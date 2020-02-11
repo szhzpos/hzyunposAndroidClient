@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/loginBackgroundColor"
+    tools:context=".MainActivity" >
+
+    <RelativeLayout
+        android:layout_width="468dp"
+        android:layout_height="288dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/round_shape"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:id="@+id/userInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/b_login"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="148dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="28dp"
+                android:layout_marginTop="188dp"
+                android:background="@drawable/button_blue"
+                android:text="@string/login"
+                android:textColor="@color/logintextcolor"
+                android:textSize="24sp" />
+
+            <Button
+                android:id="@+id/cancel"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="148dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="268dp"
+                android:layout_marginTop="188dp"
+                android:background="@drawable/button_pink"
+                android:text="@string/cancel"
+                android:textColor="@color/canceltextcolor"
+                android:textSize="24sp" />
+
+            <EditText
+                android:id="@+id/user_id"
+                android:layout_width="328dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="58dp"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/plain_border_gray"
+                android:drawableStart="@drawable/login_user"
+                android:drawablePadding="8dp"
+                android:ems="10"
+                android:hint="@string/user_name"
+                android:inputType="text"
+                android:paddingStart="8dp"
+                android:paddingEnd="0dp"
+                android:textColor="@color/gray" />
+
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="328dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="58dp"
+                android:layout_marginTop="98dp"
+                android:autofillHints=""
+                android:background="@drawable/plain_border_gray"
+                android:drawableStart="@drawable/login_password"
+                android:drawablePadding="8dp"
+                android:ems="10"
+                android:hint="@string/password"
+                android:inputType="textPassword"
+                android:paddingStart="8dp"
+                android:paddingEnd="0dp"
+                android:textColor="@color/gray" />
+        </RelativeLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/setup_ico"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/setup">
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </RelativeLayout>
+</RelativeLayout>
