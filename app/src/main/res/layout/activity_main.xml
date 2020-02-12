@@ -8,6 +8,7 @@
     tools:context=".MainActivity" >
 
     <RelativeLayout
+        android:id="@+id/login_info"
         android:layout_width="468dp"
         android:layout_height="288dp"
         android:layout_centerInParent="true"
