@@ -3,9 +3,10 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
-    <color name="loginBackgroundColor">#3F3F55</color>
+    <color name="appColor">#3F3F55</color>
     <color name="blue">#0080ff</color>
     <color name="white">#FFFFFF</color>
-    <color name="pink">#ff8080</color>
+    <color name="pink">#FF8080</color>
     <color name="gray">#A1A1A1</color>
+    <color name="transparent">#00000000</color>
 </resources>
