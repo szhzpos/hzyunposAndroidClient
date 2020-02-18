@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_enabled="false">
+        <shape android:shape="rectangle">
+            <!-- 圆角 -->
+            <corners android:radius="2dp" />
+            <!--填充颜色为白色-->
+            <solid android:color="@color/transparent" />
+        </shape>
+    </item>
+    <item android:state_hovered="true">
+        <shape android:shape="rectangle">
+            <!--圆角-->
+            <corners android:radius="2dp" />
+            <!--填充颜色为蓝色-->
+            <solid android:color="@color/white_subtransparent" />
+            <stroke android:width="1dp" android:color="@color/white_subtransparent" />
+        </shape>
+    </item>
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <!--圆角-->
+            <corners android:radius="2dp" />
+            <!--填充颜色为蓝色-->
+            <solid android:color="@color/white_subtransparent" />
+            <!--描边-->
+            <stroke android:width="1dp" android:color="@color/white_subtransparent" />
+        </shape>
+    </item>
+</selector>

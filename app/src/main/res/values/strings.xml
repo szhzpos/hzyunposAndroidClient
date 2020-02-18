@@ -7,4 +7,11 @@
     <string name="OK">确定</string>
     <string name="yes">是</string>
     <string name="no">否</string>
+    <string name="dialog_title">对话框</string>
+    <string name="cashier_desk_name">收银台</string>
+    <string name="deal_name">查交易</string>
+    <string name="shift_exchange_name">交 班</string>
+    <string name="other_name">更多</string>
+    <string name="cashier_name">收银员：</string>
+    <string name="store_name">仓库：</string>
 </resources>

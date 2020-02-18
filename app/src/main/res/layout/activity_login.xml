@@ -2,10 +2,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/appColor"
-    tools:context=".LoginActivity" >
+    tools:context=".activity.LoginActivity">
 
     <RelativeLayout
         android:id="@+id/login_info"
@@ -21,6 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
+            android:focusable="auto"
             android:orientation="vertical">
 
             <Button
@@ -32,7 +34,7 @@
                 android:layout_marginTop="188dp"
                 android:background="@drawable/button_blue"
                 android:text="@string/login"
-                android:textColor="@color/logintextcolor"
+                android:textColor="@color/oktextcolor"
                 android:textSize="24sp" />
 
             <Button
@@ -57,6 +59,7 @@
                 android:drawableStart="@drawable/login_user"
                 android:drawablePadding="8dp"
                 android:ems="10"
+                android:focusable="auto"
                 android:hint="@string/user_name"
                 android:importantForAutofill="no"
                 android:inputType="text"
@@ -75,6 +78,7 @@
                 android:drawableStart="@drawable/login_password"
                 android:drawablePadding="8dp"
                 android:ems="10"
+                android:focusable="auto"
                 android:hint="@string/password"
                 android:inputType="textPassword"
                 android:paddingStart="8dp"

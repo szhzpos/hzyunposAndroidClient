@@ -20,17 +20,14 @@ import static android.content.Context.WINDOW_SERVICE;
  */
 
 public class MyDialog extends Dialog {
-
-    private Button yes;//确定按钮
-    private Button no;//取消按钮
-    private TextView titleTv;//消息标题文本
-    private TextView messageTv;//消息提示文本
-    private String titleStr;//从外界设置的title文本
-    private String messageStr;//从外界设置的消息文本
-    private Context context;
-    private boolean isYes,isNo;
-    //确定文本和取消文本的显示内容
-    private String yesStr, noStr;
+    private Button mYes,mNo;//mYes确定按钮、mNo取消按钮
+    private TextView mTitle,mMessage;//mTitle标题文本、mMessage消息提示文本
+    private String mTitleStr;//从外界设置的title文本
+    private String mMessageStr;//从外界设置的消息文本
+    private Context mContext;
+    private boolean mIsYes,mIsNo;
+    //按钮文本的显示内容
+    private String mYesStr,mNoStr;
 
     private onNoOnclickListener noOnclickListener;//取消按钮被点击了的监听器
     private onYesOnclickListener yesOnclickListener;//确定按钮被点击了的监听器
@@ -43,10 +40,10 @@ public class MyDialog extends Dialog {
      */
     public MyDialog  setNoOnclickListener(String str, onNoOnclickListener onNoOnclickListener) {
         if (str != null) {
-            noStr = str;
+            mNoStr = str;
         }
         this.noOnclickListener = onNoOnclickListener;
-        this.isNo = true;
+        this.mIsNo = true;
 
         return this;
     }
@@ -59,17 +56,17 @@ public class MyDialog extends Dialog {
      */
     public MyDialog setYesOnclickListener(String str, onYesOnclickListener onYesOnclickListener) {
         if (str != null) {
-            yesStr = str;
+            mYesStr = str;
         }
         this.yesOnclickListener = onYesOnclickListener;
-        this.isYes = true;
+        this.mIsYes = true;
 
         return  this;
     }
 
     public MyDialog(Context context) {
         super(context,R.style.MyDialog);
-        this.context = context;
+        this.mContext = context;
     }
 
     @Override
@@ -99,7 +96,7 @@ public class MyDialog extends Dialog {
      */
     private void initEvent() {
         //设置确定按钮被点击后，向外界提供监听
-        yes.setOnClickListener(new View.OnClickListener() {
+        mYes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (yesOnclickListener != null) {
@@ -108,7 +105,7 @@ public class MyDialog extends Dialog {
             }
         });
         //设置取消按钮被点击后，向外界提供监听
-        no.setOnClickListener(new View.OnClickListener() {
+        mNo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (noOnclickListener != null) {
@@ -123,18 +120,18 @@ public class MyDialog extends Dialog {
      */
     private void initData() {
         //如果用户自定了title和message
-        if (titleStr != null) {
-            titleTv.setText(titleStr);
+        if (mTitleStr != null) {
+            mTitle.setText(mTitleStr);
         }
-        if (messageStr != null) {
-            messageTv.setText(messageStr);
+        if (mMessageStr != null) {
+            mMessage.setText(mMessageStr);
         }
         //如果设置按钮的文字
-        if (yesStr != null) {
-            yes.setText(yesStr);
+        if (mYesStr != null) {
+            mYes.setText(mYesStr);
         }
-        if (noStr != null) {
-            no.setText(noStr);
+        if (mNoStr != null) {
+            mNo.setText(mNoStr);
         }
 
     }
@@ -142,12 +139,12 @@ public class MyDialog extends Dialog {
      * 初始化界面控件
      */
     private void initView() {
-        yes = (Button) findViewById(R.id.yes);
-        no = (Button) findViewById(R.id.no);
-        titleTv = (TextView) findViewById(R.id.title_text);
-        messageTv = (TextView) findViewById(R.id.content);
+        mYes = (Button) findViewById(R.id.yes);
+        mNo = (Button) findViewById(R.id.no);
+        mTitle = (TextView) findViewById(R.id.title_text);
+        mMessage = (TextView) findViewById(R.id.content);
 
-        WindowManager m = (WindowManager)context.getSystemService(WINDOW_SERVICE);
+        WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
         if (m != null){
             Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
             Point point = new Point();
@@ -168,7 +165,7 @@ public class MyDialog extends Dialog {
      * @param title
      */
     public MyDialog setTitle(String title) {
-        titleStr = title;
+        mTitleStr = title;
         return  this;
     }
 
@@ -178,7 +175,7 @@ public class MyDialog extends Dialog {
      * @param message
      */
     public MyDialog setMessage(String message) {
-        messageStr = message;
+        mMessageStr = message;
         return  this;
     }
 
@@ -186,15 +183,15 @@ public class MyDialog extends Dialog {
     @Override
     public void show(){
         super.show();
-        if (isYes && !isNo) {
-            this.no.setVisibility(View.GONE);
-            this.yes.setVisibility(View.VISIBLE);
-        } else if (isNo && !isYes) {
-            this.yes.setVisibility(View.GONE);
-            this.no.setVisibility(View.VISIBLE);
+        if (mIsYes && !mIsNo) {
+            mNo.setVisibility(View.GONE);
+            mYes.setVisibility(View.VISIBLE);
+        } else if (mIsNo && !mIsYes) {
+            mYes.setVisibility(View.GONE);
+            mNo.setVisibility(View.VISIBLE);
         } else {
-            this.no.setVisibility(View.VISIBLE);
-            this.yes.setVisibility(View.VISIBLE);
+            mNo.setVisibility(View.VISIBLE);
+            mYes.setVisibility(View.VISIBLE);
         }
     }
     /**

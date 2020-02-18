@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@color/appColor"
+    android:background="@drawable/round_shape_main_color"
     tools:layout_editor_absoluteX="8dp"
     tools:layout_editor_absoluteY="152dp">
 
@@ -14,13 +14,14 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/linearLayout9"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="4dp"
+        android:layout_marginBottom="8dp"
         android:background="@color/transparent"
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout9">
 
         <Button
             android:id="@+id/yes"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="80dp"
             android:layout_height="40dp"
             android:layout_marginStart="20dp"
@@ -28,12 +29,13 @@
             android:layout_marginEnd="20dp"
             android:background="@drawable/dialog_button_blue"
             android:text="@string/OK"
-            android:textColor="@color/logintextcolor"
+            android:textColor="@color/oktextcolor"
             android:textSize="16sp"
             android:visibility="visible" />
 
         <Button
             android:id="@+id/no"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="80dp"
             android:layout_height="40dp"
             android:layout_marginStart="20dp"
@@ -62,14 +64,14 @@
 
         <TextView
             android:id="@+id/content"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@drawable/top_main_color_separator"
+            android:gravity="center"
             android:lineSpacingExtra="4sp"
-            android:minHeight="80dp"
-            android:text="提示内容"
-            android:textAlignment="center"
+            android:minHeight="108dp"
+            android:textAlignment="gravity"
             android:textColor="@color/white"
             android:textSize="20sp" />
     </LinearLayout>
@@ -90,12 +92,13 @@
 
         <TextView
             android:id="@+id/title_text"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:text="标题"
-            android:textAlignment="center"
+            android:drawableStart="@drawable/dialog_icon"
+            android:text="@string/dialog_title"
+            android:textAlignment="viewStart"
             android:textColor="@color/white"
             android:textSize="24sp" />
     </LinearLayout>
