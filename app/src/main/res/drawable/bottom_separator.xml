@@ -8,7 +8,7 @@
                 </shape>
             </item>
             <item
-                android:bottom="0.5dp">
+                android:bottom="1dp">
                 <shape >
                     <gradient android:startColor="#ffffff" android:endColor="#09e4e6e7"
                         android:angle="270" />

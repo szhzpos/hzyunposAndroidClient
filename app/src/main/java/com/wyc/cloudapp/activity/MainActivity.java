@@ -9,20 +9,29 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TableLayout;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
-import com.wyc.cloudapp.adapter.LinearItemDecoration;
+import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
 
 public class MainActivity extends AppCompatActivity {
     private SaleGoodsViewAdapter saleGoodsViewAdapter;
+    private EditText search_content;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        search_content = findViewById(R.id.search_content);
+
+        search_content.setOnFocusChangeListener((View v,boolean hasFocus)->{
+            Utils.hideKeyBoard((EditText) v);
+        });
 
         findViewById(R.id.q_deal_linerLayout).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,6 +54,10 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.network_status).setOnClickListener((View v)->{
             ImageView imageView = (ImageView) v;
             imageView.setImageResource(R.drawable.network_err);
+        });
+        findViewById(R.id.keyboard).setOnClickListener((View v)->{
+            TableLayout tableLayout = findViewById(R.id.keyboard_layout);
+            tableLayout.setVisibility(tableLayout.getVisibility()== View.VISIBLE ? View.GONE : View.VISIBLE);
         });
         findViewById(R.id.close).setOnClickListener((View V)->{
             final Activity activity = MainActivity.this;
@@ -73,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         recyclerView.removeItemDecoration(recyclerView.getItemDecorationAt(0));
-        recyclerView.addItemDecoration(new LinearItemDecoration());
+        recyclerView.addItemDecoration(new SaleGoodsItemDecoration());
         recyclerView.setAdapter(saleGoodsViewAdapter);
 
     }

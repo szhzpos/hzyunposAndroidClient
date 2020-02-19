@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
@@ -19,14 +18,12 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     private Context mContext;
     private JSONArray mDatas;
     private OnItemClickListener mOnItemClickListener;
-    private int type = 1;
     public SaleGoodsViewAdapter(Context context){
         this.mContext = context;
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
         TextView goods_title,only_coding,p_t_g_id,barcode,in_num,unit_name,unit_id,inventory;
-        LinearLayout inven_info;
         MyViewHolder(View itemView) {
             super(itemView);
             goods_title = itemView.findViewById(R.id.goods_title);
@@ -38,12 +35,6 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
             unit_id = itemView.findViewById(R.id.unit_id);
             inventory = itemView.findViewById(R.id.inventory);
         }
-    }
-
-    public void setmDatas(int type,JSONArray jsonArray){
-        //type 1 未盘点  2 已盘点
-        this.type = type;
-        this.mDatas = jsonArray;
     }
 
     @NonNull

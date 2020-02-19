@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="fun_button_width_size">85dp</dimen>
+    <dimen name="fun_button_height_size">50dp</dimen>
+    <dimen name="fun_button_margin_top">2dp</dimen>
+    <dimen name="margin_5">5dp</dimen>
+    <dimen name="margin_8">8dp</dimen>
+    <dimen name="fun_button_font_size_18">18sp</dimen>
+    <dimen name="fun_button_font_size_24">24sp</dimen>
+    <dimen name="fun_button_font_size_16">16sp</dimen>
+</resources>

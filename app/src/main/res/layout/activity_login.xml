@@ -34,7 +34,7 @@
                 android:layout_marginTop="188dp"
                 android:background="@drawable/button_blue"
                 android:text="@string/login"
-                android:textColor="@color/oktextcolor"
+                android:textColor="@color/white_blue"
                 android:textSize="24sp" />
 
             <Button
@@ -46,7 +46,7 @@
                 android:layout_marginTop="188dp"
                 android:background="@drawable/button_pink"
                 android:text="@string/cancel"
-                android:textColor="@color/canceltextcolor"
+                android:textColor="@color/white_pink"
                 android:textSize="24sp" />
 
             <EditText
