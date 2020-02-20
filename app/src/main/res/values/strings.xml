@@ -32,4 +32,11 @@
     <string name="num_sz">数量：</string>
     <string name="amount_sz">金额：</string>
     <string name="barcode_sz">条码/助记码：</string>
+    <string name="back">回退</string>
+    <string name="del">del</string>
+    <string name="server_url">服务器URL：</string>
+    <string name="appId">appId：</string>
+    <string name="appSecret">appSecret：</string>
+    <string name="save">保存</string>
+    <string name="conn_dialog_title_sz">连接参数</string>
 </resources>

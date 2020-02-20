@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -62,7 +63,9 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.close).setOnClickListener((View V)->{
             final Activity activity = MainActivity.this;
             MyDialog dialog = new MyDialog(activity);
-            dialog.setMessage("是否退出收银台？").setYesOnclickListener("是",(MyDialog mydialog)->{
+            dialog.setMessage("是否退出收银？").setYesOnclickListener("是",(MyDialog mydialog)->{
+                Intent intent = new Intent(activity,LoginActivity.class);
+                startActivity(intent);
                 activity.finish();
                 mydialog.dismiss();
             }).setNoOnclickListener("否",(MyDialog mydialog)->{
