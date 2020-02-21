@@ -15,7 +15,6 @@ import com.wyc.cloudapp.logger.Logger;
  */
 
 public class CustomApplication extends Application {
-    private SQLiteHelper sqLiteHelper;
     private NetChangeMonitor netChangeMonitor;
     private volatile int netState = 1,netState_mobile = 1;//WiFi 连接状态 1 连接 0 其他
     public CustomApplication(){
@@ -26,7 +25,7 @@ public class CustomApplication extends Application {
         super.onCreate();
         Logger.addLogAdapter(new AndroidLogAdapter());
         Logger.addLogAdapter(new DiskLogAdapter());//日志记录磁盘
-        sqLiteHelper = new SQLiteHelper(this);
+        SQLiteHelper.initDb(this);//初始化数据库
         netChangeMonitor = new NetChangeMonitor();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
@@ -37,18 +36,11 @@ public class CustomApplication extends Application {
     @Override
     public void onTerminate(){
         super.onTerminate();
-        if (sqLiteHelper != null){
-            sqLiteHelper.closeDB();
-        }
+        SQLiteHelper.closeDB();
         if (netChangeMonitor != null){
             unregisterReceiver(netChangeMonitor);
         }
     }
-
-    public SQLiteHelper getSqLiteHelper(){
-        return sqLiteHelper;
-    }
-
     public synchronized int getNetState(){
         return netState|netState_mobile;
     }

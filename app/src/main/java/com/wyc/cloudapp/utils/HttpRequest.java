@@ -103,7 +103,6 @@ public final class HttpRequest {
                 jsonRetStr.put("flag",0);
                 jsonRetStr.put("info","下载失败！ " + e.getLocalizedMessage());
             }catch (JSONException je ){
-                Logger.addLogAdapter(new AndroidLogAdapter());
                 Logger.e("下载文件JSON异常：%s",je.getLocalizedMessage());
             }
         }
