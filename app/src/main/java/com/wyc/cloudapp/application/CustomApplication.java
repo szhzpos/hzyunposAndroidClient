@@ -6,6 +6,8 @@ import android.content.IntentFilter;
 import com.wyc.cloudapp.broadcast.NetChangeMonitor;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.logger.AndroidLogAdapter;
+import com.wyc.cloudapp.logger.DiskLogAdapter;
+import com.wyc.cloudapp.logger.LogcatLogStrategy;
 import com.wyc.cloudapp.logger.Logger;
 
 /**
@@ -23,6 +25,7 @@ public class CustomApplication extends Application {
     public  void  onCreate(){
         super.onCreate();
         Logger.addLogAdapter(new AndroidLogAdapter());
+        Logger.addLogAdapter(new DiskLogAdapter());//日志记录磁盘
         sqLiteHelper = new SQLiteHelper(this);
         netChangeMonitor = new NetChangeMonitor();
         IntentFilter intentFilter = new IntentFilter();

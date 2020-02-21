@@ -10,6 +10,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.os.Environment;
 import androidx.annotation.NonNull;
+
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import org.json.JSONArray;
@@ -41,18 +43,18 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = Environment.getExternalStorageDirectory().getAbsolutePath() + "/yunPos/order.db";
     private static final int DATABASE_VERSION = 1;//记得修改软件版本
     private static final int MASTER_SOFTWRAW_VERSION = 1;
-    private static final ThreadLocal<String> TH = new ThreadLocal<>();
-    private SQLiteDatabase db;
-    private Context mContenxt;
+    private static SQLiteDatabase mDb;
     public SQLiteHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        mContenxt = context;
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         initDatabase(db);//初始化数据库
         onUpgrade(db,0,0);
+
+        //必须最后赋值
+        mDb = db;
     }
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase,int oldVersion, int newVersion) {
@@ -79,8 +81,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return result ;
     }
 
-    public synchronized boolean execSQLByBatchInsertJson(@NonNull JSONArray jsonArray,String table) {
-        SQLiteDatabase db = null;
+    public synchronized boolean execSQLByBatchInsertJson(@NonNull JSONArray jsonArray,String table,StringBuilder err) {
         boolean isTrue = true;
         StringBuilder stringBuilderHead = new StringBuilder();
         StringBuilder stringBuilderfoot = new StringBuilder();
@@ -90,9 +91,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         Iterator iterator;
         int columnN0 = 0;
         if (jsonArray.length() == 0) {
-            return true;
+            return false;
         }
-
 
         stringBuilderHead.append("INSERT INTO ");
         stringBuilderHead.append(table);
@@ -115,9 +115,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
 
         try {
-            db = this.getDB();
-            db.beginTransaction();
-            statement = db.compileStatement(stringBuilderHead.toString());
+            mDb.beginTransaction();
+            statement = mDb.compileStatement(stringBuilderHead.toString());
             for (int i = 0,len = jsonArray.length();i < len; i ++){
                 columnN0 = 0;
                 jsonObject = jsonArray.optJSONObject(i);
@@ -131,25 +130,23 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 }
                 statement.executeInsert();
             }
-            db.setTransactionSuccessful();
+            mDb.setTransactionSuccessful();
         } catch (SQLException e) {
             isTrue = false;
-            TH.set(e.getLocalizedMessage());
+            err.append(e.getMessage());
             e.printStackTrace();
         } finally {
             if (statement != null){
                 statement.close();
             }
-            if (db != null){
-                db.endTransaction();
+            if (mDb != null){
+                mDb.endTransaction();
             }
         }
         return isTrue;
     }
 
-
-    public synchronized boolean execSQLByBatchReplaceJson(@NonNull JSONArray jsonArray, String table) {
-        SQLiteDatabase db = null;
+    public synchronized boolean execSQLByBatchReplaceJson(@NonNull JSONArray jsonArray, String table,StringBuilder err) {
         boolean isTrue = true;
         StringBuilder stringBuilderHead = new StringBuilder();
         StringBuilder stringBuilderfoot = new StringBuilder();
@@ -159,8 +156,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         Iterator iterator;
         int columnN0 = 0;
         if (jsonArray.length() == 0) {
-            TH.set("jsonArray数据为空！");
-            return !isTrue;
+            return false;
         }
 
         stringBuilderHead.append("REPLACE INTO ");
@@ -183,9 +179,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         stringBuilderHead.append(stringBuilderfoot);
 
         try {
-            db = this.getDB();
-            db.beginTransaction();
-            statement = db.compileStatement(stringBuilderHead.toString());
+            mDb.beginTransaction();
+            statement = mDb.compileStatement(stringBuilderHead.toString());
             for (int i = 0,len = jsonArray.length();i < len; i ++){
                 columnN0 = 0;
                 jsonObject = jsonArray.optJSONObject(i);
@@ -199,24 +194,23 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 }
                 statement.execute();
             }
-            db.setTransactionSuccessful();
+            mDb.setTransactionSuccessful();
         } catch (SQLException e) {
             isTrue = false;
-            TH.set(e.getLocalizedMessage());
+            err.append(e.getMessage());
             e.printStackTrace();
         } finally {
             if (statement != null){
                 statement.close();
             }
-            if (db != null){
-                db.endTransaction();
+            if (mDb != null){
+                mDb.endTransaction();
             }
         }
         return isTrue;
     }
 
-    public synchronized boolean execSQLByBatchReplaceJson(@NonNull JSONArray jsonArray, String table,String[] cls) {
-        SQLiteDatabase db = null;
+    public synchronized boolean execSQLByBatchReplaceJson(@NonNull JSONArray jsonArray, String table,String[] cls,StringBuilder err) {
         boolean isTrue = true;
         StringBuilder stringBuilderHead = new StringBuilder();
         StringBuilder stringBuilderfoot = new StringBuilder();
@@ -226,7 +220,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         Iterator iterator;
         int columnN0 = 0;
         if (jsonArray.length() == 0) {
-            TH.set("jsonArray数据为空！");
             return false;
         }
 
@@ -261,9 +254,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         stringBuilderHead.append(stringBuilderfoot);
 
         try {
-            db = this.getDB();
-            db.beginTransaction();
-            statement = db.compileStatement(stringBuilderHead.toString());
+            mDb.beginTransaction();
+            statement = mDb.compileStatement(stringBuilderHead.toString());
             for (int i = 0,len = jsonArray.length();i < len; i ++){
                 columnN0 = 0;
                 jsonObject = jsonArray.optJSONObject(i);
@@ -286,43 +278,40 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 }
                 statement.execute();
             }
-            db.setTransactionSuccessful();
+            mDb.setTransactionSuccessful();
         } catch (SQLException e) {
             isTrue = false;
-            TH.set(e.getLocalizedMessage());
+            err.append(e.getMessage());
             e.printStackTrace();
         } finally {
             if (statement != null){
                 statement.close();
             }
-            if (db != null){
-                db.endTransaction();
+            if (mDb != null){
+                mDb.endTransaction();
             }
         }
         return isTrue;
     }
 
-    public synchronized boolean execSQLByBatch(@NonNull List<String> sqls) {
-        SQLiteDatabase db = null;
+    public synchronized boolean execSQLByBatch(@NonNull List<String> sqls,StringBuilder err) {
         boolean isTrue = true;
         if (sqls.isEmpty()) {
-            TH.set("批处理语句为空！");
-            return !isTrue;
+            return false;
         }
         try {
-            db = this.getDB();
-            db.beginTransaction();
+            mDb.beginTransaction();
             for (String sql : sqls) {
-                db.execSQL(sql);
+                mDb.execSQL(sql);
             }
-            db.setTransactionSuccessful();
+            mDb.setTransactionSuccessful();
         } catch (SQLException e) {
             isTrue = false;
-            TH.set(e.getLocalizedMessage());
+            err.append(e.getMessage());
             e.printStackTrace();
         } finally {
-            if (db != null){
-                db.endTransaction();
+            if (mDb != null){
+                mDb.endTransaction();
             }
         }
         return isTrue;
@@ -334,51 +323,41 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     }
 
     public synchronized void closeDB(){
-        if (db != null)
+        if (mDb != null)
         {
-            db.close();
-            db = null;
+            mDb.close();
         }
     }
     public synchronized SQLiteDatabase getDB() throws SQLiteException{
-        if (db == null){
-            db = this.getWritableDatabase();
+        if (mDb == null){
+            mDb = this.getWritableDatabase();
         }
-        return db;
+        return mDb;
     }
-
-    public  String getErrorMsg(){
-        String tmp = TH.get();
-        TH.remove();
-        return tmp;
-    }
-
-    public final synchronized JSONArray getList(@NonNull String sql,Integer minrow,Integer maxrow,boolean row){
+    public final synchronized JSONArray getList(@NonNull String sql,Integer minrow,Integer maxrow,boolean row,StringBuilder err){
         Cursor cursor = null;
         JSONArray array = null;
         try{
-            cursor = db.rawQuery(sql,null);
+            cursor = mDb.rawQuery(sql,null);
             array = rs2Json(cursor,minrow,maxrow,row);
         } catch (JSONException | SQLiteException e) {
-            TH.set("查询出错了:" + e.getMessage());
+            err.append("查询错误：" + e.getMessage());
             e.printStackTrace();
-            array=null;
+            array = null;
         }finally{
-            if(cursor!=null){
+            if(cursor != null){
                 try{
                     cursor.close();
                 }catch(SQLException e){
-                    TH.set("关闭资源:" + e.getMessage());
-                    array=null;
-                }finally {
-                    cursor = null;
+                    Logger.e("getList关闭cursor错误：" + e.getMessage());
+                    e.printStackTrace();
                 }
             }
         }
         return array;
     }
 
-    public final synchronized List<Map<String,Object>> getList(@NonNull String sql){
+    public final synchronized List<Map<String,Object>> getList(@NonNull String sql,StringBuilder err){
         SQLiteDatabase db = null;
         Cursor cursor = null;
         List<Map<String,Object>> maps = null;
@@ -387,16 +366,16 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             cursor = db.rawQuery(sql,null);
             maps = rs2List(cursor);
         } catch (SQLiteException e) {
-            TH.set("查询出错了:" + e.getMessage());
+            err.append("查询出错：" + e.getLocalizedMessage());
             e.printStackTrace();
-            maps=null;
+            maps = null;
         }finally{
             if(cursor!=null){
                 try{
                     cursor.close();
                 }catch(SQLException e){
-                    TH.set("关闭资源:" + e.getMessage());
-                    maps=null;
+                    Logger.e("getList关闭cursor错误：" + e.getMessage());
+                    e.printStackTrace();
                 }
             }
         }
@@ -404,34 +383,34 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     }
 
 
-    public final synchronized String getString(@NonNull String sql){
+    public final synchronized String getString(@NonNull String sql,StringBuilder err){
         SQLiteDatabase db = null;
         Cursor cursor = null;
-        String result = null;
+        String result;
         try{
             db = getDB();
             cursor = db.rawQuery(sql,null);
             result = rs2Txt(cursor);
         } catch (SQLiteException e) {
-            TH.set("查询出错了:" + e.getMessage());
+            err.append("查询错误：" + e.getMessage());
             result = null;
             e.printStackTrace();
         }finally{
-            if(cursor!=null){
+            if(cursor != null){
                 cursor.close();
             }
         }
         return result;
     }
 
-    public final synchronized JSONArray getListValues(@NonNull String sql,Integer minrow,Integer maxrow,boolean row){
+    public final synchronized JSONArray getListValues(@NonNull String sql,Integer minrow,Integer maxrow,boolean row,StringBuilder err){
         Cursor cursor = null;
         JSONArray array = null;
         try{
-            cursor = db.rawQuery(sql,null);
+            cursor = mDb.rawQuery(sql,null);
             array = rs2Values(cursor,minrow,maxrow,row);
         } catch (JSONException | SQLiteException e) {
-            TH.set("查询出错了:" + e.getMessage());
+            err.append(e.getMessage());
             e.printStackTrace();
             array=null;
         }finally{
