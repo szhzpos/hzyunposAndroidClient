@@ -46,7 +46,8 @@
             android:autofillHints=""
             android:background="@drawable/round_shape"
             android:ems="10"
-            android:inputType="textUri|textPersonName" />
+            android:inputType="textUri|textPersonName"
+            android:textColor="@color/text_color" />
 
     </LinearLayout>
 
@@ -77,7 +78,8 @@
             android:autofillHints=""
             android:background="@drawable/round_shape"
             android:ems="10"
-            android:inputType="textPersonName" />
+            android:inputType="textPersonName"
+            android:textColor="@color/text_color" />
     </LinearLayout>
 
     <LinearLayout
@@ -106,7 +108,8 @@
             android:autofillHints=""
             android:background="@drawable/round_shape"
             android:ems="10"
-            android:inputType="textPersonName" />
+            android:inputType="textPersonName"
+            android:textColor="@color/text_color" />
     </LinearLayout>
 
     <Button

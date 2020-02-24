@@ -326,16 +326,30 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return isTrue;
     }
 
-    public static JSONObject getLocalParameter(String parameter_id,StringBuilder err){
+    public static boolean getLocalParameter(String parameter_id,JSONObject param){
         boolean isTrue = true;
-        try (Cursor cursor = mDb.query("local_parameter",new String[]{"parameter_content"},"parameter_id",new String[]{parameter_id},
+        try (Cursor cursor = mDb.query("local_parameter",new String[]{"parameter_content"},"parameter_id = ?",new String[]{parameter_id},
                 null,null,null)){
-            return new JSONObject(cursor.getString(0));
-        } catch (JSONException e) {
-            err.append("查询参数错误：").append(e.getMessage());
+            if (!cursor.moveToNext()){
+                throw new SQLiteException("查询数据为空！");
+            }
+            JSONObject json = new JSONObject(cursor.getString(0));
+            Iterator<String> iterator = json.keys();
+            String key;
+            while(iterator.hasNext()){
+                key = iterator.next();
+                param.put(key,json.getString(key));
+            }
+        } catch (JSONException | SQLiteException e) {
+            isTrue = false;
+            try {
+                param.put("info","查询参数错误：" + e.getMessage());
+            } catch (JSONException ex) {
+                ex.printStackTrace();
+            }
             e.printStackTrace();
         }
-        return null;
+        return isTrue;
     }
 
     public static void closeDB(){
@@ -443,25 +457,25 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
                 if(cls != null && cls.length != 0){
                     for (String cl:cls){
-                        if ("NULL".equals(json.optString(cl))){
+                        if ("".equals(json.getString(cl))){
                             statement.bindNull(++columnN0);
                         }else
-                            statement.bindString(++columnN0,json.optString(cl));
+                            statement.bindString(++columnN0,json.getString(cl));
                     }
                 }else{
                     iterator = json.keys();
                     while(iterator.hasNext()){
                         key = (String) iterator.next();
-                        if ("".equals(json.optString(key))){
+                        if ("".equals(json.getString(key))){
                             statement.bindNull(++columnN0);
                         }else
-                            statement.bindString(++columnN0,json.optString(key));
+                            statement.bindString(++columnN0,json.getString(key));
                     }
                 }
                 statement.execute();
 
                 mDb.setTransactionSuccessful();
-            } catch (SQLException e) {
+            } catch (SQLException | JSONException e) {
                 isTrue = false;
                 err.append(e.getMessage());
                 e.printStackTrace();
@@ -520,25 +534,25 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
                 if(cls != null && cls.length != 0){
                     for (String cl:cls){
-                        if ("NULL".equals(json.optString(cl))){
+                        if ("".equals(json.getString(cl))){
                             statement.bindNull(++columnN0);
                         }else
-                            statement.bindString(++columnN0,json.optString(cl));
+                            statement.bindString(++columnN0,json.getString(cl));
                     }
                 }else{
                     iterator = json.keys();
                     while(iterator.hasNext()){
                         key = (String) iterator.next();
-                        if ("".equals(json.optString(key))){
+                        if ("".equals(json.getString(key))){
                             statement.bindNull(++columnN0);
                         }else
-                            statement.bindString(++columnN0,json.optString(key));
+                            statement.bindString(++columnN0,json.getString(key));
                     }
                 }
                 statement.execute();
 
                 mDb.setTransactionSuccessful();
-            } catch (SQLException e) {
+            } catch (SQLException | JSONException e) {
                 isTrue = false;
                 err.append(e.getMessage());
                 e.printStackTrace();
@@ -559,6 +573,9 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 // json数组
         ArrayList<String> colNames=new ArrayList<String>();
         ArrayList<Integer> coltypes=new ArrayList<Integer>();
+        if( null == json){
+            return false;
+        }
         synchronized (SQLiteHelper.class){
             try(Cursor cursor = mDb.rawQuery(sql,null);){
                 // 获取列数
@@ -572,17 +589,16 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 }
                 // 遍历ResultSet中的每条数据
                 do {
-                    JSONObject jsonObj = new JSONObject();
                     for (int i = 0; i < columnCount; i++) {
                         if (coltypes.get(i) == FIELD_TYPE_FLOAT) {
-                            jsonObj.put(colNames.get(i),BigDecimal.valueOf(cursor.getDouble(i)));  /////i = 0;rs里面的是从1开始
+                            json.put(colNames.get(i),BigDecimal.valueOf(cursor.getDouble(i)));  /////i = 0;rs里面的是从1开始
                         } else if (coltypes.get(i) == FIELD_TYPE_INTEGER) {
-                            jsonObj.put(colNames.get(i), cursor.getInt(i));
+                            json.put(colNames.get(i), cursor.getInt(i));
                         } else {
                             if (cursor.getString(i) == null) {
-                                jsonObj.put(colNames.get(i), "");
+                                json.put(colNames.get(i), "");
                             } else {
-                                jsonObj.put(colNames.get(i), cursor.getString(i).trim());
+                                json.put(colNames.get(i), cursor.getString(i).trim());
                             }
                         }
                     }

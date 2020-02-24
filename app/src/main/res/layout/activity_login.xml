@@ -65,7 +65,7 @@
                 android:inputType="text"
                 android:paddingStart="8dp"
                 android:paddingEnd="0dp"
-                android:textColor="@color/gray" />
+                android:textColor="@color/text_color" />
 
             <EditText
                 android:id="@+id/password"
@@ -83,7 +83,7 @@
                 android:inputType="textPassword"
                 android:paddingStart="8dp"
                 android:paddingEnd="0dp"
-                android:textColor="@color/gray" />
+                android:textColor="@color/text_color" />
         </RelativeLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout

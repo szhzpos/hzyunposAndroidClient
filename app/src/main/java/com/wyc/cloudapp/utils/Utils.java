@@ -8,9 +8,11 @@ import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.util.Base64;
+import android.view.Gravity;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.wyc.cloudapp.dialog.MyDialog;
 
@@ -73,6 +75,13 @@ public class Utils {
             }
         }).show();
     }
+
+    public static void ToastMessage(final String message,final Context context){
+       Toast toast = Toast.makeText(context,"保存成功！",Toast.LENGTH_SHORT);
+       toast.setGravity(Gravity.CENTER,0,0);
+       toast.show();
+    }
+
     public static String getDeviceId(Context context) {
         String deviceId = getLocalMac(context).replace(":", "") + getAndroidId(context);
          if ("".equals(deviceId)) {

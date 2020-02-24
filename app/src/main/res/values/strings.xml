@@ -39,4 +39,6 @@
     <string name="appSecret">appSecret：</string>
     <string name="save">保存</string>
     <string name="conn_dialog_title_sz">连接参数</string>
+    <string name="loading">加载中...</string>
+    <string name="sec_sign">s</string>
 </resources>
