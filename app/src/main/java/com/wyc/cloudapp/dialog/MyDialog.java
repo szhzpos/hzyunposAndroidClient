@@ -3,6 +3,7 @@ package com.wyc.cloudapp.dialog;
 import android.app.Dialog;
 import android.content.Context;
 
+import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
 import com.wyc.cloudapp.R;
@@ -25,6 +26,7 @@ public class MyDialog extends Dialog {
     private String mTitleStr;//从外界设置的title文本
     private String mMessageStr;//从外界设置的消息文本
     private Context mContext;
+    private int mMessageColor = Color.WHITE;
     private boolean mIsYes,mIsNo;
     //按钮文本的显示内容
     private String mYesStr,mNoStr;
@@ -96,21 +98,15 @@ public class MyDialog extends Dialog {
      */
     private void initEvent() {
         //设置确定按钮被点击后，向外界提供监听
-        mYes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (yesOnclickListener != null) {
-                    yesOnclickListener.onYesClick(MyDialog.this);
-                }
+        mYes.setOnClickListener(v -> {
+            if (yesOnclickListener != null) {
+                yesOnclickListener.onYesClick(MyDialog.this);
             }
         });
         //设置取消按钮被点击后，向外界提供监听
-        mNo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (noOnclickListener != null) {
-                    noOnclickListener.onNoClick(MyDialog.this);
-                }
+        mNo.setOnClickListener(v -> {
+            if (noOnclickListener != null) {
+                noOnclickListener.onNoClick(MyDialog.this);
             }
         });
     }
@@ -125,6 +121,7 @@ public class MyDialog extends Dialog {
         }
         if (mMessageStr != null) {
             mMessage.setText(mMessageStr);
+            mMessage.setTextColor(mMessageColor);
         }
         //如果设置按钮的文字
         if (mYesStr != null) {
@@ -203,6 +200,11 @@ public class MyDialog extends Dialog {
 
     public interface onNoOnclickListener {
           void onNoClick(MyDialog myDialog);
+    }
+
+    public MyDialog setTitleColor(int c){
+        mMessageColor = c;
+        return this;
     }
 
 }

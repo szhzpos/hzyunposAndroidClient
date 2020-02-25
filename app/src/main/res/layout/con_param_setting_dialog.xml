@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="208dp"
+    android:layout_height="248dp"
     android:background="@drawable/round_shape_main_color"
     android:orientation="vertical">
 
@@ -20,7 +20,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:id="@+id/linearLayout"
+        android:id="@+id/first"
         android:layout_width="match_parent"
         android:layout_height="@dimen/plain_text_height_40"
         android:layout_margin="@dimen/margin_1"
@@ -52,7 +52,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/linearLayout2"
+        android:id="@+id/second"
         android:layout_width="match_parent"
         android:layout_height="@dimen/plain_text_height_40"
         android:layout_margin="@dimen/margin_1"
@@ -60,7 +60,7 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+        app:layout_constraintTop_toBottomOf="@+id/first">
 
         <TextView
             android:id="@+id/textView13"
@@ -83,7 +83,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/linearLayout3"
+        android:id="@+id/third"
         android:layout_width="match_parent"
         android:layout_height="@dimen/plain_text_height_40"
         android:layout_margin="@dimen/margin_1"
@@ -91,7 +91,7 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+        app:layout_constraintTop_toBottomOf="@id/second">
 
         <TextView
             android:id="@+id/textView15"
@@ -112,6 +112,36 @@
             android:textColor="@color/text_color" />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/fourth"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/plain_text_height_40"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/third">
+
+        <TextView
+            android:id="@+id/textView9"
+            android:layout_width="95dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/store_name"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/fun_button_font_size_16" />
+
+        <EditText
+            android:id="@+id/store_name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/round_shape"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:textColor="@color/text_color" />
+    </LinearLayout>
+
     <Button
         android:id="@+id/save"
         android:layout_width="@dimen/dialog_button_width"
@@ -123,7 +153,7 @@
         android:textSize="@dimen/fun_button_font_size_18"
         app:layout_constraintEnd_toStartOf="@id/cancel"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
+        app:layout_constraintTop_toBottomOf="@id/fourth" />
 
     <Button
         android:id="@+id/cancel"
@@ -135,6 +165,6 @@
         android:textColor="@color/white_pink"
         android:textSize="@dimen/fun_button_font_size_18"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
+        app:layout_constraintTop_toBottomOf="@id/fourth" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,9 +6,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
@@ -26,11 +23,17 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.ConnSettingDialog;
 import com.wyc.cloudapp.dialog.CustomDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.keyboard.SoftKeyBoardListener;
-
+import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.HttpRequest;
+import com.wyc.cloudapp.utils.Utils;
+import org.json.JSONException;
+import org.json.JSONObject;
+import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 
 public class LoginActivity extends AppCompatActivity {
@@ -82,28 +85,11 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        mUser_id.setSelectAllOnFocus(true);
+        mPassword.setSelectAllOnFocus(true);
+
         b_login.setOnClickListener((View v)->{
-
-            mDialog.setTitle("正在登录...").setmCancel(true).show();
-            mDialog.setOnCancelListener(dialog -> {
-                MyDialog d = new MyDialog(mLogin);
-                d.setMessage("是否取消登录？").setYesOnclickListener("是",(MyDialog mydialog)->{
-                    mLogin.finish();
-                    mydialog.dismiss();
-                }).setNoOnclickListener("否",MyDialog::dismiss).show();
-            });
-            AsyncTask.execute(()->{
-                int cunt = 5;
-                while (cunt-- != 0)
-                try {
-                    Thread.sleep(5000);
-                    mDialog.setTitle(mDialog.getSzTitle() + cunt).refreshTitle();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                myHandler.obtainMessage(1).sendToTarget();
-            });
-
+            login();
         });
 
         b_cancel.setOnClickListener((View V)->{
@@ -157,6 +143,86 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    private void login(){
+        mDialog.setTitle("正在登录...").setmCancel(true).show();
+        mDialog.setOnCancelListener(dialog -> {
+            MyDialog d = new MyDialog(mLogin);
+            d.setMessage("是否取消登录？").setYesOnclickListener("是",(MyDialog mydialog)->{
+                mLogin.finish();
+                mydialog.dismiss();
+            }).setNoOnclickListener("否",MyDialog::dismiss).show();
+        });
+        AsyncTask.execute(()->{
+            JSONObject object = new JSONObject(),param_json = new JSONObject(),cashier_json = new JSONObject(),retJson,info_json,jsonLogin,store_info;
+            String url,login_url,pos_url,app_id,appscret,sz_param;
+            if (SQLiteHelper.getLocalParameter("connParam",param_json)){
+                try {
+                    url = param_json.getString("server_url");
+                    app_id = param_json.getString("appId");
+                    appscret = param_json.getString("appScret");
+
+                    object.put("appid",app_id);
+                    object.put("cas_account",mUser_id.getText());
+                    object.put("cas_pwd",mPassword.getText());
+
+                    sz_param = Utils.jsonToMd5_hz(object,appscret);
+
+                    login_url = url  + "/api/cashier/login";
+                    retJson = HttpRequest.sendPost(login_url,sz_param,null,true);
+
+                    switch (retJson.optInt("flag")) {
+                        case 0:
+                            myHandler.obtainMessage(0,retJson.optString("info")).sendToTarget();
+                            break;
+                        case 1:
+                            info_json = new JSONObject(retJson.getString("info"));
+                            switch (info_json.getString("status")){
+                                case "n":
+                                    myHandler.obtainMessage(0,"登录失败：" + info_json.getString("info")).sendToTarget();
+                                    break;
+                                case "y":
+                                    cashier_json = new JSONObject(info_json.getString("cashier"));
+                                    store_info = new JSONObject(param_json.getString("storeInfo"));
+
+                                    pos_url =  url + "/api/cashier/set_ps";
+                                    jsonLogin = new JSONObject();
+                                    jsonLogin.put("appid",app_id);
+                                    jsonLogin.put("pos_code",Utils.getDeviceId(mLogin));
+                                    jsonLogin.put("pos_name",Utils.getDeviceId(mLogin));
+                                    jsonLogin.put("stores_id",store_info.getString("stores_id"));
+                                    sz_param = Utils.jsonToMd5_hz(jsonLogin,appscret);
+                                    retJson = HttpRequest.sendPost_hz(pos_url,sz_param,null,true);
+
+                                    switch (retJson.getInt("flag")) {
+                                        case 0:
+                                            myHandler.obtainMessage(0,"设置收银终端错误：" + retJson.optString("info")).sendToTarget();
+                                            break;
+                                        case 1:
+                                            info_json = new JSONObject(retJson.getString("info"));
+                                            switch (info_json.getString("status")) {
+                                                case "n":
+                                                    myHandler.obtainMessage(0,"设置收银终端错误：" + info_json.optString("info")).sendToTarget();
+                                                    break;
+                                                case "y":
+                                                    cashier_json.put("pos_num", info_json.getString("pos_num"));
+                                                    myHandler.obtainMessage(1,cashier_json).sendToTarget();
+                                                    break;
+                                            }
+                                    }
+                                    break;
+                            }
+                            break;
+                    }
+                } catch (JSONException | UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                    myHandler.obtainMessage(0,e.getMessage()).sendToTarget();
+                }
+            }else {
+                myHandler.obtainMessage(0,param_json.optString("info")).sendToTarget();
+            }
+        });
+    }
+
     private static class Myhandler extends Handler {
         private WeakReference<LoginActivity> weakHandler;
         private Myhandler(LoginActivity loginActivity){
@@ -165,14 +231,30 @@ public class LoginActivity extends AppCompatActivity {
         public void handleMessage(Message msg){
             LoginActivity activity = weakHandler.get();
             if (null == activity)return;
+            if (activity.mDialog != null)activity.mDialog.dismiss();
             switch (msg.what){
                 case 0:
+                    if (msg.obj != null)
+                        Utils.displayMessage(msg.obj.toString(),activity, Utils.ErrType.ERROR);
                     break;
                 case 1://登录成功
-                    activity.mDialog.dismiss();
-                    Intent intent = new Intent(activity.mLogin,MainActivity.class);
-                    activity.startActivity(intent);
-                    activity.mLogin.finish();
+                    JSONObject cashier_json = (JSONObject) msg.obj,param_json = new JSONObject();
+                    StringBuilder err = new StringBuilder();
+                    try {
+                        param_json.put("parameter_id","cashierInfo");
+                        param_json.put("parameter_content",cashier_json);
+                        if (SQLiteHelper.replaceJson(param_json,"local_parameter",null,err)){
+                            activity.mDialog.dismiss();
+                            Intent intent = new Intent(activity.mLogin,MainActivity.class);
+                            activity.startActivity(intent);
+                            activity.mLogin.finish();
+                        }else{
+                            Utils.displayMessage("保存收银员信息错误：" + err,activity,Utils.ErrType.ERROR);
+                        }
+                    } catch (JSONException e) {
+                        Utils.displayMessage("保存收银员信息错误：" + e.getMessage(),activity,Utils.ErrType.ERROR);
+                        e.printStackTrace();
+                    }
                     break;
             }
         }

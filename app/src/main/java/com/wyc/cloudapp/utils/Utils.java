@@ -1,6 +1,7 @@
 package com.wyc.cloudapp.utils;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.icu.text.SimpleDateFormat;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -56,8 +57,14 @@ import androidx.annotation.NonNull;
  */
 
 public class Utils {
-    public static void displayMessage(String message,Context context ){
+
+    public enum ErrType{
+        INFO,WARN,ERROR;
+    }
+
+    public static void displayMessage(String message, Context context, ErrType type){
         final MyDialog builder  = new	MyDialog(context);
+        if (type == ErrType.ERROR)builder.setTitleColor(Color.RED);
         builder.setTitle("提示信息").setMessage(message).setNoOnclickListener("取消", new MyDialog.onNoOnclickListener() {
             @Override
             public void onNoClick(MyDialog myDialog) {
@@ -204,24 +211,24 @@ public class Utils {
                     properties.setProperty("database","hzpos_sy9");
                     properties.store(output,null);
                 }catch (IOException e){
-                    Utils.displayMessage(e.toString(),context);
+                    Utils.displayMessage(e.toString(),context, ErrType.INFO);
                 }finally {
                     try{
                         if (output != null) output.close();
                     }catch (IOException e){
-                        Utils.displayMessage(e.toString(), context);
+                        Utils.displayMessage(e.toString(), context,ErrType.INFO);
                     }finally {
                         output = null;
                     }
                 }
             }else{
-                Utils.displayMessage("加载配置文件出错" + ioe.toString(), context);
+                Utils.displayMessage("加载配置文件出错" + ioe.toString(), context,ErrType.INFO);
             }
         }finally {
             try{
                 if (inputStream != null) inputStream.close();
             }catch (IOException e){
-                Utils.displayMessage(e.toString(), context);
+                Utils.displayMessage(e.toString(), context,ErrType.INFO);
             }finally {
                 inputStream = null;
             }
@@ -285,7 +292,7 @@ public class Utils {
     public static boolean verifyDate(String sz){
         boolean isTrue = true;
         if (sz.length() != 10){
-            return !isTrue;
+            return false;
         }
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         try {

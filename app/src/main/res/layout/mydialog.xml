@@ -73,7 +73,7 @@
             android:minHeight="108dp"
             android:textAlignment="gravity"
             android:textColor="@color/white"
-            android:textSize="20sp" />
+            android:textSize="@dimen/fun_button_font_size_24" />
     </LinearLayout>
 
     <LinearLayout

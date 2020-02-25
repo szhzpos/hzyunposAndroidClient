@@ -13,20 +13,29 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TableLayout;
+import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
 import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
+import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
     private SaleGoodsViewAdapter saleGoodsViewAdapter;
     private EditText search_content;
+    private JSONObject mCashierInfo,mStoreInfo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        initCashierInfoAndStoreInfo();//初始化收银员、仓库信息
 
         search_content = findViewById(R.id.search_content);
 
@@ -37,19 +46,19 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.q_deal_linerLayout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utils.displayMessage("查交易",v.getContext());
+                Utils.displayMessage("查交易",v.getContext(), Utils.ErrType.INFO);
             }
         });
         findViewById(R.id.shift_exchange_linearLayout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utils.displayMessage("交班",v.getContext());
+                Utils.displayMessage("交班",v.getContext(), Utils.ErrType.INFO);
             }
         });
         findViewById(R.id.other_linearLayout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utils.displayMessage("更多",v.getContext());
+                Utils.displayMessage("更多",v.getContext(), Utils.ErrType.INFO);
             }
         });
         findViewById(R.id.network_status).setOnClickListener((View v)->{
@@ -92,5 +101,34 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.addItemDecoration(new SaleGoodsItemDecoration());
         recyclerView.setAdapter(saleGoodsViewAdapter);
 
+    }
+
+    private void initCashierInfoAndStoreInfo(){
+        mCashierInfo = new JSONObject();
+        mStoreInfo = new JSONObject();
+
+        if (SQLiteHelper.getLocalParameter("cashierInfo",mCashierInfo)){
+            Logger.json(mCashierInfo.toString());
+            TextView cashier_name = findViewById(R.id.cashier_name),
+                    store_name = findViewById(R.id.store_name);
+
+            cashier_name.setText(mCashierInfo.optString("cas_name"));
+            if (SQLiteHelper.getLocalParameter("connParam",mStoreInfo)){
+                try {
+                    mStoreInfo = new JSONObject(mStoreInfo.getString("storeInfo"));
+                    store_name.setText(String.format("%s%s%s%s",mStoreInfo.optString("stores_name"),"[",mStoreInfo.optString("stores_id"),"]"));
+                } catch (JSONException e) {
+                    Utils.displayMessage(e.getMessage(),getApplicationContext(),Utils.ErrType.ERROR);
+                    e.printStackTrace();
+                    this.finish();
+                }
+            }else{
+                Utils.displayMessage(mCashierInfo.optString("info"),getApplicationContext(),Utils.ErrType.ERROR);
+                this.finish();
+            }
+        }else{
+            Utils.displayMessage(mStoreInfo.optString("info"),getApplicationContext(),Utils.ErrType.ERROR);
+            this.finish();
+        }
     }
 }

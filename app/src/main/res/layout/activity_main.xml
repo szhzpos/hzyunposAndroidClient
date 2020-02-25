@@ -197,7 +197,7 @@
                     android:textSize="18sp" />
 
                 <TextView
-                    android:id="@+id/user_name"
+                    android:id="@+id/cashier_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="收银01"
@@ -536,6 +536,7 @@
 
         <Button
             android:id="@+id/check_out"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/fun_button_width_size"
             android:layout_height="80dp"
             android:layout_gravity="bottom"

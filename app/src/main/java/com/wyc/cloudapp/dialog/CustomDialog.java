@@ -93,8 +93,10 @@ public class CustomDialog extends ProgressDialog
     }
 
     private void stopTimer(){
-        mTimer.cancel();
-        mTimer = null;
+        if (null != mTimer){
+            mTimer.cancel();
+            mTimer = null;
+        }
     }
 
     public CustomDialog setTitle(final String title){
