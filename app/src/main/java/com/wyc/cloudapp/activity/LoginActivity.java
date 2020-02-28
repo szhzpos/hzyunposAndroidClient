@@ -28,7 +28,6 @@ import com.wyc.cloudapp.dialog.ConnSettingDialog;
 import com.wyc.cloudapp.dialog.CustomDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.keyboard.SoftKeyBoardListener;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
 import org.json.JSONException;
@@ -235,7 +234,7 @@ public class LoginActivity extends AppCompatActivity {
             switch (msg.what){
                 case 0:
                     if (msg.obj != null)
-                        Utils.displayMessage(msg.obj.toString(),activity, Utils.ErrType.ERROR);
+                        Utils.displayErrorMessage(msg.obj.toString(),activity);
                     break;
                 case 1://登录成功
                     JSONObject cashier_json = (JSONObject) msg.obj,param_json = new JSONObject();
@@ -249,10 +248,10 @@ public class LoginActivity extends AppCompatActivity {
                             activity.startActivity(intent);
                             activity.mLogin.finish();
                         }else{
-                            Utils.displayMessage("保存收银员信息错误：" + err,activity,Utils.ErrType.ERROR);
+                            Utils.displayMessage("保存收银员信息错误：" + err,activity);
                         }
                     } catch (JSONException e) {
-                        Utils.displayMessage("保存收银员信息错误：" + e.getMessage(),activity,Utils.ErrType.ERROR);
+                        Utils.displayMessage("保存收银员信息错误：" + e.getMessage(),activity);
                         e.printStackTrace();
                     }
                     break;

@@ -106,7 +106,7 @@ public class ConnSettingDialog extends Dialog {
                     Utils.ToastMessage("保存成功！",mContext);
                     ConnSettingDialog.this.dismiss();
                 }else
-                    Utils.displayMessage(err.toString(),v.getContext(), Utils.ErrType.INFO);
+                    Utils.displayMessage(err.toString(),v.getContext());
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -152,7 +152,7 @@ public class ConnSettingDialog extends Dialog {
             switch (msg.what){
                 case 0:
                     if (msg.obj != null)
-                        Utils.displayMessage(msg.obj.toString(), settingDialog.mContext, Utils.ErrType.INFO);
+                        Utils.displayErrorMessage(msg.obj.toString(), settingDialog.mContext);
                     break;
                 case 1:
                     if (msg.obj != null)
@@ -217,13 +217,13 @@ public class ConnSettingDialog extends Dialog {
                 mStore_name.setText(store_info.optString("stores_name"));
             } catch (JSONException e) {
                 e.printStackTrace();
-                Utils.displayMessage("显示门店信息错误：" + e.getMessage(),mContext, Utils.ErrType.INFO);
+                Utils.displayErrorMessage("显示门店信息错误：" + e.getMessage(),mContext);
             }
         }else{
             try {
-                Utils.displayMessage(param.getString("info"),mContext, Utils.ErrType.INFO);
+                Utils.displayMessage(param.getString("info"),mContext);
             } catch (JSONException e) {
-                Utils.displayMessage(e.getMessage(),mContext, Utils.ErrType.INFO);
+                Utils.displayErrorMessage(e.getMessage(),mContext);
                 e.printStackTrace();
             }
         }

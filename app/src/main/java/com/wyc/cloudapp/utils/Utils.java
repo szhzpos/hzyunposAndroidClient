@@ -1,7 +1,7 @@
 package com.wyc.cloudapp.utils;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
-import android.graphics.Color;
 import android.icu.text.SimpleDateFormat;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -58,29 +58,31 @@ import androidx.annotation.NonNull;
 
 public class Utils {
 
-    public enum ErrType{
-        INFO,WARN,ERROR;
+    public static void displayMessage(String message, Context context){
+        final MyDialog builder  = new	MyDialog(context,MyDialog.ErrType.INFO);
+        builder.setTitle("提示信息").setMessage(message).setNoOnclickListener("确定", Dialog::dismiss).show();
     }
 
-    public static void displayMessage(String message, Context context, ErrType type){
-        final MyDialog builder  = new	MyDialog(context);
-        if (type == ErrType.ERROR)builder.setTitleColor(Color.RED);
-        builder.setTitle("提示信息").setMessage(message).setNoOnclickListener("取消", new MyDialog.onNoOnclickListener() {
-            @Override
-            public void onNoClick(MyDialog myDialog) {
-                myDialog.dismiss();
-            }
-        }).show();
+    public static void displayErrorMessage(String message, Context context){
+        final MyDialog builder  = new	MyDialog(context,MyDialog.ErrType.ERROR);
+        builder.setTitle("提示信息").setMessage(message).setNoOnclickListener("取消", Dialog::dismiss).show();
+    }
+
+    public static void displayWarnMessage(String message, Context context){
+        final MyDialog builder  = new	MyDialog(context,MyDialog.ErrType.ASK);
+        builder.setTitle("提示信息").setMessage(message).setYesOnclickListener("确定", Dialog::dismiss)
+                .setNoOnclickListener("取消", Dialog::dismiss).show();
+    }
+
+    public static void displayAskMessage(String message, Context context,MyDialog.onYesOnclickListener yes,MyDialog.onNoOnclickListener no){
+        final MyDialog builder  = new	MyDialog(context,MyDialog.ErrType.WARN);
+        builder.setTitle("提示信息").setMessage(message).setYesOnclickListener("是",yes)
+                .setNoOnclickListener("否", no).show();
     }
 
     public static void displayMessage(String message,String sz,Context context ){
         final MyDialog builder  = new	MyDialog(context);
-        builder.setTitle("提示信息").setMessage(message).setNoOnclickListener(sz, new MyDialog.onNoOnclickListener() {
-            @Override
-            public void onNoClick(MyDialog myDialog) {
-                myDialog.dismiss();
-            }
-        }).show();
+        builder.setTitle("提示信息").setMessage(message).setNoOnclickListener(sz, Dialog::dismiss).show();
     }
 
     public static void ToastMessage(final String message,final Context context){
@@ -211,24 +213,24 @@ public class Utils {
                     properties.setProperty("database","hzpos_sy9");
                     properties.store(output,null);
                 }catch (IOException e){
-                    Utils.displayMessage(e.toString(),context, ErrType.INFO);
+                    Utils.displayMessage(e.toString(),context);
                 }finally {
                     try{
                         if (output != null) output.close();
                     }catch (IOException e){
-                        Utils.displayMessage(e.toString(), context,ErrType.INFO);
+                        Utils.displayMessage(e.toString(), context);
                     }finally {
                         output = null;
                     }
                 }
             }else{
-                Utils.displayMessage("加载配置文件出错" + ioe.toString(), context,ErrType.INFO);
+                Utils.displayMessage("加载配置文件出错" + ioe.toString(), context);
             }
         }finally {
             try{
                 if (inputStream != null) inputStream.close();
             }catch (IOException e){
-                Utils.displayMessage(e.toString(), context,ErrType.INFO);
+                Utils.displayMessage(e.toString(), context);
             }finally {
                 inputStream = null;
             }

@@ -46,19 +46,19 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.q_deal_linerLayout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utils.displayMessage("查交易",v.getContext(), Utils.ErrType.INFO);
+                Utils.displayMessage("查交易",v.getContext());
             }
         });
         findViewById(R.id.shift_exchange_linearLayout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utils.displayMessage("交班",v.getContext(), Utils.ErrType.INFO);
+                Utils.displayMessage("交班",v.getContext());
             }
         });
         findViewById(R.id.other_linearLayout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utils.displayMessage("更多",v.getContext(), Utils.ErrType.INFO);
+                Utils.displayMessage("更多",v.getContext());
             }
         });
         findViewById(R.id.network_status).setOnClickListener((View v)->{
@@ -118,16 +118,16 @@ public class MainActivity extends AppCompatActivity {
                     mStoreInfo = new JSONObject(mStoreInfo.getString("storeInfo"));
                     store_name.setText(String.format("%s%s%s%s",mStoreInfo.optString("stores_name"),"[",mStoreInfo.optString("stores_id"),"]"));
                 } catch (JSONException e) {
-                    Utils.displayMessage(e.getMessage(),getApplicationContext(),Utils.ErrType.ERROR);
+                    Utils.displayErrorMessage(e.getMessage(),getApplicationContext());
                     e.printStackTrace();
                     this.finish();
                 }
             }else{
-                Utils.displayMessage(mCashierInfo.optString("info"),getApplicationContext(),Utils.ErrType.ERROR);
+                Utils.displayErrorMessage(mCashierInfo.optString("info"),getApplicationContext());
                 this.finish();
             }
         }else{
-            Utils.displayMessage(mStoreInfo.optString("info"),getApplicationContext(),Utils.ErrType.ERROR);
+            Utils.displayErrorMessage(mStoreInfo.optString("info"),getApplicationContext());
             this.finish();
         }
     }

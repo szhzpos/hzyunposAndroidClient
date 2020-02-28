@@ -117,7 +117,7 @@ public class CustomePopupWindow extends PopupWindow {
             this.setWidth(mView.getWidth());
            // this.setHeight(82 * 2);
         }else{
-            if (mShowContents == null) Utils.displayMessage("查询内容出错： " + err,v.getContext(), Utils.ErrType.INFO);
+            if (mShowContents == null) Utils.displayErrorMessage("查询内容出错： " + err,v.getContext());
         }
     }
 
@@ -151,7 +151,7 @@ public class CustomePopupWindow extends PopupWindow {
             this.setWidth(mView.getWidth());
             // this.setHeight(82 * 2);
         }else{
-            if (mShowContents == null) Utils.displayMessage("查询内容出错： " + err,v.getContext(), Utils.ErrType.INFO);
+            if (mShowContents == null) Utils.displayErrorMessage("查询内容出错： " + err,v.getContext());
         }
     }
 

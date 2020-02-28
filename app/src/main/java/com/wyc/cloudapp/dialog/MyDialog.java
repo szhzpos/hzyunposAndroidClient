@@ -2,9 +2,8 @@ package com.wyc.cloudapp.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
-
-import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import com.wyc.cloudapp.R;
 import android.view.Display;
@@ -16,17 +15,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import static android.content.Context.WINDOW_SERVICE;
 
-/**
- * Created by Administrator on 2018-03-15.
- */
-
 public class MyDialog extends Dialog {
     private Button mYes,mNo;//mYes确定按钮、mNo取消按钮
     private TextView mTitle,mMessage;//mTitle标题文本、mMessage消息提示文本
     private String mTitleStr;//从外界设置的title文本
     private String mMessageStr;//从外界设置的消息文本
     private Context mContext;
-    private int mMessageColor = Color.WHITE;
+    private ErrType mContentIconType = ErrType.INFO;
     private boolean mIsYes,mIsNo;
     //按钮文本的显示内容
     private String mYesStr,mNoStr;
@@ -69,6 +64,15 @@ public class MyDialog extends Dialog {
     public MyDialog(Context context) {
         super(context,R.style.MyDialog);
         this.mContext = context;
+    }
+
+    public MyDialog(Context context,ErrType type){
+        this(context);
+        mContentIconType = type;
+    }
+
+    public enum ErrType{
+        INFO,WARN,ERROR,ASK;
     }
 
     @Override
@@ -121,7 +125,6 @@ public class MyDialog extends Dialog {
         }
         if (mMessageStr != null) {
             mMessage.setText(mMessageStr);
-            mMessage.setTextColor(mMessageColor);
         }
         //如果设置按钮的文字
         if (mYesStr != null) {
@@ -140,6 +143,24 @@ public class MyDialog extends Dialog {
         mNo = (Button) findViewById(R.id.no);
         mTitle = (TextView) findViewById(R.id.title_text);
         mMessage = (TextView) findViewById(R.id.content);
+        Drawable drawable = null;
+
+        switch (mContentIconType){
+            case INFO:
+                drawable = mContext.getResources().getDrawable(R.drawable.infor,null);
+                break;
+            case WARN:
+                drawable = mContext.getResources().getDrawable(R.drawable.warn,null);
+                break;
+            case ERROR:
+                drawable = mContext.getResources().getDrawable(R.drawable.error,null);
+                break;
+            case ASK:
+                drawable = mContext.getResources().getDrawable(R.drawable.ask,null);
+                break;
+        }
+        drawable.setBounds(0,0,drawable.getIntrinsicWidth(),drawable.getIntrinsicHeight());
+        mMessage.setCompoundDrawables(drawable,null,null,null);
 
         WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
         if (m != null){
@@ -201,10 +222,4 @@ public class MyDialog extends Dialog {
     public interface onNoOnclickListener {
           void onNoClick(MyDialog myDialog);
     }
-
-    public MyDialog setTitleColor(int c){
-        mMessageColor = c;
-        return this;
-    }
-
 }
