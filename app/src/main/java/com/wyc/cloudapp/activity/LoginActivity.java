@@ -25,7 +25,7 @@ import android.widget.RelativeLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.ConnSettingDialog;
-import com.wyc.cloudapp.dialog.CustomDialog;
+import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.keyboard.SoftKeyBoardListener;
 import com.wyc.cloudapp.utils.HttpRequest;
@@ -41,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mUser_id,mPassword;
     private Handler myHandler;
     private LoginActivity mLogin;
-    private CustomDialog mDialog;
+    private CustomProgressDialog mProgressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +56,7 @@ public class LoginActivity extends AppCompatActivity {
 
         myHandler = new Myhandler(this);
         mLogin = this;
-        mDialog = new CustomDialog(this,R.style.CustomDialog);
+        mProgressDialog = new CustomProgressDialog(this,R.style.CustomDialog);
 
         //局部变量
         b_login = findViewById(R.id.b_login);
@@ -143,8 +143,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void login(){
-        mDialog.setTitle("正在登录...").setmCancel(true).show();
-        mDialog.setOnCancelListener(dialog -> {
+        mProgressDialog.setTitle("正在登录...").setCancel(true).show();
+        mProgressDialog.setOnCancelListener(dialog -> {
             MyDialog d = new MyDialog(mLogin);
             d.setMessage("是否取消登录？").setYesOnclickListener("是",(MyDialog mydialog)->{
                 mLogin.finish();
@@ -230,7 +230,7 @@ public class LoginActivity extends AppCompatActivity {
         public void handleMessage(Message msg){
             LoginActivity activity = weakHandler.get();
             if (null == activity)return;
-            if (activity.mDialog != null)activity.mDialog.dismiss();
+            if (activity.mProgressDialog != null)activity.mProgressDialog.dismiss();
             switch (msg.what){
                 case 0:
                     if (msg.obj != null)
@@ -243,7 +243,7 @@ public class LoginActivity extends AppCompatActivity {
                         param_json.put("parameter_id","cashierInfo");
                         param_json.put("parameter_content",cashier_json);
                         if (SQLiteHelper.replaceJson(param_json,"local_parameter",null,err)){
-                            activity.mDialog.dismiss();
+                            activity.mProgressDialog.dismiss();
                             Intent intent = new Intent(activity.mLogin,MainActivity.class);
                             activity.startActivity(intent);
                             activity.mLogin.finish();

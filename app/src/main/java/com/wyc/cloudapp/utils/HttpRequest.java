@@ -196,9 +196,7 @@ public final class HttpRequest {
         StringBuilder result = new StringBuilder();
         StringBuilder resultJson = new StringBuilder();
         JSONObject jsonRetStr = new JSONObject();
-
-        Logger.d("requestParam:%s",param);
-
+        int resCode;
         try {
             URL realUrl = new URL(url);
 
@@ -221,7 +219,8 @@ public final class HttpRequest {
                 out.write(param.toString());
                 out.flush();
             }
-            int resCode = conn.getResponseCode();
+            resCode = conn.getResponseCode();
+
             if(resCode != HttpURLConnection.HTTP_OK){
                 jsonRetStr.put("flag", 0);
                 jsonRetStr.put("info","httpCode:" + resCode);
@@ -240,9 +239,11 @@ public final class HttpRequest {
                     jsonRetStr.put("info", new JSONObject(map));
                 }
             }
+            jsonRetStr.put("rsCode", resCode);
         } catch (IOException | XmlPullParserException | JSONException e) {
             try {
                 jsonRetStr.put("flag", 0);
+                jsonRetStr.put("rsCode", HttpURLConnection.HTTP_BAD_REQUEST);
                 jsonRetStr.put("info", e.toString());
                 e.printStackTrace();
             }catch ( JSONException je ){
@@ -260,11 +261,11 @@ public final class HttpRequest {
                 if (reader != null)
                     reader.close();
             }catch(IOException ex){
-                out = null;
-                reader = null;
                 ex.printStackTrace();
             }
         }
+
+
         return jsonRetStr;
     }
 }

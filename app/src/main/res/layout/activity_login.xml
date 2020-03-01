@@ -62,7 +62,7 @@
                 android:focusable="auto"
                 android:hint="@string/user_name"
                 android:importantForAutofill="no"
-                android:inputType="text"
+                android:inputType="textPersonName"
                 android:paddingStart="8dp"
                 android:paddingEnd="0dp"
                 android:textColor="@color/text_color" />

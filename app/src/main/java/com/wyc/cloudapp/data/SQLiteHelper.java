@@ -823,8 +823,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "    manager     VARCHAR,\n" +
                 "    stores_name VARCHAR,\n" +
                 "    stores_id   INTEGER PRIMARY KEY\n" +
-                ");\n",
-        sql_shop_category = "CREATE TABLE IF NOT EXISTS shop_category (\n" +//商品类别
+                ");\n",sql_shop_category = "CREATE TABLE IF NOT EXISTS shop_category (\n" +//商品类别
                 "    sort        INTEGER DEFAULT (0),\n" +
                 "    status      INTEGER DEFAULT (1),\n" +
                 "    path        CHAR,\n" +
@@ -832,8 +831,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "    parent_id   CHAR    DEFAULT (0),\n" +
                 "    name        CHAR,\n" +
                 "    category_id INTEGER UNIQUE\n" +
-                ");\n",
-        sql_barcode_info = "CREATE TABLE IF NOT EXISTS barcode_info (\n" +//商品档案
+                ");\n",sql_barcode_info = "CREATE TABLE IF NOT EXISTS barcode_info (\n" +//商品档案
                 "    points_max_money REAL    DEFAULT (0),\n" +
                 "    stock_unit_name  VARCHAR,\n" +
                 "    stock_unit_id    INTEGER,\n" +
@@ -874,8 +872,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "    goods_id         INTEGER,\n" +
                 "    bi_id            INTEGER PRIMARY KEY AUTOINCREMENT\n" +
                 "                             UNIQUE\n" +
-                ");\n",
-        sql_pay_method = "CREATE TABLE IF NOT EXISTS pay_method (\n" +//付款方式
+                ");\n",sql_pay_method = "CREATE TABLE IF NOT EXISTS pay_method (\n" +//付款方式
                 "    is_enable         VARCHAR DEFAULT (1),\n" +
                 "    is_open           INTEGER DEFAULT (1),\n" +
                 "    rule              VARCHAR,\n" +
@@ -895,99 +892,37 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "    status            INT,\n" +
                 "    name              CHAR,\n" +
                 "    pay_method_id     INTEGER PRIMARY KEY\n" +
-                ");\n",
-        sql_local_parameter= "CREATE TABLE IF NOT EXISTS local_parameter (\n" +
+                ");\n",sql_local_parameter= "CREATE TABLE IF NOT EXISTS local_parameter (\n" +
                 "    parameter_id      VARCHAR (20) NOT NULL,\n" +
                 "    parameter_content TEXT,\n" +
                 "    PRIMARY KEY (\n" +
                 "        parameter_id\n" +
                 "    )\n" +
-                ");",goods_type_m = "CREATE TABLE IF NOT EXISTS goods_type_m (\n" +
-                "    category_id   VARCHAR (6),\n" +
-                "    category_code VARCHAR (4),\n" +
-                "    name          VARCHAR (20),\n" +
-                "    parent_id     VARCHAR (8),\n" +
-                "    PRIMARY KEY (\n" +
-                "        category_id\n" +
-                "    )\n" +
-                ");",store_info_m = "CREATE TABLE IF NOT EXISTS store_info_m (\n" +
-                "    merchant_id  VARCHAR (14),\n" +
-                "    store_no     VARCHAR (4),\n" +
-                "    store_name   VARCHAR (20),\n" +
-                "    store_remark VARCHAR (50),\n" +
-                "    update_sign  INT,\n" +
-                "    PRIMARY KEY (\n" +
-                "        merchant_id,\n" +
-                "        store_no\n" +
-                "    )\n" +
-                ");\n", goods_unit_m = "CREATE TABLE IF NOT EXISTS goods_unit_m (\n" +
-                "    sys_unit_id VARCHAR (4),\n" +
-                "    unit_id     VARCHAR (4),\n" +
-                "    unit_name   VARCHAR (20),\n" +
-                "    PRIMARY KEY (\n" +
-                "        sys_unit_id\n" +
-                "    )\n" +
-                ");\n",goods_yh_mode_m = "CREATE TABLE IF NOT EXISTS goods_yh_mode_m (\n" +//商品优惠模式
+                ");",goods_yh_mode_m = "CREATE TABLE IF NOT EXISTS goods_yh_mode_m (\n" +//商品优惠模式
                 "    yh_mode      INT          PRIMARY KEY,\n" +
                 "    yh_mode_name VARCHAR (20) \n" +
-                ");\n",goods_info_m = "CREATE TABLE IF NOT EXISTS goods_info_m (\n" +
-                "    goods_id        VARCHAR PRIMARY KEY,\n" +
-                "    only_coding     VARCHAR,\n" +
-                "    goods_title     VARCHAR,\n" +
-                "    barcode_id      VARCHAR,\n" +
-                "    barcode         VARCHAR,\n" +
-                "    mnemonic_code   VARCHAR,\n" +
-                "    yh_mode         INT,\n" +
-                "    retail_price    VARCHAR,\n" +
-                "    buying_price   VARCHAR,\n" +
-                "    conversion   VARCHAR,\n" +
-                "    cost_price      VARCHAR,\n" +
-                "    trade_price     VARCHAR,\n" +
-                "    ps_price        NUMERIC,\n" +
-                "    yh_price        NUMERIC,\n" +
-                "    unit_id         INT,\n" +
-                "    unit_name       VARCHAR,\n" +
-                "    stock_unit_id   INT,\n" +
-                "    stock_unit_name VARCHAR,\n" +
-                "    category_id     INT,\n" +
-                "    category_name   VARCHAR,\n" +
-                "    specifi         VARCHAR\n" +
-                ");\n", pay_way_info_m = "CREATE TABLE IF NOT EXISTS pay_way_info_m (\n" +
-                "    pay_method_id CHAR (2),\n" +
-                "    name          VARCHAR (10),\n" +
-                "    PRIMARY KEY (\n" +
-                "        pay_method_id\n" +
-                "    )\n" +
-                ");", user_info_m = "CREATE TABLE IF NOT EXISTS user_info_m (\n" +
-                "    pt_user_id     VARCHAR PRIMARY KEY,\n" +
-                "    pt_user_mobile VARCHAR,\n" +
-                "    pt_user_cname  VARCHAR\n" +
+                ");\n",sql_cashier_info = "CREATE TABLE IF NOT EXISTS cashier_info (\n" +
+                "    authority     VARCHAR,\n" +
+                "    pt_user_cname VARCHAR,\n" +
+                "    pt_user_id    VARCHAR,\n" +
+                "    is_put        INTEGER DEFAULT (0),\n" +
+                "    is_give       INTEGER DEFAULT (1),\n" +
+                "    is_refund     INT     DEFAULT (2),\n" +
+                "    min_discount  REAL,\n" +
+                "    cas_status    INTEGER,\n" +
+                "    cas_phone     CHAR,\n" +
+                "    cas_code      CHAR,\n" +
+                "    cas_addtime   INT,\n" +
+                "    cas_pwd       VARCHAR,\n" +
+                "    cas_account   VARCHAR,\n" +
+                "    cas_name      VARCHAR,\n" +
+                "    stores_name   VARCHAR,\n" +
+                "    stores_id     INT,\n" +
+                "    cas_id        INTEGER PRIMARY KEY\n" +
+                "                          UNIQUE\n" +
                 ");",goods_attr_m = "CREATE TABLE IF NOT EXISTS goods_attr_m (\n" +
                 "    spec_id   VARCHAR (4)  PRIMARY KEY,\n" +
                 "    spec_name VARCHAR (20) \n" +
-                ");\n", goods_brand_m = "CREATE TABLE IF NOT EXISTS goods_brand_m (\n" +
-                "    gb_id   VARCHAR (5),\n" +
-                "    gb_code VARCHAR (8),\n" +
-                "    gb_name VARCHAR (20),\n" +
-                "    PRIMARY KEY (\n" +
-                "        gb_id\n" +
-                "    )\n" +
-                ");",warehouse_info_m = "CREATE TABLE IF NOT EXISTS  warehouse_info_m (\n" +
-                "    stores_id   VARCHAR (4)  PRIMARY KEY,\n" +
-                "    stores_name VARCHAR (50),\n" +
-                "    manager     VARCHAR,\n" +
-                "    telphone    VARCHAR,\n" +
-                "    region      VARCHAR,\n" +
-                "    status      VARCHAR,\n" +
-                "    nature      VARCHAR,\n" +
-                "    wh_id       VARCHAR,\n" +
-                "    position    VARCHAR,\n" +
-                "    ranges      VARCHAR\n" +
-                ");",supplier_info_m = "CREATE TABLE IF NOT EXISTS supplier_info_m (\n" +
-                "    gs_id          VARCHAR PRIMARY KEY,\n" +
-                "   gs_code VARCHAR,"+
-                "    gs_name        VARCHAR,\n" +
-                "    hz_method_name VARCHAR\n" +
                 ");\n";
 
         list.add(sql_shop_stores);
@@ -995,7 +930,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         list.add(sql_barcode_info);
         list.add(sql_pay_method);
         list.add(sql_local_parameter);
-
+        list.add(sql_cashier_info);
         try {
             db.beginTransaction();
             for (String sql : list) {

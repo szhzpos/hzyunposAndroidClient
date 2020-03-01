@@ -34,7 +34,7 @@ import static android.content.Context.WINDOW_SERVICE;
 public class ConnSettingDialog extends Dialog {
     private Context mContext;
     private EditText mUrl,mAppId,mAppscret,mStore_name;
-    private CustomDialog mDialog;
+    private CustomProgressDialog mDialog;
     private CustomePopupWindow mPopupWindow;
     private Myhandler mHandler;
     private JSONObject mStoreInfo;
@@ -79,7 +79,7 @@ public class ConnSettingDialog extends Dialog {
         mAppscret = findViewById(R.id.appSecret);
         mStore_name = findViewById(R.id.store_name);
 
-        mDialog = new CustomDialog(mContext,R.style.CustomDialog);
+        mDialog = new CustomProgressDialog(mContext,R.style.CustomDialog);
         mPopupWindow = new CustomePopupWindow(mContext);
         mHandler = new Myhandler(this);
 

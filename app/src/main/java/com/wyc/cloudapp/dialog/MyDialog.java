@@ -222,4 +222,9 @@ public class MyDialog extends Dialog {
     public interface onNoOnclickListener {
           void onNoClick(MyDialog myDialog);
     }
+
+    public void clearListener(){
+        noOnclickListener = null;
+        yesOnclickListener = null;
+    }
 }
