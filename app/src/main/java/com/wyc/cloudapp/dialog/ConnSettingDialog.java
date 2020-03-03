@@ -9,7 +9,7 @@ import android.os.Bundle;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.HttpRequest;
+import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
 
 import android.os.Handler;
@@ -180,7 +180,7 @@ public class ConnSettingDialog extends Dialog {
                 object.put("appid",mAppId.getText());
 
                 sz_param = Utils.jsonToMd5_hz(object,mAppscret.getText().toString());
-                retJson = HttpRequest.sendPost(url,sz_param,null,true);
+                retJson = HttpRequest.sendPost(url,sz_param,true);
 
                 Logger.json(retJson.toString());
 

@@ -3,7 +3,7 @@ package com.wyc.cloudapp.data;
 import android.os.Handler;
 
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.HttpRequest;
+import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
 
 import org.json.JSONException;
@@ -24,7 +24,7 @@ public class DataManagement extends Thread {
     private AtomicBoolean mTestNetworkStatusFlag = new AtomicBoolean(true),mNetworkStatusFlag = new AtomicBoolean(true),mDownLoadFlag = new AtomicBoolean(true);
     private int mPreNeworkStatusCode = HttpURLConnection.HTTP_OK,mSyncInterval = 3000;//mSyncInterval 同步时间间隔，默认3秒
 
-
+    private HttpURLConnection mTestConn;
 
     private DataManagement(Handler handler){
         this.mHandler = handler;
@@ -55,7 +55,7 @@ public class DataManagement extends Thread {
                     interval = 0;
                 }else{//网络检测
                     sleep(resting_seed);
-                    retJson = HttpRequest.sendPost_hz(mNetworkStatusUrl,Utils.jsonToMd5_hz(data,mAppScret),null,true);
+                    retJson = HttpRequest.sendPost(mNetworkStatusUrl,Utils.jsonToMd5_hz(data,mAppScret),true,mTestConn);
                     switch (retJson.optInt("flag")) {
                         case 0:
                             if (retJson.has("rsCode")){//flag为了0并且存在rsCode网络错误
@@ -128,6 +128,7 @@ public class DataManagement extends Thread {
     }
 
     public void stop_sync(){
+        if (mTestConn != null)mTestConn.disconnect();
         if(mTestNetworkStatusFlag.compareAndSet(true,false)){
             mDownLoadFlag.compareAndSet(true,false);
             mNetworkStatusFlag.compareAndSet(true,false);

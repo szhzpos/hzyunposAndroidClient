@@ -86,7 +86,7 @@ public class Utils {
     }
 
     public static void ToastMessage(final String message,final Context context){
-       Toast toast = Toast.makeText(context,"保存成功！",Toast.LENGTH_SHORT);
+       Toast toast = Toast.makeText(context,message,Toast.LENGTH_SHORT);
        toast.setGravity(Gravity.CENTER,0,0);
        toast.show();
     }
@@ -378,16 +378,12 @@ public class Utils {
 
         for (Iterator<String> it = json.keys(); it.hasNext(); ) {
             String key = it.next();
-            if("sign".equals(key))continue;
             map.put(key, json.getString(key));
         }
         sortMap.putAll(map);
         for (Map.Entry<String, String> s : sortMap.entrySet()) {
             String k = s.getKey();
             String v = s.getValue();
-            /*if ("".equals(v)) {// 过滤空值
-                continue;
-            }*/
             if (builder.length() != 0){
                 builder.append("&");
             }

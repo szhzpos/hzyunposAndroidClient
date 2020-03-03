@@ -5,7 +5,7 @@ import android.os.Message;
 
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.HttpRequest;
+import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
 
 import org.json.JSONArray;
@@ -48,7 +48,7 @@ public class SyncHandler extends Handler {
 
                             sz_param = Utils.jsonToMd5_hz(object,appsecret);
 
-                            retJson = HttpRequest.sendPost_hz(url,sz_param,null,true);
+                            retJson = HttpRequest.sendPost(url,sz_param,true);
 
                             Logger.json(retJson.toString());
 
@@ -178,7 +178,7 @@ public class SyncHandler extends Handler {
                         syncActivityHandler.obtainMessage(6,1, 1, sys_name + "信息....").sendToTarget();
 
                         sz_param = Utils.jsonToMd5_hz(object,appsecret);
-                        retJson = HttpRequest.sendPost_hz(url,sz_param,null,true);
+                        retJson = HttpRequest.sendPost(url,sz_param,true);
 
                         Logger.json(retJson.toString());
 

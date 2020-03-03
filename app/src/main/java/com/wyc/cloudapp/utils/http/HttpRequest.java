@@ -1,7 +1,10 @@
-package com.wyc.cloudapp.utils;
+package com.wyc.cloudapp.utils.http;
+
+import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.logger.AndroidLogAdapter;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.Utils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -22,37 +25,33 @@ import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParserException;
 
 public final class HttpRequest {
-
-	public HttpRequest() {///构造函数
-
-	}
-/*	public static void close(){
-        connection.disconnect();//可以断开连接 抛出 Socket closed 异常
+    private static final ThreadLocal<HttpURLConnection> THREAD_LOCAL = new ThreadLocal<>();
+	public static void clearConnection(){
+        HttpURLConnection conn = THREAD_LOCAL.get();
+        if (conn != null){
+            conn.disconnect();
+            THREAD_LOCAL.remove();
+        }
     }
-
-	private static HttpURLConnection connection = null;*/
-
-    public static JSONObject sendGet(String url) {
-        String result = "",line = null;
+    public static JSONObject sendGet(final String url) {
+        String line;
+        StringBuilder result = new StringBuilder();
         BufferedReader in = null;
         JSONObject jsonRetStr = new JSONObject();
-
-        Logger.d(url);
-
         try {
-
             URL realUrl = new URL(url);
-            HttpURLConnection connection = (HttpURLConnection)realUrl.openConnection();
-            connection.setRequestProperty("accept", "*/*");
-            connection.setRequestProperty("user-agent","Mozilla/5.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
-            connection.setConnectTimeout(30000);
-            connection.setReadTimeout(30000);
-            connection.setRequestMethod("GET");
-            connection.connect();
+            HttpURLConnection conn = (HttpURLConnection)realUrl.openConnection();
+            THREAD_LOCAL.set(conn);
+            conn.setRequestProperty("accept", "*/*");
+            conn.setRequestProperty("user-agent","Mozilla/5.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+            conn.setConnectTimeout(30000);
+            conn.setReadTimeout(30000);
+            conn.setRequestMethod("GET");
+            conn.connect();
 
-            in = new BufferedReader(new InputStreamReader(connection.getInputStream(),"UTF-8"));
+            in = new BufferedReader(new InputStreamReader(conn.getInputStream(),StandardCharsets.UTF_8));
             while ((line = in.readLine()) != null) {
-                result += line;
+                result.append(line);
             }
             jsonRetStr.put("flag", 1);
             jsonRetStr.put("info", result);
@@ -70,9 +69,10 @@ public final class HttpRequest {
                 if (in != null) {
                     in.close();
                 }
-            } catch (Exception e2) {
-                e2.printStackTrace();
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
             }
+            clearConnection();
         }
         return jsonRetStr;
     }
@@ -85,9 +85,9 @@ public final class HttpRequest {
         int lenght = 0;
 
         try {
-
             URL realUrl = new URL(url);
             HttpURLConnection connection =(HttpURLConnection)realUrl.openConnection();
+            THREAD_LOCAL.set(connection);
             connection.setRequestProperty("Content-Type", "application/vnd.android.package-archive");///  application/soap+xml; charset=utf-8
             connection.setRequestProperty("user-agent","Mozilla/5.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
             connection.setRequestProperty("accept", "*/*");
@@ -109,102 +109,21 @@ public final class HttpRequest {
 	    return jsonRetStr;
     }
 
-    public static JSONObject sendPost(String url, Object param,String hmac_sha1,boolean json) {
+    public static JSONObject sendPost(final String url,@NonNull final String param,boolean json) {//json 请求返回数据类型 true 为json格式 否则为XML
         BufferedReader in = null;
         BufferedWriter out = null;
         InputStreamReader reader = null;
-        String line = "";
-        StringBuilder resultJson = new StringBuilder();
-        JSONObject jsonRetStr = new JSONObject();
-        try {
-            URL realUrl = new URL(url);
-
-            HttpURLConnection conn =(HttpURLConnection)realUrl.openConnection();
-            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");///  application/soap+xml; charset=utf-8
-            conn.setRequestProperty("user-agent","Mozilla/5.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
-            conn.setRequestProperty("accept", "*/*");
-            if(hmac_sha1 != null)conn.setRequestProperty("Content-MD5", hmac_sha1);
-            conn.setAllowUserInteraction(true);
-            conn.setConnectTimeout(30000);
-            conn.setReadTimeout(30000);
-            conn.setRequestMethod("POST");
-
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
-            //conn.connect();///如果没有打开连接则在getOutputStream()打开  
-
-            if (param != null){
-                out = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream(),StandardCharsets.UTF_8));
-                out.write(param.toString());
-                out.flush();
-            }
-            int resCode = conn.getResponseCode();
-            if(resCode != HttpURLConnection.HTTP_OK){
-                jsonRetStr.put("flag", 0);
-                jsonRetStr.put("info","httpCode:" + resCode);
-            }else{
-                reader = new InputStreamReader(conn.getInputStream(),StandardCharsets.UTF_8);
-                if (json){
-                    in = new BufferedReader(reader);
-                    while ((line = in.readLine()) != null) {
-                        resultJson.append(line);
-                    }
-                    jsonRetStr.put("flag", 1);
-                    jsonRetStr.put("info", resultJson);
-                }else {
-                    Map<String,String> map = Utils.parseXml(reader);
-                    jsonRetStr.put("flag", 1);
-                    jsonRetStr.put("info", new JSONObject(map));
-                }
-            }
-        } catch (IOException | XmlPullParserException | JSONException e) {
-            try {
-                jsonRetStr.put("flag", 0);
-                jsonRetStr.put("info", e.toString());
-                e.printStackTrace();
-            }catch ( JSONException je ){
-                e.printStackTrace();
-            }
-        }
-        finally{
-            try{
-                if(out!=null){
-                    out.close();
-                }
-                if(in != null){
-                    in.close();
-                }
-                if (reader != null)
-                    reader.close();
-            }catch(IOException ex){
-                out = null;
-                reader = null;
-                in = null;
-                ex.printStackTrace();
-            }
-        }
-        return jsonRetStr;
-    }
-
-
-    public static JSONObject sendPost_hz(String url, Object param,String hmac_sha1,boolean json) {
-        BufferedReader in = null;
-        BufferedWriter out = null;
-        InputStreamReader reader = null;
-        InputStream inputStream = null;
-        String line = "";
-        StringBuilder result = new StringBuilder();
+        String line;
         StringBuilder resultJson = new StringBuilder();
         JSONObject jsonRetStr = new JSONObject();
         int resCode;
         try {
             URL realUrl = new URL(url);
-
-            HttpURLConnection conn =(HttpURLConnection)realUrl.openConnection();
+            HttpURLConnection conn = (HttpURLConnection)realUrl.openConnection();
+            THREAD_LOCAL.set(conn);
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");///  application/soap+xml; charset=utf-8
             conn.setRequestProperty("user-agent","Mozilla/5.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
             conn.setRequestProperty("accept", "*/*");
-            if(hmac_sha1 != null)conn.setRequestProperty("Content-MD5", hmac_sha1);
             conn.setAllowUserInteraction(true);
             conn.setConnectTimeout(30000);
             conn.setReadTimeout(30000);
@@ -214,11 +133,9 @@ public final class HttpRequest {
             conn.setDoInput(true);
             //conn.connect();///如果没有打开连接则在getOutputStream()打开
 
-            if (param != null){
-                out = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream(),StandardCharsets.UTF_8));
-                out.write(param.toString());
-                out.flush();
-            }
+            out = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream(),StandardCharsets.UTF_8));
+            out.write(param);
+            out.flush();
             resCode = conn.getResponseCode();
 
             if(resCode != HttpURLConnection.HTTP_OK){
@@ -252,7 +169,7 @@ public final class HttpRequest {
         }
         finally{
             try{
-                if(out!=null){
+                if(out != null){
                     out.close();
                 }
                 if(in != null){
@@ -263,9 +180,84 @@ public final class HttpRequest {
             }catch(IOException ex){
                 ex.printStackTrace();
             }
+            clearConnection();
         }
+        return jsonRetStr;
+    }
+    public static JSONObject sendPost(final String url,@NonNull final String param,boolean json,HttpURLConnection outConn) {//json 请求返回数据类型 true 为json格式 否则为XML
+        BufferedReader in = null;
+        BufferedWriter out = null;
+        InputStreamReader reader = null;
+        String line;
+        StringBuilder resultJson = new StringBuilder();
+        JSONObject jsonRetStr = new JSONObject();
+        int resCode;
+        try {
+            URL realUrl = new URL(url);
+            HttpURLConnection conn = (HttpURLConnection)realUrl.openConnection();
+            outConn = conn;
+            THREAD_LOCAL.set(conn);
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");///  application/soap+xml; charset=utf-8
+            conn.setRequestProperty("user-agent","Mozilla/5.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+            conn.setRequestProperty("accept", "*/*");
+            conn.setAllowUserInteraction(true);
+            conn.setConnectTimeout(30000);
+            conn.setReadTimeout(30000);
+            conn.setRequestMethod("POST");
 
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+            //conn.connect();///如果没有打开连接则在getOutputStream()打开
 
+            out = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream(),StandardCharsets.UTF_8));
+            out.write(param);
+            out.flush();
+            resCode = conn.getResponseCode();
+
+            if(resCode != HttpURLConnection.HTTP_OK){
+                jsonRetStr.put("flag", 0);
+                jsonRetStr.put("info","httpCode:" + resCode);
+            }else{
+                reader = new InputStreamReader(conn.getInputStream(),StandardCharsets.UTF_8);
+                if (json){
+                    in = new BufferedReader(reader);
+                    while ((line = in.readLine()) != null) {
+                        resultJson.append(line);
+                    }
+                    jsonRetStr.put("flag", 1);
+                    jsonRetStr.put("info", resultJson);
+                }else {
+                    Map<String,String> map = Utils.parseXml(reader);
+                    jsonRetStr.put("flag", 1);
+                    jsonRetStr.put("info", new JSONObject(map));
+                }
+            }
+            jsonRetStr.put("rsCode", resCode);
+        } catch (IOException | XmlPullParserException | JSONException e) {
+            try {
+                jsonRetStr.put("flag", 0);
+                jsonRetStr.put("rsCode", HttpURLConnection.HTTP_BAD_REQUEST);
+                jsonRetStr.put("info", e.toString());
+                e.printStackTrace();
+            }catch ( JSONException je ){
+                e.printStackTrace();
+            }
+        }
+        finally{
+            try{
+                if(out != null){
+                    out.close();
+                }
+                if(in != null){
+                    in.close();
+                }
+                if (reader != null)
+                    reader.close();
+            }catch(IOException ex){
+                ex.printStackTrace();
+            }
+            clearConnection();
+        }
         return jsonRetStr;
     }
 }

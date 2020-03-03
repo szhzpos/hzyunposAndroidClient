@@ -28,7 +28,7 @@ import com.wyc.cloudapp.dialog.ConnSettingDialog;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.keyboard.SoftKeyBoardListener;
-import com.wyc.cloudapp.utils.HttpRequest;
+import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -167,7 +167,7 @@ public class LoginActivity extends AppCompatActivity {
                     sz_param = Utils.jsonToMd5_hz(object,appscret);
 
                     login_url = url  + "/api/cashier/login";
-                    retJson = HttpRequest.sendPost(login_url,sz_param,null,true);
+                    retJson = HttpRequest.sendPost(login_url,sz_param,true);
 
                     switch (retJson.optInt("flag")) {
                         case 0:
@@ -190,7 +190,7 @@ public class LoginActivity extends AppCompatActivity {
                                     jsonLogin.put("pos_name",Utils.getDeviceId(mLogin));
                                     jsonLogin.put("stores_id",store_info.getString("stores_id"));
                                     sz_param = Utils.jsonToMd5_hz(jsonLogin,appscret);
-                                    retJson = HttpRequest.sendPost_hz(pos_url,sz_param,null,true);
+                                    retJson = HttpRequest.sendPost(pos_url,sz_param,true);
 
                                     switch (retJson.getInt("flag")) {
                                         case 0:

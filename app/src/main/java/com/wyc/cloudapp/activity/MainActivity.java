@@ -23,8 +23,7 @@ import com.wyc.cloudapp.data.DataManagement;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.HttpRequest;
+import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
 
 import org.json.JSONException;
@@ -34,7 +33,6 @@ import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -158,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
                         if (mNetworkStatus.get()){
                             JSONObject json = new JSONObject(),retJson,info_json;
                             json.put("appid",mAppId);
-                            retJson = HttpRequest.sendPost(mUrl + "/api/cashier/get_time",Utils.jsonToMd5_hz(json,mAppScret),null,true);
+                            retJson = HttpRequest.sendPost(mUrl + "/api/cashier/get_time",Utils.jsonToMd5_hz(json,mAppScret),true);
                             switch (retJson.optInt("flag")) {
                                 case 0:
                                     mHandler.obtainMessage(0,prefix.concat(retJson.optString("info"))).sendToTarget();
