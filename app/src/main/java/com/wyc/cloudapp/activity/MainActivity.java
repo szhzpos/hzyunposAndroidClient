@@ -24,6 +24,7 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -162,13 +163,13 @@ public class MainActivity extends AppCompatActivity {
                             retJson = httpRequest.setConnTimeOut(5000).setReadTimeOut(5000).sendPost(mUrl + "/api/cashier/get_time",HttpRequest.generate_request_parm(json,mAppScret),true);
                             switch (retJson.optInt("flag")) {
                                 case 0:
-                                    mHandler.obtainMessage(0,prefix.concat(retJson.optString("info"))).sendToTarget();
+                                    mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,prefix.concat(retJson.optString("info"))).sendToTarget();
                                     break;
                                 case 1:
                                     info_json = new JSONObject(retJson.getString("info"));
                                     switch (info_json.getString("status")){
                                         case "n":
-                                            mHandler.obtainMessage(0,prefix + info_json.getString("info")).sendToTarget();
+                                            mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,prefix + info_json.getString("info")).sendToTarget();
                                             break;
                                         case "y":
                                             mCurrentTimestamp = info_json.getLong("time");
@@ -182,9 +183,9 @@ public class MainActivity extends AppCompatActivity {
                     }else{
                        mCurrentTimestamp += 1;
                     }
-                    mHandler.obtainMessage(1).sendToTarget();
-                } catch (JSONException | UnsupportedEncodingException e) {
-                    mHandler.obtainMessage(0,prefix + e.getMessage()).sendToTarget();
+                    mHandler.obtainMessage(MessageID.UPDATE_TIME_ID).sendToTarget();
+                } catch (JSONException e) {
+                    mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,prefix + e.getMessage()).sendToTarget();
                     e.printStackTrace();
                 }
             }
@@ -233,17 +234,17 @@ public class MainActivity extends AppCompatActivity {
             MainActivity activity = weakHandler.get();
             if (null == activity)return;
             switch (msg.what){
-                case 0:
+                case MessageID.DIS_ERR_INFO_ID:
                     if (activity.mProgressDialog != null && activity.mProgressDialog.isShowing())activity.mProgressDialog.dismiss();
                     if (msg.obj instanceof String)
                         MyDialog.displayErrorMessage(msg.obj.toString(),activity);
                     break;
-                case 1://更新当前时间
+                case MessageID.UPDATE_TIME_ID://更新当前时间
                     activity.mCurrentTimeView.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(activity.mCurrentTimestamp * 1000));
                     break;
-                case DataManagement.DOWNLOADSTATUSCODE://下载错误
+                case MessageID.DOWNLOADSTATUS_ID://下载错误
                     break;
-                case DataManagement.NETWORKSTATUSCODE://网络状态
+                case MessageID.NETWORKSTATUS_ID://网络状态
                     if (msg.obj instanceof Boolean){
                         boolean code = (boolean)msg.obj;
                         if (activity.mNetworkStatus.get() != code){

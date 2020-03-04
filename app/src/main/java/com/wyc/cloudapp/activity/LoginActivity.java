@@ -28,12 +28,12 @@ import com.wyc.cloudapp.dialog.ConnSettingDialog;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.keyboard.SoftKeyBoardListener;
-import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.io.UnsupportedEncodingException;
+
 import java.lang.ref.WeakReference;
 
 public class LoginActivity extends AppCompatActivity {
@@ -158,13 +158,13 @@ public class LoginActivity extends AppCompatActivity {
 
     private void login(){
         final HttpRequest httpRequest = new HttpRequest();
-        mProgressDialog.setTitle("正在登录...").setCancel(true).setRestShowTime(false).show();
+        mProgressDialog.setMessage("正在登录...").setCancel(true).setRestShowTime(false).show();
         mProgressDialog.setOnCancelListener(dialog -> {
             MyDialog d = new MyDialog(mLogin);
             d.setMessage("是否取消登录？").setYesOnclickListener("是",(MyDialog mydialog)->{
                 mydialog.dismiss();
                 if (mProgressDialog != null && !mProgressDialog.isShowing()){
-                    mProgressDialog.setCancel(false).setTitle("正在取消登录...").setRestShowTime(false).show();
+                    mProgressDialog.setMessage("正在取消登录...").setRestShowTime(true).show();
                 }
                 mCancelLogin = true;
                 httpRequest.clearConnection(HttpRequest.CLOSEMODE.POST);
@@ -192,17 +192,17 @@ public class LoginActivity extends AppCompatActivity {
 
                     login_url = url  + "/api/cashier/login";
 
-                    retJson = httpRequest.sendPost(login_url,sz_param,true);
+                    retJson = httpRequest.setConnTimeOut(10000).sendPost(login_url,sz_param,true);
 
                     switch (retJson.optInt("flag")) {
                         case 0:
-                            myHandler.obtainMessage(0,retJson.optString("info")).sendToTarget();
+                            myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,retJson.optString("info")).sendToTarget();
                             break;
                         case 1:
                             info_json = new JSONObject(retJson.getString("info"));
                             switch (info_json.getString("status")){
                                 case "n":
-                                    myHandler.obtainMessage(0,"登录失败：" + info_json.getString("info")).sendToTarget();
+                                    myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"登录失败：" + info_json.getString("info")).sendToTarget();
                                     break;
                                 case "y":
                                     cashier_json = new JSONObject(info_json.getString("cashier"));
@@ -219,17 +219,17 @@ public class LoginActivity extends AppCompatActivity {
 
                                     switch (retJson.getInt("flag")) {
                                         case 0:
-                                            myHandler.obtainMessage(0,"设置收银终端错误：" + retJson.optString("info")).sendToTarget();
+                                            myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"设置收银终端错误：" + retJson.optString("info")).sendToTarget();
                                             break;
                                         case 1:
                                             info_json = new JSONObject(retJson.getString("info"));
                                             switch (info_json.getString("status")) {
                                                 case "n":
-                                                    myHandler.obtainMessage(0,"设置收银终端错误：" + info_json.optString("info")).sendToTarget();
+                                                    myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"设置收银终端错误：" + info_json.optString("info")).sendToTarget();
                                                     break;
                                                 case "y":
                                                     cashier_json.put("pos_num", info_json.getString("pos_num"));
-                                                    myHandler.obtainMessage(1,cashier_json).sendToTarget();
+                                                    myHandler.obtainMessage(MessageID.LOGIN_OK_ID,cashier_json).sendToTarget();
                                                     break;
                                             }
                                     }
@@ -237,12 +237,12 @@ public class LoginActivity extends AppCompatActivity {
                             }
                             break;
                     }
-                } catch (JSONException | UnsupportedEncodingException e) {
+                } catch (JSONException e) {
                     e.printStackTrace();
-                    myHandler.obtainMessage(0,e.getMessage()).sendToTarget();
+                    myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,e.getMessage()).sendToTarget();
                 }
             }else {
-                myHandler.obtainMessage(0,param_json.optString("info")).sendToTarget();
+                myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,param_json.optString("info")).sendToTarget();
             }
         });
     }
@@ -257,7 +257,9 @@ public class LoginActivity extends AppCompatActivity {
             if (null == activity)return;
             if (activity.mProgressDialog != null)activity.mProgressDialog.dismiss();
             switch (msg.what){
-                case 0:
+                case MessageID.DIS_ERR_INFO_ID:
+                case MessageID.SYNC_ERR_ID://资料同步错误
+                case MessageID.SYNC_FINISH_ID://资料同步完成
                     if (msg.obj != null){
                         if (activity.mCancelLogin){
                             activity.finish();
@@ -266,7 +268,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                     break;
-                case 1://登录成功
+                case MessageID.LOGIN_OK_ID://登录成功
                     JSONObject cashier_json = (JSONObject) msg.obj,param_json = new JSONObject();
                     StringBuilder err = new StringBuilder();
                     try {
@@ -284,6 +286,9 @@ public class LoginActivity extends AppCompatActivity {
                         MyDialog.displayMessage("保存收银员信息错误：" + e.getMessage(),activity);
                         e.printStackTrace();
                     }
+                    break;
+                case MessageID.SYNC_DIS_INFO_ID://资料同步进度信息
+                    if (activity.mProgressDialog != null)activity.mProgressDialog.setMessage(msg.obj.toString());
                     break;
             }
         }

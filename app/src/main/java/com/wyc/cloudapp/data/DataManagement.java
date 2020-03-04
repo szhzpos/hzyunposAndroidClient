@@ -3,6 +3,7 @@ package com.wyc.cloudapp.data;
 import android.os.Handler;
 
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -14,10 +15,6 @@ import java.net.HttpURLConnection;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DataManagement extends Thread {
-
-    //用于handler通讯message的标识  NETWORKSTATUSCODE 更新网络状态 DOWNLOADSTATUSCODE更新下载状态
-    public final static int NETWORKSTATUSCODE = 99,DOWNLOADSTATUSCODE = 88;
-
     private Handler mHandler;
     private String mAppId,mAppScret,mNetworkStatusUrl,mPosNum,mOperId;
     //mTestNetworkStatusFlag是否检测网络状态标志 mNetworkStatusFlag当前网络状态标志 是否下载标志
@@ -43,6 +40,7 @@ public class DataManagement extends Thread {
         long interval = 0,resting_seed = 1000;
         int err_code = HttpURLConnection.HTTP_OK;
         mHttp = new HttpRequest();
+        mHttp.setConnTimeOut(5000);
         try {
             data.put("appid",mAppId);
             data.put("pos_num",mPosNum);
@@ -92,7 +90,7 @@ public class DataManagement extends Thread {
             //退出循环后在进行一次检查设置，以保证线程退出时，状态为false
             mNetworkStatusFlag.compareAndSet(true,false);
             mDownLoadFlag.compareAndSet(true,false);
-        } catch (JSONException | UnsupportedEncodingException | InterruptedException e) {
+        } catch (JSONException | InterruptedException e) {
             Logger.e("检测网络错误：" + e.getMessage());
             e.printStackTrace();
         }
@@ -103,13 +101,13 @@ public class DataManagement extends Thread {
         if (mSyncInterval > 0){
             mDownLoadFlag.compareAndSet(!status,status);
         }
-        mHandler.obtainMessage(NETWORKSTATUSCODE,status).sendToTarget();
+        mHandler.obtainMessage(MessageID.NETWORKSTATUS_ID,status).sendToTarget();
     }
     private void updateSyncErrStatus(int code){
         switch (code) {
             case 0://下载业务错误
                 mDownLoadFlag.compareAndSet(true,false);
-                mHandler.obtainMessage(DOWNLOADSTATUSCODE).sendToTarget();
+                mHandler.obtainMessage(MessageID.DOWNLOADSTATUS_ID).sendToTarget();
                 break;
             case 1:// 网络错误
                 updateNetworkstatus(false);

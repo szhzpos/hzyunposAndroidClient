@@ -58,7 +58,7 @@ public final class HttpRequest {
                 break;
         }
     }
-    public synchronized int getHttpCode(CLOSEMODE mode){
+    public int getHttpCode(CLOSEMODE mode){
         int code = HttpURLConnection.HTTP_BAD_REQUEST;
         switch (mode){
             case GET:
@@ -241,7 +241,7 @@ public final class HttpRequest {
         return this;
     }
 
-    public  static String generate_request_parm(JSONObject json ,String apiKey) throws JSONException, UnsupportedEncodingException {
+    public  static String generate_request_parm(JSONObject json ,String apiKey) throws JSONException {
         Map<String,String> map = new HashMap<>();
         Map<String, String> sortMap = new TreeMap<String, String>();
         StringBuilder builder = new StringBuilder();

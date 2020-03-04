@@ -257,13 +257,7 @@ public class MyDialog extends Dialog {
     public interface onYesOnclickListener {
           void onYesClick(MyDialog myDialog);
     }
-
     public interface onNoOnclickListener {
           void onNoClick(MyDialog myDialog);
-    }
-
-    public void clearListener(){
-        noOnclickListener = null;
-        yesOnclickListener = null;
     }
 }

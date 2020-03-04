@@ -8,7 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -25,8 +25,6 @@ import android.widget.EditText;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 
 import static android.content.Context.WINDOW_SERVICE;
@@ -153,15 +151,11 @@ public class ConnSettingDialog extends Dialog {
             if (settingDialog == null)return;
             if (settingDialog.mDialog !=null)settingDialog.mDialog.dismiss();
             switch (msg.what){
-                case 0:
+                case MessageID.DIS_ERR_INFO_ID:
                     if (msg.obj != null)
                         MyDialog.displayErrorMessage(msg.obj.toString(), settingDialog.mContext);
                     break;
-                case 1:
-                    if (msg.obj != null)
-                        MyDialog.displayMessage(msg.obj.toString(),"确定", settingDialog.mContext);
-                    break;
-                case 2://查询门店信息正确,如果是云数据库，则要在线请求仓库信息
+                case MessageID.DIS_STORE_INFO_ID://查询门店信息正确,则要在线请求仓库信息
                     if (msg.obj instanceof  JSONArray){
                         settingDialog.mPopupWindow.initContent(null,settingDialog.mStore_name,(JSONArray)msg.obj,new String[]{"stores_name"},2,true,(JSONObject json)->{
                             settingDialog.mStoreInfo = json;
@@ -177,7 +171,7 @@ public class ConnSettingDialog extends Dialog {
     private void queryStoreInfo(){
         if (mUrl.getText().length() == 0)return;
 
-        mDialog.setTitle("正在查询门店信息...").show();
+        mDialog.setMessage("正在查询门店信息...").show();
         final HttpRequest httpRequest = new HttpRequest();
         AsyncTask.execute(()->{
             String  url = mUrl.getText() + "/api/scale/get_stores",sz_param;
@@ -190,23 +184,23 @@ public class ConnSettingDialog extends Dialog {
                 retJson = httpRequest.sendPost(url,sz_param,true);
                 switch (retJson.optInt("flag")) {
                     case 0:
-                        mHandler.obtainMessage(0,retJson.optString("info")).sendToTarget();
+                        mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,retJson.optString("info")).sendToTarget();
                         break;
                     case 1:
                         info_json = new JSONObject(retJson.optString("info"));
                         switch (info_json.getString("status")){
                             case "n":
-                                mHandler.obtainMessage(0,info_json.optString("info")).sendToTarget();
+                                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,info_json.optString("info")).sendToTarget();
                                 break;
                             case "y":
-                                mHandler.obtainMessage(2,info_json.getJSONArray("data")).sendToTarget();
+                                mHandler.obtainMessage(MessageID.DIS_STORE_INFO_ID,info_json.getJSONArray("data")).sendToTarget();
                                 break;
                         }
                         break;
                 }
-            } catch (JSONException | UnsupportedEncodingException e) {
+            } catch (JSONException e) {
                 e.printStackTrace();
-                mHandler.obtainMessage(0,e.getMessage()).sendToTarget();
+                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,e.getMessage()).sendToTarget();
             }
         });
     }

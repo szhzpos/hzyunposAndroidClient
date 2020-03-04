@@ -10,7 +10,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.MessageID;
 
 import java.lang.ref.WeakReference;
 import java.util.Timer;
@@ -18,8 +18,8 @@ import java.util.TimerTask;
 
 public class CustomProgressDialog extends ProgressDialog
 {
-    private String szTitle;
-    private TextView mTitle,mShowTimeView;
+    private String szMessage;
+    private TextView mMessage,mShowTimeView;
     private Myhandler mHandler;
     private Timer mTimer;
     private long mShowTime = 0;
@@ -39,15 +39,14 @@ public class CustomProgressDialog extends ProgressDialog
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-
-        init(getContext());
+        init();
     }
 
-    private void init(Context context)
+    private void init()
     {
         setContentView(R.layout.custom_dialog);
 
-        mTitle = findViewById(R.id.title);
+        mMessage = findViewById(R.id.title);
         mShowTimeView = findViewById(R.id.show_time);
         mHandler = new Myhandler(this);
 
@@ -67,9 +66,11 @@ public class CustomProgressDialog extends ProgressDialog
     public void show()
     {
         super.show();
+
         setCancelable(mCancel);
         setCanceledOnTouchOutside(mCancel);
-        mTitle.setText(szTitle);
+        mMessage.setText(szMessage);
+
         startTimer();
     }
 
@@ -93,7 +94,7 @@ public class CustomProgressDialog extends ProgressDialog
             mTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    mHandler.obtainMessage(1).sendToTarget();
+                    mHandler.obtainMessage(MessageID.DIALOG_SHOW_TIME_ID).sendToTarget();
                 }
             },0,1000);
         }
@@ -106,8 +107,8 @@ public class CustomProgressDialog extends ProgressDialog
         }
     }
 
-    public CustomProgressDialog setTitle(final String title){
-        szTitle = title;
+    public CustomProgressDialog setMessage(final String m){
+        szMessage = m;
         return this;
     }
 
@@ -116,12 +117,8 @@ public class CustomProgressDialog extends ProgressDialog
         return this;
     }
 
-    public String getSzTitle(){
-        return szTitle;
-    }
-
-    public void refreshTitle(){
-        mHandler.obtainMessage(0).sendToTarget();
+    public String getSzMessage(){
+        return szMessage;
     }
 
     public CustomProgressDialog setCancel(boolean b){
@@ -138,10 +135,10 @@ public class CustomProgressDialog extends ProgressDialog
             CustomProgressDialog dialog = weakHandler.get();
             if (null == dialog)return;
             switch (msg.what){
-                case 0:
-                    dialog.mTitle.setText(dialog.szTitle);
+                case MessageID.DIALOG_UPDATE_MESSAGE_ID:
+                    dialog.mMessage.setText(dialog.szMessage);
                     break;
-                case 1:
+                case MessageID.DIALOG_SHOW_TIME_ID:
                     dialog.mShowTimeView.setText(String.valueOf(++dialog.mShowTime));
                     break;
             }
