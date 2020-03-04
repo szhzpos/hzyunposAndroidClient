@@ -57,40 +57,6 @@ import androidx.annotation.NonNull;
  */
 
 public class Utils {
-
-    public static void displayMessage(String message, Context context){
-        final MyDialog builder  = new	MyDialog(context,MyDialog.ErrType.INFO);
-        builder.setTitle("提示信息").setMessage(message).setNoOnclickListener("确定", Dialog::dismiss).show();
-    }
-
-    public static void displayErrorMessage(String message, Context context){
-        final MyDialog builder  = new	MyDialog(context,MyDialog.ErrType.ERROR);
-        builder.setTitle("提示信息").setMessage(message).setNoOnclickListener("取消", Dialog::dismiss).show();
-    }
-
-    public static void displayWarnMessage(String message, Context context){
-        final MyDialog builder  = new	MyDialog(context,MyDialog.ErrType.ASK);
-        builder.setTitle("提示信息").setMessage(message).setYesOnclickListener("确定", Dialog::dismiss)
-                .setNoOnclickListener("取消", Dialog::dismiss).show();
-    }
-
-    public static void displayAskMessage(String message, Context context,MyDialog.onYesOnclickListener yes,MyDialog.onNoOnclickListener no){
-        final MyDialog builder  = new	MyDialog(context,MyDialog.ErrType.WARN);
-        builder.setTitle("提示信息").setMessage(message).setYesOnclickListener("是",yes)
-                .setNoOnclickListener("否", no).show();
-    }
-
-    public static void displayMessage(String message,String sz,Context context ){
-        final MyDialog builder  = new	MyDialog(context);
-        builder.setTitle("提示信息").setMessage(message).setNoOnclickListener(sz, Dialog::dismiss).show();
-    }
-
-    public static void ToastMessage(final String message,final Context context){
-       Toast toast = Toast.makeText(context,message,Toast.LENGTH_SHORT);
-       toast.setGravity(Gravity.CENTER,0,0);
-       toast.show();
-    }
-
     public static String getDeviceId(Context context) {
         String deviceId = getLocalMac(context).replace(":", "") + getAndroidId(context);
          if ("".equals(deviceId)) {
@@ -213,24 +179,24 @@ public class Utils {
                     properties.setProperty("database","hzpos_sy9");
                     properties.store(output,null);
                 }catch (IOException e){
-                    Utils.displayMessage(e.toString(),context);
+                    MyDialog.displayMessage(e.toString(),context);
                 }finally {
                     try{
                         if (output != null) output.close();
                     }catch (IOException e){
-                        Utils.displayMessage(e.toString(), context);
+                        MyDialog.displayMessage(e.toString(), context);
                     }finally {
                         output = null;
                     }
                 }
             }else{
-                Utils.displayMessage("加载配置文件出错" + ioe.toString(), context);
+                MyDialog.displayMessage("加载配置文件出错" + ioe.toString(), context);
             }
         }finally {
             try{
                 if (inputStream != null) inputStream.close();
             }catch (IOException e){
-                Utils.displayMessage(e.toString(), context);
+                MyDialog.displayMessage(e.toString(), context);
             }finally {
                 inputStream = null;
             }
@@ -343,57 +309,6 @@ public class Utils {
         return sb.toString();
     }
 
-    public  static String jsonToMd5(JSONObject json ,String apiKey) throws JSONException,UnsupportedEncodingException{
-        Map<String,String> map = new HashMap<>();
-        Map<String, String> sortMap = new TreeMap<String, String>();
-        StringBuilder builder = new StringBuilder();
-        String signStr = null;
-
-        for (Iterator<String> it = json.keys(); it.hasNext(); ) {
-            String key = it.next();
-            if("sign".equals(key))continue;
-            map.put(key, json.getString(key));
-        }
-        sortMap.putAll(map);
-        for (Map.Entry<String, String> s : sortMap.entrySet()) {
-            String k = s.getKey();
-            String v = s.getValue();
-            if ("".equals(v)) {// 过滤空值
-                continue;
-            }
-            if (builder.length() != 0){
-                builder.append("&");
-            }
-            builder.append(k).append("=").append(v);
-        }
-        signStr = URLEncoder.encode(builder + "&key=" + apiKey,"UTF-8").replace("+", "%20");//"+" 替换空格
-        return getMD5(signStr.getBytes());
-    }
-
-    public  static String jsonToMd5_hz(JSONObject json ,String apiKey) throws JSONException,UnsupportedEncodingException{
-        Map<String,String> map = new HashMap<>();
-        Map<String, String> sortMap = new TreeMap<String, String>();
-        StringBuilder builder = new StringBuilder();
-        String signStr = null;
-
-        for (Iterator<String> it = json.keys(); it.hasNext(); ) {
-            String key = it.next();
-            map.put(key, json.getString(key));
-        }
-        sortMap.putAll(map);
-        for (Map.Entry<String, String> s : sortMap.entrySet()) {
-            String k = s.getKey();
-            String v = s.getValue();
-            if (builder.length() != 0){
-                builder.append("&");
-            }
-            builder.append(k).append("=").append(v);
-        }
-        signStr = builder + apiKey;
-
-        return builder.append("&sign=").append(getMD5(signStr.getBytes())).toString();
-    }
-
     // IMEI码
     private static String getIMIEStatus(Context context) {
         TelephonyManager tm = (TelephonyManager) context
@@ -415,5 +330,9 @@ public class Utils {
         String androidId = Settings.Secure.getString(
                 context.getContentResolver(), Settings.Secure.ANDROID_ID);
         return androidId;
+    }
+
+    public static boolean JsonIsEmpty(JSONObject json){
+        return json != null && json.keys().hasNext();
     }
 }

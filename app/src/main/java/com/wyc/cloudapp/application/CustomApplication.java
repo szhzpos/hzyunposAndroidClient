@@ -1,10 +1,17 @@
 package com.wyc.cloudapp.application;
 
+import android.Manifest;
 import android.app.Application;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.broadcast.NetChangeMonitor;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.AndroidLogAdapter;
 import com.wyc.cloudapp.logger.DiskLogAdapter;
 import com.wyc.cloudapp.logger.LogcatLogStrategy;
@@ -25,7 +32,6 @@ public class CustomApplication extends Application {
         super.onCreate();
         Logger.addLogAdapter(new AndroidLogAdapter());
         Logger.addLogAdapter(new DiskLogAdapter());//日志记录磁盘
-        SQLiteHelper.initDb(this);//初始化数据库
         netChangeMonitor = new NetChangeMonitor();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");

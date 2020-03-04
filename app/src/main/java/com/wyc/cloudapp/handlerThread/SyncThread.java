@@ -27,6 +27,7 @@ public class SyncThread extends Thread {
         try{
             handlerInitLatch.await();//必须确保Handler初始化
         }catch (InterruptedException e){
+            e.fillInStackTrace();
         }
         return this.SyncHandler;
     }

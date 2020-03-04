@@ -10,6 +10,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.logger.Logger;
 
 import java.lang.ref.WeakReference;
 import java.util.Timer;
@@ -23,6 +24,7 @@ public class CustomProgressDialog extends ProgressDialog
     private Timer mTimer;
     private long mShowTime = 0;
     private boolean mCancel = false;
+    private boolean mRestShowTime = true;
     public CustomProgressDialog(Context context)
     {
         super(context);
@@ -43,9 +45,6 @@ public class CustomProgressDialog extends ProgressDialog
 
     private void init(Context context)
     {
-        setCancelable(mCancel);
-        setCanceledOnTouchOutside(mCancel);
-
         setContentView(R.layout.custom_dialog);
 
         mTitle = findViewById(R.id.title);
@@ -59,7 +58,6 @@ public class CustomProgressDialog extends ProgressDialog
             params.height = WindowManager.LayoutParams.WRAP_CONTENT;
             window.setAttributes(params);
         }
-        mTitle.setText(szTitle);
 
         findViewById(R.id.dialog_linearLayout).setMinimumWidth(100);
 
@@ -69,24 +67,36 @@ public class CustomProgressDialog extends ProgressDialog
     public void show()
     {
         super.show();
+        setCancelable(mCancel);
+        setCanceledOnTouchOutside(mCancel);
+        mTitle.setText(szTitle);
         startTimer();
     }
 
     @Override
     public void dismiss(){
         super.dismiss();
-        stopTimer();
-        mShowTime = 0;
+    }
+
+    @Override
+    public void onDetachedFromWindow(){
+        super.onDetachedFromWindow();
+        if (mRestShowTime){
+            stopTimer();
+            mShowTime = 0;
+        }
     }
 
     private void startTimer(){
-        mTimer = new Timer();
-        mTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                mHandler.obtainMessage(1).sendToTarget();
-            }
-        },0,1000);
+        if (null == mTimer){
+            mTimer = new Timer();
+            mTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    mHandler.obtainMessage(1).sendToTarget();
+                }
+            },0,1000);
+        }
     }
 
     private void stopTimer(){
@@ -98,6 +108,11 @@ public class CustomProgressDialog extends ProgressDialog
 
     public CustomProgressDialog setTitle(final String title){
         szTitle = title;
+        return this;
+    }
+
+    public CustomProgressDialog setRestShowTime(boolean b){
+        mRestShowTime = b;
         return this;
     }
 

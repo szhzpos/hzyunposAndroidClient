@@ -13,6 +13,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import static android.content.Context.WINDOW_SERVICE;
 
 public class MyDialog extends Dialog {
@@ -211,6 +213,43 @@ public class MyDialog extends Dialog {
             mNo.setVisibility(View.VISIBLE);
             mYes.setVisibility(View.VISIBLE);
         }
+    }
+    public static void displayMessage(String message, Context context){
+        final MyDialog builder  = new	MyDialog(context,MyDialog.ErrType.INFO);
+        builder.setTitle("提示信息").setMessage(message).setNoOnclickListener("确定", Dialog::dismiss).show();
+    }
+
+    public static void displayErrorMessage(String message, Context context){
+        final MyDialog builder  = new	MyDialog(context,MyDialog.ErrType.ERROR);
+        builder.setTitle("提示信息").setMessage(message).setNoOnclickListener("取消", Dialog::dismiss).show();
+    }
+
+    public static void displayErrorMessage(String message, Context context,onNoOnclickListener no){
+        final MyDialog builder  = new	MyDialog(context,MyDialog.ErrType.ERROR);
+        builder.setTitle("提示信息").setMessage(message).setNoOnclickListener("取消",no).show();
+    }
+
+    public static void displayWarnMessage(String message, Context context){
+        final MyDialog builder  = new	MyDialog(context,MyDialog.ErrType.ASK);
+        builder.setTitle("提示信息").setMessage(message).setYesOnclickListener("确定", Dialog::dismiss)
+                .setNoOnclickListener("取消", Dialog::dismiss).show();
+    }
+
+    public static void displayAskMessage(String message, Context context,MyDialog.onYesOnclickListener yes,MyDialog.onNoOnclickListener no){
+        final MyDialog builder  = new	MyDialog(context,MyDialog.ErrType.WARN);
+        builder.setTitle("提示信息").setMessage(message).setYesOnclickListener("是",yes)
+                .setNoOnclickListener("否", no).show();
+    }
+
+    public static void displayMessage(String message,String sz,Context context ){
+        final MyDialog builder  = new	MyDialog(context);
+        builder.setTitle("提示信息").setMessage(message).setNoOnclickListener(sz, Dialog::dismiss).show();
+    }
+
+    public static void ToastMessage(final String message,final Context context){
+        Toast toast = Toast.makeText(context,message,Toast.LENGTH_SHORT);
+        toast.setGravity(Gravity.CENTER,0,0);
+        toast.show();
     }
     /**
      * 设置确定按钮和取消被点击的接口

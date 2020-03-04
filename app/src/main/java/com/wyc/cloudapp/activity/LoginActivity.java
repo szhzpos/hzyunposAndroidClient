@@ -28,6 +28,7 @@ import com.wyc.cloudapp.dialog.ConnSettingDialog;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.keyboard.SoftKeyBoardListener;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
 import org.json.JSONException;
@@ -42,6 +43,7 @@ public class LoginActivity extends AppCompatActivity {
     private Handler myHandler;
     private LoginActivity mLogin;
     private CustomProgressDialog mProgressDialog;
+    private boolean mCancelLogin = false;//是否主动取消登陆
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,8 +96,8 @@ public class LoginActivity extends AppCompatActivity {
         b_cancel.setOnClickListener((View V)->{
             MyDialog dialog = new MyDialog(mLogin);
             dialog.setMessage("是否取消登录？").setYesOnclickListener("是",(MyDialog mydialog)->{
-                mLogin.finish();
                 mydialog.dismiss();
+                mLogin.finish();
             }).setNoOnclickListener("否",MyDialog::dismiss).show();
 
         });
@@ -108,20 +110,32 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onStart(){
+        super.onStart();
+
+    }
+
+    @Override
     public void onResume(){
         super.onResume();
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             if ((ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))){
                 MyDialog dialogTmp = new MyDialog(this);
-                dialogTmp.setTitle("提示信息").setMessage("APP不能存储数据,请设置允许APP读写手机存储权限").setNoOnclickListener("取消", new MyDialog.onNoOnclickListener() {
+                dialogTmp.setTitle("提示信息").setMessage("APP不能存储数据,请设置允许APP读写手机存储权限").setNoOnclickListener("退出", new MyDialog.onNoOnclickListener() {
                     @Override
                     public void onNoClick(MyDialog myDialog) {
                         myDialog.dismiss();
+                        LoginActivity.this.finish();
                     }
+                }).setYesOnclickListener("重新获取",(MyDialog myDialog)->{
+                    myDialog.dismiss();
+                    ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},REQUEST_STORAGE_PERMISSIONS );
                 }).show();
             }else {
                 ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},REQUEST_STORAGE_PERMISSIONS );
             }
+        }else{
+            SQLiteHelper.initDb(this);
         }
     }
 
@@ -130,7 +144,7 @@ public class LoginActivity extends AppCompatActivity {
         switch (requestCode) {
             case REQUEST_STORAGE_PERMISSIONS: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
+                    SQLiteHelper.initDb(this);
                 } else {
 
                 }
@@ -143,13 +157,23 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void login(){
-        mProgressDialog.setTitle("正在登录...").setCancel(true).show();
+        final HttpRequest httpRequest = new HttpRequest();
+        mProgressDialog.setTitle("正在登录...").setCancel(true).setRestShowTime(false).show();
         mProgressDialog.setOnCancelListener(dialog -> {
             MyDialog d = new MyDialog(mLogin);
             d.setMessage("是否取消登录？").setYesOnclickListener("是",(MyDialog mydialog)->{
-                mLogin.finish();
                 mydialog.dismiss();
-            }).setNoOnclickListener("否",MyDialog::dismiss).show();
+                if (mProgressDialog != null && !mProgressDialog.isShowing()){
+                    mProgressDialog.setCancel(false).setTitle("正在取消登录...").setRestShowTime(false).show();
+                }
+                mCancelLogin = true;
+                httpRequest.clearConnection(HttpRequest.CLOSEMODE.POST);
+            }).setNoOnclickListener("否",(MyDialog myDialog)->{
+                myDialog.dismiss();
+                if (mProgressDialog != null && !mProgressDialog.isShowing()){
+                    mProgressDialog.setRestShowTime(false).show();
+                }
+            }).show();
         });
         AsyncTask.execute(()->{
             JSONObject object = new JSONObject(),param_json = new JSONObject(),cashier_json = new JSONObject(),retJson,info_json,jsonLogin,store_info;
@@ -164,10 +188,11 @@ public class LoginActivity extends AppCompatActivity {
                     object.put("cas_account",mUser_id.getText());
                     object.put("cas_pwd",mPassword.getText());
 
-                    sz_param = Utils.jsonToMd5_hz(object,appscret);
+                    sz_param = HttpRequest.generate_request_parm(object,appscret);
 
                     login_url = url  + "/api/cashier/login";
-                    retJson = HttpRequest.sendPost(login_url,sz_param,true);
+
+                    retJson = httpRequest.sendPost(login_url,sz_param,true);
 
                     switch (retJson.optInt("flag")) {
                         case 0:
@@ -189,8 +214,8 @@ public class LoginActivity extends AppCompatActivity {
                                     jsonLogin.put("pos_code",Utils.getDeviceId(mLogin));
                                     jsonLogin.put("pos_name",Utils.getDeviceId(mLogin));
                                     jsonLogin.put("stores_id",store_info.getString("stores_id"));
-                                    sz_param = Utils.jsonToMd5_hz(jsonLogin,appscret);
-                                    retJson = HttpRequest.sendPost(pos_url,sz_param,true);
+                                    sz_param = HttpRequest.generate_request_parm(jsonLogin,appscret);
+                                    retJson = httpRequest.sendPost(pos_url,sz_param,true);
 
                                     switch (retJson.getInt("flag")) {
                                         case 0:
@@ -233,8 +258,13 @@ public class LoginActivity extends AppCompatActivity {
             if (activity.mProgressDialog != null)activity.mProgressDialog.dismiss();
             switch (msg.what){
                 case 0:
-                    if (msg.obj != null)
-                        Utils.displayErrorMessage(msg.obj.toString(),activity);
+                    if (msg.obj != null){
+                        if (activity.mCancelLogin){
+                            activity.finish();
+                        }else{
+                            MyDialog.displayErrorMessage(msg.obj.toString(),activity);
+                        }
+                    }
                     break;
                 case 1://登录成功
                     JSONObject cashier_json = (JSONObject) msg.obj,param_json = new JSONObject();
@@ -248,10 +278,10 @@ public class LoginActivity extends AppCompatActivity {
                             activity.startActivity(intent);
                             activity.mLogin.finish();
                         }else{
-                            Utils.displayMessage("保存收银员信息错误：" + err,activity);
+                            MyDialog.displayMessage("保存收银员信息错误：" + err,activity);
                         }
                     } catch (JSONException e) {
-                        Utils.displayMessage("保存收银员信息错误：" + e.getMessage(),activity);
+                        MyDialog.displayMessage("保存收银员信息错误：" + e.getMessage(),activity);
                         e.printStackTrace();
                     }
                     break;

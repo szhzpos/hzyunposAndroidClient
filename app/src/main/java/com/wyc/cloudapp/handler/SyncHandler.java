@@ -16,9 +16,11 @@ import java.io.UnsupportedEncodingException;
 
 public class SyncHandler extends Handler {
 
+    private HttpRequest mHttp;
     private Handler syncActivityHandler;
     public SyncHandler(Handler handler){
         this.syncActivityHandler = handler;
+        mHttp = new HttpRequest();
     }
 
     @Override
@@ -46,9 +48,9 @@ public class SyncHandler extends Handler {
                             url = url + "/api/goods_set/get_bases";
                             object.put("appid",appid);
 
-                            sz_param = Utils.jsonToMd5_hz(object,appsecret);
+                            sz_param = HttpRequest.generate_request_parm(object,appsecret);
 
-                            retJson = HttpRequest.sendPost(url,sz_param,true);
+                            retJson = mHttp.sendPost(url,sz_param,true);
 
                             Logger.json(retJson.toString());
 
@@ -177,8 +179,8 @@ public class SyncHandler extends Handler {
                     }else{
                         syncActivityHandler.obtainMessage(6,1, 1, sys_name + "信息....").sendToTarget();
 
-                        sz_param = Utils.jsonToMd5_hz(object,appsecret);
-                        retJson = HttpRequest.sendPost(url,sz_param,true);
+                        sz_param = HttpRequest.generate_request_parm(object,appsecret);
+                        retJson = mHttp.sendPost(url,sz_param,true);
 
                         Logger.json(retJson.toString());
 
@@ -222,7 +224,7 @@ public class SyncHandler extends Handler {
             JSONObject category_json = category_jsons.optJSONObject(i);
             if (category_json.has("childs")) {
                 JSONArray childs = (JSONArray) category_json.remove("childs");
-                if(childs.length() != 0){
+                if(childs != null && childs.length() != 0){
                     parse_category_info(childs,categorys);
                 }
             }

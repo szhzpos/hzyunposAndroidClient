@@ -23,6 +23,7 @@ import com.wyc.cloudapp.data.DataManagement;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -75,19 +76,19 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.q_deal_linerLayout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utils.displayMessage("查交易",v.getContext());
+                MyDialog.displayMessage("查交易",v.getContext());
             }
         });
         findViewById(R.id.shift_exchange_linearLayout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utils.displayMessage("交班",v.getContext());
+                MyDialog.displayMessage("交班",v.getContext());
             }
         });
         findViewById(R.id.other_linearLayout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utils.displayMessage("更多",v.getContext());
+                MyDialog.displayMessage("更多",v.getContext());
             }
         });
 
@@ -96,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
             tableLayout.setVisibility(tableLayout.getVisibility()== View.VISIBLE ? View.GONE : View.VISIBLE);
         });
         findViewById(R.id.close).setOnClickListener((View V)->{
-            Utils.displayAskMessage("是否退出收银？",MainActivity.this,(MyDialog myDialog)->{
+            MyDialog.displayAskMessage("是否退出收银？",MainActivity.this,(MyDialog myDialog)->{
                 myDialog.dismiss();
                 mDataManagement.stop_sync();
                 Intent intent = new Intent(MainActivity.this,LoginActivity.class);
@@ -141,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
     public void onDestroy(){
         super.onDestroy();
         mDataManagement.stop_sync();
+        stopSyncCurrentTime();
         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
     }
 
@@ -154,9 +156,10 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     if (mCurrentTimestamp == 0){
                         if (mNetworkStatus.get()){
+                            HttpRequest httpRequest = new HttpRequest();
                             JSONObject json = new JSONObject(),retJson,info_json;
                             json.put("appid",mAppId);
-                            retJson = HttpRequest.sendPost(mUrl + "/api/cashier/get_time",Utils.jsonToMd5_hz(json,mAppScret),true);
+                            retJson = httpRequest.setConnTimeOut(5000).setReadTimeOut(5000).sendPost(mUrl + "/api/cashier/get_time",HttpRequest.generate_request_parm(json,mAppScret),true);
                             switch (retJson.optInt("flag")) {
                                 case 0:
                                     mHandler.obtainMessage(0,prefix.concat(retJson.optString("info"))).sendToTarget();
@@ -233,10 +236,10 @@ public class MainActivity extends AppCompatActivity {
                 case 0:
                     if (activity.mProgressDialog != null && activity.mProgressDialog.isShowing())activity.mProgressDialog.dismiss();
                     if (msg.obj instanceof String)
-                        Utils.displayErrorMessage(msg.obj.toString(),activity);
+                        MyDialog.displayErrorMessage(msg.obj.toString(),activity);
                     break;
                 case 1://更新当前时间
-                    activity.mCurrentTimeView.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(new Timestamp(activity.mCurrentTimestamp * 1000)));
+                    activity.mCurrentTimeView.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(activity.mCurrentTimestamp * 1000));
                     break;
                 case DataManagement.DOWNLOADSTATUSCODE://下载错误
                     break;

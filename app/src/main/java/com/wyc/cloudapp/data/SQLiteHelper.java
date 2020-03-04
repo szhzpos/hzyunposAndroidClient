@@ -1,18 +1,18 @@
 package com.wyc.cloudapp.data;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.database.sqlite.SQLiteCantOpenDatabaseException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.os.Environment;
 import androidx.annotation.NonNull;
-
-import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.Utils;
+import com.wyc.cloudapp.dialog.MyDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,15 +20,11 @@ import org.json.JSONObject;
 
 import java.math.BigDecimal;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
 
 import static android.database.Cursor.FIELD_TYPE_FLOAT;
 import static android.database.Cursor.FIELD_TYPE_INTEGER;
@@ -64,9 +60,28 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL("PRAGMA foreign_keys=ON;");
     }
 
-    public static void initDb(Context context){
-        SQLiteHelper sqLiteHelper = new SQLiteHelper(context);
-        mDb = sqLiteHelper.getWritableDatabase();
+    public static boolean initDb(Context context){
+        boolean code = true;
+        if (mDb == null){
+            SQLiteHelper sqLiteHelper = new SQLiteHelper(context);
+            synchronized (SQLiteHelper.class){
+                if (mDb == null)
+                    try {
+                        mDb = sqLiteHelper.getWritableDatabase();
+                    }catch (SQLiteCantOpenDatabaseException e){
+                        MyDialog.displayErrorMessage("打开数据库错误：" + e.getLocalizedMessage(),context,(MyDialog myDialog)->{
+                            myDialog.dismiss();
+                           if (context instanceof Activity){
+                               ((Activity)context).finish();
+                           }else{
+                               System.exit(0);
+                           }
+                        });
+                        code = false;
+                    }
+            }
+        }
+        return code;
     }
 
     private static boolean checkColumnExists(SQLiteDatabase db, String tableName, String columnName) throws SQLiteException {
@@ -331,7 +346,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         try (Cursor cursor = mDb.query("local_parameter",new String[]{"parameter_content"},"parameter_id = ?",new String[]{parameter_id},
                 null,null,null)){
             if (!cursor.moveToNext()){
-                throw new SQLiteException("查询数据为空！");
+                return true;
             }
             JSONObject json = new JSONObject(cursor.getString(0));
             Iterator<String> iterator = json.keys();
@@ -355,7 +370,10 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static void closeDB(){
         if (mDb != null)
         {
-            mDb.close();
+            synchronized (SQLiteHelper.class){
+                mDb.close();
+                mDb = null;
+            }
         }
     }
     public SQLiteDatabase getDB() throws SQLiteException{

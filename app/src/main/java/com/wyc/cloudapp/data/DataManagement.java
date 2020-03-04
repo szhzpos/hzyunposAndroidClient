@@ -23,8 +23,7 @@ public class DataManagement extends Thread {
     //mTestNetworkStatusFlag是否检测网络状态标志 mNetworkStatusFlag当前网络状态标志 是否下载标志
     private AtomicBoolean mTestNetworkStatusFlag = new AtomicBoolean(true),mNetworkStatusFlag = new AtomicBoolean(true),mDownLoadFlag = new AtomicBoolean(true);
     private int mPreNeworkStatusCode = HttpURLConnection.HTTP_OK,mSyncInterval = 3000;//mSyncInterval 同步时间间隔，默认3秒
-
-    private HttpURLConnection mTestConn;
+    private HttpRequest mHttp;
 
     private DataManagement(Handler handler){
         this.mHandler = handler;
@@ -43,6 +42,7 @@ public class DataManagement extends Thread {
         final String prefix = "网络检测错误：";
         long interval = 0,resting_seed = 1000;
         int err_code = HttpURLConnection.HTTP_OK;
+        mHttp = new HttpRequest();
         try {
             data.put("appid",mAppId);
             data.put("pos_num",mPosNum);
@@ -55,7 +55,7 @@ public class DataManagement extends Thread {
                     interval = 0;
                 }else{//网络检测
                     sleep(resting_seed);
-                    retJson = HttpRequest.sendPost(mNetworkStatusUrl,Utils.jsonToMd5_hz(data,mAppScret),true,mTestConn);
+                    retJson = mHttp.sendPost(mNetworkStatusUrl,HttpRequest.generate_request_parm(data,mAppScret),true);
                     switch (retJson.optInt("flag")) {
                         case 0:
                             if (retJson.has("rsCode")){//flag为了0并且存在rsCode网络错误
@@ -128,8 +128,8 @@ public class DataManagement extends Thread {
     }
 
     public void stop_sync(){
-        if (mTestConn != null)mTestConn.disconnect();
         if(mTestNetworkStatusFlag.compareAndSet(true,false)){
+            if (mHttp != null)mHttp.clearConnection(HttpRequest.CLOSEMODE.POST);
             mDownLoadFlag.compareAndSet(true,false);
             mNetworkStatusFlag.compareAndSet(true,false);
             try {
