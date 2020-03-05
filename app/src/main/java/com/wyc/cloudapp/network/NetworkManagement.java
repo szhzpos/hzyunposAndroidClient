@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.data;
+package com.wyc.cloudapp.network;
 
 import android.os.Handler;
 
@@ -10,11 +10,10 @@ import com.wyc.cloudapp.utils.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class DataManagement extends Thread {
+public class NetworkManagement extends Thread {
     private Handler mHandler;
     private String mAppId,mAppScret,mNetworkStatusUrl,mPosNum,mOperId;
     //mTestNetworkStatusFlag是否检测网络状态标志 mNetworkStatusFlag当前网络状态标志 是否下载标志
@@ -22,10 +21,10 @@ public class DataManagement extends Thread {
     private int mPreNeworkStatusCode = HttpURLConnection.HTTP_OK,mSyncInterval = 3000;//mSyncInterval 同步时间间隔，默认3秒
     private HttpRequest mHttp;
 
-    private DataManagement(Handler handler){
+    private NetworkManagement(Handler handler){
         this.mHandler = handler;
     }
-    public DataManagement(Handler handler,final String url,final String appid,final String appscret,final String pos_num,final String operid){
+    public NetworkManagement(Handler handler, final String url, final String appid, final String appscret, final String pos_num, final String operid){
         this(handler);
         mNetworkStatusUrl = url + "/api/heartbeat/index";
         mAppId = appid;
@@ -78,7 +77,7 @@ public class DataManagement extends Thread {
                                     mHandler.obtainMessage(0,prefix + info_json.getString("info")).sendToTarget();
                                     break;
                                 case "y":
-                                    Logger.json(info_json.toString());
+                                    //Logger.json(info_json.toString());
                                     break;
                             }
                             break;

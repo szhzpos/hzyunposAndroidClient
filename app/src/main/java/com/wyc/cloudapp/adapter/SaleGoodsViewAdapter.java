@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.dialog.MyDialog;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

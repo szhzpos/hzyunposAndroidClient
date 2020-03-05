@@ -3,6 +3,7 @@ package com.wyc.cloudapp.activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.app.Dialog;
@@ -11,19 +12,24 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
+import com.wyc.cloudapp.adapter.GoodsTypeItemDecoration;
+import com.wyc.cloudapp.adapter.GoodsTypeViewAdapter;
 import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
 import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
-import com.wyc.cloudapp.data.DataManagement;
+import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.network.NetworkManagement;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
@@ -31,9 +37,7 @@ import com.wyc.cloudapp.utils.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Timer;
@@ -42,6 +46,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainActivity extends AppCompatActivity {
     private SaleGoodsViewAdapter saleGoodsViewAdapter;
+    private GoodsTypeViewAdapter goodsTypeViewAdapter;
+    private GoodsInfoViewAdapter goodsInfoViewAdapter;
     private EditText search_content;
     private JSONObject mCashierInfo,mStoreInfo;
     private Myhandler mHandler;
@@ -49,10 +55,11 @@ public class MainActivity extends AppCompatActivity {
     private MyDialog mDialog;
     private AtomicBoolean mNetworkStatus = new AtomicBoolean(true);//网络状态
     private long mCurrentTimestamp = 0;
-    private String mAppId,mAppScret,mUrl;//收银机终端号
+    private String mAppId,mAppScret,mUrl;
     private TextView mCurrentTimeView;
     private Timer mTimer;//更新当前时间计时器
-    private DataManagement mDataManagement;
+    private NetworkManagement mNetworkManagement;
+    private ImageView mClose;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
         mDialog = new MyDialog(this);
         search_content = findViewById(R.id.search_content);
         mCurrentTimeView = findViewById(R.id.current_time);
+        mClose = findViewById(R.id.close);
 
         //初始化收银员、仓库信息
         initCashierInfoAndStoreInfo();
@@ -97,10 +105,10 @@ public class MainActivity extends AppCompatActivity {
             TableLayout tableLayout = findViewById(R.id.keyboard_layout);
             tableLayout.setVisibility(tableLayout.getVisibility()== View.VISIBLE ? View.GONE : View.VISIBLE);
         });
-        findViewById(R.id.close).setOnClickListener((View V)->{
+        mClose.setOnClickListener((View V)->{
             MyDialog.displayAskMessage("是否退出收银？",MainActivity.this,(MyDialog myDialog)->{
                 myDialog.dismiss();
-                mDataManagement.stop_sync();
+                mNetworkManagement.stop_sync();
                 Intent intent = new Intent(MainActivity.this,LoginActivity.class);
                 startActivity(intent);
                 MainActivity.this.finish();
@@ -108,6 +116,37 @@ public class MainActivity extends AppCompatActivity {
             }, Dialog::dismiss);
         });
 
+        //初始化商品类别
+        RecyclerView goods_type_view = findViewById(R.id.goods_type_list);
+        goods_type_view.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false));
+        goodsTypeViewAdapter = new GoodsTypeViewAdapter(this);
+        goodsTypeViewAdapter.setDatas();
+        goods_type_view.setAdapter(goodsTypeViewAdapter);
+
+        //初始化商品信息
+        final RecyclerView goods_info_view = findViewById(R.id.goods_info_list);
+        //goods_info_view.setLayoutManager(new GridLayoutManager(this,5));
+        goods_info_view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                goods_info_view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                int width = goods_info_view.getMeasuredWidth();
+                int height = goods_info_view.getMeasuredHeight();
+
+                float itemWidth = MainActivity.this.getResources().getDimension(R.dimen.goods_width);
+                float itemHeight = MainActivity.this.getResources().getDimension(R.dimen.goods_height);
+
+                goods_info_view.setLayoutManager(new GridLayoutManager(MainActivity.this,(int) (width / itemWidth)));
+
+
+                Logger.d("width:%d；height:%d",width,height);
+            }
+        });
+        goodsInfoViewAdapter = new GoodsInfoViewAdapter(this);
+        goodsInfoViewAdapter.setDatas();
+        goods_info_view.setAdapter(goodsInfoViewAdapter);
+
+        //初始化已选商品
         RecyclerView recyclerView = findViewById(R.id.sale_goods_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
         recyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
@@ -117,23 +156,23 @@ public class MainActivity extends AppCompatActivity {
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == RecyclerView.SCROLL_STATE_SETTLING){
-                    //load_inventory_goods_details();
+
                 }
             }
         });
-
         recyclerView.removeItemDecoration(recyclerView.getItemDecorationAt(0));
         recyclerView.addItemDecoration(new SaleGoodsItemDecoration());
         recyclerView.setAdapter(saleGoodsViewAdapter);
 
         //初始化数据管理对象
-        mDataManagement = new DataManagement(mHandler,mUrl,mAppId,mAppScret,mCashierInfo.optString("pos_num"),mCashierInfo.optString("cas_id"));
-        mDataManagement.start_sync();
+        mNetworkManagement = new NetworkManagement(mHandler,mUrl,mAppId,mAppScret,mCashierInfo.optString("pos_num"),mCashierInfo.optString("cas_id"));
+        mNetworkManagement.start_sync();
 
     }
     @Override
     public void onResume(){
         super.onResume();
+        //reSpacing(findViewById(R.id.goods_type_list),50,88);
     }
     @Override
     public void onPause(){
@@ -142,11 +181,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy(){
         super.onDestroy();
-        mDataManagement.stop_sync();
+        mNetworkManagement.stop_sync();
         stopSyncCurrentTime();
         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
     }
 
+    @Override
+    public void onBackPressed(){
+        mClose.callOnClick();
+    }
 
     private void startSyncCurrentTime(){
         mTimer = new Timer();
@@ -230,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
         private Myhandler(MainActivity mainActivity){
             this.weakHandler = new WeakReference<>(mainActivity);
         }
-        public void handleMessage(Message msg){
+        public void handleMessage(@NonNull Message msg){
             MainActivity activity = weakHandler.get();
             if (null == activity)return;
             switch (msg.what){

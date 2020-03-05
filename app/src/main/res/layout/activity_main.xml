@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/appColor"
+    android:focusable="false"
     tools:context=".activity.MainActivity">
 
     <LinearLayout
@@ -561,7 +562,7 @@
         app:layout_constraintVertical_bias="0.0" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/goods_info_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="2dp"
@@ -570,8 +571,7 @@
         app:layout_constraintBottom_toTopOf="@id/keyboard_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/main_middle_middle"
-        app:layout_constraintTop_toBottomOf="@+id/goods_type_list"
-        app:layout_constraintVertical_bias="0.57">
+        app:layout_constraintTop_toBottomOf="@+id/goods_type_list">
 
     </androidx.recyclerview.widget.RecyclerView>
 
@@ -584,7 +584,7 @@
         app:layout_constraintBottom_toTopOf="@id/search_text_linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/main_middle_middle"
-        app:layout_constraintTop_toBottomOf="@id/recyclerView">
+        app:layout_constraintTop_toBottomOf="@id/goods_info_list">
 
         <TableRow
             android:layout_width="match_parent"
@@ -600,7 +600,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="0"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -613,7 +613,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="1"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -626,7 +626,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="2"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -639,7 +639,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="3"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -652,7 +652,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="4"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -665,7 +665,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="5"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -678,7 +678,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="6"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -691,7 +691,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="7"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -704,7 +704,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="8"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -717,7 +717,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="9"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
         </TableRow>
 
@@ -734,7 +734,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="Q"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -746,7 +746,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="W"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -759,7 +759,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="E"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -772,7 +772,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="R"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -785,7 +785,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="T"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -798,7 +798,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="Y"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -811,7 +811,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="U"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -824,7 +824,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="I"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -837,7 +837,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="O"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -850,7 +850,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="P"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
         </TableRow>
 
@@ -868,7 +868,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="A"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -881,7 +881,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="S"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -894,7 +894,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="D"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -907,7 +907,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="F"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -920,7 +920,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="G"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -933,7 +933,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="H"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -946,7 +946,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="J"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -959,7 +959,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="K"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -972,7 +972,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="L"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -985,7 +985,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="@string/back"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_18" />
         </TableRow>
 
@@ -1002,7 +1002,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="Z"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -1015,7 +1015,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="X"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -1028,7 +1028,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="C"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -1041,7 +1041,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="V"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -1054,7 +1054,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="B"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -1067,7 +1067,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="N"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -1080,7 +1080,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="M"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <Button
@@ -1093,7 +1093,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
 
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_18" />
 
             <Button
@@ -1106,7 +1106,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
 
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_18" />
 
             <Button
@@ -1119,7 +1119,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
                 android:text="@string/del"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_18" />
 
 
@@ -1158,7 +1158,7 @@
             android:ems="10"
             android:importantForAutofill="no"
             android:inputType="textPersonName"
-            android:textColor="@color/black"
+            android:textColor="@color/text_color"
             android:textSize="24sp" />
 
         <ImageView

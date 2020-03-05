@@ -27,6 +27,7 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.ConnSettingDialog;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.handlerThread.SyncThread;
 import com.wyc.cloudapp.keyboard.SoftKeyBoardListener;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -41,35 +42,38 @@ public class LoginActivity extends AppCompatActivity {
     private RelativeLayout mMain;
     private EditText mUser_id,mPassword;
     private Handler myHandler;
-    private LoginActivity mLogin;
+    private LoginActivity mSelf;
     private CustomProgressDialog mProgressDialog;
     private boolean mCancelLogin = false;//是否主动取消登陆
+    private SyncThread mSync;
+    private Button mCancel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        Button b_login,b_cancel;
+        Button b_login;
         View b_setup;
 
         mMain = findViewById(R.id.main);
         mUser_id = findViewById(R.id.user_id);
         mPassword = findViewById(R.id.password);
+        mCancel = findViewById(R.id.cancel);
 
         myHandler = new Myhandler(this);
-        mLogin = this;
+        mSelf = this;
         mProgressDialog = new CustomProgressDialog(this,R.style.CustomDialog);
+        mSync = new SyncThread(myHandler);
 
         //局部变量
         b_login = findViewById(R.id.b_login);
-        b_cancel = findViewById(R.id.cancel);
         b_setup = findViewById(R.id.setup_ico);
 
         SoftKeyBoardListener.setListener(this, new SoftKeyBoardListener.OnSoftKeyBoardChangeListener() {
             ViewGroup.LayoutParams mLayoutParams = mMain.getLayoutParams();
             @Override
             public void keyBoardShow(int height) {
-                WindowManager m = (WindowManager)mLogin.getSystemService(WINDOW_SERVICE);
+                WindowManager m = (WindowManager) mSelf.getSystemService(WINDOW_SERVICE);
                 if (m != null){
                     Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
                     Point point = new Point();
@@ -93,11 +97,11 @@ public class LoginActivity extends AppCompatActivity {
             login();
         });
 
-        b_cancel.setOnClickListener((View V)->{
-            MyDialog dialog = new MyDialog(mLogin);
+        mCancel.setOnClickListener((View V)->{
+            MyDialog dialog = new MyDialog(mSelf, MyDialog.IconType.ASK);
             dialog.setMessage("是否取消登录？").setYesOnclickListener("是",(MyDialog mydialog)->{
                 mydialog.dismiss();
-                mLogin.finish();
+                mSelf.finish();
             }).setNoOnclickListener("否",MyDialog::dismiss).show();
 
         });
@@ -113,6 +117,17 @@ public class LoginActivity extends AppCompatActivity {
     public void onStart(){
         super.onStart();
 
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        mSync.quit();
+    }
+
+    @Override
+    public void onBackPressed(){
+        mCancel.callOnClick();
     }
 
     @Override
@@ -158,22 +173,21 @@ public class LoginActivity extends AppCompatActivity {
 
     private void login(){
         final HttpRequest httpRequest = new HttpRequest();
-        mProgressDialog.setMessage("正在登录...").setCancel(true).setRestShowTime(false).show();
+        mProgressDialog.setMessage("正在登录...").setCancel(true).show();
         mProgressDialog.setOnCancelListener(dialog -> {
-            MyDialog d = new MyDialog(mLogin);
-            d.setMessage("是否取消登录？").setYesOnclickListener("是",(MyDialog mydialog)->{
+            MyDialog.displayAskMessage("是否取消登录？", mSelf,(MyDialog mydialog)->{
                 mydialog.dismiss();
                 if (mProgressDialog != null && !mProgressDialog.isShowing()){
-                    mProgressDialog.setMessage("正在取消登录...").setRestShowTime(true).show();
+                    mProgressDialog.setMessage("正在取消登录...").refreshMessage().show();
                 }
                 mCancelLogin = true;
                 httpRequest.clearConnection(HttpRequest.CLOSEMODE.POST);
-            }).setNoOnclickListener("否",(MyDialog myDialog)->{
+            },(MyDialog myDialog)->{
                 myDialog.dismiss();
                 if (mProgressDialog != null && !mProgressDialog.isShowing()){
                     mProgressDialog.setRestShowTime(false).show();
                 }
-            }).show();
+            });
         });
         AsyncTask.execute(()->{
             JSONObject object = new JSONObject(),param_json = new JSONObject(),cashier_json = new JSONObject(),retJson,info_json,jsonLogin,store_info;
@@ -211,8 +225,8 @@ public class LoginActivity extends AppCompatActivity {
                                     pos_url =  url + "/api/cashier/set_ps";
                                     jsonLogin = new JSONObject();
                                     jsonLogin.put("appid",app_id);
-                                    jsonLogin.put("pos_code",Utils.getDeviceId(mLogin));
-                                    jsonLogin.put("pos_name",Utils.getDeviceId(mLogin));
+                                    jsonLogin.put("pos_code",Utils.getDeviceId(mSelf));
+                                    jsonLogin.put("pos_name",Utils.getDeviceId(mSelf));
                                     jsonLogin.put("stores_id",store_info.getString("stores_id"));
                                     sz_param = HttpRequest.generate_request_parm(jsonLogin,appscret);
                                     retJson = httpRequest.sendPost(pos_url,sz_param,true);
@@ -252,14 +266,13 @@ public class LoginActivity extends AppCompatActivity {
         private Myhandler(LoginActivity loginActivity){
             this.weakHandler = new WeakReference<LoginActivity>(loginActivity);
         }
-        public void handleMessage(Message msg){
+        public void handleMessage(@NonNull Message msg){
             LoginActivity activity = weakHandler.get();
             if (null == activity)return;
-            if (activity.mProgressDialog != null)activity.mProgressDialog.dismiss();
+
             switch (msg.what){
                 case MessageID.DIS_ERR_INFO_ID:
-                case MessageID.SYNC_ERR_ID://资料同步错误
-                case MessageID.SYNC_FINISH_ID://资料同步完成
+                    if (activity.mProgressDialog != null)activity.mProgressDialog.dismiss();
                     if (msg.obj != null){
                         if (activity.mCancelLogin){
                             activity.finish();
@@ -268,27 +281,53 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                     break;
+                case MessageID.SYNC_ERR_ID://资料同步错误
+                    if (activity.mProgressDialog != null)activity.mProgressDialog.dismiss();
+                    if (msg.obj != null){
+                        MyDialog.displayErrorMessage(msg.obj.toString(),activity);
+                    }
+                    break;
+                case MessageID.SYNC_FINISH_ID://同步成功启动主界面
+                    if (activity.mProgressDialog != null)activity.mProgressDialog.dismiss();
+                    Intent intent = new Intent(activity,MainActivity.class);
+                    activity.startActivity(intent);
+                    activity.finish();
+                    break;
                 case MessageID.LOGIN_OK_ID://登录成功
-                    JSONObject cashier_json = (JSONObject) msg.obj,param_json = new JSONObject();
-                    StringBuilder err = new StringBuilder();
-                    try {
-                        param_json.put("parameter_id","cashierInfo");
-                        param_json.put("parameter_content",cashier_json);
-                        if (SQLiteHelper.replaceJson(param_json,"local_parameter",null,err)){
-                            activity.mProgressDialog.dismiss();
-                            Intent intent = new Intent(activity.mLogin,MainActivity.class);
-                            activity.startActivity(intent);
-                            activity.mLogin.finish();
-                        }else{
-                            MyDialog.displayMessage("保存收银员信息错误：" + err,activity);
+                    if (activity.mProgressDialog != null)activity.mProgressDialog.dismiss();
+                    if (msg.obj instanceof  JSONObject){
+                        JSONObject cashier_json = (JSONObject) msg.obj,param_json = new JSONObject();
+                        StringBuilder err = new StringBuilder();
+                        try {
+                            param_json.put("parameter_id","cashierInfo");
+                            param_json.put("parameter_content",cashier_json);
+                            if (SQLiteHelper.replaceJson(param_json,"local_parameter",null,err)){
+                                if (!activity.mSync.isAlive())activity.mSync.start();
+                                Handler handler = activity.mSync.getHandler();
+                                handler.obtainMessage(MessageID.SYNC_CASHIER_ID).sendToTarget();//收银员
+                                handler.obtainMessage(MessageID.SYNC_GOODS_CATEGORY_ID).sendToTarget();//商品类别
+                                handler.obtainMessage(MessageID.SYNC_GOODS_ID).sendToTarget();//商品信息
+                                handler.obtainMessage(MessageID.SYNC_PAY_METHOD_ID).sendToTarget();//支付方式
+                                handler.obtainMessage(MessageID.SYNC_STORES_ID).sendToTarget();//仓库信息
+                                handler.obtainMessage(MessageID.SYNC_FINISH_ID).sendToTarget();//最后发送同步完成消息
+                            }else{
+                                MyDialog.displayMessage("保存收银员信息错误：" + err,activity);
+                            }
+                        } catch (JSONException e) {
+                            MyDialog.displayMessage("保存收银员信息错误：" + e.getMessage(),activity);
+                            e.printStackTrace();
                         }
-                    } catch (JSONException e) {
-                        MyDialog.displayMessage("保存收银员信息错误：" + e.getMessage(),activity);
-                        e.printStackTrace();
+                    }else{
+                        MyDialog.displayErrorMessage("收银员信息为空！",activity);
                     }
                     break;
                 case MessageID.SYNC_DIS_INFO_ID://资料同步进度信息
-                    if (activity.mProgressDialog != null)activity.mProgressDialog.setMessage(msg.obj.toString());
+                    if (activity.mProgressDialog != null){
+                        activity.mProgressDialog.setMessage(msg.obj.toString()).refreshMessage();
+                        if (!activity.mProgressDialog.isShowing()) {
+                            activity.mProgressDialog.show();
+                        }
+                    }
                     break;
             }
         }

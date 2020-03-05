@@ -13,6 +13,7 @@ import android.database.sqlite.SQLiteStatement;
 import android.os.Environment;
 import androidx.annotation.NonNull;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.logger.Logger;
 
 import org.json.JSONArray;
 import org.json.JSONException;

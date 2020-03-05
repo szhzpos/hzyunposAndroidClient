@@ -42,4 +42,6 @@
     <string name="loading">加载中...</string>
     <string name="sec_sign">s</string>
     <string name="store_name">门店：</string>
+    <string name="currency_symbol">￥</string>
+    <string name="space">""</string>
 </resources>

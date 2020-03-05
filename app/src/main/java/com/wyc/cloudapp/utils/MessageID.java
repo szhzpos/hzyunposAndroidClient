@@ -19,5 +19,6 @@ public final class MessageID {
             DOWNLOADSTATUS_ID = 12,
             DIS_STORE_INFO_ID = 13,
             DIALOG_SHOW_TIME_ID = 14,
-            DIALOG_UPDATE_MESSAGE_ID = 15;
+            DIALOG_UPDATE_MESSAGE_ID = 15,
+            SYNC_GOODS_CATEGORY_ID = 16;
 }

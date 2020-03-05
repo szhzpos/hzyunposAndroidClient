@@ -23,7 +23,7 @@ public class MyDialog extends Dialog {
     private String mTitleStr;//从外界设置的title文本
     private String mMessageStr;//从外界设置的消息文本
     private Context mContext;
-    private ErrType mContentIconType = ErrType.INFO;
+    private IconType mContentIconType = IconType.INFO;
     private boolean mIsYes,mIsNo;
     //按钮文本的显示内容
     private String mYesStr,mNoStr;
@@ -68,12 +68,12 @@ public class MyDialog extends Dialog {
         this.mContext = context;
     }
 
-    public MyDialog(Context context,ErrType type){
+    public MyDialog(Context context, IconType type){
         this(context);
         mContentIconType = type;
     }
 
-    public enum ErrType{
+    public enum IconType {
         INFO,WARN,ERROR,ASK;
     }
 
@@ -215,28 +215,28 @@ public class MyDialog extends Dialog {
         }
     }
     public static void displayMessage(String message, Context context){
-        final MyDialog builder  = new	MyDialog(context,MyDialog.ErrType.INFO);
+        final MyDialog builder  = new	MyDialog(context, IconType.INFO);
         builder.setTitle("提示信息").setMessage(message).setNoOnclickListener("确定", Dialog::dismiss).show();
     }
 
     public static void displayErrorMessage(String message, Context context){
-        final MyDialog builder  = new	MyDialog(context,MyDialog.ErrType.ERROR);
+        final MyDialog builder  = new	MyDialog(context, IconType.ERROR);
         builder.setTitle("提示信息").setMessage(message).setNoOnclickListener("取消", Dialog::dismiss).show();
     }
 
     public static void displayErrorMessage(String message, Context context,onNoOnclickListener no){
-        final MyDialog builder  = new	MyDialog(context,MyDialog.ErrType.ERROR);
+        final MyDialog builder  = new	MyDialog(context, IconType.ERROR);
         builder.setTitle("提示信息").setMessage(message).setNoOnclickListener("取消",no).show();
     }
 
     public static void displayWarnMessage(String message, Context context){
-        final MyDialog builder  = new	MyDialog(context,MyDialog.ErrType.ASK);
+        final MyDialog builder  = new	MyDialog(context, IconType.WARN);
         builder.setTitle("提示信息").setMessage(message).setYesOnclickListener("确定", Dialog::dismiss)
                 .setNoOnclickListener("取消", Dialog::dismiss).show();
     }
 
     public static void displayAskMessage(String message, Context context,MyDialog.onYesOnclickListener yes,MyDialog.onNoOnclickListener no){
-        final MyDialog builder  = new	MyDialog(context,MyDialog.ErrType.WARN);
+        final MyDialog builder  = new	MyDialog(context, IconType.ASK);
         builder.setTitle("提示信息").setMessage(message).setYesOnclickListener("是",yes)
                 .setNoOnclickListener("否", no).show();
     }

@@ -23,7 +23,6 @@ public class CustomProgressDialog extends ProgressDialog
     private Myhandler mHandler;
     private Timer mTimer;
     private long mShowTime = 0;
-    private boolean mCancel = false;
     private boolean mRestShowTime = true;
     public CustomProgressDialog(Context context)
     {
@@ -45,10 +44,14 @@ public class CustomProgressDialog extends ProgressDialog
     private void init()
     {
         setContentView(R.layout.custom_dialog);
+        setCancelable(false);
+        setCanceledOnTouchOutside(false);
 
         mMessage = findViewById(R.id.title);
         mShowTimeView = findViewById(R.id.show_time);
         mHandler = new Myhandler(this);
+
+        mMessage.setText(szMessage);
 
         Window window = getWindow();
         if (null != window){
@@ -66,11 +69,6 @@ public class CustomProgressDialog extends ProgressDialog
     public void show()
     {
         super.show();
-
-        setCancelable(mCancel);
-        setCanceledOnTouchOutside(mCancel);
-        mMessage.setText(szMessage);
-
         startTimer();
     }
 
@@ -112,6 +110,11 @@ public class CustomProgressDialog extends ProgressDialog
         return this;
     }
 
+    public CustomProgressDialog refreshMessage(){
+        mHandler.obtainMessage(MessageID.DIALOG_UPDATE_MESSAGE_ID).sendToTarget();
+        return this;
+    }
+
     public CustomProgressDialog setRestShowTime(boolean b){
         mRestShowTime = b;
         return this;
@@ -122,7 +125,8 @@ public class CustomProgressDialog extends ProgressDialog
     }
 
     public CustomProgressDialog setCancel(boolean b){
-        mCancel = b;
+        setCancelable(b);
+        setCanceledOnTouchOutside(b);
         return this;
     }
 
