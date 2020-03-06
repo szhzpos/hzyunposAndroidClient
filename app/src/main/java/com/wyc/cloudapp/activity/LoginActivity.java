@@ -175,9 +175,9 @@ public class LoginActivity extends AppCompatActivity {
 
     private void login(){
         final HttpRequest httpRequest = new HttpRequest();
-        mProgressDialog.setMessage("正在登录...").setCancel(true).show();
+        mProgressDialog.setCancel(true).setMessage("正在登录...").show();
         mProgressDialog.setOnCancelListener(dialog -> {
-            MyDialog.displayAskMessage("是否取消登录？", mSelf,(MyDialog mydialog)->{
+            MyDialog.displayAskMessage("是否取消登录？",mSelf,(MyDialog mydialog)->{
                 mydialog.dismiss();
                 if (mProgressDialog != null && !mProgressDialog.isShowing()){
                     mProgressDialog.setMessage("正在取消登录...").refreshMessage().show();
@@ -306,6 +306,7 @@ public class LoginActivity extends AppCompatActivity {
                             param_json.put("parameter_id","cashierInfo");
                             param_json.put("parameter_content",cashier_json);
                             if (SQLiteHelper.replaceJson(param_json,"local_parameter",null,err)){
+                                activity.mProgressDialog.setCancel(false);
                                 if (!activity.mSync.isAlive())activity.mSync.start();
                                 Handler handler = activity.mSync.getHandler();
                                 handler.obtainMessage(MessageID.SYNC_CASHIER_ID).sendToTarget();//收银员

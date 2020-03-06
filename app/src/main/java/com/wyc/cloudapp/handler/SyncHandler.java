@@ -20,7 +20,6 @@ public class SyncHandler extends Handler {
     public SyncHandler(Handler handler){
         this.syncActivityHandler = handler;
         mHttp = new HttpRequest();
-
         initSyncParam();
     }
 
@@ -150,6 +149,11 @@ public class SyncHandler extends Handler {
             }
             categorys.put(category_json);
         }
+    }
+
+    private void stop_download(){
+        this.removeCallbacksAndMessages(null);//先清空消息
+        mHttp.clearConnection(HttpRequest.CLOSEMODE.BOTH);
     }
 
 }

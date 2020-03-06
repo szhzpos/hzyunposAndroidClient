@@ -44,8 +44,6 @@ public class CustomProgressDialog extends ProgressDialog
     private void init()
     {
         setContentView(R.layout.custom_dialog);
-        setCancelable(false);
-        setCanceledOnTouchOutside(false);
 
         mMessage = findViewById(R.id.title);
         mShowTimeView = findViewById(R.id.show_time);

@@ -23,7 +23,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
     private Context mContext;
     private JSONArray mDatas;
     private OnItemClickListener mOnItemClickListener;
-
+    private boolean mSearchLoad = false;
     public GoodsInfoViewAdapter(Context context){
         this.mContext = context;
     }
@@ -53,12 +53,6 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         View itemView = View.inflate(mContext, R.layout.goods_info_content, null);
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.goods_height));
         itemView.setLayoutParams(lp);
-
-        if (mOnItemClickListener != null){
-            itemView.setOnClickListener((View v)->{
-                mOnItemClickListener.onClick(v,i);
-            });
-        }
         return new MyViewHolder(itemView);
     }
 
@@ -82,9 +76,20 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                 myViewHolder.barcode.setText(goods_info.optString("barcode"));
                 myViewHolder.buying_price.setText(goods_info.optString("buying_price"));
 
-                if (mDatas.length() == 1 && null != myViewHolder.mCurrentItemView){
+                if(myViewHolder.goods_title.getCurrentTextColor() == mContext.getResources().getColor(R.color.blue,null)){
+                    myViewHolder.goods_title.setTextColor(mContext.getColor(R.color.green));//需要重新设置颜色；不然重用之后内容颜色为重用之前的。
+                }
+
+                if (mOnItemClickListener != null){
+                    myViewHolder.mCurrentItemView.setOnClickListener((View v)->{
+                        mOnItemClickListener.onClick(v,i);
+                    });
+                }
+
+                if (mSearchLoad && mDatas.length() == 1 && null != myViewHolder.mCurrentItemView){
                         myViewHolder.mCurrentItemView.callOnClick();
                 }
+
             }
         }
     }
@@ -112,6 +117,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         }
         mDatas = SQLiteHelper.getList(sql,0,0,false,err);
         if (mDatas != null){
+            if (mSearchLoad)mSearchLoad = false;
             this.notifyDataSetChanged();
         }else{
             MyDialog.displayErrorMessage("加载类别错误：" + err,mContext);
@@ -124,6 +130,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                 "barcode_info where (barcode like '" + search_content + "%' or mnemonic_code like '" + search_content +"%')";
         mDatas = SQLiteHelper.getList(sql,0,0,false,err);
         if (mDatas != null){
+            if (!mSearchLoad)mSearchLoad = true;
             this.notifyDataSetChanged();
         }else{
             MyDialog.displayErrorMessage("加载类别错误：" + err,mContext);

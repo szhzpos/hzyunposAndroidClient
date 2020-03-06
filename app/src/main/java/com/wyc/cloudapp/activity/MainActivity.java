@@ -98,6 +98,9 @@ public class MainActivity extends AppCompatActivity {
         //初始化键盘
         initKeyboard();
 
+        //初始化功能按钮事件
+        findViewById(R.id.clear).setOnClickListener(v -> mSaleGoodsViewAdapter.clearGoods());
+
         findViewById(R.id.q_deal_linerLayout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
                 MyDialog.displayMessage("更多",v.getContext());
             }
         });
-
 
         mClose.setOnClickListener((View V)->{
             MyDialog.displayAskMessage("是否退出收银？",MainActivity.this,(MyDialog myDialog)->{
@@ -299,8 +301,9 @@ public class MainActivity extends AppCompatActivity {
                 Animation shake = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake);
                 goods_name.startAnimation(shake);
                 goods_name.setTextColor(MainActivity.this.getColor(R.color.blue));
-
                 mPreName = v;
+
+                mSaleGoodsViewAdapter.addSaleGoods(mGoodsInfoViewAdapter.getItem(pos));
             }
         });
         goods_info_view.setAdapter(mGoodsInfoViewAdapter);
@@ -320,6 +323,27 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
         recyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
 
+        mSaleGoodsViewAdapter.setOnItemClickListener(new SaleGoodsViewAdapter.OnItemClickListener() {
+            View mPreName;
+            @Override
+            public void onClick(View v, int pos) {
+                TextView goods_name;
+                if(null != mPreName){
+                    goods_name = mPreName.findViewById(R.id.goods_title);
+                    goods_name.clearAnimation();
+                    goods_name.setTextColor(MainActivity.this.getColor(R.color.green));
+                }
+                goods_name = v.findViewById(R.id.goods_title);
+                Animation shake = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake);
+                goods_name.startAnimation(shake);
+                goods_name.setTextColor(MainActivity.this.getColor(R.color.blue));
+                mPreName = v;
+
+                Logger.json(mSaleGoodsViewAdapter.getItem(pos).toString());
+            }
+        });
+
+
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
@@ -330,7 +354,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         recyclerView.removeItemDecoration(recyclerView.getItemDecorationAt(0));
-        recyclerView.addItemDecoration(new SaleGoodsItemDecoration());
+        recyclerView.addItemDecoration(new DividerItemDecoration(this,1));
         recyclerView.setAdapter(mSaleGoodsViewAdapter);
     }
 
@@ -363,7 +387,10 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                mGoodsInfoViewAdapter.search_goods(editable.toString());
+                if (editable.length() != 0)
+                    mGoodsInfoViewAdapter.search_goods(editable.toString());
+                else
+                    mGoodsTypeViewAdapter.trigger_preView();
             }
         });
         mSearch_content.setTransformationMethod(new ReplacementTransformationMethod() {
@@ -391,7 +418,8 @@ public class MainActivity extends AppCompatActivity {
                     if (v_id == R.id.DEL){
                         editable.clear();
                     }else if (v_id == R.id.back){
-                        editable.delete(editable.length() - 1,editable.length());
+                        if (editable.length() != 0)
+                            editable.delete(editable.length() - 1,editable.length());
                     }else
                         editable.append(((Button)view).getText());
                 }

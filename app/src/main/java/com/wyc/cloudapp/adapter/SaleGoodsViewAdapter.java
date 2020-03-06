@@ -24,26 +24,28 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView goods_title,only_coding,p_t_g_id,barcode,in_num,unit_name,unit_id,inventory;
+        TextView goods_id,goods_title,unit_id,unit_name,barcode_id,barcode,buying_price;
+        View mCurrentItemView;
         MyViewHolder(View itemView) {
             super(itemView);
-            goods_title = itemView.findViewById(R.id.goods_title);
-            only_coding =  itemView.findViewById(R.id.only_coding);
-            p_t_g_id = itemView.findViewById(R.id.p_t_g_id);
-            barcode = itemView.findViewById(R.id.barcode);
-            in_num = itemView.findViewById(R.id.in_num);
-            unit_name = itemView.findViewById(R.id.unit_name);
-            unit_id = itemView.findViewById(R.id.unit_id);
-            inventory = itemView.findViewById(R.id.inventory);
+            mCurrentItemView = itemView;
+
+            goods_id = itemView.findViewById(R.id.goods_id);
+            goods_title =  itemView.findViewById(R.id.goods_title);
+            unit_id =  itemView.findViewById(R.id.unit_id);
+            unit_name =  itemView.findViewById(R.id.unit_name);
+            barcode_id =  itemView.findViewById(R.id.barcode_id);
+            barcode =  itemView.findViewById(R.id.barcode);
+            buying_price =  itemView.findViewById(R.id.buying_price);
         }
     }
 
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View itemView = View.inflate(mContext, R.layout.goods_info_detail_content, null);
+        View itemView = View.inflate(mContext, R.layout.sale_goods_content, null);
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
+                78);
         itemView.setLayoutParams(lp);
 
         return new MyViewHolder(itemView);
@@ -52,21 +54,25 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
         if (mDatas != null){
-            JSONObject task_info = mDatas.optJSONObject(i);
-            if (task_info != null){
-                myViewHolder.goods_title.setText(task_info.optString("goods_title"));
-                myViewHolder.only_coding.setText(task_info.optString("only_coding"));
-                myViewHolder.p_t_g_id.setText(task_info.optString("goods_spec_code"));
-                myViewHolder.barcode.setText(task_info.optString("barcode"));
-                myViewHolder.in_num.setText(task_info.optString("pt_xnum_sum"));
-                myViewHolder.unit_name.setText(task_info.optString("unit_name"));
-                myViewHolder.unit_id.setText(task_info.optString("unit_id"));
+            JSONObject goods_info = mDatas.optJSONObject(i);
+            if (goods_info != null){
+                myViewHolder.goods_id.setText(goods_info.optString("goods_id"));
+                myViewHolder.goods_title.setText(goods_info.optString("goods_title"));
+                myViewHolder.unit_id.setText(goods_info.optString("unit_id"));
+                myViewHolder.unit_name.setText(goods_info.optString("unit_name"));
+                myViewHolder.barcode_id.setText(goods_info.optString("barcode_id"));
+                myViewHolder.barcode.setText(goods_info.optString("barcode"));
+                myViewHolder.buying_price.setText(goods_info.optString("buying_price"));
 
-            }
-            if (mOnItemClickListener != null){
-                myViewHolder.inventory.setOnClickListener((View view)->{
-                    mOnItemClickListener.onClick(i);
-                });
+                if (mOnItemClickListener != null){
+                    myViewHolder.mCurrentItemView.setOnClickListener((View v)->{
+                        mOnItemClickListener.onClick(v,i);
+                    });
+                }
+
+                if (mDatas.length() - 1 == i && null != myViewHolder.mCurrentItemView){
+                    myViewHolder.mCurrentItemView.callOnClick();
+                }
             }
         }
     }
@@ -77,10 +83,26 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     }
 
     public interface OnItemClickListener{
-        void onClick(int pos);
+        void onClick(View v,int pos);
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener){
         this.mOnItemClickListener = onItemClickListener;
     }
+
+    public void addSaleGoods(JSONObject json){
+        if (mDatas == null)mDatas = new JSONArray();
+        mDatas.put(json);
+        this.notifyDataSetChanged();
+    }
+
+    public void clearGoods(){
+        mDatas = new JSONArray();
+        this.notifyDataSetChanged();
+    }
+
+    public JSONObject getItem(int i){
+        return mDatas == null ? null : mDatas.optJSONObject(i);
+    }
+
 }
