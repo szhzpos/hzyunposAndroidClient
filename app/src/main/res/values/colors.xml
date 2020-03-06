@@ -2,11 +2,11 @@
 <resources>
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorAccent">#D8571B</color>
     <color name="appColor">#53A3F3</color><!--3F3F55-->
     <color name="blue">#0080ff</color>
     <color name="white">#FFFFFF</color>
-    <color name="pink">#FF8080</color>
+    <color name="pink">#FFC0CB</color>
     <color name="gray">#A1A1A1</color>
     <color name="transparent">#00000000</color>
     <color name="white_subtransparent">#80FFFFFF</color>
@@ -14,5 +14,6 @@
     <color name="black">#000</color>
     <color name="orange">#FF6100</color>
     <color name="blue_subtransparent">#8052A5F7</color>
-    <color name="text_color">#3C3A3A</color>
+    <color name="text_color">#494848</color>
+    <color name="orange_1">#FFF44336</color>
 </resources>

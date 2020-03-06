@@ -150,18 +150,21 @@
                     android:id="@+id/network_status"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
+                    android:contentDescription="@string/space"
                     app:srcCompat="@drawable/network" />
 
                 <ImageView
                     android:id="@+id/printer_status"
                     android:layout_width="64dp"
                     android:layout_height="32dp"
+                    android:contentDescription="@string/space"
                     app:srcCompat="@drawable/printer" />
 
                 <ImageView
                     android:id="@+id/upload_status"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
+                    android:contentDescription="@string/space"
                     app:srcCompat="@drawable/upload" />
 
                 <Space
@@ -174,6 +177,7 @@
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_weight="0.5"
+                    android:contentDescription="@string/space"
                     app:srcCompat="@drawable/close" />
 
             </LinearLayout>
@@ -1167,6 +1171,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginStart="@dimen/margin_8"
+            android:contentDescription="@string/space"
             app:srcCompat="@drawable/keyboard_icon" />
     </LinearLayout>
 

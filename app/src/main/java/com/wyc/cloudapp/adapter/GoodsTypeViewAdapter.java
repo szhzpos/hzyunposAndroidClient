@@ -19,14 +19,19 @@ public class GoodsTypeViewAdapter extends RecyclerView.Adapter<GoodsTypeViewAdap
 
     private Context mContext;
     private JSONArray mDatas;
-    public GoodsTypeViewAdapter(Context context){
+    private View mPreView;
+    private GoodsInfoViewAdapter mGoodsInfoAdapter;
+    public GoodsTypeViewAdapter(Context context,GoodsInfoViewAdapter adapter){
         this.mContext = context;
+        this.mGoodsInfoAdapter = adapter;
     }
-
     static class MyViewHolder extends RecyclerView.ViewHolder {
         TextView category_id,category_name;
+        View mCurrentItem;
         MyViewHolder(View itemView) {
             super(itemView);
+            mCurrentItem = itemView;
+
             category_id = itemView.findViewById(R.id.category_id);
             category_name =  itemView.findViewById(R.id.category_name);
         }
@@ -40,12 +45,20 @@ public class GoodsTypeViewAdapter extends RecyclerView.Adapter<GoodsTypeViewAdap
                 ViewGroup.LayoutParams.MATCH_PARENT);
         itemView.setLayoutParams(lp);
 
-        itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                TextView name = view.findViewById(R.id.category_name);
-                MyDialog.ToastMessage(name.getText().toString(),mContext);
+        itemView.setOnClickListener(view -> {
+            TextView name,category_id;
+            if (null != mPreView){
+                mPreView.setBackgroundColor(mContext.getResources().getColor(R.color.white,null));
+                name = mPreView.findViewById(R.id.category_name);
+                name.setTextColor(mContext.getResources().getColor(R.color.blue,null));
             }
+            view.setBackgroundColor(mContext.getResources().getColor(R.color.blue,null));
+            name = view.findViewById(R.id.category_name);
+            name.setTextColor(mContext.getResources().getColor(R.color.white,null));
+
+            mPreView = view;
+            category_id = view.findViewById(R.id.category_id);
+            if (null != mGoodsInfoAdapter)mGoodsInfoAdapter.setDatas(category_id.getText().toString());
         });
         return new MyViewHolder(itemView);
     }
@@ -57,6 +70,10 @@ public class GoodsTypeViewAdapter extends RecyclerView.Adapter<GoodsTypeViewAdap
             if (goods_type_info != null){
                 myViewHolder.category_id.setText(goods_type_info.optString("category_id"));
                 myViewHolder.category_name.setText(goods_type_info.optString("name"));
+
+                if (i == 0){//触发第一个类别查询
+                    myViewHolder.mCurrentItem.callOnClick();
+                }
             }
         }
     }
@@ -72,7 +89,7 @@ public class GoodsTypeViewAdapter extends RecyclerView.Adapter<GoodsTypeViewAdap
 
     public void setDatas(){
         StringBuilder err = new StringBuilder();
-        mDatas = SQLiteHelper.getList("select category_id,name from shop_category",0,0,false,err);
+        mDatas = SQLiteHelper.getList("select category_id,name from shop_category where parent_id='0'",0,0,false,err);
         if (mDatas != null){
             this.notifyDataSetChanged();
         }else{

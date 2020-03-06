@@ -20,5 +20,7 @@ public final class MessageID {
             DIS_STORE_INFO_ID = 13,
             DIALOG_SHOW_TIME_ID = 14,
             DIALOG_UPDATE_MESSAGE_ID = 15,
-            SYNC_GOODS_CATEGORY_ID = 16;
+            SYNC_GOODS_CATEGORY_ID = 16,
+            LOGIN_PW_ERROR_ID = 17,
+            LOGIN_ID_ERROR_ID = 18;
 }

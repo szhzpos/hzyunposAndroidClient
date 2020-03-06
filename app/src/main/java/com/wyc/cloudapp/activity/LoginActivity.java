@@ -17,6 +17,7 @@ import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -29,6 +30,7 @@ import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.handlerThread.SyncThread;
 import com.wyc.cloudapp.keyboard.SoftKeyBoardListener;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
@@ -191,7 +193,7 @@ public class LoginActivity extends AppCompatActivity {
         });
         AsyncTask.execute(()->{
             JSONObject object = new JSONObject(),param_json = new JSONObject(),cashier_json = new JSONObject(),retJson,info_json,jsonLogin,store_info;
-            String url,login_url,pos_url,app_id,appscret,sz_param;
+            String url,login_url,pos_url,app_id,appscret,sz_param,err_info;
             if (SQLiteHelper.getLocalParameter("connParam",param_json)){
                 try {
                     url = param_json.getString("server_url");
@@ -216,7 +218,13 @@ public class LoginActivity extends AppCompatActivity {
                             info_json = new JSONObject(retJson.getString("info"));
                             switch (info_json.getString("status")){
                                 case "n":
-                                    myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"登录失败：" + info_json.getString("info")).sendToTarget();
+                                    err_info  = info_json.getString("info");
+                                    if (err_info.contains("密码")){
+                                        myHandler.obtainMessage(MessageID.LOGIN_PW_ERROR_ID,"登录失败：" + err_info).sendToTarget();
+                                    }else if (err_info.contains("账号")){
+                                        myHandler.obtainMessage(MessageID.LOGIN_ID_ERROR_ID,"登录失败：" + err_info).sendToTarget();
+                                    }else
+                                        myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"登录失败：" + err_info).sendToTarget();
                                     break;
                                 case "y":
                                     cashier_json = new JSONObject(info_json.getString("cashier"));
@@ -269,10 +277,9 @@ public class LoginActivity extends AppCompatActivity {
         public void handleMessage(@NonNull Message msg){
             LoginActivity activity = weakHandler.get();
             if (null == activity)return;
-
+            if (activity.mProgressDialog != null && msg.what != MessageID.SYNC_DIS_INFO_ID)activity.mProgressDialog.dismiss();
             switch (msg.what){
                 case MessageID.DIS_ERR_INFO_ID:
-                    if (activity.mProgressDialog != null)activity.mProgressDialog.dismiss();
                     if (msg.obj != null){
                         if (activity.mCancelLogin){
                             activity.finish();
@@ -282,19 +289,16 @@ public class LoginActivity extends AppCompatActivity {
                     }
                     break;
                 case MessageID.SYNC_ERR_ID://资料同步错误
-                    if (activity.mProgressDialog != null)activity.mProgressDialog.dismiss();
                     if (msg.obj != null){
                         MyDialog.displayErrorMessage(msg.obj.toString(),activity);
                     }
                     break;
                 case MessageID.SYNC_FINISH_ID://同步成功启动主界面
-                    if (activity.mProgressDialog != null)activity.mProgressDialog.dismiss();
                     Intent intent = new Intent(activity,MainActivity.class);
                     activity.startActivity(intent);
                     activity.finish();
                     break;
                 case MessageID.LOGIN_OK_ID://登录成功
-                    if (activity.mProgressDialog != null)activity.mProgressDialog.dismiss();
                     if (msg.obj instanceof  JSONObject){
                         JSONObject cashier_json = (JSONObject) msg.obj,param_json = new JSONObject();
                         StringBuilder err = new StringBuilder();
@@ -320,6 +324,20 @@ public class LoginActivity extends AppCompatActivity {
                     }else{
                         MyDialog.displayErrorMessage("收银员信息为空！",activity);
                     }
+                    break;
+                case MessageID.LOGIN_ID_ERROR_ID://账号错误
+                    activity.mUser_id.requestFocus();
+                    activity.mPassword.selectAll();
+                    activity.mUser_id.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake));
+                    if (msg.obj instanceof String)
+                        MyDialog.ToastMessage(msg.obj.toString(),activity);
+                    break;
+                case MessageID.LOGIN_PW_ERROR_ID://密码错误
+                    activity.mPassword.requestFocus();
+                    activity.mPassword.selectAll();
+                    activity.mPassword.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake));
+                    if (msg.obj instanceof String)
+                        MyDialog.ToastMessage(msg.obj.toString(),activity);
                     break;
                 case MessageID.SYNC_DIS_INFO_ID://资料同步进度信息
                     if (activity.mProgressDialog != null){

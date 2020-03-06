@@ -54,6 +54,9 @@ public class SyncHandler extends Handler {
         StringBuilder err = new StringBuilder();
         try{
             switch (msg.what) {
+                case MessageID.SYNC_GOODS_BASE_ID:
+
+                    break;
                 case MessageID.SYNC_GOODS_CATEGORY_ID:
                     table_name = "shop_category";
                     sys_name = "正在同步商品类别";

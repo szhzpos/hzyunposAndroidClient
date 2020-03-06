@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="@dimen/goods_type_width"
-    android:layout_height="match_parent"
-    android:background="@drawable/button_blue">
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/category_id"
@@ -21,9 +20,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_5"
-        android:text="8888"
         android:textAlignment="center"
-        android:textColor="@color/white_blue"
+        android:textColor="@color/blue"
+        android:textSize="@dimen/fun_button_font_size_16"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

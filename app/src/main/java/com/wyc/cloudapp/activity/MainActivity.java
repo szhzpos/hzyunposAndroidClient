@@ -6,22 +6,31 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.text.method.ReplacementTransformationMethod;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.adapter.GoodsInfoItemDecoration;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
-import com.wyc.cloudapp.adapter.GoodsTypeItemDecoration;
 import com.wyc.cloudapp.adapter.GoodsTypeViewAdapter;
 import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
 import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
@@ -45,10 +54,10 @@ import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainActivity extends AppCompatActivity {
-    private SaleGoodsViewAdapter saleGoodsViewAdapter;
-    private GoodsTypeViewAdapter goodsTypeViewAdapter;
-    private GoodsInfoViewAdapter goodsInfoViewAdapter;
-    private EditText search_content;
+    private SaleGoodsViewAdapter mSaleGoodsViewAdapter;
+    private GoodsTypeViewAdapter mGoodsTypeViewAdapter;
+    private GoodsInfoViewAdapter mGoodsInfoViewAdapter;
+    private EditText mSearch_content;
     private JSONObject mCashierInfo,mStoreInfo;
     private Myhandler mHandler;
     private CustomProgressDialog mProgressDialog;
@@ -69,18 +78,25 @@ public class MainActivity extends AppCompatActivity {
         mHandler = new Myhandler(this);
         mProgressDialog = new CustomProgressDialog(this,R.style.CustomDialog);
         mDialog = new MyDialog(this);
-        search_content = findViewById(R.id.search_content);
+        mSearch_content = findViewById(R.id.search_content);
         mCurrentTimeView = findViewById(R.id.current_time);
         mClose = findViewById(R.id.close);
+
+        //初始化adapter
+        initGoodsInfoAdapter();
+        initGoodsTypeAdapter();
+        initSaleGoodsAdapter();
 
         //初始化收银员、仓库信息
         initCashierInfoAndStoreInfo();
         //更新当前时间
         startSyncCurrentTime();
 
-        search_content.setOnFocusChangeListener((View v,boolean hasFocus)->{
-            Utils.hideKeyBoard((EditText) v);
-        });
+        //初始化搜索框
+        initSearch();
+
+        //初始化键盘
+        initKeyboard();
 
         findViewById(R.id.q_deal_linerLayout).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,10 +117,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.keyboard).setOnClickListener((View v)->{
-            TableLayout tableLayout = findViewById(R.id.keyboard_layout);
-            tableLayout.setVisibility(tableLayout.getVisibility()== View.VISIBLE ? View.GONE : View.VISIBLE);
-        });
+
         mClose.setOnClickListener((View V)->{
             MyDialog.displayAskMessage("是否退出收银？",MainActivity.this,(MyDialog myDialog)->{
                 myDialog.dismiss();
@@ -115,54 +128,6 @@ public class MainActivity extends AppCompatActivity {
 
             }, Dialog::dismiss);
         });
-
-        //初始化商品类别
-        RecyclerView goods_type_view = findViewById(R.id.goods_type_list);
-        goods_type_view.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false));
-        goodsTypeViewAdapter = new GoodsTypeViewAdapter(this);
-        goodsTypeViewAdapter.setDatas();
-        goods_type_view.setAdapter(goodsTypeViewAdapter);
-
-        //初始化商品信息
-        final RecyclerView goods_info_view = findViewById(R.id.goods_info_list);
-        //goods_info_view.setLayoutManager(new GridLayoutManager(this,5));
-        goods_info_view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                goods_info_view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                int width = goods_info_view.getMeasuredWidth();
-                int height = goods_info_view.getMeasuredHeight();
-
-                float itemWidth = MainActivity.this.getResources().getDimension(R.dimen.goods_width);
-                float itemHeight = MainActivity.this.getResources().getDimension(R.dimen.goods_height);
-
-                goods_info_view.setLayoutManager(new GridLayoutManager(MainActivity.this,(int) (width / itemWidth)));
-
-
-                Logger.d("width:%d；height:%d",width,height);
-            }
-        });
-        goodsInfoViewAdapter = new GoodsInfoViewAdapter(this);
-        goodsInfoViewAdapter.setDatas();
-        goods_info_view.setAdapter(goodsInfoViewAdapter);
-
-        //初始化已选商品
-        RecyclerView recyclerView = findViewById(R.id.sale_goods_list);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
-        recyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
-        saleGoodsViewAdapter = new SaleGoodsViewAdapter(this);
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (newState == RecyclerView.SCROLL_STATE_SETTLING){
-
-                }
-            }
-        });
-        recyclerView.removeItemDecoration(recyclerView.getItemDecorationAt(0));
-        recyclerView.addItemDecoration(new SaleGoodsItemDecoration());
-        recyclerView.setAdapter(saleGoodsViewAdapter);
 
         //初始化数据管理对象
         mNetworkManagement = new NetworkManagement(mHandler,mUrl,mAppId,mAppScret,mCashierInfo.optString("pos_num"),mCashierInfo.optString("cas_id"));
@@ -304,4 +269,158 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    private void initGoodsInfoAdapter(){
+        mGoodsInfoViewAdapter = new GoodsInfoViewAdapter(this);
+        final RecyclerView goods_info_view = findViewById(R.id.goods_info_list);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(MainActivity.this,4);
+        goods_info_view.setLayoutManager(gridLayoutManager);
+        goods_info_view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                goods_info_view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                int height = goods_info_view.getMeasuredHeight();
+                float itemHeight = MainActivity.this.getResources().getDimension(R.dimen.goods_height);
+                goods_info_view.addItemDecoration(new GoodsInfoItemDecoration(getVerSpacing(height,(int) itemHeight)));
+            }
+        });
+        mGoodsInfoViewAdapter.setDatas(null);
+        mGoodsInfoViewAdapter.setOnItemClickListener(new GoodsInfoViewAdapter.OnItemClickListener() {
+            View mPreName;
+            @Override
+            public void onClick(View v, int pos) {
+                TextView goods_name;
+                if(null != mPreName){
+                    goods_name = mPreName.findViewById(R.id.goods_title);
+                    goods_name.clearAnimation();
+                    goods_name.setTextColor(MainActivity.this.getColor(R.color.green));
+                }
+                goods_name = v.findViewById(R.id.goods_title);
+                Animation shake = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake);
+                goods_name.startAnimation(shake);
+                goods_name.setTextColor(MainActivity.this.getColor(R.color.blue));
+
+                mPreName = v;
+            }
+        });
+        goods_info_view.setAdapter(mGoodsInfoViewAdapter);
+    }
+
+    private void initGoodsTypeAdapter(){
+        mGoodsTypeViewAdapter = new GoodsTypeViewAdapter(this, mGoodsInfoViewAdapter);
+        RecyclerView goods_type_view = findViewById(R.id.goods_type_list);
+        goods_type_view.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false));
+        mGoodsTypeViewAdapter.setDatas();
+        goods_type_view.setAdapter(mGoodsTypeViewAdapter);
+    }
+
+    private void initSaleGoodsAdapter(){
+        mSaleGoodsViewAdapter = new SaleGoodsViewAdapter(this);
+        RecyclerView recyclerView = findViewById(R.id.sale_goods_list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
+        recyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_SETTLING){
+
+                }
+            }
+        });
+        recyclerView.removeItemDecoration(recyclerView.getItemDecorationAt(0));
+        recyclerView.addItemDecoration(new SaleGoodsItemDecoration());
+        recyclerView.setAdapter(mSaleGoodsViewAdapter);
+    }
+
+    private int getVerSpacing(int viewHeight,int m_height){
+        int vertical_space ,vertical_counts,per_vertical_space;
+        vertical_space = viewHeight % m_height;
+        vertical_counts = viewHeight / m_height;
+        per_vertical_space = vertical_space / (vertical_counts != 0 ? vertical_counts:1);
+        return per_vertical_space;
+    }
+
+    private void initSearch(){
+        mSearch_content.setOnFocusChangeListener((View v, boolean hasFocus)->{
+            Utils.hideKeyBoard((EditText) v);
+        });
+        mHandler.postDelayed(()->{
+            mSearch_content.requestFocus();
+        },300);
+        mSearch_content.setSelectAllOnFocus(true);
+        mSearch_content.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                mGoodsInfoViewAdapter.search_goods(editable.toString());
+            }
+        });
+        mSearch_content.setTransformationMethod(new ReplacementTransformationMethod() {
+            @Override
+            protected char[] getOriginal() {
+                return new char[]{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+                        'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
+            }
+
+            @Override
+            protected char[] getReplacement() {
+                return new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
+                        'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+            }
+        });
+    }
+
+    private void initKeyboard(){
+        findViewById(R.id.keyboard).setOnClickListener((new View.OnClickListener() {
+            private View.OnClickListener mKeyboardListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int v_id = view.getId();
+                    Editable editable = mSearch_content.getText();
+                    if (v_id == R.id.DEL){
+                        editable.clear();
+                    }else if (v_id == R.id.back){
+                        editable.delete(editable.length() - 1,editable.length());
+                    }else
+                        editable.append(((Button)view).getText());
+                }
+            };
+            @Override
+            public void onClick(View view) {
+                final TableLayout tableLayout = findViewById(R.id.keyboard_layout);
+                tableLayout.setVisibility(tableLayout.getVisibility()== View.VISIBLE ? View.GONE : View.VISIBLE);
+                for(int i = 0,childCounts = tableLayout.getChildCount();i < childCounts;i ++){
+                    View vObj = tableLayout.getChildAt(i);
+                    if ( vObj instanceof TableRow){
+                        TableRow tableRow = (TableRow)vObj ;
+                        int buttons = tableRow.getChildCount();
+                        for (int j = 0;j < buttons;j ++){
+                            vObj = tableRow.getChildAt(j);
+                            if (vObj instanceof Button){
+                                final Button button = (Button)vObj;
+                                if (tableLayout.getVisibility() == View.VISIBLE){
+                                    button.setOnClickListener(mKeyboardListener);
+                                }else{
+                                    button.setOnClickListener(null);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }));
+    }
+
+
 }

@@ -16,7 +16,6 @@
     <dimen name="dialog_button_height">40dp</dimen>
     <dimen name="goods_type_width">88dp</dimen>
     <dimen name="height_45">45dp</dimen>
-    <dimen name="goods_width">228dp</dimen>
-    <dimen name="goods_height">68dp</dimen>
-    <dimen name="goods_img_width">68dp</dimen>
+    <dimen name="goods_height">78dp</dimen>
+    <dimen name="goods_img_width">88dp</dimen>
 </resources>
