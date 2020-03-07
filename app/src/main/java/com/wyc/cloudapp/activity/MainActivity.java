@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -32,8 +31,8 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.GoodsInfoItemDecoration;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.GoodsTypeViewAdapter;
-import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
 import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
+import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.network.NetworkManagement;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -43,6 +42,7 @@ import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -65,10 +65,11 @@ public class MainActivity extends AppCompatActivity {
     private AtomicBoolean mNetworkStatus = new AtomicBoolean(true);//网络状态
     private long mCurrentTimestamp = 0;
     private String mAppId,mAppScret,mUrl;
-    private TextView mCurrentTimeView;
+    private TextView mCurrentTimeView,mSaleSumNum,mSaleSumAmount;
     private Timer mTimer;//更新当前时间计时器
     private NetworkManagement mNetworkManagement;
-    private ImageView mClose;
+    private ImageView mCloseBtn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,7 +81,9 @@ public class MainActivity extends AppCompatActivity {
         mDialog = new MyDialog(this);
         mSearch_content = findViewById(R.id.search_content);
         mCurrentTimeView = findViewById(R.id.current_time);
-        mClose = findViewById(R.id.close);
+        mCloseBtn = findViewById(R.id.close);
+        mSaleSumNum = findViewById(R.id.sale_sum_num);
+        mSaleSumAmount = findViewById(R.id.sale_sum_amount);
 
         //初始化adapter
         initGoodsInfoAdapter();
@@ -100,6 +103,9 @@ public class MainActivity extends AppCompatActivity {
 
         //初始化功能按钮事件
         findViewById(R.id.clear).setOnClickListener(v -> mSaleGoodsViewAdapter.clearGoods());
+        findViewById(R.id.minus_num).setOnClickListener(v -> mSaleGoodsViewAdapter.deleteSaleGoods(mSaleGoodsViewAdapter.getCurrentItemIndex(),1));
+        findViewById(R.id.add_num).setOnClickListener(v -> mSaleGoodsViewAdapter.addSaleGoods(mSaleGoodsViewAdapter.getCurrentContent()));
+
 
         findViewById(R.id.q_deal_linerLayout).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -120,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mClose.setOnClickListener((View V)->{
+        mCloseBtn.setOnClickListener((View V)->{
             MyDialog.displayAskMessage("是否退出收银？",MainActivity.this,(MyDialog myDialog)->{
                 myDialog.dismiss();
                 mNetworkManagement.stop_sync();
@@ -139,7 +145,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
-        //reSpacing(findViewById(R.id.goods_type_list),50,88);
     }
     @Override
     public void onPause(){
@@ -155,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed(){
-        mClose.callOnClick();
+        mCloseBtn.callOnClick();
     }
 
     private void startSyncCurrentTime(){
@@ -212,9 +217,11 @@ public class MainActivity extends AppCompatActivity {
 
         if (SQLiteHelper.getLocalParameter("cashierInfo",mCashierInfo)){
             TextView cashier_name = findViewById(R.id.cashier_name),
-                    store_name = findViewById(R.id.store_name);
+                    store_name = findViewById(R.id.store_name),
+                    pos_num = findViewById(R.id.pos_num);
 
             cashier_name.setText(mCashierInfo.optString("cas_name"));
+            pos_num.setText(mCashierInfo.optString("pos_num"));
             if (SQLiteHelper.getLocalParameter("connParam",mStoreInfo)){
                 try {
                     mUrl = mStoreInfo.getString("server_url");
@@ -291,6 +298,11 @@ public class MainActivity extends AppCompatActivity {
             View mPreName;
             @Override
             public void onClick(View v, int pos) {
+                set_selected_status(v);//设置选中状态
+
+                mSaleGoodsViewAdapter.addSaleGoods(mGoodsInfoViewAdapter.getItem(pos));
+            }
+            private void set_selected_status(View v){
                 TextView goods_name;
                 if(null != mPreName){
                     goods_name = mPreName.findViewById(R.id.goods_title);
@@ -302,8 +314,6 @@ public class MainActivity extends AppCompatActivity {
                 goods_name.startAnimation(shake);
                 goods_name.setTextColor(MainActivity.this.getColor(R.color.blue));
                 mPreName = v;
-
-                mSaleGoodsViewAdapter.addSaleGoods(mGoodsInfoViewAdapter.getItem(pos));
             }
         });
         goods_info_view.setAdapter(mGoodsInfoViewAdapter);
@@ -318,41 +328,41 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initSaleGoodsAdapter(){
+        final RecyclerView recyclerView = findViewById(R.id.sale_goods_list);
         mSaleGoodsViewAdapter = new SaleGoodsViewAdapter(this);
-        RecyclerView recyclerView = findViewById(R.id.sale_goods_list);
+        mSaleGoodsViewAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged(){
+                JSONArray datas = mSaleGoodsViewAdapter.getDatas();
+                double sale_sum_num = 0.0,sale_sum_amount = 0.0;
+                try {
+                    for (int i = 0,length = datas.length();i < length;i ++){
+                        JSONObject jsonObject = datas.getJSONObject(i);
+                        sale_sum_num += jsonObject.getDouble("sale_num");
+                        sale_sum_amount += jsonObject.getDouble("sale_amount");
+                    }
+                    mSaleSumNum.setText(String.format(Locale.CANADA,"%.2f",sale_sum_num));
+                    mSaleSumAmount.setText(String.format(Locale.CANADA,"%.4f",sale_sum_amount));
+
+                    recyclerView.scrollToPosition(mSaleGoodsViewAdapter.getCurrentItemIndex());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    MyDialog.displayErrorMessage("更新销售数据错误：" + e.getMessage(),MainActivity.this);
+                }
+            }
+        });
+
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
+        recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                int height = recyclerView.getMeasuredHeight();
+                float itemHeight = MainActivity.this.getResources().getDimension(R.dimen.goods_height);
+                recyclerView.addItemDecoration(new SaleGoodsItemDecoration(getVerSpacing(height,(int) itemHeight)));
+            }
+        });
         recyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
-
-        mSaleGoodsViewAdapter.setOnItemClickListener(new SaleGoodsViewAdapter.OnItemClickListener() {
-            View mPreName;
-            @Override
-            public void onClick(View v, int pos) {
-                TextView goods_name;
-                if(null != mPreName){
-                    goods_name = mPreName.findViewById(R.id.goods_title);
-                    goods_name.clearAnimation();
-                    goods_name.setTextColor(MainActivity.this.getColor(R.color.green));
-                }
-                goods_name = v.findViewById(R.id.goods_title);
-                Animation shake = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake);
-                goods_name.startAnimation(shake);
-                goods_name.setTextColor(MainActivity.this.getColor(R.color.blue));
-                mPreName = v;
-
-                Logger.json(mSaleGoodsViewAdapter.getItem(pos).toString());
-            }
-        });
-
-
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if (newState == RecyclerView.SCROLL_STATE_SETTLING){
-
-                }
-            }
-        });
         recyclerView.removeItemDecoration(recyclerView.getItemDecorationAt(0));
         recyclerView.addItemDecoration(new DividerItemDecoration(this,1));
         recyclerView.setAdapter(mSaleGoodsViewAdapter);

@@ -60,15 +60,45 @@
         android:text="1028"
         android:textAlignment="viewStart"
         android:textColor="@color/orange_1"
-        android:textSize="@dimen/fun_button_font_size_16" />
+        android:textSize="@dimen/fun_button_font_size_18" />
+
+    <TextView
+        android:id="@+id/sale_sum_num"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="false"
+        android:textColor="@color/orange_1"
+        android:textSize="@dimen/fun_button_font_size_18" />
+
+    <TextView
+        android:id="@+id/amount_symbol"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toStartOf="@id/sale_sum_amount"
+        android:text="@string/currency_symbol"
+        android:textColor="@color/green" />
+
+    <TextView
+        android:id="@+id/sale_sum_amount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="@dimen/margin_5"
+        android:textColor="@color/orange_1"
+        android:textSize="@dimen/fun_button_font_size_18" />
 
     <TextView
         android:id="@+id/unit_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/buying_price"
+        android:layout_alignParentBottom="true"
         android:layout_marginStart="@dimen/margin_8"
-        android:layout_toEndOf="@id/buying_price"
+        android:layout_toEndOf="@id/sale_sum_num"
         android:textColor="@color/green" />
 
 </RelativeLayout>

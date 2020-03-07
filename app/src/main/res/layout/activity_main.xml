@@ -259,8 +259,10 @@
             android:id="@+id/sale_goods_list"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginBottom="@dimen/margin_5"
             android:layout_weight="1"
-            android:background="@drawable/round_shape">
+            android:background="@drawable/round_shape"
+            app:stackFromEnd="true">
 
         </androidx.recyclerview.widget.RecyclerView>
 
@@ -268,8 +270,8 @@
             android:id="@+id/vip_info_linearLayout"
             android:layout_width="match_parent"
             android:layout_height="35dp"
-            android:layout_marginTop="@dimen/margin_2"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="visible">
 
             <TextView
                 android:id="@+id/textView5"
@@ -284,7 +286,6 @@
                 android:id="@+id/vip_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="会员01"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/fun_button_font_size_16" />
 
@@ -306,7 +307,6 @@
                 android:id="@+id/vip_phone_num"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="18888888888"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/fun_button_font_size_16" />
         </LinearLayout>
@@ -315,6 +315,7 @@
             android:id="@+id/order_info_linearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_5"
             android:orientation="vertical">
 
             <LinearLayout
@@ -352,7 +353,7 @@
                     android:textSize="@dimen/fun_button_font_size_16" />
 
                 <TextView
-                    android:id="@+id/jh_id"
+                    android:id="@+id/pos_num"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0001"
@@ -398,7 +399,7 @@
                     android:textSize="@dimen/fun_button_font_size_18" />
 
                 <TextView
-                    android:id="@+id/sale_num"
+                    android:id="@+id/sale_sum_num"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="8.00"
@@ -419,11 +420,11 @@
                     android:textSize="@dimen/fun_button_font_size_18" />
 
                 <TextView
-                    android:id="@+id/sale_amount"
+                    android:id="@+id/sale_sum_amount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="￥88.00"
-                    android:textColor="@color/colorAccent"
+                    android:textColor="@color/orange_1"
                     android:textSize="@dimen/fun_button_font_size_18" />
             </LinearLayout>
 
@@ -462,6 +463,7 @@
             android:layout_marginTop="@dimen/margin_2"
             android:background="@drawable/dialog_button_pink"
             android:text="@string/minus"
+            android:textAlignment="gravity"
             android:textColor="@color/white_pink"
             android:textSize="@dimen/fun_button_font_size_24" />
 
