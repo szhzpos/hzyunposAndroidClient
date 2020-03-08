@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.listener.DoubleClickListener;
+import com.wyc.cloudapp.listener.ClickListener;
 import com.wyc.cloudapp.utils.Utils;
 
 import org.json.JSONArray;
@@ -78,7 +78,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                     myViewHolder.goods_title.setTextColor(mContext.getColor(R.color.green));//需要重新设置颜色；不然重用之后内容颜色为重用之前的。
                 }
 
-                myViewHolder.mCurrentLayoutItemView.setOnTouchListener(new DoubleClickListener(v -> {
+                myViewHolder.mCurrentLayoutItemView.setOnTouchListener(new ClickListener(v -> {
                     setCurrentItemIndexAndItemView(v);
                     deleteSaleGoods(mCurrentItemIndex,0);
                     if (mOnItemDoubleClickListener != null){

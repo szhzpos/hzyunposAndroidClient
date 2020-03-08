@@ -102,10 +102,19 @@ public class MainActivity extends AppCompatActivity {
         initKeyboard();
 
         //初始化功能按钮事件
-        findViewById(R.id.clear).setOnClickListener(v -> mSaleGoodsViewAdapter.clearGoods());
-        findViewById(R.id.minus_num).setOnClickListener(v -> mSaleGoodsViewAdapter.deleteSaleGoods(mSaleGoodsViewAdapter.getCurrentItemIndex(),1));
-        findViewById(R.id.add_num).setOnClickListener(v -> mSaleGoodsViewAdapter.addSaleGoods(mSaleGoodsViewAdapter.getCurrentContent()));
+        findViewById(R.id.clear).setOnClickListener(v -> mSaleGoodsViewAdapter.clearGoods());//清空
+        findViewById(R.id.minus_num).setOnClickListener(v -> mSaleGoodsViewAdapter.deleteSaleGoods(mSaleGoodsViewAdapter.getCurrentItemIndex(),1));//数量减
+        findViewById(R.id.add_num).setOnClickListener(v -> mSaleGoodsViewAdapter.addSaleGoods(mSaleGoodsViewAdapter.getCurrentContent()));//数量加
+        mCloseBtn.setOnClickListener((View V)->{
+            MyDialog.displayAskMessage("是否退出收银？",MainActivity.this,(MyDialog myDialog)->{
+                myDialog.dismiss();
+                mNetworkManagement.stop_sync();
+                Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+                startActivity(intent);
+                MainActivity.this.finish();
 
+            }, Dialog::dismiss);
+        });
 
         findViewById(R.id.q_deal_linerLayout).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,16 +135,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mCloseBtn.setOnClickListener((View V)->{
-            MyDialog.displayAskMessage("是否退出收银？",MainActivity.this,(MyDialog myDialog)->{
-                myDialog.dismiss();
-                mNetworkManagement.stop_sync();
-                Intent intent = new Intent(MainActivity.this,LoginActivity.class);
-                startActivity(intent);
-                MainActivity.this.finish();
 
-            }, Dialog::dismiss);
-        });
 
         //初始化数据管理对象
         mNetworkManagement = new NetworkManagement(mHandler,mUrl,mAppId,mAppScret,mCashierInfo.optString("pos_num"),mCashierInfo.optString("cas_id"));

@@ -1,16 +1,14 @@
 package com.wyc.cloudapp.listener;
-
-import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 
-public class DoubleClickListener implements View.OnTouchListener {
+public class ClickListener implements View.OnTouchListener {
     private final String TAG = this.getClass().getSimpleName();
     private int count = 0;
     private long firClick = 0;
     private onDoubleClickListener mDoubleListener;
     private onSingleClickListener mSingleListener;
-    private Handler mHandler;
+    private View mView;
     public interface onDoubleClickListener {
         void onDoubleClick(View v);
     }
@@ -19,37 +17,26 @@ public class DoubleClickListener implements View.OnTouchListener {
         void onClick(View v);
     }
 
-    public DoubleClickListener(onDoubleClickListener d,onSingleClickListener s) {
+    public ClickListener(onDoubleClickListener d, onSingleClickListener s) {
         super();
         this.mDoubleListener = d;
         this.mSingleListener = s;
-        mHandler = new Handler();
     }
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+        mView = v;
         long secClick = 0;
         int interval = 200;
         if (MotionEvent.ACTION_DOWN == event.getAction()) {
             count++;
             if (1 == count) {
                 firClick = System.currentTimeMillis();
-                mHandler.postDelayed(()->{
-                    synchronized (DoubleClickListener.this){
-                        if (mSingleListener != null){
-                            mSingleListener.onClick(v);
-                        }
-                        count = 0;
-                        firClick = 0;
-                    }
-                },250);
-
+                v.postDelayed(SingleClick,250);
             } else if (2 == count) {
                 secClick = System.currentTimeMillis();
                 if (secClick - firClick < interval) {
-                    synchronized (this){
-                        mHandler.removeCallbacksAndMessages(null);
-                    }
+                     v.removeCallbacks(SingleClick);
                     if (mDoubleListener != null) {
                         mDoubleListener.onDoubleClick(v);
                     }
@@ -63,4 +50,11 @@ public class DoubleClickListener implements View.OnTouchListener {
         }
         return true;
     }
+    private Runnable SingleClick = ()->{
+            if (mSingleListener != null){
+                mSingleListener.onClick(mView);
+            }
+            count = 0;
+            firClick = 0;
+    };
 }

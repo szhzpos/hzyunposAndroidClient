@@ -1162,6 +1162,7 @@
             android:layout_marginStart="@dimen/margin_5"
             android:background="@drawable/plain_border_gray"
             android:ems="10"
+            android:hint="@string/space"
             android:importantForAutofill="no"
             android:inputType="textPersonName"
             android:textColor="@color/text_color"
