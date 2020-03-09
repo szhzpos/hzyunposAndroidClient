@@ -259,7 +259,6 @@
             android:id="@+id/sale_goods_list"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginBottom="@dimen/margin_5"
             android:layout_weight="1"
             android:background="@drawable/round_shape"
             app:stackFromEnd="true">
@@ -269,8 +268,8 @@
         <LinearLayout
             android:id="@+id/vip_info_linearLayout"
             android:layout_width="match_parent"
-            android:layout_height="35dp"
-            android:layout_marginTop="@dimen/margin_2"
+            android:layout_height="@dimen/size_35"
+            android:background="@drawable/top_separator"
             android:orientation="horizontal"
             android:visibility="visible">
 
@@ -546,7 +545,7 @@
             android:id="@+id/check_out"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/fun_button_width_size"
-            android:layout_height="80dp"
+            android:layout_height="@dimen/height_88"
             android:layout_gravity="bottom"
             android:background="@drawable/button_orange"
             android:text="@string/check_out_sz"
@@ -572,7 +571,7 @@
         android:id="@+id/goods_info_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="@dimen/margin_2"
         android:background="@drawable/round_shape"
         android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@id/keyboard_layout"
@@ -606,7 +605,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
-                android:text="0"
+                android:text="@string/zero_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
@@ -619,7 +618,7 @@
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
-                android:text="1"
+                android:text="@string/one_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
@@ -632,7 +631,7 @@
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
-                android:text="2"
+                android:text="@string/two_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
@@ -645,7 +644,7 @@
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
-                android:text="3"
+                android:text="@string/three_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
@@ -658,7 +657,7 @@
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
-                android:text="4"
+                android:text="@string/four_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
@@ -671,7 +670,7 @@
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
-                android:text="5"
+                android:text="@string/five_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
@@ -684,7 +683,7 @@
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
-                android:text="6"
+                android:text="@string/six_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
@@ -697,7 +696,7 @@
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
-                android:text="7"
+                android:text="@string/seven_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
@@ -710,7 +709,7 @@
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
-                android:text="8"
+                android:text="@string/eight_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
@@ -723,7 +722,7 @@
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue_blue"
-                android:text="9"
+                android:text="@string/nine_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
         </TableRow>

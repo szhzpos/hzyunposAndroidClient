@@ -121,6 +121,7 @@ public class SyncHandler extends Handler {
                                 break;
                             case "y":
                                 JSONArray data = info_json.getJSONArray("data");
+                                if (msg.what == MessageID.SYNC_PAY_METHOD_ID)Logger.json(data.toString());
                                 if(data.length() != 0){
                                     if (!SQLiteHelper.execSQLByBatchReplaceJson(data,table_name ,table_cls,err)) {
                                         this.removeCallbacksAndMessages(null);

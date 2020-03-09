@@ -124,23 +124,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.change_price).setOnClickListener(v->{
             mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 1);
         });//改价
-        findViewById(R.id.check_out).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                PayDialog dialog = new PayDialog(view.getContext());
-                dialog.setYesOnclickListener(new PayDialog.onYesOnclickListener() {
-                    @Override
-                    public void onYesClick(PayDialog myDialog) {
-                        myDialog.dismiss();
-                    }
-                }).setNoOnclickListener(new PayDialog.onNoOnclickListener() {
-                    @Override
-                    public void onNoClick(PayDialog myDialog) {
-                        myDialog.dismiss();
-                    }
-                }).show();
-            }
-        });
+        findViewById(R.id.check_out).setOnClickListener(view -> mSaleGoodsViewAdapter.showPayDialog());
 
         findViewById(R.id.q_deal_linerLayout).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -371,8 +355,8 @@ public class MainActivity extends AppCompatActivity {
                         sale_sum_num += jsonObject.getDouble("sale_num");
                         sale_sum_amount += jsonObject.getDouble("sale_amount");
                     }
-                    mSaleSumNum.setText(String.format(Locale.CANADA,"%.2f",sale_sum_num));
-                    mSaleSumAmount.setText(String.format(Locale.CANADA,"%.4f",sale_sum_amount));
+                    mSaleSumNum.setText(String.format(Locale.CANADA,"%.4f",sale_sum_num));
+                    mSaleSumAmount.setText(String.format(Locale.CANADA,"%.2f",sale_sum_amount));
 
                     recyclerView.scrollToPosition(mSaleGoodsViewAdapter.getCurrentItemIndex());
                 } catch (JSONException e) {
@@ -465,6 +449,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 final TableLayout tableLayout = findViewById(R.id.keyboard_layout);
                 tableLayout.setVisibility(tableLayout.getVisibility()== View.VISIBLE ? View.GONE : View.VISIBLE);
+                findViewById(R.id.goods_info_list).requestLayout();
                 for(int i = 0,childCounts = tableLayout.getChildCount();i < childCounts;i ++){
                     View vObj = tableLayout.getChildAt(i);
                     if ( vObj instanceof TableRow){

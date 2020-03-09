@@ -24,6 +24,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
     private JSONArray mDatas;
     private OnItemClickListener mOnItemClickListener;
     private boolean mSearchLoad = false;
+    private boolean mShowPic = false;
     public GoodsInfoViewAdapter(Context context){
         this.mContext = context;
     }
@@ -63,11 +64,16 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
             String szImage;
             if (goods_info != null){
                 szImage = goods_info.optString("image");
-                if (!"".equals(szImage)){
-                    Logger.d("图片内容：%s",szImage);
+                if (mShowPic){
+                    if (!"".equals(szImage)){
+                        Logger.d("图片内容：%s",szImage);
+                    }else{
+                        myViewHolder.goods_img.setImageDrawable(mContext.getDrawable(R.drawable.nodish));
+                    }
                 }else{
-                    myViewHolder.goods_img.setImageDrawable(mContext.getDrawable(R.drawable.nodish));
+                    myViewHolder.goods_img.setVisibility(View.GONE);
                 }
+
                 myViewHolder.goods_id.setText(goods_info.optString("goods_id"));
                 myViewHolder.goods_title.setText(goods_info.optString("goods_title"));
                 myViewHolder.unit_id.setText(goods_info.optString("unit_id"));

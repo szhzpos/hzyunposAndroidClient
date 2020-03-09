@@ -48,7 +48,7 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/goods_title"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="@dimen/margin_24"
+        android:layout_marginStart="@dimen/margin_48"
         android:text="@string/currency_symbol_sz"
         android:textColor="@color/black" />
 
@@ -89,7 +89,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="0dp"
-        android:layout_marginEnd="@dimen/margin_24"
+        android:layout_marginEnd="@dimen/margin_48"
         android:textColor="@color/orange_1"
         android:textSize="@dimen/fun_button_font_size_18" />
 

@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.PayDialog;
 import com.wyc.cloudapp.listener.ClickListener;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -137,7 +138,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                         double sale_amount = tmp.getDouble("sale_amount");
 
                         tmp.put("sale_num",Utils.formatDouble(sale_num + sel_num,4));
-                        tmp.put("sale_amount",Utils.formatDouble(sale_amount + sel_amount,4));
+                        tmp.put("sale_amount",Utils.formatDouble(sale_amount + sel_amount,2));
 
                         mCurrentItemIndex = i;
 
@@ -296,5 +297,24 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         Animation shake = AnimationUtils.loadAnimation(mContext, R.anim.shake);
         goods_name.startAnimation(shake);
         goods_name.setTextColor(mContext.getColor(R.color.blue));
+    }
+
+    public void showPayDialog(){
+        if (getCurrentContent() != null){
+            PayDialog dialog = new PayDialog(mContext);
+            dialog.setYesOnclickListener(new PayDialog.onYesOnclickListener() {
+                @Override
+                public void onYesClick(PayDialog myDialog) {
+                    myDialog.dismiss();
+                }
+            }).setNoOnclickListener(new PayDialog.onNoOnclickListener() {
+                @Override
+                public void onNoClick(PayDialog myDialog) {
+                    myDialog.dismiss();
+                }
+            }).show();
+        }else{
+            MyDialog.ToastMessage("已选商品为空！!",mContext);
+        }
     }
 }
