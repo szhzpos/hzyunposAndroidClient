@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -33,7 +32,8 @@ import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.GoodsTypeViewAdapter;
 import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
-import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
+import com.wyc.cloudapp.dialog.PayDialog;
 import com.wyc.cloudapp.network.NetworkManagement;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
@@ -114,6 +114,32 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.finish();
 
             }, Dialog::dismiss);
+        });//退出收银
+        findViewById(R.id.num).setOnClickListener(view -> {
+            mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 0);
+        });//数量
+        findViewById(R.id.discount).setOnClickListener(v->{
+            mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 2);
+        });//打折
+        findViewById(R.id.change_price).setOnClickListener(v->{
+            mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 1);
+        });//改价
+        findViewById(R.id.check_out).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PayDialog dialog = new PayDialog(view.getContext());
+                dialog.setYesOnclickListener(new PayDialog.onYesOnclickListener() {
+                    @Override
+                    public void onYesClick(PayDialog myDialog) {
+                        myDialog.dismiss();
+                    }
+                }).setNoOnclickListener(new PayDialog.onNoOnclickListener() {
+                    @Override
+                    public void onNoClick(PayDialog myDialog) {
+                        myDialog.dismiss();
+                    }
+                }).show();
+            }
         });
 
         findViewById(R.id.q_deal_linerLayout).setOnClickListener(new View.OnClickListener() {
@@ -145,10 +171,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
+        mHandler.postDelayed(()->{
+            mSearch_content.requestFocus();
+        },300);
     }
     @Override
     public void onPause(){
         super.onPause();
+        mSearch_content.clearFocus();
     }
     @Override
     public void onDestroy(){
@@ -307,7 +337,7 @@ public class MainActivity extends AppCompatActivity {
                 if(null != mPreName){
                     goods_name = mPreName.findViewById(R.id.goods_title);
                     goods_name.clearAnimation();
-                    goods_name.setTextColor(MainActivity.this.getColor(R.color.green));
+                    goods_name.setTextColor(MainActivity.this.getColor(R.color.good_name_color));
                 }
                 goods_name = v.findViewById(R.id.goods_title);
                 Animation shake = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake);
@@ -380,9 +410,6 @@ public class MainActivity extends AppCompatActivity {
         mSearch_content.setOnFocusChangeListener((View v, boolean hasFocus)->{
             Utils.hideKeyBoard((EditText) v);
         });
-        mHandler.postDelayed(()->{
-            mSearch_content.requestFocus();
-        },300);
         mSearch_content.setSelectAllOnFocus(true);
         mSearch_content.addTextChangedListener(new TextWatcher() {
             @Override
@@ -459,6 +486,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }));
     }
+
 
 
 }

@@ -29,7 +29,7 @@
         android:id="@+id/barcode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/orange"
+        android:textColor="@color/black"
         android:textSize="@dimen/fun_button_font_size_16" />
 
     <TextView
@@ -39,7 +39,7 @@
         android:layout_above="@id/symbol_text"
         android:layout_below="@id/barcode"
         android:text="某某商品"
-        android:textColor="@color/green"
+        android:textColor="@color/black"
         android:textSize="@dimen/fun_button_font_size_18" />
 
     <TextView
@@ -48,8 +48,9 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/goods_title"
         android:layout_alignParentBottom="true"
-        android:text="@string/currency_symbol"
-        android:textColor="@color/green" />
+        android:layout_marginStart="@dimen/margin_24"
+        android:text="@string/currency_symbol_sz"
+        android:textColor="@color/black" />
 
     <TextView
         android:id="@+id/buying_price"
@@ -78,8 +79,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_toStartOf="@id/sale_sum_amount"
-        android:text="@string/currency_symbol"
-        android:textColor="@color/green" />
+        android:text="@string/currency_symbol_sz"
+        android:textColor="@color/black" />
 
     <TextView
         android:id="@+id/sale_sum_amount"
@@ -88,7 +89,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="0dp"
-        android:layout_marginEnd="@dimen/margin_5"
+        android:layout_marginEnd="@dimen/margin_24"
         android:textColor="@color/orange_1"
         android:textSize="@dimen/fun_button_font_size_18" />
 
@@ -99,6 +100,6 @@
         android:layout_alignParentBottom="true"
         android:layout_marginStart="@dimen/margin_8"
         android:layout_toEndOf="@id/sale_sum_num"
-        android:textColor="@color/green" />
+        android:textColor="@color/black" />
 
 </RelativeLayout>

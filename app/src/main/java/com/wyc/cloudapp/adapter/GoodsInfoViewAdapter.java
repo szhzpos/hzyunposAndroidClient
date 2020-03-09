@@ -77,7 +77,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                 myViewHolder.buying_price.setText(goods_info.optString("buying_price"));
 
                 if(myViewHolder.goods_title.getCurrentTextColor() == mContext.getResources().getColor(R.color.blue,null)){
-                    myViewHolder.goods_title.setTextColor(mContext.getColor(R.color.green));//需要重新设置颜色；不然重用之后内容颜色为重用之前的。
+                    myViewHolder.goods_title.setTextColor(mContext.getColor(R.color.good_name_color));//需要重新设置颜色；不然重用之后内容颜色为重用之前的。
                 }
 
                 if (mOnItemClickListener != null){

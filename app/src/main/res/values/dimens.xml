@@ -6,6 +6,7 @@
     <dimen name="margin_1">1dp</dimen>
     <dimen name="margin_5">5dp</dimen>
     <dimen name="margin_8">8dp</dimen>
+    <dimen name="margin_24">48dp</dimen>
     <dimen name="fun_button_font_size_18">18sp</dimen>
     <dimen name="fun_button_font_size_24">24sp</dimen>
     <dimen name="fun_button_font_size_16">16sp</dimen>
@@ -16,6 +17,11 @@
     <dimen name="dialog_button_height">40dp</dimen>
     <dimen name="goods_type_width">88dp</dimen>
     <dimen name="height_45">45dp</dimen>
+    <dimen name="height_68">68dp</dimen>
+    <dimen name="size_35">35dp</dimen>
     <dimen name="goods_height">78dp</dimen>
     <dimen name="goods_img_width">88dp</dimen>
+    <dimen name="main_middle_left_width">380dp</dimen>
+    <dimen name="pay_dialog_button_width">92dp</dimen>
+    <dimen name="pay_dialog_button_height">80dp</dimen>
 </resources>

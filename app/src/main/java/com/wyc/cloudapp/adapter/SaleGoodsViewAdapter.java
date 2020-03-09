@@ -11,6 +11,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.listener.ClickListener;
 import com.wyc.cloudapp.utils.Utils;
@@ -75,7 +76,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 myViewHolder.sale_amount.setText(goods_info.optString("sale_amount"));
 
                 if(myViewHolder.goods_title.getCurrentTextColor() == mContext.getResources().getColor(R.color.blue,null)){
-                    myViewHolder.goods_title.setTextColor(mContext.getColor(R.color.green));//需要重新设置颜色；不然重用之后内容颜色为重用之前的。
+                    myViewHolder.goods_title.setTextColor(mContext.getColor(R.color.black));//需要重新设置颜色；不然重用之后内容颜色为重用之前的。
                 }
 
                 myViewHolder.mCurrentLayoutItemView.setOnTouchListener(new ClickListener(v -> {
@@ -186,6 +187,69 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         }
     }
 
+    public void updateSaleGoodsDialog(final short type){//type 0 修改数量 1修改价格 2打折
+        if (getCurrentContent() != null){
+            ChangeNumOrPriceDialog dialog;
+            switch (type){
+                case 1:
+                    dialog = new ChangeNumOrPriceDialog(mContext,"新价格：");
+                    break;
+                case 2:
+                    dialog = new ChangeNumOrPriceDialog(mContext,"折扣：");
+                    break;
+                    default:
+                        dialog = new ChangeNumOrPriceDialog(mContext);
+                        break;
+            }
+            dialog.setYesOnclickListener(new ChangeNumOrPriceDialog.onYesOnclickListener() {
+                @Override
+                public void onYesClick(ChangeNumOrPriceDialog myDialog) {
+                    updateSaleGoodsInfo(myDialog.getNewNumOrPrice(),type);
+                    myDialog.dismiss();
+                }
+            }).setNoOnclickListener(new ChangeNumOrPriceDialog.onNoOnclickListener() {
+                @Override
+                public void onNoClick(ChangeNumOrPriceDialog myDialog) {
+                    myDialog.dismiss();
+                }
+            }).show();
+        }else{
+            MyDialog.ToastMessage("请选择需要修改的商品!",mContext);
+        }
+    }
+
+    private void updateSaleGoodsInfo(double value,short type){//type 0 修改数量 1修改价格 2打折
+        JSONObject json = getCurrentContent();
+        try {
+            double price = json.getDouble("buying_price");
+            double sale_num = json.getDouble("sale_num");
+            switch (type){
+                case 0:
+                    if (value <= 0){
+                        deleteSaleGoods(getCurrentItemIndex(),0);
+                    }else{
+                        json.put("sale_num",Utils.formatDouble(value,2));
+                        json.put("sale_amount",Utils.formatDouble(value * price,4));
+                    }
+                    break;
+                case 1:
+                    json.put("buying_price",Utils.formatDouble(value,2));
+                    json.put("sale_amount",Utils.formatDouble(value * sale_num,4));
+                    break;
+                case 2:
+                    price = Utils.formatDouble(price * (value / 100),2);
+                    json.put("buying_price",price);
+                    json.put("sale_amount",Utils.formatDouble(price * sale_num,4));
+                    break;
+            }
+            notifyDataSetChanged();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            MyDialog.displayErrorMessage("修改数量错误：" + e.getMessage(),mContext);
+        }
+    }
+
+
     public void clearGoods(){
         mDatas = new JSONArray();
         this.notifyDataSetChanged();
@@ -226,7 +290,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         if(null != mCurrentItemView){
             goods_name = mCurrentItemView.findViewById(R.id.goods_title);
             goods_name.clearAnimation();
-            goods_name.setTextColor(mContext.getColor(R.color.green));
+            goods_name.setTextColor(mContext.getColor(R.color.good_name_color));
         }
         goods_name = v.findViewById(R.id.goods_title);
         Animation shake = AnimationUtils.loadAnimation(mContext, R.anim.shake);

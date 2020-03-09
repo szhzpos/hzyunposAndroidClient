@@ -7,6 +7,7 @@
     <color name="blue">#0080ff</color>
     <color name="white">#FFFFFF</color>
     <color name="pink">#FFC0CB</color>
+    <color name="gray__subtransparent">#bbA1A1A1</color>
     <color name="gray">#A1A1A1</color>
     <color name="transparent">#00000000</color>
     <color name="white_subtransparent">#80FFFFFF</color>
@@ -16,4 +17,5 @@
     <color name="blue_subtransparent">#8052A5F7</color>
     <color name="text_color">#494848</color>
     <color name="orange_1">#FFF44336</color>
+    <color name="good_name_color">@color/black</color>
 </resources>

@@ -150,21 +150,21 @@
                     android:id="@+id/network_status"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-                    android:contentDescription="@string/space"
+                    android:contentDescription="@string/space_sz"
                     app:srcCompat="@drawable/network" />
 
                 <ImageView
                     android:id="@+id/printer_status"
                     android:layout_width="64dp"
                     android:layout_height="32dp"
-                    android:contentDescription="@string/space"
+                    android:contentDescription="@string/space_sz"
                     app:srcCompat="@drawable/printer" />
 
                 <ImageView
                     android:id="@+id/upload_status"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-                    android:contentDescription="@string/space"
+                    android:contentDescription="@string/space_sz"
                     app:srcCompat="@drawable/upload" />
 
                 <Space
@@ -177,7 +177,7 @@
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_weight="0.5"
-                    android:contentDescription="@string/space"
+                    android:contentDescription="@string/space_sz"
                     app:srcCompat="@drawable/close" />
 
             </LinearLayout>
@@ -242,7 +242,7 @@
 
     <LinearLayout
         android:id="@+id/main_middle_left"
-        android:layout_width="380dp"
+        android:layout_width="@dimen/main_middle_left_width"
         android:layout_height="0dp"
         android:layout_marginStart="@dimen/margin_5"
         android:layout_marginBottom="@dimen/margin_5"
@@ -270,6 +270,7 @@
             android:id="@+id/vip_info_linearLayout"
             android:layout_width="match_parent"
             android:layout_height="35dp"
+            android:layout_marginTop="@dimen/margin_2"
             android:orientation="horizontal"
             android:visibility="visible">
 
@@ -278,7 +279,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="@string/vip_info"
+                android:text="@string/vip_info_sz"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/fun_button_font_size_16" />
 
@@ -298,7 +299,7 @@
                 android:id="@+id/textView8"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/vip_phone"
+                android:text="@string/vip_phone_sz"
                 android:textAlignment="center"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/fun_button_font_size_16" />
@@ -483,7 +484,7 @@
             android:layout_height="@dimen/fun_button_height_size"
             android:layout_marginTop="@dimen/margin_2"
             android:background="@drawable/button_green"
-            android:text="@string/clear"
+            android:text="@string/clear_sz"
             android:textColor="@color/black_white"
             android:textSize="@dimen/fun_button_font_size_18" />
 
@@ -493,7 +494,7 @@
             android:layout_height="@dimen/fun_button_height_size"
             android:layout_marginTop="@dimen/margin_2"
             android:background="@drawable/button_green"
-            android:text="@string/discount"
+            android:text="@string/discount_sz"
             android:textColor="@color/black_white"
             android:textSize="@dimen/fun_button_font_size_18" />
 
@@ -503,7 +504,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_2"
             android:background="@drawable/button_green"
-            android:text="@string/change_price"
+            android:text="@string/change_price_sz"
             android:textColor="@color/black_white"
             android:textSize="@dimen/fun_button_font_size_18" />
 
@@ -513,7 +514,7 @@
             android:layout_height="@dimen/fun_button_height_size"
             android:layout_marginTop="@dimen/margin_2"
             android:background="@drawable/button_green"
-            android:text="@string/tmp_order"
+            android:text="@string/tmp_order_sz"
             android:textColor="@color/black_white" />
 
         <Button
@@ -522,7 +523,7 @@
             android:layout_height="@dimen/fun_button_height_size"
             android:layout_marginTop="@dimen/margin_2"
             android:background="@drawable/button_green"
-            android:text="@string/vip_button"
+            android:text="@string/vip_button_sz"
             android:textColor="@color/black_white"
             android:textSize="@dimen/fun_button_font_size_18" />
 
@@ -532,7 +533,7 @@
             android:layout_height="@dimen/fun_button_height_size"
             android:layout_marginTop="@dimen/margin_2"
             android:background="@drawable/button_green"
-            android:text="@string/sale_man"
+            android:text="@string/sale_man_sz"
             android:textColor="@color/black_white"
             android:textSize="@dimen/fun_button_font_size_18" />
 
@@ -548,7 +549,7 @@
             android:layout_height="80dp"
             android:layout_gravity="bottom"
             android:background="@drawable/button_orange"
-            android:text="@string/check_out"
+            android:text="@string/check_out_sz"
             android:textColor="@color/white"
             android:textSize="@dimen/fun_button_font_size_24" />
     </LinearLayout>
@@ -1160,9 +1161,9 @@
             android:layout_height="45dp"
             android:layout_gravity="center"
             android:layout_marginStart="@dimen/margin_5"
-            android:background="@drawable/plain_border_gray"
+            android:background="@drawable/border_sub_gray"
             android:ems="10"
-            android:hint="@string/space"
+            android:hint="@string/space_sz"
             android:importantForAutofill="no"
             android:inputType="textPersonName"
             android:textColor="@color/text_color"
@@ -1174,7 +1175,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginStart="@dimen/margin_8"
-            android:contentDescription="@string/space"
+            android:contentDescription="@string/space_sz"
             app:srcCompat="@drawable/keyboard_icon" />
     </LinearLayout>
 
