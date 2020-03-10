@@ -117,7 +117,7 @@ public class ChangeNumOrPriceDialog extends Dialog {
             }
         }
 
-        WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
+/*        WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
         if (m != null){
             Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
             Point point = new Point();
@@ -129,7 +129,7 @@ public class ChangeNumOrPriceDialog extends Dialog {
                 lp.width = (int)(0.4 * point.x); // 宽度
                 dialogWindow.setAttributes(lp);
             }
-        }
+        }*/
 
     }
 

@@ -26,6 +26,8 @@ import com.wyc.cloudapp.adapter.PayMethodItemDecoration;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
 import com.wyc.cloudapp.utils.Utils;
 
+import java.util.Locale;
+
 import static android.content.Context.WINDOW_SERVICE;
 
 public class PayDialog extends Dialog {
@@ -34,6 +36,7 @@ public class PayDialog extends Dialog {
     private onNoOnclickListener noOnclickListener;//取消按钮被点击了的监听器
     private onYesOnclickListener yesOnclickListener;//确定按钮被点击了的监听器
     private PayMethodViewAdapter mPayMethodViewAdapter;
+    private double mSaleAmount = 0.00;
     public PayDialog(Context context){
         super(context);
         this.mContext = context;
@@ -44,8 +47,13 @@ public class PayDialog extends Dialog {
         setCancelable(false);
         setCanceledOnTouchOutside(false);
 
+        //初始化支付方式
+        initPayMethodAdapter();
+
         //初始化金额
         mMoney = findViewById(R.id.money);
+        mMoney.setText(String.format(Locale.CHINA,"%.2f",mSaleAmount));
+        mMoney.setSelectAllOnFocus(true);
         mMoney.setOnFocusChangeListener((view, b) -> Utils.hideKeyBoard((EditText) view));
         mMoney.postDelayed(()->{
             mMoney.requestFocus();
@@ -69,23 +77,18 @@ public class PayDialog extends Dialog {
                 EditText tmp_edit = ((EditText)view);
                 int index = tmp_edit.getSelectionStart();
                 if (index == 0)return;
-                switch (view.getId()){
-                    case R.id.money:
-                        if (index == tmp_edit.getText().toString().indexOf(".") + 1){
-                            tmp_edit.setSelection(index - 1);
-                        }else if (index > tmp_edit.getText().toString().indexOf(".")){
-                            tmp_edit.getText().replace(index - 1, index,"0");
-                            tmp_edit.setSelection(index - 1);
-                        }else {
-                            tmp_edit.getText().delete(index - 1, index);
-                        }
-                        break;
+                if (view.getId() == R.id.money) {
+                    if (index == tmp_edit.getText().toString().indexOf(".") + 1) {
+                        tmp_edit.setSelection(index - 1);
+                    } else if (index > tmp_edit.getText().toString().indexOf(".")) {
+                        tmp_edit.getText().replace(index - 1, index, "0");
+                        tmp_edit.setSelection(index - 1);
+                    } else {
+                        tmp_edit.getText().delete(index - 1, index);
+                    }
                 }
             }
         });
-
-        //初始化支付方式
-        initPayMethodAdapter();
 
         //初始化数字键盘
         ConstraintLayout keyboard_linear_layout;
@@ -95,21 +98,6 @@ public class PayDialog extends Dialog {
             int id = tmp_v.getId();
             if (tmp_v instanceof Button && !(id == R.id._back || id == R.id.cancel || id == R.id._ok)){
                 tmp_v.setOnClickListener(button_click);
-            }
-        }
-
-        //初始化对话框大小
-        WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
-        if (m != null){
-            Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
-            Point point = new Point();
-            d.getSize(point);
-            Window dialogWindow = this.getWindow();
-            if (dialogWindow != null){
-                WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-                dialogWindow.setGravity(Gravity.CENTER);
-                lp.width = (int)(0.8 * point.x); // 宽度
-                dialogWindow.setAttributes(lp);
             }
         }
     }
@@ -147,20 +135,18 @@ public class PayDialog extends Dialog {
             EditText tmp_edit = ((EditText)view);
             int index = tmp_edit.getSelectionStart();
             String sz_button = ((Button) v).getText().toString();
-            switch (view.getId()){
-                case R.id.money:
-                    if (".".equals(sz_button)) {
-                        tmp_edit.setSelection(tmp_edit.getText().toString().indexOf(".") + 1);
-                    }else {
-                        if (index > tmp_edit.getText().toString().indexOf(".")){
-                            if (index != tmp_edit.length())
-                                tmp_edit.getText().delete(index,index + 1).insert(index,sz_button);
-                        }else {
-                            if(index == 0 && "0".equals(sz_button) )return;
-                            tmp_edit.getText().insert(index, sz_button);
-                        }
+            if (view.getId() == R.id.money) {
+                if (".".equals(sz_button)) {
+                    tmp_edit.setSelection(tmp_edit.getText().toString().indexOf(".") + 1);
+                } else {
+                    if (index > tmp_edit.getText().toString().indexOf(".")) {
+                        if (index != tmp_edit.length())
+                            tmp_edit.getText().delete(index, index + 1).insert(index, sz_button);
+                    } else {
+                        if (index == 0 && "0".equals(sz_button)) return;
+                        tmp_edit.getText().insert(index, sz_button);
                     }
-                    break;
+                }
             }
 
         }
@@ -168,11 +154,16 @@ public class PayDialog extends Dialog {
 
     private void initPayMethodAdapter(){
         mPayMethodViewAdapter = new PayMethodViewAdapter(mContext);
-        final RecyclerView recyclerView = findViewById(R.id.pay_method_list);
+        mPayMethodViewAdapter.setDatas();
+        RecyclerView recyclerView = findViewById(R.id.pay_method_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL,false));
         recyclerView.addItemDecoration(new PayMethodItemDecoration(2));
-        mPayMethodViewAdapter.setDatas();
         recyclerView.setAdapter(mPayMethodViewAdapter);
+    }
+
+    public PayDialog setMoney(double money){
+        mSaleAmount = money;
+        return this;
     }
 
 }

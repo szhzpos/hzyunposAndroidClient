@@ -19,6 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.math.BigDecimal;
 
 import java.util.ArrayList;
@@ -37,7 +38,8 @@ import static android.database.Cursor.FIELD_TYPE_STRING;
  */
 
 public class SQLiteHelper extends SQLiteOpenHelper {
-    private static final String DATABASE_NAME = Environment.getExternalStorageDirectory().getAbsolutePath() + "/yunPos/order.db";
+    public static String IMG_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/img/";
+    private static final String DATABASE_NAME = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/order.db";
     private static final int DATABASE_VERSION = 1;//记得修改软件版本
     private static final int MASTER_SOFTWRAW_VERSION = 1;
     private static SQLiteDatabase mDb;
@@ -83,6 +85,15 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             }
         }
         return code;
+    }
+
+    public static void initGoodsImgDirectory(Context context){
+        File file = new File(IMG_PATH);
+        if (!file.exists()){
+            if (!file.mkdir()){
+                MyDialog.ToastMessage("初始化商品图片目录错误！",context);
+            }
+        }
     }
 
     private static boolean checkColumnExists(SQLiteDatabase db, String tableName, String columnName) throws SQLiteException {
@@ -852,6 +863,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "    category_id INTEGER UNIQUE\n" +
                 ");\n",sql_barcode_info = "CREATE TABLE IF NOT EXISTS barcode_info (\n" +//商品档案
                 "    points_max_money REAL    DEFAULT (0),\n" +
+                "    img_url  VARCHAR,\n" +
                 "    stock_unit_name  VARCHAR,\n" +
                 "    stock_unit_id    INTEGER,\n" +
                 "    update_price     INTEGER DEFAULT (0),\n" +
@@ -922,6 +934,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "    yh_mode_name VARCHAR (20) \n" +
                 ");\n",sql_cashier_info = "CREATE TABLE IF NOT EXISTS cashier_info (\n" +
                 "    authority     VARCHAR,\n" +
+                "    remark     VARCHAR,\n" +
                 "    pt_user_cname VARCHAR,\n" +
                 "    pt_user_id    VARCHAR,\n" +
                 "    is_put        INTEGER DEFAULT (0),\n" +

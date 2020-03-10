@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.change_price).setOnClickListener(v->{
             mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 1);
         });//改价
-        findViewById(R.id.check_out).setOnClickListener(view -> mSaleGoodsViewAdapter.showPayDialog());
+        findViewById(R.id.check_out).setOnClickListener(view -> mSaleGoodsViewAdapter.showPayDialog(Double.valueOf(mSaleSumAmount.getText().toString())));
 
         findViewById(R.id.q_deal_linerLayout).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -296,7 +296,7 @@ public class MainActivity extends AppCompatActivity {
     private void initGoodsInfoAdapter(){
         mGoodsInfoViewAdapter = new GoodsInfoViewAdapter(this);
         final RecyclerView goods_info_view = findViewById(R.id.goods_info_list);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(MainActivity.this,4);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(MainActivity.this,5);
         goods_info_view.setLayoutManager(gridLayoutManager);
         goods_info_view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -372,7 +372,7 @@ public class MainActivity extends AppCompatActivity {
             public void onGlobalLayout() {
                 recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 int height = recyclerView.getMeasuredHeight();
-                float itemHeight = MainActivity.this.getResources().getDimension(R.dimen.goods_height);
+                float itemHeight = MainActivity.this.getResources().getDimension(R.dimen.sale_goods_height);
                 recyclerView.addItemDecoration(new SaleGoodsItemDecoration(getVerSpacing(height,(int) itemHeight)));
             }
         });

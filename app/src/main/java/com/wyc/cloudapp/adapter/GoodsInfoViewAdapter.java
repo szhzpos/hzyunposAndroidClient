@@ -4,6 +4,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.graphics.BitmapFactory;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -63,10 +64,11 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
             JSONObject goods_info = mDatas.optJSONObject(i);
             String szImage;
             if (goods_info != null){
-                szImage = goods_info.optString("image");
+                szImage = goods_info.optString("img_url");
                 if (mShowPic){
                     if (!"".equals(szImage)){
-                        Logger.d("图片内容：%s",szImage);
+                        szImage = szImage.substring(szImage.lastIndexOf("/") + 1);
+                        myViewHolder.goods_img.setImageBitmap(BitmapFactory.decodeFile(SQLiteHelper.IMG_PATH + szImage));
                     }else{
                         myViewHolder.goods_img.setImageDrawable(mContext.getDrawable(R.drawable.nodish));
                     }
@@ -111,7 +113,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
 
     public void setDatas(String category_id){
         StringBuilder err = new StringBuilder();
-        String sql = "select goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,buying_price,ifnull(image,'') image from barcode_info";
+        String sql = "select goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,buying_price,ifnull(img_url,'') img_url from barcode_info";
         if (category_id != null){
             category_id = SQLiteHelper.getString("select category_id from shop_category where path like '" + category_id +"%'",err);
             if (null == category_id){
@@ -119,7 +121,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                 return;
             }
             category_id = category_id.replace("\r\n",",");
-            sql = "select goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,buying_price,ifnull(image,'') image from barcode_info where category_id in (" + category_id + ")";
+            sql = "select goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,buying_price,ifnull(img_url,'') img_url from barcode_info where category_id in (" + category_id + ")";
         }
         mDatas = SQLiteHelper.getList(sql,0,0,false,err);
         if (mDatas != null){
@@ -132,7 +134,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
 
     public void search_goods(String search_content){
         StringBuilder err = new StringBuilder();
-        String sql = "select goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,buying_price,ifnull(image,'') image from " +
+        String sql = "select goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,buying_price,ifnull(img_url,'') img_url from " +
                 "barcode_info where (barcode like '" + search_content + "%' or mnemonic_code like '" + search_content +"%')";
         mDatas = SQLiteHelper.getList(sql,0,0,false,err);
         if (mDatas != null){

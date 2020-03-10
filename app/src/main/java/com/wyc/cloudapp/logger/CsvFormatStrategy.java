@@ -126,7 +126,7 @@ public class CsvFormatStrategy implements FormatStrategy {
         dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss.SSS", Locale.UK);
       }
       if (logStrategy == null) {
-        String diskPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzpos";
+        String diskPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos";
         String folder = diskPath + File.separatorChar + "logger";
 
         HandlerThread ht = new HandlerThread("AndroidFileLogger." + folder);

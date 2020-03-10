@@ -7,6 +7,8 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.wyc.cloudapp.R;
+
 public class PayMethodItemDecoration extends RecyclerView.ItemDecoration {
     private int right;
     public PayMethodItemDecoration(int space){
@@ -20,6 +22,7 @@ public class PayMethodItemDecoration extends RecyclerView.ItemDecoration {
     @Override
     public void onDrawOver(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
         super.onDrawOver(c, parent, state);
+
     }
 
     @Override

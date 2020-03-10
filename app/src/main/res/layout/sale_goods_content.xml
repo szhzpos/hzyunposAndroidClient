@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/goods_height"
+    android:layout_height="@dimen/sale_goods_height"
+    android:layout_marginEnd="0dp"
     android:paddingStart="@dimen/margin_2"
     android:paddingEnd="0dp">
 
@@ -29,18 +30,29 @@
         android:id="@+id/barcode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:textSize="@dimen/fun_button_font_size_16" />
+        android:layout_below="@id/goods_title"
+        android:layout_alignStart="@id/goods_title"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/row_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_5"
+        android:text="1、"
+        android:textColor="@color/text_color" />
 
     <TextView
         android:id="@+id/goods_title"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/height_45"
-        android:layout_above="@id/symbol_text"
-        android:layout_below="@id/barcode"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_5"
+        android:layout_toEndOf="@id/row_id"
+        android:lines="1"
+        android:maxHeight="@dimen/size_35"
         android:text="某某商品"
         android:textColor="@color/black"
-        android:textSize="@dimen/fun_button_font_size_18" />
+        android:textSize="@dimen/fun_button_font_size_16" />
 
     <TextView
         android:id="@+id/symbol_text"
@@ -48,9 +60,9 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/goods_title"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="@dimen/margin_48"
+        android:layout_marginStart="@dimen/margin_16"
         android:text="@string/currency_symbol_sz"
-        android:textColor="@color/black" />
+        android:textColor="@color/text_color" />
 
     <TextView
         android:id="@+id/buying_price"
@@ -60,8 +72,7 @@
         android:layout_toEndOf="@+id/symbol_text"
         android:text="1028"
         android:textAlignment="viewStart"
-        android:textColor="@color/orange_1"
-        android:textSize="@dimen/fun_button_font_size_18" />
+        android:textColor="@color/text_color" />
 
     <TextView
         android:id="@+id/sale_sum_num"
@@ -70,8 +81,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="false"
-        android:textColor="@color/orange_1"
-        android:textSize="@dimen/fun_button_font_size_18" />
+        android:textColor="@color/text_color" />
 
     <TextView
         android:id="@+id/amount_symbol"
@@ -80,7 +90,8 @@
         android:layout_alignParentBottom="true"
         android:layout_toStartOf="@id/sale_sum_amount"
         android:text="@string/currency_symbol_sz"
-        android:textColor="@color/black" />
+        android:textColor="@color/orange_1"
+        android:textSize="@dimen/fun_button_font_size_18" />
 
     <TextView
         android:id="@+id/sale_sum_amount"
@@ -88,8 +99,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="0dp"
-        android:layout_marginEnd="@dimen/margin_48"
+        android:layout_marginEnd="@dimen/margin_2"
         android:textColor="@color/orange_1"
         android:textSize="@dimen/fun_button_font_size_18" />
 
@@ -100,6 +110,6 @@
         android:layout_alignParentBottom="true"
         android:layout_marginStart="@dimen/margin_8"
         android:layout_toEndOf="@id/sale_sum_num"
-        android:textColor="@color/black" />
+        android:textColor="@color/text_color" />
 
 </RelativeLayout>

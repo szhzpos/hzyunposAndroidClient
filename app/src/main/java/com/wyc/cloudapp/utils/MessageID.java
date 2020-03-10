@@ -22,5 +22,7 @@ public final class MessageID {
             DIALOG_UPDATE_MESSAGE_ID = 15,
             SYNC_GOODS_CATEGORY_ID = 16,
             LOGIN_PW_ERROR_ID = 17,
-            LOGIN_ID_ERROR_ID = 18;
+            LOGIN_ID_ERROR_ID = 18,
+            SYNC_GOODS_IMG_ERR_ID = 19,
+            CONN_PARAM_ERR_ID = 20;
 }

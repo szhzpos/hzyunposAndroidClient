@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Application;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.os.Environment;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -16,6 +17,8 @@ import com.wyc.cloudapp.logger.AndroidLogAdapter;
 import com.wyc.cloudapp.logger.DiskLogAdapter;
 import com.wyc.cloudapp.logger.LogcatLogStrategy;
 import com.wyc.cloudapp.logger.Logger;
+
+import java.io.File;
 
 /**
  * Created by Administrator on 2018-04-17.

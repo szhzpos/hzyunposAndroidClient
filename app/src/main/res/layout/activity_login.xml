@@ -5,56 +5,64 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/appColor"
+    android:background="@drawable/logobg"
     tools:context=".activity.LoginActivity">
 
     <RelativeLayout
         android:id="@+id/login_info"
         android:layout_width="468dp"
-        android:layout_height="288dp"
+        android:layout_height="298dp"
         android:layout_centerInParent="true"
         android:background="@drawable/round_shape"
         android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/margin_5"
+            android:contentDescription="@string/space_sz"
+            app:srcCompat="@drawable/logo" />
 
         <RelativeLayout
             android:id="@+id/userInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginTop="5dp"
+            android:layout_below="@id/logo"
+            android:layout_centerHorizontal="true"
             android:focusable="auto"
             android:orientation="vertical">
 
             <Button
                 android:id="@+id/b_login"
                 style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="148dp"
-                android:layout_height="60dp"
-                android:layout_marginStart="28dp"
-                android:layout_marginTop="188dp"
+                android:layout_width="@dimen/login_width_btn"
+                android:layout_height="@dimen/login_height_btn"
+                android:layout_marginTop="148dp"
                 android:background="@drawable/button_blue"
                 android:text="@string/login"
                 android:textColor="@color/white_blue"
-                android:textSize="24sp" />
+                android:textSize="@dimen/fun_button_font_size_18" />
 
             <Button
                 android:id="@+id/cancel"
                 style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="148dp"
-                android:layout_height="60dp"
+                android:layout_width="@dimen/login_width_btn"
+                android:layout_height="@dimen/login_height_btn"
                 android:layout_marginStart="268dp"
-                android:layout_marginTop="188dp"
+                android:layout_marginTop="148dp"
                 android:background="@drawable/button_pink"
                 android:text="@string/cancel"
                 android:textColor="@color/white_pink"
-                android:textSize="24sp" />
+                android:textSize="@dimen/fun_button_font_size_18" />
 
             <EditText
                 android:id="@+id/user_id"
                 android:layout_width="328dp"
-                android:layout_height="50dp"
-                android:layout_marginStart="68dp"
-                android:layout_marginTop="28dp"
+                android:layout_height="@dimen/height_50"
+                android:layout_marginStart="58dp"
+                android:layout_marginTop="@dimen/margin_8"
                 android:background="@drawable/border_sub_gray"
                 android:drawableStart="@drawable/login_user"
                 android:drawablePadding="8dp"
@@ -71,8 +79,8 @@
                 android:id="@+id/password"
                 android:layout_width="328dp"
                 android:layout_height="50dp"
-                android:layout_marginStart="68dp"
-                android:layout_marginTop="108dp"
+                android:layout_marginStart="58dp"
+                android:layout_marginTop="78dp"
                 android:autofillHints=""
                 android:background="@drawable/border_sub_gray"
                 android:drawableStart="@drawable/login_password"
@@ -84,17 +92,19 @@
                 android:paddingStart="8dp"
                 android:paddingEnd="0dp"
                 android:textColor="@color/text_color" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/setup_ico"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_alignBottom="@id/b_login"
+                android:layout_alignParentBottom="false"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/setup">
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </RelativeLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/setup_ico"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:background="@drawable/setup">
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </RelativeLayout>
 </RelativeLayout>

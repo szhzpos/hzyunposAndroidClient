@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.view.Display;
@@ -30,13 +31,13 @@ import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.handlerThread.SyncThread;
 import com.wyc.cloudapp.keyboard.SoftKeyBoardListener;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 
 public class LoginActivity extends AppCompatActivity {
@@ -54,9 +55,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        Button b_login;
-        View b_setup;
-
         mMain = findViewById(R.id.main);
         mUser_id = findViewById(R.id.user_id);
         mPassword = findViewById(R.id.password);
@@ -66,10 +64,6 @@ public class LoginActivity extends AppCompatActivity {
         mSelf = this;
         mProgressDialog = new CustomProgressDialog(this,R.style.CustomDialog);
         mSync = new SyncThread(myHandler);
-
-        //局部变量
-        b_login = findViewById(R.id.b_login);
-        b_setup = findViewById(R.id.setup_ico);
 
         SoftKeyBoardListener.setListener(this, new SoftKeyBoardListener.OnSoftKeyBoardChangeListener() {
             ViewGroup.LayoutParams mLayoutParams = mMain.getLayoutParams();
@@ -95,7 +89,7 @@ public class LoginActivity extends AppCompatActivity {
         mUser_id.setSelectAllOnFocus(true);
         mPassword.setSelectAllOnFocus(true);
 
-        b_login.setOnClickListener((View v)->{
+        findViewById(R.id.b_login).setOnClickListener((View v)->{
             login();
         });
 
@@ -108,7 +102,7 @@ public class LoginActivity extends AppCompatActivity {
 
         });
 
-        b_setup.setOnClickListener((View v)->{
+        findViewById(R.id.setup_ico).setOnClickListener((View v)->{
             ConnSettingDialog dialog = new ConnSettingDialog(v.getContext());
             dialog.show();
         });
@@ -153,6 +147,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         }else{
             SQLiteHelper.initDb(this);
+            SQLiteHelper.initGoodsImgDirectory(this);
         }
     }
 
@@ -162,6 +157,7 @@ public class LoginActivity extends AppCompatActivity {
             case REQUEST_STORAGE_PERMISSIONS: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     SQLiteHelper.initDb(this);
+                    SQLiteHelper.initGoodsImgDirectory(this);
                 } else {
 
                 }
@@ -195,73 +191,77 @@ public class LoginActivity extends AppCompatActivity {
             JSONObject object = new JSONObject(),param_json = new JSONObject(),cashier_json = new JSONObject(),retJson,info_json,jsonLogin,store_info;
             String url,login_url,pos_url,app_id,appscret,sz_param,err_info;
             if (SQLiteHelper.getLocalParameter("connParam",param_json)){
-                try {
-                    url = param_json.getString("server_url");
-                    app_id = param_json.getString("appId");
-                    appscret = param_json.getString("appScret");
+                if (Utils.JsonIsNotEmpty(param_json)){
+                    try {
+                        url = param_json.getString("server_url");
+                        app_id = param_json.getString("appId");
+                        appscret = param_json.getString("appScret");
 
-                    object.put("appid",app_id);
-                    object.put("cas_account",mUser_id.getText());
-                    object.put("cas_pwd",mPassword.getText());
+                        object.put("appid",app_id);
+                        object.put("cas_account",mUser_id.getText());
+                        object.put("cas_pwd",mPassword.getText());
 
-                    sz_param = HttpRequest.generate_request_parm(object,appscret);
+                        sz_param = HttpRequest.generate_request_parm(object,appscret);
 
-                    login_url = url  + "/api/cashier/login";
+                        login_url = url  + "/api/cashier/login";
 
-                    retJson = httpRequest.setConnTimeOut(10000).sendPost(login_url,sz_param,true);
+                        retJson = httpRequest.setConnTimeOut(10000).sendPost(login_url,sz_param,true);
 
-                    switch (retJson.optInt("flag")) {
-                        case 0:
-                            myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,retJson.optString("info")).sendToTarget();
-                            break;
-                        case 1:
-                            info_json = new JSONObject(retJson.getString("info"));
-                            switch (info_json.getString("status")){
-                                case "n":
-                                    err_info  = info_json.getString("info");
-                                    if (err_info.contains("密码")){
-                                        myHandler.obtainMessage(MessageID.LOGIN_PW_ERROR_ID,"登录失败：" + err_info).sendToTarget();
-                                    }else if (err_info.contains("账号")){
-                                        myHandler.obtainMessage(MessageID.LOGIN_ID_ERROR_ID,"登录失败：" + err_info).sendToTarget();
-                                    }else
-                                        myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"登录失败：" + err_info).sendToTarget();
-                                    break;
-                                case "y":
-                                    cashier_json = new JSONObject(info_json.getString("cashier"));
-                                    store_info = new JSONObject(param_json.getString("storeInfo"));
+                        switch (retJson.optInt("flag")) {
+                            case 0:
+                                myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,retJson.optString("info")).sendToTarget();
+                                break;
+                            case 1:
+                                info_json = new JSONObject(retJson.getString("info"));
+                                switch (info_json.getString("status")){
+                                    case "n":
+                                        err_info  = info_json.getString("info");
+                                        if (err_info.contains("密码")){
+                                            myHandler.obtainMessage(MessageID.LOGIN_PW_ERROR_ID,"登录失败：" + err_info).sendToTarget();
+                                        }else if (err_info.contains("账号")){
+                                            myHandler.obtainMessage(MessageID.LOGIN_ID_ERROR_ID,"登录失败：" + err_info).sendToTarget();
+                                        }else
+                                            myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"登录失败：" + err_info).sendToTarget();
+                                        break;
+                                    case "y":
+                                        cashier_json = new JSONObject(info_json.getString("cashier"));
+                                        store_info = new JSONObject(param_json.getString("storeInfo"));
 
-                                    pos_url =  url + "/api/cashier/set_ps";
-                                    jsonLogin = new JSONObject();
-                                    jsonLogin.put("appid",app_id);
-                                    jsonLogin.put("pos_code",Utils.getDeviceId(mSelf));
-                                    jsonLogin.put("pos_name",Utils.getDeviceId(mSelf));
-                                    jsonLogin.put("stores_id",store_info.getString("stores_id"));
-                                    sz_param = HttpRequest.generate_request_parm(jsonLogin,appscret);
-                                    retJson = httpRequest.sendPost(pos_url,sz_param,true);
+                                        pos_url =  url + "/api/cashier/set_ps";
+                                        jsonLogin = new JSONObject();
+                                        jsonLogin.put("appid",app_id);
+                                        jsonLogin.put("pos_code",Utils.getDeviceId(mSelf));
+                                        jsonLogin.put("pos_name",Utils.getDeviceId(mSelf));
+                                        jsonLogin.put("stores_id",store_info.getString("stores_id"));
+                                        sz_param = HttpRequest.generate_request_parm(jsonLogin,appscret);
+                                        retJson = httpRequest.sendPost(pos_url,sz_param,true);
 
-                                    switch (retJson.getInt("flag")) {
-                                        case 0:
-                                            myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"设置收银终端错误：" + retJson.optString("info")).sendToTarget();
-                                            break;
-                                        case 1:
-                                            info_json = new JSONObject(retJson.getString("info"));
-                                            switch (info_json.getString("status")) {
-                                                case "n":
-                                                    myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"设置收银终端错误：" + info_json.optString("info")).sendToTarget();
-                                                    break;
-                                                case "y":
-                                                    cashier_json.put("pos_num", info_json.getString("pos_num"));
-                                                    myHandler.obtainMessage(MessageID.LOGIN_OK_ID,cashier_json).sendToTarget();
-                                                    break;
-                                            }
-                                    }
-                                    break;
-                            }
-                            break;
+                                        switch (retJson.getInt("flag")) {
+                                            case 0:
+                                                myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"设置收银终端错误：" + retJson.optString("info")).sendToTarget();
+                                                break;
+                                            case 1:
+                                                info_json = new JSONObject(retJson.getString("info"));
+                                                switch (info_json.getString("status")) {
+                                                    case "n":
+                                                        myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"设置收银终端错误：" + info_json.optString("info")).sendToTarget();
+                                                        break;
+                                                    case "y":
+                                                        cashier_json.put("pos_num", info_json.getString("pos_num"));
+                                                        myHandler.obtainMessage(MessageID.LOGIN_OK_ID,cashier_json).sendToTarget();
+                                                        break;
+                                                }
+                                        }
+                                        break;
+                                }
+                                break;
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,e.getMessage()).sendToTarget();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,e.getMessage()).sendToTarget();
+                }else{
+                    myHandler.obtainMessage(MessageID.CONN_PARAM_ERR_ID,"连接参数不能为空！").sendToTarget();
                 }
             }else {
                 myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,param_json.optString("info")).sendToTarget();
@@ -346,6 +346,16 @@ public class LoginActivity extends AppCompatActivity {
                         if (!activity.mProgressDialog.isShowing()) {
                             activity.mProgressDialog.show();
                         }
+                    }
+                    break;
+                case MessageID.SYNC_GOODS_IMG_ERR_ID:
+                    if (msg.obj instanceof String)
+                        MyDialog.ToastMessage(msg.obj.toString(),activity);
+                    break;
+                case MessageID.CONN_PARAM_ERR_ID:
+                    if (msg.obj instanceof String){
+                        MyDialog.ToastMessage(msg.obj.toString(),activity);
+                        activity.findViewById(R.id.setup_ico).callOnClick();
                     }
                     break;
             }

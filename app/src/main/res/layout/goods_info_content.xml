@@ -39,19 +39,21 @@
         android:id="@+id/barcode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/goods_title"
+        android:layout_marginTop="@dimen/margin_2"
         android:layout_toEndOf="@id/goods_img"
-        android:textColor="@color/black" />
+        android:textColor="@color/black"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/goods_title"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/height_45"
-        android:layout_above="@id/symbol_text"
-        android:layout_below="@id/barcode"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_2"
         android:layout_toEndOf="@+id/goods_img"
+        android:maxHeight="@dimen/size_35"
         android:text="某某商品"
-        android:textColor="@color/black"
-        android:textSize="@dimen/fun_button_font_size_16" />
+        android:textColor="@color/good_name_color" />
 
     <TextView
         android:id="@+id/symbol_text"
@@ -59,6 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/goods_title"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/margin_2"
         android:text="@string/currency_symbol_sz"
         android:textColor="@color/black" />
 
@@ -67,6 +70,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_marginTop="@dimen/margin_2"
+        android:layout_marginBottom="@dimen/margin_2"
         android:layout_toEndOf="@+id/symbol_text"
         android:text="1028"
         android:textAlignment="viewStart"
@@ -78,6 +83,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/buying_price"
         android:layout_marginStart="@dimen/margin_8"
+        android:layout_marginBottom="@dimen/margin_2"
         android:layout_toEndOf="@id/buying_price"
         android:textColor="@color/black" />
 

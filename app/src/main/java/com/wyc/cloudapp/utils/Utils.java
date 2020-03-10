@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.logger.Logger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -332,7 +333,7 @@ public class Utils {
         return androidId;
     }
 
-    public static boolean JsonIsEmpty(JSONObject json){
+    public static boolean JsonIsNotEmpty(JSONObject json){
         return json != null && json.keys().hasNext();
     }
 }

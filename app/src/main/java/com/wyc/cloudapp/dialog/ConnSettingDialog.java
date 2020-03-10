@@ -92,16 +92,19 @@ public class ConnSettingDialog extends Dialog {
                 json.put("server_url",mUrl.getText());
                 json.put("appId",mAppId.getText());
                 json.put("appScret",mAppscret.getText());
-                json.put("storeInfo",mStoreInfo.toString());
-
-                param.put("parameter_id","connParam");
-                param.put("parameter_content",json);
-                StringBuilder err = new StringBuilder();
-                if (SQLiteHelper.replaceJson(param,"local_parameter",null,err)){
-                    MyDialog.ToastMessage("保存成功！",mContext);
-                    ConnSettingDialog.this.dismiss();
-                }else
-                    MyDialog.displayMessage(err.toString(),v.getContext());
+                if (Utils.JsonIsNotEmpty(mStoreInfo)){
+                    json.put("storeInfo",mStoreInfo.toString());
+                    param.put("parameter_id","connParam");
+                    param.put("parameter_content",json);
+                    StringBuilder err = new StringBuilder();
+                    if (SQLiteHelper.replaceJson(param,"local_parameter",null,err)){
+                        MyDialog.ToastMessage("保存成功！",mContext);
+                        ConnSettingDialog.this.dismiss();
+                    }else
+                        MyDialog.displayMessage(err.toString(),v.getContext());
+                }else{
+                    MyDialog.ToastMessage("门店不能为空！",mContext);
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -169,7 +172,11 @@ public class ConnSettingDialog extends Dialog {
     }
 
     private void queryStoreInfo(){
-        if (mUrl.getText().length() == 0)return;
+        if (mUrl.getText().length() == 0){
+            mUrl.requestFocus();
+            MyDialog.ToastMessage("服务器URL不能为空！",mContext);
+            return;
+        }
 
         mDialog.setMessage("正在查询门店信息...").show();
         final HttpRequest httpRequest = new HttpRequest();
@@ -208,7 +215,7 @@ public class ConnSettingDialog extends Dialog {
     private void showConnParam(){
         JSONObject param = new JSONObject();
         if(SQLiteHelper.getLocalParameter("connParam",param)){
-            if (Utils.JsonIsEmpty(param)){
+            if (Utils.JsonIsNotEmpty(param)){
                 mUrl.setText(param.optString("server_url"));
                 mAppId.setText(param.optString("appId"));
                 mAppscret.setText(param.optString("appScret"));

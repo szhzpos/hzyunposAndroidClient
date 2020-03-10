@@ -25,19 +25,10 @@
 
         <ImageView
             android:id="@+id/cashier_desk_image"
-            android:layout_width="78dp"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/cashier_desk_sz"
-            app:srcCompat="@drawable/nav" />
-
-        <TextView
-            android:id="@+id/cashier_desk_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/cashier_desk_sz"
-            android:textColor="@color/white"
-            android:textSize="18sp" />
+            android:contentDescription="@string/cashier_desk_sz"
+            app:srcCompat="@drawable/main" />
 
         <Space
             android:layout_width="18dp"
@@ -266,61 +257,63 @@
         </androidx.recyclerview.widget.RecyclerView>
 
         <LinearLayout
-            android:id="@+id/vip_info_linearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/size_35"
-            android:background="@drawable/top_separator"
-            android:orientation="horizontal"
-            android:visibility="visible">
-
-            <TextView
-                android:id="@+id/textView5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/vip_info_sz"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/fun_button_font_size_16" />
-
-            <TextView
-                android:id="@+id/vip_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/fun_button_font_size_16" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
-            <TextView
-                android:id="@+id/textView8"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/vip_phone_sz"
-                android:textAlignment="center"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/fun_button_font_size_16" />
-
-            <TextView
-                android:id="@+id/vip_phone_num"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/fun_button_font_size_16" />
-        </LinearLayout>
-
-        <LinearLayout
             android:id="@+id/order_info_linearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/margin_5"
+            android:layout_marginBottom="@dimen/margin_2"
+            android:background="@drawable/top_separator"
             android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/vip_info_linearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_16"
+                android:orientation="horizontal"
+                android:visibility="visible">
+
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/vip_info_sz"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/fun_button_font_size_16" />
+
+                <TextView
+                    android:id="@+id/vip_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/fun_button_font_size_16" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/textView8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/vip_phone_sz"
+                    android:textAlignment="center"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/fun_button_font_size_16" />
+
+                <TextView
+                    android:id="@+id/vip_phone_num"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/fun_button_font_size_16" />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_16"
                 android:orientation="horizontal">
 
                 <TextView
@@ -356,6 +349,7 @@
                     android:id="@+id/pos_num"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/margin_2"
                     android:text="0001"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/fun_button_font_size_16" />
@@ -386,8 +380,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="@dimen/margin_5"
-                android:layout_marginBottom="@dimen/margin_8"
+                android:layout_marginTop="@dimen/margin_2"
+                android:layout_marginBottom="@dimen/margin_2"
                 android:orientation="horizontal">
 
                 <TextView
@@ -420,12 +414,20 @@
                     android:textSize="@dimen/fun_button_font_size_18" />
 
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/currency_symbol_sz"
+                    android:textColor="@color/orange_1"
+                    android:textSize="@dimen/fun_button_font_size_24" />
+
+                <TextView
                     android:id="@+id/sale_sum_amount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="￥88.00"
+                    android:layout_marginEnd="@dimen/margin_2"
+                    android:text="88.00"
                     android:textColor="@color/orange_1"
-                    android:textSize="@dimen/fun_button_font_size_18" />
+                    android:textSize="@dimen/fun_button_font_size_24" />
             </LinearLayout>
 
         </LinearLayout>
@@ -475,7 +477,7 @@
             android:background="@drawable/button_green"
             android:text="@string/num_button_sz"
             android:textColor="@color/black_white"
-            android:textSize="@dimen/fun_button_font_size_18" />
+            android:textSize="@dimen/fun_button_font_size_16" />
 
         <Button
             android:id="@+id/clear"
@@ -485,7 +487,7 @@
             android:background="@drawable/button_green"
             android:text="@string/clear_sz"
             android:textColor="@color/black_white"
-            android:textSize="@dimen/fun_button_font_size_18" />
+            android:textSize="@dimen/fun_button_font_size_16" />
 
         <Button
             android:id="@+id/discount"
@@ -495,7 +497,7 @@
             android:background="@drawable/button_green"
             android:text="@string/discount_sz"
             android:textColor="@color/black_white"
-            android:textSize="@dimen/fun_button_font_size_18" />
+            android:textSize="@dimen/fun_button_font_size_16" />
 
         <Button
             android:id="@+id/change_price"
@@ -505,7 +507,7 @@
             android:background="@drawable/button_green"
             android:text="@string/change_price_sz"
             android:textColor="@color/black_white"
-            android:textSize="@dimen/fun_button_font_size_18" />
+            android:textSize="@dimen/fun_button_font_size_16" />
 
         <Button
             android:id="@+id/tmp_order"
@@ -524,7 +526,7 @@
             android:background="@drawable/button_green"
             android:text="@string/vip_button_sz"
             android:textColor="@color/black_white"
-            android:textSize="@dimen/fun_button_font_size_18" />
+            android:textSize="@dimen/fun_button_font_size_16" />
 
         <Button
             android:id="@+id/b_sale_man"
@@ -534,7 +536,7 @@
             android:background="@drawable/button_green"
             android:text="@string/sale_man_sz"
             android:textColor="@color/black_white"
-            android:textSize="@dimen/fun_button_font_size_18" />
+            android:textSize="@dimen/fun_button_font_size_16" />
 
         <Space
             android:layout_width="match_parent"
@@ -604,7 +606,7 @@
                 android:layout_height="@dimen/keyboard_button_height"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="@string/zero_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -617,7 +619,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="@string/one_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -630,7 +632,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="@string/two_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -643,7 +645,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="@string/three_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -656,7 +658,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="@string/four_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -669,7 +671,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="@string/five_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -682,7 +684,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="@string/six_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -695,7 +697,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="@string/seven_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -708,7 +710,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="@string/eight_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -721,7 +723,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="@string/nine_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -738,7 +740,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/keyboard_button_height"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="Q"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -750,7 +752,7 @@
                 android:layout_height="@dimen/keyboard_button_height"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="W"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -763,7 +765,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="E"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -776,7 +778,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="R"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -789,7 +791,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="T"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -802,7 +804,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="Y"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -815,7 +817,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="U"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -828,7 +830,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="I"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -841,7 +843,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="O"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -854,7 +856,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="P"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -872,7 +874,7 @@
                 android:layout_height="@dimen/keyboard_button_height"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="A"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -885,7 +887,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="S"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -898,7 +900,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="D"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -911,7 +913,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="F"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -924,7 +926,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="G"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -937,7 +939,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="H"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -950,7 +952,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="J"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -963,7 +965,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="K"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -976,7 +978,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="L"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -989,7 +991,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="@string/back"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_18" />
@@ -1006,7 +1008,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/keyboard_button_height"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="Z"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -1019,7 +1021,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="X"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -1032,7 +1034,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="C"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -1045,7 +1047,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="V"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -1058,7 +1060,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="B"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -1071,7 +1073,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="N"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -1084,7 +1086,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="M"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_24" />
@@ -1097,7 +1099,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
 
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_18" />
@@ -1110,7 +1112,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
 
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_18" />
@@ -1123,7 +1125,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/margin_1"
                 android:layout_weight="1"
-                android:background="@drawable/button_sub_blue_blue"
+                android:background="@drawable/button_sub_blue"
                 android:text="@string/del"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_18" />

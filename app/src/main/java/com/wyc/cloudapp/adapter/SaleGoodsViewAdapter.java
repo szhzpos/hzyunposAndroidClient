@@ -21,6 +21,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Locale;
+
 public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdapter.MyViewHolder> {
 
     private Context mContext;
@@ -35,12 +37,12 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView goods_id,goods_title,unit_id,unit_name,barcode_id,barcode,buying_price,sale_num,sale_amount;
+        TextView row_id,goods_id,goods_title,unit_id,unit_name,barcode_id,barcode,buying_price,sale_num,sale_amount;
         View mCurrentLayoutItemView;
         MyViewHolder(View itemView) {
             super(itemView);
             mCurrentLayoutItemView = itemView;
-
+            row_id = itemView.findViewById(R.id.row_id);
             goods_id = itemView.findViewById(R.id.goods_id);
             goods_title =  itemView.findViewById(R.id.goods_title);
             unit_id =  itemView.findViewById(R.id.unit_id);
@@ -57,7 +59,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View itemView = View.inflate(mContext, R.layout.sale_goods_content, null);
-        itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.goods_height)));
+        itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.sale_goods_height)));
         return new MyViewHolder(itemView);
     }
 
@@ -66,6 +68,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         if (mDatas != null){
             final JSONObject goods_info = mDatas.optJSONObject(i);
             if (goods_info != null){
+                myViewHolder.row_id.setText(String.format(Locale.CHINA,"%s%s",i + 1,"、"));
                 myViewHolder.goods_id.setText(goods_info.optString("goods_id"));
                 myViewHolder.goods_title.setText(goods_info.optString("goods_title"));
                 myViewHolder.unit_id.setText(goods_info.optString("unit_id"));
@@ -299,10 +302,10 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         goods_name.setTextColor(mContext.getColor(R.color.blue));
     }
 
-    public void showPayDialog(){
+    public void showPayDialog(double money){
         if (getCurrentContent() != null){
             PayDialog dialog = new PayDialog(mContext);
-            dialog.setYesOnclickListener(new PayDialog.onYesOnclickListener() {
+            dialog.setMoney(money).setYesOnclickListener(new PayDialog.onYesOnclickListener() {
                 @Override
                 public void onYesClick(PayDialog myDialog) {
                     myDialog.dismiss();

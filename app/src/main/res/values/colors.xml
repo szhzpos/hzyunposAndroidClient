@@ -14,7 +14,7 @@
     <color name="green">#41CAC0</color>
     <color name="black">#000</color>
     <color name="orange">#FF6100</color>
-    <color name="blue_subtransparent">#8052A5F7</color>
+    <color name="blue_subtransparent">#881883F7</color>
     <color name="text_color">#494848</color>
     <color name="orange_1">#FFF44336</color>
     <color name="good_name_color">@color/black</color>

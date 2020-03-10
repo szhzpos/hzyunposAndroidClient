@@ -119,9 +119,9 @@ public final class HttpRequest {
         }
         return jsonRetStr;
     }
-	public synchronized JSONObject getFile( String store_filePath,String url){
+	public synchronized JSONObject getFile( Object store_file,String url){
         JSONObject jsonRetStr = new JSONObject();
-
+        File download_file = null;
         byte[] buffer = new byte[1024];
         int lenght = 0;
 
@@ -139,12 +139,18 @@ public final class HttpRequest {
                 jsonRetStr.put("flag", 0);
                 jsonRetStr.put("info",mGetConn.getResponseMessage());
             }else{
-                try ( BufferedInputStream in = new BufferedInputStream(mGetConn.getInputStream()); FileOutputStream  fileOutputStream = new FileOutputStream(new File(store_filePath));){
+                if (store_file instanceof File){//可能产生效率问题，后续跟进优化
+                    download_file = (File) store_file;
+                }else {
+                    download_file = new File(store_file.toString());
+                }
+                try ( BufferedInputStream in = new BufferedInputStream(mGetConn.getInputStream()); FileOutputStream  fileOutputStream = new FileOutputStream(download_file);){
                     while ((lenght = in.read(buffer)) != -1){
                         fileOutputStream.write(buffer,0,lenght);
                     }
                 }
             }
+            jsonRetStr.put("flag",1);
             jsonRetStr.put("rsCode", mGetCode);
         }catch (IOException | JSONException e){
             try {
@@ -152,6 +158,7 @@ public final class HttpRequest {
                 jsonRetStr.put("info","httpCode:" + mGetCode);
                 jsonRetStr.put("info","下载失败！ " + e.getLocalizedMessage());
             }catch (JSONException je ){
+                je.printStackTrace();
                 Logger.e("下载文件JSON异常：%s",je.getLocalizedMessage());
             }
         }finally {

@@ -29,7 +29,7 @@
             android:id="@+id/_close"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/size_35"
-            android:layout_height="35dp"
+            android:layout_height="@dimen/size_35"
             android:layout_gravity="center_vertical"
             android:layout_margin="@dimen/margin_5"
             android:background="@drawable/close" />
@@ -43,10 +43,9 @@
 
         <LinearLayout
             android:id="@+id/left"
-            android:layout_width="0dp"
+            android:layout_width="488dp"
             android:layout_height="match_parent"
             android:layout_marginEnd="@dimen/margin_5"
-            android:layout_weight="1"
             android:background="@drawable/round_shape"
             android:orientation="vertical">
 
@@ -121,8 +120,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/order_amount_sz"
-                        android:textAlignment="center"
-                        android:textSize="@dimen/fun_button_font_size_16" />
+                        android:textAlignment="center" />
 
                     <TextView
                         android:id="@+id/order_amount"
@@ -146,8 +144,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/discount_amount_sz"
-                        android:textAlignment="center"
-                        android:textSize="@dimen/fun_button_font_size_16" />
+                        android:textAlignment="center" />
 
                     <TextView
                         android:id="@+id/discount_amount"
@@ -172,8 +169,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/actual_amount_sz"
-                        android:textAlignment="center"
-                        android:textSize="@dimen/fun_button_font_size_16" />
+                        android:textAlignment="center" />
 
                     <TextView
                         android:id="@+id/actual_amount"
@@ -221,8 +217,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/pay_amount_sz"
-                            android:textAlignment="center"
-                            android:textSize="@dimen/fun_button_font_size_16" />
+                            android:textAlignment="center" />
 
                         <TextView
                             android:id="@+id/pay_amount"
@@ -254,8 +249,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/amount_received_sz"
-                            android:textAlignment="center"
-                            android:textSize="@dimen/fun_button_font_size_16" />
+                            android:textAlignment="center" />
 
                         <TextView
                             android:id="@+id/amount_received"
@@ -287,8 +281,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/balance_sz"
-                            android:textAlignment="center"
-                            android:textSize="@dimen/fun_button_font_size_16" />
+                            android:textAlignment="center" />
 
                         <TextView
                             android:id="@+id/pay_balance"
@@ -389,7 +382,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/height_68"
                 android:layout_margin="@dimen/margin_2"
-                android:background="@drawable/border_sub_gray" />
+                android:foreground="@drawable/round_shape_blue_foreground" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -435,7 +428,7 @@
                     android:layout_height="@dimen/pay_dialog_button_height"
                     android:layout_marginStart="@dimen/margin_2"
                     android:layout_weight="2.5"
-                    android:background="@drawable/button_sub_blue_blue"
+                    android:background="@drawable/button_sub_blue"
                     android:text="@string/one_sz"
                     android:textAlignment="center"
                     android:textAllCaps="false"
@@ -451,7 +444,7 @@
                     android:layout_height="@dimen/pay_dialog_button_height"
                     android:layout_marginStart="@dimen/margin_2"
                     android:layout_weight="2.5"
-                    android:background="@drawable/button_sub_blue_blue"
+                    android:background="@drawable/button_sub_blue"
                     android:text="@string/two_sz"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
@@ -466,7 +459,7 @@
                     android:layout_height="@dimen/pay_dialog_button_height"
                     android:layout_marginStart="@dimen/margin_2"
                     android:layout_weight="2.5"
-                    android:background="@drawable/button_sub_blue_blue"
+                    android:background="@drawable/button_sub_blue"
                     android:text="@string/three_sz"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
@@ -482,7 +475,7 @@
                     android:layout_marginStart="@dimen/margin_2"
                     android:layout_marginEnd="@dimen/margin_2"
                     android:layout_weight="2.5"
-                    android:background="@drawable/button_sub_blue_blue"
+                    android:background="@drawable/button_sub_blue"
                     android:text="@string/back"
                     android:textColor="@color/white"
                     android:textSize="@dimen/fun_button_font_size_18"
@@ -498,7 +491,7 @@
                     android:layout_marginStart="@dimen/margin_2"
                     android:layout_marginTop="@dimen/margin_2"
                     android:layout_weight="2.5"
-                    android:background="@drawable/button_sub_blue_blue"
+                    android:background="@drawable/button_sub_blue"
                     android:text="@string/four_sz"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
@@ -514,7 +507,7 @@
                     android:layout_marginStart="@dimen/margin_2"
                     android:layout_marginTop="@dimen/margin_2"
                     android:layout_weight="2.5"
-                    android:background="@drawable/button_sub_blue_blue"
+                    android:background="@drawable/button_sub_blue"
                     android:text="@string/five_sz"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
@@ -530,7 +523,7 @@
                     android:layout_marginStart="@dimen/margin_2"
                     android:layout_marginTop="@dimen/margin_2"
                     android:layout_weight="2.5"
-                    android:background="@drawable/button_sub_blue_blue"
+                    android:background="@drawable/button_sub_blue"
                     android:text="@string/six_sz"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
@@ -546,7 +539,7 @@
                     android:layout_marginStart="@dimen/margin_2"
                     android:layout_marginTop="@dimen/margin_2"
                     android:layout_weight="2.5"
-                    android:background="@drawable/button_sub_blue_blue"
+                    android:background="@drawable/button_sub_blue"
                     android:text="@string/cancel"
                     android:textColor="@color/white"
                     android:textSize="@dimen/fun_button_font_size_18"
@@ -561,7 +554,7 @@
                     android:layout_marginStart="@dimen/margin_2"
                     android:layout_marginTop="@dimen/margin_2"
                     android:layout_weight="2.5"
-                    android:background="@drawable/button_sub_blue_blue"
+                    android:background="@drawable/button_sub_blue"
                     android:text="@string/seven_sz"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
@@ -577,7 +570,7 @@
                     android:layout_marginStart="@dimen/margin_2"
                     android:layout_marginTop="@dimen/margin_2"
                     android:layout_weight="2.5"
-                    android:background="@drawable/button_sub_blue_blue"
+                    android:background="@drawable/button_sub_blue"
                     android:text="@string/eight_sz"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
@@ -593,7 +586,7 @@
                     android:layout_marginStart="@dimen/margin_2"
                     android:layout_marginTop="@dimen/margin_2"
                     android:layout_weight="2.5"
-                    android:background="@drawable/button_sub_blue_blue"
+                    android:background="@drawable/button_sub_blue"
                     android:text="@string/nine_sz"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
@@ -609,7 +602,7 @@
                     android:layout_marginStart="@dimen/margin_2"
                     android:layout_marginTop="@dimen/margin_2"
                     android:layout_weight="2.5"
-                    android:background="@drawable/button_sub_blue_blue"
+                    android:background="@drawable/button_sub_blue"
                     android:text="@string/point_sz"
                     android:textAlignment="center"
                     android:textAllCaps="false"
@@ -626,7 +619,7 @@
                     android:layout_marginStart="@dimen/margin_2"
                     android:layout_marginTop="@dimen/margin_2"
                     android:layout_weight="2.5"
-                    android:background="@drawable/button_sub_blue_blue"
+                    android:background="@drawable/button_sub_blue"
                     android:text="@string/zero_sz"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
@@ -642,7 +635,7 @@
                     android:layout_marginStart="@dimen/margin_2"
                     android:layout_marginTop="@dimen/margin_2"
                     android:layout_weight="2.5"
-                    android:background="@drawable/button_sub_blue_blue"
+                    android:background="@drawable/button_sub_blue"
                     android:text="@string/d_zero_sz"
                     android:textColor="@color/white"
                     android:textSize="@dimen/fun_button_font_size_24"
@@ -657,7 +650,7 @@
                     android:layout_marginStart="@dimen/margin_2"
                     android:layout_marginTop="@dimen/margin_2"
                     android:layout_marginEnd="@dimen/margin_2"
-                    android:background="@drawable/button_sub_blue_blue"
+                    android:background="@drawable/button_sub_blue"
                     android:text="@string/OK"
                     android:textColor="@color/white"
                     android:textSize="@dimen/fun_button_font_size_18"
