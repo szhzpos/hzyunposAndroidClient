@@ -69,4 +69,5 @@
     <string name="zero_sz">0</string>
     <string name="d_zero_sz">00</string>
     <string name="point_sz">.</string>
+    <string name="d_zero_point_sz">.00</string>
 </resources>

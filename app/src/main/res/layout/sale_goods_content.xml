@@ -60,7 +60,7 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/goods_title"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="@dimen/margin_16"
+        android:layout_marginStart="@dimen/margin_12"
         android:text="@string/currency_symbol_sz"
         android:textColor="@color/text_color" />
 

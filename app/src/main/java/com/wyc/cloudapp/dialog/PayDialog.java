@@ -24,6 +24,7 @@ import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.GoodsInfoItemDecoration;
 import com.wyc.cloudapp.adapter.PayMethodItemDecoration;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
@@ -76,6 +77,9 @@ public class PayDialog extends Dialog {
             if (view != null) {
                 EditText tmp_edit = ((EditText)view);
                 int index = tmp_edit.getSelectionStart();
+                if (tmp_edit.getSelectionEnd() == tmp_edit.getText().length()){
+                    tmp_edit.setText(mContext.getString(R.string.d_zero_point_sz));
+                }
                 if (index == 0)return;
                 if (view.getId() == R.id.money) {
                     if (index == tmp_edit.getText().toString().indexOf(".") + 1) {

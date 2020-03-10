@@ -34,6 +34,7 @@ import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.PayDialog;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.network.NetworkManagement;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
@@ -157,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         mHandler.postDelayed(()->{
             mSearch_content.requestFocus();
-        },300);
+        },500);
     }
     @Override
     public void onPause(){
@@ -387,6 +388,7 @@ public class MainActivity extends AppCompatActivity {
         vertical_space = viewHeight % m_height;
         vertical_counts = viewHeight / m_height;
         per_vertical_space = vertical_space / (vertical_counts != 0 ? vertical_counts:1);
+
         return per_vertical_space;
     }
 

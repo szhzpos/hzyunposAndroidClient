@@ -196,27 +196,19 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
             ChangeNumOrPriceDialog dialog;
             switch (type){
                 case 1:
-                    dialog = new ChangeNumOrPriceDialog(mContext,"新价格：");
+                    dialog = new ChangeNumOrPriceDialog(mContext,"新价格");
                     break;
                 case 2:
-                    dialog = new ChangeNumOrPriceDialog(mContext,"折扣：");
+                    dialog = new ChangeNumOrPriceDialog(mContext,"折扣");
                     break;
                     default:
-                        dialog = new ChangeNumOrPriceDialog(mContext);
+                        dialog = new ChangeNumOrPriceDialog(mContext,"新数量");
                         break;
             }
-            dialog.setYesOnclickListener(new ChangeNumOrPriceDialog.onYesOnclickListener() {
-                @Override
-                public void onYesClick(ChangeNumOrPriceDialog myDialog) {
-                    updateSaleGoodsInfo(myDialog.getNewNumOrPrice(),type);
-                    myDialog.dismiss();
-                }
-            }).setNoOnclickListener(new ChangeNumOrPriceDialog.onNoOnclickListener() {
-                @Override
-                public void onNoClick(ChangeNumOrPriceDialog myDialog) {
-                    myDialog.dismiss();
-                }
-            }).show();
+            dialog.setYesOnclickListener(myDialog -> {
+                updateSaleGoodsInfo(myDialog.getNewNumOrPrice(),type);
+                myDialog.dismiss();
+            }).setNoOnclickListener(myDialog -> myDialog.dismiss()).show();
         }else{
             MyDialog.ToastMessage("请选择需要修改的商品!",mContext);
         }

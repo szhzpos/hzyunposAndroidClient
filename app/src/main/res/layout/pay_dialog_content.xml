@@ -3,19 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:baselineAligned="false"
     android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/height_45"
+        android:layout_height="@dimen/height_50"
         android:background="@drawable/round_shape_main_color"
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/textView19"
+            android:id="@+id/title"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -36,7 +36,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:baselineAligned="false"
         android:orientation="horizontal">
@@ -409,7 +409,7 @@
                     android:focusableInTouchMode="true"
                     android:inputType="textPersonName"
                     android:maxLength="8"
-                    android:text=".00"
+                    android:text="@string/d_zero_point_sz"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/fun_button_font_size_18" />
             </LinearLayout>
@@ -646,7 +646,7 @@
                     android:id="@+id/_ok"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="@dimen/pay_dialog_button_width"
-                    android:layout_height="158dp"
+                    android:layout_height="138dp"
                     android:layout_marginStart="@dimen/margin_2"
                     android:layout_marginTop="@dimen/margin_2"
                     android:layout_marginEnd="@dimen/margin_2"
