@@ -16,6 +16,7 @@ import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.PayDialog;
 import com.wyc.cloudapp.listener.ClickListener;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import org.json.JSONArray;
@@ -132,7 +133,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 double sel_num = 1.00,sel_amount,price;
 
                 price = json.getDouble("buying_price");
-                sel_amount = Utils.formatDouble(sel_num * price,4);
+                sel_amount = Utils.formatDouble(sel_num * price,2);
 
                 for (int i = 0,length = mDatas.length();i < length;i++){
                     JSONObject tmp = mDatas.getJSONObject(i);
@@ -175,13 +176,13 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
             }else{
                 JSONObject jsonObject = mDatas.optJSONObject(index);
                 try {
-                    double current_num = jsonObject.getDouble("sale_num"),
+                    double current_num = jsonObject.getDouble("sale_sum_num"),
                             price = jsonObject.getDouble("buying_price");
                     if ((current_num = current_num - num) <= 0){
                         mDatas.remove(index);
                     }else{
-                        jsonObject.put("sale_num",current_num);
-                        jsonObject.put("sale_amount",Utils.formatDouble(current_num * price,4));
+                        jsonObject.put("sale_sum_num",current_num);
+                        jsonObject.put("sale_sum_amt",Utils.formatDouble(current_num * price,2));
                     }
                 }catch (JSONException e){
                     e.printStackTrace();
@@ -225,18 +226,18 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                     if (value <= 0){
                         deleteSaleGoods(getCurrentItemIndex(),0);
                     }else{
-                        json.put("sale_sum_num",Utils.formatDouble(value,2));
-                        json.put("sale_sum_amt",Utils.formatDouble(value * price,4));
+                        json.put("sale_sum_num",Utils.formatDouble(value,4));
+                        json.put("sale_sum_amt",Utils.formatDouble(value * price,2));
                     }
                     break;
                 case 1:
                     json.put("buying_price",Utils.formatDouble(value,2));
-                    json.put("sale_sum_amt",Utils.formatDouble(value * sale_num,4));
+                    json.put("sale_sum_amt",Utils.formatDouble(value * sale_num,2));
                     break;
                 case 2:
                     price = Utils.formatDouble(price * (value / 100),2);
                     json.put("buying_price",price);
-                    json.put("sale_sum_amt",Utils.formatDouble(price * sale_num,4));
+                    json.put("sale_sum_amt",Utils.formatDouble(price * sale_num,2));
                     break;
             }
             notifyDataSetChanged();
@@ -295,16 +296,11 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         goods_name.setTextColor(mContext.getColor(R.color.blue));
     }
 
-    public void showPayDialog(double money){
+    public void showPayDialog(){
         if (mDatas.length() != 0){
             PayDialog dialog = new PayDialog(mContext,this);
             if (dialog.initPayContent(mDatas)){
-                dialog.setNoOnclickListener(new PayDialog.onNoOnclickListener() {
-                    @Override
-                    public void onNoClick(PayDialog myDialog) {
-                        myDialog.dismiss();
-                    }
-                }).show();
+                dialog.setNoOnclickListener(myDialog -> myDialog.dismiss()).show();
             }
         }else{
             MyDialog.ToastMessage("已选商品为空！!",mContext);

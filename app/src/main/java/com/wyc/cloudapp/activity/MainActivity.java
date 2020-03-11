@@ -122,7 +122,11 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.change_price).setOnClickListener(v->{
             mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 1);
         });//改价
-        findViewById(R.id.check_out).setOnClickListener(view -> mSaleGoodsViewAdapter.showPayDialog(Double.valueOf(mSaleSumAmount.getText().toString())));
+        findViewById(R.id.check_out).setOnClickListener((View v)->{
+            v.setEnabled(false);
+            mSaleGoodsViewAdapter.showPayDialog();
+            v.setEnabled(true);
+        });//结账
 
         findViewById(R.id.q_deal_linerLayout).setOnClickListener(new View.OnClickListener() {
             @Override
