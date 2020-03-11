@@ -25,7 +25,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
     private JSONArray mDatas;
     private OnItemClickListener mOnItemClickListener;
     private boolean mSearchLoad = false;
-    private boolean mShowPic = false;
+    private boolean mShowPic = true;
     public GoodsInfoViewAdapter(Context context){
         this.mContext = context;
     }
@@ -94,10 +94,10 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                     });
                 }
 
-                if (mSearchLoad && mDatas.length() == 1 && null != myViewHolder.mCurrentItemView){
+                /*if (mSearchLoad && mDatas.length() == 1 && null != myViewHolder.mCurrentItemView){//搜索只有一个的时候自动选择
                         myViewHolder.mCurrentItemView.callOnClick();
                 }
-
+*/
             }
         }
     }

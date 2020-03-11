@@ -68,7 +68,7 @@
             android:textAlignment="center"
             android:textAllCaps="false"
             android:textColor="@color/white"
-            android:textSize="30sp"
+            android:textSize="@dimen/num_keyboard_font_size_24"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -83,7 +83,7 @@
             android:text="@string/two_sz"
             android:textAllCaps="false"
             android:textColor="@color/white"
-            android:textSize="@dimen/fun_button_font_size_24"
+            android:textSize="@dimen/num_keyboard_font_size_24"
             app:layout_constraintStart_toEndOf="@+id/_one"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -98,7 +98,7 @@
             android:text="@string/three_sz"
             android:textAllCaps="false"
             android:textColor="@color/white"
-            android:textSize="@dimen/fun_button_font_size_24"
+            android:textSize="@dimen/num_keyboard_font_size_24"
             app:layout_constraintStart_toEndOf="@+id/_two"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -112,7 +112,7 @@
             android:background="@drawable/button_sub_blue"
             android:text="@string/back"
             android:textColor="@color/white"
-            android:textSize="@dimen/fun_button_font_size_18"
+            android:textSize="@dimen/num_keyboard_font_size_18"
             app:layout_constraintStart_toEndOf="@+id/_three"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -127,7 +127,7 @@
             android:text="@string/four_sz"
             android:textAllCaps="false"
             android:textColor="@color/white"
-            android:textSize="@dimen/fun_button_font_size_24"
+            android:textSize="@dimen/num_keyboard_font_size_24"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/_one" />
 
@@ -143,7 +143,7 @@
             android:text="@string/five_sz"
             android:textAllCaps="false"
             android:textColor="@color/white"
-            android:textSize="@dimen/fun_button_font_size_24"
+            android:textSize="@dimen/num_keyboard_font_size_24"
             app:layout_constraintStart_toEndOf="@+id/_four"
             app:layout_constraintTop_toBottomOf="@+id/_two" />
 
@@ -158,7 +158,7 @@
             android:text="@string/six_sz"
             android:textAllCaps="false"
             android:textColor="@color/white"
-            android:textSize="@dimen/fun_button_font_size_24"
+            android:textSize="@dimen/num_keyboard_font_size_24"
             app:layout_constraintStart_toEndOf="@+id/_five"
             app:layout_constraintTop_toBottomOf="@+id/_three" />
 
@@ -172,7 +172,7 @@
             android:background="@drawable/button_sub_blue"
             android:text="@string/cancel"
             android:textColor="@color/white"
-            android:textSize="@dimen/fun_button_font_size_18"
+            android:textSize="@dimen/num_keyboard_font_size_18"
             app:layout_constraintStart_toEndOf="@+id/_six"
             app:layout_constraintTop_toBottomOf="@+id/_back" />
 
@@ -187,7 +187,7 @@
             android:text="@string/seven_sz"
             android:textAllCaps="false"
             android:textColor="@color/white"
-            android:textSize="@dimen/fun_button_font_size_24"
+            android:textSize="@dimen/num_keyboard_font_size_24"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/_four" />
 
@@ -203,7 +203,7 @@
             android:text="@string/eight_sz"
             android:textAllCaps="false"
             android:textColor="@color/white"
-            android:textSize="@dimen/fun_button_font_size_24"
+            android:textSize="@dimen/num_keyboard_font_size_24"
             app:layout_constraintStart_toEndOf="@+id/button3"
             app:layout_constraintTop_toBottomOf="@+id/_five" />
 
@@ -219,7 +219,7 @@
             android:text="@string/nine_sz"
             android:textAllCaps="false"
             android:textColor="@color/white"
-            android:textSize="@dimen/fun_button_font_size_24"
+            android:textSize="@dimen/num_keyboard_font_size_24"
             app:layout_constraintStart_toEndOf="@+id/button4"
             app:layout_constraintTop_toBottomOf="@+id/_six" />
 
@@ -236,7 +236,7 @@
             android:textAlignment="center"
             android:textAllCaps="false"
             android:textColor="@color/white"
-            android:textSize="30sp"
+            android:textSize="@dimen/num_keyboard_font_size_24"
             app:layout_constraintStart_toEndOf="@+id/button16"
             app:layout_constraintTop_toBottomOf="@+id/button5" />
 
@@ -251,7 +251,7 @@
             android:text="@string/zero_sz"
             android:textAllCaps="false"
             android:textColor="@color/white"
-            android:textSize="@dimen/fun_button_font_size_24"
+            android:textSize="@dimen/num_keyboard_font_size_24"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/button3" />
 
@@ -266,7 +266,7 @@
             android:background="@drawable/button_sub_blue"
             android:text="@string/d_zero_sz"
             android:textColor="@color/white"
-            android:textSize="@dimen/fun_button_font_size_24"
+            android:textSize="@dimen/num_keyboard_font_size_24"
             app:layout_constraintStart_toEndOf="@+id/button6"
             app:layout_constraintTop_toBottomOf="@+id/button4" />
 
@@ -280,7 +280,7 @@
             android:background="@drawable/button_sub_blue"
             android:text="@string/OK"
             android:textColor="@color/white"
-            android:textSize="@dimen/fun_button_font_size_18"
+            android:textSize="@dimen/num_keyboard_font_size_18"
             app:layout_constraintStart_toEndOf="@+id/button5"
             app:layout_constraintTop_toBottomOf="@+id/cancel" />
     </androidx.constraintlayout.widget.ConstraintLayout>

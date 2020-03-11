@@ -30,7 +30,7 @@
     <string name="jh_sz">机号：</string>
     <string name="order_time_sz">时间：</string>
     <string name="num_sz">数量：</string>
-    <string name="amount_sz">金额：</string>
+    <string name="amt_sz">金额：</string>
     <string name="barcode_sz">条码/助记码：</string>
     <string name="back">回退</string>
     <string name="del">del</string>
@@ -45,12 +45,12 @@
     <string name="currency_symbol_sz">￥</string>
     <string name="space_sz">""</string>
     <string name="verify_pay_sz">确认收银</string>
-    <string name="order_amount_sz">单据金额</string>
-    <string name="discount_amount_sz">优惠金额</string>
-    <string name="actual_amount_sz">应收金额</string>
+    <string name="order_amt_sz">单据金额</string>
+    <string name="discount_amt_sz">优惠金额</string>
+    <string name="actual_amt_sz">应收金额</string>
     <string name="pay_method_sz">-联合支付明细-</string>
-    <string name="pay_amount_sz">待收</string>
-    <string name="amount_received_sz">已收</string>
+    <string name="pay_amt_sz">待收</string>
+    <string name="amt_received_sz">已收</string>
     <string name="balance_sz">剩余</string>
     <string name="all_discount_sz">整单折</string>
     <string name="mo_l_sz">抹零</string>
@@ -70,4 +70,12 @@
     <string name="d_zero_sz">00</string>
     <string name="point_sz">.</string>
     <string name="d_zero_point_sz">.00</string>
+    <string name="z_p_z_sz">0.00</string>
+    <string name="pay_detail_row_id_sz">序号</string>
+    <string name="pay_detail_name_sz">支付方式</string>
+    <string name="pay_detail_amt_sz">金额</string>
+    <string name="pay_detail_zl_sz">找零</string>
+    <string name="pay_detail_v_num_sz">凭证号</string>
+    <string name="cash_pay_sz">现金：</string>
+    <string name="cash_zl_sz">找零：</string>
 </resources>

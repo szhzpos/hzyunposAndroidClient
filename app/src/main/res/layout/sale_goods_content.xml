@@ -52,7 +52,7 @@
         android:maxHeight="@dimen/size_35"
         android:text="某某商品"
         android:textColor="@color/black"
-        android:textSize="@dimen/fun_button_font_size_16" />
+        android:textSize="@dimen/font_size_16" />
 
     <TextView
         android:id="@+id/symbol_text"
@@ -84,24 +84,24 @@
         android:textColor="@color/text_color" />
 
     <TextView
-        android:id="@+id/amount_symbol"
+        android:id="@+id/amt_symbol"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_toStartOf="@id/sale_sum_amount"
+        android:layout_toStartOf="@id/sale_sum_amt"
         android:text="@string/currency_symbol_sz"
         android:textColor="@color/orange_1"
-        android:textSize="@dimen/fun_button_font_size_18" />
+        android:textSize="@dimen/font_size_18" />
 
     <TextView
-        android:id="@+id/sale_sum_amount"
+        android:id="@+id/sale_sum_amt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="@dimen/margin_2"
         android:textColor="@color/orange_1"
-        android:textSize="@dimen/fun_button_font_size_18" />
+        android:textSize="@dimen/font_size_18" />
 
     <TextView
         android:id="@+id/unit_name"

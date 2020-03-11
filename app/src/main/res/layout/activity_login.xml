@@ -43,7 +43,7 @@
                 android:background="@drawable/button_blue"
                 android:text="@string/login"
                 android:textColor="@color/white_blue"
-                android:textSize="@dimen/fun_button_font_size_18" />
+                android:textSize="@dimen/font_size_18" />
 
             <Button
                 android:id="@+id/cancel"
@@ -55,7 +55,7 @@
                 android:background="@drawable/button_pink"
                 android:text="@string/cancel"
                 android:textColor="@color/white_pink"
-                android:textSize="@dimen/fun_button_font_size_18" />
+                android:textSize="@dimen/font_size_18" />
 
             <EditText
                 android:id="@+id/user_id"

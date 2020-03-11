@@ -119,11 +119,11 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/order_amount_sz"
+                        android:text="@string/order_amt_sz"
                         android:textAlignment="center" />
 
                     <TextView
-                        android:id="@+id/order_amount"
+                        android:id="@+id/order_amt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="888.00"
@@ -143,11 +143,11 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/discount_amount_sz"
+                        android:text="@string/discount_amt_sz"
                         android:textAlignment="center" />
 
                     <TextView
-                        android:id="@+id/discount_amount"
+                        android:id="@+id/discount_amt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="66.00"
@@ -168,11 +168,11 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/actual_amount_sz"
+                        android:text="@string/actual_amt_sz"
                         android:textAlignment="center" />
 
                     <TextView
-                        android:id="@+id/actual_amount"
+                        android:id="@+id/actual_amt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="128.00"
@@ -216,11 +216,11 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/pay_amount_sz"
+                            android:text="@string/pay_amt_sz"
                             android:textAlignment="center" />
 
                         <TextView
-                            android:id="@+id/pay_amount"
+                            android:id="@+id/pay_amt"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="128.00"
@@ -234,7 +234,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center_vertical"
-                        android:text="@string/equal_sign_sz"
+                        android:text="@string/minus"
                         android:textAlignment="center"
                         android:textSize="@dimen/fun_button_font_size_24" />
 
@@ -248,11 +248,11 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/amount_received_sz"
+                            android:text="@string/amt_received_sz"
                             android:textAlignment="center" />
 
                         <TextView
-                            android:id="@+id/amount_received"
+                            android:id="@+id/amt_received"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="28.00"
@@ -296,18 +296,21 @@
                 </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/pay_method_detail"
+                    android:id="@+id/pay_detail_list"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:layout_weight="1">
+                    android:layout_margin="@dimen/margin_2"
+                    android:layout_weight="1"
+                    android:background="@drawable/bottom_separator">
 
                 </androidx.recyclerview.widget.RecyclerView>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/height_68"
-                    android:layout_margin="@dimen/margin_2"
-                    android:background="@drawable/top_separator"
+                    android:layout_marginStart="@dimen/margin_2"
+                    android:layout_marginEnd="@dimen/margin_2"
+                    android:layout_marginBottom="@dimen/margin_2"
                     android:orientation="horizontal">
 
                     <Button
@@ -320,7 +323,7 @@
                         android:background="@drawable/button_blue"
                         android:text="@string/vip_button_sz"
                         android:textColor="@color/white_blue"
-                        android:textSize="@dimen/fun_button_font_size_16" />
+                        android:textSize="@dimen/font_size_16" />
 
                     <Button
                         android:id="@+id/all_discount"
@@ -332,7 +335,7 @@
                         android:background="@drawable/button_blue"
                         android:text="@string/all_discount_sz"
                         android:textColor="@color/white_blue"
-                        android:textSize="@dimen/fun_button_font_size_16" />
+                        android:textSize="@dimen/font_size_16" />
 
                     <Button
                         android:id="@+id/mo_l"
@@ -344,7 +347,7 @@
                         android:background="@drawable/button_blue"
                         android:text="@string/mo_l_sz"
                         android:textColor="@color/white_blue"
-                        android:textSize="@dimen/fun_button_font_size_16" />
+                        android:textSize="@dimen/font_size_16" />
 
                     <Button
                         android:id="@+id/remark"
@@ -356,7 +359,7 @@
                         android:background="@drawable/button_blue"
                         android:text="@string/remark_sz"
                         android:textColor="@color/white_blue"
-                        android:textSize="@dimen/fun_button_font_size_16" />
+                        android:textSize="@dimen/font_size_16" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -396,22 +399,44 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="@dimen/margin_5"
-                    android:text="@string/amount_sz"
+                    android:text="@string/cash_pay_sz"
+                    android:textColor="@color/blue"
                     android:textSize="@dimen/fun_button_font_size_18" />
 
                 <EditText
-                    android:id="@+id/money"
+                    android:id="@+id/cash_amt"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_weight="1"
                     android:autofillHints=""
                     android:background="@color/transparent"
                     android:ems="10"
                     android:focusableInTouchMode="true"
-                    android:inputType="textPersonName"
+                    android:inputType="number|textPersonName"
                     android:maxLength="8"
                     android:text="@string/d_zero_point_sz"
                     android:textColor="@color/text_color"
-                    android:textSize="@dimen/fun_button_font_size_18" />
+                    android:textSize="@dimen/font_size_18" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cash_zl_sz"
+                    android:textColor="@color/blue"
+                    android:textSize="@dimen/font_size_18" />
+
+                <EditText
+                    android:id="@+id/zl_amt"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@color/transparent"
+                    android:ems="10"
+                    android:enabled="false"
+                    android:inputType="number"
+                    android:text="@string/z_p_z_sz"
+                    android:textColor="@color/orange_1"
+                    android:textSize="@dimen/font_size_18" />
             </LinearLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -433,7 +458,7 @@
                     android:textAlignment="center"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
-                    android:textSize="30sp"
+                    android:textSize="@dimen/num_keyboard_font_size_24"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -448,7 +473,7 @@
                     android:text="@string/two_sz"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/fun_button_font_size_24"
+                    android:textSize="@dimen/num_keyboard_font_size_24"
                     app:layout_constraintStart_toEndOf="@+id/_one"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -463,7 +488,7 @@
                     android:text="@string/three_sz"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/fun_button_font_size_24"
+                    android:textSize="@dimen/num_keyboard_font_size_24"
                     app:layout_constraintStart_toEndOf="@+id/_two"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -478,7 +503,7 @@
                     android:background="@drawable/button_sub_blue"
                     android:text="@string/back"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/fun_button_font_size_18"
+                    android:textSize="@dimen/num_keyboard_font_size_18"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/_three"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -495,7 +520,7 @@
                     android:text="@string/four_sz"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/fun_button_font_size_24"
+                    android:textSize="@dimen/num_keyboard_font_size_24"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/_one" />
 
@@ -511,7 +536,7 @@
                     android:text="@string/five_sz"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/fun_button_font_size_24"
+                    android:textSize="@dimen/num_keyboard_font_size_24"
                     app:layout_constraintStart_toEndOf="@+id/_four"
                     app:layout_constraintTop_toBottomOf="@+id/_two" />
 
@@ -527,7 +552,7 @@
                     android:text="@string/six_sz"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/fun_button_font_size_24"
+                    android:textSize="@dimen/num_keyboard_font_size_24"
                     app:layout_constraintStart_toEndOf="@+id/_five"
                     app:layout_constraintTop_toBottomOf="@+id/_three" />
 
@@ -542,7 +567,7 @@
                     android:background="@drawable/button_sub_blue"
                     android:text="@string/cancel"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/fun_button_font_size_18"
+                    android:textSize="@dimen/num_keyboard_font_size_18"
                     app:layout_constraintStart_toEndOf="@+id/_six"
                     app:layout_constraintTop_toBottomOf="@+id/_back" />
 
@@ -558,7 +583,7 @@
                     android:text="@string/seven_sz"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/fun_button_font_size_24"
+                    android:textSize="@dimen/num_keyboard_font_size_24"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/_four" />
 
@@ -574,7 +599,7 @@
                     android:text="@string/eight_sz"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/fun_button_font_size_24"
+                    android:textSize="@dimen/num_keyboard_font_size_24"
                     app:layout_constraintStart_toEndOf="@+id/button3"
                     app:layout_constraintTop_toBottomOf="@+id/_five" />
 
@@ -590,7 +615,7 @@
                     android:text="@string/nine_sz"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/fun_button_font_size_24"
+                    android:textSize="@dimen/num_keyboard_font_size_24"
                     app:layout_constraintStart_toEndOf="@+id/button4"
                     app:layout_constraintTop_toBottomOf="@+id/_six" />
 
@@ -607,7 +632,7 @@
                     android:textAlignment="center"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
-                    android:textSize="30sp"
+                    android:textSize="@dimen/num_keyboard_font_size_24"
                     app:layout_constraintStart_toEndOf="@+id/button16"
                     app:layout_constraintTop_toBottomOf="@+id/button5" />
 
@@ -623,7 +648,7 @@
                     android:text="@string/zero_sz"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/fun_button_font_size_24"
+                    android:textSize="@dimen/num_keyboard_font_size_24"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/button3" />
 
@@ -638,7 +663,7 @@
                     android:background="@drawable/button_sub_blue"
                     android:text="@string/d_zero_sz"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/fun_button_font_size_24"
+                    android:textSize="@dimen/num_keyboard_font_size_24"
                     app:layout_constraintStart_toEndOf="@+id/button6"
                     app:layout_constraintTop_toBottomOf="@+id/button4" />
 
@@ -653,7 +678,7 @@
                     android:background="@drawable/button_sub_blue"
                     android:text="@string/OK"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/fun_button_font_size_18"
+                    android:textSize="@dimen/num_keyboard_font_size_18"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/button5"
                     app:layout_constraintTop_toBottomOf="@+id/cancel" />

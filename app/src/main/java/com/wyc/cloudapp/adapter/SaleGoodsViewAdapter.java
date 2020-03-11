@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.adapter;
 
+import android.app.Dialog;
 import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,7 +38,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView row_id,goods_id,goods_title,unit_id,unit_name,barcode_id,barcode,buying_price,sale_num,sale_amount;
+        TextView row_id,goods_id,goods_title,unit_id,unit_name,barcode_id,barcode,buying_price,sale_num,sale_amt;
         View mCurrentLayoutItemView;
         MyViewHolder(View itemView) {
             super(itemView);
@@ -51,7 +52,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
             barcode =  itemView.findViewById(R.id.barcode);
             buying_price =  itemView.findViewById(R.id.buying_price);
             sale_num = itemView.findViewById(R.id.sale_sum_num);
-            sale_amount = itemView.findViewById(R.id.sale_sum_amount);
+            sale_amt = itemView.findViewById(R.id.sale_sum_amt);
         }
     }
 
@@ -76,8 +77,8 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 myViewHolder.barcode_id.setText(goods_info.optString("barcode_id"));
                 myViewHolder.barcode.setText(goods_info.optString("barcode"));
                 myViewHolder.buying_price.setText(goods_info.optString("buying_price"));
-                myViewHolder.sale_num.setText(goods_info.optString("sale_num"));
-                myViewHolder.sale_amount.setText(goods_info.optString("sale_amount"));
+                myViewHolder.sale_num.setText(goods_info.optString("sale_sum_num"));
+                myViewHolder.sale_amt.setText(goods_info.optString("sale_sum_amt"));
 
                 if(myViewHolder.goods_title.getCurrentTextColor() == mContext.getResources().getColor(R.color.blue,null)){
                     myViewHolder.goods_title.setTextColor(mContext.getColor(R.color.black));//需要重新设置颜色；不然重用之后内容颜色为重用之前的。
@@ -137,11 +138,11 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                     JSONObject tmp = mDatas.getJSONObject(i);
                     if (id.equals(tmp.getString("goods_id"))){
                         exist = true;
-                        double sale_num = tmp.getDouble("sale_num");
-                        double sale_amount = tmp.getDouble("sale_amount");
+                        double sale_num = tmp.getDouble("sale_sum_num");
+                        double sale_amount = tmp.getDouble("sale_sum_amt");
 
-                        tmp.put("sale_num",Utils.formatDouble(sale_num + sel_num,4));
-                        tmp.put("sale_amount",Utils.formatDouble(sale_amount + sel_amount,2));
+                        tmp.put("sale_sum_num",Utils.formatDouble(sale_num + sel_num,4));
+                        tmp.put("sale_sum_amt",Utils.formatDouble(sale_amount + sel_amount,2));
 
                         mCurrentItemIndex = i;
 
@@ -149,8 +150,8 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                     }
                 }
                 if (!exist){
-                    json.put("sale_num",sel_num);
-                    json.put("sale_amount",sel_amount);
+                    json.put("sale_sum_num",sel_num);
+                    json.put("sale_sum_amt",sel_amount);
                     mDatas.put(json);
 
                     mCurrentItemIndex = mDatas.length() - 1;
@@ -208,7 +209,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
             dialog.setYesOnclickListener(myDialog -> {
                 updateSaleGoodsInfo(myDialog.getNewNumOrPrice(),type);
                 myDialog.dismiss();
-            }).setNoOnclickListener(myDialog -> myDialog.dismiss()).show();
+            }).setNoOnclickListener(Dialog::dismiss).show();
         }else{
             MyDialog.ToastMessage("请选择需要修改的商品!",mContext);
         }
@@ -218,30 +219,30 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         JSONObject json = getCurrentContent();
         try {
             double price = json.getDouble("buying_price");
-            double sale_num = json.getDouble("sale_num");
+            double sale_num = json.getDouble("sale_sum_num");
             switch (type){
                 case 0:
                     if (value <= 0){
                         deleteSaleGoods(getCurrentItemIndex(),0);
                     }else{
-                        json.put("sale_num",Utils.formatDouble(value,2));
-                        json.put("sale_amount",Utils.formatDouble(value * price,4));
+                        json.put("sale_sum_num",Utils.formatDouble(value,2));
+                        json.put("sale_sum_amt",Utils.formatDouble(value * price,4));
                     }
                     break;
                 case 1:
                     json.put("buying_price",Utils.formatDouble(value,2));
-                    json.put("sale_amount",Utils.formatDouble(value * sale_num,4));
+                    json.put("sale_sum_amt",Utils.formatDouble(value * sale_num,4));
                     break;
                 case 2:
                     price = Utils.formatDouble(price * (value / 100),2);
                     json.put("buying_price",price);
-                    json.put("sale_amount",Utils.formatDouble(price * sale_num,4));
+                    json.put("sale_sum_amt",Utils.formatDouble(price * sale_num,4));
                     break;
             }
             notifyDataSetChanged();
         } catch (JSONException e) {
             e.printStackTrace();
-            MyDialog.displayErrorMessage("修改数量错误：" + e.getMessage(),mContext);
+            MyDialog.displayErrorMessage("修改销售商品信息错误：" + e.getMessage(),mContext);
         }
     }
 
@@ -295,19 +296,16 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     }
 
     public void showPayDialog(double money){
-        if (getCurrentContent() != null){
-            PayDialog dialog = new PayDialog(mContext);
-            dialog.setMoney(money).setYesOnclickListener(new PayDialog.onYesOnclickListener() {
-                @Override
-                public void onYesClick(PayDialog myDialog) {
-                    myDialog.dismiss();
-                }
-            }).setNoOnclickListener(new PayDialog.onNoOnclickListener() {
-                @Override
-                public void onNoClick(PayDialog myDialog) {
-                    myDialog.dismiss();
-                }
-            }).show();
+        if (mDatas.length() != 0){
+            PayDialog dialog = new PayDialog(mContext,this);
+            if (dialog.initPayContent(mDatas)){
+                dialog.setNoOnclickListener(new PayDialog.onNoOnclickListener() {
+                    @Override
+                    public void onNoClick(PayDialog myDialog) {
+                        myDialog.dismiss();
+                    }
+                }).show();
+            }
         }else{
             MyDialog.ToastMessage("已选商品为空！!",mContext);
         }

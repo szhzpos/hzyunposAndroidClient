@@ -70,19 +70,20 @@ public class ChangeNumOrPriceDialog extends Dialog {
             View view =  getCurrentFocus();
             if (view != null) {
                 EditText tmp_edit = ((EditText)view);
-                int index = tmp_edit.getSelectionStart();
-                if (tmp_edit.getSelectionEnd() == tmp_edit.getText().length()){
+                int index = tmp_edit.getSelectionStart(),end = tmp_edit.getSelectionEnd();
+                if (index != end && end  == tmp_edit.getText().length()){
                     tmp_edit.setText(mContext.getString(R.string.d_zero_point_sz));
-                }
-                if (index == 0)return;
-                if (view.getId() == R.id.new_numOrprice_text) {
-                    if (index == tmp_edit.getText().toString().indexOf(".") + 1) {
-                        tmp_edit.setSelection(index - 1);
-                    } else if (index > tmp_edit.getText().toString().indexOf(".")) {
-                        tmp_edit.getText().replace(index - 1, index, "0");
-                        tmp_edit.setSelection(index - 1);
-                    } else {
-                        tmp_edit.getText().delete(index - 1, index);
+                }else {
+                    if (index == 0)return;
+                    if (view.getId() == R.id.new_numOrprice_text) {
+                        if (index == tmp_edit.getText().toString().indexOf(".") + 1) {
+                            tmp_edit.setSelection(index - 1);
+                        } else if (index > tmp_edit.getText().toString().indexOf(".")) {
+                            tmp_edit.getText().replace(index - 1, index, "0");
+                            tmp_edit.setSelection(index - 1);
+                        } else {
+                            tmp_edit.getText().delete(index - 1, index);
+                        }
                     }
                 }
             }
@@ -94,7 +95,7 @@ public class ChangeNumOrPriceDialog extends Dialog {
         for (int i = 0,child  = keyboard_layout.getChildCount(); i < child;i++){
             View tmp_v = keyboard_layout.getChildAt(i);
             int id = tmp_v.getId();
-            if (tmp_v instanceof Button && !(id == R.id._back)){
+            if (tmp_v instanceof Button && !(id == R.id._back || id == R.id.cancel || id == R.id._ok )){
                 tmp_v.setOnClickListener(button_click);
             }
         }
@@ -138,22 +139,20 @@ public class ChangeNumOrPriceDialog extends Dialog {
             EditText tmp_edit = ((EditText)view);
             int index = tmp_edit.getSelectionStart();
             String sz_button = ((Button) v).getText().toString();
-            switch (view.getId()){
-                case R.id.new_numOrprice_text:
-                    if (".".equals(sz_button)) {
-                        tmp_edit.setSelection(tmp_edit.getText().toString().indexOf(".") + 1);
-                    }else {
-                        if (index > tmp_edit.getText().toString().indexOf(".")){
-                            if (index != tmp_edit.length())
-                                tmp_edit.getText().delete(index,index + 1).insert(index,sz_button);
+            if (view.getId() == R.id.new_numOrprice_text) {
+                if (".".equals(sz_button)) {
+                    tmp_edit.setSelection(tmp_edit.getText().toString().indexOf(".") + 1);
+                } else {
+                    if (index > tmp_edit.getText().toString().indexOf(".")) {
+                        if (index != tmp_edit.length())
+                            tmp_edit.getText().delete(index, index + 1).insert(index, sz_button);
                             /*else
                                 tmp_edit.setSelection(tmp_edit.getText().toString().indexOf("."));*/
-                        }else {
-                            if(index == 0 && "0".equals(sz_button) )return;
-                            tmp_edit.getText().insert(index, sz_button);
-                        }
+                    } else {
+                        if (index == 0 && "0".equals(sz_button)) return;
+                        tmp_edit.getText().insert(index, sz_button);
                     }
-                    break;
+                }
             }
 
         }

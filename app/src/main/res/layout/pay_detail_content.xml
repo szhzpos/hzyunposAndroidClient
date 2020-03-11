@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/pay_detail_height"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/row_id"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/pay_detail_row_id_sz"
+        android:textAllCaps="false"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/pay_detail_head_font_size" />
+
+    <TextView
+        android:id="@+id/pay_method_id"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/pay_method_name"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/pay_detail_name_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/pay_detail_head_font_size" />
+
+    <TextView
+        android:id="@+id/pay_detail_amt"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/pay_detail_amt_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/pay_detail_head_font_size" />
+
+    <TextView
+        android:id="@+id/pay_detail_zl"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/pay_detail_zl_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/pay_detail_head_font_size" />
+
+    <TextView
+        android:id="@+id/pay_detail_v_num"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/pay_detail_v_num_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/pay_detail_head_font_size" />
+</LinearLayout>

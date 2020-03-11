@@ -409,7 +409,7 @@
                     android:id="@+id/textView18"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/amount_sz"
+                    android:text="@string/amt_sz"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/fun_button_font_size_18" />
 
@@ -421,7 +421,7 @@
                     android:textSize="@dimen/fun_button_font_size_24" />
 
                 <TextView
-                    android:id="@+id/sale_sum_amount"
+                    android:id="@+id/sale_sum_amt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/margin_2"

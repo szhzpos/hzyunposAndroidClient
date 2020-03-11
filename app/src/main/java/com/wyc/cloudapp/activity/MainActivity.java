@@ -32,9 +32,6 @@ import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.GoodsTypeViewAdapter;
 import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
-import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
-import com.wyc.cloudapp.dialog.PayDialog;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.network.NetworkManagement;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
@@ -84,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         mCurrentTimeView = findViewById(R.id.current_time);
         mCloseBtn = findViewById(R.id.close);
         mSaleSumNum = findViewById(R.id.sale_sum_num);
-        mSaleSumAmount = findViewById(R.id.sale_sum_amount);
+        mSaleSumAmount = findViewById(R.id.sale_sum_amt);
 
         //初始化adapter
         initGoodsInfoAdapter();
@@ -300,6 +297,14 @@ public class MainActivity extends AppCompatActivity {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(MainActivity.this,5);
         goods_info_view.setLayoutManager(gridLayoutManager);
         goods_info_view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            private int getVerSpacing(int viewHeight,int m_height){
+                int vertical_space ,vertical_counts,per_vertical_space;
+                vertical_space = viewHeight % m_height;
+                vertical_counts = viewHeight / m_height;
+                per_vertical_space = vertical_space / (vertical_counts != 0 ? vertical_counts:1);
+
+                return per_vertical_space;
+            }
             @Override
             public void onGlobalLayout() {
                 goods_info_view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
@@ -353,8 +358,8 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     for (int i = 0,length = datas.length();i < length;i ++){
                         JSONObject jsonObject = datas.getJSONObject(i);
-                        sale_sum_num += jsonObject.getDouble("sale_num");
-                        sale_sum_amount += jsonObject.getDouble("sale_amount");
+                        sale_sum_num += jsonObject.getDouble("sale_sum_num");
+                        sale_sum_amount += jsonObject.getDouble("sale_sum_amt");
                     }
                     mSaleSumNum.setText(String.format(Locale.CANADA,"%.4f",sale_sum_num));
                     mSaleSumAmount.setText(String.format(Locale.CANADA,"%.2f",sale_sum_amount));
@@ -369,6 +374,14 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
         recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            private int getVerSpacing(int viewHeight,int m_height){
+                int vertical_space ,vertical_counts,per_vertical_space;
+                vertical_space = viewHeight % m_height;
+                vertical_counts = viewHeight / m_height;
+                per_vertical_space = vertical_space / (vertical_counts != 0 ? vertical_counts:1);
+
+                return per_vertical_space;
+            }
             @Override
             public void onGlobalLayout() {
                 recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
@@ -378,18 +391,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         recyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
-        recyclerView.removeItemDecoration(recyclerView.getItemDecorationAt(0));
-        recyclerView.addItemDecoration(new DividerItemDecoration(this,1));
         recyclerView.setAdapter(mSaleGoodsViewAdapter);
-    }
-
-    private int getVerSpacing(int viewHeight,int m_height){
-        int vertical_space ,vertical_counts,per_vertical_space;
-        vertical_space = viewHeight % m_height;
-        vertical_counts = viewHeight / m_height;
-        per_vertical_space = vertical_space / (vertical_counts != 0 ? vertical_counts:1);
-
-        return per_vertical_space;
     }
 
     private void initSearch(){
