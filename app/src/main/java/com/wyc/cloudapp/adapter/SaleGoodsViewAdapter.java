@@ -52,8 +52,8 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
             barcode_id =  itemView.findViewById(R.id.barcode_id);
             barcode =  itemView.findViewById(R.id.barcode);
             buying_price =  itemView.findViewById(R.id.buying_price);
-            sale_num = itemView.findViewById(R.id.sale_sum_num);
-            sale_amt = itemView.findViewById(R.id.sale_sum_amt);
+            sale_num = itemView.findViewById(R.id.sale_num);
+            sale_amt = itemView.findViewById(R.id.sale_amt);
         }
     }
 
@@ -78,8 +78,8 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 myViewHolder.barcode_id.setText(goods_info.optString("barcode_id"));
                 myViewHolder.barcode.setText(goods_info.optString("barcode"));
                 myViewHolder.buying_price.setText(goods_info.optString("buying_price"));
-                myViewHolder.sale_num.setText(goods_info.optString("sale_sum_num"));
-                myViewHolder.sale_amt.setText(goods_info.optString("sale_sum_amt"));
+                myViewHolder.sale_num.setText(goods_info.optString("sale_num"));
+                myViewHolder.sale_amt.setText(goods_info.optString("sale_amt"));
 
                 if(myViewHolder.goods_title.getCurrentTextColor() == mContext.getResources().getColor(R.color.blue,null)){
                     myViewHolder.goods_title.setTextColor(mContext.getColor(R.color.black));//需要重新设置颜色；不然重用之后内容颜色为重用之前的。
@@ -130,20 +130,34 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         if (json != null){
             try {
                 String id = json.getString("goods_id");
-                double sel_num = 1.00,sel_amount,price;
+                double sel_num = 1.00,sel_amount,price,discount = 1.0,discount_amt = 0.0,new_price = 0.0;
 
                 price = json.getDouble("buying_price");
-                sel_amount = Utils.formatDouble(sel_num * price,2);
 
                 for (int i = 0,length = mDatas.length();i < length;i++){
                     JSONObject tmp = mDatas.getJSONObject(i);
                     if (id.equals(tmp.getString("goods_id"))){
                         exist = true;
-                        double sale_num = tmp.getDouble("sale_sum_num");
-                        double sale_amount = tmp.getDouble("sale_sum_amt");
 
-                        tmp.put("sale_sum_num",Utils.formatDouble(sale_num + sel_num,4));
-                        tmp.put("sale_sum_amt",Utils.formatDouble(sale_amount + sel_amount,2));
+                        double sale_num = tmp.getDouble("sale_num");
+                        double sale_amount = tmp.getDouble("sale_amt");
+                        double sale_discount_amt = tmp.getDouble("discount_amt");
+
+                        discount  = tmp.optDouble("discount",1.0);
+                        new_price = Utils.formatDouble(price * discount,2);
+                        sel_amount = Utils.formatDouble(sel_num * new_price,2);
+
+                        discount_amt = Utils.formatDouble((sel_num * (price - new_price)) + sale_discount_amt,2);
+
+                        tmp.put("old_price", price);
+                        tmp.put("buying_price", new_price);
+                        tmp.put("discount", discount);
+                        tmp.put("discount_amt", discount_amt);
+                        tmp.put("sale_num",Utils.formatDouble(sale_num + sel_num,4));
+                        tmp.put("sale_amt",Utils.formatDouble(sale_amount + sel_amount,2));
+                        tmp.put("order_amt",Utils.formatDouble(sale_amount + sel_amount + discount_amt,2));
+
+                        Logger.d_json(tmp.toString());
 
                         mCurrentItemIndex = i;
 
@@ -151,12 +165,27 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                     }
                 }
                 if (!exist){
-                    json.put("sale_sum_num",sel_num);
-                    json.put("sale_sum_amt",sel_amount);
+
+                    discount  = json.optDouble("discount",1.0);
+                    new_price = Utils.formatDouble(price * discount,2);
+                    sel_amount = Utils.formatDouble(sel_num * price,2);
+                    discount_amt = Utils.formatDouble(sel_num * (price - new_price),2);
+
+                    json.put("old_price", price);
+                    json.put("buying_price",new_price);
+                    json.put("discount", discount);
+                    json.put("discount_amt", discount_amt);
+                    json.put("sale_num",sel_num);
+                    json.put("sale_amt",sel_amount);
+                    json.put("order_amt",Utils.formatDouble(sel_amount + discount_amt,2));
                     mDatas.put(json);
+
+                    Logger.d_json(json.toString());
 
                     mCurrentItemIndex = mDatas.length() - 1;
                 }
+                Logger.d("discount:%f",discount);
+
                 this.notifyDataSetChanged();
             }catch (JSONException e){
                 MyDialog.displayErrorMessage("选择商品错误：" + e.getMessage(),mContext);
@@ -176,13 +205,13 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
             }else{
                 JSONObject jsonObject = mDatas.optJSONObject(index);
                 try {
-                    double current_num = jsonObject.getDouble("sale_sum_num"),
+                    double current_num = jsonObject.getDouble("sale_num"),
                             price = jsonObject.getDouble("buying_price");
                     if ((current_num = current_num - num) <= 0){
                         mDatas.remove(index);
                     }else{
-                        jsonObject.put("sale_sum_num",current_num);
-                        jsonObject.put("sale_sum_amt",Utils.formatDouble(current_num * price,2));
+                        jsonObject.put("sale_num",current_num);
+                        jsonObject.put("sale_amt",Utils.formatDouble(current_num * price,2));
                     }
                 }catch (JSONException e){
                     e.printStackTrace();
@@ -194,17 +223,18 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     }
 
     public void updateSaleGoodsDialog(final short type){//type 0 修改数量 1修改价格 2打折
-        if (getCurrentContent() != null){
+        JSONObject cur_json = getCurrentContent();
+        if (cur_json != null){
             ChangeNumOrPriceDialog dialog;
             switch (type){
                 case 1:
-                    dialog = new ChangeNumOrPriceDialog(mContext,"新价格");
+                    dialog = new ChangeNumOrPriceDialog(mContext,"新价格",cur_json.optString("buying_price"));
                     break;
                 case 2:
-                    dialog = new ChangeNumOrPriceDialog(mContext,"折扣");
+                    dialog = new ChangeNumOrPriceDialog(mContext,mContext.getString(R.string.discount_sz),String.format(Locale.CHINA,"%.0f",cur_json.optDouble("discount",1.0)*100));
                     break;
                     default:
-                        dialog = new ChangeNumOrPriceDialog(mContext,"新数量");
+                        dialog = new ChangeNumOrPriceDialog(mContext,"新数量",String.format(Locale.CHINA,"%.2f",cur_json.optDouble("sale_num",1.0)));
                         break;
             }
             dialog.setYesOnclickListener(myDialog -> {
@@ -218,28 +248,57 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
 
     private void updateSaleGoodsInfo(double value,short type){//type 0 修改数量 1修改价格 2打折
         JSONObject json = getCurrentContent();
+        double discount = 1.0,discount_amt = 0.0,old_price = 0.0,new_price = 0.0,sale_num = 0.0;
+        boolean d_discount = false;//是否折上折
         try {
-            double price = json.getDouble("buying_price");
-            double sale_num = json.getDouble("sale_sum_num");
+            old_price = json.getDouble("old_price");
             switch (type){
                 case 0:
                     if (value <= 0){
                         deleteSaleGoods(getCurrentItemIndex(),0);
                     }else{
-                        json.put("sale_sum_num",Utils.formatDouble(value,4));
-                        json.put("sale_sum_amt",Utils.formatDouble(value * price,2));
+                        sale_num = value;
+                        new_price = json.getDouble("buying_price");
+                        discount_amt = sale_num * (old_price - new_price);
+
+                        json.put("discount_amt", Utils.formatDouble(discount_amt + json.getDouble("discount_amt"),2));
+                        json.put("sale_num",Utils.formatDouble(sale_num,4));
+
                     }
                     break;
                 case 1:
-                    json.put("buying_price",Utils.formatDouble(value,2));
-                    json.put("sale_sum_amt",Utils.formatDouble(value * sale_num,2));
+                    sale_num = json.getDouble("sale_num");
+
+                    new_price = value;
+                    discount = Utils.formatDouble(new_price / old_price,4);
+                    discount_amt = Utils.formatDouble(sale_num * (old_price - new_price),2);
+
+                    json.put("discount", discount);
+                    json.put("discount_amt", discount_amt);
+                    json.put("buying_price",Utils.formatDouble(new_price,2));
                     break;
                 case 2:
-                    price = Utils.formatDouble(price * (value / 100),2);
-                    json.put("buying_price",price);
-                    json.put("sale_sum_amt",Utils.formatDouble(price * sale_num,2));
+                    discount = Utils.formatDouble(value / 100,4);
+                    new_price = json.getDouble("buying_price");
+                    sale_num = json.getDouble("sale_num");
+
+                    if (d_discount){
+                        new_price = Utils.formatDouble(new_price * discount,2);
+                    }else{
+                        new_price = Utils.formatDouble(old_price * discount,2);
+                    }
+
+                    discount_amt = Utils.formatDouble(sale_num * (old_price - new_price),2);
+
+                    json.put("discount", discount);
+                    json.put("discount_amt", discount_amt);
+                    json.put("buying_price",new_price);
                     break;
             }
+            json.put("sale_amt",Utils.formatDouble(sale_num * new_price,2));
+            json.put("order_amt",Utils.formatDouble(old_price * sale_num,2));
+
+            Logger.d_json(json.toString());
             notifyDataSetChanged();
         } catch (JSONException e) {
             e.printStackTrace();

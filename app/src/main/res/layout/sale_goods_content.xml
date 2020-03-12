@@ -75,7 +75,7 @@
         android:textColor="@color/text_color" />
 
     <TextView
-        android:id="@+id/sale_sum_num"
+        android:id="@+id/sale_num"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -88,13 +88,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_toStartOf="@id/sale_sum_amt"
+        android:layout_toStartOf="@id/sale_amt"
         android:text="@string/currency_symbol_sz"
         android:textColor="@color/orange_1"
         android:textSize="@dimen/font_size_18" />
 
     <TextView
-        android:id="@+id/sale_sum_amt"
+        android:id="@+id/sale_amt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
@@ -109,7 +109,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="@dimen/margin_8"
-        android:layout_toEndOf="@id/sale_sum_num"
+        android:layout_toEndOf="@id/sale_num"
         android:textColor="@color/text_color" />
 
 </RelativeLayout>

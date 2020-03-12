@@ -412,7 +412,7 @@
                     android:background="@color/transparent"
                     android:ems="10"
                     android:focusableInTouchMode="true"
-                    android:inputType="number|textPersonName"
+                    android:inputType="number|numberDecimal"
                     android:maxLength="8"
                     android:text="@string/d_zero_point_sz"
                     android:textColor="@color/text_color"

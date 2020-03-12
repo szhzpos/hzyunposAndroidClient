@@ -87,7 +87,11 @@ public class PayDialog extends Dialog {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                mCashAmt = Double.valueOf(editable.toString());
+                try {
+                    mCashAmt = Double.valueOf(editable.toString());
+                }catch (NumberFormatException e){
+                    mCashAmt = 0.0;
+                }
                 if ((mZlAmt = mCashAmt - mPay_balance) > 0){
                     if (mZlAmt < 100)
                         mZlAmtEt.setText(String.format(Locale.CHINA,"%.2f",mZlAmt));
@@ -119,20 +123,24 @@ public class PayDialog extends Dialog {
         findViewById(R.id._back).setOnClickListener(v -> {
             View view =  getCurrentFocus();
             if (view != null) {
-                EditText tmp_edit = ((EditText)view);
-                int index = tmp_edit.getSelectionStart(),end = tmp_edit.getSelectionEnd();
-                if (index !=end && end == tmp_edit.getText().length()){
-                    tmp_edit.setText(mContext.getString(R.string.d_zero_point_sz));
-                }else{
-                    if (index == 0)return;
-                    if (view.getId() == R.id.cash_amt) {
-                        if (index == tmp_edit.getText().toString().indexOf(".") + 1) {
-                            tmp_edit.setSelection(index - 1);
-                        } else if (index > tmp_edit.getText().toString().indexOf(".")) {
-                            tmp_edit.getText().replace(index - 1, index, "0");
-                            tmp_edit.setSelection(index - 1);
-                        } else {
-                            tmp_edit.getText().delete(index - 1, index);
+                if (view.getId() == R.id.cash_amt) {
+                    EditText tmp_edit = ((EditText)view);
+                    Editable editable = tmp_edit.getText();
+                    int index = tmp_edit.getSelectionStart(),end = tmp_edit.getSelectionEnd();
+                    if (index !=end && end == editable.length()){
+                        tmp_edit.setText(mContext.getString(R.string.d_zero_point_sz));
+                    }else{
+                        if (index == 0)return;
+                        if (index > editable.length())index = editable.length();
+                        if (view.getId() == R.id.cash_amt) {
+                            if (index == editable.toString().indexOf(".") + 1) {
+                                tmp_edit.setSelection(index - 1);
+                            } else if (index > editable.toString().indexOf(".")) {
+                                editable.replace(index - 1, index, "0");
+                                tmp_edit.setSelection(index - 1);
+                            } else {
+                                editable.delete(index - 1, index);
+                            }
                         }
                     }
                 }
@@ -182,24 +190,30 @@ public class PayDialog extends Dialog {
     private View.OnClickListener button_click = v -> {
         View view =  getCurrentFocus();
         if (view != null) {
-            EditText tmp_edit = ((EditText)view);
-            int index = tmp_edit.getSelectionStart();
-            String sz_button = ((Button) v).getText().toString();
-            if (tmp_edit.getSelectionEnd() == tmp_edit.getText().length()){
-                tmp_edit.setText(mContext.getString(R.string.d_zero_point_sz));
-            }
             if (view.getId() == R.id.cash_amt) {
-                if (".".equals(sz_button)) {
-                    tmp_edit.setSelection(tmp_edit.getText().toString().indexOf(".") + 1);
-                } else {
-                    if (index > tmp_edit.getText().toString().indexOf(".")) {
-                        if (index != tmp_edit.length())
-                            tmp_edit.getText().delete(index, index + 1).insert(index, sz_button);
+                EditText tmp_edit = ((EditText)view);
+                int index = tmp_edit.getSelectionStart();
+                Editable editable = tmp_edit.getText();
+                String sz_button = ((Button) v).getText().toString();
+                if (editable.toString().contains(".") && tmp_edit.getSelectionEnd() == editable.length()){
+                    editable.replace(0,editable.toString().indexOf("."),sz_button);
+                    tmp_edit.setSelection(editable.toString().indexOf("."));
+                }else
+                    if (".".equals(sz_button)) {
+                        if (editable.toString().contains(".")){
+                            tmp_edit.setSelection(editable.toString().indexOf(".") + 1);
+                        }else{
+                            editable.insert(index, sz_button);
+                        }
                     } else {
-                        if (index == 0 && "0".equals(sz_button)) return;
-                        tmp_edit.getText().insert(index, sz_button);
+                        if (editable.toString().contains(".") && index > editable.toString().indexOf(".")) {
+                            if (index != tmp_edit.length())
+                                editable.delete(index, index + 1).insert(index, sz_button);
+                        } else {
+                            if (index == 0 && "0".equals(sz_button)) return;
+                            editable.insert(index, sz_button);
+                        }
                     }
-                }
             }
 
         }
@@ -216,8 +230,12 @@ public class PayDialog extends Dialog {
                 if (pay_method != null){
                     try {
                         id = pay_method.getString("pay_method_id");
-                        if (PayMethodViewAdapter.CASH_METHOD_ID.equals(id)){
-                            mOK.callOnClick();
+                        switch (id){
+                            case PayMethodViewAdapter.CASH_METHOD_ID:
+                                mOK.callOnClick();
+                                break;
+                                default:
+                                    break;
                         }
                         Logger.d_json(pay_method.toString());
                     } catch (JSONException e) {
@@ -291,7 +309,7 @@ public class PayDialog extends Dialog {
         for (int i = 0,length = datas.length();i < length; i ++){
             try {
                 JSONObject jsonObject = datas.getJSONObject(i);
-                mOrder_amt += jsonObject.getDouble("sale_sum_amt");
+                mOrder_amt += jsonObject.getDouble("order_amt");
                 mDiscount_amt += jsonObject.optDouble("discount_amt",0.00);
                 mActual_amt = mOrder_amt - mDiscount_amt;
                 mCashAmt = mActual_amt;

@@ -15,6 +15,7 @@ import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.ReplacementTransformationMethod;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
@@ -96,9 +97,6 @@ public class MainActivity extends AppCompatActivity {
         //初始化搜索框
         initSearch();
 
-        //初始化键盘
-        initKeyboard();
-
         //初始化功能按钮事件
         findViewById(R.id.clear).setOnClickListener(v -> mSaleGoodsViewAdapter.clearGoods());//清空
         findViewById(R.id.minus_num).setOnClickListener(v -> mSaleGoodsViewAdapter.deleteSaleGoods(mSaleGoodsViewAdapter.getCurrentItemIndex(),1));//数量减
@@ -146,8 +144,6 @@ public class MainActivity extends AppCompatActivity {
                 MyDialog.displayMessage("更多",v.getContext());
             }
         });
-
-
 
         //初始化数据管理对象
         mNetworkManagement = new NetworkManagement(mHandler,mUrl,mAppId,mAppScret,mCashierInfo.optString("pos_num"),mCashierInfo.optString("cas_id"));
@@ -323,8 +319,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v, int pos) {
                 set_selected_status(v);//设置选中状态
-
-                mSaleGoodsViewAdapter.addSaleGoods(mGoodsInfoViewAdapter.getItem(pos));
+                JSONObject jsonObject = mGoodsInfoViewAdapter.getItem(pos);
+                if (jsonObject != null){
+                    try {
+                        mSaleGoodsViewAdapter.addSaleGoods(Utils.JsondeepCopy(mGoodsInfoViewAdapter.getItem(pos)));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        MyDialog.ToastMessage("选择商品错误：" + e.getMessage(),v.getContext());
+                    }
+                }
             }
             private void set_selected_status(View v){
                 TextView goods_name;
@@ -362,8 +365,8 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     for (int i = 0,length = datas.length();i < length;i ++){
                         JSONObject jsonObject = datas.getJSONObject(i);
-                        sale_sum_num += jsonObject.getDouble("sale_sum_num");
-                        sale_sum_amount += jsonObject.getDouble("sale_sum_amt");
+                        sale_sum_num += jsonObject.getDouble("sale_num");
+                        sale_sum_amount += jsonObject.getDouble("sale_amt");
                     }
                     mSaleSumNum.setText(String.format(Locale.CANADA,"%.4f",sale_sum_num));
                     mSaleSumAmount.setText(String.format(Locale.CANADA,"%.2f",sale_sum_amount));
@@ -435,10 +438,7 @@ public class MainActivity extends AppCompatActivity {
                         'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
             }
         });
-    }
-
-    private void initKeyboard(){
-        findViewById(R.id.keyboard).setOnClickListener((new View.OnClickListener() {
+        mSearch_content.setOnTouchListener(new View.OnTouchListener() {
             private View.OnClickListener mKeyboardListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -454,32 +454,41 @@ public class MainActivity extends AppCompatActivity {
                 }
             };
             @Override
-            public void onClick(View view) {
-                final TableLayout tableLayout = findViewById(R.id.keyboard_layout);
-                tableLayout.setVisibility(tableLayout.getVisibility()== View.VISIBLE ? View.GONE : View.VISIBLE);
-                findViewById(R.id.goods_info_list).requestLayout();
-                for(int i = 0,childCounts = tableLayout.getChildCount();i < childCounts;i ++){
-                    View vObj = tableLayout.getChildAt(i);
-                    if ( vObj instanceof TableRow){
-                        TableRow tableRow = (TableRow)vObj ;
-                        int buttons = tableRow.getChildCount();
-                        for (int j = 0;j < buttons;j ++){
-                            vObj = tableRow.getChildAt(j);
-                            if (vObj instanceof Button){
-                                final Button button = (Button)vObj;
-                                if (tableLayout.getVisibility() == View.VISIBLE){
-                                    button.setOnClickListener(mKeyboardListener);
-                                }else{
-                                    button.setOnClickListener(null);
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()){
+                    case MotionEvent.ACTION_DOWN:
+                        if (motionEvent.getX() > (mSearch_content.getWidth() - mSearch_content.getCompoundPaddingRight())){
+                            final TableLayout tableLayout = findViewById(R.id.keyboard_layout);
+                            tableLayout.setVisibility(tableLayout.getVisibility()== View.VISIBLE ? View.GONE : View.VISIBLE);
+                            findViewById(R.id.goods_info_list).requestLayout();
+                            for(int i = 0,childCounts = tableLayout.getChildCount();i < childCounts;i ++){
+                                View vObj = tableLayout.getChildAt(i);
+                                if ( vObj instanceof TableRow){
+                                    TableRow tableRow = (TableRow)vObj ;
+                                    int buttons = tableRow.getChildCount();
+                                    for (int j = 0;j < buttons;j ++){
+                                        vObj = tableRow.getChildAt(j);
+                                        if (vObj instanceof Button){
+                                            final Button button = (Button)vObj;
+                                            if (tableLayout.getVisibility() == View.VISIBLE){
+                                                button.setOnClickListener(mKeyboardListener);
+                                            }else{
+                                                button.setOnClickListener(null);
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
-                    }
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        //barcode_text.performClick();
+                        break;
                 }
+                return false;
             }
-        }));
+        });
     }
-
-
-
 }

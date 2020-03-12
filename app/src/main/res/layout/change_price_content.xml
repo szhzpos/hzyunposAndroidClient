@@ -45,7 +45,7 @@
         android:background="@drawable/border_sub_gray"
         android:ems="10"
         android:focusable="auto"
-        android:inputType="number"
+        android:inputType="number|numberDecimal"
         android:maxLength="8"
         android:text="@string/d_zero_point_sz"
         android:textColor="@color/text_color"

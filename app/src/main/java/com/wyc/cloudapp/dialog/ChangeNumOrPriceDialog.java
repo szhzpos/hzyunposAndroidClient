@@ -2,16 +2,11 @@ package com.wyc.cloudapp.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.Point;
 import android.os.Bundle;
-import android.view.Display;
-import android.view.Gravity;
+import android.text.Editable;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -19,22 +14,20 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.utils.Utils;
 
-import static android.content.Context.WINDOW_SERVICE;
-
 public class ChangeNumOrPriceDialog extends Dialog {
     private Context mContext;
     private EditText new_price_text;
-    private TextView mTitle;
-    private String szTitle;
+    private String mTitle,mInitVal;
     private onNoOnclickListener noOnclickListener;//取消按钮被点击了的监听器
     private onYesOnclickListener yesOnclickListener;//确定按钮被点击了的监听器
-    public ChangeNumOrPriceDialog(Context context){
+    private ChangeNumOrPriceDialog(Context context){
         super(context);
         this.mContext = context;
     }
-    public ChangeNumOrPriceDialog(Context context,String sztitle){
+    public ChangeNumOrPriceDialog(Context context,final String title,final String initVal){
         this(context);
-        this.szTitle = sztitle;
+        this.mTitle = title;
+        mInitVal = initVal;
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +40,10 @@ public class ChangeNumOrPriceDialog extends Dialog {
         new_price_text.setOnFocusChangeListener((v, hasFocus) -> Utils.hideKeyBoard((EditText)v));
         new_price_text.postDelayed(()->{
             new_price_text.requestFocus();
-            new_price_text.setSelection(0);
-        },500);
+            //new_price_text.setSelection(new_price_text.getText().length());
+        },300);
+        new_price_text.setText(mInitVal);
 
-        mTitle = findViewById(R.id.title);
-        mTitle.setText(szTitle);
 
         findViewById(R.id._ok).setOnClickListener(v -> {
             if (yesOnclickListener != null){
@@ -69,21 +61,14 @@ public class ChangeNumOrPriceDialog extends Dialog {
         findViewById(R.id._back).setOnClickListener(v -> {
             View view =  getCurrentFocus();
             if (view != null) {
-                EditText tmp_edit = ((EditText)view);
-                int index = tmp_edit.getSelectionStart(),end = tmp_edit.getSelectionEnd();
-                if (index != end && end  == tmp_edit.getText().length()){
-                    tmp_edit.setText(mContext.getString(R.string.d_zero_point_sz));
-                }else {
-                    if (index == 0)return;
-                    if (view.getId() == R.id.new_numOrprice_text) {
-                        if (index == tmp_edit.getText().toString().indexOf(".") + 1) {
-                            tmp_edit.setSelection(index - 1);
-                        } else if (index > tmp_edit.getText().toString().indexOf(".")) {
-                            tmp_edit.getText().replace(index - 1, index, "0");
-                            tmp_edit.setSelection(index - 1);
-                        } else {
-                            tmp_edit.getText().delete(index - 1, index);
-                        }
+                if (view.getId() == R.id.new_numOrprice_text) {
+                    EditText tmp_edit = ((EditText)view);
+                    int index = tmp_edit.getSelectionStart(),end = tmp_edit.getSelectionEnd();
+                    if (index != end && end  == tmp_edit.getText().length()){
+                        tmp_edit.setText(mContext.getString(R.string.space_sz));
+                    }else{
+                        if (index == 0)return;
+                        tmp_edit.getText().delete(index - 1, index);
                     }
                 }
             }
@@ -99,6 +84,10 @@ public class ChangeNumOrPriceDialog extends Dialog {
                 tmp_v.setOnClickListener(button_click);
             }
         }
+
+        //处理标题
+        ((TextView)findViewById(R.id.title)).setText(mTitle);
+
     }
 
     @Override
@@ -122,7 +111,9 @@ public class ChangeNumOrPriceDialog extends Dialog {
     }
 
     public double getNewNumOrPrice(){
-        return  Double.valueOf(new_price_text.getText().toString());
+        Editable editable = new_price_text.getText();
+        if (editable.length() == 0)return Double.valueOf(mInitVal);
+        return  Double.valueOf(editable.toString());
     }
 
     public interface onYesOnclickListener {
@@ -136,26 +127,14 @@ public class ChangeNumOrPriceDialog extends Dialog {
     private View.OnClickListener button_click = v -> {
         View view =  getCurrentFocus();
         if (view != null) {
-            EditText tmp_edit = ((EditText)view);
-            int index = tmp_edit.getSelectionStart();
-            String sz_button = ((Button) v).getText().toString();
             if (view.getId() == R.id.new_numOrprice_text) {
-                if (".".equals(sz_button)) {
-                    tmp_edit.setSelection(tmp_edit.getText().toString().indexOf(".") + 1);
-                } else {
-                    if (index > tmp_edit.getText().toString().indexOf(".")) {
-                        if (index != tmp_edit.length())
-                            tmp_edit.getText().delete(index, index + 1).insert(index, sz_button);
-                            /*else
-                                tmp_edit.setSelection(tmp_edit.getText().toString().indexOf("."));*/
-                    } else {
-                        if (index == 0 && "0".equals(sz_button)) return;
-                        tmp_edit.getText().insert(index, sz_button);
-                    }
-                }
+                EditText tmp_edit = ((EditText)view);
+                int index = tmp_edit.getSelectionStart();
+                Editable editable = tmp_edit.getText();
+                String sz_button = ((Button) v).getText().toString();
+                if (index != tmp_edit.getSelectionEnd())editable.clear();
+                editable.insert(index, sz_button);
             }
-
         }
     };
-
 }

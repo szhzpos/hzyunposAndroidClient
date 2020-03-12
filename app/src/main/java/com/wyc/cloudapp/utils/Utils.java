@@ -336,4 +336,7 @@ public class Utils {
     public static boolean JsonIsNotEmpty(JSONObject json){
         return json != null && json.keys().hasNext();
     }
+    public static JSONObject JsondeepCopy(JSONObject jsonObject) throws JSONException {
+        return new JSONObject(jsonObject.toString());
+    }
 }

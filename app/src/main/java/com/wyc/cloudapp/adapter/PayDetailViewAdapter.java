@@ -11,7 +11,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.listener.ClickListener;
 import com.wyc.cloudapp.utils.Utils;
