@@ -33,6 +33,7 @@ import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.GoodsTypeViewAdapter;
 import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
+import com.wyc.cloudapp.dialog.VipInfoDialog;
 import com.wyc.cloudapp.network.NetworkManagement;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
@@ -76,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
         //初始化成员变量
         mHandler = new Myhandler(this);
-        mProgressDialog = new CustomProgressDialog(this,R.style.CustomDialog);
+        mProgressDialog = new CustomProgressDialog(this);
         mDialog = new MyDialog(this);
         mSearch_content = findViewById(R.id.search_content);
         mCurrentTimeView = findViewById(R.id.current_time);
@@ -111,20 +112,23 @@ public class MainActivity extends AppCompatActivity {
 
             }, Dialog::dismiss);
         });//退出收银
-        findViewById(R.id.num).setOnClickListener(view -> {
-            mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 0);
-        });//数量
-        findViewById(R.id.discount).setOnClickListener(v->{
-            mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 2);
-        });//打折
-        findViewById(R.id.change_price).setOnClickListener(v->{
-            mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 1);
-        });//改价
+        findViewById(R.id.num).setOnClickListener(view -> mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 0));//数量
+        findViewById(R.id.discount).setOnClickListener(v-> mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 2));//打折
+        findViewById(R.id.change_price).setOnClickListener(v-> mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 1));//改价
         findViewById(R.id.check_out).setOnClickListener((View v)->{
             v.setEnabled(false);
             mSaleGoodsViewAdapter.showPayDialog();
             v.setEnabled(true);
         });//结账
+
+        findViewById(R.id.vip).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                VipInfoDialog dialog = new VipInfoDialog(v.getContext());
+                dialog.show();
+            }
+        });
+
 
         findViewById(R.id.q_deal_linerLayout).setOnClickListener(new View.OnClickListener() {
             @Override

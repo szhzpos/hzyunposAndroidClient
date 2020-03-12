@@ -7,6 +7,7 @@
     <dimen name="margin_5">5dp</dimen>
     <dimen name="margin_8">8dp</dimen>
     <dimen name="margin_12">12dp</dimen>
+    <dimen name="margin_88">88dp</dimen>
     <dimen name="font_size_16">16sp</dimen>
     <dimen name="font_size_18">18sp</dimen>
     <dimen name="font_size_24">24sp</dimen>
@@ -35,6 +36,7 @@
     <dimen name="width_85">85dp</dimen>
     <dimen name="width_78">78dp</dimen>
     <dimen name="width_328">328dp</dimen>
+    <dimen name="width_0">0dp</dimen>
     <dimen name="size_35">35dp</dimen>
     <dimen name="dialog_head_heigth">@dimen/height_50</dimen>
     <dimen name="goods_height">82dp</dimen>

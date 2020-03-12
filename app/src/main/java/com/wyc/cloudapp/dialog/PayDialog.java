@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
@@ -69,46 +70,8 @@ public class PayDialog extends Dialog {
         //初始化支付明细
         initPayDetailViewAdapter();
 
-        //初始化现金金额
-        mCashMoneyEt = findViewById(R.id.cash_amt);
-        mCashMoneyEt.setText(String.format(Locale.CHINA,"%.2f",mActual_amt));
-        mCashMoneyEt.setSelectAllOnFocus(true);
-        mCashMoneyEt.setOnFocusChangeListener((view, b) -> Utils.hideKeyBoard((EditText) view));
-        mCashMoneyEt.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                try {
-                    mCashAmt = Double.valueOf(editable.toString());
-                }catch (NumberFormatException e){
-                    mCashAmt = 0.0;
-                }
-                if ((mZlAmt = mCashAmt - mPay_balance) > 0){
-                    if (mZlAmt < 100)
-                        mZlAmtEt.setText(String.format(Locale.CHINA,"%.2f",mZlAmt));
-                    else{
-                        mCashMoneyEt.setText(mPayBalanceTv.getText());
-                        mCashMoneyEt.selectAll();
-                        MyDialog.ToastMessage("找零不能大于100",mContext);
-                    }
-                }else{
-                    mZlAmt = 0.00;
-                    mZlAmtEt.setText(mContext.getText(R.string.z_p_z_sz));
-                }
-            }
-        });
-        mCashMoneyEt.postDelayed(()->{
-            mCashMoneyEt.requestFocus();
-        },300);
+        //初始化现金EditText
+        initCsahText();
 
         //初始化按钮
         mOK = findViewById(R.id._ok);
@@ -343,6 +306,7 @@ public class PayDialog extends Dialog {
         mAmt_received = 0.0;
         mPay_balance = 0.0;
         mCashAmt = 0.0;
+        mZlAmt = 0.0;
     }
 
     private void cash_pay(){
@@ -364,5 +328,45 @@ public class PayDialog extends Dialog {
         }else{
             MyDialog.ToastMessage("现金付款方式不存在！",mContext);
         }
+    }
+
+    private void initCsahText(){
+        mCashMoneyEt = findViewById(R.id.cash_amt);
+        mCashMoneyEt.setText(String.format(Locale.CHINA,"%.2f",mActual_amt));
+        mCashMoneyEt.setSelectAllOnFocus(true);
+        mCashMoneyEt.setOnFocusChangeListener((view, b) -> Utils.hideKeyBoard((EditText) view));
+        mCashMoneyEt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                try {
+                    mCashAmt = Double.valueOf(editable.toString());
+                }catch (NumberFormatException e){
+                    mCashAmt = 0.0;
+                }
+                if ((mZlAmt = mCashAmt - mPay_balance) > 0){
+                    if (mZlAmt < 100)
+                        mZlAmtEt.setText(String.format(Locale.CHINA,"%.2f",mZlAmt));
+                    else{
+                        mCashMoneyEt.setText(mPayBalanceTv.getText());
+                        mCashMoneyEt.selectAll();
+                        MyDialog.ToastMessage("找零不能大于100",mContext);
+                    }
+                }else{
+                    mZlAmt = 0.00;
+                    mZlAmtEt.setText(mContext.getText(R.string.z_p_z_sz));
+                }
+            }
+        });
+        mCashMoneyEt.postDelayed(()-> mCashMoneyEt.requestFocus(),300);
     }
 }

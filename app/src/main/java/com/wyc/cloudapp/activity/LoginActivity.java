@@ -62,7 +62,7 @@ public class LoginActivity extends AppCompatActivity {
 
         myHandler = new Myhandler(this);
         mSelf = this;
-        mProgressDialog = new CustomProgressDialog(this,R.style.CustomDialog);
+        mProgressDialog = new CustomProgressDialog(this);
         mSync = new SyncThread(myHandler);
 
         SoftKeyBoardListener.setListener(this, new SoftKeyBoardListener.OnSoftKeyBoardChangeListener() {

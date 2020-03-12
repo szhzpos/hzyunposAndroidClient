@@ -77,7 +77,7 @@ public class ConnSettingDialog extends Dialog {
         mAppscret = findViewById(R.id.appSecret);
         mStore_name = findViewById(R.id.store_name);
 
-        mDialog = new CustomProgressDialog(mContext,R.style.CustomDialog);
+        mDialog = new CustomProgressDialog(mContext);
         mPopupWindow = new CustomePopupWindow(mContext);
         mHandler = new Myhandler(this);
 

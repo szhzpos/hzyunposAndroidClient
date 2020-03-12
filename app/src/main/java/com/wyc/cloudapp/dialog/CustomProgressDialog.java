@@ -26,7 +26,7 @@ public class CustomProgressDialog extends ProgressDialog
     private boolean mRestShowTime = true;
     public CustomProgressDialog(Context context)
     {
-        super(context);
+        super(context,R.style.CustomProgressDialog);
     }
 
     public CustomProgressDialog(Context context, int theme)
@@ -43,7 +43,7 @@ public class CustomProgressDialog extends ProgressDialog
 
     private void init()
     {
-        setContentView(R.layout.custom_dialog);
+        setContentView(R.layout.custom_progress_dialog);
 
         mMessage = findViewById(R.id.title);
         mShowTimeView = findViewById(R.id.show_time);
