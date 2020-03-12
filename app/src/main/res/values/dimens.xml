@@ -36,6 +36,7 @@
     <dimen name="width_78">78dp</dimen>
     <dimen name="width_328">328dp</dimen>
     <dimen name="size_35">35dp</dimen>
+    <dimen name="dialog_head_heigth">@dimen/height_50</dimen>
     <dimen name="goods_height">82dp</dimen>
     <dimen name="sale_goods_height">68dp</dimen>
     <dimen name="goods_img_width">@dimen/width_88</dimen>

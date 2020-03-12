@@ -78,4 +78,12 @@
     <string name="pay_detail_v_num_sz">凭证号</string>
     <string name="cash_pay_sz">现金：</string>
     <string name="cash_zl_sz">找零：</string>
+    <string name="vip_dialog_sz">会员信息</string>
+    <string name="vip_search_hint_sz">请输入会员手机号</string>
+    <string name="vip_name_sz">会员姓名：</string>
+    <string name="vip_six_sz">性别：</string>
+    <string name="vip_ph_num_sz">会员手机：</string>
+    <string name="vip_id_sz">卡号：</string>
+    <string name="vip_balance_sz">余额：</string>
+    <string name="vip_integral_sz">积分：</string>
 </resources>
