@@ -80,10 +80,16 @@
     <string name="cash_zl_sz">找零：</string>
     <string name="vip_dialog_sz">会员信息</string>
     <string name="vip_search_hint_sz">请输入会员手机号</string>
-    <string name="vip_name_sz">会员姓名：</string>
+    <string name="vip_name_sz">姓名：</string>
     <string name="vip_six_sz">性别：</string>
-    <string name="vip_ph_num_sz">会员手机：</string>
+    <string name="vip_ph_num_sz">手机：</string>
     <string name="vip_id_sz">卡号：</string>
     <string name="vip_balance_sz">余额：</string>
     <string name="vip_integral_sz">积分：</string>
+    <string name="search_sz">搜索</string>
+    <string name="vip_modify_sz">修改</string>
+    <string name="vip_charge_sz">储值</string>
+    <string name="add_sz">新增</string>
+    <string name="vip_level_sz">级别：</string>
+    <string name="vip_birth_sz">生日：</string>
 </resources>

@@ -33,6 +33,7 @@ import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.GoodsTypeViewAdapter;
 import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
+import com.wyc.cloudapp.dialog.PayDialog;
 import com.wyc.cloudapp.dialog.VipInfoDialog;
 import com.wyc.cloudapp.network.NetworkManagement;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -117,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.change_price).setOnClickListener(v-> mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 1));//改价
         findViewById(R.id.check_out).setOnClickListener((View v)->{
             v.setEnabled(false);
-            mSaleGoodsViewAdapter.showPayDialog();
+            showPayDialog();
             v.setEnabled(true);
         });//结账
 
@@ -494,5 +495,17 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    private void showPayDialog(){
+        JSONArray datas = mSaleGoodsViewAdapter.getDatas();
+        if (datas.length() != 0){
+            PayDialog dialog = new PayDialog(this,mSaleGoodsViewAdapter);
+            if (dialog.initPayContent(datas)){
+                dialog.setNoOnclickListener(PayDialog::dismiss).show();
+            }
+        }else{
+            MyDialog.ToastMessage("已选商品为空！!",this);
+        }
     }
 }

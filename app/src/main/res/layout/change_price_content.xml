@@ -10,7 +10,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/dialog_head_heigth"
-        android:background="@drawable/round_shape_main_color"
+        android:background="@drawable/dialog_top_round_shap"
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:orientation="horizontal">
@@ -47,6 +47,7 @@
         android:focusable="auto"
         android:inputType="number|numberDecimal"
         android:maxLength="8"
+        android:padding="@dimen/margin_5"
         android:text="@string/d_zero_point_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/fun_button_font_size_18" />
@@ -177,7 +178,7 @@
             app:layout_constraintTop_toBottomOf="@+id/_back" />
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/_seven"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/pay_dialog_button_width"
             android:layout_height="@dimen/pay_dialog_button_height"
@@ -192,7 +193,7 @@
             app:layout_constraintTop_toBottomOf="@+id/_four" />
 
         <Button
-            android:id="@+id/button4"
+            android:id="@+id/_eight"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/pay_dialog_button_width"
             android:layout_height="@dimen/pay_dialog_button_height"
@@ -204,11 +205,11 @@
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="@dimen/num_keyboard_font_size_24"
-            app:layout_constraintStart_toEndOf="@+id/button3"
+            app:layout_constraintStart_toEndOf="@+id/_seven"
             app:layout_constraintTop_toBottomOf="@+id/_five" />
 
         <Button
-            android:id="@+id/button5"
+            android:id="@+id/_nine"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/pay_dialog_button_width"
             android:layout_height="@dimen/pay_dialog_button_height"
@@ -220,7 +221,7 @@
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="@dimen/num_keyboard_font_size_24"
-            app:layout_constraintStart_toEndOf="@+id/button4"
+            app:layout_constraintStart_toEndOf="@+id/_eight"
             app:layout_constraintTop_toBottomOf="@+id/_six" />
 
         <Button
@@ -238,7 +239,7 @@
             android:textColor="@color/white"
             android:textSize="@dimen/num_keyboard_font_size_24"
             app:layout_constraintStart_toEndOf="@+id/button16"
-            app:layout_constraintTop_toBottomOf="@+id/button5" />
+            app:layout_constraintTop_toBottomOf="@+id/_nine" />
 
         <Button
             android:id="@+id/button6"
@@ -253,7 +254,7 @@
             android:textColor="@color/white"
             android:textSize="@dimen/num_keyboard_font_size_24"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button3" />
+            app:layout_constraintTop_toBottomOf="@+id/_seven" />
 
         <Button
             android:id="@+id/button16"
@@ -268,20 +269,20 @@
             android:textColor="@color/white"
             android:textSize="@dimen/num_keyboard_font_size_24"
             app:layout_constraintStart_toEndOf="@+id/button6"
-            app:layout_constraintTop_toBottomOf="@+id/button4" />
+            app:layout_constraintTop_toBottomOf="@+id/_eight" />
 
         <Button
             android:id="@+id/_ok"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/pay_dialog_button_width"
-            android:layout_height="138dp"
+            android:layout_height="122dp"
             android:layout_marginStart="@dimen/margin_2"
             android:layout_marginTop="@dimen/margin_2"
             android:background="@drawable/button_sub_blue"
             android:text="@string/OK"
             android:textColor="@color/white"
             android:textSize="@dimen/num_keyboard_font_size_18"
-            app:layout_constraintStart_toEndOf="@+id/button5"
+            app:layout_constraintStart_toEndOf="@+id/_nine"
             app:layout_constraintTop_toBottomOf="@+id/cancel" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 

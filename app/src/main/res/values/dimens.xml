@@ -7,7 +7,7 @@
     <dimen name="margin_5">5dp</dimen>
     <dimen name="margin_8">8dp</dimen>
     <dimen name="margin_12">12dp</dimen>
-    <dimen name="margin_88">88dp</dimen>
+    <dimen name="margin_18">18dp</dimen>
     <dimen name="font_size_16">16sp</dimen>
     <dimen name="font_size_18">18sp</dimen>
     <dimen name="font_size_24">24sp</dimen>
@@ -38,7 +38,7 @@
     <dimen name="width_328">328dp</dimen>
     <dimen name="width_0">0dp</dimen>
     <dimen name="size_35">35dp</dimen>
-    <dimen name="dialog_head_heigth">@dimen/height_50</dimen>
+    <dimen name="dialog_head_heigth">@dimen/height_45</dimen>
     <dimen name="goods_height">82dp</dimen>
     <dimen name="sale_goods_height">68dp</dimen>
     <dimen name="goods_img_width">@dimen/width_88</dimen>
@@ -47,7 +47,8 @@
     <dimen name="login_btn_width">138dp</dimen>
     <dimen name="login_text_width">@dimen/width_328</dimen>
     <dimen name="login_text_height">@dimen/height_50</dimen>
-    <dimen name="pay_dialog_button_width">@dimen/width_88</dimen>
-    <dimen name="pay_dialog_button_height">@dimen/height_68</dimen>
+    <dimen name="pay_dialog_button_width">75dp</dimen>
+    <dimen name="pay_dialog_button_height">60dp</dimen>
     <dimen name="pay_detail_height">@dimen/height_45</dimen>
+    <dimen name="pay_method_width">101dp</dimen>
 </resources>

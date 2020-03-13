@@ -1161,15 +1161,13 @@
             android:layout_width="248dp"
             android:layout_height="@dimen/height_40"
             android:layout_gravity="center"
-            android:layout_marginStart="@dimen/margin_5"
             android:background="@drawable/border_sub_gray"
             android:drawableEnd="@drawable/keyboard_icon"
             android:ems="10"
             android:hint="@string/space_sz"
             android:importantForAutofill="no"
             android:inputType="textPersonName"
-            android:paddingStart="0dp"
-            android:paddingEnd="@dimen/margin_2"
+            android:padding="@dimen/margin_5"
             android:textColor="@color/text_color"
             android:textSize="24sp" />
 

@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.ConnSettingDialog;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
@@ -187,8 +188,8 @@ public class LoginActivity extends AppCompatActivity {
                 }
             });
         });
-        AsyncTask.execute(()->{
-            JSONObject object = new JSONObject(),param_json = new JSONObject(),cashier_json = new JSONObject(),retJson,info_json,jsonLogin,store_info;
+        CustomApplication.execute(()->{
+            JSONObject object = new JSONObject(),param_json = new JSONObject(),cashier_json,retJson,info_json,jsonLogin,store_info;
             String url,login_url,pos_url,app_id,appscret,sz_param,err_info;
             if (SQLiteHelper.getLocalParameter("connParam",param_json)){
                 if (Utils.JsonIsNotEmpty(param_json)){

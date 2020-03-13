@@ -43,7 +43,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View itemView = View.inflate(mContext, R.layout.pay_method_content, null);
-        itemView.setLayoutParams( new RecyclerView.LayoutParams((int)mContext.getResources().getDimension(R.dimen.width_88), ViewGroup.LayoutParams.MATCH_PARENT));
+        itemView.setLayoutParams( new RecyclerView.LayoutParams((int)mContext.getResources().getDimension(R.dimen.pay_method_width), ViewGroup.LayoutParams.MATCH_PARENT));
         itemView.setOnClickListener(view -> mCurrentItemView = view);
         return new MyViewHolder(itemView);
     }

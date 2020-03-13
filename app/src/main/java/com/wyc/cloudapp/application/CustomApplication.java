@@ -19,12 +19,15 @@ import com.wyc.cloudapp.logger.LogcatLogStrategy;
 import com.wyc.cloudapp.logger.Logger;
 
 import java.io.File;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Created by Administrator on 2018-04-17.
  */
 
 public class CustomApplication extends Application {
+    private static final ThreadPoolExecutor THREAD_POOL_EXECUTOR = (ThreadPoolExecutor)Executors.newFixedThreadPool(8);
     private NetChangeMonitor netChangeMonitor;
     private volatile int netState = 1,netState_mobile = 1;//WiFi 连接状态 1 连接 0 其他
     public CustomApplication(){
@@ -45,6 +48,7 @@ public class CustomApplication extends Application {
     @Override
     public void onTerminate(){
         super.onTerminate();
+        THREAD_POOL_EXECUTOR.shutdown();
         SQLiteHelper.closeDB();
         if (netChangeMonitor != null){
             unregisterReceiver(netChangeMonitor);
@@ -64,4 +68,7 @@ public class CustomApplication extends Application {
         netState = state;
     }
 
+    public static void execute(Runnable runnable){
+        THREAD_POOL_EXECUTOR.execute(runnable);
+    }
 }

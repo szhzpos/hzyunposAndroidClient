@@ -355,14 +355,4 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         goods_name.setTextColor(mContext.getColor(R.color.blue));
     }
 
-    public void showPayDialog(){
-        if (mDatas.length() != 0){
-            PayDialog dialog = new PayDialog(mContext,this);
-            if (dialog.initPayContent(mDatas)){
-                dialog.setNoOnclickListener(myDialog -> myDialog.dismiss()).show();
-            }
-        }else{
-            MyDialog.ToastMessage("已选商品为空！!",mContext);
-        }
-    }
 }

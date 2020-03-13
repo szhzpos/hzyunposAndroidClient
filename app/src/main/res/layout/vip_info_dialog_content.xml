@@ -2,14 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:background="@drawable/round_shape"
     android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/dialog_head_heigth"
-        android:background="@drawable/round_shape_main_color"
+        android:background="@drawable/dialog_top_round_shap"
         android:orientation="horizontal">
 
         <TextView
@@ -40,136 +41,191 @@
         android:orientation="horizontal">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="@dimen/width_0"
-            android:layout_height="match_parent"
-            android:layout_margin="@dimen/margin_2"
-            android:layout_weight="1"
-            android:background="@drawable/round_shape">
+            android:layout_width="@dimen/width_328"
+            android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/name_text"
-                android:layout_width="wrap_content"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:text="@string/vip_name_sz"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16"
+                android:layout_margin="@dimen/margin_2"
+                android:background="@drawable/dot_round_shape"
+                android:padding="@dimen/margin_5"
+                android:visibility="visible"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/vip_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="某某会员"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16"
-                app:layout_constraintStart_toEndOf="@id/name_text"
-                app:layout_constraintTop_toTopOf="@id/name_text" />
+                <TextView
+                    android:id="@+id/name_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:text="@string/vip_name_sz"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/sex_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="88dp"
-                android:text="@string/vip_six_sz"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16"
-                app:layout_constraintStart_toEndOf="@id/vip_name"
-                app:layout_constraintTop_toTopOf="parent" />
+                <TextView
+                    android:id="@+id/vip_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16"
+                    app:layout_constraintStart_toEndOf="@id/name_text"
+                    app:layout_constraintTop_toTopOf="@id/name_text" />
 
-            <TextView
-                android:id="@+id/vip_sex"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="男"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16"
-                app:layout_constraintStart_toEndOf="@id/sex_text"
-                app:layout_constraintTop_toTopOf="parent" />
+                <TextView
+                    android:id="@+id/sex_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="108dp"
+                    android:text="@string/vip_six_sz"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16"
+                    app:layout_constraintStart_toEndOf="@id/vip_name"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/p_num_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_88"
-                android:text="@string/vip_ph_num_sz"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/name_text" />
+                <TextView
+                    android:id="@+id/vip_sex"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16"
+                    app:layout_constraintStart_toEndOf="@id/sex_text"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/vip_p_num"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="188888888"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16"
-                app:layout_constraintStart_toEndOf="@id/p_num_text"
-                app:layout_constraintTop_toTopOf="@id/p_num_text" />
+                <TextView
+                    android:id="@+id/p_num_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_18"
+                    android:text="@string/vip_ph_num_sz"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/name_text" />
 
-            <TextView
-                android:id="@+id/id_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/vip_id_sz"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16"
-                app:layout_constraintStart_toStartOf="@id/sex_text"
-                app:layout_constraintTop_toTopOf="@id/vip_p_num" />
+                <TextView
+                    android:id="@+id/vip_p_num"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16"
+                    app:layout_constraintStart_toEndOf="@id/p_num_text"
+                    app:layout_constraintTop_toTopOf="@id/p_num_text" />
 
-            <TextView
-                android:id="@+id/vip_card_id"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="18888"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16"
-                app:layout_constraintStart_toEndOf="@id/id_text"
-                app:layout_constraintTop_toTopOf="@id/id_text" />
+                <TextView
+                    android:id="@+id/id_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/vip_id_sz"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16"
+                    app:layout_constraintStart_toStartOf="@id/sex_text"
+                    app:layout_constraintTop_toTopOf="@id/vip_p_num" />
 
-            <TextView
-                android:id="@+id/balance_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_88"
-                android:text="@string/vip_balance_sz"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16"
-                app:layout_constraintStart_toStartOf="@id/p_num_text"
-                app:layout_constraintTop_toBottomOf="@id/p_num_text" />
+                <TextView
+                    android:id="@+id/vip_card_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16"
+                    app:layout_constraintStart_toEndOf="@id/id_text"
+                    app:layout_constraintTop_toTopOf="@id/id_text" />
 
-            <TextView
-                android:id="@+id/textView28"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="16.88"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16"
-                app:layout_constraintStart_toEndOf="@id/balance_text"
-                app:layout_constraintTop_toTopOf="@id/balance_text" />
+                <TextView
+                    android:id="@+id/balance_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_18"
+                    android:text="@string/vip_balance_sz"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16"
+                    app:layout_constraintStart_toStartOf="@id/p_num_text"
+                    app:layout_constraintTop_toBottomOf="@id/p_num_text" />
 
-            <TextView
-                android:id="@+id/integral_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/vip_integral_sz"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16"
-                app:layout_constraintStart_toStartOf="@id/id_text"
-                app:layout_constraintTop_toTopOf="@id/balance_text" />
+                <TextView
+                    android:id="@+id/vip_balance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16"
+                    app:layout_constraintStart_toEndOf="@id/balance_text"
+                    app:layout_constraintTop_toTopOf="@id/balance_text" />
 
-            <TextView
-                android:id="@+id/textView30"
-                android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/integral_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/vip_integral_sz"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16"
+                    app:layout_constraintStart_toStartOf="@id/id_text"
+                    app:layout_constraintTop_toTopOf="@id/balance_text" />
+
+                <TextView
+                    android:id="@+id/vip_integral"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16"
+                    app:layout_constraintStart_toEndOf="@id/integral_text"
+                    app:layout_constraintTop_toTopOf="@id/integral_text" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="1080.00"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16"
-                app:layout_constraintStart_toEndOf="@id/integral_text"
-                app:layout_constraintTop_toTopOf="@id/integral_text" />
+                android:layout_margin="@dimen/margin_2"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <Button
+                    android:id="@+id/vip_add"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_45"
+                    android:background="@drawable/button_blue"
+                    android:text="@string/add_sz"
+                    android:textColor="@color/white_blue"
+                    android:textSize="@dimen/font_size_16" />
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <Button
+                    android:id="@+id/vip_modify"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_45"
+                    android:background="@drawable/button_blue"
+                    android:text="@string/vip_modify_sz"
+                    android:textColor="@color/white_blue"
+                    android:textSize="@dimen/font_size_16"
+                    android:visibility="visible" />
+
+                <Space
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <Button
+                    android:id="@+id/vip_charge"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_45"
+                    android:background="@drawable/button_blue"
+                    android:text="@string/vip_charge_sz"
+                    android:textColor="@color/white_blue"
+                    android:textSize="@dimen/font_size_16"
+                    android:visibility="visible" />
+            </LinearLayout>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
@@ -187,19 +243,20 @@
                 android:layout_height="@dimen/height_45"
                 android:layout_margin="@dimen/margin_2"
                 android:background="@drawable/border_sub_gray"
+                android:drawableEnd="@drawable/r_card"
                 android:ems="10"
                 android:focusable="auto"
                 android:hint="@string/vip_search_hint_sz"
                 android:importantForAutofill="no"
                 android:inputType="textPersonName"
+                android:padding="@dimen/margin_5"
                 android:textColor="@color/text_color" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/keyboard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_2"
-                android:layout_marginBottom="@dimen/margin_2">
+                android:layout_marginTop="@dimen/margin_2">
 
                 <Button
                     android:id="@+id/_one"
@@ -254,7 +311,6 @@
                     android:layout_height="@dimen/pay_dialog_button_height"
                     android:layout_marginStart="@dimen/margin_2"
                     android:layout_marginEnd="@dimen/margin_2"
-                    android:layout_weight="2.5"
                     android:background="@drawable/button_sub_blue"
                     android:text="@string/back"
                     android:textColor="@color/white"
@@ -312,22 +368,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/_three" />
 
                 <Button
-                    android:id="@+id/cancel"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/pay_dialog_button_width"
-                    android:layout_height="@dimen/pay_dialog_button_height"
-                    android:layout_marginStart="@dimen/margin_2"
-                    android:layout_marginTop="@dimen/margin_2"
-                    android:layout_weight="2.5"
-                    android:background="@drawable/button_sub_blue"
-                    android:text="@string/cancel"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/num_keyboard_font_size_18"
-                    app:layout_constraintStart_toEndOf="@+id/_six"
-                    app:layout_constraintTop_toBottomOf="@+id/_back" />
-
-                <Button
-                    android:id="@+id/button3"
+                    android:id="@+id/_seven"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="@dimen/pay_dialog_button_width"
                     android:layout_height="@dimen/pay_dialog_button_height"
@@ -343,7 +384,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/_four" />
 
                 <Button
-                    android:id="@+id/button4"
+                    android:id="@+id/_eight"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="@dimen/pay_dialog_button_width"
                     android:layout_height="@dimen/pay_dialog_button_height"
@@ -355,11 +396,11 @@
                     android:textAllCaps="false"
                     android:textColor="@color/white"
                     android:textSize="@dimen/num_keyboard_font_size_24"
-                    app:layout_constraintStart_toEndOf="@+id/button3"
+                    app:layout_constraintStart_toEndOf="@+id/_seven"
                     app:layout_constraintTop_toBottomOf="@+id/_five" />
 
                 <Button
-                    android:id="@+id/button5"
+                    android:id="@+id/_nine"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="@dimen/pay_dialog_button_width"
                     android:layout_height="@dimen/pay_dialog_button_height"
@@ -371,25 +412,8 @@
                     android:textAllCaps="false"
                     android:textColor="@color/white"
                     android:textSize="@dimen/num_keyboard_font_size_24"
-                    app:layout_constraintStart_toEndOf="@+id/button4"
+                    app:layout_constraintStart_toEndOf="@+id/_eight"
                     app:layout_constraintTop_toBottomOf="@+id/_six" />
-
-                <Button
-                    android:id="@+id/button15"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/pay_dialog_button_width"
-                    android:layout_height="@dimen/pay_dialog_button_height"
-                    android:layout_marginStart="@dimen/margin_2"
-                    android:layout_marginTop="@dimen/margin_2"
-                    android:layout_weight="2.5"
-                    android:background="@drawable/button_sub_blue"
-                    android:text="@string/point_sz"
-                    android:textAlignment="center"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/num_keyboard_font_size_24"
-                    app:layout_constraintStart_toEndOf="@+id/button16"
-                    app:layout_constraintTop_toBottomOf="@+id/button5" />
 
                 <Button
                     android:id="@+id/button6"
@@ -398,45 +422,30 @@
                     android:layout_height="@dimen/pay_dialog_button_height"
                     android:layout_marginStart="@dimen/margin_2"
                     android:layout_marginTop="@dimen/margin_2"
-                    android:layout_weight="2.5"
                     android:background="@drawable/button_sub_blue"
                     android:text="@string/zero_sz"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
                     android:textSize="@dimen/num_keyboard_font_size_24"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/button3" />
-
-                <Button
-                    android:id="@+id/button16"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/pay_dialog_button_width"
-                    android:layout_height="@dimen/pay_dialog_button_height"
-                    android:layout_marginStart="@dimen/margin_2"
-                    android:layout_marginTop="@dimen/margin_2"
-                    android:layout_weight="2.5"
-                    android:background="@drawable/button_sub_blue"
-                    android:text="@string/d_zero_sz"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/num_keyboard_font_size_24"
-                    app:layout_constraintStart_toEndOf="@+id/button6"
-                    app:layout_constraintTop_toBottomOf="@+id/button4" />
+                    app:layout_constraintStart_toEndOf="@+id/_nine"
+                    app:layout_constraintTop_toBottomOf="@id/_ok" />
 
                 <Button
                     android:id="@+id/_ok"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="@dimen/pay_dialog_button_width"
-                    android:layout_height="138dp"
+                    android:layout_height="@dimen/pay_dialog_button_height"
                     android:layout_marginStart="@dimen/margin_2"
                     android:layout_marginTop="@dimen/margin_2"
                     android:layout_marginEnd="@dimen/margin_2"
                     android:background="@drawable/button_sub_blue"
-                    android:text="@string/OK"
+                    android:text="@string/search_sz"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/num_keyboard_font_size_18"
+                    android:textSize="@dimen/font_size_18"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/button5"
-                    app:layout_constraintTop_toBottomOf="@+id/cancel" />
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/_nine"
+                    app:layout_constraintTop_toBottomOf="@id/_back" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
 

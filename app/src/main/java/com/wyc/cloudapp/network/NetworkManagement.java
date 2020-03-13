@@ -74,7 +74,8 @@ public class NetworkManagement extends Thread {
                             info_json = new JSONObject(retJson.getString("info"));
                             switch (info_json.getString("status")){
                                 case "n":
-                                    mHandler.obtainMessage(0,prefix + info_json.getString("info")).sendToTarget();
+                                    updateNetworkstatus(false);
+                                    Logger.e(prefix + retJson.optString("info"));
                                     break;
                                 case "y":
                                     //Logger.json(info_json.toString());
@@ -82,7 +83,6 @@ public class NetworkManagement extends Thread {
                             }
                             break;
                     }
-                    mHandler.obtainMessage(99,err_code).sendToTarget();//更新网络状态
                     mPreNeworkStatusCode = err_code;
                 }
             }
