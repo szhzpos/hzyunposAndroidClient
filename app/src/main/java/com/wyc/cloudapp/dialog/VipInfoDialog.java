@@ -2,6 +2,7 @@ package com.wyc.cloudapp.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -92,18 +93,17 @@ public class VipInfoDialog extends Dialog {
             }
         });
         mSearchBtn.setOnClickListener(view -> serchVip(mSearchContent.getText().toString()));
-        mAddBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mSearchContent.clearFocus();
-                AddVipInfoDialog dialog = new AddVipInfoDialog(mContext);
-                dialog.setYesOnclickListener(new AddVipInfoDialog.onYesOnclickListener() {
-                    @Override
-                    public void onYesClick(AddVipInfoDialog dialog) {
-                        Logger.d_json(dialog.getVipInfo().toString());
-                    }
-                }).show();
-            }
+        mAddBtn.setOnClickListener(view -> {
+            AddVipInfoDialog dialog = new AddVipInfoDialog(mContext,mUrl,mAppId,mAppScret);
+            dialog.setOnShowListener(dialog12 -> mSearchContent.clearFocus());
+            dialog.setOnDismissListener(dialog1 -> mSearchContent.postDelayed(()->{mSearchContent.requestFocus();},300));
+            dialog.setYesOnclickListener(new AddVipInfoDialog.onYesOnclickListener() {
+                @Override
+                public void onYesClick(AddVipInfoDialog dialog) {
+                    showVipInfo(dialog.getVipInfo());
+                    dialog.dismiss();
+                }
+            }).show();
         });
 
         //初始化数字键盘
@@ -121,7 +121,7 @@ public class VipInfoDialog extends Dialog {
 
     @Override
     public void onAttachedToWindow(){
-        mSearchContent.postDelayed(()->{mSearchContent.requestFocus();},300);
+
     }
 
     @Override
@@ -133,6 +133,7 @@ public class VipInfoDialog extends Dialog {
         mSearchContent = findViewById(R.id.search_content);
         mSearchContent.setSelectAllOnFocus(true);
         mSearchContent.setOnFocusChangeListener((view, b) -> Utils.hideKeyBoard((EditText) view));
+        mSearchContent.postDelayed(()->{mSearchContent.requestFocus();},300);
         mSearchContent.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -208,6 +209,7 @@ public class VipInfoDialog extends Dialog {
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"查询会员级别错误：" + e.getMessage()).sendToTarget();
             }
 
         });
@@ -233,8 +235,8 @@ public class VipInfoDialog extends Dialog {
         mVip_sex.setText(object.optString("sex"));
         mVip_p_num.setText(object.optString("mobile"));
         mVip_card_id.setText(object.optString("card_code"));
-        mVip_balance.setText(object.optString("money_sum"));
-        mVip_integral.setText(object.optString("points_sum"));
+        mVip_balance.setText(object.optString("money_sum","0.00"));
+        mVip_integral.setText(object.optString("points_sum","0.0"));
     }
 
     private void clearVipInfo(){

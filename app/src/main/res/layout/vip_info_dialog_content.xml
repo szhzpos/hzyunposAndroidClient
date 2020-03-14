@@ -80,7 +80,7 @@
                     android:id="@+id/sex_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="108dp"
+                    android:layout_marginStart="88dp"
                     android:text="@string/vip_six_sz"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/font_size_16"

@@ -3,9 +3,9 @@
     android:id="@android:id/text1"
     style="?attr/spinnerDropDownItemStyle"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
+    android:layout_height="@dimen/height_58"
     android:background="@drawable/bottom_separator"
     android:ellipsize="marquee"
-    android:paddingEnd="0dp"
-    android:paddingStart="0dp"
-    android:textColor="@color/colorAccent" />
+    android:gravity="center"
+    android:textColor="@color/blue"
+    android:textSize="@dimen/font_size_18" />
