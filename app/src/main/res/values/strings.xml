@@ -87,9 +87,11 @@
     <string name="vip_balance_sz">余额：</string>
     <string name="vip_integral_sz">积分：</string>
     <string name="search_sz">搜索</string>
-    <string name="vip_modify_sz">修改</string>
-    <string name="vip_charge_sz">储值</string>
+    <string name="modify_sz">修改</string>
+    <string name="charge_sz">储值</string>
     <string name="add_sz">新增</string>
-    <string name="vip_level_sz">级别：</string>
-    <string name="vip_birth_sz">生日：</string>
+    <string name="level_sz">级别：</string>
+    <string name="birth_sz">生日：</string>
+    <string name="add_vip_sz">新增会员</string>
+    <string name="modify_vip_sz">修改会员</string>
 </resources>

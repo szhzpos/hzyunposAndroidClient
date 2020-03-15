@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -35,6 +36,7 @@ import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
 import com.wyc.cloudapp.dialog.PayDialog;
 import com.wyc.cloudapp.dialog.VipInfoDialog;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.network.NetworkManagement;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
@@ -59,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
     private GoodsTypeViewAdapter mGoodsTypeViewAdapter;
     private GoodsInfoViewAdapter mGoodsInfoViewAdapter;
     private EditText mSearch_content;
-    private JSONObject mCashierInfo,mStoreInfo;
+    private JSONObject mCashierInfo,mStoreInfo,mVipInfo;
     private Myhandler mHandler;
     private CustomProgressDialog mProgressDialog;
     private MyDialog mDialog;
@@ -122,12 +124,15 @@ public class MainActivity extends AppCompatActivity {
             v.setEnabled(true);
         });//结账
 
-        findViewById(R.id.vip).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                VipInfoDialog dialog = new VipInfoDialog(v.getContext());
-                dialog.show();
-            }
+        findViewById(R.id.vip).setOnClickListener(v -> {
+            VipInfoDialog vipInfoDialog = new VipInfoDialog(v.getContext());
+            vipInfoDialog.setYesOnclickListener(dialog -> {
+                mVipInfo = dialog.getVip();
+                if (mVipInfo != null){
+                    Logger.d_json(mVipInfo.toString());
+                }
+                dialog.dismiss();
+            }).show();
         });
 
 

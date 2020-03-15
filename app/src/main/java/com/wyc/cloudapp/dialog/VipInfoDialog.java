@@ -40,6 +40,7 @@ public class VipInfoDialog extends Dialog {
     private JSONObject mVip;
     private TextView mVip_name,mVip_sex,mVip_p_num,mVip_card_id,mVip_balance,mVip_integral;
     private Button mSearchBtn,mModfiyBtn,mChargeBtn,mAddBtn;
+    private onYesOnclickListener mYesOnclickListener;//确定按钮被点击了的监听器
     public VipInfoDialog(@NonNull Context context) {
         super(context);
         mContext = context;
@@ -92,18 +93,34 @@ public class VipInfoDialog extends Dialog {
                 }
             }
         });
-        mSearchBtn.setOnClickListener(view -> serchVip(mSearchContent.getText().toString()));
+        mSearchBtn.setOnClickListener(view -> {
+            if (mVip == null)
+                serchVip(mSearchContent.getText().toString());
+            else{
+                if (mYesOnclickListener != null)mYesOnclickListener.onYesClick(VipInfoDialog.this);
+            }
+        });
         mAddBtn.setOnClickListener(view -> {
-            AddVipInfoDialog dialog = new AddVipInfoDialog(mContext,mUrl,mAppId,mAppScret);
+            AddVipInfoDialog dialog = new AddVipInfoDialog(mContext,null,mUrl,mAppId,mAppScret);
             dialog.setOnShowListener(dialog12 -> mSearchContent.clearFocus());
             dialog.setOnDismissListener(dialog1 -> mSearchContent.postDelayed(()->{mSearchContent.requestFocus();},300));
-            dialog.setYesOnclickListener(new AddVipInfoDialog.onYesOnclickListener() {
-                @Override
-                public void onYesClick(AddVipInfoDialog dialog) {
-                    showVipInfo(dialog.getVipInfo());
-                    dialog.dismiss();
-                }
+            dialog.setYesOnclickListener(dialog13 -> {
+                showVipInfo(dialog13.getVipInfo());
+                dialog13.dismiss();
             }).show();
+        });
+        mModfiyBtn.setOnClickListener(view -> {
+            if (mVip != null){
+                AddVipInfoDialog dialog = new AddVipInfoDialog(mContext,mVip,mUrl,mAppId,mAppScret);
+                dialog.setOnShowListener(dialog12 -> mSearchContent.clearFocus());
+                dialog.setOnDismissListener(dialog1 -> mSearchContent.postDelayed(()->{mSearchContent.requestFocus();},300));
+                dialog.setYesOnclickListener(dialog14 -> {
+                    showVipInfo(dialog14.getVipInfo());
+                    dialog14.dismiss();
+                }).show();
+            }else{
+                MyDialog.ToastMessage("请查询会员信息！",mContext);
+            }
         });
 
         //初始化数字键盘
@@ -231,6 +248,7 @@ public class VipInfoDialog extends Dialog {
 
     private void showVipInfo(JSONObject object){
         mVip = object;
+        mSearchBtn.setText(mContext.getString(R.string.OK));
         mVip_name.setText(object.optString("name"));
         mVip_sex.setText(object.optString("sex"));
         mVip_p_num.setText(object.optString("mobile"));
@@ -241,6 +259,7 @@ public class VipInfoDialog extends Dialog {
 
     private void clearVipInfo(){
         if (mVip != null){
+            mSearchBtn.setText(mContext.getString(R.string.search_sz));
             mVip = null;
             mVip_name.setText(mContext.getText(R.string.space_sz));
             mVip_sex.setText(mContext.getText(R.string.space_sz));
@@ -253,6 +272,17 @@ public class VipInfoDialog extends Dialog {
 
     public JSONObject getVip(){
         return mVip;
+    }
+
+    public VipInfoDialog setYesOnclickListener(onYesOnclickListener listener) {
+        if (listener != null){
+            mYesOnclickListener = listener;
+        }
+        return this;
+    }
+
+    public interface onYesOnclickListener {
+        void onYesClick(VipInfoDialog dialog);
     }
 
     private static class Myhandler extends Handler {

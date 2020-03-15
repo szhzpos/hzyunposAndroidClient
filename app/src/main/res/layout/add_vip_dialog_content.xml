@@ -17,7 +17,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="@string/vip_dialog_sz"
+            android:text="@string/modify_vip_sz"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="@dimen/font_size_24" />
@@ -54,7 +54,8 @@
             android:autofillHints=""
             android:background="@color/transparent"
             android:ems="10"
-            android:inputType="number" />
+            android:inputType="number"
+            android:textColor="@color/text_color" />
     </LinearLayout>
 
     <LinearLayout
@@ -80,7 +81,8 @@
             android:background="@color/transparent"
             android:drawableEnd="@drawable/r_card"
             android:ems="10"
-            android:inputType="number" />
+            android:inputType="number"
+            android:textColor="@color/text_color" />
 
     </LinearLayout>
 
@@ -95,7 +97,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="@string/vip_level_sz"
+            android:text="@string/level_sz"
             android:textColor="@color/appColor"
             android:textSize="@dimen/font_size_16" />
 
@@ -141,7 +143,8 @@
             android:autofillHints=""
             android:background="@color/transparent"
             android:ems="10"
-            android:inputType="textPersonName" />
+            android:inputType="textPersonName"
+            android:textColor="@color/text_color" />
     </LinearLayout>
 
     <LinearLayout
@@ -156,7 +159,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="@string/vip_birth_sz"
+            android:text="@string/birth_sz"
             android:textColor="@color/appColor"
             android:textSize="@dimen/font_size_16" />
 

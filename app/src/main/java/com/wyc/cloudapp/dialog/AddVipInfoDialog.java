@@ -7,7 +7,6 @@ import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.Editable;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -37,13 +36,17 @@ public class AddVipInfoDialog extends Dialog {
     private EditText m_vip_p_num,m_card_id,m_vip_name,m_vip_birthday;
     private onYesOnclickListener mYesOnclickListener;//确定按钮被点击了的监听器
     private int mSexType = 0;
+    private String mVipGradeId,mMemberId;
     private CustomProgressDialog mProgressDialog;
     private Myhandler mHandler;
     private String mAppId,mAppScret,mUrl;
-    private String mVipGradeId;
-    AddVipInfoDialog(@NonNull Context context,final String url,final String appid,final String appScret) {
+    private Spinner m_vip_sex;
+    private JSONObject mVip;
+
+    AddVipInfoDialog(@NonNull Context context,JSONObject vip,final String url,final String appid,final String appScret) {//如果vip为null则新增会员，否则修改会员
         super(context);
         mContext = context;
+        mVip = vip;
         mUrl = url;
         mAppId = appid;
         mAppScret = appScret;
@@ -59,6 +62,7 @@ public class AddVipInfoDialog extends Dialog {
         m_vip_p_num = findViewById(R.id.n_vip_p_num);
         m_card_id = findViewById(R.id.n_card_id);
         m_vip_name = findViewById(R.id.n_vip_name);
+        m_vip_sex = findViewById(R.id.n_vip_sex);
 
         //初始化按钮
         findViewById(R.id._close).setOnClickListener(view->AddVipInfoDialog.this.dismiss());
@@ -83,6 +87,10 @@ public class AddVipInfoDialog extends Dialog {
         super.onAttachedToWindow();
         //查询会员级别
         queryVipLevel();
+        //显示会员信息
+        if (mVip != null){
+            showVipInfo();
+        }
     }
 
     public AddVipInfoDialog setYesOnclickListener(onYesOnclickListener listener) {
@@ -96,8 +104,12 @@ public class AddVipInfoDialog extends Dialog {
         JSONObject object = new JSONObject();
         String phone_num = m_vip_p_num.getText().toString();
         try {
+            if (mVip != null){
+                object.put("member_id",mMemberId);
+            }else{
+                object.put("login_pwd",phone_num.substring(phone_num.length() - 6));
+            }
             object.put("mobile",phone_num);
-            object.put("login_pwd",phone_num.substring(phone_num.length() - 6));
             object.put("name",m_vip_name.getText());
             object.put("birthday",m_vip_birthday.getText());
             object.put("card_code",m_card_id.getText());
@@ -134,10 +146,24 @@ public class AddVipInfoDialog extends Dialog {
                     .get(Calendar.DAY_OF_MONTH)).show();});
     }
     private void initVipSex(){
-        Spinner m_vip_sex = findViewById(R.id.n_vip_sex);
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext,R.layout.drop_down_style);
-        arrayAdapter.add("男");
-        arrayAdapter.add("女");
+        final String sz_male = "男",sz_woman = "女";
+        if (mVip != null){
+            if (sz_male.equals(mVip.optString("sex"))){
+                arrayAdapter.add(sz_male);
+                arrayAdapter.add(sz_woman);
+            }else if(sz_woman.equals(mVip.optString("sex"))){
+                arrayAdapter.add(sz_woman);
+                arrayAdapter.add(sz_male);
+            }else{
+                arrayAdapter.add("-");
+                arrayAdapter.add(sz_woman);
+                arrayAdapter.add(sz_male);
+            }
+        }else{
+            arrayAdapter.add(sz_male);
+            arrayAdapter.add(sz_woman);
+        }
         m_vip_sex.setAdapter(arrayAdapter);
         m_vip_sex.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -206,12 +232,16 @@ public class AddVipInfoDialog extends Dialog {
             }
         });
     }
-
     private void addVipInfo(){
         mProgressDialog.setMessage("正在上传会员信息...").show();
         CustomApplication.execute(()->{
             String url = mUrl + "/api/member/mk",sz_param;
             JSONObject object = getVipInfo(),ret_json;
+
+            if (mVip != null){
+                url = mUrl + "/api/member/up";
+            }
+
             if (object != null){
                 HttpRequest httpRequest = new HttpRequest();
                 try {
@@ -240,6 +270,14 @@ public class AddVipInfoDialog extends Dialog {
                 }
             }
         });
+    }
+    private void showVipInfo(){
+        ((TextView)findViewById(R.id.title)).setText(R.string.modify_vip_sz);
+        mMemberId = mVip.optString("member_id");
+        m_vip_p_num.setText(mVip.optString("mobile"));
+        m_vip_name.setText(mVip.optString("name"));
+        m_card_id.setText(mVip.optString("card_code"));
+        m_vip_birthday.setText(mVip.optString("birthday"));
     }
 
     private static class Myhandler extends Handler {
