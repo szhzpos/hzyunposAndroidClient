@@ -55,7 +55,7 @@
     <string name="all_discount_sz">整单折</string>
     <string name="mo_l_sz">抹零</string>
     <string name="remark_sz">备注</string>
-    <string name="select_pay_method_sz">请选择支付方式</string>
+    <string name="pay_m_hint_sz">请选择支付方式</string>
     <string name="equal_sign_sz">=</string>
     <string name="one_sz">1</string>
     <string name="two_sz">2</string>
@@ -88,12 +88,16 @@
     <string name="vip_integral_sz">积分：</string>
     <string name="search_sz">搜索</string>
     <string name="modify_sz">修改</string>
-    <string name="charge_sz">储值</string>
+    <string name="charge_sz">充值</string>
     <string name="add_sz">新增</string>
     <string name="level_sz">级别：</string>
     <string name="birth_sz">生日：</string>
     <string name="add_vip_sz">新增会员</string>
     <string name="modify_vip_sz">修改会员</string>
     <string name="vip_charge_sz">会员充值</string>
-    <string name="charge_amount_sz">请输入充值金额</string>
+    <string name="c_amt_hint_sz">请输入充值金额</string>
+    <string name="one_hundred_sz">100</string>
+    <string name="two_hundred_sz">200</string>
+    <string name="five_hundred_sz">500</string>
+    <string name="eight_hundred_sz">800</string>
 </resources>

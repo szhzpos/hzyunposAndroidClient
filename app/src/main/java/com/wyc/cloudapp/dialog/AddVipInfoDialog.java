@@ -92,13 +92,6 @@ public class AddVipInfoDialog extends Dialog {
         }
     }
 
-    public AddVipInfoDialog setYesOnclickListener(onYesOnclickListener listener) {
-        if (listener != null){
-            mYesOnclickListener = listener;
-        }
-        return this;
-    }
-
     public JSONObject getVipInfo(){
         String phone_num = m_vip_p_num.getText().toString();
         try {
@@ -122,6 +115,12 @@ public class AddVipInfoDialog extends Dialog {
         return mVip;
     }
 
+    public AddVipInfoDialog setYesOnclickListener(onYesOnclickListener listener) {
+        if (listener != null){
+            mYesOnclickListener = listener;
+        }
+        return this;
+    }
     public interface onYesOnclickListener {
         void onYesClick(AddVipInfoDialog dialog);
     }

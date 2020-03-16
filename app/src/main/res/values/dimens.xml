@@ -32,6 +32,7 @@
     <dimen name="height_80">80dp</dimen>
     <dimen name="height_78">78dp</dimen>
     <dimen name="height_88">88dp</dimen>
+    <dimen name="height_122">122dp</dimen>
     <dimen name="width_88">88dp</dimen>
     <dimen name="width_85">85dp</dimen>
     <dimen name="width_78">78dp</dimen>
@@ -51,4 +52,5 @@
     <dimen name="pay_dialog_button_height">60dp</dimen>
     <dimen name="pay_detail_height">@dimen/height_45</dimen>
     <dimen name="pay_method_width">101dp</dimen>
+    <dimen name="d_dialog_button_height">@dimen/height_122</dimen>
 </resources>

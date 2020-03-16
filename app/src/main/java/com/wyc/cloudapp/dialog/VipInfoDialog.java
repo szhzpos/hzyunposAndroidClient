@@ -130,8 +130,14 @@ public class VipInfoDialog extends Dialog {
             @Override
             public void onClick(View view) {
                 if (mVip != null){
-                    VipChargeDialog dialog = new VipChargeDialog(mContext);
-                    dialog.show();
+                    VipChargeDialog dialog = new VipChargeDialog(mContext,mVip);
+                    dialog.setYesOnclickListener(new VipChargeDialog.onYesOnclickListener() {
+                        @Override
+                        public void onYesClick(VipChargeDialog dialog) {
+                            showVipInfo(dialog.getVipInfo());
+                            dialog.dismiss();
+                        }
+                    }).show();
                 }else{
                     serchVip(mSearchContent.getText().toString(),mChargeBtn.getId());
                 }
@@ -196,7 +202,6 @@ public class VipInfoDialog extends Dialog {
             }
             return false;
         });
-
     }
     private View.OnClickListener button_click = v -> {
         View view =  getCurrentFocus();
@@ -213,38 +218,42 @@ public class VipInfoDialog extends Dialog {
     };
 
     public void serchVip(final String ph_num,int btn_id){
-        mProgressDialog.setMessage("正在查询会员...").show();
-        CustomApplication.execute(()->{
-            String url = mUrl + "/api/member/get_member_info",sz_param;
-            JSONObject object = new JSONObject(),ret_json;
-            HttpRequest httpRequest = new HttpRequest();
-            try {
-                object.put("appid",mAppId);
-                object.put("mobile",ph_num);
-                sz_param = HttpRequest.generate_request_parm(object,mAppScret);
-                ret_json = httpRequest.sendPost(url,sz_param,true);
-                switch (ret_json.getInt("flag")){
-                    case 0:
-                        mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"查询会员错误：" + ret_json.optString("info")).sendToTarget();
-                        break;
-                    case 1:
-                        ret_json = new JSONObject(ret_json.getString("info"));
-                        switch (ret_json.getString("status")){
-                            case "n":
-                                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"查询会员错误：" + ret_json.optString("info")).sendToTarget();
-                                break;
-                            case "y":
-                                mHandler.obtainMessage(MessageID.QUERY_VIP_INFO_ID,btn_id,0,new JSONArray(ret_json.getString("list"))).sendToTarget();
-                                break;
-                        }
-                        break;
+        if(ph_num != null && ph_num.length() != 0){
+            mProgressDialog.setMessage("正在查询会员...").show();
+            CustomApplication.execute(()->{
+                String url = mUrl + "/api/member/get_member_info",sz_param;
+                JSONObject object = new JSONObject(),ret_json;
+                HttpRequest httpRequest = new HttpRequest();
+                try {
+                    object.put("appid",mAppId);
+                    object.put("mobile",ph_num);
+                    sz_param = HttpRequest.generate_request_parm(object,mAppScret);
+                    ret_json = httpRequest.sendPost(url,sz_param,true);
+                    switch (ret_json.getInt("flag")){
+                        case 0:
+                            mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"查询会员错误：" + ret_json.optString("info")).sendToTarget();
+                            break;
+                        case 1:
+                            ret_json = new JSONObject(ret_json.getString("info"));
+                            switch (ret_json.getString("status")){
+                                case "n":
+                                    mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"查询会员错误：" + ret_json.optString("info")).sendToTarget();
+                                    break;
+                                case "y":
+                                    mHandler.obtainMessage(MessageID.QUERY_VIP_INFO_ID,btn_id,0,new JSONArray(ret_json.getString("list"))).sendToTarget();
+                                    break;
+                            }
+                            break;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"查询会员级别错误：" + e.getMessage()).sendToTarget();
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
-                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"查询会员级别错误：" + e.getMessage()).sendToTarget();
-            }
 
-        });
+            });
+        }else{
+            MyDialog.ToastMessage("请输入查询内容！",mContext);
+        }
     }
 
     private boolean initConnParam(){

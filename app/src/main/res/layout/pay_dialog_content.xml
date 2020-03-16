@@ -376,7 +376,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/select_pay_method_sz"
+                android:text="@string/pay_m_hint_sz"
                 android:textAlignment="center"
                 android:textSize="@dimen/fun_button_font_size_16" />
 
@@ -637,7 +637,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/_nine" />
 
                 <Button
-                    android:id="@+id/button6"
+                    android:id="@+id/_zero"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="@dimen/pay_dialog_button_width"
                     android:layout_height="@dimen/pay_dialog_button_height"
@@ -664,14 +664,14 @@
                     android:text="@string/d_zero_sz"
                     android:textColor="@color/white"
                     android:textSize="@dimen/num_keyboard_font_size_24"
-                    app:layout_constraintStart_toEndOf="@+id/button6"
+                    app:layout_constraintStart_toEndOf="@+id/_zero"
                     app:layout_constraintTop_toBottomOf="@+id/_eight" />
 
                 <Button
                     android:id="@+id/_ok"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="@dimen/pay_dialog_button_width"
-                    android:layout_height="122dp"
+                    android:layout_height="@dimen/d_dialog_button_height"
                     android:layout_marginStart="@dimen/margin_2"
                     android:layout_marginTop="@dimen/margin_2"
                     android:layout_marginEnd="@dimen/margin_2"
