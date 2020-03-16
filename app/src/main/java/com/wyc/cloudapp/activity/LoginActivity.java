@@ -172,22 +172,26 @@ public class LoginActivity extends AppCompatActivity {
 
     private void login(){
         final HttpRequest httpRequest = new HttpRequest();
-        mProgressDialog.setCancel(true).setMessage("正在登录...").show();
-        mProgressDialog.setOnCancelListener(dialog -> {
-            MyDialog.displayAskMessage("是否取消登录？",mSelf,(MyDialog mydialog)->{
-                mydialog.dismiss();
-                if (mProgressDialog != null && !mProgressDialog.isShowing()){
-                    mProgressDialog.setMessage("正在取消登录...").refreshMessage().show();
-                }
-                mCancelLogin = true;
-                httpRequest.clearConnection(HttpRequest.CLOSEMODE.POST);
-            },(MyDialog myDialog)->{
-                myDialog.dismiss();
-                if (mProgressDialog != null && !mProgressDialog.isShowing()){
-                    mProgressDialog.setRestShowTime(false).show();
-                }
-            });
-        });
+        mProgressDialog.setCancel(false).setMessage("正在登录...").show();
+        myHandler.postDelayed(()->{
+            if (mProgressDialog.isShowing())
+                mProgressDialog.setCancel(true).setOnCancelListener(dialog -> {
+                    MyDialog.displayAskMessage("是否取消登录？",mSelf,(MyDialog mydialog)->{
+                        mydialog.dismiss();
+                        if (mProgressDialog != null && !mProgressDialog.isShowing()){
+                            mProgressDialog.setMessage("正在取消登录...").refreshMessage().show();
+                        }
+                        mCancelLogin = true;
+                        httpRequest.clearConnection(HttpRequest.CLOSEMODE.POST);
+                    },(MyDialog myDialog)->{
+                        myDialog.dismiss();
+                        if (mProgressDialog != null && !mProgressDialog.isShowing()){
+                            mProgressDialog.setRestShowTime(false).show();
+                        }
+                    });
+                });
+        },3000);
+
         CustomApplication.execute(()->{
             JSONObject object = new JSONObject(),param_json = new JSONObject(),cashier_json,retJson,info_json,jsonLogin,store_info;
             String url,login_url,pos_url,app_id,appscret,sz_param,err_info;

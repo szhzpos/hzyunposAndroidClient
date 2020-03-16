@@ -94,4 +94,6 @@
     <string name="birth_sz">生日：</string>
     <string name="add_vip_sz">新增会员</string>
     <string name="modify_vip_sz">修改会员</string>
+    <string name="vip_charge_sz">会员充值</string>
+    <string name="charge_amount_sz">请输入充值金额</string>
 </resources>

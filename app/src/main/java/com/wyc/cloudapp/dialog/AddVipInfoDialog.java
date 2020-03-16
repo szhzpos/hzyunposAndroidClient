@@ -35,11 +35,10 @@ public class AddVipInfoDialog extends Dialog {
     private Context mContext;
     private EditText m_vip_p_num,m_card_id,m_vip_name,m_vip_birthday;
     private onYesOnclickListener mYesOnclickListener;//确定按钮被点击了的监听器
-    private int mSexType = 0;
     private String mVipGradeId,mMemberId;
     private CustomProgressDialog mProgressDialog;
     private Myhandler mHandler;
-    private String mAppId,mAppScret,mUrl;
+    private String mAppId,mAppScret,mUrl,mSex;
     private Spinner m_vip_sex;
     private JSONObject mVip;
 
@@ -101,26 +100,26 @@ public class AddVipInfoDialog extends Dialog {
     }
 
     public JSONObject getVipInfo(){
-        JSONObject object = new JSONObject();
         String phone_num = m_vip_p_num.getText().toString();
         try {
             if (mVip != null){
-                object.put("member_id",mMemberId);
+                mVip.put("member_id",mMemberId);
             }else{
-                object.put("login_pwd",phone_num.substring(phone_num.length() - 6));
+                mVip = new JSONObject();
+                mVip.put("login_pwd",phone_num.substring(phone_num.length() - 6));
             }
-            object.put("mobile",phone_num);
-            object.put("name",m_vip_name.getText());
-            object.put("birthday",m_vip_birthday.getText());
-            object.put("card_code",m_card_id.getText());
-            object.put("grade_id",mVipGradeId);
-            object.put("sex",mSexType);
+            mVip.put("mobile",phone_num);
+            mVip.put("name",m_vip_name.getText());
+            mVip.put("birthday",m_vip_birthday.getText());
+            mVip.put("card_code",m_card_id.getText());
+            mVip.put("grade_id",mVipGradeId);
+            mVip.put("sex",mSex);
         } catch (JSONException e) {
-            object = null;
+            mVip = null;
             e.printStackTrace();
             MyDialog.ToastMessage("获取会员信息错误：" + e.getMessage(),mContext);
         }
-        return object;
+        return mVip;
     }
 
     public interface onYesOnclickListener {
@@ -168,7 +167,10 @@ public class AddVipInfoDialog extends Dialog {
         m_vip_sex.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mSexType = position;
+                if (view instanceof TextView)
+                    mSex = ((TextView)view).getText().toString();
+                else
+                    mSex = "-";
             }
 
             @Override
@@ -213,24 +215,27 @@ public class AddVipInfoDialog extends Dialog {
     private void initVipLevel(final JSONArray array){
         Spinner m_vip_level = findViewById(R.id.n_vip_level);
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext,R.layout.drop_down_style);
-        for(int i = 0,length = array.length();i < length;i++){
-            JSONObject object = array.optJSONObject(i);
-            arrayAdapter.add(object.optString("grade_name"));
+
+        if (array.length() != 0){
+            mVipGradeId = array.optJSONObject(0).optString("grade_id");
+            for(int i = 0,length = array.length();i < length;i++){
+                JSONObject object = array.optJSONObject(i);
+                arrayAdapter.add(object.optString("grade_name"));
+            }
+            m_vip_level.setAdapter(arrayAdapter);
+            m_vip_level.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    JSONObject jsonObject = array.optJSONObject(position);
+                    if (jsonObject != null)
+                        mVipGradeId = jsonObject.optString("grade_id");
+                }
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
         }
-        m_vip_level.setAdapter(arrayAdapter);
-        m_vip_level.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                JSONObject jsonObject = array.optJSONObject(position);
-                if (jsonObject != null)
-                    mVipGradeId = jsonObject.optString("grade_id");
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
     }
     private void addVipInfo(){
         mProgressDialog.setMessage("正在上传会员信息...").show();
@@ -238,7 +243,7 @@ public class AddVipInfoDialog extends Dialog {
             String url = mUrl + "/api/member/mk",sz_param;
             JSONObject object = getVipInfo(),ret_json;
 
-            if (mVip != null){
+            if (mVip.has("member_id")){
                 url = mUrl + "/api/member/up";
             }
 
@@ -247,6 +252,7 @@ public class AddVipInfoDialog extends Dialog {
                 try {
                     object.put("appid",mAppId);
                     sz_param = HttpRequest.generate_request_parm(object,mAppScret);
+
                     ret_json = httpRequest.sendPost(url,sz_param,true);
                     switch (ret_json.getInt("flag")){
                         case 0:

@@ -113,7 +113,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
 
     public void setDatas(String category_id){
         StringBuilder err = new StringBuilder();
-        String sql = "select goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,buying_price,ifnull(img_url,'') img_url from barcode_info";
+        String sql = "select goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,buying_price,ifnull(img_url,'') img_url,yh_mode,yh_price from barcode_info";
         if (category_id != null){
             category_id = SQLiteHelper.getString("select category_id from shop_category where path like '" + category_id +"%'",err);
             if (null == category_id){
@@ -121,7 +121,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                 return;
             }
             category_id = category_id.replace("\r\n",",");
-            sql = "select goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,buying_price,ifnull(img_url,'') img_url from barcode_info where category_id in (" + category_id + ")";
+            sql = "select goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,buying_price,ifnull(img_url,'') img_url,yh_mode,yh_price from barcode_info where goods_status = '1' and category_id in (" + category_id + ")";
         }
         mDatas = SQLiteHelper.getList(sql,0,0,false,err);
         if (mDatas != null){
@@ -134,8 +134,8 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
 
     public void search_goods(String search_content){
         StringBuilder err = new StringBuilder();
-        String sql = "select goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,buying_price,ifnull(img_url,'') img_url from " +
-                "barcode_info where (barcode like '" + search_content + "%' or mnemonic_code like '" + search_content +"%')";
+        String sql = "select goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,buying_price,ifnull(img_url,'') img_url,yh_mode,yh_price from " +
+                "barcode_info where goods_status = '1' and  (barcode like '" + search_content + "%' or mnemonic_code like '" + search_content +"%')";
         mDatas = SQLiteHelper.getList(sql,0,0,false,err);
         if (mDatas != null){
             if (!mSearchLoad)mSearchLoad = true;

@@ -17,7 +17,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="@string/modify_vip_sz"
+            android:text="@string/add_vip_sz"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="@dimen/font_size_24" />

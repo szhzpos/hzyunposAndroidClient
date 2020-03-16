@@ -95,7 +95,7 @@ public class VipInfoDialog extends Dialog {
         });
         mSearchBtn.setOnClickListener(view -> {
             if (mVip == null)
-                serchVip(mSearchContent.getText().toString());
+                serchVip(mSearchContent.getText().toString(),0);
             else{
                 if (mYesOnclickListener != null)mYesOnclickListener.onYesClick(VipInfoDialog.this);
             }
@@ -105,7 +105,11 @@ public class VipInfoDialog extends Dialog {
             dialog.setOnShowListener(dialog12 -> mSearchContent.clearFocus());
             dialog.setOnDismissListener(dialog1 -> mSearchContent.postDelayed(()->{mSearchContent.requestFocus();},300));
             dialog.setYesOnclickListener(dialog13 -> {
-                showVipInfo(dialog13.getVipInfo());
+                JSONObject jsonObject = dialog13.getVipInfo();
+                if (jsonObject != null){
+                    mSearchContent.setText(jsonObject.optString("mobile"));
+                    mSearchBtn.callOnClick();
+                }
                 dialog13.dismiss();
             }).show();
         });
@@ -119,7 +123,18 @@ public class VipInfoDialog extends Dialog {
                     dialog14.dismiss();
                 }).show();
             }else{
-                MyDialog.ToastMessage("请查询会员信息！",mContext);
+                serchVip(mSearchContent.getText().toString(),mModfiyBtn.getId());
+            }
+        });
+        mChargeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mVip != null){
+                    VipChargeDialog dialog = new VipChargeDialog(mContext);
+                    dialog.show();
+                }else{
+                    serchVip(mSearchContent.getText().toString(),mChargeBtn.getId());
+                }
             }
         });
 
@@ -197,7 +212,7 @@ public class VipInfoDialog extends Dialog {
         }
     };
 
-    public void serchVip(final String ph_num){
+    public void serchVip(final String ph_num,int btn_id){
         mProgressDialog.setMessage("正在查询会员...").show();
         CustomApplication.execute(()->{
             String url = mUrl + "/api/member/get_member_info",sz_param;
@@ -219,7 +234,7 @@ public class VipInfoDialog extends Dialog {
                                 mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"查询会员错误：" + ret_json.optString("info")).sendToTarget();
                                 break;
                             case "y":
-                                mHandler.obtainMessage(MessageID.QUERY_VIP_INFO_ID,new JSONArray(ret_json.getString("list"))).sendToTarget();
+                                mHandler.obtainMessage(MessageID.QUERY_VIP_INFO_ID,btn_id,0,new JSONArray(ret_json.getString("list"))).sendToTarget();
                                 break;
                         }
                         break;
@@ -304,6 +319,10 @@ public class VipInfoDialog extends Dialog {
                         JSONArray array = (JSONArray)msg.obj;
                         if (array.length() == 1){
                             dialog.showVipInfo(array.optJSONObject(0));
+
+                            //触发修改或充值按钮点击事件；做这两个操作之前客户可能没查询会员，必须先查询再操作。
+                            Button btn = dialog.findViewById(msg.arg1);
+                            if (btn != null)btn.callOnClick();
                         }else{//提示选择对话框
 
                         }

@@ -24,6 +24,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -102,9 +103,12 @@ public class MainActivity extends AppCompatActivity {
         initSearch();
 
         //初始化功能按钮事件
-        findViewById(R.id.clear).setOnClickListener(v -> mSaleGoodsViewAdapter.clearGoods());//清空
+        findViewById(R.id.clear).setOnClickListener(v -> {
+            resetOrderInfo();
+            mSaleGoodsViewAdapter.clearGoods();
+        });//清空
         findViewById(R.id.minus_num).setOnClickListener(v -> mSaleGoodsViewAdapter.deleteSaleGoods(mSaleGoodsViewAdapter.getCurrentItemIndex(),1));//数量减
-        findViewById(R.id.add_num).setOnClickListener(v -> mSaleGoodsViewAdapter.addSaleGoods(mSaleGoodsViewAdapter.getCurrentContent()));//数量加
+        findViewById(R.id.add_num).setOnClickListener(v -> mSaleGoodsViewAdapter.addSaleGoods(mSaleGoodsViewAdapter.getCurrentContent(),mVipInfo));//数量加
         mCloseBtn.setOnClickListener((View V)->{
             MyDialog.displayAskMessage("是否退出收银？",MainActivity.this,(MyDialog myDialog)->{
                 myDialog.dismiss();
@@ -115,9 +119,9 @@ public class MainActivity extends AppCompatActivity {
 
             }, Dialog::dismiss);
         });//退出收银
-        findViewById(R.id.num).setOnClickListener(view -> mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 0));//数量
-        findViewById(R.id.discount).setOnClickListener(v-> mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 2));//打折
-        findViewById(R.id.change_price).setOnClickListener(v-> mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 1));//改价
+        findViewById(R.id.num).setOnClickListener(view -> mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 0,mVipInfo));//数量
+        findViewById(R.id.discount).setOnClickListener(v-> mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 2,mVipInfo));//打折
+        findViewById(R.id.change_price).setOnClickListener(v-> mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 1,mVipInfo));//改价
         findViewById(R.id.check_out).setOnClickListener((View v)->{
             v.setEnabled(false);
             showPayDialog();
@@ -130,11 +134,11 @@ public class MainActivity extends AppCompatActivity {
                 mVipInfo = dialog.getVip();
                 if (mVipInfo != null){
                     Logger.d_json(mVipInfo.toString());
+                    showVipInfo();
                 }
                 dialog.dismiss();
             }).show();
         });
-
 
         findViewById(R.id.q_deal_linerLayout).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -332,7 +336,10 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject jsonObject = mGoodsInfoViewAdapter.getItem(pos);
                 if (jsonObject != null){
                     try {
-                        mSaleGoodsViewAdapter.addSaleGoods(Utils.JsondeepCopy(mGoodsInfoViewAdapter.getItem(pos)));
+
+                        Logger.d_json(jsonObject.toString());
+
+                        mSaleGoodsViewAdapter.addSaleGoods(Utils.JsondeepCopy(jsonObject),mVipInfo);
                     } catch (JSONException e) {
                         e.printStackTrace();
                         MyDialog.ToastMessage("选择商品错误：" + e.getMessage(),v.getContext());
@@ -513,4 +520,30 @@ public class MainActivity extends AppCompatActivity {
             MyDialog.ToastMessage("已选商品为空！!",this);
         }
     }
+
+    private void resetOrderInfo(){
+        clearVipInfo();
+    }
+
+    private void showVipInfo(){
+        if (mVipInfo != null){
+            LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
+            vip_info_linearLayout.setVisibility(View.VISIBLE);
+            ((TextView)vip_info_linearLayout.findViewById(R.id.vip_name)).setText(mVipInfo.optString("name"));
+            ((TextView)vip_info_linearLayout.findViewById(R.id.vip_phone_num)).setText(mVipInfo.optString("mobile"));
+
+            mSaleGoodsViewAdapter.updateGoodsInfoToVip(mVipInfo);
+        }
+    }
+
+    private void clearVipInfo(){
+        if (mVipInfo != null){
+            mVipInfo = null;
+            LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
+            vip_info_linearLayout.setVisibility(View.GONE);
+            ((TextView)vip_info_linearLayout.findViewById(R.id.vip_name)).setText(getText(R.string.space_sz));
+            ((TextView)vip_info_linearLayout.findViewById(R.id.vip_phone_num)).setText(getText(R.string.space_sz));
+        }
+    }
+
 }
