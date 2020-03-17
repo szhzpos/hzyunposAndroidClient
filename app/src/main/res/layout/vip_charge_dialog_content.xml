@@ -60,7 +60,7 @@
                 android:ems="10"
                 android:focusable="auto"
                 android:hint="@string/c_amt_hint_sz"
-                android:inputType="textPersonName"
+                android:inputType="numberDecimal"
                 android:paddingStart="@dimen/margin_5"
                 android:paddingEnd="0dp"
                 android:textColor="@color/text_color"
@@ -73,6 +73,18 @@
                 android:layout_margin="@dimen/margin_1"
                 android:layout_weight="1" />
         </LinearLayout>
+
+        <EditText
+            android:id="@+id/pay_code"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_45"
+            android:layout_marginTop="@dimen/margin_2"
+            android:background="@drawable/border_sub_gray"
+            android:ems="10"
+            android:hint="@string/mobile_code_sz"
+            android:inputType="number"
+            android:textColor="@color/text_color"
+            android:visibility="gone" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/keyboard"

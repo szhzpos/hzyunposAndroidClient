@@ -17,7 +17,6 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.logger.Logger;
@@ -32,9 +31,9 @@ import org.json.JSONObject;
 import java.lang.ref.WeakReference;
 
 public class VipChargeDialog extends Dialog {
-    private EditText mC_amt;
+    private EditText mC_amt,mPayCode;
     private Context mContext;
-    private String mPayMethodId;
+    private JSONObject mPayMethod;
     private CustomProgressDialog mProgressDialog;
     private JSONObject mVip;
     private Myhandler mHandler;
@@ -52,6 +51,9 @@ public class VipChargeDialog extends Dialog {
 
         mProgressDialog = new CustomProgressDialog(mContext);
         mHandler = new Myhandler(this);
+
+        //初始化付款码
+        init_pay_code();
 
         //初始化金额text
         init_c_amount();
@@ -76,9 +78,8 @@ public class VipChargeDialog extends Dialog {
                 }
             }
         });
-        findViewById(R.id._ok).setOnClickListener(v -> {
-            vip_charge();
-        });
+        findViewById(R.id._ok).setOnClickListener(v -> {vip_charge();});
+        findViewById(R.id._cancel).setOnClickListener(view -> VipChargeDialog.this.dismiss());
 
         //初始化数字键盘
         ConstraintLayout keyboard_linear_layout;
@@ -113,15 +114,21 @@ public class VipChargeDialog extends Dialog {
         mC_amt.postDelayed(()->{mC_amt.requestFocus();},300);
     }
 
+    private void init_pay_code(){
+        mPayCode = findViewById(R.id.pay_code);
+        mPayCode.setSelectAllOnFocus(true);
+        mPayCode.setOnFocusChangeListener((view, b) -> Utils.hideKeyBoard((EditText) view));
+        mPayCode.postDelayed(()->{mPayCode.requestFocus();},300);
+    }
+
     private void intiPayMethod(){
         StringBuilder err = new StringBuilder();
-        JSONArray array = SQLiteHelper.getList("select pay_method_id,name from pay_method where status = '1' order by sort",0,0,false,err);
+        JSONArray array = SQLiteHelper.getList("select * from pay_method where status = '1' and support like '%3%' order by sort",0,0,false,err);
         if (array != null){
             Spinner m_vip_level = findViewById(R.id.pay_method_spinner);
             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext,R.layout.drop_down_style);
             if (array.length() != 0){
                 arrayAdapter.add(mContext.getString(R.string.pay_m_hint_sz));
-                mPayMethodId = array.optJSONObject(0).optString("pay_method_id");
                 for(int i = 0,length = array.length();i < length;i++){
                     JSONObject object = array.optJSONObject(i);
                     arrayAdapter.add(object.optString("name"));
@@ -130,12 +137,20 @@ public class VipChargeDialog extends Dialog {
                 m_vip_level.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        if (position > 0){
-                            JSONObject jsonObject = array.optJSONObject(position);
-                            if (jsonObject != null)
-                                mPayMethodId = jsonObject.optString("pay_method_id");
+                        if (position != 0){
+                            mPayMethod = array.optJSONObject(position - 1);
+                            if (mPayMethod != null) {
+                                Logger.d_json(mPayMethod.toString());
+                                int is_cardno = mPayMethod.optInt("is_cardno");
+                                if (2 == is_cardno)//显示付款码输入框
+                                    mPayCode.setVisibility(View.VISIBLE);
+                                else
+                                    mPayCode.setVisibility(View.GONE);
 
-                            Logger.d("mPayMethodId:%s",mPayMethodId);
+                            }
+                        }else{
+                            if (mPayMethod != null)mPayMethod = null;
+                            if (mPayCode.getVisibility() == View.VISIBLE)mPayCode.setVisibility(View.GONE);
                         }
                     }
                     @Override
@@ -151,6 +166,21 @@ public class VipChargeDialog extends Dialog {
 
     private void vip_charge(){
         if (mVip != null){
+            if (mPayMethod == null){
+                MyDialog.ToastMessage("请选择付款方式！",mContext);
+                return;
+            }
+            if (mC_amt.length() == 0){
+                mC_amt.requestFocus();
+                MyDialog.ToastMessage(mC_amt.getHint().toString(),mContext);
+                return;
+            }
+            if (mPayCode.getVisibility() == View.VISIBLE && mPayCode.length() == 0){
+                mPayCode.requestFocus();
+                MyDialog.ToastMessage(mPayCode.getHint().toString(),mContext);
+                return;
+            }
+
             mProgressDialog.setMessage("正在充值...").show();
             CustomApplication.execute(()->{
                 JSONObject cashier_info = new JSONObject(),store_info = new JSONObject(),data_ = new JSONObject(),retJson,info_json;
@@ -196,7 +226,7 @@ public class VipChargeDialog extends Dialog {
                                             data_.put("appid",appId);
                                             data_.put("order_code",order_code);
                                             data_.put("case_pay_money",mC_amt.getText().toString());
-                                            data_.put("pay_method",mPayMethodId);
+                                            data_.put("pay_method",mPayMethod.optString("pay_method_id"));
 
                                             url = url + "/api/member/cl_money_order";
                                             sz_param = HttpRequest.generate_request_parm(data_,appScret);

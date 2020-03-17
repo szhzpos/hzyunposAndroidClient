@@ -270,7 +270,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_12"
                 android:orientation="horizontal"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/textView5"

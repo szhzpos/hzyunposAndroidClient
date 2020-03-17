@@ -91,7 +91,7 @@ public class SyncHandler extends Handler {
                     table_name = "pay_method";
                     img_url_col_name = "pay_img";
                     table_cls = new String[]{"pay_method_id","name","status","remark","is_check","shortcut_key","sort","xtype","pay_img","master_img",
-                            "is_show_client","is_cardno","is_scan","wr_btn_img","unified_pay_order","unified_pay_query","rule","is_open","is_enable"};
+                            "is_show_client","is_cardno","is_scan","wr_btn_img","unified_pay_order","unified_pay_query","rule","is_open","is_enable","support"};
                     sys_name = "正在同步支付方式";
                     url = mUrl + "/api/cashier/get_pm_info";
                     object.put("stores_id",mStoreInfo.getString("stores_id"));
@@ -134,6 +134,7 @@ public class SyncHandler extends Handler {
                             case "y":
                                 JSONArray data = info_json.getJSONArray("data");
                                 if(data.length() != 0){
+                                    if (msg.what == MessageID.SYNC_PAY_METHOD_ID)Logger.d_json(data.toString());
                                     if (img_url_col_name != null){
                                         for (int k = 0,length = data.length();k < length;k++){
                                             img_url_info = data.getJSONObject(k).getString(img_url_col_name);

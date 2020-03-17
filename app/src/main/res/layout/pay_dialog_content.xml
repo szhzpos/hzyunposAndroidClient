@@ -52,7 +52,7 @@
             <LinearLayout
                 android:id="@+id/vip_info_linearLayout"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/height_68"
+                android:layout_height="@dimen/height_45"
                 android:layout_margin="@dimen/margin_2"
                 android:background="@drawable/border_sub_gray"
                 android:orientation="horizontal"
@@ -66,7 +66,7 @@
                     android:gravity="center"
                     android:text="@string/vip_info_sz"
                     android:textColor="@color/text_color"
-                    android:textSize="@dimen/fun_button_font_size_18" />
+                    android:textSize="@dimen/font_size_16" />
 
                 <TextView
                     android:id="@+id/vip_name"
@@ -74,7 +74,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:textColor="@color/text_color"
-                    android:textSize="@dimen/fun_button_font_size_24" />
+                    android:textSize="@dimen/font_size_16" />
 
                 <Space
                     android:layout_width="0dp"
@@ -88,7 +88,7 @@
                     android:text="@string/vip_phone_sz"
                     android:textAlignment="center"
                     android:textColor="@color/text_color"
-                    android:textSize="@dimen/fun_button_font_size_18" />
+                    android:textSize="@dimen/font_size_16" />
 
                 <TextView
                     android:id="@+id/vip_phone_num"
@@ -97,13 +97,13 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="@dimen/margin_5"
                     android:textColor="@color/text_color"
-                    android:textSize="@dimen/fun_button_font_size_24" />
+                    android:textSize="@dimen/font_size_16" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/pay_amount_info"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/height_68"
+                android:layout_height="@dimen/height_58"
                 android:layout_margin="@dimen/margin_2"
                 android:background="@drawable/border_sub_gray"
                 android:baselineAligned="false"
@@ -193,7 +193,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/height_68"
+                    android:layout_height="@dimen/height_58"
                     android:layout_margin="@dimen/margin_2"
                     android:background="@drawable/bottom_separator"
                     android:orientation="horizontal">
@@ -307,7 +307,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/height_68"
+                    android:layout_height="@dimen/height_58"
                     android:layout_marginStart="@dimen/margin_2"
                     android:layout_marginEnd="@dimen/margin_2"
                     android:layout_marginBottom="@dimen/margin_2"

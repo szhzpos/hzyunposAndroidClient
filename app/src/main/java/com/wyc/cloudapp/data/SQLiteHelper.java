@@ -905,6 +905,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "                             UNIQUE\n" +
                 ");\n",sql_pay_method = "CREATE TABLE IF NOT EXISTS pay_method (\n" +//付款方式
                 "    is_enable         VARCHAR DEFAULT (1),\n" +
+                "    support           VARCHAR  ,\n" +
                 "    is_open           INTEGER DEFAULT (1),\n" +
                 "    rule              VARCHAR,\n" +
                 "    unified_pay_query VARCHAR,\n" +

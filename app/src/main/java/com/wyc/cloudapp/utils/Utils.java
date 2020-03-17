@@ -339,4 +339,8 @@ public class Utils {
     public static JSONObject JsondeepCopy(JSONObject jsonObject) throws JSONException {
         return new JSONObject(jsonObject.toString());
     }
+
+    public static boolean equalDouble(double a,double b){
+        return Math.abs(a - b) < 0.00001;
+    }
 }

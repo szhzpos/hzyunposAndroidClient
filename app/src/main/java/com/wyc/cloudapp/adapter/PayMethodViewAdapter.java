@@ -97,7 +97,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
 
     public void setDatas(){
         StringBuilder err = new StringBuilder();
-        mDatas = SQLiteHelper.getList("select pay_method_id,name,pay_img  from pay_method where status = '1' order by sort",0,0,false,err);
+        mDatas = SQLiteHelper.getList("select pay_method_id,name,pay_img  from pay_method where status = '1' and support like '%1%' order by sort",0,0,false,err);
         if (mDatas != null){
             this.notifyDataSetChanged();
         }else{

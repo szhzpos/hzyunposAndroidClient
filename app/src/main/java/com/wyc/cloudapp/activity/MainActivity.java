@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -35,6 +36,7 @@ import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.GoodsTypeViewAdapter;
 import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
+import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.dialog.PayDialog;
 import com.wyc.cloudapp.dialog.VipInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
@@ -73,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
     private Timer mTimer;//更新当前时间计时器
     private NetworkManagement mNetworkManagement;
     private ImageView mCloseBtn;
-
+    private RecyclerView mSaleGoodsRecyclerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,26 +121,21 @@ public class MainActivity extends AppCompatActivity {
 
             }, Dialog::dismiss);
         });//退出收银
-        findViewById(R.id.num).setOnClickListener(view -> mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 0,mVipInfo));//数量
-        findViewById(R.id.discount).setOnClickListener(v-> mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 2,mVipInfo));//打折
-        findViewById(R.id.change_price).setOnClickListener(v-> mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 1,mVipInfo));//改价
+        findViewById(R.id.num).setOnClickListener(view -> mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 0));//数量
+        findViewById(R.id.discount).setOnClickListener(v-> mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 2));//打折
+        findViewById(R.id.change_price).setOnClickListener(v-> mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 1));//改价
         findViewById(R.id.check_out).setOnClickListener((View v)->{
             v.setEnabled(false);
             showPayDialog();
             v.setEnabled(true);
         });//结账
-
         findViewById(R.id.vip).setOnClickListener(v -> {
             VipInfoDialog vipInfoDialog = new VipInfoDialog(v.getContext());
             vipInfoDialog.setYesOnclickListener(dialog -> {
-                mVipInfo = dialog.getVip();
-                if (mVipInfo != null){
-                    Logger.d_json(mVipInfo.toString());
-                    showVipInfo();
-                }
+                showVipInfo(dialog.getVip());
                 dialog.dismiss();
             }).show();
-        });
+        });//会员
 
         findViewById(R.id.q_deal_linerLayout).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -310,23 +307,9 @@ public class MainActivity extends AppCompatActivity {
         final RecyclerView goods_info_view = findViewById(R.id.goods_info_list);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(MainActivity.this,5);
         goods_info_view.setLayoutManager(gridLayoutManager);
-        goods_info_view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            private int getVerSpacing(int viewHeight,int m_height){
-                int vertical_space ,vertical_counts,per_vertical_space;
-                vertical_space = viewHeight % m_height;
-                vertical_counts = viewHeight / m_height;
-                per_vertical_space = vertical_space / (vertical_counts != 0 ? vertical_counts:1);
 
-                return per_vertical_space;
-            }
-            @Override
-            public void onGlobalLayout() {
-                goods_info_view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                int height = goods_info_view.getMeasuredHeight();
-                float itemHeight = MainActivity.this.getResources().getDimension(R.dimen.goods_height);
-                goods_info_view.addItemDecoration(new GoodsInfoItemDecoration(getVerSpacing(height,(int) itemHeight)));
-            }
-        });
+        registerGlobalLayoutToRecyclerView(goods_info_view,getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration());
+
         mGoodsInfoViewAdapter.setDatas(null);
         mGoodsInfoViewAdapter.setOnItemClickListener(new GoodsInfoViewAdapter.OnItemClickListener() {
             View mPreName;
@@ -336,9 +319,6 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject jsonObject = mGoodsInfoViewAdapter.getItem(pos);
                 if (jsonObject != null){
                     try {
-
-                        Logger.d_json(jsonObject.toString());
-
                         mSaleGoodsViewAdapter.addSaleGoods(Utils.JsondeepCopy(jsonObject),mVipInfo);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -372,7 +352,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initSaleGoodsAdapter(){
-        final RecyclerView recyclerView = findViewById(R.id.sale_goods_list);
+        mSaleGoodsRecyclerView = findViewById(R.id.sale_goods_list);
         mSaleGoodsViewAdapter = new SaleGoodsViewAdapter(this);
         mSaleGoodsViewAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
@@ -388,7 +368,7 @@ public class MainActivity extends AppCompatActivity {
                     mSaleSumNum.setText(String.format(Locale.CANADA,"%.4f",sale_sum_num));
                     mSaleSumAmount.setText(String.format(Locale.CANADA,"%.2f",sale_sum_amount));
 
-                    recyclerView.scrollToPosition(mSaleGoodsViewAdapter.getCurrentItemIndex());
+                    mSaleGoodsRecyclerView.scrollToPosition(mSaleGoodsViewAdapter.getCurrentItemIndex());
                 } catch (JSONException e) {
                     e.printStackTrace();
                     MyDialog.displayErrorMessage("更新销售数据错误：" + e.getMessage(),MainActivity.this);
@@ -396,26 +376,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
-        recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            private int getVerSpacing(int viewHeight,int m_height){
-                int vertical_space ,vertical_counts,per_vertical_space;
-                vertical_space = viewHeight % m_height;
-                vertical_counts = viewHeight / m_height;
-                per_vertical_space = vertical_space / (vertical_counts != 0 ? vertical_counts:1);
+        registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray__subtransparent)));
 
-                return per_vertical_space;
-            }
-            @Override
-            public void onGlobalLayout() {
-                recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                int height = recyclerView.getMeasuredHeight();
-                float itemHeight = MainActivity.this.getResources().getDimension(R.dimen.sale_goods_height);
-                recyclerView.addItemDecoration(new SaleGoodsItemDecoration(getVerSpacing(height,(int) itemHeight)));
-            }
-        });
-        recyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
-        recyclerView.setAdapter(mSaleGoodsViewAdapter);
+        mSaleGoodsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
+        mSaleGoodsRecyclerView.setAdapter(mSaleGoodsViewAdapter);
     }
 
     private void initSearch(){
@@ -477,7 +441,7 @@ public class MainActivity extends AppCompatActivity {
                         if (motionEvent.getX() > (mSearch_content.getWidth() - mSearch_content.getCompoundPaddingRight())){
                             final TableLayout tableLayout = findViewById(R.id.keyboard_layout);
                             tableLayout.setVisibility(tableLayout.getVisibility()== View.VISIBLE ? View.GONE : View.VISIBLE);
-                            findViewById(R.id.goods_info_list).requestLayout();
+                            //registerGlobalLayoutToRecyclerView(findViewById(R.id.goods_info_list),MainActivity.this.getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration());
                             for(int i = 0,childCounts = tableLayout.getChildCount();i < childCounts;i ++){
                                 View vObj = tableLayout.getChildAt(i);
                                 if ( vObj instanceof TableRow){
@@ -512,7 +476,8 @@ public class MainActivity extends AppCompatActivity {
     private void showPayDialog(){
         JSONArray datas = mSaleGoodsViewAdapter.getDatas();
         if (datas.length() != 0){
-            PayDialog dialog = new PayDialog(this,mSaleGoodsViewAdapter);
+            PayDialog dialog = new PayDialog(this);
+            if (mVipInfo != null)dialog.showVipInfo(mVipInfo,true);
             if (dialog.initPayContent(datas)){
                 dialog.setNoOnclickListener(PayDialog::dismiss).show();
             }
@@ -525,25 +490,60 @@ public class MainActivity extends AppCompatActivity {
         clearVipInfo();
     }
 
-    private void showVipInfo(){
-        if (mVipInfo != null){
-            LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
-            vip_info_linearLayout.setVisibility(View.VISIBLE);
-            ((TextView)vip_info_linearLayout.findViewById(R.id.vip_name)).setText(mVipInfo.optString("name"));
-            ((TextView)vip_info_linearLayout.findViewById(R.id.vip_phone_num)).setText(mVipInfo.optString("mobile"));
+    public JSONArray showVipInfo(@NonNull JSONObject vip){
+        mVipInfo = vip;
 
-            mSaleGoodsViewAdapter.updateGoodsInfoToVip(mVipInfo);
-        }
+        registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray__subtransparent)));
+
+        LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
+        vip_info_linearLayout.setVisibility(View.VISIBLE);
+        ((TextView)vip_info_linearLayout.findViewById(R.id.vip_name)).setText(mVipInfo.optString("name"));
+        ((TextView)vip_info_linearLayout.findViewById(R.id.vip_phone_num)).setText(mVipInfo.optString("mobile"));
+
+        return  mSaleGoodsViewAdapter.updateGoodsInfoToVip(mVipInfo);
     }
 
     private void clearVipInfo(){
         if (mVipInfo != null){
             mVipInfo = null;
+
+            registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray__subtransparent)));
+
             LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
             vip_info_linearLayout.setVisibility(View.GONE);
             ((TextView)vip_info_linearLayout.findViewById(R.id.vip_name)).setText(getText(R.string.space_sz));
             ((TextView)vip_info_linearLayout.findViewById(R.id.vip_phone_num)).setText(getText(R.string.space_sz));
         }
+    }
+
+    private void registerGlobalLayoutToRecyclerView(@NonNull final View view,final float size,@NonNull final SuperItemDecoration superItemDecoration){
+        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            private int getVerSpacing(int viewHeight,int m_height){
+                double vertical_space ,vertical_counts,per_vertical_space;
+                vertical_space = viewHeight % m_height;
+                vertical_counts = viewHeight / m_height;
+                per_vertical_space = vertical_space / (vertical_counts != 0 ? vertical_counts:1);
+
+                return (int) Utils.formatDouble(per_vertical_space,0);
+            }
+            @Override
+            public void onGlobalLayout() {
+                view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                int height = view.getMeasuredHeight();
+                if (view instanceof RecyclerView){
+                    RecyclerView recyclerView = ((RecyclerView)view);
+                    if (recyclerView.getItemDecorationCount() > 0){
+                        recyclerView.removeItemDecorationAt(0);
+                    }
+                    superItemDecoration.setSpace(getVerSpacing(height,(int) size));
+                    recyclerView.addItemDecoration(superItemDecoration);
+                }
+            }
+        });
+    }
+
+    public JSONArray discount(double discount){
+        return mSaleGoodsViewAdapter.discount(discount);
     }
 
 }

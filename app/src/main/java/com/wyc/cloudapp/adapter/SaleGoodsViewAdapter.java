@@ -243,7 +243,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         }
     }
 
-    public void updateSaleGoodsDialog(final short type,final JSONObject vip){//type 0 修改数量 1修改价格 2打折
+    public void updateSaleGoodsDialog(final short type){//type 0 修改数量 1修改价格 2打折
         JSONObject cur_json = getCurrentContent();
         if (cur_json != null){
             ChangeNumOrPriceDialog dialog;
@@ -327,6 +327,44 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         }
     }
 
+    public JSONArray discount(double discount){
+        double  discount_amt = 0.0,old_price = 0.0,new_price = 0.0,sale_num = 0.0;
+        boolean d_discount = false;//是否折上折
+        try {
+            for(int i = 0,length = mDatas.length();i < length;i++){
+                JSONObject json = mDatas.getJSONObject(i);
+
+                old_price = json.getDouble("old_price");
+                discount = Utils.formatDouble(discount / 100,4);
+                new_price = json.getDouble("buying_price");
+                sale_num = json.getDouble("sale_num");
+
+                if (d_discount){
+                    new_price = Utils.formatDouble(new_price * discount,2);
+                }else{
+                    new_price = Utils.formatDouble(old_price * discount,2);
+                }
+
+                discount_amt = Utils.formatDouble(sale_num * (old_price - new_price),2);
+
+                json.put("discount", discount);
+                json.put("discount_amt", discount_amt);
+                json.put("buying_price",new_price);
+
+                json.put("sale_amt",Utils.formatDouble(sale_num * new_price,2));
+                json.put("order_amt",Utils.formatDouble(old_price * sale_num,2));
+
+                Logger.d_json(json.toString());
+            }
+            notifyDataSetChanged();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            MyDialog.displayErrorMessage("整单折扣错误：" + e.getMessage(),mContext);
+        }
+
+        return mDatas;
+    }
+
 
     public void clearGoods(){
         mDatas = new JSONArray();
@@ -376,7 +414,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         goods_name.setTextColor(mContext.getColor(R.color.blue));
     }
 
-    public void updateGoodsInfoToVip(final JSONObject vip){
+    public JSONArray updateGoodsInfoToVip(final JSONObject vip){
         double discount = 1.0,new_price = 0.0,old_price,discount_amt = 0.0,sale_num = 0.0;
         if (vip != null){
             try {
@@ -418,6 +456,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 MyDialog.ToastMessage("会员折扣错误：" + e.getMessage(),mContext);
             }
         }
+        return mDatas;
     }
 
 }

@@ -1,24 +1,23 @@
 package com.wyc.cloudapp.dialog;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.adapter.PayDetailItemDecoration;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.PayDetailViewAdapter;
 import com.wyc.cloudapp.adapter.PayMethodItemDecoration;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
@@ -33,24 +32,24 @@ import org.json.JSONObject;
 import java.util.Locale;
 
 public class PayDialog extends Dialog {
-    private Context mContext;
+    private MainActivity mainActivity;
     private EditText mCashMoneyEt,mZlAmtEt;
     private onNoOnclickListener noOnclickListener;//取消按钮被点击了的监听器
     private onYesOnclickListener yesOnclickListener;//确定按钮被点击了的监听器
     private PayMethodViewAdapter mPayMethodViewAdapter;
     private PayDetailViewAdapter mPayDetailViewAdapter;
-    private SaleGoodsViewAdapter mSaleGoodsViewAdpter;
     private TextView mOrderAmtTv,mDiscountAmtTv,mActualAmtTv,mPayAmtTv,mAmtReceivedTv,mPayBalanceTv;
     private double mOrder_amt = 0.0,mDiscount_amt = 0.0,mActual_amt = 0.0,mPay_amt = 0.0,mAmt_received = 0.0,mPay_balance = 0.0,mCashAmt = 0.0,mZlAmt = 0.0;
     private Button mOK;
-    public PayDialog(Context context,SaleGoodsViewAdapter saleGoodsViewAdapter){
+    private JSONObject mVip;
+    public PayDialog(MainActivity context){
         super(context);
-        this.mContext = context;
-        mSaleGoodsViewAdpter = saleGoodsViewAdapter;
+        mainActivity = context;
+        //可以show之前访问view
+        setContentView(this.getLayoutInflater().inflate(R.layout.pay_dialog_content, null));
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setContentView(this.getLayoutInflater().inflate(R.layout.pay_dialog_content, null));
         setCancelable(false);
         setCanceledOnTouchOutside(false);
 
@@ -76,7 +75,6 @@ public class PayDialog extends Dialog {
         //初始化按钮
         mOK = findViewById(R.id._ok);
         mOK.setOnClickListener(v -> {cash_pay();});
-
         findViewById(R.id._close).setOnClickListener(view -> PayDialog.this.dismiss());
         findViewById(R.id.cancel).setOnClickListener(v -> {
             if (noOnclickListener != null){
@@ -91,7 +89,7 @@ public class PayDialog extends Dialog {
                     Editable editable = tmp_edit.getText();
                     int index = tmp_edit.getSelectionStart(),end = tmp_edit.getSelectionEnd();
                     if (index !=end && end == editable.length()){
-                        tmp_edit.setText(mContext.getString(R.string.d_zero_point_sz));
+                        tmp_edit.setText(mainActivity.getString(R.string.d_zero_point_sz));
                     }else{
                         if (index == 0)return;
                         if (index > editable.length())index = editable.length();
@@ -107,6 +105,27 @@ public class PayDialog extends Dialog {
                         }
                     }
                 }
+            }
+        });
+        findViewById(R.id.vip).setOnClickListener(view -> {
+            VipInfoDialog vipInfoDialog = new VipInfoDialog(mainActivity);
+            vipInfoDialog.setYesOnclickListener(dialog -> {
+                if (showVipInfo(dialog.getVip(),false)){
+                    refreshContent();
+                    dialog.dismiss();
+                }
+            }).show();
+        });
+        findViewById(R.id.all_discount).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ChangeNumOrPriceDialog dialog = new ChangeNumOrPriceDialog(mainActivity,mainActivity.getString(R.string.discount_sz),String.format(Locale.CHINA,"%d",100));
+                dialog.setYesOnclickListener(myDialog -> {
+                    if (initPayContent(mainActivity.discount(myDialog.getNewNumOrPrice()))){
+                        refreshContent();
+                        myDialog.dismiss();
+                    }
+                }).show();
             }
         });
 
@@ -183,7 +202,7 @@ public class PayDialog extends Dialog {
     };
 
     private void initPayMethodAdapter(){
-        mPayMethodViewAdapter = new PayMethodViewAdapter(mContext);
+        mPayMethodViewAdapter = new PayMethodViewAdapter(mainActivity);
         mPayMethodViewAdapter.setDatas();
         mPayMethodViewAdapter.setOnItemClickListener(new PayMethodViewAdapter.OnItemClickListener() {
             @Override
@@ -203,19 +222,19 @@ public class PayDialog extends Dialog {
                         Logger.d_json(pay_method.toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        MyDialog.ToastMessage("付款错误：" + e.getMessage(),mContext);
+                        MyDialog.ToastMessage("付款错误：" + e.getMessage(),mainActivity);
                     }
                 }
             }
         });
         RecyclerView recyclerView = findViewById(R.id.pay_method_list);
-        recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL,false));
+        recyclerView.setLayoutManager(new LinearLayoutManager(mainActivity, LinearLayoutManager.HORIZONTAL,false));
         recyclerView.addItemDecoration(new PayMethodItemDecoration(2));
         recyclerView.setAdapter(mPayMethodViewAdapter);
     }
 
     private void initPayDetailViewAdapter(){
-        mPayDetailViewAdapter = new PayDetailViewAdapter(mContext);
+        mPayDetailViewAdapter = new PayDetailViewAdapter(mainActivity);
         mPayDetailViewAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
@@ -235,40 +254,24 @@ public class PayDialog extends Dialog {
 
                     refreshContent();
 
-                    if (mActual_amt == mAmt_received){//支付明细数据发送变化后，计算是否已经付款完成，如果完成直接退出付款界面
+                    if (Utils.equalDouble(mActual_amt,mAmt_received)){//支付明细数据发送变化后，计算是否已经付款完成，如果完成直接退出付款界面
                         PayDialog.this.dismiss();
                     }
                 }catch (JSONException e){
                     e.printStackTrace();
-                    MyDialog.ToastMessage("付款错误：" + e.getMessage(),mContext);
+                    MyDialog.ToastMessage("付款错误：" + e.getMessage(),mainActivity);
                 }
             }
         });
         RecyclerView recyclerView = findViewById(R.id.pay_detail_list);
-        recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
-        /*recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            private int getVerSpacing(int viewHeight,int m_height){
-                int vertical_space ,vertical_counts,per_vertical_space;
-                vertical_space = viewHeight % m_height;
-                vertical_counts = viewHeight / m_height;
-                per_vertical_space = vertical_space / (vertical_counts != 0 ? vertical_counts:1);
-
-                return per_vertical_space;
-            }
-            @Override
-            public void onGlobalLayout() {
-                recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                int height = recyclerView.getMeasuredHeight();
-                float itemHeight = mContext.getResources().getDimension(R.dimen.sale_goods_height);
-                recyclerView.addItemDecoration(new PayDetailItemDecoration(getVerSpacing(height,(int) itemHeight)));
-            }
-        });*/
-        recyclerView.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
+        recyclerView.setLayoutManager(new LinearLayoutManager(mainActivity, LinearLayoutManager.VERTICAL,false));
+        recyclerView.addItemDecoration(new DividerItemDecoration(mainActivity,DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(mPayDetailViewAdapter);
     }
 
     public boolean initPayContent(JSONArray datas){
         boolean isTrue = true;
+        clearContent();
         for (int i = 0,length = datas.length();i < length; i ++){
             try {
                 JSONObject jsonObject = datas.getJSONObject(i);
@@ -281,7 +284,7 @@ public class PayDialog extends Dialog {
             } catch (JSONException e) {
                 isTrue = false;
                 e.printStackTrace();
-                MyDialog.ToastMessage("初始化付款信息错误：" + e.getMessage(),mContext);
+                MyDialog.ToastMessage("初始化付款信息错误：" + e.getMessage(),mainActivity);
             }
         }
         return isTrue;
@@ -323,10 +326,10 @@ public class PayDialog extends Dialog {
                 mPayDetailViewAdapter.addPayDetail(cash_json);
             }catch (JSONException e){
                 e.printStackTrace();
-                MyDialog.ToastMessage("现金付款错误：" + e.getMessage(),mContext);
+                MyDialog.ToastMessage("现金付款错误：" + e.getMessage(),mainActivity);
             }
         }else{
-            MyDialog.ToastMessage("现金付款方式不存在！",mContext);
+            MyDialog.ToastMessage("现金付款方式不存在！",mainActivity);
         }
     }
 
@@ -359,14 +362,25 @@ public class PayDialog extends Dialog {
                     else{
                         mCashMoneyEt.setText(mPayBalanceTv.getText());
                         mCashMoneyEt.selectAll();
-                        MyDialog.ToastMessage("找零不能大于100",mContext);
+                        MyDialog.ToastMessage("找零不能大于100",mainActivity);
                     }
                 }else{
                     mZlAmt = 0.00;
-                    mZlAmtEt.setText(mContext.getText(R.string.z_p_z_sz));
+                    mZlAmtEt.setText(mainActivity.getText(R.string.z_p_z_sz));
                 }
             }
         });
         mCashMoneyEt.postDelayed(()-> mCashMoneyEt.requestFocus(),300);
+    }
+
+    public boolean showVipInfo(@NonNull JSONObject vip,boolean show){//show为true则只显示不再刷新已销售商品
+        mVip = vip;
+        LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
+        if (vip_info_linearLayout != null){
+            vip_info_linearLayout.setVisibility(View.VISIBLE);
+            ((TextView)vip_info_linearLayout.findViewById(R.id.vip_name)).setText(mVip.optString("name"));
+            ((TextView)vip_info_linearLayout.findViewById(R.id.vip_phone_num)).setText(mVip.optString("mobile"));
+        }
+        return show ? show : initPayContent(mainActivity.showVipInfo(vip));
     }
 }
