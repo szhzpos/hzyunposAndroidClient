@@ -58,9 +58,8 @@
 
             <EditText
                 android:id="@+id/c_amt"
-                android:layout_width="match_parent"
+                android:layout_width="150dp"
                 android:layout_height="match_parent"
-                android:layout_weight="2"
                 android:autofillHints=""
                 android:background="@color/transparent"
                 android:ems="10"
@@ -77,7 +76,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="@dimen/margin_2"
-                android:layout_weight="1"
                 android:background="@drawable/left_separator"
                 android:ems="10"
                 android:hint="@string/space_sz"
@@ -86,7 +84,7 @@
                 android:paddingEnd="0dp"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_14"
-                android:visibility="visible" />
+                android:visibility="gone" />
 
         </LinearLayout>
 

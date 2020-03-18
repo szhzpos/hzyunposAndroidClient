@@ -11,6 +11,7 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.utils.Utils;
 import org.json.JSONObject;
 import java.util.Locale;
@@ -18,6 +19,9 @@ import java.util.Locale;
 public abstract class AbstractPayDialog extends Dialog implements IPay {
     protected EditText mC_amt,mPayCode;
     protected Context mContext;
+    protected Button mOk;
+    protected CustomProgressDialog mProgressDialog;
+    protected JSONObject mPayMethod;
     public AbstractPayDialog(@NonNull Context context) {
         super(context);
         mContext = context;
@@ -26,6 +30,11 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.pay_method_dialog_content);
+        setCancelable(false);
+        setCanceledOnTouchOutside(false);
+
+        mProgressDialog = new CustomProgressDialog(mContext);
+        mOk = findViewById(R.id._ok);
 
         //初始化付款码
         init_pay_code();
@@ -90,9 +99,7 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
         return null;
     }
 
-    protected void initPayMethod() {
-
-    }
+    protected abstract void initPayMethod();
 
     private void init_c_amount(){
         mC_amt = findViewById(R.id.c_amt);

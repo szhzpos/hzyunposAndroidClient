@@ -5,13 +5,10 @@ import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.Editable;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,8 +31,6 @@ import java.lang.ref.WeakReference;
 import java.util.Date;
 
 public class VipChargeDialog extends AbstractPayDialog {
-    private JSONObject mPayMethod;
-    private CustomProgressDialog mProgressDialog;
     private JSONObject mVip;
     private Myhandler mHandler;
     private onYesOnclickListener mYesOnclickListener;
@@ -50,7 +45,6 @@ public class VipChargeDialog extends AbstractPayDialog {
         setCancelable(false);
         setCanceledOnTouchOutside(false);
 
-        mProgressDialog = new CustomProgressDialog(mContext);
         mHandler = new Myhandler(this);
 
         //初始化支付方式
@@ -62,19 +56,18 @@ public class VipChargeDialog extends AbstractPayDialog {
 
     @Override
     protected void initPayMethod(){
-        PayMethodViewAdapter payMethodViewAdapter = new PayMethodViewAdapter(mContext,94);
-        payMethodViewAdapter.setDatas("1");
-        payMethodViewAdapter.setOnItemClickListener(new PayMethodViewAdapter.OnItemClickListener() {
-            @Override
-            public void onClick(View v, int pos) {
-                mPayMethod = payMethodViewAdapter.getItem(pos);
-                if (mPayMethod != null) {
-                    Logger.d_json(mPayMethod.toString());
-                    if (mPayMethod.optInt("is_check") != 2){ //显示付款码输入框
-                        mPayCode.setVisibility(View.VISIBLE);
-                        mPayCode.setHint(mPayMethod.optString("xtype",""));
-                    }else
-                        mPayCode.setVisibility(View.GONE);
+        final PayMethodViewAdapter payMethodViewAdapter = new PayMethodViewAdapter(mContext,94);
+        payMethodViewAdapter.setDatas("3");
+        payMethodViewAdapter.setOnItemClickListener((v, pos) -> {
+            mPayMethod = payMethodViewAdapter.getItem(pos);
+            if (mPayMethod != null) {
+                Logger.d_json(mPayMethod.toString());
+                if (mPayMethod.optInt("is_check") != 2){ //显示付款码输入框
+                    mPayCode.setVisibility(View.VISIBLE);
+                    mPayCode.setHint(mPayMethod.optString("xtype",""));
+                }else{
+                    mPayCode.getText().clear();
+                    mPayCode.setVisibility(View.GONE);
                 }
             }
         });
@@ -83,6 +76,8 @@ public class VipChargeDialog extends AbstractPayDialog {
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL,false));
         recyclerView.addItemDecoration(new PayMethodItemDecoration(2));
         recyclerView.setAdapter(payMethodViewAdapter);
+
+        ((TextView)findViewById(R.id.title)).setText(mContext.getString(R.string.vip_charge_sz));
     }
 
     private void vip_charge(){

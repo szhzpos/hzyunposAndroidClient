@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.dialog;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -30,7 +31,7 @@ import org.json.JSONObject;
 
 import java.util.Locale;
 
-public class PayDialog extends AbstractPayDialog {
+public class PayDialog extends Dialog {
     private MainActivity mainActivity;
     private EditText mCashMoneyEt,mZlAmtEt;
     private onNoOnclickListener noOnclickListener;//取消按钮被点击了的监听器
@@ -160,12 +161,6 @@ public class PayDialog extends AbstractPayDialog {
         return  this;
     }
 
-    @Override
-    public void setPayAmt(double amt) {
-
-    }
-
-    @Override
     public JSONObject getPayContent() {
         JSONArray array = mPayDetailViewAdapter.getDatas();
         for (int i = 0,length = array.length();i < length;i++){
@@ -190,21 +185,21 @@ public class PayDialog extends AbstractPayDialog {
         if (view != null) {
             if (view.getId() == R.id.cash_amt) {
                 EditText tmp_edit = ((EditText)view);
-                int index = tmp_edit.getSelectionStart();
                 Editable editable = tmp_edit.getText();
+                int index = tmp_edit.getSelectionStart(),point_index = editable.toString().indexOf(".");
                 String sz_button = ((Button) v).getText().toString();
-                if (editable.toString().contains(".") && tmp_edit.getSelectionEnd() == editable.length()){
-                    editable.replace(0,editable.toString().indexOf("."),sz_button);
-                    tmp_edit.setSelection(editable.toString().indexOf("."));
-                }else
+                if (-1 != point_index && tmp_edit.getSelectionEnd() == editable.length()){
+                    editable.replace(0, editable.length(),sz_button.concat(mainActivity.getString(R.string.d_zero_point_sz)));
+                    tmp_edit.setSelection(point_index);
+                }else{
                     if (".".equals(sz_button)) {
-                        if (editable.toString().contains(".")){
-                            tmp_edit.setSelection(editable.toString().indexOf(".") + 1);
+                        if (-1 != point_index){
+                            tmp_edit.setSelection(point_index + 1);
                         }else{
                             editable.insert(index, sz_button);
                         }
                     } else {
-                        if (editable.toString().contains(".") && index > editable.toString().indexOf(".")) {
+                        if (-1 != point_index && index > point_index) {
                             if (index != tmp_edit.length())
                                 editable.delete(index, index + 1).insert(index, sz_button);
                         } else {
@@ -212,32 +207,28 @@ public class PayDialog extends AbstractPayDialog {
                             editable.insert(index, sz_button);
                         }
                     }
+                }
             }
-
         }
     };
 
-    @Override
-    protected void initPayMethod(){
+    private void initPayMethod(){
         mPayMethodViewAdapter = new PayMethodViewAdapter(mainActivity,(int) mainActivity.getResources().getDimension(R.dimen.pay_method_width));
         mPayMethodViewAdapter.setDatas("1");
-        mPayMethodViewAdapter.setOnItemClickListener(new PayMethodViewAdapter.OnItemClickListener() {
-            @Override
-            public void onClick(View v, int pos) {
-                JSONObject pay_method = mPayMethodViewAdapter.getItem(pos);
-                if (pay_method != null){
-                    try {
-                        if (PayMethodViewAdapter.CASH_METHOD_ID.equals(pay_method.getString("pay_method_id"))) {
-                            mOK.callOnClick();
-                        } else {
-                            PayMethodDialog payMethodDialog = new PayMethodDialog(mainActivity, pay_method);
-                            payMethodDialog.show();
-                        }
-                        Logger.d_json(pay_method.toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        MyDialog.ToastMessage("付款错误：" + e.getMessage(),mainActivity);
+        mPayMethodViewAdapter.setOnItemClickListener((v, pos) -> {
+            JSONObject pay_method = mPayMethodViewAdapter.getItem(pos);
+            if (pay_method != null){
+                try {
+                    if (PayMethodViewAdapter.CASH_METHOD_ID.equals(pay_method.getString("pay_method_id"))) {
+                        mOK.callOnClick();
+                    } else {
+                        PayMethodDialog payMethodDialog = new PayMethodDialog(mainActivity, pay_method);
+                        payMethodDialog.show();
                     }
+                    Logger.d_json(pay_method.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    MyDialog.ToastMessage("付款错误：" + e.getMessage(),mainActivity);
                 }
             }
         });
@@ -313,6 +304,8 @@ public class PayDialog extends AbstractPayDialog {
         mAmtReceivedTv.setText(String.format(Locale.CHINA,"%.2f",mAmt_received));
         mPayBalanceTv.setText(String.format(Locale.CHINA,"%.2f",mPay_balance));
         mZlAmtEt.setText(String.format(Locale.CHINA,"%.2f",mZlAmt));
+
+        mCashMoneyEt.selectAll();
     }
 
     private void clearContent(){

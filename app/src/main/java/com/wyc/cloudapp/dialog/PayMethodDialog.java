@@ -12,17 +12,21 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.interface_abstract.AbstractPayDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
+import com.wyc.cloudapp.utils.http.HttpRequest;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Locale;
 
 public class PayMethodDialog extends AbstractPayDialog {
-    private JSONObject mPayMethod;
     public PayMethodDialog(@NonNull Context context,@NonNull JSONObject pay_method) {//show_check_code 是否显示校验码输入框
         super(context);
         mPayMethod = pay_method;
@@ -31,6 +35,8 @@ public class PayMethodDialog extends AbstractPayDialog {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+
+        mOk.setText(R.string.OK);
 
         //初始化支付方式
         initPayMethod();
@@ -55,15 +61,14 @@ public class PayMethodDialog extends AbstractPayDialog {
     protected void initPayMethod(){
         if (mPayMethod != null) {
             Logger.d_json(mPayMethod.toString());
-
             ((TextView)super.findViewById(R.id.title)).setText(mPayMethod.optString("name"));
-
             if (mPayMethod.optInt("is_check") != 2){ //显示付款码输入框
                 mPayCode.setVisibility(View.VISIBLE);
                 mPayCode.setHint(mPayMethod.optString("xtype",""));
-            }else
+            }else{
+                mPayCode.getText().clear();
                 mPayCode.setVisibility(View.GONE);
+            }
         }
     }
-
 }

@@ -48,17 +48,26 @@ public class GoodsTypeViewAdapter extends RecyclerView.Adapter<GoodsTypeViewAdap
         itemView.setOnClickListener(view -> {
             TextView name,category_id;
             if (null != mCurrentItemView){
-                mCurrentItemView.setBackgroundColor(mContext.getResources().getColor(R.color.white,null));
-                name = mCurrentItemView.findViewById(R.id.category_name);
-                name.setTextColor(mContext.getResources().getColor(R.color.blue,null));
-            }
-            view.setBackgroundColor(mContext.getResources().getColor(R.color.blue,null));
-            name = view.findViewById(R.id.category_name);
-            name.setTextColor(mContext.getResources().getColor(R.color.white,null));
+                if (mCurrentItemView != view){
+                    mCurrentItemView.setBackgroundColor(mContext.getResources().getColor(R.color.white,null));
+                    name = mCurrentItemView.findViewById(R.id.category_name);
+                    name.setTextColor(mContext.getResources().getColor(R.color.blue,null));
 
-            mCurrentItemView = view;
+                    mCurrentItemView = view;
+
+                    mCurrentItemView.setBackgroundColor(mContext.getResources().getColor(R.color.blue,null));
+                    name = mCurrentItemView.findViewById(R.id.category_name);
+                    name.setTextColor(mContext.getResources().getColor(R.color.white,null));
+                }
+            }else{
+                view.setBackgroundColor(mContext.getResources().getColor(R.color.blue,null));
+                name = view.findViewById(R.id.category_name);
+                name.setTextColor(mContext.getResources().getColor(R.color.white,null));
+                mCurrentItemView = view;
+            }
+
             category_id = view.findViewById(R.id.category_id);
-            if (null != mGoodsInfoAdapter)mGoodsInfoAdapter.setDatas(category_id.getText().toString());
+            if (null != mGoodsInfoAdapter && category_id != null)mGoodsInfoAdapter.setDatas(category_id.getText().toString());
         });
         return new MyViewHolder(itemView);
     }

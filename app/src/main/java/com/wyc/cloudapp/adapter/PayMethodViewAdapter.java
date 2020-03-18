@@ -11,11 +11,15 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.MessageID;
+import com.wyc.cloudapp.utils.http.HttpRequest;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdapter.MyViewHolder> {
@@ -46,7 +50,6 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View itemView = View.inflate(mContext, R.layout.pay_method_content, null);
         itemView.setLayoutParams( new RecyclerView.LayoutParams(mWidth, ViewGroup.LayoutParams.MATCH_PARENT));
-        itemView.setOnClickListener(view -> mCurrentItemView = view);
         return new MyViewHolder(itemView);
     }
 
@@ -74,10 +77,33 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
                 myViewHolder.pay_method_name.setText(pay_method_info.optString("name"));
 
                 if (mOnItemClickListener != null){
-                    myViewHolder.mCurrentLayoutItemView.setOnClickListener(view -> mOnItemClickListener.onClick(view,i));
+                    myViewHolder.mCurrentLayoutItemView.setOnClickListener(view -> {
+                        View sign;
+                        if (null != mCurrentItemView){
+                            if (mCurrentItemView != view){
+                                sign = view.findViewById(R.id.sel_sign);
+                                if (sign != null)sign.setVisibility(View.VISIBLE);
+
+                                sign = mCurrentItemView.findViewById(R.id.sel_sign);
+                                if (sign != null)sign.setVisibility(View.GONE);
+
+                                mCurrentItemView = view;
+                            }
+                        }else{
+                            sign = view.findViewById(R.id.sel_sign);
+                            if (sign != null)sign.setVisibility(View.VISIBLE);
+                            mCurrentItemView = view;
+                        }
+                        mOnItemClickListener.onClick(view,i);
+                    });
                 }
             }
         }
+    }
+
+    @Override
+    public void onViewAttachedToWindow (MyViewHolder holder){
+
     }
 
     @Override
@@ -117,5 +143,4 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
         }
         return null;
     }
-
 }

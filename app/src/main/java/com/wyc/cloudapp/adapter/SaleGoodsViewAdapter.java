@@ -93,7 +93,6 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                     }
                 }, v -> {
                     setSelectStatus(v);
-                    setCurrentItemIndexAndItemView(v);
                     if (mOnItemClickListener != null){
                     mOnItemClickListener.onClick(v,i); }
                 }));
@@ -409,9 +408,10 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
             goods_name.setTextColor(mContext.getColor(R.color.good_name_color));
         }
         goods_name = v.findViewById(R.id.goods_title);
-        Animation shake = AnimationUtils.loadAnimation(mContext, R.anim.shake);
-        goods_name.startAnimation(shake);
+        goods_name.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.shake));
         goods_name.setTextColor(mContext.getColor(R.color.blue));
+
+        if (mCurrentItemView != v)setCurrentItemIndexAndItemView(v);
     }
 
     public JSONArray updateGoodsInfoToVip(final JSONObject vip){

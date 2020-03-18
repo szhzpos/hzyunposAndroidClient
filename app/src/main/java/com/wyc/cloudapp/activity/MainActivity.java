@@ -312,7 +312,7 @@ public class MainActivity extends AppCompatActivity {
 
         mGoodsInfoViewAdapter.setDatas(null);
         mGoodsInfoViewAdapter.setOnItemClickListener(new GoodsInfoViewAdapter.OnItemClickListener() {
-            View mPreName;
+            View mCurrentView;
             @Override
             public void onClick(View v, int pos) {
                 set_selected_status(v);//设置选中状态
@@ -328,16 +328,16 @@ public class MainActivity extends AppCompatActivity {
             }
             private void set_selected_status(View v){
                 TextView goods_name;
-                if(null != mPreName){
-                    goods_name = mPreName.findViewById(R.id.goods_title);
+                if(null != mCurrentView){
+                    goods_name = mCurrentView.findViewById(R.id.goods_title);
                     goods_name.clearAnimation();
                     goods_name.setTextColor(MainActivity.this.getColor(R.color.good_name_color));
                 }
                 goods_name = v.findViewById(R.id.goods_title);
-                Animation shake = AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake);
-                goods_name.startAnimation(shake);
+                goods_name.startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake));
                 goods_name.setTextColor(MainActivity.this.getColor(R.color.blue));
-                mPreName = v;
+
+                if (mCurrentView != v)mCurrentView = v;
             }
         });
         goods_info_view.setAdapter(mGoodsInfoViewAdapter);
