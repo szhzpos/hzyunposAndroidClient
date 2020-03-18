@@ -479,7 +479,12 @@ public class MainActivity extends AppCompatActivity {
             PayDialog dialog = new PayDialog(this);
             if (mVipInfo != null)dialog.showVipInfo(mVipInfo,true);
             if (dialog.initPayContent(datas)){
-                dialog.setNoOnclickListener(PayDialog::dismiss).show();
+                dialog.setYesOnclickListener(new PayDialog.onYesOnclickListener() {
+                    @Override
+                    public void onYesClick(PayDialog myDialog) {
+                        //Logger.d_json(myDialog.ge);
+                    }
+                }).setNoOnclickListener(PayDialog::dismiss).show();
             }
         }else{
             MyDialog.ToastMessage("已选商品为空！!",this);

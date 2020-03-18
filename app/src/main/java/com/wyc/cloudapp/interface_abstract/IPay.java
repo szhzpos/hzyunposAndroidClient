@@ -1,8 +1,8 @@
-package com.wyc.cloudapp.dialog;
+package com.wyc.cloudapp.interface_abstract;
 
 import org.json.JSONObject;
 
-public interface IPay {
+ interface IPay {
     void setPayAmt(double amt);
     JSONObject getPayContent();
 }

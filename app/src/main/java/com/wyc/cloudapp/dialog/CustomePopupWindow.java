@@ -5,6 +5,8 @@ import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import androidx.annotation.NonNull;
+
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
@@ -14,6 +16,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.R;
 
@@ -250,7 +253,7 @@ public class CustomePopupWindow extends PopupWindow {
     }
     public void show(View view){
         if (!this.isShowing() && !mArrayAdapter.isEmpty()){
-            this.setHeight(82 * 2);
+            this.setHeight((int)mContext.getResources().getDimension(R.dimen.drop_down_height) * 2);
             setBackgroundAlpha(0.5f);
             this.showAsDropDown(view,0,0);
         }
@@ -258,9 +261,9 @@ public class CustomePopupWindow extends PopupWindow {
 
     public void show(View view,int size){
         if (!this.isShowing() && !mArrayAdapter.isEmpty()){
-            this.setHeight(82 * size);
+            this.setHeight((int)mContext.getResources().getDimension(R.dimen.drop_down_height) * size);
             setBackgroundAlpha(0.5f);
-            this.showAsDropDown(view,0,0);
+            showAtLocation(view,Gravity.CENTER,0,0);
         }
     }
 

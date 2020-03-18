@@ -24,8 +24,10 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     private JSONArray mDatas;
     private OnItemClickListener mOnItemClickListener;
     private View mCurrentItemView;//当前选择的类别item
-    public PayMethodViewAdapter(Context context){
+    private int mWidth;
+    public PayMethodViewAdapter(Context context,int width){
         this.mContext = context;
+        mWidth = width;
     }
     static class MyViewHolder extends RecyclerView.ViewHolder {
         private TextView pay_method_id,pay_method_name;
@@ -43,7 +45,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View itemView = View.inflate(mContext, R.layout.pay_method_content, null);
-        itemView.setLayoutParams( new RecyclerView.LayoutParams((int)mContext.getResources().getDimension(R.dimen.pay_method_width), ViewGroup.LayoutParams.MATCH_PARENT));
+        itemView.setLayoutParams( new RecyclerView.LayoutParams(mWidth, ViewGroup.LayoutParams.MATCH_PARENT));
         itemView.setOnClickListener(view -> mCurrentItemView = view);
         return new MyViewHolder(itemView);
     }
@@ -95,20 +97,20 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
         return mDatas == null ? null : mDatas.optJSONObject(i);
     }
 
-    public void setDatas(){
+    public void setDatas(final String support_code){
         StringBuilder err = new StringBuilder();
-        mDatas = SQLiteHelper.getList("select pay_method_id,name,pay_img  from pay_method where status = '1' and support like '%1%' order by sort",0,0,false,err);
+        mDatas = SQLiteHelper.getList("select *  from pay_method where status = '1' and support like '%" + support_code +"%' order by sort",0,0,false,err);
         if (mDatas != null){
             this.notifyDataSetChanged();
         }else{
             MyDialog.ToastMessage("加载支付方式错误：" + err,mContext);
         }
     }
-    public JSONObject get_pay_method(final String pay_method_id){
+    public JSONObject get_pay_method(@NonNull final String pay_method_id){
         if (mDatas != null){
             for (int i = 0,lengh = mDatas.length();i < lengh;i++){
                 JSONObject jsonObject = mDatas.optJSONObject(i);
-                if (pay_method_id != null && pay_method_id.equals(jsonObject.optString("pay_method_id"))){
+                if (pay_method_id.equals(jsonObject.optString("pay_method_id"))){
                     return jsonObject;
                 }
             }

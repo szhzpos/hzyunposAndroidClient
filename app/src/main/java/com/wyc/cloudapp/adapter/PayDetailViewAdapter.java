@@ -150,7 +150,7 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<PayDetailViewAdap
         return mCurrentItemIndex;
     }
 
-    public JSONArray getDatas(){
+    public @NonNull JSONArray getDatas(){
         return mDatas;
     }
 

@@ -1,6 +1,5 @@
 package com.wyc.cloudapp.dialog;
 
-import android.app.Dialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -21,7 +20,7 @@ import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.PayDetailViewAdapter;
 import com.wyc.cloudapp.adapter.PayMethodItemDecoration;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
-import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
+import com.wyc.cloudapp.interface_abstract.AbstractPayDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -31,7 +30,7 @@ import org.json.JSONObject;
 
 import java.util.Locale;
 
-public class PayDialog extends Dialog {
+public class PayDialog extends AbstractPayDialog {
     private MainActivity mainActivity;
     private EditText mCashMoneyEt,mZlAmtEt;
     private onNoOnclickListener noOnclickListener;//取消按钮被点击了的监听器
@@ -64,7 +63,7 @@ public class PayDialog extends Dialog {
 
 
         //初始化支付方式
-        initPayMethodAdapter();
+        initPayMethod();
 
         //初始化支付明细
         initPayDetailViewAdapter();
@@ -161,6 +160,23 @@ public class PayDialog extends Dialog {
         return  this;
     }
 
+    @Override
+    public void setPayAmt(double amt) {
+
+    }
+
+    @Override
+    public JSONObject getPayContent() {
+        JSONArray array = mPayDetailViewAdapter.getDatas();
+        for (int i = 0,length = array.length();i < length;i++){
+            JSONObject object = array.optJSONObject(i);
+            if (object != null && PayMethodViewAdapter.CASH_METHOD_ID.equals(object.optString("pay_method_id"))){//获取现金支付记录
+                return object;
+            }
+        }
+        return null;
+    }
+
     public interface onYesOnclickListener {
         void onYesClick(PayDialog myDialog);
     }
@@ -201,23 +217,21 @@ public class PayDialog extends Dialog {
         }
     };
 
-    private void initPayMethodAdapter(){
-        mPayMethodViewAdapter = new PayMethodViewAdapter(mainActivity);
-        mPayMethodViewAdapter.setDatas();
+    @Override
+    protected void initPayMethod(){
+        mPayMethodViewAdapter = new PayMethodViewAdapter(mainActivity,(int) mainActivity.getResources().getDimension(R.dimen.pay_method_width));
+        mPayMethodViewAdapter.setDatas("1");
         mPayMethodViewAdapter.setOnItemClickListener(new PayMethodViewAdapter.OnItemClickListener() {
             @Override
             public void onClick(View v, int pos) {
                 JSONObject pay_method = mPayMethodViewAdapter.getItem(pos);
-                String id;
                 if (pay_method != null){
                     try {
-                        id = pay_method.getString("pay_method_id");
-                        switch (id){
-                            case PayMethodViewAdapter.CASH_METHOD_ID:
-                                mOK.callOnClick();
-                                break;
-                                default:
-                                    break;
+                        if (PayMethodViewAdapter.CASH_METHOD_ID.equals(pay_method.getString("pay_method_id"))) {
+                            mOK.callOnClick();
+                        } else {
+                            PayMethodDialog payMethodDialog = new PayMethodDialog(mainActivity, pay_method);
+                            payMethodDialog.show();
                         }
                         Logger.d_json(pay_method.toString());
                     } catch (JSONException e) {
@@ -316,13 +330,10 @@ public class PayDialog extends Dialog {
         JSONObject cash_json = new JSONObject(),pay_method_json = mPayMethodViewAdapter.get_pay_method(PayMethodViewAdapter.CASH_METHOD_ID);
         if (pay_method_json != null){
             try {
-                String id = pay_method_json.getString("pay_method_id");
-
-                cash_json.put("pay_method_id",id);
+                cash_json.put("pay_method_id",PayMethodViewAdapter.CASH_METHOD_ID);
                 cash_json.put("name",pay_method_json.getString("name"));
                 cash_json.put("pamt",mCashAmt);
                 cash_json.put("pzl",String.format(Locale.CHINA,"%.2f",mZlAmt));
-
                 mPayDetailViewAdapter.addPayDetail(cash_json);
             }catch (JSONException e){
                 e.printStackTrace();

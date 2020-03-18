@@ -49,7 +49,7 @@
     <string name="discount_amt_sz">优惠金额</string>
     <string name="actual_amt_sz">应收金额</string>
     <string name="pay_method_sz">-联合支付明细-</string>
-    <string name="pay_amt_sz">待收</string>
+    <string name="unpay_amt_sz">待收</string>
     <string name="amt_received_sz">已收</string>
     <string name="balance_sz">剩余</string>
     <string name="all_discount_sz">整单折</string>
@@ -100,5 +100,5 @@
     <string name="two_hundred_sz">200</string>
     <string name="five_hundred_sz">500</string>
     <string name="eight_hundred_sz">800</string>
-    <string name="mobile_code_sz">请输入付款码</string>
+    <string name="pay_amt_sz">请输入付款金额</string>
 </resources>

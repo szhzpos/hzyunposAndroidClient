@@ -23,7 +23,6 @@
             android:gravity="center"
             android:paddingStart="@dimen/margin_8"
             android:paddingEnd="0dp"
-            android:text="@string/vip_charge_sz"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="@dimen/font_size_24" />
@@ -44,6 +43,13 @@
         android:orientation="vertical"
         android:padding="@dimen/margin_2">
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/pay_method_list"
+            android:layout_width="382dp"
+            android:layout_height="@dimen/height_58"
+            android:layout_marginBottom="@dimen/margin_2"
+            android:visibility="gone" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/height_40"
@@ -52,39 +58,37 @@
 
             <EditText
                 android:id="@+id/c_amt"
-                android:layout_width="@dimen/width_78"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 android:autofillHints=""
                 android:background="@color/transparent"
                 android:ems="10"
                 android:focusable="auto"
-                android:hint="@string/c_amt_hint_sz"
+                android:hint="@string/pay_amt_sz"
                 android:inputType="numberDecimal"
                 android:paddingStart="@dimen/margin_5"
                 android:paddingEnd="0dp"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_16" />
 
-            <Spinner
-                android:id="@+id/pay_method_spinner"
-                android:layout_width="wrap_content"
+            <EditText
+                android:id="@+id/pay_code"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="@dimen/margin_1"
-                android:layout_weight="1" />
-        </LinearLayout>
+                android:layout_margin="@dimen/margin_2"
+                android:layout_weight="1"
+                android:background="@drawable/left_separator"
+                android:ems="10"
+                android:hint="@string/space_sz"
+                android:inputType="number"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="0dp"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_14"
+                android:visibility="visible" />
 
-        <EditText
-            android:id="@+id/pay_code"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/height_45"
-            android:layout_marginTop="@dimen/margin_2"
-            android:background="@drawable/border_sub_gray"
-            android:ems="10"
-            android:hint="@string/mobile_code_sz"
-            android:inputType="number"
-            android:textColor="@color/text_color"
-            android:visibility="gone" />
+        </LinearLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/keyboard"
@@ -142,11 +146,12 @@
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="@dimen/pay_dialog_button_width"
                 android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_marginStart="@dimen/margin_2"
                 android:background="@drawable/button_sub_blue"
                 android:text="@string/back"
                 android:textColor="@color/white"
                 android:textSize="@dimen/num_keyboard_font_size_18"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/_one_hundred"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <Button

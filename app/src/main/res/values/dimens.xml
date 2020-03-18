@@ -8,6 +8,7 @@
     <dimen name="margin_8">8dp</dimen>
     <dimen name="margin_12">12dp</dimen>
     <dimen name="margin_18">18dp</dimen>
+    <dimen name="font_size_14">14sp</dimen>
     <dimen name="font_size_16">16sp</dimen>
     <dimen name="font_size_18">18sp</dimen>
     <dimen name="font_size_24">24sp</dimen>
@@ -53,4 +54,5 @@
     <dimen name="pay_detail_height">@dimen/height_45</dimen>
     <dimen name="pay_method_width">101dp</dimen>
     <dimen name="d_dialog_button_height">@dimen/height_122</dimen>
+    <dimen name="drop_down_height">@dimen/height_45</dimen>
 </resources>

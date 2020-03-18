@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
@@ -124,6 +125,7 @@ public class ConnSettingDialog extends Dialog {
         });
 
         mStore_name.setOnFocusChangeListener((v, hasFocus) -> {
+            Utils.hideKeyBoard((EditText)v);
             if (hasFocus){
                 queryStoreInfo();
             }
@@ -163,7 +165,7 @@ public class ConnSettingDialog extends Dialog {
                         settingDialog.mPopupWindow.initContent(null,settingDialog.mStore_name,(JSONArray)msg.obj,new String[]{"stores_name"},2,true,(JSONObject json)->{
                             settingDialog.mStoreInfo = json;
                         });
-                        settingDialog.mPopupWindow.show(settingDialog.mStore_name,2);
+                        settingDialog.mPopupWindow.show(settingDialog.mStore_name,3);
                     }
                     break;
             }

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@android:id/text1"
-    style="?attr/spinnerDropDownItemStyle"
+    style="@style/Widget.AppCompat.TextView.SpinnerItem"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/height_58"
-    android:background="@drawable/bottom_separator"
+    android:layout_height="@dimen/drop_down_height"
+    android:background="@color/white"
     android:ellipsize="marquee"
     android:gravity="center"
     android:textColor="@color/blue"

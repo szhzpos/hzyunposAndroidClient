@@ -1,24 +1,26 @@
 package com.wyc.cloudapp.dialog;
 
-import android.app.Dialog;
 import android.content.Context;
+import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.adapter.PayMethodItemDecoration;
+import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.interface_abstract.AbstractPayDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
@@ -29,10 +31,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
+import java.util.Date;
 
-public class VipChargeDialog extends Dialog {
-    private EditText mC_amt,mPayCode;
-    private Context mContext;
+public class VipChargeDialog extends AbstractPayDialog {
     private JSONObject mPayMethod;
     private CustomProgressDialog mProgressDialog;
     private JSONObject mVip;
@@ -40,128 +41,48 @@ public class VipChargeDialog extends Dialog {
     private onYesOnclickListener mYesOnclickListener;
     public VipChargeDialog(@NonNull Context context,final JSONObject vip) {
         super(context);
-        mContext = context;
         mVip = vip;
     }
     @Override
     protected void onCreate(Bundle savedInstanceState){
-        setContentView(R.layout.vip_charge_dialog_content);
+        super.onCreate(savedInstanceState);
+
         setCancelable(false);
         setCanceledOnTouchOutside(false);
 
         mProgressDialog = new CustomProgressDialog(mContext);
         mHandler = new Myhandler(this);
 
-        //初始化付款码
-        init_pay_code();
-
-        //初始化金额text
-        init_c_amount();
-
         //初始化支付方式
-        intiPayMethod();
+        initPayMethod();
 
         //初始化按钮事件
-        findViewById(R.id._close).setOnClickListener(view->VipChargeDialog.this.dismiss());
-        findViewById(R.id._back).setOnClickListener(v -> {
-            View view =  getCurrentFocus();
-            if (view != null) {
-                if (view.getId() == R.id.c_amt) {
-                    EditText tmp_edit = ((EditText)view);
-                    int index = tmp_edit.getSelectionStart(),end = tmp_edit.getSelectionEnd();
-                    if (index != end && end  == tmp_edit.getText().length()){
-                        tmp_edit.setText(mContext.getString(R.string.space_sz));
-                    }else{
-                        if (index == 0)return;
-                        tmp_edit.getText().delete(index - 1, index);
-                    }
+        findViewById(R.id._ok).setOnClickListener(v -> {vip_charge();});
+    }
+
+    @Override
+    protected void initPayMethod(){
+        PayMethodViewAdapter payMethodViewAdapter = new PayMethodViewAdapter(mContext,94);
+        payMethodViewAdapter.setDatas("1");
+        payMethodViewAdapter.setOnItemClickListener(new PayMethodViewAdapter.OnItemClickListener() {
+            @Override
+            public void onClick(View v, int pos) {
+                mPayMethod = payMethodViewAdapter.getItem(pos);
+                if (mPayMethod != null) {
+                    Logger.d_json(mPayMethod.toString());
+                    if (mPayMethod.optInt("is_check") != 2){ //显示付款码输入框
+                        mPayCode.setVisibility(View.VISIBLE);
+                        mPayCode.setHint(mPayMethod.optString("xtype",""));
+                    }else
+                        mPayCode.setVisibility(View.GONE);
                 }
             }
         });
-        findViewById(R.id._ok).setOnClickListener(v -> {vip_charge();});
-        findViewById(R.id._cancel).setOnClickListener(view -> VipChargeDialog.this.dismiss());
-
-        //初始化数字键盘
-        ConstraintLayout keyboard_linear_layout;
-        keyboard_linear_layout = findViewById(R.id.keyboard);
-        for (int i = 0,child  = keyboard_linear_layout.getChildCount(); i < child;i++){
-            View tmp_v = keyboard_linear_layout.getChildAt(i);
-            int id = tmp_v.getId();
-            if (tmp_v instanceof Button && !(id == R.id._back || id == R.id._cancel || id == R.id._ok)){
-                tmp_v.setOnClickListener(button_click);
-            }
-        }
-    }
-
-    private View.OnClickListener button_click = v -> {
-        View view =  getCurrentFocus();
-        if (view != null) {
-            if (view.getId() == R.id.c_amt) {
-                EditText tmp_edit = ((EditText)view);
-                int index = tmp_edit.getSelectionStart();
-                Editable editable = tmp_edit.getText();
-                String sz_button = ((Button) v).getText().toString();
-                if (index != tmp_edit.getSelectionEnd())editable.clear();
-                editable.insert(index, sz_button);
-            }
-        }
-    };
-
-    private void init_c_amount(){
-        mC_amt = findViewById(R.id.c_amt);
-        mC_amt.setSelectAllOnFocus(true);
-        mC_amt.setOnFocusChangeListener((view, b) -> Utils.hideKeyBoard((EditText) view));
-        mC_amt.postDelayed(()->{mC_amt.requestFocus();},300);
-    }
-
-    private void init_pay_code(){
-        mPayCode = findViewById(R.id.pay_code);
-        mPayCode.setSelectAllOnFocus(true);
-        mPayCode.setOnFocusChangeListener((view, b) -> Utils.hideKeyBoard((EditText) view));
-        mPayCode.postDelayed(()->{mPayCode.requestFocus();},300);
-    }
-
-    private void intiPayMethod(){
-        StringBuilder err = new StringBuilder();
-        JSONArray array = SQLiteHelper.getList("select * from pay_method where status = '1' and support like '%3%' order by sort",0,0,false,err);
-        if (array != null){
-            Spinner m_vip_level = findViewById(R.id.pay_method_spinner);
-            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext,R.layout.drop_down_style);
-            if (array.length() != 0){
-                arrayAdapter.add(mContext.getString(R.string.pay_m_hint_sz));
-                for(int i = 0,length = array.length();i < length;i++){
-                    JSONObject object = array.optJSONObject(i);
-                    arrayAdapter.add(object.optString("name"));
-                }
-                m_vip_level.setAdapter(arrayAdapter);
-                m_vip_level.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        if (position != 0){
-                            mPayMethod = array.optJSONObject(position - 1);
-                            if (mPayMethod != null) {
-                                Logger.d_json(mPayMethod.toString());
-                                int is_cardno = mPayMethod.optInt("is_cardno");
-                                if (2 == is_cardno)//显示付款码输入框
-                                    mPayCode.setVisibility(View.VISIBLE);
-                                else
-                                    mPayCode.setVisibility(View.GONE);
-
-                            }
-                        }else{
-                            if (mPayMethod != null)mPayMethod = null;
-                            if (mPayCode.getVisibility() == View.VISIBLE)mPayCode.setVisibility(View.GONE);
-                        }
-                    }
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-
-                    }
-                });
-            }
-        }else {
-            MyDialog.ToastMessage("初始化支付方式错误：" + err, mContext);
-        }
+        RecyclerView recyclerView = findViewById(R.id.pay_method_list);
+        recyclerView.setVisibility(View.VISIBLE);
+        recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL,false));
+        recyclerView.addItemDecoration(new PayMethodItemDecoration(2));
+        recyclerView.setAdapter(payMethodViewAdapter);
     }
 
     private void vip_charge(){
@@ -181,7 +102,7 @@ public class VipChargeDialog extends Dialog {
                 return;
             }
 
-            mProgressDialog.setMessage("正在充值...").show();
+            mProgressDialog.setCancel(false).setMessage("正在生成充值订单...").show();
             CustomApplication.execute(()->{
                 JSONObject cashier_info = new JSONObject(),store_info = new JSONObject(),data_ = new JSONObject(),retJson,info_json;
                 if (SQLiteHelper.getLocalParameter("cashierInfo",cashier_info)){
@@ -221,7 +142,99 @@ public class VipChargeDialog extends Dialog {
 
                                             order_code = info_json.getString("order_code");
 
+                                            //发起支付请求
+                                            if (mPayMethod.getInt("is_check") != 2){
+                                                String unified_pay_order = mPayMethod.getString("unified_pay_order"),
+                                                        unified_pay_query = mPayMethod.getString("unified_pay_query");
+
+                                                if ("null".equals(unified_pay_order) || "".equals(unified_pay_order)){
+                                                    unified_pay_order = "/api/pay2/index";
+                                                }
+                                                if ("null".equals(unified_pay_query) || "".equals(unified_pay_query)){
+                                                    unified_pay_query = "/api/pay2_query/query";
+                                                }
+
+                                                mProgressDialog.setMessage("正在发起支付请求...").refreshMessage();
+                                                data_ = new JSONObject();
+                                                data_.put("appid",appId);
+                                                data_.put("stores_id",stores_id);
+                                                data_.put("order_code",order_code);
+                                                data_.put("pos_num",cashier_info.getString("pos_num"));
+                                                data_.put("is_wuren",2);
+                                                data_.put("order_code_son",generate_pay_son_order_id());
+                                                data_.put("pay_money",mC_amt.getText().toString());
+                                                data_.put("pay_method",mPayMethod.optString("pay_method_id"));
+                                                data_.put("pay_code_str",mPayCode.getText().toString());
+
+                                                sz_param = HttpRequest.generate_request_parm(data_,appScret);
+                                                retJson = httpRequest.sendPost(url + unified_pay_order,sz_param,true);
+
+                                                switch (retJson.optInt("flag")){
+                                                    case 0:
+                                                        mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"支付错误：" + retJson.getString("info")).sendToTarget();
+                                                        return;
+                                                    case 1:
+                                                        info_json = new JSONObject(retJson.optString("info"));
+                                                         switch (info_json.optString("status")){
+                                                            case "n":
+                                                                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"支付错误：" + info_json.getString("info")).sendToTarget();
+                                                                return;
+                                                            case "y":
+                                                                int res_code = info_json.getInt("res_code");
+                                                                switch (res_code){
+                                                                    case 1://支付成功
+                                                                        break;
+                                                                    case 2:
+                                                                        mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"支付错误：" + info_json.getString("info")).sendToTarget();
+                                                                        return;
+                                                                    case 3:
+                                                                    case 4:
+                                                                        while (res_code == 3 ||  res_code == 4){
+                                                                            mProgressDialog.setMessage("正在查询支付结果...").refreshMessage();
+                                                                            data_ = new JSONObject();
+
+                                                                            data_.put("appid",appId);
+                                                                            data_.put("pay_code",info_json.getString("pay_code"));
+                                                                            data_.put("order_code_son",info_json.getString("order_code_son"));
+
+                                                                            if (res_code == 4){
+                                                                                data_.put("pay_password","");
+                                                                            }
+                                                                            sz_param = HttpRequest.generate_request_parm(data_,appScret);
+                                                                            retJson = httpRequest.sendPost(url + unified_pay_query,sz_param,true);
+                                                                            switch (retJson.getInt("flag")){
+                                                                                case 0:
+                                                                                    mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"查询支付结果错误：" + retJson.getString("info")).sendToTarget();
+                                                                                    return;
+                                                                                case 1:
+                                                                                    info_json = new JSONObject(retJson.optString("info"));
+                                                                                    Logger.json(info_json.toString());
+                                                                                    switch (info_json.getString("status")){
+                                                                                        case "n":
+                                                                                            mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"查询支付结果错误：" + info_json.getString("info")).sendToTarget();
+                                                                                            return;
+                                                                                        case "y":
+                                                                                            res_code = info_json.getInt("res_code");
+                                                                                            if (res_code == 2){//支付失败
+                                                                                                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"支付错误：" + info_json.getString("info")).sendToTarget();
+                                                                                                return;
+                                                                                            }
+                                                                                            break;
+                                                                                    }
+                                                                                    break;
+                                                                            }
+                                                                        }
+                                                                        break;
+                                                                }
+                                                                break;
+                                                        }
+                                                        break;
+                                                }
+
+                                            }
+
                                             //处理充值订单
+                                            mProgressDialog.setMessage("正在处理充值订单...").refreshMessage();
                                             data_ = new JSONObject();
                                             data_.put("appid",appId);
                                             data_.put("order_code",order_code);
@@ -294,7 +307,7 @@ public class VipChargeDialog extends Dialog {
                         Logger.d_json( msg.obj.toString());
 
                         dialog.mVip = (JSONObject) msg.obj;
-
+                        MyDialog.ToastMessage("充值成功！",dialog.mContext);
                         if (dialog.mYesOnclickListener != null){
                             dialog.mYesOnclickListener.onYesClick(dialog);
                         }
@@ -310,7 +323,12 @@ public class VipChargeDialog extends Dialog {
         }
         return this;
     }
+
     public interface onYesOnclickListener {
         void onYesClick(VipChargeDialog dialog);
     }
+    private String generate_pay_son_order_id(){
+        return "MPAY" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Utils.getNonce_str(8);
+    }
+
 }
