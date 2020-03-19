@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.listener.ClickListener;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import org.json.JSONArray;
@@ -21,7 +22,7 @@ import org.json.JSONObject;
 
 public class PayDetailViewAdapter extends RecyclerView.Adapter<PayDetailViewAdapter.MyViewHolder> {
     private Context mContext;
-    private JSONArray mDatas,mHeadData;
+    private JSONArray mDatas;
     private View mCurrentItemView;
     private int mCurrentItemIndex;
     private OnItemClickListener mOnItemClickListener;
@@ -60,7 +61,7 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<PayDetailViewAdap
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
         if (i == 0){
             myViewHolder.row_id.setText(mContext.getString(R.string.pay_detail_row_id_sz));
-            myViewHolder.pay_method_id.setText(mContext.getString(R.string.pay_detail_row_id_sz));
+            myViewHolder.pay_method_id.setText(mContext.getString(R.string.space_sz));
             myViewHolder.pay_method_name.setText(mContext.getString(R.string.pay_detail_name_sz));
             myViewHolder.pay_detail_amt.setText(mContext.getString(R.string.pay_detail_amt_sz));
             myViewHolder.pay_detail_zl.setText(mContext.getString(R.string.pay_detail_zl_sz));
@@ -75,24 +76,23 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<PayDetailViewAdap
 
             myViewHolder.mCurrentLayoutItemView.setBackgroundColor(mContext.getResources().getColor(R.color.blue_subtransparent,null));
         }else{
-            JSONObject goods_type_info = mDatas.optJSONObject(i);
-            if (goods_type_info != null){
+            JSONObject pay_detail = mDatas.optJSONObject(i);
+            if (pay_detail != null){
                 myViewHolder.row_id.setText(String.valueOf(i));
-                myViewHolder.pay_method_id.setText(goods_type_info.optString("id"));
-                myViewHolder.pay_method_name.setText(goods_type_info.optString("name"));
-                myViewHolder.pay_detail_amt.setText(goods_type_info.optString("pamt"));
-                myViewHolder.pay_detail_zl.setText(goods_type_info.optString("pzl"));
-                myViewHolder.pay_detail_v_num.setText(goods_type_info.optString("v_num"));
+                myViewHolder.pay_method_id.setText(pay_detail.optString("pay_method_id"));
+                myViewHolder.pay_method_name.setText(pay_detail.optString("name"));
+                myViewHolder.pay_detail_amt.setText(pay_detail.optString("pamt"));
+                myViewHolder.pay_detail_zl.setText(pay_detail.optString("pzl"));
+                myViewHolder.pay_detail_v_num.setText(pay_detail.optString("v_num"));
 
                 myViewHolder.mCurrentLayoutItemView.setOnTouchListener(new ClickListener(v -> {
                     setCurrentItemIndexAndItemView(v);
-                    deleteSaleGoods(mCurrentItemIndex,0);
+                    deletePayDetail(mCurrentItemIndex,0);
                     if (mOnItemDoubleClickListener != null){
                         mOnItemDoubleClickListener.onClick(v,i);
                     }
                 }, v -> {
                     setSelectStatus(v);
-                    setCurrentItemIndexAndItemView(v);
                     if (mOnItemClickListener != null){
                         mOnItemClickListener.onClick(v,i); }
                 }));
@@ -131,12 +131,12 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<PayDetailViewAdap
     private void setCurrentItemIndexAndItemView(View v){
         TextView tv_id;
         mCurrentItemView = v;
-        if (null != mCurrentItemView && (tv_id = mCurrentItemView.findViewById(R.id.goods_id)) != null){
+        if (null != mCurrentItemView && (tv_id = mCurrentItemView.findViewById(R.id.pay_method_id)) != null){
             String id = tv_id.getText().toString();
             if (mDatas != null ){
                 for (int i = 0,length = mDatas.length();i < length;i ++){
                     JSONObject json = mDatas.optJSONObject(i);
-                    if (id.equals(json.optString("goods_id"))){
+                    if (id.equals(json.optString("pay_method_id"))){
                         mCurrentItemIndex = i;
                         return;
                     }
@@ -176,7 +176,8 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<PayDetailViewAdap
         }
     }
 
-    public void deleteSaleGoods(int index,double num){
+    public void deletePayDetail(int index,double num){
+        Logger.d("index:%d",index);
         if (0 <= index && index < mDatas.length()){
             if (num == 0){//等于0全部删除
                 mDatas.remove(index);
@@ -205,24 +206,16 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<PayDetailViewAdap
     }
 
     private void setSelectStatus(View v){
-        TextView goods_name;
-        if (mCurrentItemIndex != 0){
-            if(null != mCurrentItemView){
-                goods_name = mCurrentItemView.findViewById(R.id.pay_method_name);
-                goods_name.clearAnimation();
-                goods_name.setTextColor(mContext.getColor(R.color.good_name_color));
-            }
-            goods_name = v.findViewById(R.id.pay_method_name);
-            Animation shake = AnimationUtils.loadAnimation(mContext, R.anim.shake);
-            goods_name.startAnimation(shake);
-            goods_name.setTextColor(mContext.getColor(R.color.blue));
+        if(null != mCurrentItemView){
+            mCurrentItemView.setBackgroundColor(mContext.getResources().getColor(R.color.white,null));
         }
-
+        v.setBackgroundColor(mContext.getResources().getColor(R.color.pink,null));
+        setCurrentItemIndexAndItemView(v);
     }
 
     private JSONObject findPayDetailById(final String id){
         try {
-            for (int i = 1,length = mDatas.length();i < length;i ++){
+            for (int i = 1,length = mDatas.length();i < length;i ++){//0为表头
                 JSONObject jsonObject = mDatas.getJSONObject(i);
                 if (id != null && id.equals(jsonObject.getString("pay_method_id"))){
                     return jsonObject;

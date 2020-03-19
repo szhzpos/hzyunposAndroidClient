@@ -21,6 +21,7 @@ import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.PayDetailViewAdapter;
 import com.wyc.cloudapp.adapter.PayMethodItemDecoration;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
+import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.interface_abstract.AbstractPayDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
@@ -34,8 +35,7 @@ import java.util.Locale;
 public class PayDialog extends Dialog {
     private MainActivity mainActivity;
     private EditText mCashMoneyEt,mZlAmtEt;
-    private onNoOnclickListener noOnclickListener;//取消按钮被点击了的监听器
-    private onYesOnclickListener yesOnclickListener;//确定按钮被点击了的监听器
+    private onPayFinishListener mPayFinishListener;//付款完成事件，外部可通过此接口获取付款记录
     private PayMethodViewAdapter mPayMethodViewAdapter;
     private PayDetailViewAdapter mPayDetailViewAdapter;
     private TextView mOrderAmtTv,mDiscountAmtTv,mActualAmtTv,mPayAmtTv,mAmtReceivedTv,mPayBalanceTv;
@@ -77,9 +77,7 @@ public class PayDialog extends Dialog {
         mOK.setOnClickListener(v -> {cash_pay();});
         findViewById(R.id._close).setOnClickListener(view -> PayDialog.this.dismiss());
         findViewById(R.id.cancel).setOnClickListener(v -> {
-            if (noOnclickListener != null){
-                noOnclickListener.onNoClick(PayDialog.this);
-            }
+            PayDialog.this.dismiss();
         });
         findViewById(R.id._back).setOnClickListener(v -> {
             View view =  getCurrentFocus();
@@ -151,33 +149,17 @@ public class PayDialog extends Dialog {
         refreshContent();
     }
 
-    public PayDialog  setNoOnclickListener(onNoOnclickListener onNoOnclickListener) {
-        this.noOnclickListener = onNoOnclickListener;
-        return this;
-    }
-
-    public PayDialog setYesOnclickListener(onYesOnclickListener onYesOnclickListener) {
-        this.yesOnclickListener = onYesOnclickListener;
+    public PayDialog setPayFinishListener(onPayFinishListener listener) {
+        this.mPayFinishListener = listener;
         return  this;
     }
 
-    public JSONObject getPayContent() {
-        JSONArray array = mPayDetailViewAdapter.getDatas();
-        for (int i = 0,length = array.length();i < length;i++){
-            JSONObject object = array.optJSONObject(i);
-            if (object != null && PayMethodViewAdapter.CASH_METHOD_ID.equals(object.optString("pay_method_id"))){//获取现金支付记录
-                return object;
-            }
-        }
-        return null;
+    public JSONArray getContent(){
+        return mPayDetailViewAdapter.getDatas();
     }
 
-    public interface onYesOnclickListener {
-        void onYesClick(PayDialog myDialog);
-    }
-
-    public interface onNoOnclickListener {
-        void onNoClick(PayDialog myDialog);
+    public interface onPayFinishListener {
+        void onClick(PayDialog myDialog);
     }
 
     private View.OnClickListener button_click = v -> {
@@ -190,6 +172,7 @@ public class PayDialog extends Dialog {
                 String sz_button = ((Button) v).getText().toString();
                 if (-1 != point_index && tmp_edit.getSelectionEnd() == editable.length()){
                     editable.replace(0, editable.length(),sz_button.concat(mainActivity.getString(R.string.d_zero_point_sz)));
+                    point_index = editable.toString().indexOf(".");
                     tmp_edit.setSelection(point_index);
                 }else{
                     if (".".equals(sz_button)) {
@@ -219,13 +202,25 @@ public class PayDialog extends Dialog {
             JSONObject pay_method = mPayMethodViewAdapter.getItem(pos);
             if (pay_method != null){
                 try {
+                    pay_method = Utils.JsondeepCopy(pay_method);
+
                     if (PayMethodViewAdapter.CASH_METHOD_ID.equals(pay_method.getString("pay_method_id"))) {
                         mOK.callOnClick();
                     } else {
-                        PayMethodDialog payMethodDialog = new PayMethodDialog(mainActivity, pay_method);
-                        payMethodDialog.show();
+                        if (!Utils.equalDouble(mPay_balance,0) && getContent().length() != 0){//剩余付款金额为零并且以有付款记录不能再付款
+                            PayMethodDialog payMethodDialog = new PayMethodDialog(mainActivity, pay_method);
+                            payMethodDialog.setPayAmt(mPay_balance);
+                            payMethodDialog.setYesOnclickListener(dialog -> {
+                                JSONObject jsonObject = dialog.getContent();
+                                if (jsonObject != null){
+                                    mPayDetailViewAdapter.addPayDetail(jsonObject);
+                                    dialog.dismiss();
+                                }
+                            }).show();
+                        }else{
+                            MyDialog.ToastMessage("剩余金额为零！",mainActivity);
+                        }
                     }
-                    Logger.d_json(pay_method.toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                     MyDialog.ToastMessage("付款错误：" + e.getMessage(),mainActivity);
@@ -245,22 +240,26 @@ public class PayDialog extends Dialog {
             public void onChanged() {
                 super.onChanged();
                 JSONArray jsonArray = mPayDetailViewAdapter.getDatas();
-                double amt = 0.0,zl_amt = 0.0,sum_amt;
-                Logger.d_json(jsonArray.toString());
+                double amt = 0.0,zl_amt = 0.0;
                 try {
                     for (int i = 1,length = jsonArray.length();i < length;i ++){//第一个为表头
                         JSONObject object = jsonArray.getJSONObject(i);
                         amt += object.getDouble("pamt");
                         zl_amt += object.getDouble("pzl");
                     }
+
+                    Logger.d("amt:%f - zl_amt:%f = %f",amt,zl_amt,amt - zl_amt);
+
                     mAmt_received = amt - zl_amt;
                     mPay_balance = mPay_amt - mAmt_received;
                     mCashAmt = mPay_balance;
 
                     refreshContent();
 
-                    if (Utils.equalDouble(mActual_amt,mAmt_received)){//支付明细数据发送变化后，计算是否已经付款完成，如果完成直接退出付款界面
-                        PayDialog.this.dismiss();
+                    if (Utils.equalDouble(mActual_amt,mAmt_received)){//支付明细数据发送变化后，计算是否已经付款完成，如果完成触发支付完成事件
+                        if (mPayFinishListener != null){
+                            mPayFinishListener.onClick(PayDialog.this);
+                        }
                     }
                 }catch (JSONException e){
                     e.printStackTrace();
@@ -320,20 +319,24 @@ public class PayDialog extends Dialog {
     }
 
     private void cash_pay(){
-        JSONObject cash_json = new JSONObject(),pay_method_json = mPayMethodViewAdapter.get_pay_method(PayMethodViewAdapter.CASH_METHOD_ID);
-        if (pay_method_json != null){
-            try {
-                cash_json.put("pay_method_id",PayMethodViewAdapter.CASH_METHOD_ID);
-                cash_json.put("name",pay_method_json.getString("name"));
-                cash_json.put("pamt",mCashAmt);
-                cash_json.put("pzl",String.format(Locale.CHINA,"%.2f",mZlAmt));
-                mPayDetailViewAdapter.addPayDetail(cash_json);
-            }catch (JSONException e){
-                e.printStackTrace();
-                MyDialog.ToastMessage("现金付款错误：" + e.getMessage(),mainActivity);
+        JSONObject pay_method_json = mPayMethodViewAdapter.get_pay_method(PayMethodViewAdapter.CASH_METHOD_ID);
+        if (!Utils.equalDouble(mPay_balance,0) && getContent().length() != 0){
+            if (pay_method_json != null){
+                try {
+                    pay_method_json = Utils.JsondeepCopy(pay_method_json);
+
+                    pay_method_json.put("pamt",mCashAmt);
+                    pay_method_json.put("pzl",String.format(Locale.CHINA,"%.2f",mZlAmt));
+                    mPayDetailViewAdapter.addPayDetail(pay_method_json);
+                }catch (JSONException e){
+                    e.printStackTrace();
+                    MyDialog.ToastMessage("现金付款错误：" + e.getMessage(),mainActivity);
+                }
+            }else{
+                MyDialog.ToastMessage("现金付款方式不存在！",mainActivity);
             }
         }else{
-            MyDialog.ToastMessage("现金付款方式不存在！",mainActivity);
+            MyDialog.ToastMessage("剩余金额为零！",mainActivity);
         }
     }
 

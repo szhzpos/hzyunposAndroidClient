@@ -3,24 +3,16 @@ package com.wyc.cloudapp.dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.interface_abstract.AbstractPayDialog;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
-import com.wyc.cloudapp.utils.http.HttpRequest;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -37,23 +29,71 @@ public class PayMethodDialog extends AbstractPayDialog {
         super.onCreate(savedInstanceState);
 
         mOk.setText(R.string.OK);
+        setTitle(mPayMethod.optString("name"));
 
         //初始化支付方式
         initPayMethod();
+
+        //付款方式不能找零
+        mPayAmtEt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (editable.length()> 0){
+                    int index = editable.toString().indexOf('.');
+                    if (index > -1 && editable.length() >= (index += 3)){
+                        Logger.d("index:%d",index);
+                        editable.delete(index,editable.length());
+                    }
+                    if (Double.valueOf(editable.toString()) - mPayAmt> 0){
+                        refreshContent();
+                        MyDialog.ToastMessage("此付款方式不找零！",mContext);
+                    }
+                }
+            }
+        });
+
     }
     @Override
     public void setPayAmt(double amt) {
         super.setPayAmt(amt);
     }
+
     @Override
-    public JSONObject getPayContent() {
+    public void refreshContent(){
+        if (mPayAmtEt != null){
+            mPayAmtEt.setText(String.format(Locale.CHINA,"%.2f",mPayAmt));
+            mPayAmtEt.selectAll();
+        }
+    }
+
+    @Override
+    public JSONObject getContent() {
         try {
-            mPayMethod.put("pamt","0.00");
-            mPayMethod.put("pzl",mC_amt.getText());
+            mPayMethod.put("pamt", mPayAmtEt.getText().toString());
+            mPayMethod.put("pzl",0.00);
+            if (mPayCode.getVisibility() == View.VISIBLE){
+                if (mPayCode.getText().length() != 0){
+                    mPayMethod.put("v_num",mPayCode.getText().toString());
+                }else{
+                    mPayCode.requestFocus();
+                    MyDialog.ToastMessage(mPayCode.getHint() + "不能为空！",mContext);
+                    return null;
+                }
+            }
         } catch (JSONException e) {
-            mPayMethod = null;
             e.printStackTrace();
             MyDialog.ToastMessage("支付错误：" + e.getMessage(),mContext);
+            return null;
         }
         return mPayMethod;
     }
@@ -61,7 +101,6 @@ public class PayMethodDialog extends AbstractPayDialog {
     protected void initPayMethod(){
         if (mPayMethod != null) {
             Logger.d_json(mPayMethod.toString());
-            ((TextView)super.findViewById(R.id.title)).setText(mPayMethod.optString("name"));
             if (mPayMethod.optInt("is_check") != 2){ //显示付款码输入框
                 mPayCode.setVisibility(View.VISIBLE);
                 mPayCode.setHint(mPayMethod.optString("xtype",""));

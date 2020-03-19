@@ -1106,7 +1106,7 @@
                 android:textSize="@dimen/fun_button_font_size_18" />
 
             <Button
-                android:id="@+id/blank_1"
+                android:id="@+id/enter"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/keyboard_button_height"
@@ -1115,6 +1115,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/button_sub_blue"
 
+                android:text="@string/enter_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/fun_button_font_size_18" />
 

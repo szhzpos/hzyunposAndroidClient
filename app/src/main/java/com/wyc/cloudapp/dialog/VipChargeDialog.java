@@ -5,8 +5,9 @@ import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -33,7 +34,6 @@ import java.util.Date;
 public class VipChargeDialog extends AbstractPayDialog {
     private JSONObject mVip;
     private Myhandler mHandler;
-    private onYesOnclickListener mYesOnclickListener;
     public VipChargeDialog(@NonNull Context context,final JSONObject vip) {
         super(context);
         mVip = vip;
@@ -51,7 +51,34 @@ public class VipChargeDialog extends AbstractPayDialog {
         initPayMethod();
 
         //初始化按钮事件
-        findViewById(R.id._ok).setOnClickListener(v -> {vip_charge();});
+        mOk.setOnClickListener(view -> vip_charge());//父类默认会调用mYesOnclickListener接口，如果覆盖了记得单独调用mYesOnclickListener
+
+        setTitle(mContext.getString(R.string.vip_charge_sz));
+        setHint(mContext.getString(R.string.c_amt_hint_sz));
+
+        //保留两位小数
+        mPayAmtEt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (editable.length()> 0){
+                    int index = editable.toString().indexOf('.');
+                    if (index > -1 && editable.length() >= (index += 3)){
+                        Logger.d("index:%d",index);
+                        editable.delete(index,editable.length());
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -76,8 +103,6 @@ public class VipChargeDialog extends AbstractPayDialog {
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL,false));
         recyclerView.addItemDecoration(new PayMethodItemDecoration(2));
         recyclerView.setAdapter(payMethodViewAdapter);
-
-        ((TextView)findViewById(R.id.title)).setText(mContext.getString(R.string.vip_charge_sz));
     }
 
     private void vip_charge(){
@@ -86,9 +111,9 @@ public class VipChargeDialog extends AbstractPayDialog {
                 MyDialog.ToastMessage("请选择付款方式！",mContext);
                 return;
             }
-            if (mC_amt.length() == 0){
-                mC_amt.requestFocus();
-                MyDialog.ToastMessage(mC_amt.getHint().toString(),mContext);
+            if (mPayAmtEt.length() == 0){
+                mPayAmtEt.requestFocus();
+                MyDialog.ToastMessage(mPayAmtEt.getHint().toString(),mContext);
                 return;
             }
             if (mPayCode.getVisibility() == View.VISIBLE && mPayCode.length() == 0){
@@ -116,7 +141,7 @@ public class VipChargeDialog extends AbstractPayDialog {
                             data_.put("stores_id",stores_id);
                             data_.put("member_id",mVip.getString("member_id"));
                             data_.put("cashier_id",cashier_info.getString("cas_id"));
-                            data_.put("order_money",mC_amt.getText().toString());
+                            data_.put("order_money", mPayAmtEt.getText().toString());
 
                             sz_param = HttpRequest.generate_request_parm(data_,appScret);
 
@@ -157,7 +182,7 @@ public class VipChargeDialog extends AbstractPayDialog {
                                                 data_.put("pos_num",cashier_info.getString("pos_num"));
                                                 data_.put("is_wuren",2);
                                                 data_.put("order_code_son",generate_pay_son_order_id());
-                                                data_.put("pay_money",mC_amt.getText().toString());
+                                                data_.put("pay_money", mPayAmtEt.getText().toString());
                                                 data_.put("pay_method",mPayMethod.optString("pay_method_id"));
                                                 data_.put("pay_code_str",mPayCode.getText().toString());
 
@@ -233,7 +258,7 @@ public class VipChargeDialog extends AbstractPayDialog {
                                             data_ = new JSONObject();
                                             data_.put("appid",appId);
                                             data_.put("order_code",order_code);
-                                            data_.put("case_pay_money",mC_amt.getText().toString());
+                                            data_.put("case_pay_money", mPayAmtEt.getText().toString());
                                             data_.put("pay_method",mPayMethod.optString("pay_method_id"));
 
                                             url = url + "/api/member/cl_money_order";
@@ -279,7 +304,8 @@ public class VipChargeDialog extends AbstractPayDialog {
         }
     }
 
-    public JSONObject getVipInfo(){
+    @Override
+    public JSONObject getContent() {//返回的是同一个引用
         return mVip;
     }
 
@@ -300,7 +326,6 @@ public class VipChargeDialog extends AbstractPayDialog {
                 case MessageID.VIP_C_SUCCESS_ID:
                     if (msg.obj instanceof JSONObject){
                         Logger.d_json( msg.obj.toString());
-
                         dialog.mVip = (JSONObject) msg.obj;
                         MyDialog.ToastMessage("充值成功！",dialog.mContext);
                         if (dialog.mYesOnclickListener != null){
@@ -312,16 +337,6 @@ public class VipChargeDialog extends AbstractPayDialog {
         }
     }
 
-    public VipChargeDialog setYesOnclickListener(onYesOnclickListener listener) {
-        if (listener != null){
-            mYesOnclickListener = listener;
-        }
-        return this;
-    }
-
-    public interface onYesOnclickListener {
-        void onYesClick(VipChargeDialog dialog);
-    }
     private String generate_pay_son_order_id(){
         return "MPAY" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Utils.getNonce_str(8);
     }

@@ -20,6 +20,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.interface_abstract.AbstractPayDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
@@ -126,21 +127,15 @@ public class VipInfoDialog extends Dialog {
                 serchVip(mSearchContent.getText().toString(),mModfiyBtn.getId());
             }
         });
-        mChargeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mVip != null){
-                    VipChargeDialog dialog = new VipChargeDialog(mContext,mVip);
-                    dialog.setYesOnclickListener(new VipChargeDialog.onYesOnclickListener() {
-                        @Override
-                        public void onYesClick(VipChargeDialog dialog) {
-                            showVipInfo(dialog.getVipInfo());
-                            dialog.dismiss();
-                        }
-                    }).show();
-                }else{
-                    serchVip(mSearchContent.getText().toString(),mChargeBtn.getId());
-                }
+        mChargeBtn.setOnClickListener(view -> {
+            if (mVip != null){
+                VipChargeDialog vipChargeDialog = new VipChargeDialog(mContext,mVip);
+                vipChargeDialog.setYesOnclickListener(dialog -> {
+                    showVipInfo(dialog.getContent());
+                    dialog.dismiss();
+                }).show();
+            }else{
+                serchVip(mSearchContent.getText().toString(),mChargeBtn.getId());
             }
         });
 

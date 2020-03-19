@@ -101,4 +101,5 @@
     <string name="five_hundred_sz">500</string>
     <string name="eight_hundred_sz">800</string>
     <string name="pay_amt_sz">请输入付款金额</string>
+    <string name="enter_sz">ENT</string>
 </resources>

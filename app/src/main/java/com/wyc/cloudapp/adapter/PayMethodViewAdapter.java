@@ -60,10 +60,9 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
             String szImage,pay_method_id;
             Drawable drawable = null;
             if (pay_method_info != null){
-                szImage = pay_method_info.optString("pay_img");
-                if (!"".equals(szImage)){
+                szImage = (String) pay_method_info.remove("pay_img");
+                if (!"".equals(szImage) && szImage != null){
                     szImage = szImage.substring(szImage.lastIndexOf("/") + 1);
-                    Logger.d("图片文件：%s",szImage);
                     drawable = Drawable.createFromPath(SQLiteHelper.IMG_PATH + szImage);
                 }else{
                     drawable = mContext.getDrawable(R.drawable.default_pay);

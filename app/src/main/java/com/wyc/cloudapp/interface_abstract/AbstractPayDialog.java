@@ -7,6 +7,7 @@ import android.text.Editable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -17,11 +18,13 @@ import org.json.JSONObject;
 import java.util.Locale;
 
 public abstract class AbstractPayDialog extends Dialog implements IPay {
-    protected EditText mC_amt,mPayCode;
+    protected EditText mPayAmtEt,mPayCode;
     protected Context mContext;
     protected Button mOk;
     protected CustomProgressDialog mProgressDialog;
     protected JSONObject mPayMethod;
+    protected onYesOnclickListener mYesOnclickListener;
+    protected double mPayAmt = 0.0;
     public AbstractPayDialog(@NonNull Context context) {
         super(context);
         mContext = context;
@@ -61,6 +64,9 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
             }
         });
         findViewById(R.id._cancel).setOnClickListener(view -> AbstractPayDialog.this.dismiss());
+        mOk.setOnClickListener(v -> {
+            if (mYesOnclickListener != null)mYesOnclickListener.onYesClick(AbstractPayDialog.this);
+        });
 
         //初始化数字键盘
         ConstraintLayout keyboard_linear_layout;
@@ -91,21 +97,45 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
 
     @Override
     public void setPayAmt(double amt) {
-        mC_amt.setText(String.format(Locale.CHINA,"%.2f",amt));
+        mPayAmt = amt;
     }
 
     @Override
-    public JSONObject getPayContent() {
+    public JSONObject getContent() {
         return null;
+    }
+
+    protected void setTitle(final String title){
+        ((TextView)findViewById(R.id.title)).setText(title);
+    }
+
+    protected void setHint(final String hint){
+        mPayAmtEt.setHint(hint);
+    }
+
+    protected void refreshContent(){
+
     }
 
     protected abstract void initPayMethod();
 
+    public AbstractPayDialog setYesOnclickListener(onYesOnclickListener listener) {
+        if (listener != null){
+            mYesOnclickListener = listener;
+        }
+        return this;
+    }
+
+    public interface onYesOnclickListener {
+        void onYesClick(AbstractPayDialog dialog);
+    }
+
     private void init_c_amount(){
-        mC_amt = findViewById(R.id.c_amt);
-        mC_amt.setSelectAllOnFocus(true);
-        mC_amt.setOnFocusChangeListener((view, b) -> Utils.hideKeyBoard((EditText) view));
-        mC_amt.postDelayed(()->{mC_amt.requestFocus();},300);
+        mPayAmtEt = findViewById(R.id.c_amt);
+        mPayAmtEt.setText(String.format(Locale.CHINA,"%.2f",mPayAmt));
+        mPayAmtEt.setSelectAllOnFocus(true);
+        mPayAmtEt.setOnFocusChangeListener((view, b) -> Utils.hideKeyBoard((EditText) view));
+        mPayAmtEt.postDelayed(()->{ mPayAmtEt.requestFocus();},300);
     }
 
     private void init_pay_code(){

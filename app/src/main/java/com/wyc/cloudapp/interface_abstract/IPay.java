@@ -4,5 +4,5 @@ import org.json.JSONObject;
 
  interface IPay {
     void setPayAmt(double amt);
-    JSONObject getPayContent();
+    JSONObject getContent();
 }

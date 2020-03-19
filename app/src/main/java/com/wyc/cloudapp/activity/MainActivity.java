@@ -2,25 +2,22 @@ package com.wyc.cloudapp.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.ReplacementTransformationMethod;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
@@ -76,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
     private NetworkManagement mNetworkManagement;
     private ImageView mCloseBtn;
     private RecyclerView mSaleGoodsRecyclerView;
+    private TableLayout mKeyboard;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
         mCloseBtn = findViewById(R.id.close);
         mSaleSumNum = findViewById(R.id.sale_sum_num);
         mSaleSumAmount = findViewById(R.id.sale_sum_amt);
+        mKeyboard = findViewById(R.id.keyboard_layout);
 
         //初始化adapter
         initGoodsInfoAdapter();
@@ -319,7 +318,18 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject jsonObject = mGoodsInfoViewAdapter.getItem(pos);
                 if (jsonObject != null){
                     try {
-                        mSaleGoodsViewAdapter.addSaleGoods(Utils.JsondeepCopy(jsonObject),mVipInfo);
+                        String goods_id = jsonObject.getString("goods_id"),
+                                barcode_id = jsonObject.getString("barcode_id"),
+                                sql = "select goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,buying_price,yh_mode,yh_price from " +
+                                        "barcode_info where goods_status = '1' and goods_id = '" + goods_id + "' and barcode_id = '" + barcode_id +"'";
+
+                        jsonObject = new JSONObject();
+                        if (SQLiteHelper.execSql(jsonObject,sql)){
+                            mSaleGoodsViewAdapter.addSaleGoods(jsonObject,mVipInfo);
+                            mSearch_content.selectAll();
+                        }else{
+                            MyDialog.ToastMessage("选择商品错误：" + jsonObject.getString("info"),v.getContext());
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                         MyDialog.ToastMessage("选择商品错误：" + e.getMessage(),v.getContext());
@@ -400,10 +410,26 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (editable.length() != 0)
-                    mGoodsInfoViewAdapter.search_goods(editable.toString());
-                else
-                    mGoodsTypeViewAdapter.trigger_preView();
+                if (mKeyboard.getVisibility() == View.VISIBLE){
+                    if (editable.length() == 0){
+                        mGoodsTypeViewAdapter.trigger_preView();
+                    }else{
+                        mGoodsInfoViewAdapter.search_goods(editable.toString());
+                    }
+                }
+            }
+        });
+        mSearch_content.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if (mKeyboard.getVisibility() == View.GONE){
+                    int keyCode = keyEvent.getKeyCode();
+                    if (keyCode == KeyEvent.KEYCODE_ENTER){
+                        mGoodsInfoViewAdapter.search_goods(mSearch_content.getText().toString());
+                        mSearch_content.selectAll();
+                    }
+                }
+                return false;
             }
         });
         mSearch_content.setTransformationMethod(new ReplacementTransformationMethod() {
@@ -430,8 +456,17 @@ public class MainActivity extends AppCompatActivity {
                     }else if (v_id == R.id.back){
                         if (editable.length() != 0)
                             editable.delete(editable.length() - 1,editable.length());
-                    }else
-                        editable.append(((Button)view).getText());
+                    }else if(v_id == R.id.enter){
+                        mGoodsInfoViewAdapter.search_goods(mSearch_content.getText().toString());
+                        mSearch_content.selectAll();
+                    }else {
+                        if (mSearch_content.getSelectionStart() != mSearch_content.getSelectionEnd()){
+                            editable.replace(0,editable.length(),((Button)view).getText());
+                            mSearch_content.setSelection(editable.length());
+                        }else
+                            editable.append(((Button)view).getText());
+                    }
+
                 }
             };
             @Override
@@ -439,11 +474,11 @@ public class MainActivity extends AppCompatActivity {
                 switch (motionEvent.getAction()){
                     case MotionEvent.ACTION_DOWN:
                         if (motionEvent.getX() > (mSearch_content.getWidth() - mSearch_content.getCompoundPaddingRight())){
-                            final TableLayout tableLayout = findViewById(R.id.keyboard_layout);
-                            tableLayout.setVisibility(tableLayout.getVisibility()== View.VISIBLE ? View.GONE : View.VISIBLE);
+
+                            mKeyboard.setVisibility(mKeyboard.getVisibility()== View.VISIBLE ? View.GONE : View.VISIBLE);
                             //registerGlobalLayoutToRecyclerView(findViewById(R.id.goods_info_list),MainActivity.this.getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration());
-                            for(int i = 0,childCounts = tableLayout.getChildCount();i < childCounts;i ++){
-                                View vObj = tableLayout.getChildAt(i);
+                            for(int i = 0,childCounts = mKeyboard.getChildCount();i < childCounts;i ++){
+                                View vObj = mKeyboard.getChildAt(i);
                                 if ( vObj instanceof TableRow){
                                     TableRow tableRow = (TableRow)vObj ;
                                     int buttons = tableRow.getChildCount();
@@ -451,7 +486,7 @@ public class MainActivity extends AppCompatActivity {
                                         vObj = tableRow.getChildAt(j);
                                         if (vObj instanceof Button){
                                             final Button button = (Button)vObj;
-                                            if (tableLayout.getVisibility() == View.VISIBLE){
+                                            if (mKeyboard.getVisibility() == View.VISIBLE){
                                                 button.setOnClickListener(mKeyboardListener);
                                             }else{
                                                 button.setOnClickListener(null);
@@ -479,12 +514,16 @@ public class MainActivity extends AppCompatActivity {
             PayDialog dialog = new PayDialog(this);
             if (mVipInfo != null)dialog.showVipInfo(mVipInfo,true);
             if (dialog.initPayContent(datas)){
-                dialog.setYesOnclickListener(new PayDialog.onYesOnclickListener() {
+                dialog.setPayFinishListener(new PayDialog.onPayFinishListener() {
                     @Override
-                    public void onYesClick(PayDialog myDialog) {
-                        //Logger.d_json(myDialog.ge);
+                    public void onClick(PayDialog myDialog) {
+                        JSONArray sales = mSaleGoodsViewAdapter.getDatas(),
+                                pays = myDialog.getContent();
+
+                        Logger.d("sales:%s,pays:%s",sales.toString(),pays.toString());
+                        myDialog.dismiss();
                     }
-                }).setNoOnclickListener(PayDialog::dismiss).show();
+                }).show();
             }
         }else{
             MyDialog.ToastMessage("已选商品为空！!",this);

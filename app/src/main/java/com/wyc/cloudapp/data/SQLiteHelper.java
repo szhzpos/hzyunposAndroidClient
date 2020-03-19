@@ -96,11 +96,11 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
     }
 
-    private static boolean checkColumnExists(SQLiteDatabase db, String tableName, String columnName) throws SQLiteException {
+    private static boolean checkColumnExists(String tableName, String columnName) throws SQLiteException {
         boolean result = false ;
         Cursor cursor = null ;
         try{
-            cursor = db.rawQuery( "select 1 from sqlite_master where name = ? and sql like ?"
+            cursor = mDb.rawQuery( "select 1 from sqlite_master where name = ? and sql like ?"
                     , new String[]{tableName , "%" + columnName + "%"} );
             result = null != cursor && cursor.moveToFirst() ;
         }finally{
@@ -328,31 +328,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return isTrue;
     }
 
-    public static boolean execSQLByBatch(@NonNull List<String> sqls,StringBuilder err) {
-        boolean isTrue = true;
-        if (sqls.isEmpty()) {
-            return false;
-        }
-        synchronized (SQLiteHelper.class){
-            try {
-                mDb.beginTransaction();
-                for (String sql : sqls) {
-                    mDb.execSQL(sql);
-                }
-                mDb.setTransactionSuccessful();
-            } catch (SQLException e) {
-                isTrue = false;
-                err.append(e.getMessage());
-                e.printStackTrace();
-            } finally {
-                if (mDb != null){
-                    mDb.endTransaction();
-                }
-            }
-        }
-        return isTrue;
-    }
-
     public static boolean getLocalParameter(String parameter_id,@NonNull JSONObject param){
         boolean isTrue = true;
         try (Cursor cursor = mDb.query("local_parameter",new String[]{"parameter_content"},"parameter_id = ?",new String[]{parameter_id},
@@ -443,7 +418,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
         return array;
     }
-    public static boolean insertJson(final JSONObject json,final String table_name,String[] cls,StringBuilder err){
+    public static boolean insertJson(@NonNull final JSONObject json,@NonNull final String table_name,String[] cls,StringBuilder err){
         boolean isTrue = true;
         StringBuilder stringBuilderHead = new StringBuilder();
         StringBuilder stringBuilderfoot = new StringBuilder();
@@ -520,7 +495,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
         return isTrue;
     }
-    public static boolean replaceJson(final JSONObject json,final String table_name,String[] cls,StringBuilder err){
+    public static boolean replaceJson(@NonNull final JSONObject json,@NonNull final String table_name,String[] cls,StringBuilder err){
         boolean isTrue = true;
         StringBuilder stringBuilderHead = new StringBuilder();
         StringBuilder stringBuilderfoot = new StringBuilder();
@@ -597,15 +572,13 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
         return isTrue;
     }
-    public static boolean execSql(JSONObject json,final String sql){
+    public static boolean execSql(@NonNull JSONObject json,@NonNull final String sql){
         boolean isTrue = true;
-        //执行select语句 jsons包含查询到的数据，如果出错jsons的第一个json包含错误信息  db由方法提供并控制事务  sql要执行的数据库查询语句
-// json数组
+        //执行select语句 json只返回一条记录，如果出错json包含错误信息 sql要执行的数据库查询语句
+
         ArrayList<String> colNames=new ArrayList<String>();
         ArrayList<Integer> coltypes=new ArrayList<Integer>();
-        if( null == json){
-            return false;
-        }
+
         synchronized (SQLiteHelper.class){
             try(Cursor cursor = mDb.rawQuery(sql,null);){
                 // 获取列数
@@ -618,21 +591,19 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                     coltypes.add(cursor.getType(i));
                 }
                 // 遍历ResultSet中的每条数据
-                do {
-                    for (int i = 0; i < columnCount; i++) {
-                        if (coltypes.get(i) == FIELD_TYPE_FLOAT) {
-                            json.put(colNames.get(i),BigDecimal.valueOf(cursor.getDouble(i)));  /////i = 0;rs里面的是从1开始
-                        } else if (coltypes.get(i) == FIELD_TYPE_INTEGER) {
-                            json.put(colNames.get(i), cursor.getInt(i));
+                for (int i = 0; i < columnCount; i++) {
+                    if (coltypes.get(i) == FIELD_TYPE_FLOAT) {
+                        json.put(colNames.get(i),BigDecimal.valueOf(cursor.getDouble(i)));  /////i = 0;rs里面的是从1开始
+                    } else if (coltypes.get(i) == FIELD_TYPE_INTEGER) {
+                        json.put(colNames.get(i), cursor.getInt(i));
+                    } else {
+                        if (cursor.getString(i) == null) {
+                            json.put(colNames.get(i), "");
                         } else {
-                            if (cursor.getString(i) == null) {
-                                json.put(colNames.get(i), "");
-                            } else {
-                                json.put(colNames.get(i), cursor.getString(i).trim());
-                            }
+                            json.put(colNames.get(i), cursor.getString(i).trim());
                         }
                     }
-                } while (cursor.moveToNext());
+                }
             } catch (JSONException | SQLiteException e) {
                 isTrue = false;
                 try {
@@ -645,6 +616,125 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
         return isTrue;
     }
+    public static boolean execUpdateSql(@NonNull final String table,final ContentValues values,final String whereClause,final String[] whereArgs,StringBuilder err){
+        //执行updata语句    sql要执行的数据库修改语句 如果出错error包含错误信息
+        boolean code = true;
+        try {
+            synchronized (SQLiteHelper.class){
+                mDb.update(table,values,whereClause,whereArgs);
+            }
+        }catch (SQLiteException e){
+            code = false;
+            err.append(e.getMessage());
+        }
+        return code;
+    }
+    public static boolean execInsertSql(@NonNull final String table,final String nullColumnHack,final ContentValues values,StringBuilder err){
+        //执行updata语句    sql要执行的数据库修改语句 如果出错error包含错误信息
+        boolean code = true;
+        try {
+            synchronized (SQLiteHelper.class){
+                mDb.insert(table,nullColumnHack,values);
+            }
+        }catch (SQLiteException e){
+            code = false;
+            err.append(e.getMessage());
+        }
+        return code;
+    }
+    public static boolean execBatchUpdateSql(@NonNull final List<String> list,StringBuilder err){
+        //执行updata语句    sql要执行的数据库修改语句 如果出错error包含错误信息
+        boolean code = true;
+        try {
+            synchronized (SQLiteHelper.class){
+                try {
+                    mDb.beginTransaction();
+                    for (String sql : list) {
+                        mDb.execSQL(sql);
+                    }
+                    mDb.setTransactionSuccessful();
+                }finally {
+                    mDb.endTransaction();
+                }
+            }
+        }catch (SQLiteException e){
+            code = false;
+            err.append(e.getMessage());
+        }
+        return code;
+    }
+
+    public static boolean execSQLByBatchInsertJson(@NonNull JSONObject json,List<String> tables,List<List<String>> table_cols,StringBuilder err){
+        boolean code = true;
+        StringBuilder stringBuilderHead = new StringBuilder();
+        StringBuilder stringBuilderfoot = new StringBuilder();
+        JSONObject jsonObject;
+        String table;
+        SQLiteStatement statement = null;
+        int columnN0 = 0;
+        List<String> cls;
+        JSONArray arrays;
+        for (int k = 0,size = tables.size();k < size;k++){
+            table = tables.get(k);
+
+            if(stringBuilderHead.length() != 0)stringBuilderHead.delete(0,stringBuilderHead.length());
+            if(stringBuilderfoot.length() != 0)stringBuilderfoot.delete(0,stringBuilderfoot.length());
+
+            stringBuilderHead.append("REPLACE INTO ");
+            stringBuilderHead.append(table);
+            stringBuilderHead.append(" (");
+            stringBuilderfoot.append("VALUES (");
+
+            cls = table_cols.get(k);
+
+            for (String cl:cls){
+                stringBuilderHead.append(cl);
+                stringBuilderHead.append(",");
+
+                stringBuilderfoot.append("?");
+                stringBuilderfoot.append(",");
+            }
+
+            stringBuilderHead.replace(stringBuilderHead.length() - 1,stringBuilderHead.length(),")");
+            stringBuilderfoot.replace(stringBuilderfoot.length() - 1,stringBuilderfoot.length(),")");
+            stringBuilderHead.append(stringBuilderfoot);
+
+            synchronized (SQLiteHelper.class){
+                try {
+                    arrays = json.getJSONArray(table);
+
+                    mDb.beginTransaction();
+                    statement = mDb.compileStatement(stringBuilderHead.toString());
+                    for (int i = 0,len = arrays.length();i < len; i ++){
+                        columnN0 = 0;
+                        jsonObject = arrays.getJSONObject(i);
+                        for (String cl:cls){
+                            if ("".equals(jsonObject.getString(cl))){
+                                statement.bindNull(++columnN0);
+                            }else
+                                statement.bindString(++columnN0,jsonObject.getString(cl));
+                        }
+                        statement.execute();
+                    }
+                    mDb.setTransactionSuccessful();
+
+                } catch (SQLException | JSONException e) {
+                    code = false;
+                    err.append(e.getMessage());
+                    e.printStackTrace();
+                } finally {
+                    if (statement != null){
+                        statement.close();
+                    }
+                    if (mDb != null){
+                        mDb.endTransaction();
+                    }
+                }
+            }
+        }
+         return code;
+    }
+
 
     private static List<Map<String,Object>> rs2List(Cursor cursor) {
 
