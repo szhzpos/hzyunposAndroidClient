@@ -8,8 +8,11 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
+import android.os.Looper;
+
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.logger.Logger;
 
 /**
  * Created by Administrator on 2018-05-04.
@@ -36,10 +39,9 @@ public class NetChangeMonitor extends BroadcastReceiver {
                        if (networkInfo != null) {
                            switch (networkInfo.getState()) {
                                case CONNECTED:
-
                                    break;
                                default:
-                                       builder.setContentTitle("无线网已断开,进入离线模式！");
+                                       builder.setContentTitle("网络状态");
                                        builder.setContentText("无线网已断开,进入离线模式！");
                                        mNotificationManager.notify(1, mNotification);
                                        if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE)
@@ -53,7 +55,7 @@ public class NetChangeMonitor extends BroadcastReceiver {
                        }
                    }
                }else {
-                   builder.setContentTitle("无线网已断开,进入离线模式！");
+                   builder.setContentTitle("网络状态");
                    builder.setContentText("无线网已断开,进入离线模式！");
                    mNotificationManager.notify(1, mNotification);
                    application.setNetState_mobile(0);

@@ -2,8 +2,10 @@ package com.wyc.cloudapp.interface_abstract;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -93,6 +95,16 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
                 editable.insert(index, sz_button);
             }
         }
+
+        this.setOnKeyListener(new OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
+                if (i == KeyEvent.KEYCODE_ENTER){
+                    if (mOk != null)mOk.callOnClick();
+                }
+                return false;
+            }
+        });
     };
 
     @Override

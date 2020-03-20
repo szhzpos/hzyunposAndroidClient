@@ -90,9 +90,11 @@ public class VipChargeDialog extends AbstractPayDialog {
             if (mPayMethod != null) {
                 Logger.d_json(mPayMethod.toString());
                 if (mPayMethod.optInt("is_check") != 2){ //显示付款码输入框
+                    mPayCode.requestFocus();
                     mPayCode.setVisibility(View.VISIBLE);
                     mPayCode.setHint(mPayMethod.optString("xtype",""));
                 }else{
+                    mPayCode.callOnClick();
                     mPayCode.getText().clear();
                     mPayCode.setVisibility(View.GONE);
                 }
@@ -145,7 +147,9 @@ public class VipChargeDialog extends AbstractPayDialog {
 
                             sz_param = HttpRequest.generate_request_parm(data_,appScret);
 
+                            Logger.i("生成充值订单参数:url:%s%s,param:%s",url ,"/api/member/mk_money_order" ,sz_param);
                             retJson = httpRequest.sendPost(url + "/api/member/mk_money_order",sz_param,true);
+                            Logger.i("生成充值订单返回:%s",retJson.toString());
 
                             switch (retJson.optInt("flag")) {
                                 case 0:
@@ -187,7 +191,10 @@ public class VipChargeDialog extends AbstractPayDialog {
                                                 data_.put("pay_code_str",mPayCode.getText().toString());
 
                                                 sz_param = HttpRequest.generate_request_parm(data_,appScret);
+
+                                                Logger.i("会员充值请求支付参数:url:%s%s,param:%s",url ,unified_pay_order,sz_param);
                                                 retJson = httpRequest.sendPost(url + unified_pay_order,sz_param,true);
+                                                Logger.i("会员充值支付请求返回:%s",retJson.toString());
 
                                                 switch (retJson.optInt("flag")){
                                                     case 0:
@@ -221,7 +228,11 @@ public class VipChargeDialog extends AbstractPayDialog {
                                                                                 data_.put("pay_password","");
                                                                             }
                                                                             sz_param = HttpRequest.generate_request_parm(data_,appScret);
+
+                                                                            Logger.i("会员充值支付查询参数:url:%s%s,param:%s",url,unified_pay_order,sz_param);
                                                                             retJson = httpRequest.sendPost(url + unified_pay_query,sz_param,true);
+                                                                            Logger.i("会员充值支付查询返回:%s",retJson.toString());
+
                                                                             switch (retJson.getInt("flag")){
                                                                                 case 0:
                                                                                     mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"查询支付结果错误：" + retJson.getString("info")).sendToTarget();
@@ -265,7 +276,6 @@ public class VipChargeDialog extends AbstractPayDialog {
                                             sz_param = HttpRequest.generate_request_parm(data_,appScret);
                                             retJson = httpRequest.sendPost(url,sz_param,true);
 
-                                            Logger.json(retJson.toString());
                                             switch (retJson.optInt("flag")) {
                                                 case 0:
                                                     mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,retJson.getString("info")).sendToTarget();

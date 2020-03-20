@@ -113,10 +113,10 @@ public class MainActivity extends AppCompatActivity {
         mCloseBtn.setOnClickListener((View V)->{
             MyDialog.displayAskMessage("是否退出收银？",MainActivity.this,(MyDialog myDialog)->{
                 myDialog.dismiss();
-                mNetworkManagement.stop_sync();
+                mNetworkManagement.quit();
                 Intent intent = new Intent(MainActivity.this,LoginActivity.class);
-                startActivity(intent);
                 MainActivity.this.finish();
+                //startActivity(intent);
 
             }, Dialog::dismiss);
         });//退出收银
@@ -156,8 +156,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //初始化数据管理对象
-        mNetworkManagement = new NetworkManagement(mHandler,mUrl,mAppId,mAppScret,mCashierInfo.optString("pos_num"),mCashierInfo.optString("cas_id"));
-        mNetworkManagement.start_sync();
+        mNetworkManagement = new NetworkManagement(mHandler,false,mUrl,mAppId,mAppScret,mStoreInfo.optString("stores_id"),mCashierInfo.optString("pos_num"),mCashierInfo.optString("cas_id"));
+        mNetworkManagement.start();
 
     }
     @Override
@@ -175,7 +175,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy(){
         super.onDestroy();
-        mNetworkManagement.stop_sync();
+        if (mNetworkManagement != null){
+            mNetworkManagement.quit();
+        }
         stopSyncCurrentTime();
         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
     }
@@ -190,6 +192,7 @@ public class MainActivity extends AppCompatActivity {
         mTimer.schedule(new TimerTask() {
             @Override
             public void run() {
+                if (mNetworkManagement != null)mNetworkManagement.start_sync(false);
                 final String prefix = "同步时间错误：";
                 try {
                     if (mCurrentTimestamp == 0){
@@ -293,6 +296,7 @@ public class MainActivity extends AppCompatActivity {
                                 imageView.setImageResource(R.drawable.network);
                             }else{
                                 imageView.setImageResource(R.drawable.network_err);
+                                imageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake));
                             }
                         }
                     }
@@ -315,20 +319,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v, int pos) {
                 set_selected_status(v);//设置选中状态
-                JSONObject jsonObject = mGoodsInfoViewAdapter.getItem(pos);
+                JSONObject jsonObject = mGoodsInfoViewAdapter.getItem(pos),content = new JSONObject();
                 if (jsonObject != null){
                     try {
-                        String goods_id = jsonObject.getString("goods_id"),
-                                barcode_id = jsonObject.getString("barcode_id"),
-                                sql = "select goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,buying_price,yh_mode,yh_price from " +
-                                        "barcode_info where goods_status = '1' and goods_id = '" + goods_id + "' and barcode_id = '" + barcode_id +"'";
-
-                        jsonObject = new JSONObject();
-                        if (SQLiteHelper.execSql(jsonObject,sql)){
-                            mSaleGoodsViewAdapter.addSaleGoods(jsonObject,mVipInfo);
+                        if (mGoodsInfoViewAdapter.getSingleGoods(content,jsonObject.getString("goods_id"),jsonObject.getString("barcode_id"))){
+                            mSaleGoodsViewAdapter.addSaleGoods(content,mVipInfo);
                             mSearch_content.selectAll();
                         }else{
-                            MyDialog.ToastMessage("选择商品错误：" + jsonObject.getString("info"),v.getContext());
+                            MyDialog.ToastMessage("选择商品错误：" + content.getString("info"),v.getContext());
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -414,7 +412,7 @@ public class MainActivity extends AppCompatActivity {
                     if (editable.length() == 0){
                         mGoodsTypeViewAdapter.trigger_preView();
                     }else{
-                        mGoodsInfoViewAdapter.search_goods(editable.toString());
+                        mGoodsInfoViewAdapter.fuzzy_search_goods(editable.toString());
                     }
                 }
             }
@@ -425,7 +423,7 @@ public class MainActivity extends AppCompatActivity {
                 if (mKeyboard.getVisibility() == View.GONE){
                     int keyCode = keyEvent.getKeyCode();
                     if (keyCode == KeyEvent.KEYCODE_ENTER){
-                        mGoodsInfoViewAdapter.search_goods(mSearch_content.getText().toString());
+                        mGoodsInfoViewAdapter.fuzzy_search_goods(mSearch_content.getText().toString());
                         mSearch_content.selectAll();
                     }
                 }
@@ -457,7 +455,11 @@ public class MainActivity extends AppCompatActivity {
                         if (editable.length() != 0)
                             editable.delete(editable.length() - 1,editable.length());
                     }else if(v_id == R.id.enter){
-                        mGoodsInfoViewAdapter.search_goods(mSearch_content.getText().toString());
+                        if (editable.length() == 0){
+                            mGoodsTypeViewAdapter.trigger_preView();
+                        }else{
+                            mGoodsInfoViewAdapter.fuzzy_search_goods(editable.toString());
+                        }
                         mSearch_content.selectAll();
                     }else {
                         if (mSearch_content.getSelectionStart() != mSearch_content.getSelectionEnd()){

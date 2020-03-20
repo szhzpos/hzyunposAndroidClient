@@ -131,7 +131,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         }
     }
 
-    public void search_goods(String search_content){
+    public void fuzzy_search_goods(String search_content){
         StringBuilder err = new StringBuilder();
         String sql = "select goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,buying_price,ifnull(img_url,'') img_url from " +
                 "barcode_info where goods_status = '1' and  (barcode like '" + search_content + "%' or mnemonic_code like '" + search_content +"%')";
@@ -146,6 +146,11 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         }else{
             MyDialog.displayErrorMessage("搜索商品错误：" + err,mContext);
         }
+    }
+
+    public boolean getSingleGoods(@NonNull JSONObject object,final String goods_id,final String barcode_id){
+       return SQLiteHelper.execSql(object,"select goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,buying_price,yh_mode,yh_price from " +
+               "barcode_info where goods_status = '1' and goods_id = '" + goods_id + "' and barcode_id = '" + barcode_id +"'");
     }
 
     public interface OnItemClickListener{

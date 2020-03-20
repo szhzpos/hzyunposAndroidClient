@@ -9,55 +9,43 @@ import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.network.NetworkManagement;
 import com.wyc.cloudapp.utils.MessageID;
+import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.net.HttpURLConnection;
 
 import static com.wyc.cloudapp.utils.MessageID.SYNC_DIS_INFO_ID;
 
 public class SyncHandler extends Handler {
     private HttpRequest mHttp;
     private Handler syncActivityHandler;
-    private JSONObject mCashierInfo,mStoreInfo;
-    private String mAppId,mAppScret,mUrl;
-    public SyncHandler(Handler handler){
+    private String mAppId,mAppScret,mUrl,mPosNum,mOperId,mStoresId;
+    private boolean mReportProgress;
+    private int mPreNeworkStatusCode = HttpURLConnection.HTTP_OK;
+    public SyncHandler(Handler handler,boolean report,final String url, final String appid, final String appscret,final String stores_id,final String pos_num, final String operid){
         this.syncActivityHandler = handler;
         mHttp = new HttpRequest();
-        initSyncParam();
-    }
+        mHttp.setConnTimeOut(5000);
 
-    private void initSyncParam(){
-        mCashierInfo = new JSONObject();
-        mStoreInfo = new JSONObject();
-        if (SQLiteHelper.getLocalParameter("cashierInfo",mCashierInfo)){
-            if (SQLiteHelper.getLocalParameter("connParam",mStoreInfo)){
-                try {
-                    mUrl = mStoreInfo.getString("server_url");
-                    mAppId = mStoreInfo.getString("appId");
-                    mAppScret = mStoreInfo.getString("appScret");
-                    mStoreInfo = new JSONObject(mStoreInfo.getString("storeInfo"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    syncActivityHandler.obtainMessage(MessageID.SYNC_ERR_ID,"初始化同步参数错误：" + e.getMessage()).sendToTarget();
-                }
-            }else{
-                syncActivityHandler.obtainMessage(MessageID.SYNC_ERR_ID,"初始化同步参数错误：" + mCashierInfo.optString("info")).sendToTarget();
-            }
-        }else{
-            syncActivityHandler.obtainMessage(MessageID.SYNC_ERR_ID,"初始化同步参数错误：" + mStoreInfo.optString("info")).sendToTarget();
-        }
+        mReportProgress = report;
+        mOperId = operid;
+        mPosNum = pos_num;
+        mUrl = url;
+        mAppId = appid;
+        mAppScret = appscret;
+        mStoresId = stores_id;
     }
-
     @Override
     public void handleMessage(Message msg){
         JSONObject object = new JSONObject(),info_json,retJson;
         String table_name = "",sys_name = "",url = "",sz_param = "",img_url_info,img_file_name,img_url_col_name = null;
         String[] table_cls = null;
-        StringBuilder err = new StringBuilder();
         try{
             switch (msg.what) {
                 case MessageID.SYNC_GOODS_BASE_ID:
@@ -68,14 +56,14 @@ public class SyncHandler extends Handler {
                     sys_name = "正在同步商品类别";
                     table_cls = new String[]{"category_id","name","parent_id","depth","path","status","sort"};
                     url = mUrl + "/api/scale/get_category_info";
-                    object.put("pos_num",mCashierInfo.getString("pos_num"));
+                    object.put("pos_num",mPosNum);
                     break;
                 case MessageID.SYNC_STORES_ID://仓库信息
                     table_name = "shop_stores";
                     table_cls = new String[]{"stores_id","stores_name","manager","telphone","region","status","nature"};
                     sys_name = "正在同步仓库";
                     url = mUrl + "/api/scale/get_stores";
-                    object.put("pt_user_id",mCashierInfo.getString("cas_id"));
+                    object.put("pt_user_id",mOperId);
                     break;
                 case MessageID.SYNC_GOODS_ID://商品信息
                     img_url_col_name = "img_url";
@@ -85,7 +73,7 @@ public class SyncHandler extends Handler {
                     "unit_id","unit_name","specifi","category_name","metering_id","shelf_life","goods_status","brand","origin","type","goods_tare","barcode_status","category_id",
                     "tax_rate","tc_mode","tc_rate","yh_mode","yh_price","mnemonic_code","image","attr_id","attr_name","attr_code","conversion","update_price","stock_unit_id","stock_unit_name","img_url"};
                     url = mUrl + "/api/goods/get_goods_all";
-                    object.put("pos_num",mCashierInfo.getString("pos_num"));
+                    object.put("pos_num",mPosNum);
                     break;
                 case MessageID.SYNC_PAY_METHOD_ID://支付方式
                     table_name = "pay_method";
@@ -94,8 +82,8 @@ public class SyncHandler extends Handler {
                             "is_show_client","is_cardno","is_scan","wr_btn_img","unified_pay_order","unified_pay_query","rule","is_open","is_enable","support"};
                     sys_name = "正在同步支付方式";
                     url = mUrl + "/api/cashier/get_pm_info";
-                    object.put("stores_id",mStoreInfo.getString("stores_id"));
-                    object.put("pos_num",mCashierInfo.getString("pos_num"));
+                    object.put("stores_id",mStoresId);
+                    object.put("pos_num",mPosNum);
                     break;
                 case MessageID.SYNC_CASHIER_ID://收银员
                     table_name = "cashier_info";
@@ -105,15 +93,19 @@ public class SyncHandler extends Handler {
                     sys_name = "正在同步门店收银员";
                     url = mUrl + "/api/cashier_dwn/get_cashier_info";
 
-                    object.put("cas_id",mCashierInfo.getString("cas_id"));
-                    object.put("pos_num",mCashierInfo.getString("pos_num"));
-                    object.put("stores_id",mStoreInfo.getString("stores_id"));
+                    object.put("cas_id",mOperId);
+                    object.put("pos_num",mPosNum);
+                    object.put("stores_id",mStoresId);
                     break;
+                case MessageID.NETWORKSTATUS_ID:
+                    testNetworkStatus();
+                    return;
             }
             if (msg.what == MessageID.SYNC_FINISH_ID){
                 syncActivityHandler.obtainMessage(MessageID.SYNC_FINISH_ID).sendToTarget();//同步完成
             }else{
-                syncActivityHandler.obtainMessage(SYNC_DIS_INFO_ID,sys_name + "信息....").sendToTarget();
+                if (mReportProgress)
+                    syncActivityHandler.obtainMessage(SYNC_DIS_INFO_ID,sys_name + "信息....").sendToTarget();
 
                 object.put("appid",mAppId);
 
@@ -122,14 +114,22 @@ public class SyncHandler extends Handler {
                 switch (retJson.optInt("flag")) {
                     case 0:
                         this.removeCallbacksAndMessages(null);
-                        syncActivityHandler.obtainMessage(MessageID.SYNC_ERR_ID, sys_name + "错误:" +  retJson.optString("info")).sendToTarget();
+                        sys_name = sys_name.concat("错误:").concat(retJson.optString("info"));
+                        if (mReportProgress)
+                            syncActivityHandler.obtainMessage(MessageID.SYNC_ERR_ID, sys_name).sendToTarget();
+                        else
+                            Logger.e("%s",sys_name);
                         break;
                     case 1:
                         info_json = new JSONObject(retJson.optString("info"));
                         switch (info_json.optString("status")){
                             case "n":
                                 this.removeCallbacksAndMessages(null);
-                                syncActivityHandler.obtainMessage(MessageID.SYNC_ERR_ID, sys_name.concat("错误：").concat(info_json.optString("info"))).sendToTarget();
+                                sys_name = sys_name.concat("错误:").concat(info_json.optString("info"));
+                                if (mReportProgress)
+                                    syncActivityHandler.obtainMessage(MessageID.SYNC_ERR_ID, sys_name).sendToTarget();
+                                else
+                                    Logger.e("%s",sys_name);
                                 break;
                             case "y":
                                 JSONArray data = info_json.getJSONArray("data");
@@ -150,9 +150,15 @@ public class SyncHandler extends Handler {
                                             }
                                         }
                                     }
+
+                                    StringBuilder err = new StringBuilder();
                                     if (!SQLiteHelper.execSQLByBatchReplaceJson(data,table_name ,table_cls,err)) {
                                         this.removeCallbacksAndMessages(null);
-                                        syncActivityHandler.obtainMessage(MessageID.SYNC_ERR_ID, sys_name + "错误：" + err).sendToTarget();
+                                        sys_name = sys_name.concat("错误:").concat(err.toString());
+                                        if (mReportProgress)
+                                            syncActivityHandler.obtainMessage(MessageID.SYNC_ERR_ID, sys_name).sendToTarget();
+                                        else
+                                            Logger.e("%s",sys_name);
                                     }
                                 }
                                 break;
@@ -162,7 +168,11 @@ public class SyncHandler extends Handler {
             }
         }catch (JSONException e){
             this.removeCallbacksAndMessages(null);
-            syncActivityHandler.obtainMessage(MessageID.SYNC_ERR_ID, "同步" + table_name + "错误:" +  e.getMessage()).sendToTarget();
+            sys_name = "同步" + table_name + "错误:" +  e.getMessage();
+            if (mReportProgress)
+                syncActivityHandler.obtainMessage(MessageID.SYNC_ERR_ID, sys_name).sendToTarget();
+            else
+                Logger.e("%s",sys_name);
         }
     }
 
@@ -179,9 +189,57 @@ public class SyncHandler extends Handler {
         }
     }
 
-    private void stop_download(){
-        this.removeCallbacksAndMessages(null);//先清空消息
-        mHttp.clearConnection(HttpRequest.CLOSEMODE.BOTH);
+    public void stop(){
+        this.removeCallbacksAndMessages(null);
+        if (mHttp != null)mHttp.clearConnection(HttpRequest.CLOSEMODE.BOTH);
     }
+    private void testNetworkStatus(){
+        JSONObject data = new JSONObject(),retJson,info_json;
+        final String prefix = "网络检测错误：",test_url = mUrl + "/api/heartbeat/index";
+        int err_code = HttpURLConnection.HTTP_OK;
+        try {
+            data.put("appid",mAppId);
+            data.put("pos_num",mPosNum);
+            data.put("randstr", Utils.getNonce_str(8));
+            data.put("cas_id",mOperId);
+            retJson = mHttp.sendPost(test_url,HttpRequest.generate_request_parm(data,mAppScret),true);
+            switch (retJson.optInt("flag")) {
+                case 0:
+                    if (retJson.has("rsCode")){//flag为了0并且存在rsCode网络错误
+                        err_code = retJson.getInt("rsCode");
+                        if (mPreNeworkStatusCode != err_code){
+                            Logger.e("连接服务器错误：" + retJson.optString("info"));
+                        }
+                        syncActivityHandler.obtainMessage(MessageID.NETWORKSTATUS_ID,false).sendToTarget();
+                    }else{
+                        Logger.e("数据解析错误：" + retJson.optString("info"));
+                    }
+                    break;
+                case 1:
+                    syncActivityHandler.obtainMessage(MessageID.NETWORKSTATUS_ID,true).sendToTarget();
+                    err_code = retJson.getInt("rsCode");
+                    if (mPreNeworkStatusCode != HttpURLConnection.HTTP_OK){//如果之前网络响应状态不为OK,则重连成功
+                        Logger.i("重新连接服务器成功！");
+                    }
+                    info_json = new JSONObject(retJson.getString("info"));
+                    switch (info_json.getString("status")){
+                        case "n":
+                            syncActivityHandler.obtainMessage(MessageID.NETWORKSTATUS_ID,false).sendToTarget();
+                            Logger.e(prefix + retJson.optString("info"));
+                            break;
+                        case "y":
+                            //Logger.json(info_json.toString());
+                            break;
+                    }
+                    break;
+            }
+            mPreNeworkStatusCode = err_code;
+        } catch (JSONException e) {
+            Logger.e("检测网络错误：" + e.getMessage());
+            e.printStackTrace();
+        }
+
+    }
+
 
 }

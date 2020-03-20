@@ -8,6 +8,9 @@ import androidx.annotation.Nullable;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import static com.wyc.cloudapp.logger.Utils.checkNotNull;
 
@@ -50,7 +53,7 @@ public class DiskLogStrategy implements LogStrategy {
       FileWriter fileWriter = null;
       File logFile = null;
       try {
-        logFile = getLogFile(folder, "logs");
+        logFile = getLogFile(folder, new SimpleDateFormat("yyyy-MM-dd",Locale.CHINA).format(new Date()) + "_logs");
         fileWriter = new FileWriter(logFile, true);
         writeLog(fileWriter, content);
         fileWriter.flush();
@@ -100,11 +103,11 @@ public class DiskLogStrategy implements LogStrategy {
       File newFile;
       File existingFile = null;
 
-      newFile = new File(folder, String.format("%s_%s.csv", fileName, newFileCount));
+      newFile = new File(folder, String.format("%s_%s.txt", fileName, newFileCount));
       while (newFile.exists()) {
         existingFile = newFile;
         newFileCount++;
-        newFile = new File(folder, String.format("%s_%s.csv", fileName, newFileCount));
+        newFile = new File(folder, String.format("%s_%s.txt", fileName, newFileCount));
       }
 
       if (existingFile != null) {

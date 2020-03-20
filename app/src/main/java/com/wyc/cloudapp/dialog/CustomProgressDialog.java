@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.view.Window;
 import android.view.WindowManager;
@@ -142,6 +143,7 @@ public class CustomProgressDialog extends ProgressDialog
                     break;
                 case MessageID.DIALOG_SHOW_TIME_ID:
                     dialog.mShowTimeView.setText(String.valueOf(++dialog.mShowTime));
+                    if (dialog.mShowTime == 30)dialog.dismiss();
                     break;
             }
         }

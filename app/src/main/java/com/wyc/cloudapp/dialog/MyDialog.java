@@ -6,6 +6,10 @@ import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.logger.Logger;
+
+import android.os.Looper;
+import android.os.MessageQueue;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;

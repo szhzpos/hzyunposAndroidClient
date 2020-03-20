@@ -13,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.view.Display;
 import android.view.View;
@@ -30,8 +31,8 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.ConnSettingDialog;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.handlerThread.SyncThread;
 import com.wyc.cloudapp.keyboard.SoftKeyBoardListener;
+import com.wyc.cloudapp.network.NetworkManagement;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
@@ -49,8 +50,9 @@ public class LoginActivity extends AppCompatActivity {
     private LoginActivity mSelf;
     private CustomProgressDialog mProgressDialog;
     private boolean mCancelLogin = false;//是否主动取消登陆
-    private SyncThread mSync;
+    private NetworkManagement mNetworkManagement;
     private Button mCancel;
+    private String mAppId,mAppScret,mUrl,mPosNum,mOperId,mStoresId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +66,6 @@ public class LoginActivity extends AppCompatActivity {
         myHandler = new Myhandler(this);
         mSelf = this;
         mProgressDialog = new CustomProgressDialog(this);
-        mSync = new SyncThread(myHandler);
 
         SoftKeyBoardListener.setListener(this, new SoftKeyBoardListener.OnSoftKeyBoardChangeListener() {
             ViewGroup.LayoutParams mLayoutParams = mMain.getLayoutParams();
@@ -119,7 +120,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onDestroy(){
         super.onDestroy();
-        mSync.quit();
+        if (mNetworkManagement != null)mNetworkManagement.quit();
     }
 
     @Override
@@ -194,23 +195,25 @@ public class LoginActivity extends AppCompatActivity {
 
         CustomApplication.execute(()->{
             JSONObject object = new JSONObject(),param_json = new JSONObject(),cashier_json,retJson,info_json,jsonLogin,store_info;
-            String url,login_url,pos_url,app_id,appscret,sz_param,err_info;
+            String url,sz_param,err_info;
             if (SQLiteHelper.getLocalParameter("connParam",param_json)){
                 if (Utils.JsonIsNotEmpty(param_json)){
                     try {
-                        url = param_json.getString("server_url");
-                        app_id = param_json.getString("appId");
-                        appscret = param_json.getString("appScret");
+                        mUrl = param_json.getString("server_url");
+                        mAppId = param_json.getString("appId");
+                        mAppScret = param_json.getString("appScret");
+                        mOperId = mUser_id.getText().toString();
 
-                        object.put("appid",app_id);
-                        object.put("cas_account",mUser_id.getText());
+
+                        object.put("appid",mAppId);
+                        object.put("cas_account",mOperId);
                         object.put("cas_pwd",mPassword.getText());
 
-                        sz_param = HttpRequest.generate_request_parm(object,appscret);
+                        sz_param = HttpRequest.generate_request_parm(object,mAppScret);
 
-                        login_url = url  + "/api/cashier/login";
+                        url = mUrl  + "/api/cashier/login";
 
-                        retJson = httpRequest.setConnTimeOut(10000).sendPost(login_url,sz_param,true);
+                        retJson = httpRequest.setConnTimeOut(10000).sendPost(url,sz_param,true);
 
                         switch (retJson.optInt("flag")) {
                             case 0:
@@ -231,16 +234,16 @@ public class LoginActivity extends AppCompatActivity {
                                     case "y":
                                         cashier_json = new JSONObject(info_json.getString("cashier"));
                                         store_info = new JSONObject(param_json.getString("storeInfo"));
+                                        mStoresId = store_info.getString("stores_id");
 
-                                        pos_url =  url + "/api/cashier/set_ps";
+                                        url =  mUrl + "/api/cashier/set_ps";
                                         jsonLogin = new JSONObject();
-                                        jsonLogin.put("appid",app_id);
+                                        jsonLogin.put("appid",mAppId);
                                         jsonLogin.put("pos_code",Utils.getDeviceId(mSelf));
                                         jsonLogin.put("pos_name",Utils.getDeviceId(mSelf));
-                                        jsonLogin.put("stores_id",store_info.getString("stores_id"));
-                                        sz_param = HttpRequest.generate_request_parm(jsonLogin,appscret);
-                                        retJson = httpRequest.sendPost(pos_url,sz_param,true);
-
+                                        jsonLogin.put("stores_id",mStoresId);
+                                        sz_param = HttpRequest.generate_request_parm(jsonLogin,mAppScret);
+                                        retJson = httpRequest.sendPost(url,sz_param,true);
                                         switch (retJson.getInt("flag")) {
                                             case 0:
                                                 myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"设置收银终端错误：" + retJson.optString("info")).sendToTarget();
@@ -252,7 +255,7 @@ public class LoginActivity extends AppCompatActivity {
                                                         myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"设置收银终端错误：" + info_json.optString("info")).sendToTarget();
                                                         break;
                                                     case "y":
-                                                        cashier_json.put("pos_num", info_json.getString("pos_num"));
+                                                        cashier_json.put("pos_num",(mPosNum = info_json.getString("pos_num")));
                                                         myHandler.obtainMessage(MessageID.LOGIN_OK_ID,cashier_json).sendToTarget();
                                                         break;
                                                 }
@@ -311,15 +314,8 @@ public class LoginActivity extends AppCompatActivity {
                             param_json.put("parameter_id","cashierInfo");
                             param_json.put("parameter_content",cashier_json);
                             if (SQLiteHelper.replaceJson(param_json,"local_parameter",null,err)){
-                                activity.mProgressDialog.setCancel(false);
-                                if (!activity.mSync.isAlive())activity.mSync.start();
-                                Handler handler = activity.mSync.getHandler();
-                                handler.obtainMessage(MessageID.SYNC_CASHIER_ID).sendToTarget();//收银员
-                                handler.obtainMessage(MessageID.SYNC_GOODS_CATEGORY_ID).sendToTarget();//商品类别
-                                handler.obtainMessage(MessageID.SYNC_GOODS_ID).sendToTarget();//商品信息
-                                handler.obtainMessage(MessageID.SYNC_PAY_METHOD_ID).sendToTarget();//支付方式
-                                handler.obtainMessage(MessageID.SYNC_STORES_ID).sendToTarget();//仓库信息
-                                handler.obtainMessage(MessageID.SYNC_FINISH_ID).sendToTarget();//最后发送同步完成消息
+                                activity.mNetworkManagement = new NetworkManagement(this,true,activity.mUrl,activity.mAppId,activity.mAppScret,activity.mStoresId,activity.mPosNum,activity.mOperId);
+                                activity.mNetworkManagement.start_sync(true);
                             }else{
                                 MyDialog.displayMessage("保存收银员信息错误：" + err,activity);
                             }
