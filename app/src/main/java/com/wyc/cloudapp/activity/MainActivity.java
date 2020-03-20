@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
     private CustomProgressDialog mProgressDialog;
     private MyDialog mDialog;
     private AtomicBoolean mNetworkStatus = new AtomicBoolean(true);//网络状态
+    private AtomicBoolean mTransferStatus = new AtomicBoolean(true);//传输状态
     private long mCurrentTimestamp = 0;
     private String mAppId,mAppScret,mUrl;
     private TextView mCurrentTimeView,mSaleSumNum,mSaleSumAmount;
@@ -116,8 +117,7 @@ public class MainActivity extends AppCompatActivity {
                 mNetworkManagement.quit();
                 Intent intent = new Intent(MainActivity.this,LoginActivity.class);
                 MainActivity.this.finish();
-                //startActivity(intent);
-
+                startActivity(intent);
             }, Dialog::dismiss);
         });//退出收银
         findViewById(R.id.num).setOnClickListener(view -> mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 0));//数量
@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
 
         //初始化数据管理对象
         mNetworkManagement = new NetworkManagement(mHandler,false,mUrl,mAppId,mAppScret,mStoreInfo.optString("stores_id"),mCashierInfo.optString("pos_num"),mCashierInfo.optString("cas_id"));
-        mNetworkManagement.start();
+        mNetworkManagement.start_sync(false);
 
     }
     @Override
@@ -192,7 +192,6 @@ public class MainActivity extends AppCompatActivity {
         mTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                if (mNetworkManagement != null)mNetworkManagement.start_sync(false);
                 final String prefix = "同步时间错误：";
                 try {
                     if (mCurrentTimestamp == 0){
@@ -273,6 +272,7 @@ public class MainActivity extends AppCompatActivity {
             this.weakHandler = new WeakReference<>(mainActivity);
         }
         public void handleMessage(@NonNull Message msg){
+            ImageView imageView;
             MainActivity activity = weakHandler.get();
             if (null == activity)return;
             switch (msg.what){
@@ -284,19 +284,34 @@ public class MainActivity extends AppCompatActivity {
                 case MessageID.UPDATE_TIME_ID://更新当前时间
                     activity.mCurrentTimeView.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(activity.mCurrentTimestamp * 1000));
                     break;
-                case MessageID.DOWNLOADSTATUS_ID://下载错误
+                case MessageID.DOWNLOADSTATUS_ID://下载状态
+                    imageView = activity.findViewById(R.id.upload_status);
+                    if (msg.obj instanceof Boolean){
+                        boolean code = (boolean)msg.obj;
+                        if (activity.mTransferStatus.getAndSet(code) != code){
+                            if (imageView != null){
+                                if (code){
+                                    imageView.setImageResource(R.drawable.transfer);
+                                }else{
+                                    imageView.setImageResource(R.drawable.transfer_err);
+                                    imageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake));
+                                }
+                            }
+                        }
+                    }
                     break;
                 case MessageID.NETWORKSTATUS_ID://网络状态
                     if (msg.obj instanceof Boolean){
                         boolean code = (boolean)msg.obj;
-                        if (activity.mNetworkStatus.get() != code){
-                            activity.mNetworkStatus.set(code);
-                            ImageView imageView = activity.findViewById(R.id.network_status);
-                            if (code){
-                                imageView.setImageResource(R.drawable.network);
-                            }else{
-                                imageView.setImageResource(R.drawable.network_err);
-                                imageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake));
+                        if (activity.mNetworkStatus.getAndSet(code) != code){
+                            imageView = activity.findViewById(R.id.network_status);
+                            if (imageView != null){
+                                if (code){
+                                    imageView.setImageResource(R.drawable.network);
+                                }else{
+                                    imageView.setImageResource(R.drawable.network_err);
+                                    imageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake));
+                                }
                             }
                         }
                     }

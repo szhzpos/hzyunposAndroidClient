@@ -74,7 +74,7 @@ public final class HttpRequest {
         String line;
         StringBuilder result = new StringBuilder();
         BufferedReader in = null;
-        JSONObject jsonRetStr = new JSONObject();
+        JSONObject content = new JSONObject();
         try {
             URL url_obj = new URL(url);
             mGetConn = (HttpURLConnection)url_obj.openConnection();
@@ -87,21 +87,22 @@ public final class HttpRequest {
 
             mGetCode = mGetConn.getResponseCode();
             if(mGetCode != HttpURLConnection.HTTP_OK){
-                jsonRetStr.put("flag", 0);
-                jsonRetStr.put("info",mGetConn.getResponseMessage());
+                content.put("flag", 0);
+                content.put("info",mGetConn.getResponseMessage());
             }else {
                 in = new BufferedReader(new InputStreamReader(mGetConn.getInputStream(),StandardCharsets.UTF_8));
                 while ((line = in.readLine()) != null) {
                     result.append(line);
                 }
-                jsonRetStr.put("flag", 1);
-                jsonRetStr.put("info", result);
+                content.put("flag", 1);
+                content.put("info", result);
             }
-            jsonRetStr.put("rsCode", mGetCode);
+            content.put("rsCode", mGetCode);
         } catch (IOException | JSONException  e) {
             try {
-                jsonRetStr.put("flag", 0);
-                jsonRetStr.put("info", e.toString());
+                content.put("flag", 0);
+                content.put("rsCode", HttpURLConnection.HTTP_BAD_REQUEST);
+                content.put("info", e.toString());
             }catch (JSONException  je){
                 je.printStackTrace();
             }
@@ -117,10 +118,10 @@ public final class HttpRequest {
             }
             clearConnection(CLOSEMODE.GET);
         }
-        return jsonRetStr;
+        return content;
     }
 	public synchronized JSONObject getFile( Object store_file,String url){
-        JSONObject jsonRetStr = new JSONObject();
+        JSONObject content = new JSONObject();
         File download_file = null;
         byte[] buffer = new byte[1024];
         int lenght = 0;
@@ -136,8 +137,8 @@ public final class HttpRequest {
             mGetConn.connect();
             mGetCode = mGetConn.getResponseCode();
             if(mGetCode != HttpURLConnection.HTTP_OK){
-                jsonRetStr.put("flag", 0);
-                jsonRetStr.put("info",mGetConn.getResponseMessage());
+                content.put("flag", 0);
+                content.put("info",mGetConn.getResponseMessage());
             }else{
                 if (store_file instanceof File){//可能产生效率问题，后续跟进优化
                     download_file = (File) store_file;
@@ -150,29 +151,28 @@ public final class HttpRequest {
                     }
                 }
             }
-            jsonRetStr.put("flag",1);
-            jsonRetStr.put("rsCode", mGetCode);
+            content.put("flag",1);
+            content.put("rsCode", mGetCode);
         }catch (IOException | JSONException e){
             try {
-                jsonRetStr.put("flag",0);
-                jsonRetStr.put("info","httpCode:" + mGetCode);
-                jsonRetStr.put("info","下载失败！ " + e.getLocalizedMessage());
+                content.put("flag",0);
+                content.put("rsCode", HttpURLConnection.HTTP_BAD_REQUEST);
+                content.put("info","下载失败！ " + e.getLocalizedMessage());
             }catch (JSONException je ){
                 je.printStackTrace();
-                Logger.e("下载文件JSON异常：%s",je.getLocalizedMessage());
             }
         }finally {
             clearConnection(CLOSEMODE.GET);
         }
-	    return jsonRetStr;
+	    return content;
     }
     public synchronized JSONObject sendPost(final String url,@NonNull final String param,boolean json) {//json 请求返回数据类型 true 为json格式 否则为XML
         BufferedReader in = null;
         BufferedWriter out = null;
         InputStreamReader reader = null;
         String line;
-        StringBuilder resultJson = new StringBuilder();
-        JSONObject jsonRetStr = new JSONObject();
+        StringBuilder result = new StringBuilder();
+        JSONObject content = new JSONObject();
         try {
             URL url_obj = new URL(url);
             mPostConn = (HttpURLConnection)url_obj.openConnection();
@@ -193,29 +193,29 @@ public final class HttpRequest {
             mPostCode = mPostConn.getResponseCode();
 
             if(mPostCode != HttpURLConnection.HTTP_OK){
-                jsonRetStr.put("flag", 0);
-                jsonRetStr.put("info",mPostConn.getResponseMessage());
+                content.put("flag", 0);
+                content.put("info",mPostConn.getResponseMessage());
             }else{
                 reader = new InputStreamReader(mPostConn.getInputStream(),StandardCharsets.UTF_8);
                 if (json){
                     in = new BufferedReader(reader);
                     while ((line = in.readLine()) != null) {
-                        resultJson.append(line);
+                        result.append(line);
                     }
-                    jsonRetStr.put("flag", 1);
-                    jsonRetStr.put("info", resultJson);
+                    content.put("flag", 1);
+                    content.put("info", result);
                 }else {
                     Map<String,String> map = Utils.parseXml(reader);
-                    jsonRetStr.put("flag", 1);
-                    jsonRetStr.put("info", new JSONObject(map));
+                    content.put("flag", 1);
+                    content.put("info", new JSONObject(map));
                 }
             }
-            jsonRetStr.put("rsCode", mPostCode);
+            content.put("rsCode", mPostCode);
         } catch (IOException | XmlPullParserException | JSONException e) {
             try {
-                jsonRetStr.put("flag", 0);
-                jsonRetStr.put("rsCode", HttpURLConnection.HTTP_BAD_REQUEST);
-                jsonRetStr.put("info", e.toString());
+                content.put("flag", 0);
+                content.put("rsCode", HttpURLConnection.HTTP_BAD_REQUEST);
+                content.put("info", e.toString());
                 e.printStackTrace();
             }catch ( JSONException je ){
                 e.printStackTrace();
@@ -236,7 +236,7 @@ public final class HttpRequest {
             }
             clearConnection(CLOSEMODE.POST);
         }
-        return jsonRetStr;
+        return content;
     }
 
     public HttpRequest setConnTimeOut(int connTimeOut) {
@@ -249,16 +249,14 @@ public final class HttpRequest {
     }
 
     public  static String generate_request_parm(JSONObject json ,String apiKey) throws JSONException {
-        Map<String,String> map = new HashMap<>();
-        Map<String, String> sortMap = new TreeMap<String, String>();
+        Map<String,String> map = new HashMap<>(),sortMap;
         StringBuilder builder = new StringBuilder();
         String signStr = null;
-
         for (Iterator<String> it = json.keys(); it.hasNext(); ) {
             String key = it.next();
             map.put(key, json.getString(key));
         }
-        sortMap.putAll(map);
+        sortMap = new TreeMap<>(map);
         for (Map.Entry<String, String> s : sortMap.entrySet()) {
             String k = s.getKey();
             String v = s.getValue();
@@ -268,7 +266,6 @@ public final class HttpRequest {
             builder.append(k).append("=").append(v);
         }
         signStr = builder + apiKey;
-
         return builder.append("&sign=").append(Utils.getMD5(signStr.getBytes())).toString();
     }
 }

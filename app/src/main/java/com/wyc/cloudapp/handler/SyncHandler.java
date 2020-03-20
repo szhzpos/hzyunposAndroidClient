@@ -1,15 +1,10 @@
 package com.wyc.cloudapp.handler;
 
-import android.graphics.BitmapFactory;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 
-import com.wyc.cloudapp.activity.LoginActivity;
-import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.network.NetworkManagement;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -27,11 +22,12 @@ public class SyncHandler extends Handler {
     private Handler syncActivityHandler;
     private String mAppId,mAppScret,mUrl,mPosNum,mOperId,mStoresId;
     private boolean mReportProgress;
-    private int mPreNeworkStatusCode = HttpURLConnection.HTTP_OK;
+    private int mCurrentNeworkStatusCode = HttpURLConnection.HTTP_OK;
+    private long mSyncInterval = 3000,mLoseTime = 0;//mSyncInterval 同步时间间隔，默认3秒
     public SyncHandler(Handler handler,boolean report,final String url, final String appid, final String appscret,final String stores_id,final String pos_num, final String operid){
         this.syncActivityHandler = handler;
         mHttp = new HttpRequest();
-        mHttp.setConnTimeOut(5000);
+        mHttp.setConnTimeOut(3000);
 
         mReportProgress = report;
         mOperId = operid;
@@ -97,98 +93,104 @@ public class SyncHandler extends Handler {
                     object.put("pos_num",mPosNum);
                     object.put("stores_id",mStoresId);
                     break;
+                case MessageID.SYNC_FINISH_ID:
+                    syncActivityHandler.obtainMessage(MessageID.SYNC_FINISH_ID).sendToTarget();//同步完成
+                    return;
                 case MessageID.NETWORKSTATUS_ID:
                     testNetworkStatus();
+                    if (System.currentTimeMillis() - mLoseTime >= mSyncInterval && mCurrentNeworkStatusCode == HttpURLConnection.HTTP_OK){
+                        mLoseTime = System.currentTimeMillis();
+
+                        this.obtainMessage(MessageID.SYNC_CASHIER_ID).sendToTarget();//收银员
+                        this.obtainMessage(MessageID.SYNC_GOODS_CATEGORY_ID).sendToTarget();//商品类别
+                        this.obtainMessage(MessageID.SYNC_GOODS_ID).sendToTarget();//商品信息
+                        this.obtainMessage(MessageID.SYNC_PAY_METHOD_ID).sendToTarget();//支付方式
+                        this.obtainMessage(MessageID.SYNC_STORES_ID).sendToTarget();//仓库信息
+                    }
+                    this.postDelayed(()->{
+                        this.obtainMessage(MessageID.NETWORKSTATUS_ID).sendToTarget();
+                    },1000);
                     return;
             }
-            if (msg.what == MessageID.SYNC_FINISH_ID){
-                syncActivityHandler.obtainMessage(MessageID.SYNC_FINISH_ID).sendToTarget();//同步完成
-            }else{
-                if (mReportProgress)
-                    syncActivityHandler.obtainMessage(SYNC_DIS_INFO_ID,sys_name + "信息....").sendToTarget();
 
-                object.put("appid",mAppId);
+            if (mReportProgress)
+                syncActivityHandler.obtainMessage(SYNC_DIS_INFO_ID,sys_name + "信息....").sendToTarget();
 
-                sz_param = HttpRequest.generate_request_parm(object,mAppScret);
-                retJson = mHttp.sendPost(url,sz_param,true);
-                switch (retJson.optInt("flag")) {
-                    case 0:
-                        this.removeCallbacksAndMessages(null);
-                        sys_name = sys_name.concat("错误:").concat(retJson.optString("info"));
-                        if (mReportProgress)
-                            syncActivityHandler.obtainMessage(MessageID.SYNC_ERR_ID, sys_name).sendToTarget();
-                        else
-                            Logger.e("%s",sys_name);
-                        break;
-                    case 1:
-                        info_json = new JSONObject(retJson.optString("info"));
-                        switch (info_json.optString("status")){
-                            case "n":
-                                this.removeCallbacksAndMessages(null);
-                                sys_name = sys_name.concat("错误:").concat(info_json.optString("info"));
-                                if (mReportProgress)
-                                    syncActivityHandler.obtainMessage(MessageID.SYNC_ERR_ID, sys_name).sendToTarget();
-                                else
-                                    Logger.e("%s",sys_name);
-                                break;
-                            case "y":
-                                JSONArray data = info_json.getJSONArray("data");
-                                if(data.length() != 0){
-                                    if (msg.what == MessageID.SYNC_PAY_METHOD_ID)Logger.d_json(data.toString());
-                                    if (img_url_col_name != null){
-                                        for (int k = 0,length = data.length();k < length;k++){
-                                            img_url_info = data.getJSONObject(k).getString(img_url_col_name);
-                                            if (!img_url_info.equals("")){
-                                                img_file_name = img_url_info.substring(img_url_info.lastIndexOf("/") + 1);
-                                                File file = new File(SQLiteHelper.IMG_PATH + img_file_name);
-                                                if (!file.exists()){
-                                                    JSONObject load_img = mHttp.getFile(file,img_url_info);
-                                                    if (load_img.getInt("flag") == 0){
-                                                        Logger.e("下载商品图片错误：" + load_img.getString("info"));
-                                                    }
+            object.put("appid",mAppId);
+
+            sz_param = HttpRequest.generate_request_parm(object,mAppScret);
+            retJson = mHttp.sendPost(url,sz_param,true);
+            switch (retJson.optInt("flag")) {
+                case 0:
+                    sys_name = sys_name.concat("错误:").concat(retJson.optString("info"));
+                    if (mReportProgress) {
+                        removeCallbacksAndMessages(null);
+                        syncActivityHandler.obtainMessage(MessageID.SYNC_ERR_ID, sys_name).sendToTarget();
+                    }else {
+                        syncActivityHandler.obtainMessage(MessageID.DOWNLOADSTATUS_ID,false).sendToTarget();
+                        Logger.e("%s", sys_name);
+                    }
+                    break;
+                case 1:
+                    info_json = new JSONObject(retJson.optString("info"));
+                    switch (info_json.optString("status")){
+                        case "n":
+                            sys_name = sys_name.concat("错误:").concat(info_json.optString("info"));
+                            if (mReportProgress) {
+                                removeCallbacksAndMessages(null);
+                                syncActivityHandler.obtainMessage(MessageID.SYNC_ERR_ID, sys_name).sendToTarget();
+                            } else{
+                                syncActivityHandler.obtainMessage(MessageID.DOWNLOADSTATUS_ID,false).sendToTarget();
+                                Logger.e("%s", sys_name);
+                            }
+                            break;
+                        case "y":
+                            JSONArray data = info_json.getJSONArray("data");
+                            if(data.length() != 0){
+                                if (img_url_col_name != null){
+                                    for (int k = 0,length = data.length();k < length;k++){
+                                        img_url_info = data.getJSONObject(k).getString(img_url_col_name);
+                                        if (!img_url_info.equals("")){
+                                            img_file_name = img_url_info.substring(img_url_info.lastIndexOf("/") + 1);
+                                            File file = new File(SQLiteHelper.IMG_PATH + img_file_name);
+                                            if (!file.exists()){
+                                                JSONObject load_img = mHttp.getFile(file,img_url_info);
+                                                if (load_img.getInt("flag") == 0){
+                                                    Logger.e("下载商品图片错误：" + load_img.getString("info"));
                                                 }
                                             }
                                         }
                                     }
-
-                                    StringBuilder err = new StringBuilder();
-                                    if (!SQLiteHelper.execSQLByBatchReplaceJson(data,table_name ,table_cls,err)) {
-                                        this.removeCallbacksAndMessages(null);
-                                        sys_name = sys_name.concat("错误:").concat(err.toString());
-                                        if (mReportProgress)
-                                            syncActivityHandler.obtainMessage(MessageID.SYNC_ERR_ID, sys_name).sendToTarget();
-                                        else
-                                            Logger.e("%s",sys_name);
-                                    }
                                 }
-                                break;
-                        }
-                        break;
-                }
+                                StringBuilder err = new StringBuilder();
+                                if (!SQLiteHelper.execSQLByBatchReplaceJson(data,table_name ,table_cls,err)) {
+                                    sys_name = sys_name.concat("错误:").concat(err.toString());
+                                    if (mReportProgress) {
+                                        removeCallbacksAndMessages(null);
+                                        syncActivityHandler.obtainMessage(MessageID.SYNC_ERR_ID, sys_name).sendToTarget();
+                                    }else{
+                                        syncActivityHandler.obtainMessage(MessageID.DOWNLOADSTATUS_ID,false).sendToTarget();
+                                        Logger.e("%s", sys_name);
+                                    }
+                                }else{
+                                    if (!mReportProgress)
+                                        syncActivityHandler.obtainMessage(MessageID.DOWNLOADSTATUS_ID,true).sendToTarget();
+                                }
+                            }
+                            break;
+                    }
+                    break;
             }
         }catch (JSONException e){
             this.removeCallbacksAndMessages(null);
             sys_name = "同步" + table_name + "错误:" +  e.getMessage();
-            if (mReportProgress)
+            if (mReportProgress) {
+                removeCallbacksAndMessages(null);
                 syncActivityHandler.obtainMessage(MessageID.SYNC_ERR_ID, sys_name).sendToTarget();
-            else
+            }else
                 Logger.e("%s",sys_name);
         }
     }
-
-    private void parse_category_info(JSONArray category_jsons,JSONArray categorys){
-        for(int i = 0,length = category_jsons.length();i < length;i++) {
-            JSONObject category_json = category_jsons.optJSONObject(i);
-            if (category_json.has("childs")) {
-                JSONArray childs = (JSONArray) category_json.remove("childs");
-                if(childs != null && childs.length() != 0){
-                    parse_category_info(childs,categorys);
-                }
-            }
-            categorys.put(category_json);
-        }
-    }
-
     public void stop(){
         this.removeCallbacksAndMessages(null);
         if (mHttp != null)mHttp.clearConnection(HttpRequest.CLOSEMODE.BOTH);
@@ -196,29 +198,24 @@ public class SyncHandler extends Handler {
     private void testNetworkStatus(){
         JSONObject data = new JSONObject(),retJson,info_json;
         final String prefix = "网络检测错误：",test_url = mUrl + "/api/heartbeat/index";
-        int err_code = HttpURLConnection.HTTP_OK;
+        int err_code;
         try {
             data.put("appid",mAppId);
             data.put("pos_num",mPosNum);
             data.put("randstr", Utils.getNonce_str(8));
             data.put("cas_id",mOperId);
             retJson = mHttp.sendPost(test_url,HttpRequest.generate_request_parm(data,mAppScret),true);
+            err_code = retJson.getInt("rsCode");
             switch (retJson.optInt("flag")) {
                 case 0:
-                    if (retJson.has("rsCode")){//flag为了0并且存在rsCode网络错误
-                        err_code = retJson.getInt("rsCode");
-                        if (mPreNeworkStatusCode != err_code){
-                            Logger.e("连接服务器错误：" + retJson.optString("info"));
-                        }
-                        syncActivityHandler.obtainMessage(MessageID.NETWORKSTATUS_ID,false).sendToTarget();
-                    }else{
-                        Logger.e("数据解析错误：" + retJson.optString("info"));
+                    if (mCurrentNeworkStatusCode != err_code){
+                        Logger.e("连接服务器错误：" + retJson.optString("info"));
                     }
+                    syncActivityHandler.obtainMessage(MessageID.NETWORKSTATUS_ID,false).sendToTarget();
                     break;
                 case 1:
                     syncActivityHandler.obtainMessage(MessageID.NETWORKSTATUS_ID,true).sendToTarget();
-                    err_code = retJson.getInt("rsCode");
-                    if (mPreNeworkStatusCode != HttpURLConnection.HTTP_OK){//如果之前网络响应状态不为OK,则重连成功
+                    if (mCurrentNeworkStatusCode != HttpURLConnection.HTTP_OK){//如果之前网络响应状态不为OK,则重连成功
                         Logger.i("重新连接服务器成功！");
                     }
                     info_json = new JSONObject(retJson.getString("info"));
@@ -233,13 +230,11 @@ public class SyncHandler extends Handler {
                     }
                     break;
             }
-            mPreNeworkStatusCode = err_code;
+            mCurrentNeworkStatusCode = err_code;
         } catch (JSONException e) {
             Logger.e("检测网络错误：" + e.getMessage());
             e.printStackTrace();
         }
 
     }
-
-
 }

@@ -22,8 +22,6 @@ public class NetworkManagement extends Thread {
     private CountDownLatch handlerInitLatch;
     private Handler mHandler,mSyncHandler;
     private String mAppId,mAppScret,mUrl,mPosNum,mOperId,mStoresId;
-    private Timer mTimer;
-    private int mSyncInterval = 1500;//mSyncInterval 同步时间间隔，默认3秒
     private boolean mReportProgress;
     private NetworkManagement(Handler handler){
         this.mHandler = handler;
@@ -59,7 +57,6 @@ public class NetworkManagement extends Thread {
     }
 
     public void quit(){
-        stopTimer();
         if (mSyncHandler != null){
             ((SyncHandler)mSyncHandler).stop();
             mSyncHandler.getLooper().quit();
@@ -69,49 +66,20 @@ public class NetworkManagement extends Thread {
         }
     }
 
-    private void sync(){
-        if (mSyncHandler == null)mSyncHandler = getHandler();
-        mSyncHandler.obtainMessage(MessageID.SYNC_CASHIER_ID).sendToTarget();//收银员
-        mSyncHandler.obtainMessage(MessageID.SYNC_GOODS_CATEGORY_ID).sendToTarget();//商品类别
-        mSyncHandler.obtainMessage(MessageID.SYNC_GOODS_ID).sendToTarget();//商品信息
-        mSyncHandler.obtainMessage(MessageID.SYNC_PAY_METHOD_ID).sendToTarget();//支付方式
-        mSyncHandler.obtainMessage(MessageID.SYNC_STORES_ID).sendToTarget();//仓库信息
-        mSyncHandler.obtainMessage(MessageID.SYNC_FINISH_ID).sendToTarget();//最后发送同步完成消息
-    }
-
     public void start_sync(boolean b){
         if (!isAlive())start();
+        if (mSyncHandler == null)mSyncHandler = getHandler();
         if (b){
-            sync();
+            mSyncHandler.obtainMessage(MessageID.SYNC_CASHIER_ID).sendToTarget();//收银员
+            mSyncHandler.obtainMessage(MessageID.SYNC_GOODS_CATEGORY_ID).sendToTarget();//商品类别
+            mSyncHandler.obtainMessage(MessageID.SYNC_GOODS_ID).sendToTarget();//商品信息
+            mSyncHandler.obtainMessage(MessageID.SYNC_PAY_METHOD_ID).sendToTarget();//支付方式
+            mSyncHandler.obtainMessage(MessageID.SYNC_STORES_ID).sendToTarget();//仓库信息
+            mSyncHandler.obtainMessage(MessageID.SYNC_FINISH_ID).sendToTarget();//最后发送同步完成消息
         }else{
-            starTimer();
-        }
-    }
-
-    private void starTimer(){
-        if (mTimer == null){
-            mTimer = new Timer();
-            mTimer.schedule(new TimerTask() {
-                long mlossTmie = 0;
-                @Override
-                public void run() {
-                    if (System.currentTimeMillis() - mlossTmie >= mSyncInterval){
-                        mlossTmie = System.currentTimeMillis();
-                        sync();
-                    }else{
-                        if (mSyncHandler != null && !mSyncHandler.hasMessages(MessageID.NETWORKSTATUS_ID)){
-                            mSyncHandler.obtainMessage(MessageID.NETWORKSTATUS_ID).sendToTarget();
-                        }
-                    }
-                }
-            },0,1000);
-        }
-    }
-
-    private void stopTimer(){
-        if (mTimer != null){
-            mTimer.cancel();
-            mTimer = null;
+            if (mSyncHandler != null && !mSyncHandler.hasMessages(MessageID.NETWORKSTATUS_ID)){
+                mSyncHandler.obtainMessage(MessageID.NETWORKSTATUS_ID).sendToTarget();
+            }
         }
     }
 }
