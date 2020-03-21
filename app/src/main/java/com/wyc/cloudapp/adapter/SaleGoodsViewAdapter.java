@@ -7,14 +7,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.PayDialog;
 import com.wyc.cloudapp.listener.ClickListener;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
@@ -60,7 +58,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View itemView = View.inflate(mContext, R.layout.sale_goods_content, null);
+        View itemView = View.inflate(mContext, R.layout.sale_goods_content_layout, null);
         itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.sale_goods_height)));
         return new MyViewHolder(itemView);
     }
@@ -408,7 +406,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
             goods_name.setTextColor(mContext.getColor(R.color.good_name_color));
         }
         goods_name = v.findViewById(R.id.goods_title);
-        goods_name.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.shake));
+        goods_name.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.shake_x));
         goods_name.setTextColor(mContext.getColor(R.color.blue));
 
         if (mCurrentItemView != v)setCurrentItemIndexAndItemView(v);

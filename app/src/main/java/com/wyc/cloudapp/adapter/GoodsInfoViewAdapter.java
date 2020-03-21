@@ -7,14 +7,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.graphics.BitmapFactory;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.logger.Logger;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -52,7 +50,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View itemView = View.inflate(mContext, R.layout.goods_info_content, null);
+        View itemView = View.inflate(mContext, R.layout.goods_info_content_layout, null);
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.goods_height));
         itemView.setLayoutParams(lp);
         return new MyViewHolder(itemView);

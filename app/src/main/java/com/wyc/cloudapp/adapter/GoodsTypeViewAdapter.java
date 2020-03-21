@@ -40,7 +40,7 @@ public class GoodsTypeViewAdapter extends RecyclerView.Adapter<GoodsTypeViewAdap
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View itemView = View.inflate(mContext, R.layout.goods_type_info_content, null);
+        View itemView = View.inflate(mContext, R.layout.goods_type_info_content_layout, null);
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(88,
                 ViewGroup.LayoutParams.MATCH_PARENT);
         itemView.setLayoutParams(lp);

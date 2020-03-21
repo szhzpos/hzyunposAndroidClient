@@ -6,8 +6,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
@@ -20,7 +18,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class PayDetailViewAdapter extends RecyclerView.Adapter<PayDetailViewAdapter.MyViewHolder> {
+public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static final int HEADER = -1;
+    private static final int CONTENT = -2;
+    private static final int FOOTER = -3;
     private Context mContext;
     private JSONArray mDatas;
     private View mCurrentItemView;
@@ -30,12 +31,27 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<PayDetailViewAdap
     public PayDetailViewAdapter(Context context){
         this.mContext = context;
         mDatas = new JSONArray();
-        initHead();
     }
-    static class MyViewHolder extends RecyclerView.ViewHolder {
+    static class ContentHolder extends RecyclerView.ViewHolder {
         private TextView row_id,pay_method_id,pay_method_name,pay_detail_amt,pay_detail_zl,pay_detail_v_num;
         private View mCurrentLayoutItemView;//当前布局的item
-        MyViewHolder(View itemView) {
+        ContentHolder(View itemView) {
+            super(itemView);
+            mCurrentLayoutItemView = itemView;
+
+            row_id = itemView.findViewById(R.id.row_id);
+            pay_method_id =  itemView.findViewById(R.id.pay_method_id);
+            pay_method_name =  itemView.findViewById(R.id.pay_method_name);
+            pay_detail_amt =  itemView.findViewById(R.id.pay_detail_amt);
+            pay_detail_zl =  itemView.findViewById(R.id.pay_detail_zl);
+            pay_detail_v_num =  itemView.findViewById(R.id.pay_detail_v_num);
+        }
+    }
+
+    static class HeaderHolder extends RecyclerView.ViewHolder {
+        private TextView row_id,pay_method_id,pay_method_name,pay_detail_amt,pay_detail_zl,pay_detail_v_num;
+        private View mCurrentLayoutItemView;//当前布局的item
+        HeaderHolder(View itemView) {
             super(itemView);
             mCurrentLayoutItemView = itemView;
 
@@ -50,42 +66,41 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<PayDetailViewAdap
 
     @NonNull
     @Override
-    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View itemView = View.inflate(mContext, R.layout.pay_detail_content, null);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+        View itemView = View.inflate(mContext, R.layout.pay_detail_content_layout, null);
         itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.pay_detail_height)));
-
-        return new MyViewHolder(itemView);
+        RecyclerView.ViewHolder holder;
+        if (i == HEADER){
+            holder = new HeaderHolder(itemView);
+        }else{
+            holder = new ContentHolder(itemView);
+        }
+        return holder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
-        if (i == 0){
-            myViewHolder.row_id.setText(mContext.getString(R.string.pay_detail_row_id_sz));
-            myViewHolder.pay_method_id.setText(mContext.getString(R.string.space_sz));
-            myViewHolder.pay_method_name.setText(mContext.getString(R.string.pay_detail_name_sz));
-            myViewHolder.pay_detail_amt.setText(mContext.getString(R.string.pay_detail_amt_sz));
-            myViewHolder.pay_detail_zl.setText(mContext.getString(R.string.pay_detail_zl_sz));
-            myViewHolder.pay_detail_v_num.setText(mContext.getString(R.string.pay_detail_v_num_sz));
-
-            myViewHolder.row_id.setTextColor(mContext.getResources().getColor(R.color.white,null));
-            myViewHolder.pay_method_id.setTextColor(mContext.getResources().getColor(R.color.white,null));
-            myViewHolder.pay_method_name.setTextColor(mContext.getResources().getColor(R.color.white,null));
-            myViewHolder.pay_detail_amt.setTextColor(mContext.getResources().getColor(R.color.white,null));
-            myViewHolder.pay_detail_zl.setTextColor(mContext.getResources().getColor(R.color.white,null));
-            myViewHolder.pay_detail_v_num.setTextColor(mContext.getResources().getColor(R.color.white,null));
-
-            myViewHolder.mCurrentLayoutItemView.setBackgroundColor(mContext.getResources().getColor(R.color.blue_subtransparent,null));
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder myViewHolder, int i) {
+        if (myViewHolder instanceof HeaderHolder){
+            HeaderHolder headerHolder = (HeaderHolder)myViewHolder;
+            headerHolder.row_id.setTextColor(mContext.getResources().getColor(R.color.white,null));
+            headerHolder.pay_method_id.setTextColor(mContext.getResources().getColor(R.color.white,null));
+            headerHolder.pay_method_name.setTextColor(mContext.getResources().getColor(R.color.white,null));
+            headerHolder.pay_detail_amt.setTextColor(mContext.getResources().getColor(R.color.white,null));
+            headerHolder.pay_detail_zl.setTextColor(mContext.getResources().getColor(R.color.white,null));
+            headerHolder.pay_detail_v_num.setTextColor(mContext.getResources().getColor(R.color.white,null));
+            headerHolder.mCurrentLayoutItemView.setBackgroundColor(mContext.getResources().getColor(R.color.blue_subtransparent,null));
         }else{
-            JSONObject pay_detail = mDatas.optJSONObject(i);
+            JSONObject pay_detail = mDatas.optJSONObject(i - 1);
             if (pay_detail != null){
-                myViewHolder.row_id.setText(String.valueOf(i));
-                myViewHolder.pay_method_id.setText(pay_detail.optString("pay_method_id"));
-                myViewHolder.pay_method_name.setText(pay_detail.optString("name"));
-                myViewHolder.pay_detail_amt.setText(pay_detail.optString("pamt"));
-                myViewHolder.pay_detail_zl.setText(pay_detail.optString("pzl"));
-                myViewHolder.pay_detail_v_num.setText(pay_detail.optString("v_num"));
+                ContentHolder contentHolder = (ContentHolder)myViewHolder;
+                contentHolder.row_id.setText(String.valueOf(i));
+                contentHolder.pay_method_id.setText(pay_detail.optString("pay_method_id"));
+                contentHolder.pay_method_name.setText(pay_detail.optString("name"));
+                contentHolder.pay_detail_amt.setText(pay_detail.optString("pamt"));
+                contentHolder.pay_detail_zl.setText(pay_detail.optString("pzl"));
+                contentHolder.pay_detail_v_num.setText(pay_detail.optString("v_num"));
 
-                myViewHolder.mCurrentLayoutItemView.setOnTouchListener(new ClickListener(v -> {
+                contentHolder.mCurrentLayoutItemView.setOnTouchListener(new ClickListener(v -> {
                     setCurrentItemIndexAndItemView(v);
                     deletePayDetail(mCurrentItemIndex,0);
                     if (mOnItemDoubleClickListener != null){
@@ -98,17 +113,24 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<PayDetailViewAdap
                 }));
 
                 if (mCurrentItemIndex == i){
-                    setSelectStatus(myViewHolder.mCurrentLayoutItemView);
-                    mCurrentItemView = myViewHolder.mCurrentLayoutItemView;
+                    setSelectStatus(contentHolder.mCurrentLayoutItemView);
+                    mCurrentItemView = contentHolder.mCurrentLayoutItemView;
                 }
             }
         }
-
     }
 
     @Override
     public int getItemCount() {
-        return mDatas == null ? 0 : mDatas.length();
+        return mDatas == null ? 1 : mDatas.length() + 1;
+    }
+
+    @Override
+    public int getItemViewType(int position){
+        if (0 == position){
+            return HEADER;
+        }
+        return CONTENT;
     }
 
     public interface OnItemClickListener{
@@ -201,7 +223,7 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<PayDetailViewAdap
                     MyDialog.displayErrorMessage("删除商品错误：" + e.getMessage(),mContext);
                 }
             }
-            this.notifyDataSetChanged();
+            this.notifyItemRangeRemoved(0,index);
         }
     }
 
@@ -215,7 +237,7 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<PayDetailViewAdap
 
     private JSONObject findPayDetailById(final String id){
         try {
-            for (int i = 1,length = mDatas.length();i < length;i ++){//0为表头
+            for (int i = 0,length = mDatas.length();i < length;i ++){//0为表头
                 JSONObject jsonObject = mDatas.getJSONObject(i);
                 if (id != null && id.equals(jsonObject.getString("pay_method_id"))){
                     return jsonObject;
@@ -226,10 +248,5 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<PayDetailViewAdap
             MyDialog.ToastMessage("查找付款记录错误：" + e.getMessage(),mContext);
         }
         return null;
-    }
-
-    private void initHead(){
-        mDatas.put(new JSONObject());
-        notifyDataSetChanged();
     }
 }

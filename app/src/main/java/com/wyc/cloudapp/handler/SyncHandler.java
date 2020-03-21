@@ -21,15 +21,14 @@ public class SyncHandler extends Handler {
     private HttpRequest mHttp;
     private Handler syncActivityHandler;
     private String mAppId,mAppScret,mUrl,mPosNum,mOperId,mStoresId;
-    private boolean mReportProgress;
+    private boolean mReportProgress = true;
     private int mCurrentNeworkStatusCode = HttpURLConnection.HTTP_OK;
     private long mSyncInterval = 3000,mLoseTime = 0;//mSyncInterval 同步时间间隔，默认3秒
-    public SyncHandler(Handler handler,boolean report,final String url, final String appid, final String appscret,final String stores_id,final String pos_num, final String operid){
+    public SyncHandler(Handler handler,final String url, final String appid, final String appscret,final String stores_id,final String pos_num, final String operid){
         this.syncActivityHandler = handler;
         mHttp = new HttpRequest();
         mHttp.setConnTimeOut(3000);
 
-        mReportProgress = report;
         mOperId = operid;
         mPosNum = pos_num;
         mUrl = url;
@@ -100,16 +99,8 @@ public class SyncHandler extends Handler {
                     testNetworkStatus();
                     if (System.currentTimeMillis() - mLoseTime >= mSyncInterval && mCurrentNeworkStatusCode == HttpURLConnection.HTTP_OK){
                         mLoseTime = System.currentTimeMillis();
-
-                        this.obtainMessage(MessageID.SYNC_CASHIER_ID).sendToTarget();//收银员
-                        this.obtainMessage(MessageID.SYNC_GOODS_CATEGORY_ID).sendToTarget();//商品类别
-                        this.obtainMessage(MessageID.SYNC_GOODS_ID).sendToTarget();//商品信息
-                        this.obtainMessage(MessageID.SYNC_PAY_METHOD_ID).sendToTarget();//支付方式
-                        this.obtainMessage(MessageID.SYNC_STORES_ID).sendToTarget();//仓库信息
+                        sync();
                     }
-                    this.postDelayed(()->{
-                        this.obtainMessage(MessageID.NETWORKSTATUS_ID).sendToTarget();
-                    },1000);
                     return;
             }
 
@@ -236,5 +227,24 @@ public class SyncHandler extends Handler {
             e.printStackTrace();
         }
 
+    }
+    public void setReportProgress(boolean b){
+        mReportProgress = b;
+    }
+    public void sync(){
+        this.obtainMessage(MessageID.SYNC_CASHIER_ID).sendToTarget();//收银员
+        this.obtainMessage(MessageID.SYNC_GOODS_CATEGORY_ID).sendToTarget();//商品类别
+        this.obtainMessage(MessageID.SYNC_GOODS_ID).sendToTarget();//商品信息
+        this.obtainMessage(MessageID.SYNC_PAY_METHOD_ID).sendToTarget();//支付方式
+        this.obtainMessage(MessageID.SYNC_STORES_ID).sendToTarget();//仓库信息
+    }
+    public void syncFinish(){
+        obtainMessage(MessageID.SYNC_FINISH_ID).sendToTarget();//最后发送同步完成消息
+    }
+    public void startNetworkTest(){
+        if (!hasMessages(MessageID.NETWORKSTATUS_ID)){
+            obtainMessage(MessageID.NETWORKSTATUS_ID).sendToTarget();
+            postDelayed(this::startNetworkTest,1000);
+        }
     }
 }

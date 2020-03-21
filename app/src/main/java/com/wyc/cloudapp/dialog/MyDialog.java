@@ -91,7 +91,7 @@ public class MyDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(this.getLayoutInflater().inflate(R.layout.mydialog, null));
+        setContentView(this.getLayoutInflater().inflate(R.layout.mydialog_layout, null));
         //按空白处不能取消动画
         setCanceledOnTouchOutside(false);
 
@@ -146,12 +146,12 @@ public class MyDialog extends Dialog {
      * 初始化界面控件
      */
     private void initView() {
-        mYes = (Button) findViewById(R.id.yes);
-        mNo = (Button) findViewById(R.id.no);
-        mTitle = (TextView) findViewById(R.id.title_text);
-        mMessage = (TextView) findViewById(R.id.content);
+        findViewById(R.id._close).setOnClickListener(v -> this.dismiss());
+        mYes = findViewById(R.id.yes);
+        mNo = findViewById(R.id.no);
+        mTitle = findViewById(R.id.title_text);
+        mMessage = findViewById(R.id.content);
         Drawable drawable = null;
-
         switch (mContentIconType){
             case INFO:
                 drawable = mContext.getResources().getDrawable(R.drawable.infor,null);
@@ -168,19 +168,12 @@ public class MyDialog extends Dialog {
         }
         drawable.setBounds(0,0,drawable.getIntrinsicWidth(),drawable.getIntrinsicHeight());
         mMessage.setCompoundDrawables(drawable,null,null,null);
-
-        WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
-        if (m != null){
-            Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
-            Point point = new Point();
-            d.getSize(point);
-            Window dialogWindow = this.getWindow();
-            if (dialogWindow != null){
-                WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-                dialogWindow.setGravity(Gravity.CENTER);
-                lp.width = (int)(0.4 * point.x); // 宽度
-                dialogWindow.setAttributes(lp);
-            }
+        Window window = getWindow();
+        if (null != window){
+            WindowManager.LayoutParams params = window.getAttributes();
+            params.width = 428;
+            params.height = 200;
+            window.setAttributes(params);
         }
     }
 
@@ -258,9 +251,12 @@ public class MyDialog extends Dialog {
     }
 
     public static void ToastMessage(@NonNull View v, final String message, View anchor){
-        Snackbar snackbar = Snackbar.make(v,message, Snackbar.LENGTH_LONG);
+        Snackbar snackbar = Snackbar.make(v,message, Snackbar.LENGTH_SHORT);
         if (anchor != null)snackbar.setAnchorView(anchor);
-        snackbar.getView().setBackgroundResource(R.drawable.snackbar_background);
+        View snackbar_view = snackbar.getView();
+        snackbar_view.setBackgroundResource(R.drawable.snackbar_background);
+        TextView tvSnackbarText = snackbar_view.findViewById(R.id.snackbar_text);
+        tvSnackbarText.setTextSize(24);
         snackbar.show();
     }
 

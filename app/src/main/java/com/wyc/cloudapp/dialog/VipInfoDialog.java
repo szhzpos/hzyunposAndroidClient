@@ -2,7 +2,6 @@ package com.wyc.cloudapp.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -20,8 +19,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.interface_abstract.AbstractPayDialog;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -48,7 +45,7 @@ public class VipInfoDialog extends Dialog {
     }
     @Override
     protected void onCreate(Bundle savedInstanceState){
-        setContentView(R.layout.vip_info_dialog_content);
+        setContentView(R.layout.vip_info_dialog_layout);
         setCancelable(false);
         setCanceledOnTouchOutside(false);
 

@@ -10,11 +10,8 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.view.Display;
 import android.view.View;
@@ -26,7 +23,6 @@ import android.widget.EditText;
 
 import android.widget.RelativeLayout;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -41,7 +37,6 @@ import com.wyc.cloudapp.utils.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.lang.ref.WeakReference;
 
 public class LoginActivity extends AppCompatActivity {
@@ -286,20 +281,16 @@ public class LoginActivity extends AppCompatActivity {
         public void handleMessage(@NonNull Message msg){
             LoginActivity activity = weakHandler.get();
             if (null == activity)return;
-            if (activity.mProgressDialog != null && msg.what != MessageID.SYNC_DIS_INFO_ID)activity.mProgressDialog.dismiss();
+            if (activity.mProgressDialog != null && activity.mProgressDialog.isShowing() && msg.what != MessageID.SYNC_DIS_INFO_ID)activity.mProgressDialog.dismiss();
             switch (msg.what){
                 case MessageID.DIS_ERR_INFO_ID:
+                case MessageID.SYNC_ERR_ID://资料同步错误
                     if (msg.obj != null){
                         if (activity.mCancelLogin){
                             activity.finish();
                         }else{
                             MyDialog.displayErrorMessage(msg.obj.toString(),activity);
                         }
-                    }
-                    break;
-                case MessageID.SYNC_ERR_ID://资料同步错误
-                    if (msg.obj != null){
-                        MyDialog.displayErrorMessage(msg.obj.toString(),activity);
                     }
                     break;
                 case MessageID.SYNC_FINISH_ID://同步成功启动主界面
@@ -315,7 +306,7 @@ public class LoginActivity extends AppCompatActivity {
                             param_json.put("parameter_id","cashierInfo");
                             param_json.put("parameter_content",cashier_json);
                             if (SQLiteHelper.replaceJson(param_json,"local_parameter",null,err)){
-                                activity.mNetworkManagement = new NetworkManagement(this,true,activity.mUrl,activity.mAppId,activity.mAppScret,activity.mStoresId,activity.mPosNum,activity.mOperId);
+                                activity.mNetworkManagement = new NetworkManagement(this,activity.mUrl,activity.mAppId,activity.mAppScret,activity.mStoresId,activity.mPosNum,activity.mOperId);
                                 activity.mNetworkManagement.start_sync(true);
                             }else{
                                 MyDialog.displayMessage("保存收银员信息错误：" + err,activity);
@@ -331,14 +322,14 @@ public class LoginActivity extends AppCompatActivity {
                 case MessageID.LOGIN_ID_ERROR_ID://账号错误
                     activity.mUser_id.requestFocus();
                     activity.mUser_id.selectAll();
-                    activity.mUser_id.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake));
+                    activity.mUser_id.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake_x));
                     if (msg.obj instanceof String)
                         MyDialog.ToastMessage(activity.getWindow().getDecorView(),msg.obj.toString(),activity.getCurrentFocus());
                     break;
                 case MessageID.LOGIN_PW_ERROR_ID://密码错误
                     activity.mPassword.requestFocus();
                     activity.mPassword.selectAll();
-                    activity.mPassword.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake));
+                    activity.mPassword.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake_x));
                     if (msg.obj instanceof String)
                         MyDialog.ToastMessage(activity.getWindow().getDecorView(),msg.obj.toString(),activity.getCurrentFocus());
                     break;

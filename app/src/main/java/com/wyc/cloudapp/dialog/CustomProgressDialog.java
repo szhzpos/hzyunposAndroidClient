@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.view.Window;
 import android.view.WindowManager;
@@ -28,13 +27,8 @@ public class CustomProgressDialog extends ProgressDialog
     public CustomProgressDialog(Context context)
     {
         super(context,R.style.CustomProgressDialog);
+        mHandler = new Myhandler(this);
     }
-
-    public CustomProgressDialog(Context context, int theme)
-    {
-        super(context, theme);
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -44,11 +38,10 @@ public class CustomProgressDialog extends ProgressDialog
 
     private void init()
     {
-        setContentView(R.layout.custom_progress_dialog);
+        setContentView(R.layout.custom_progress_dialog_layout);
 
         mMessage = findViewById(R.id.title);
         mShowTimeView = findViewById(R.id.show_time);
-        mHandler = new Myhandler(this);
 
         mMessage.setText(szMessage);
 

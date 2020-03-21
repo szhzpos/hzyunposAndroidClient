@@ -21,8 +21,6 @@ import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.PayDetailViewAdapter;
 import com.wyc.cloudapp.adapter.PayMethodItemDecoration;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
-import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.interface_abstract.AbstractPayDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -46,7 +44,7 @@ public class PayDialog extends Dialog {
         super(context);
         mainActivity = context;
         //可以show之前访问view
-        setContentView(this.getLayoutInflater().inflate(R.layout.pay_dialog_content, null));
+        setContentView(this.getLayoutInflater().inflate(R.layout.pay_dialog_content_layout, null));
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -207,7 +205,9 @@ public class PayDialog extends Dialog {
                     if (PayMethodViewAdapter.CASH_METHOD_ID.equals(pay_method.getString("pay_method_id"))) {
                         mOK.callOnClick();
                     } else {
-                        if (!Utils.equalDouble(mPay_balance,0) && getContent().length() != 0){//剩余付款金额为零并且以有付款记录不能再付款
+                        if (Utils.equalDouble(mPay_balance,0)){//剩余付款金额为零并且以有付款记录不能再付款
+                            MyDialog.ToastMessage(getWindow().getDecorView(),"剩余金额为零！",getCurrentFocus());
+                        }else{
                             PayMethodDialog payMethodDialog = new PayMethodDialog(mainActivity, pay_method);
                             payMethodDialog.setPayAmt(mPay_balance);
                             payMethodDialog.setYesOnclickListener(dialog -> {
@@ -217,8 +217,6 @@ public class PayDialog extends Dialog {
                                     dialog.dismiss();
                                 }
                             }).show();
-                        }else{
-                            MyDialog.ToastMessage("剩余金额为零！",mainActivity);
                         }
                     }
                 } catch (JSONException e) {
@@ -242,7 +240,7 @@ public class PayDialog extends Dialog {
                 JSONArray jsonArray = mPayDetailViewAdapter.getDatas();
                 double amt = 0.0,zl_amt = 0.0;
                 try {
-                    for (int i = 1,length = jsonArray.length();i < length;i ++){//第一个为表头
+                    for (int i = 0,length = jsonArray.length();i < length;i ++){//第一个为表头
                         JSONObject object = jsonArray.getJSONObject(i);
                         amt += object.getDouble("pamt");
                         zl_amt += object.getDouble("pzl");
@@ -320,7 +318,9 @@ public class PayDialog extends Dialog {
 
     private void cash_pay(){
         JSONObject pay_method_json = mPayMethodViewAdapter.get_pay_method(PayMethodViewAdapter.CASH_METHOD_ID);
-        if (!Utils.equalDouble(mPay_balance,0) && getContent().length() != 0){
+        if (Utils.equalDouble(mPay_balance,0) && getContent().length() != 0){
+            MyDialog.ToastMessage(getWindow().getDecorView(),"剩余金额为零！",getCurrentFocus());
+        }else{
             if (pay_method_json != null){
                 try {
                     pay_method_json = Utils.JsondeepCopy(pay_method_json);
@@ -335,8 +335,6 @@ public class PayDialog extends Dialog {
             }else{
                 MyDialog.ToastMessage("现金付款方式不存在！",mainActivity);
             }
-        }else{
-            MyDialog.ToastMessage("剩余金额为零！",mainActivity);
         }
     }
 

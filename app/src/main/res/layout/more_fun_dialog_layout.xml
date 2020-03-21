@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/more_dialog"
+    android:layout_width="@dimen/more_fun_dialog_width"
+    android:layout_height="@dimen/more_fun_dialog_height"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dialog_head_heigth"
+        android:background="@drawable/dialog_top_round_shap"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/more_fun_dialog_sz"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24" />
+
+        <Button
+            android:id="@+id/_close"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/size_35"
+            android:layout_height="@dimen/size_35"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="@dimen/margin_2"
+            android:background="@drawable/close" />
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/sync_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_5"
+            android:layout_marginTop="@dimen/margin_5"
+            android:background="@drawable/button_blue"
+            android:text="@string/sync_sz"
+            android:textColor="@color/white_blue"
+            android:textSize="@dimen/font_size_14"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/setup_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_5"
+            android:layout_marginTop="@dimen/margin_5"
+            android:background="@drawable/button_blue"
+            android:text="@string/setup_sz"
+            android:textColor="@color/white_blue"
+            android:textSize="@dimen/font_size_14"
+            app:layout_constraintStart_toEndOf="@id/sync_btn"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

@@ -102,4 +102,7 @@
     <string name="eight_hundred_sz">800</string>
     <string name="pay_amt_sz">请输入付款金额</string>
     <string name="enter_sz">ENT</string>
+    <string name="more_fun_dialog_sz">更多功能</string>
+    <string name="sync_sz">同步数据</string>
+    <string name="setup_sz">参数设置</string>
 </resources>

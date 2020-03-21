@@ -19,7 +19,6 @@ import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -52,7 +51,7 @@ public class AddVipInfoDialog extends Dialog {
     }
     @Override
     protected void onCreate(Bundle savedInstanceState){
-        setContentView(R.layout.add_vip_dialog_content);
+        setContentView(R.layout.add_vip_dialog_layout);
 
         mProgressDialog = new CustomProgressDialog(mContext);
         mHandler = new Myhandler(this);

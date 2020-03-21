@@ -1,6 +1,5 @@
 package com.wyc.cloudapp.dialog;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 
@@ -9,7 +8,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
@@ -59,7 +57,7 @@ public class ConnSettingDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(this.getLayoutInflater().inflate(R.layout.con_param_setting_dialog, null));
+        setContentView(this.getLayoutInflater().inflate(R.layout.con_param_setting_dialog_layout, null));
         //按空白处不能取消动画
         setCanceledOnTouchOutside(false);
 

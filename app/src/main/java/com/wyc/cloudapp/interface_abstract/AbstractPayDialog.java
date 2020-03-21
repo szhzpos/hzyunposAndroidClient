@@ -34,7 +34,7 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.pay_method_dialog_content);
+        setContentView(R.layout.pay_method_dialog_layout);
         setCancelable(false);
         setCanceledOnTouchOutside(false);
 

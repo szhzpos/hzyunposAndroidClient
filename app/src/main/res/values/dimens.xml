@@ -55,4 +55,6 @@
     <dimen name="pay_method_width">101dp</dimen>
     <dimen name="d_dialog_button_height">@dimen/height_122</dimen>
     <dimen name="drop_down_height">@dimen/height_45</dimen>
+    <dimen name="more_fun_dialog_height">288dp</dimen>
+    <dimen name="more_fun_dialog_width">488dp</dimen>
 </resources>

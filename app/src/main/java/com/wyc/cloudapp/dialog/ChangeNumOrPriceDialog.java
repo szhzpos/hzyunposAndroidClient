@@ -31,7 +31,7 @@ public class ChangeNumOrPriceDialog extends Dialog {
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setContentView(this.getLayoutInflater().inflate(R.layout.change_price_content, null));
+        setContentView(this.getLayoutInflater().inflate(R.layout.change_price_dialog_layout, null));
         setCancelable(false);
         setCanceledOnTouchOutside(false);
 

@@ -34,6 +34,7 @@ import com.wyc.cloudapp.adapter.GoodsTypeViewAdapter;
 import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
 import com.wyc.cloudapp.adapter.SuperItemDecoration;
+import com.wyc.cloudapp.dialog.MoreFunDialog;
 import com.wyc.cloudapp.dialog.PayDialog;
 import com.wyc.cloudapp.dialog.VipInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
@@ -151,12 +152,13 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.other_linearLayout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MyDialog.displayMessage("更多",v.getContext());
+                MoreFunDialog moreFunDialog = new MoreFunDialog(MainActivity.this);
+                moreFunDialog.show();
             }
         });
 
         //初始化数据管理对象
-        mNetworkManagement = new NetworkManagement(mHandler,false,mUrl,mAppId,mAppScret,mStoreInfo.optString("stores_id"),mCashierInfo.optString("pos_num"),mCashierInfo.optString("cas_id"));
+        mNetworkManagement = new NetworkManagement(mHandler,mUrl,mAppId,mAppScret,mStoreInfo.optString("stores_id"),mCashierInfo.optString("pos_num"),mCashierInfo.optString("cas_id"));
         mNetworkManagement.start_sync(false);
 
     }
@@ -275,26 +277,33 @@ public class MainActivity extends AppCompatActivity {
             ImageView imageView;
             MainActivity activity = weakHandler.get();
             if (null == activity)return;
+            if (activity.mProgressDialog != null && activity.mProgressDialog.isShowing() && msg.what != MessageID.SYNC_DIS_INFO_ID)activity.mProgressDialog.dismiss();
             switch (msg.what){
                 case MessageID.DIS_ERR_INFO_ID:
-                    if (activity.mProgressDialog != null && activity.mProgressDialog.isShowing())activity.mProgressDialog.dismiss();
+                case MessageID.SYNC_ERR_ID://资料同步错误
                     if (msg.obj instanceof String)
                         MyDialog.displayErrorMessage(msg.obj.toString(),activity);
+                    break;
+                case MessageID.SYNC_FINISH_ID:
+                    activity.mNetworkManagement.start_sync(false);
                     break;
                 case MessageID.UPDATE_TIME_ID://更新当前时间
                     activity.mCurrentTimeView.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(activity.mCurrentTimestamp * 1000));
                     break;
                 case MessageID.TRANSFERSTATUS_ID://传输状态
-                    imageView = activity.findViewById(R.id.upload_status);
                     if (msg.obj instanceof Boolean){
+                        imageView = activity.findViewById(R.id.upload_status);
                         boolean code = (boolean)msg.obj;
+                        if (code && imageView.getAnimation() == null){
+                            imageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake_y));
+                        }
                         if (activity.mTransferStatus.getAndSet(code) != code){
                             if (imageView != null){
                                 if (code){
                                     imageView.setImageResource(R.drawable.transfer);
                                 }else{
                                     imageView.setImageResource(R.drawable.transfer_err);
-                                    imageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake));
+                                    imageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake_x));
                                 }
                             }
                         }
@@ -310,9 +319,17 @@ public class MainActivity extends AppCompatActivity {
                                     imageView.setImageResource(R.drawable.network);
                                 }else{
                                     imageView.setImageResource(R.drawable.network_err);
-                                    imageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake));
+                                    imageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake_x));
                                 }
                             }
+                        }
+                    }
+                    break;
+                case MessageID.SYNC_DIS_INFO_ID://资料同步进度信息
+                    if (activity.mProgressDialog != null){
+                        activity.mProgressDialog.setMessage(msg.obj.toString()).refreshMessage();
+                        if (!activity.mProgressDialog.isShowing()) {
+                            activity.mProgressDialog.show();
                         }
                     }
                     break;
@@ -357,7 +374,7 @@ public class MainActivity extends AppCompatActivity {
                     goods_name.setTextColor(MainActivity.this.getColor(R.color.good_name_color));
                 }
                 goods_name = v.findViewById(R.id.goods_title);
-                goods_name.startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake));
+                goods_name.startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake_x));
                 goods_name.setTextColor(MainActivity.this.getColor(R.color.blue));
 
                 if (mCurrentView != v)mCurrentView = v;
@@ -531,15 +548,12 @@ public class MainActivity extends AppCompatActivity {
             PayDialog dialog = new PayDialog(this);
             if (mVipInfo != null)dialog.showVipInfo(mVipInfo,true);
             if (dialog.initPayContent(datas)){
-                dialog.setPayFinishListener(new PayDialog.onPayFinishListener() {
-                    @Override
-                    public void onClick(PayDialog myDialog) {
-                        JSONArray sales = mSaleGoodsViewAdapter.getDatas(),
-                                pays = myDialog.getContent();
+                dialog.setPayFinishListener(myDialog -> {
+                    JSONArray sales = mSaleGoodsViewAdapter.getDatas(),
+                            pays = myDialog.getContent();
 
-                        Logger.d("sales:%s,pays:%s",sales.toString(),pays.toString());
-                        myDialog.dismiss();
-                    }
+                    Logger.d("sales:%s,pays:%s",sales.toString(),pays.toString());
+                    myDialog.dismiss();
                 }).show();
             }
         }else{
@@ -605,6 +619,12 @@ public class MainActivity extends AppCompatActivity {
 
     public JSONArray discount(double discount){
         return mSaleGoodsViewAdapter.discount(discount);
+    }
+    public void sync(boolean b){
+        if (mNetworkManagement != null){
+            if (mProgressDialog != null && !mProgressDialog.isShowing())mProgressDialog.setMessage("正在同步...").show();
+            mNetworkManagement.start_sync(b);
+        }
     }
 
 }
