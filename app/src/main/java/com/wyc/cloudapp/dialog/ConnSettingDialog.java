@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.dialog;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 
@@ -104,9 +105,10 @@ public class ConnSettingDialog extends Dialog {
                     }else
                         MyDialog.displayMessage(err.toString(),v.getContext());
                 }else{
-                    MyDialog.ToastMessage("门店不能为空！",mContext);
+                    MyDialog.ToastMessage(getWindow().getDecorView(),"门店不能为空！",getCurrentFocus());
                 }
             } catch (JSONException e) {
+                MyDialog.ToastMessage(getWindow().getDecorView(),"保存错误：" + e.getMessage(),getCurrentFocus());
                 e.printStackTrace();
             }
         });
@@ -176,7 +178,7 @@ public class ConnSettingDialog extends Dialog {
     private void queryStoreInfo(){
         if (mUrl.getText().length() == 0){
             mUrl.requestFocus();
-            MyDialog.ToastMessage("服务器URL不能为空！",mContext);
+            MyDialog.ToastMessage(getWindow().getDecorView(),"服务器URL不能为空！",getCurrentFocus());
             return;
         }
 
@@ -218,25 +220,19 @@ public class ConnSettingDialog extends Dialog {
         JSONObject param = new JSONObject();
         if(SQLiteHelper.getLocalParameter("connParam",param)){
             if (Utils.JsonIsNotEmpty(param)){
-                mUrl.setText(param.optString("server_url"));
-                mAppId.setText(param.optString("appId"));
-                mAppscret.setText(param.optString("appScret"));
-                JSONObject store_info;
                 try {
-                    store_info = new JSONObject(param.optString("storeInfo"));
-                    mStore_name.setText(store_info.optString("stores_name"));
+                    mUrl.setText(param.getString("server_url"));
+                    mAppId.setText(param.getString("appId"));
+                    mAppscret.setText(param.getString("appScret"));
+                    mStoreInfo = new JSONObject(param.getString("storeInfo"));
+                    mStore_name.setText(mStoreInfo.getString("stores_name"));
                 } catch (JSONException e) {
                     e.printStackTrace();
                     MyDialog.displayErrorMessage("显示门店信息错误：" + e.getMessage(),mContext);
                 }
             }
         }else{
-            try {
-                MyDialog.ToastMessage(param.getString("info"),mContext);
-            } catch (JSONException e) {
-                MyDialog.displayErrorMessage(e.getMessage(),mContext);
-                e.printStackTrace();
-            }
+            MyDialog.ToastMessage(getWindow().getDecorView(),param.optString("info"),getCurrentFocus());
         }
     }
 

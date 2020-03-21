@@ -284,7 +284,7 @@ public class MainActivity extends AppCompatActivity {
                 case MessageID.UPDATE_TIME_ID://更新当前时间
                     activity.mCurrentTimeView.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(activity.mCurrentTimestamp * 1000));
                     break;
-                case MessageID.DOWNLOADSTATUS_ID://下载状态
+                case MessageID.TRANSFERSTATUS_ID://传输状态
                     imageView = activity.findViewById(R.id.upload_status);
                     if (msg.obj instanceof Boolean){
                         boolean code = (boolean)msg.obj;
@@ -543,7 +543,7 @@ public class MainActivity extends AppCompatActivity {
                 }).show();
             }
         }else{
-            MyDialog.ToastMessage("已选商品为空！!",this);
+            MyDialog.ToastMessage(getWindow().getDecorView(),"已选商品为空！!",getCurrentFocus());
         }
     }
 

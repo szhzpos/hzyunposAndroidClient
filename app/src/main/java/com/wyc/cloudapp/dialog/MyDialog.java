@@ -5,11 +5,10 @@ import android.content.Context;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.logger.Logger;
 
-import android.os.Looper;
-import android.os.MessageQueue;
+import com.google.android.material.snackbar.Snackbar;
+import com.wyc.cloudapp.R;
+
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -18,6 +17,8 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 
 import static android.content.Context.WINDOW_SERVICE;
 
@@ -255,6 +256,14 @@ public class MyDialog extends Dialog {
         toast.setGravity(Gravity.CENTER,0,0);
         toast.show();
     }
+
+    public static void ToastMessage(@NonNull View v, final String message, View anchor){
+        Snackbar snackbar = Snackbar.make(v,message, Snackbar.LENGTH_LONG);
+        if (anchor != null)snackbar.setAnchorView(anchor);
+        snackbar.getView().setBackgroundResource(R.drawable.snackbar_background);
+        snackbar.show();
+    }
+
     /**
      * 设置确定按钮和取消被点击的接口
      */

@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
@@ -25,6 +26,7 @@ import android.widget.EditText;
 
 import android.widget.RelativeLayout;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -96,11 +98,10 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         mCancel.setOnClickListener((View V)->{
-            MyDialog dialog = new MyDialog(mSelf, MyDialog.IconType.ASK);
-            dialog.setMessage("是否取消登录？").setYesOnclickListener("是",(MyDialog mydialog)->{
-                mydialog.dismiss();
+            MyDialog.displayAskMessage("是否退出？", mSelf, myDialog -> {
                 mSelf.finish();
-            }).setNoOnclickListener("否",MyDialog::dismiss).show();
+                myDialog.dismiss();
+            }, Dialog::dismiss);
 
         });
 
@@ -329,17 +330,17 @@ public class LoginActivity extends AppCompatActivity {
                     break;
                 case MessageID.LOGIN_ID_ERROR_ID://账号错误
                     activity.mUser_id.requestFocus();
-                    activity.mPassword.selectAll();
+                    activity.mUser_id.selectAll();
                     activity.mUser_id.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake));
                     if (msg.obj instanceof String)
-                        MyDialog.ToastMessage(msg.obj.toString(),activity);
+                        MyDialog.ToastMessage(activity.getWindow().getDecorView(),msg.obj.toString(),activity.getCurrentFocus());
                     break;
                 case MessageID.LOGIN_PW_ERROR_ID://密码错误
                     activity.mPassword.requestFocus();
                     activity.mPassword.selectAll();
                     activity.mPassword.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake));
                     if (msg.obj instanceof String)
-                        MyDialog.ToastMessage(msg.obj.toString(),activity);
+                        MyDialog.ToastMessage(activity.getWindow().getDecorView(),msg.obj.toString(),activity.getCurrentFocus());
                     break;
                 case MessageID.SYNC_DIS_INFO_ID://资料同步进度信息
                     if (activity.mProgressDialog != null){
@@ -351,11 +352,11 @@ public class LoginActivity extends AppCompatActivity {
                     break;
                 case MessageID.SYNC_GOODS_IMG_ERR_ID:
                     if (msg.obj instanceof String)
-                        MyDialog.ToastMessage(msg.obj.toString(),activity);
+                        MyDialog.ToastMessage(activity.getWindow().getDecorView(),msg.obj.toString(),activity.getCurrentFocus());
                     break;
                 case MessageID.CONN_PARAM_ERR_ID:
                     if (msg.obj instanceof String){
-                        MyDialog.ToastMessage(msg.obj.toString(),activity);
+                        MyDialog.ToastMessage(activity.getWindow().getDecorView(),msg.obj.toString(),activity.getCurrentFocus());
                         activity.findViewById(R.id.setup_ico).callOnClick();
                     }
                     break;

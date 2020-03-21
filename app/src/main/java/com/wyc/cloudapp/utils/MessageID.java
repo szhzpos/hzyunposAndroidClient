@@ -16,7 +16,7 @@ public final class MessageID {
             LOGIN_OK_ID = 9,
             UPDATE_TIME_ID = 10,
             NETWORKSTATUS_ID = 11,
-            DOWNLOADSTATUS_ID = 12,
+            TRANSFERSTATUS_ID = 12,
             DIS_STORE_INFO_ID = 13,
             DIALOG_SHOW_TIME_ID = 14,
             DIALOG_UPDATE_MESSAGE_ID = 15,

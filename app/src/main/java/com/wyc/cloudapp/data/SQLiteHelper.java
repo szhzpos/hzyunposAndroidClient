@@ -935,7 +935,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     private void initTables(SQLiteDatabase db) throws SQLiteException {
 
         List<String> list = new ArrayList<>();
-        String sql_shop_stores = "CREATE TABLE IF NOT EXISTS  shop_stores (\n" +//商店仓库
+        final String sql_shop_stores = "CREATE TABLE IF NOT EXISTS  shop_stores (\n" +//商店仓库
                 "    nature      INT     DEFAULT (1),\n" +
                 "    status      INT     DEFAULT (1),\n" +
                 "    region      VARCHAR,\n" +
@@ -1014,16 +1014,13 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "    status            INT,\n" +
                 "    name              CHAR,\n" +
                 "    pay_method_id     INTEGER PRIMARY KEY\n" +
-                ");\n",sql_local_parameter= "CREATE TABLE IF NOT EXISTS local_parameter (\n" +
+                ");\n",sql_local_parameter= "CREATE TABLE IF NOT EXISTS local_parameter (\n" +//本地参数
                 "    parameter_id      VARCHAR (20) NOT NULL,\n" +
                 "    parameter_content TEXT,\n" +
                 "    PRIMARY KEY (\n" +
                 "        parameter_id\n" +
                 "    )\n" +
-                ");",goods_yh_mode_m = "CREATE TABLE IF NOT EXISTS goods_yh_mode_m (\n" +//商品优惠模式
-                "    yh_mode      INT          PRIMARY KEY,\n" +
-                "    yh_mode_name VARCHAR (20) \n" +
-                ");\n",sql_cashier_info = "CREATE TABLE IF NOT EXISTS cashier_info (\n" +
+                ");",sql_cashier_info = "CREATE TABLE IF NOT EXISTS cashier_info (\n" +//收银员
                 "    authority     VARCHAR,\n" +
                 "    remark     VARCHAR,\n" +
                 "    pt_user_cname VARCHAR,\n" +
@@ -1043,9 +1040,129 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "    stores_id     INT,\n" +
                 "    cas_id        INTEGER PRIMARY KEY\n" +
                 "                          UNIQUE\n" +
-                ");",goods_attr_m = "CREATE TABLE IF NOT EXISTS goods_attr_m (\n" +
-                "    spec_id   VARCHAR (4)  PRIMARY KEY,\n" +
-                "    spec_name VARCHAR (20) \n" +
+                ");",sql_refund_order = "CREATE TABLE if not exists refund_order (\n" +//退单
+                "    refund_total    REAL    DEFAULT (0),\n" +
+                "    ok_cashier_name VARCHAR,\n" +
+                "    ok_cashier_id   INT,\n" +
+                "    cashier_name    VARCHAR,\n" +
+                "    member_id       INT,\n" +
+                "    transfer_time   INT,\n" +
+                "    transfer_status INT     DEFAULT (1),\n" +
+                "    remark          VARCHAR,\n" +
+                "    card_code       CHAR,\n" +
+                "    name            CHAR,\n" +
+                "    mobile          CHAR,\n" +
+                "    refund_ment     INT,\n" +
+                "    is_rk           INT     DEFAULT (1),\n" +
+                "    upload_time     INT,\n" +
+                "    upload_status   INT     DEFAULT (1),\n" +
+                "    order_status    INT     DEFAULT (1),\n" +
+                "    pos_code        CHAR,\n" +
+                "    addtime         INT,\n" +
+                "    cashier_id      INT,\n" +
+                "    member_card     CHAR,\n" +
+                "    type            INT,\n" +
+                "    total           REAL,\n" +
+                "    order_code      VARCHAR,\n" +
+                "    ro_code         VARCHAR,\n" +
+                "    stores_id       INT,\n" +
+                "    ro_id           INTEGER PRIMARY KEY AUTOINCREMENT\n" +
+                ");\n",sql_refund_order_goods = "CREATE TABLE if not exsits refund_order_goods (\n" +//退单商品明细
+                "    produce_date INT,\n" +
+                "    conversion   REAL,\n" +
+                "    is_rk        INT     DEFAULT (2),\n" +
+                "    unit_name    CHAR,\n" +
+                "    barcode      VARCHAR,\n" +
+                "    goods_title  VARCHAR,\n" +
+                "    rog_id       INT,\n" +
+                "    refund_price REAL,\n" +
+                "    price        REAL,\n" +
+                "    xnum         REAL,\n" +
+                "    barcode_id   INT,\n" +
+                "    ro_code      VARCHAR,\n" +
+                "    ro_id        INTEGER PRIMARY KEY AUTOINCREMENT\n" +
+                ");\n",sql_refund_order_pays = "CREATE TABLE if not exists refund_order_pays (\n" +//退单付款明细
+                "    road_pay_status INT     DEFAULT (1),\n" +
+                "    pay_method_name CHAR,\n" +
+                "    is_check        INT,\n" +
+                "    remark          VARCHAR,\n" +
+                "    pay_code        VARCHAR,\n" +
+                "    pay_serial_no   VARCHAR,\n" +
+                "    pay_status      INT     DEFAULT (1),\n" +
+                "    pay_time        INT,\n" +
+                "    pay_money       REAL,\n" +
+                "    pay_method      INT,\n" +
+                "    ro_code         CHAR,\n" +
+                "    pay_id          INTEGER PRIMARY KEY AUTOINCREMENT\n" +
+                ");\n",sql_retail_order = "CREATE TABLE if not exists retail_order (\n" +//销售单
+                "    zk_cashier_id   INTEGER,\n" +
+                "    remark          VARCHAR,\n" +
+                "    ss_money        REAL    DEFAULT (0),\n" +
+                "    zl_money        REAL    DEFAULT (0),\n" +
+                "    spare_param2    VARCHAR,\n" +
+                "    spare_param1    VARCHAR,\n" +
+                "    discount_money  REAL    DEFAULT (0),\n" +
+                "    member_id       INT,\n" +
+                "    sc_tc_money     REAL,\n" +
+                "    sc_ids          VARCHAR,\n" +
+                "    card_code       CHAR,\n" +
+                "    name            CHAR,\n" +
+                "    mobile          CHAR,\n" +
+                "    is_rk           INT     DEFAULT (2),\n" +
+                "    transfer_time   INT,\n" +
+                "    transfer_status INT     DEFAULT (1),\n" +
+                "    upload_time     INT,\n" +
+                "    upload_status   INT     DEFAULT (1),\n" +
+                "    pay_time        INT,\n" +
+                "    pay_status      INT     DEFAULT (1),\n" +
+                "    order_status    INT     DEFAULT (1),\n" +
+                "    pos_code        VARCHAR,\n" +
+                "    addtime         INT,\n" +
+                "    cashier_id      INT,\n" +
+                "    total           REAL    DEFAULT (0),\n" +
+                "    discount_price  REAL    DEFAULT (0),\n" +
+                "    order_code      VARCHAR,\n" +
+                "    stores_id       INT,\n" +
+                "    order_id        INTEGER PRIMARY KEY AUTOINCREMENT\n" +
+                ");\n",sql_retail_order_goods = "CREATE TABLE if not exists retail_order_goods (\n" +//销售商品明细
+                "    y_price       REAL,\n" +
+                "    barcode       VARCHAR,\n" +
+                "    conversion    INT     DEFAULT (1),\n" +
+                "    total_money   REAL,\n" +
+                "    zk_cashier_id INT,\n" +
+                "    gp_id         INT,\n" +
+                "    tc_rate       REAL,\n" +
+                "    tc_mode       INT,\n" +
+                "    tax_rate      REAL,\n" +
+                "    ps_price      REAL,\n" +
+                "    cost_price    REAL,\n" +
+                "    trade_price   REAL,\n" +
+                "    retail_price  REAL,\n" +
+                "    buying_price  REAL,\n" +
+                "    price         REAL,\n" +
+                "    xnum          REAL,\n" +
+                "    barcode_id    INTEGER,\n" +
+                "    order_code    VARCHAR,\n" +
+                "    rog_id        INTEGER PRIMARY KEY AUTOINCREMENT\n" +
+                ");\n",sql_retail_order_pays = "CREATE TABLE if not exists retail_order_pays (\n" +//销售付款明细
+                "    print_info        VARCHAR,\n" +
+                "    return_code       VARCHAR,\n" +
+                "    card_no           VARCHAR,\n" +
+                "    xnote             VARCHAR,\n" +
+                "    discount_money    REAL    DEFAULT (0),\n" +
+                "    give_change_money REAL    DEFAULT (0),\n" +
+                "    pre_sale_money    REAL    DEFAULT (0),\n" +
+                "    zk_money          REAL    DEFAULT (0),\n" +
+                "    is_check          INT,\n" +
+                "    remark            VARCHAR,\n" +
+                "    pay_code          CHAR,\n" +
+                "    pay_serial_no     CHAR,\n" +
+                "    pay_status        INT     DEFAULT (1),\n" +
+                "    pay_time          INTEGER,\n" +
+                "    pay_money         REAL    DEFAULT (0),\n" +
+                "    pay_method        INT,\n" +
+                "    order_code        CHAR,\n" +
+                "    pay_id            INTEGER PRIMARY KEY AUTOINCREMENT\n" +
                 ");\n";
 
         list.add(sql_shop_stores);
@@ -1054,6 +1171,12 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         list.add(sql_pay_method);
         list.add(sql_local_parameter);
         list.add(sql_cashier_info);
+        list.add(sql_refund_order);
+        list.add(sql_refund_order_goods);
+        list.add(sql_refund_order_pays);
+        list.add(sql_retail_order);
+        list.add(sql_retail_order_goods);
+        list.add(sql_retail_order_pays);
         try {
             db.beginTransaction();
             for (String sql : list) {

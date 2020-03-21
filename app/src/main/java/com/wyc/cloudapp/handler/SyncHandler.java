@@ -127,7 +127,7 @@ public class SyncHandler extends Handler {
                         removeCallbacksAndMessages(null);
                         syncActivityHandler.obtainMessage(MessageID.SYNC_ERR_ID, sys_name).sendToTarget();
                     }else {
-                        syncActivityHandler.obtainMessage(MessageID.DOWNLOADSTATUS_ID,false).sendToTarget();
+                        syncActivityHandler.obtainMessage(MessageID.TRANSFERSTATUS_ID,false).sendToTarget();
                         Logger.e("%s", sys_name);
                     }
                     break;
@@ -140,7 +140,7 @@ public class SyncHandler extends Handler {
                                 removeCallbacksAndMessages(null);
                                 syncActivityHandler.obtainMessage(MessageID.SYNC_ERR_ID, sys_name).sendToTarget();
                             } else{
-                                syncActivityHandler.obtainMessage(MessageID.DOWNLOADSTATUS_ID,false).sendToTarget();
+                                syncActivityHandler.obtainMessage(MessageID.TRANSFERSTATUS_ID,false).sendToTarget();
                                 Logger.e("%s", sys_name);
                             }
                             break;
@@ -169,12 +169,12 @@ public class SyncHandler extends Handler {
                                         removeCallbacksAndMessages(null);
                                         syncActivityHandler.obtainMessage(MessageID.SYNC_ERR_ID, sys_name).sendToTarget();
                                     }else{
-                                        syncActivityHandler.obtainMessage(MessageID.DOWNLOADSTATUS_ID,false).sendToTarget();
+                                        syncActivityHandler.obtainMessage(MessageID.TRANSFERSTATUS_ID,false).sendToTarget();
                                         Logger.e("%s", sys_name);
                                     }
                                 }else{
                                     if (!mReportProgress)
-                                        syncActivityHandler.obtainMessage(MessageID.DOWNLOADSTATUS_ID,true).sendToTarget();
+                                        syncActivityHandler.obtainMessage(MessageID.TRANSFERSTATUS_ID,true).sendToTarget();
                                 }
                             }
                             break;
