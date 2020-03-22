@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Application;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.icu.text.SimpleDateFormat;
 import android.os.Environment;
 
 import androidx.core.app.ActivityCompat;
@@ -19,6 +20,7 @@ import com.wyc.cloudapp.logger.LogcatLogStrategy;
 import com.wyc.cloudapp.logger.Logger;
 
 import java.io.File;
+import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -43,6 +45,7 @@ public class CustomApplication extends Application {
         intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
         intentFilter.addAction("confirm_connection");
         registerReceiver(netChangeMonitor,intentFilter);
+        Logger.i("程序启动时间:%s",new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()));
     }
 
     @Override
@@ -53,6 +56,7 @@ public class CustomApplication extends Application {
         if (netChangeMonitor != null){
             unregisterReceiver(netChangeMonitor);
         }
+        Logger.i("程序退出时间:%s",new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()));
     }
     public synchronized int getNetState(){
         return netState|netState_mobile;

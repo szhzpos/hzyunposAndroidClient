@@ -205,7 +205,7 @@ public class PayDialog extends Dialog {
                     if (PayMethodViewAdapter.CASH_METHOD_ID.equals(pay_method.getString("pay_method_id"))) {
                         mOK.callOnClick();
                     } else {
-                        if (Utils.equalDouble(mPay_balance,0)){//剩余付款金额为零并且以有付款记录不能再付款
+                        if (Utils.equalDouble(mPay_balance,0)){
                             MyDialog.ToastMessage(getWindow().getDecorView(),"剩余金额为零！",getCurrentFocus());
                         }else{
                             PayMethodDialog payMethodDialog = new PayMethodDialog(mainActivity, pay_method);

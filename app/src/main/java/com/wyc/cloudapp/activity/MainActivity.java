@@ -34,6 +34,7 @@ import com.wyc.cloudapp.adapter.GoodsTypeViewAdapter;
 import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
 import com.wyc.cloudapp.adapter.SuperItemDecoration;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MoreFunDialog;
 import com.wyc.cloudapp.dialog.PayDialog;
 import com.wyc.cloudapp.dialog.VipInfoDialog;
@@ -52,6 +53,7 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -71,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
     private long mCurrentTimestamp = 0;
     private String mAppId,mAppScret,mUrl;
     private TextView mCurrentTimeView,mSaleSumNum,mSaleSumAmount;
-    private Timer mTimer;//更新当前时间计时器
     private NetworkManagement mNetworkManagement;
     private ImageView mCloseBtn;
     private RecyclerView mSaleGoodsRecyclerView;
@@ -149,12 +150,8 @@ public class MainActivity extends AppCompatActivity {
                 MyDialog.displayMessage("交班",v.getContext());
             }
         });
-        findViewById(R.id.other_linearLayout).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MoreFunDialog moreFunDialog = new MoreFunDialog(MainActivity.this);
-                moreFunDialog.show();
-            }
+        findViewById(R.id.other_linearLayout).setOnClickListener(v -> {
+            new MoreFunDialog(MainActivity.this).show();
         });
 
         //初始化数据管理对象
@@ -165,23 +162,22 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
-        mHandler.postDelayed(()->{
-            mSearch_content.requestFocus();
-        },500);
+
+        mHandler.postDelayed(()-> mSearch_content.requestFocus(),500);
     }
     @Override
     public void onPause(){
         super.onPause();
+
         mSearch_content.clearFocus();
     }
     @Override
     public void onDestroy(){
         super.onDestroy();
-        if (mNetworkManagement != null){
-            mNetworkManagement.quit();
-        }
-        stopSyncCurrentTime();
+
+        if (mNetworkManagement != null)mNetworkManagement.quit();
         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
+        stopSyncCurrentTime();
     }
 
     @Override
@@ -190,51 +186,51 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startSyncCurrentTime(){
-        mTimer = new Timer();
-        mTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                final String prefix = "同步时间错误：";
-                try {
-                    if (mCurrentTimestamp == 0){
-                        if (mNetworkStatus.get()){
-                            HttpRequest httpRequest = new HttpRequest();
-                            JSONObject json = new JSONObject(),retJson,info_json;
-                            json.put("appid",mAppId);
-                            retJson = httpRequest.setConnTimeOut(5000).setReadTimeOut(5000).sendPost(mUrl + "/api/cashier/get_time",HttpRequest.generate_request_parm(json,mAppScret),true);
-                            switch (retJson.optInt("flag")) {
-                                case 0:
-                                    mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,prefix.concat(retJson.optString("info"))).sendToTarget();
-                                    break;
-                                case 1:
-                                    info_json = new JSONObject(retJson.getString("info"));
-                                    switch (info_json.getString("status")){
-                                        case "n":
-                                            mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,prefix + info_json.getString("info")).sendToTarget();
-                                            break;
-                                        case "y":
-                                            mCurrentTimestamp = info_json.getLong("time");
-                                            break;
-                                    }
-                                    break;
-                            }
-                        }else{
-                            mCurrentTimestamp = System.currentTimeMillis()/1000;
+        if (mCurrentTimestamp == 0){
+            if (mNetworkStatus.get()){
+                CustomApplication.execute(()->{
+                    long cur = System.currentTimeMillis();
+                    try {
+                        HttpRequest httpRequest = new HttpRequest();
+                        JSONObject json = new JSONObject(),retJson,info_json;
+                        json.put("appid",mAppId);
+                        retJson = httpRequest.setConnTimeOut(3000).setReadTimeOut(3000).sendPost(mUrl + "/api/cashier/get_time",HttpRequest.generate_request_parm(json,mAppScret),true);
+                        switch (retJson.optInt("flag")) {
+                            case 0:
+                                mCurrentTimestamp = System.currentTimeMillis();
+                                Logger.e("同步时间错误:%s",retJson.getString("info"));
+                                break;
+                            case 1:
+                                info_json = new JSONObject(retJson.getString("info"));
+                                switch (info_json.getString("status")){
+                                    case "n":
+                                        mCurrentTimestamp = System.currentTimeMillis();
+                                        Logger.e("同步时间错误:%s",info_json.getString("info"));
+                                        break;
+                                    case "y":
+                                        mCurrentTimestamp = info_json.getLong("time") * 1000 + (System.currentTimeMillis() - cur);
+                                        break;
+                                }
+                                break;
                         }
-                    }else{
-                       mCurrentTimestamp += 1;
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Logger.e("同步时间错误:%s",e.getMessage());
                     }
-                    mHandler.obtainMessage(MessageID.UPDATE_TIME_ID).sendToTarget();
-                } catch (JSONException e) {
-                    mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,prefix + e.getMessage()).sendToTarget();
-                    e.printStackTrace();
-                }
+                    mHandler.postDelayed(this::startSyncCurrentTime,0);
+                });
+            }else{
+                mCurrentTimestamp = System.currentTimeMillis();
+                mHandler.postDelayed(this::startSyncCurrentTime,1000);
             }
-        },0,1000);
+        }else{
+            mCurrentTimestamp += (1000 + System.currentTimeMillis() - mCurrentTimestamp);
+            mHandler.postDelayed(this::startSyncCurrentTime,1000);
+        }
+        mCurrentTimeView.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(mCurrentTimestamp));
     }
     private void stopSyncCurrentTime(){
-        mTimer.cancel();
-        mTimer = null;
+        mHandler.removeCallbacksAndMessages(null);
     }
 
     private void initCashierInfoAndStoreInfo(){
@@ -265,75 +261,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }else{
             mDialog.setMessage(mStoreInfo.optString("info")).setNoOnclickListener("取消", myDialog -> MainActivity.this.finish()).show();
-        }
-    }
-
-    private static class Myhandler extends Handler {
-        private WeakReference<MainActivity> weakHandler;
-        private Myhandler(MainActivity mainActivity){
-            this.weakHandler = new WeakReference<>(mainActivity);
-        }
-        public void handleMessage(@NonNull Message msg){
-            ImageView imageView;
-            MainActivity activity = weakHandler.get();
-            if (null == activity)return;
-            if (activity.mProgressDialog != null && activity.mProgressDialog.isShowing() && msg.what != MessageID.SYNC_DIS_INFO_ID)activity.mProgressDialog.dismiss();
-            switch (msg.what){
-                case MessageID.DIS_ERR_INFO_ID:
-                case MessageID.SYNC_ERR_ID://资料同步错误
-                    if (msg.obj instanceof String)
-                        MyDialog.displayErrorMessage(msg.obj.toString(),activity);
-                    break;
-                case MessageID.SYNC_FINISH_ID:
-                    activity.mNetworkManagement.start_sync(false);
-                    break;
-                case MessageID.UPDATE_TIME_ID://更新当前时间
-                    activity.mCurrentTimeView.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(activity.mCurrentTimestamp * 1000));
-                    break;
-                case MessageID.TRANSFERSTATUS_ID://传输状态
-                    if (msg.obj instanceof Boolean){
-                        imageView = activity.findViewById(R.id.upload_status);
-                        boolean code = (boolean)msg.obj;
-                        if (code && imageView.getAnimation() == null){
-                            imageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake_y));
-                        }
-                        if (activity.mTransferStatus.getAndSet(code) != code){
-                            if (imageView != null){
-                                if (code){
-                                    imageView.setImageResource(R.drawable.transfer);
-                                }else{
-                                    imageView.setImageResource(R.drawable.transfer_err);
-                                    imageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake_x));
-                                }
-                            }
-                        }
-                    }
-                    break;
-                case MessageID.NETWORKSTATUS_ID://网络状态
-                    if (msg.obj instanceof Boolean){
-                        boolean code = (boolean)msg.obj;
-                        if (activity.mNetworkStatus.getAndSet(code) != code){
-                            imageView = activity.findViewById(R.id.network_status);
-                            if (imageView != null){
-                                if (code){
-                                    imageView.setImageResource(R.drawable.network);
-                                }else{
-                                    imageView.setImageResource(R.drawable.network_err);
-                                    imageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake_x));
-                                }
-                            }
-                        }
-                    }
-                    break;
-                case MessageID.SYNC_DIS_INFO_ID://资料同步进度信息
-                    if (activity.mProgressDialog != null){
-                        activity.mProgressDialog.setMessage(msg.obj.toString()).refreshMessage();
-                        if (!activity.mProgressDialog.isShowing()) {
-                            activity.mProgressDialog.show();
-                        }
-                    }
-                    break;
-            }
         }
     }
 
@@ -627,4 +554,69 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private static class Myhandler extends Handler {
+        private WeakReference<MainActivity> weakHandler;
+        private Myhandler(MainActivity mainActivity){
+            this.weakHandler = new WeakReference<>(mainActivity);
+        }
+        public void handleMessage(@NonNull Message msg){
+            ImageView imageView;
+            MainActivity activity = weakHandler.get();
+            if (null == activity)return;
+            if (activity.mProgressDialog != null && activity.mProgressDialog.isShowing() && msg.what != MessageID.SYNC_DIS_INFO_ID)activity.mProgressDialog.dismiss();
+            switch (msg.what){
+                case MessageID.DIS_ERR_INFO_ID:
+                case MessageID.SYNC_ERR_ID://资料同步错误
+                    if (msg.obj instanceof String)
+                        MyDialog.displayErrorMessage(msg.obj.toString(),activity);
+                    break;
+                case MessageID.SYNC_FINISH_ID:
+                    activity.mNetworkManagement.start_sync(false);
+                    break;
+                case MessageID.TRANSFERSTATUS_ID://传输状态
+                    if (msg.obj instanceof Boolean){
+                        imageView = activity.findViewById(R.id.upload_status);
+                        boolean code = (boolean)msg.obj;
+                        if (code && imageView.getAnimation() == null){
+                            imageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake_y));
+                        }
+                        if (activity.mTransferStatus.getAndSet(code) != code){
+                            if (imageView != null){
+                                if (code){
+                                    imageView.setImageResource(R.drawable.transfer);
+                                }else{
+                                    imageView.setImageResource(R.drawable.transfer_err);
+                                    imageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake_x));
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case MessageID.NETWORKSTATUS_ID://网络状态
+                    if (msg.obj instanceof Boolean){
+                        boolean code = (boolean)msg.obj;
+                        if (activity.mNetworkStatus.getAndSet(code) != code){
+                            imageView = activity.findViewById(R.id.network_status);
+                            if (imageView != null){
+                                if (code){
+                                    imageView.setImageResource(R.drawable.network);
+                                }else{
+                                    imageView.setImageResource(R.drawable.network_err);
+                                    imageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake_x));
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case MessageID.SYNC_DIS_INFO_ID://资料同步进度信息
+                    if (activity.mProgressDialog != null){
+                        activity.mProgressDialog.setMessage(msg.obj.toString()).refreshMessage();
+                        if (!activity.mProgressDialog.isShowing()) {
+                            activity.mProgressDialog.show();
+                        }
+                    }
+                    break;
+            }
+        }
+    }
 }
