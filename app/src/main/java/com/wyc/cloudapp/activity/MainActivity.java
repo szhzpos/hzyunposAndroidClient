@@ -72,11 +72,12 @@ public class MainActivity extends AppCompatActivity {
     private AtomicBoolean mTransferStatus = new AtomicBoolean(true);//传输状态
     private long mCurrentTimestamp = 0;
     private String mAppId,mAppScret,mUrl;
-    private TextView mCurrentTimeView,mSaleSumNum,mSaleSumAmount;
+    private TextView mCurrentTimeView,mSaleSumNum,mSaleSumAmount,mOrderCode,mDisSumAmt;
     private NetworkManagement mNetworkManagement;
     private ImageView mCloseBtn;
     private RecyclerView mSaleGoodsRecyclerView;
     private TableLayout mKeyboard;
+    private String mRemark = "",zk_cashier_id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,6 +93,8 @@ public class MainActivity extends AppCompatActivity {
         mSaleSumNum = findViewById(R.id.sale_sum_num);
         mSaleSumAmount = findViewById(R.id.sale_sum_amt);
         mKeyboard = findViewById(R.id.keyboard_layout);
+        mOrderCode = findViewById(R.id.order_code);
+        mDisSumAmt = findViewById(R.id.dis_sum_amt);
 
         //初始化adapter
         initGoodsInfoAdapter();
@@ -123,8 +126,13 @@ public class MainActivity extends AppCompatActivity {
             }, Dialog::dismiss);
         });//退出收银
         findViewById(R.id.num).setOnClickListener(view -> mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 0));//数量
-        findViewById(R.id.discount).setOnClickListener(v-> mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 2));//打折
-        findViewById(R.id.change_price).setOnClickListener(v-> mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 1));//改价
+        findViewById(R.id.discount).setOnClickListener(v-> {
+            setDisCashierId(mCashierInfo.optString("cas_id"));
+            mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 2);});//打折
+
+        findViewById(R.id.change_price).setOnClickListener(v-> {
+            setDisCashierId(mCashierInfo.optString("cas_id"));
+            mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 1);});//改价
         findViewById(R.id.check_out).setOnClickListener((View v)->{
             v.setEnabled(false);
             showPayDialog();
@@ -158,6 +166,8 @@ public class MainActivity extends AppCompatActivity {
         mNetworkManagement = new NetworkManagement(mHandler,mUrl,mAppId,mAppScret,mStoreInfo.optString("stores_id"),mCashierInfo.optString("pos_num"),mCashierInfo.optString("cas_id"));
         mNetworkManagement.start_sync(false);
 
+        //重置订单信息
+        resetOrderInfo();
     }
     @Override
     public void onResume(){
@@ -325,15 +335,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onChanged(){
                 JSONArray datas = mSaleGoodsViewAdapter.getDatas();
-                double sale_sum_num = 0.0,sale_sum_amount = 0.0;
+                double sale_sum_num = 0.0,sale_sum_amount = 0.0,dis_sum_amt = 0.0;
                 try {
                     for (int i = 0,length = datas.length();i < length;i ++){
                         JSONObject jsonObject = datas.getJSONObject(i);
-                        sale_sum_num += jsonObject.getDouble("sale_num");
+                        sale_sum_num += jsonObject.getDouble("xnum");
                         sale_sum_amount += jsonObject.getDouble("sale_amt");
+                        dis_sum_amt = jsonObject.getDouble("discount_amt");
                     }
                     mSaleSumNum.setText(String.format(Locale.CANADA,"%.4f",sale_sum_num));
                     mSaleSumAmount.setText(String.format(Locale.CANADA,"%.2f",sale_sum_amount));
+                    mDisSumAmt.setText(String.format(Locale.CANADA,"%.2f",dis_sum_amt));
 
                     mSaleGoodsRecyclerView.scrollToPosition(mSaleGoodsViewAdapter.getCurrentItemIndex());
                 } catch (JSONException e) {
@@ -476,10 +488,65 @@ public class MainActivity extends AppCompatActivity {
             if (mVipInfo != null)dialog.showVipInfo(mVipInfo,true);
             if (dialog.initPayContent(datas)){
                 dialog.setPayFinishListener(myDialog -> {
-                    JSONArray sales = mSaleGoodsViewAdapter.getDatas(),
+                    JSONObject order_info = new JSONObject(),data = new JSONObject();
+                    JSONArray orders = new JSONArray(),sales = mSaleGoodsViewAdapter.getDatas(),
                             pays = myDialog.getContent();
 
                     Logger.d("sales:%s,pays:%s",sales.toString(),pays.toString());
+
+                    String order_code = mOrderCode.getText().toString();
+                    try {
+                        double sale_sum_amt = Double.valueOf(mSaleSumAmount.getText().toString()),
+                                dis_sum_amt = Double.valueOf(mDisSumAmt.getText().toString()),
+                                total = dis_sum_amt + sale_sum_amt,zl_amt = 0.0;
+
+
+                        long time = System.currentTimeMillis() / 1000;
+
+                        order_info.put("stores_id",mStoreInfo.getString("stores_id"));
+                        order_info.put("order_code",order_code);
+                        order_info.put("total",total);
+                        order_info.put("discount_price",sale_sum_amt);
+                        order_info.put("discount_money",total);
+                        order_info.put("discount",String.format(Locale.CHINA,"%.4f",dis_sum_amt / total));
+                        order_info.put("cashier_id",mCashierInfo.getString("cas_id"));
+                        order_info.put("addtime",time);
+                        order_info.put("pos_code",mCashierInfo.getString("pos_num"));
+                        order_info.put("order_status",1);//订单状态（1未付款，2已付款，3已取消，4已退货）
+                        order_info.put("pay_status",1);//支付状态（1未支付，2已支付，3支付中）
+                        order_info.put("pay_time",time);
+                        order_info.put("upload_status",1);//上传状态（1未上传，2已上传）
+                        order_info.put("upload_time",time);
+                        order_info.put("transfer_status",1);//交班状态（1未交班，2已交班）
+                        order_info.put("transfer_time",0);
+                        order_info.put("is_rk",2);//是否已经扣减库存（1是，2否）
+                        if (mVipInfo != null){
+                            order_info.put("member_id",mVipInfo.getString("member_id"));
+                            order_info.put("mobile",mVipInfo.getString("mobile"));
+                            order_info.put("name",mVipInfo.getString("name"));
+                            order_info.put("card_code",mVipInfo.getString("card_code"));
+                        }
+                        order_info.put("sc_ids","");
+                        order_info.put("sc_tc_money",0.00);
+                        order_info.put("zl_money",zl_amt);
+                        order_info.put("ss_money",0.0);
+                        order_info.put("remark",mRemark);
+                        order_info.put("zk_cashier_id",zk_cashier_id);//使用折扣的收银员ID,默认当前收银员
+
+                        orders.put(order_info);
+
+                        //处理销售明细
+                        for(int i = 0,size = sales.length();i < size;i ++){
+                            JSONObject sale = sales.getJSONObject(i);
+                            sale.put("order_code",order_code);
+                            sale.put("xnum",sale.remove("xnum"));
+
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        MyDialog.displayErrorMessage("生成订单信息错误：" + e.getMessage(),this);
+                    }
                     myDialog.dismiss();
                 }).show();
             }
@@ -489,22 +556,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void resetOrderInfo(){
+        zk_cashier_id = mRemark  = "";
+
+        mOrderCode.setText(generateOrderCode());
         clearVipInfo();
     }
-
-    public JSONArray showVipInfo(@NonNull JSONObject vip){
-        mVipInfo = vip;
-
-        registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray__subtransparent)));
-
-        LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
-        vip_info_linearLayout.setVisibility(View.VISIBLE);
-        ((TextView)vip_info_linearLayout.findViewById(R.id.vip_name)).setText(mVipInfo.optString("name"));
-        ((TextView)vip_info_linearLayout.findViewById(R.id.vip_phone_num)).setText(mVipInfo.optString("mobile"));
-
-        return  mSaleGoodsViewAdapter.updateGoodsInfoToVip(mVipInfo);
-    }
-
     private void clearVipInfo(){
         if (mVipInfo != null){
             mVipInfo = null;
@@ -517,7 +573,19 @@ public class MainActivity extends AppCompatActivity {
             ((TextView)vip_info_linearLayout.findViewById(R.id.vip_phone_num)).setText(getText(R.string.space_sz));
         }
     }
-
+    private String generateOrderCode(){
+        String prefix = "P" + mCashierInfo.optString("pos_num") + "-" + new android.icu.text.SimpleDateFormat("yyMMddHHmmss").format(new Date()) + "-",order_code ;
+        JSONObject orders= new JSONObject();
+        if (SQLiteHelper.execSql(orders,"SELECT count(order_id) + 1 order_id from retail_order where date(addtime,'unixepoch' ) = date('now')")){
+            order_code =orders.optString("order_id");
+            order_code = prefix + "0000".substring(order_code.length()) + order_code;
+            Logger.d("order_id:%s,length:%d",order_code,order_code.length());
+        }else{
+            order_code = prefix + "0001";;
+            MyDialog.ToastMessage("生成订单号错误：" + orders.optString("info"),this);
+        }
+        return order_code;
+    }
     private void registerGlobalLayoutToRecyclerView(@NonNull final View view,final float size,@NonNull final SuperItemDecoration superItemDecoration){
         view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             private int getVerSpacing(int viewHeight,int m_height){
@@ -543,8 +611,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    private void setDisCashierId(final String id){
+        zk_cashier_id = id;
+    }
 
-    public JSONArray discount(double discount){
+    public JSONArray discount(double discount,final String zk_cashier_id){
+        if (null == zk_cashier_id || "".equals(zk_cashier_id)){
+            setDisCashierId(mCashierInfo.optString("cas_id"));
+        }else
+            setDisCashierId(zk_cashier_id);
         return mSaleGoodsViewAdapter.discount(discount);
     }
     public void sync(boolean b){
@@ -552,6 +627,21 @@ public class MainActivity extends AppCompatActivity {
             if (mProgressDialog != null && !mProgressDialog.isShowing())mProgressDialog.setMessage("正在同步...").show();
             mNetworkManagement.start_sync(b);
         }
+    }
+    public JSONArray showVipInfo(@NonNull JSONObject vip){
+        mVipInfo = vip;
+
+        registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray__subtransparent)));
+
+        LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
+        vip_info_linearLayout.setVisibility(View.VISIBLE);
+        ((TextView)vip_info_linearLayout.findViewById(R.id.vip_name)).setText(mVipInfo.optString("name"));
+        ((TextView)vip_info_linearLayout.findViewById(R.id.vip_phone_num)).setText(mVipInfo.optString("mobile"));
+
+        return  mSaleGoodsViewAdapter.updateGoodsInfoToVip(mVipInfo);
+    }
+    public void set_order_remark(final String remark){
+        mRemark = mRemark.concat(remark);
     }
 
     private static class Myhandler extends Handler {

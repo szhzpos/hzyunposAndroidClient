@@ -9,6 +9,7 @@ import android.os.Bundle;
 import com.google.android.material.snackbar.Snackbar;
 import com.wyc.cloudapp.R;
 
+import android.text.method.ScrollingMovementMethod;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -151,6 +152,7 @@ public class MyDialog extends Dialog {
         mNo = findViewById(R.id.no);
         mTitle = findViewById(R.id.title_text);
         mMessage = findViewById(R.id.content);
+        mMessage.setMovementMethod(ScrollingMovementMethod.getInstance());
         Drawable drawable = null;
         switch (mContentIconType){
             case INFO:
@@ -168,13 +170,6 @@ public class MyDialog extends Dialog {
         }
         drawable.setBounds(0,0,drawable.getIntrinsicWidth(),drawable.getIntrinsicHeight());
         mMessage.setCompoundDrawables(drawable,null,null,null);
-        Window window = getWindow();
-        if (null != window){
-            WindowManager.LayoutParams params = window.getAttributes();
-            params.width = 428;
-            params.height = 200;
-            window.setAttributes(params);
-        }
     }
 
     /**
@@ -256,7 +251,7 @@ public class MyDialog extends Dialog {
         View snackbar_view = snackbar.getView();
         snackbar_view.setBackgroundResource(R.drawable.snackbar_background);
         TextView tvSnackbarText = snackbar_view.findViewById(R.id.snackbar_text);
-        tvSnackbarText.setTextSize(24);
+        tvSnackbarText.setTextSize(18);
         snackbar.show();
     }
 

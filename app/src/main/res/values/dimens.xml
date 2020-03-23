@@ -18,7 +18,6 @@
     <dimen name="num_keyboard_font_size_18">@dimen/font_size_18</dimen>
     <dimen name="num_keyboard_font_size_24">@dimen/font_size_24</dimen>
     <dimen name="pay_detail_head_font_size">@dimen/font_size_16</dimen>
-    
     <dimen name="keyboard_button_width">@dimen/height_45</dimen>
     <dimen name="keyboard_button_height">@dimen/height_50</dimen>
     <dimen name="plain_text_height_40">@dimen/height_40</dimen>
@@ -37,6 +36,7 @@
     <dimen name="width_88">88dp</dimen>
     <dimen name="width_85">85dp</dimen>
     <dimen name="width_78">78dp</dimen>
+    <dimen name="width_80">80dp</dimen>
     <dimen name="width_328">328dp</dimen>
     <dimen name="width_0">0dp</dimen>
     <dimen name="size_35">35dp</dimen>
@@ -44,7 +44,7 @@
     <dimen name="goods_height">82dp</dimen>
     <dimen name="sale_goods_height">68dp</dimen>
     <dimen name="goods_img_width">@dimen/width_88</dimen>
-    <dimen name="main_middle_left_width">@dimen/width_328</dimen>
+    <dimen name="main_middle_left_width">336dp</dimen>
     <dimen name="login_btn_height">@dimen/height_58</dimen>
     <dimen name="login_btn_width">138dp</dimen>
     <dimen name="login_text_width">@dimen/width_328</dimen>
@@ -57,4 +57,5 @@
     <dimen name="drop_down_height">@dimen/height_45</dimen>
     <dimen name="more_fun_dialog_height">288dp</dimen>
     <dimen name="more_fun_dialog_width">488dp</dimen>
+    <dimen name="top_fun_btn_width">@dimen/width_80</dimen>
 </resources>

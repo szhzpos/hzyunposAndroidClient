@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Editable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
@@ -37,7 +38,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView row_id,goods_id,goods_title,unit_id,unit_name,barcode_id,barcode,buying_price,sale_num,sale_amt;
+        TextView row_id,goods_id,goods_title,unit_id,unit_name,barcode_id,barcode,sale_price,sale_num,sale_amt;
         View mCurrentLayoutItemView;
         MyViewHolder(View itemView) {
             super(itemView);
@@ -49,7 +50,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
             unit_name =  itemView.findViewById(R.id.unit_name);
             barcode_id =  itemView.findViewById(R.id.barcode_id);
             barcode =  itemView.findViewById(R.id.barcode);
-            buying_price =  itemView.findViewById(R.id.buying_price);
+            sale_price =  itemView.findViewById(R.id.sale_price);
             sale_num = itemView.findViewById(R.id.sale_num);
             sale_amt = itemView.findViewById(R.id.sale_amt);
         }
@@ -75,7 +76,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 myViewHolder.unit_name.setText(goods_info.optString("unit_name"));
                 myViewHolder.barcode_id.setText(goods_info.optString("barcode_id"));
                 myViewHolder.barcode.setText(goods_info.optString("barcode"));
-                myViewHolder.buying_price.setText(goods_info.optString("buying_price"));
+                myViewHolder.sale_price.setText(goods_info.optString("price"));
                 myViewHolder.sale_num.setText(goods_info.optString("sale_num"));
                 myViewHolder.sale_amt.setText(goods_info.optString("sale_amt"));
 
@@ -129,14 +130,14 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 String id = goods.getString("goods_id");
                 double sel_num = 1.00,sel_amount,price,discount = 1.0,discount_amt = 0.0,new_price = 0.0;
 
-                price = goods.getDouble("buying_price");
+                price = goods.getDouble("price");
 
                 for (int i = 0,length = mDatas.length();i < length;i++){
                     JSONObject tmp = mDatas.getJSONObject(i);
                     if (id.equals(tmp.getString("goods_id"))){
                         exist = true;
 
-                        double sale_num = tmp.getDouble("sale_num");
+                        double sale_num = tmp.getDouble("xnum");
                         double sale_amount = tmp.getDouble("sale_amt");
                         double sale_discount_amt = tmp.getDouble("discount_amt");
 
@@ -147,10 +148,10 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                         discount_amt = Utils.formatDouble((sel_num * (price - new_price)) + sale_discount_amt,2);
 
                         tmp.put("old_price", price);
-                        tmp.put("buying_price", new_price);
+                        tmp.put("price", new_price);
                         tmp.put("discount", discount);
                         tmp.put("discount_amt", discount_amt);
-                        tmp.put("sale_num",Utils.formatDouble(sale_num + sel_num,4));
+                        tmp.put("xnum",Utils.formatDouble(sale_num + sel_num,4));
                         tmp.put("sale_amt",Utils.formatDouble(sale_amount + sel_amount,2));
                         tmp.put("order_amt",Utils.formatDouble(sale_amount + sel_amount + discount_amt,2));
 
@@ -192,10 +193,10 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                     discount_amt = Utils.formatDouble(sel_num * (price - new_price),2);
 
                     goods.put("old_price", price);
-                    goods.put("buying_price",new_price);
+                    goods.put("price",new_price);
                     goods.put("discount", discount);
                     goods.put("discount_amt", discount_amt);
-                    goods.put("sale_num",sel_num);
+                    goods.put("xnum",sel_num);
                     goods.put("sale_amt",sel_amount);
                     goods.put("order_amt",Utils.formatDouble(sel_amount + discount_amt,2));
                     mDatas.put(goods);
@@ -223,12 +224,12 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
             }else{
                 JSONObject jsonObject = mDatas.optJSONObject(index);
                 try {
-                    double current_num = jsonObject.getDouble("sale_num"),
-                            price = jsonObject.getDouble("buying_price");
+                    double current_num = jsonObject.getDouble("xnum"),
+                            price = jsonObject.getDouble("price");
                     if ((current_num = current_num - num) <= 0){
                         mDatas.remove(index);
                     }else{
-                        jsonObject.put("sale_num",current_num);
+                        jsonObject.put("xnum",current_num);
                         jsonObject.put("sale_amt",Utils.formatDouble(current_num * price,2));
                     }
                 }catch (JSONException e){
@@ -246,13 +247,13 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
             ChangeNumOrPriceDialog dialog;
             switch (type){
                 case 1:
-                    dialog = new ChangeNumOrPriceDialog(mContext,"新价格",cur_json.optString("buying_price"));
+                    dialog = new ChangeNumOrPriceDialog(mContext,"新价格",cur_json.optString("price"));
                     break;
                 case 2:
                     dialog = new ChangeNumOrPriceDialog(mContext,mContext.getString(R.string.discount_sz),String.format(Locale.CHINA,"%.0f",cur_json.optDouble("discount",1.0)*100));
                     break;
                     default:
-                        dialog = new ChangeNumOrPriceDialog(mContext,"新数量",String.format(Locale.CHINA,"%.2f",cur_json.optDouble("sale_num",1.0)));
+                        dialog = new ChangeNumOrPriceDialog(mContext,"新数量",String.format(Locale.CHINA,"%.2f",cur_json.optDouble("xnum",1.0)));
                         break;
             }
             dialog.setYesOnclickListener(myDialog -> {
@@ -266,7 +267,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
 
     private void updateSaleGoodsInfo(double value,short type){//type 0 修改数量 1修改价格 2打折
         JSONObject json = getCurrentContent();
-        double discount = 1.0,discount_amt = 0.0,old_price = 0.0,new_price = 0.0,sale_num = 0.0;
+        double discount = 1.0,discount_amt = 0.0,old_price = 0.0,new_price = 0.0,xnum = 0.0;
         boolean d_discount = false;//是否折上折
         try {
             old_price = json.getDouble("old_price");
@@ -275,30 +276,30 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                     if (value <= 0){
                         deleteSaleGoods(getCurrentItemIndex(),0);
                     }else{
-                        sale_num = value;
-                        new_price = json.getDouble("buying_price");
-                        discount_amt = sale_num * (old_price - new_price);
+                        xnum = value;
+                        new_price = json.getDouble("price");
+                        discount_amt = xnum * (old_price - new_price);
 
                         json.put("discount_amt", Utils.formatDouble(discount_amt + json.getDouble("discount_amt"),2));
-                        json.put("sale_num",Utils.formatDouble(sale_num,4));
+                        json.put("xnum",Utils.formatDouble(xnum,4));
 
                     }
                     break;
                 case 1:
-                    sale_num = json.getDouble("sale_num");
+                    xnum = json.getDouble("xnum");
 
                     new_price = value;
                     discount = Utils.formatDouble(new_price / old_price,4);
-                    discount_amt = Utils.formatDouble(sale_num * (old_price - new_price),2);
+                    discount_amt = Utils.formatDouble(xnum * (old_price - new_price),2);
 
                     json.put("discount", discount);
                     json.put("discount_amt", discount_amt);
-                    json.put("buying_price",Utils.formatDouble(new_price,2));
+                    json.put("price",Utils.formatDouble(new_price,2));
                     break;
                 case 2:
                     discount = Utils.formatDouble(value / 100,4);
-                    new_price = json.getDouble("buying_price");
-                    sale_num = json.getDouble("sale_num");
+                    new_price = json.getDouble("price");
+                    xnum = json.getDouble("xnum");
 
                     if (d_discount){
                         new_price = Utils.formatDouble(new_price * discount,2);
@@ -306,15 +307,15 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                         new_price = Utils.formatDouble(old_price * discount,2);
                     }
 
-                    discount_amt = Utils.formatDouble(sale_num * (old_price - new_price),2);
+                    discount_amt = Utils.formatDouble(xnum * (old_price - new_price),2);
 
                     json.put("discount", discount);
                     json.put("discount_amt", discount_amt);
-                    json.put("buying_price",new_price);
+                    json.put("price",new_price);
                     break;
             }
-            json.put("sale_amt",Utils.formatDouble(sale_num * new_price,2));
-            json.put("order_amt",Utils.formatDouble(old_price * sale_num,2));
+            json.put("sale_amt",Utils.formatDouble(xnum * new_price,2));
+            json.put("order_amt",Utils.formatDouble(old_price * xnum,2));
 
             Logger.d_json(json.toString());
             notifyDataSetChanged();
@@ -324,8 +325,8 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         }
     }
 
-    public JSONArray discount(double discount){
-        double  discount_amt = 0.0,old_price = 0.0,new_price = 0.0,sale_num = 0.0;
+    public JSONArray discount(double discount){//整单折
+        double  discount_amt = 0.0,old_price = 0.0,new_price = 0.0,xnum = 0.0;
         boolean d_discount = false;//是否折上折
         try {
             for(int i = 0,length = mDatas.length();i < length;i++){
@@ -333,8 +334,8 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
 
                 old_price = json.getDouble("old_price");
                 discount = Utils.formatDouble(discount / 100,4);
-                new_price = json.getDouble("buying_price");
-                sale_num = json.getDouble("sale_num");
+                new_price = json.getDouble("price");
+                xnum = json.getDouble("xnum");
 
                 if (d_discount){
                     new_price = Utils.formatDouble(new_price * discount,2);
@@ -342,14 +343,14 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                     new_price = Utils.formatDouble(old_price * discount,2);
                 }
 
-                discount_amt = Utils.formatDouble(sale_num * (old_price - new_price),2);
+                discount_amt = Utils.formatDouble(xnum * (old_price - new_price),2);
 
                 json.put("discount", discount);
                 json.put("discount_amt", discount_amt);
-                json.put("buying_price",new_price);
+                json.put("price",new_price);
 
-                json.put("sale_amt",Utils.formatDouble(sale_num * new_price,2));
-                json.put("order_amt",Utils.formatDouble(old_price * sale_num,2));
+                json.put("sale_amt",Utils.formatDouble(xnum * new_price,2));
+                json.put("order_amt",Utils.formatDouble(old_price * xnum,2));
 
                 Logger.d_json(json.toString());
             }
@@ -373,14 +374,14 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     }
 
     private void setCurrentItemIndexAndItemView(View v){
-        TextView tv_id;
+        TextView tv_id,tv_barcode_id;
         mCurrentItemView = v;
-        if (null != mCurrentItemView && (tv_id = mCurrentItemView.findViewById(R.id.goods_id)) != null){
-            String id = tv_id.getText().toString();
+        if (null != mCurrentItemView && (tv_id = mCurrentItemView.findViewById(R.id.goods_id)) != null && (tv_barcode_id = mCurrentItemView.findViewById(R.id.barcode_id)) != null){
+            CharSequence id = tv_id.getText(),barcode_id = tv_barcode_id.getText();
             if (mDatas != null ){
                 for (int i = 0,length = mDatas.length();i < length;i ++){
                     JSONObject json = mDatas.optJSONObject(i);
-                    if (id.equals(json.optString("goods_id"))){
+                    if (id.equals(json.optString("goods_id")) && barcode_id.equals(json.optString("barcode_id"))){
                         mCurrentItemIndex = i;
                         return;
                     }
@@ -413,7 +414,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     }
 
     public JSONArray updateGoodsInfoToVip(final JSONObject vip){
-        double discount = 1.0,new_price = 0.0,old_price,discount_amt = 0.0,sale_num = 0.0;
+        double discount = 1.0,new_price = 0.0,old_price,discount_amt = 0.0,xnum = 0.0;
         if (vip != null){
             try {
                 for (int i = 0,length = mDatas.length();i < length;i++){
@@ -424,7 +425,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                     jsonObject.put("mobile",vip.getString("mobile"));
 
                     old_price = jsonObject.getDouble("old_price");
-                    sale_num = jsonObject.getDouble("sale_num");
+                    xnum = jsonObject.getDouble("xnum");
 
                     switch (jsonObject.getInt("yh_mode")){
                         case 0://无优惠
@@ -440,13 +441,13 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                             new_price = Utils.formatDouble(old_price * discount,2);
                             break;
                     }
-                    discount_amt = Utils.formatDouble(sale_num * (old_price - new_price),2);
+                    discount_amt = Utils.formatDouble(xnum * (old_price - new_price),2);
 
                     jsonObject.put("discount", discount);
                     jsonObject.put("discount_amt", discount_amt);
-                    jsonObject.put("buying_price",new_price);
-                    jsonObject.put("sale_amt",Utils.formatDouble(sale_num * new_price,2));
-                    jsonObject.put("order_amt",Utils.formatDouble(old_price * sale_num,2));
+                    jsonObject.put("price",new_price);
+                    jsonObject.put("sale_amt",Utils.formatDouble(xnum * new_price,2));
+                    jsonObject.put("order_amt",Utils.formatDouble(old_price * xnum,2));
                 }
                 notifyDataSetChanged();
             }catch (JSONException e){

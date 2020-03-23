@@ -27,6 +27,7 @@
             android:id="@+id/cashier_desk_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/margin_8"
             android:contentDescription="@string/cashier_desk_sz"
             app:srcCompat="@drawable/main" />
 
@@ -45,7 +46,7 @@
 
             <ImageView
                 android:id="@+id/imageView3"
-                android:layout_width="80dp"
+                android:layout_width="@dimen/top_fun_btn_width"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:contentDescription="@string/deal_sz"
@@ -73,7 +74,7 @@
 
             <ImageView
                 android:id="@+id/imageView"
-                android:layout_width="80dp"
+                android:layout_width="@dimen/top_fun_btn_width"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:contentDescription="@string/shift_exchange_sz"
@@ -101,7 +102,7 @@
 
             <ImageView
                 android:id="@+id/imageView2"
-                android:layout_width="80dp"
+                android:layout_width="@dimen/top_fun_btn_width"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:contentDescription="@string/other_sz"
@@ -325,10 +326,9 @@
                     android:textSize="@dimen/fun_button_font_size_16" />
 
                 <TextView
-                    android:id="@+id/textView11"
+                    android:id="@+id/order_code"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="202002198888"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/fun_button_font_size_16" />
 
@@ -350,7 +350,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/margin_2"
-                    android:text="0001"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/fun_button_font_size_16" />
             </LinearLayout>
@@ -391,6 +390,14 @@
                     android:text="@string/num_sz"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/fun_button_font_size_18" />
+
+                <TextView
+                    android:id="@+id/dis_sum_amt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/z_p_z_sz"
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/sale_sum_num"

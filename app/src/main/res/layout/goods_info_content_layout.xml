@@ -68,7 +68,7 @@
         android:textColor="@color/black" />
 
     <TextView
-        android:id="@+id/buying_price"
+        android:id="@+id/sale_price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -83,10 +83,10 @@
         android:id="@+id/unit_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/buying_price"
+        android:layout_alignBottom="@id/sale_price"
         android:layout_marginStart="@dimen/margin_8"
         android:layout_marginBottom="@dimen/margin_2"
-        android:layout_toEndOf="@id/buying_price"
+        android:layout_toEndOf="@id/sale_price"
         android:textColor="@color/black" />
 
 </RelativeLayout>

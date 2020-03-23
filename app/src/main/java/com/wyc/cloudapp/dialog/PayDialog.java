@@ -53,7 +53,7 @@ public class PayDialog extends Dialog {
 
         //初始化TextView
         mOrderAmtTv = findViewById(R.id.order_amt);//单据金额
-        mDiscountAmtTv = findViewById(R.id.discount_amt);//折扣金额
+        mDiscountAmtTv = findViewById(R.id.dis_sum_amt);//折扣金额
         mActualAmtTv = findViewById(R.id.actual_amt);//应收金额
         mPayAmtTv = findViewById(R.id.pay_amt);//付款金额
         mAmtReceivedTv = findViewById(R.id.amt_received);//已收金额
@@ -117,7 +117,7 @@ public class PayDialog extends Dialog {
             public void onClick(View view) {
                 ChangeNumOrPriceDialog dialog = new ChangeNumOrPriceDialog(mainActivity,mainActivity.getString(R.string.discount_sz),String.format(Locale.CHINA,"%d",100));
                 dialog.setYesOnclickListener(myDialog -> {
-                    if (initPayContent(mainActivity.discount(myDialog.getNewNumOrPrice()))){
+                    if (initPayContent(mainActivity.discount(myDialog.getNewNumOrPrice(),""))){
                         refreshContent();
                         myDialog.dismiss();
                     }

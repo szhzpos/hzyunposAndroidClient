@@ -43,14 +43,19 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;//记得修改软件版本
     private static final int MASTER_SOFTWRAW_VERSION = 1;
     private static SQLiteDatabase mDb;
-
+    private Context mContext;
     private SQLiteHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        mContext = context;
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        initTables(db);//初始化数据库
+        try {
+            initTables(db);//初始化数据库
+        }catch (SQLiteException e){
+            MyDialog.displayErrorMessage("初始化本地数据库错误：" + e.getMessage(),mContext);
+        }
         onUpgrade(db,0,0);
     }
     @Override
@@ -664,7 +669,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return code;
     }
 
-    public static boolean execSQLByBatchInsertJson(@NonNull JSONObject json,List<String> tables,List<List<String>> table_cols,StringBuilder err){
+    public static boolean execSQLByBatchReplaceJson(@NonNull JSONObject json,List<String> tables,List<List<String>> table_cols,StringBuilder err){
         boolean code = true;
         StringBuilder stringBuilderHead = new StringBuilder();
         StringBuilder stringBuilderfoot = new StringBuilder();
@@ -674,67 +679,68 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         int columnN0 = 0;
         List<String> cls;
         JSONArray arrays;
-        for (int k = 0,size = tables.size();k < size;k++){
-            table = tables.get(k);
 
-            if(stringBuilderHead.length() != 0)stringBuilderHead.delete(0,stringBuilderHead.length());
-            if(stringBuilderfoot.length() != 0)stringBuilderfoot.delete(0,stringBuilderfoot.length());
+        synchronized (SQLiteHelper.class){
+            try {
+                mDb.beginTransaction();
+                for (int k = 0,size = tables.size();k < size;k++) {
+                    table = tables.get(k);
 
-            stringBuilderHead.append("REPLACE INTO ");
-            stringBuilderHead.append(table);
-            stringBuilderHead.append(" (");
-            stringBuilderfoot.append("VALUES (");
+                    if (stringBuilderHead.length() != 0)
+                        stringBuilderHead.delete(0, stringBuilderHead.length());
+                    if (stringBuilderfoot.length() != 0)
+                        stringBuilderfoot.delete(0, stringBuilderfoot.length());
 
-            cls = table_cols.get(k);
+                    stringBuilderHead.append("REPLACE INTO ");
+                    stringBuilderHead.append(table);
+                    stringBuilderHead.append(" (");
+                    stringBuilderfoot.append("VALUES (");
 
-            for (String cl:cls){
-                stringBuilderHead.append(cl);
-                stringBuilderHead.append(",");
+                    cls = table_cols.get(k);
 
-                stringBuilderfoot.append("?");
-                stringBuilderfoot.append(",");
-            }
+                    for (String cl : cls) {
+                        stringBuilderHead.append(cl);
+                        stringBuilderHead.append(",");
 
-            stringBuilderHead.replace(stringBuilderHead.length() - 1,stringBuilderHead.length(),")");
-            stringBuilderfoot.replace(stringBuilderfoot.length() - 1,stringBuilderfoot.length(),")");
-            stringBuilderHead.append(stringBuilderfoot);
+                        stringBuilderfoot.append("?");
+                        stringBuilderfoot.append(",");
+                    }
 
-            synchronized (SQLiteHelper.class){
-                try {
+                    stringBuilderHead.replace(stringBuilderHead.length() - 1, stringBuilderHead.length(), ")");
+                    stringBuilderfoot.replace(stringBuilderfoot.length() - 1, stringBuilderfoot.length(), ")");
+                    stringBuilderHead.append(stringBuilderfoot);
+
                     arrays = json.getJSONArray(table);
-
-                    mDb.beginTransaction();
                     statement = mDb.compileStatement(stringBuilderHead.toString());
-                    for (int i = 0,len = arrays.length();i < len; i ++){
+                    for (int i = 0, len = arrays.length(); i < len; i++) {
                         columnN0 = 0;
                         jsonObject = arrays.getJSONObject(i);
-                        for (String cl:cls){
-                            if ("".equals(jsonObject.getString(cl))){
+                        for (String cl : cls) {
+                            if ("".equals(jsonObject.getString(cl))) {
                                 statement.bindNull(++columnN0);
-                            }else
-                                statement.bindString(++columnN0,jsonObject.getString(cl));
+                            } else
+                                statement.bindString(++columnN0, jsonObject.getString(cl));
                         }
                         statement.execute();
                     }
-                    mDb.setTransactionSuccessful();
-
-                } catch (SQLException | JSONException e) {
-                    code = false;
-                    err.append(e.getMessage());
-                    e.printStackTrace();
-                } finally {
-                    if (statement != null){
-                        statement.close();
-                    }
-                    if (mDb != null){
-                        mDb.endTransaction();
-                    }
+                }
+                mDb.setTransactionSuccessful();
+            } catch (SQLException | JSONException e) {
+                code = false;
+                err.append(e.getMessage());
+                e.printStackTrace();
+            } finally {
+                if (statement != null){
+                    statement.close();
+                }
+                if (mDb != null){
+                    mDb.endTransaction();
                 }
             }
         }
+
          return code;
     }
-
 
     private static List<Map<String,Object>> rs2List(Cursor cursor) {
 
@@ -1040,7 +1046,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "    stores_id     INT,\n" +
                 "    cas_id        INTEGER PRIMARY KEY\n" +
                 "                          UNIQUE\n" +
-                ");",sql_refund_order = "CREATE TABLE if not exists refund_order (\n" +//退单
+                ");",sql_refund_order = "CREATE TABLE IF NOT EXISTS refund_order (\n" +//退单
                 "    refund_total    REAL    DEFAULT (0),\n" +
                 "    ok_cashier_name VARCHAR,\n" +
                 "    ok_cashier_id   INT,\n" +
@@ -1067,7 +1073,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "    ro_code         VARCHAR,\n" +
                 "    stores_id       INT,\n" +
                 "    ro_id           INTEGER PRIMARY KEY AUTOINCREMENT\n" +
-                ");\n",sql_refund_order_goods = "CREATE TABLE if not exsits refund_order_goods (\n" +//退单商品明细
+                ");\n",sql_refund_order_goods = "CREATE TABLE IF NOT EXISTS refund_order_goods (\n" +//退单商品明细
                 "    produce_date INT,\n" +
                 "    conversion   REAL,\n" +
                 "    is_rk        INT     DEFAULT (2),\n" +
@@ -1081,7 +1087,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "    barcode_id   INT,\n" +
                 "    ro_code      VARCHAR,\n" +
                 "    ro_id        INTEGER PRIMARY KEY AUTOINCREMENT\n" +
-                ");\n",sql_refund_order_pays = "CREATE TABLE if not exists refund_order_pays (\n" +//退单付款明细
+                ");\n",sql_refund_order_pays = "CREATE TABLE IF NOT EXISTS refund_order_pays (\n" +//退单付款明细
                 "    road_pay_status INT     DEFAULT (1),\n" +
                 "    pay_method_name CHAR,\n" +
                 "    is_check        INT,\n" +
@@ -1094,7 +1100,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "    pay_method      INT,\n" +
                 "    ro_code         CHAR,\n" +
                 "    pay_id          INTEGER PRIMARY KEY AUTOINCREMENT\n" +
-                ");\n",sql_retail_order = "CREATE TABLE if not exists retail_order (\n" +//销售单
+                ");\n",sql_retail_order = "CREATE TABLE IF NOT EXISTS retail_order (\n" +//销售单
                 "    zk_cashier_id   INTEGER,\n" +
                 "    remark          VARCHAR,\n" +
                 "    ss_money        REAL    DEFAULT (0),\n" +
@@ -1121,10 +1127,11 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "    cashier_id      INT,\n" +
                 "    total           REAL    DEFAULT (0),\n" +
                 "    discount_price  REAL    DEFAULT (0),\n" +
+                "    discount  REAL    DEFAULT (0),\n" +
                 "    order_code      VARCHAR,\n" +
                 "    stores_id       INT,\n" +
                 "    order_id        INTEGER PRIMARY KEY AUTOINCREMENT\n" +
-                ");\n",sql_retail_order_goods = "CREATE TABLE if not exists retail_order_goods (\n" +//销售商品明细
+                ");\n",sql_retail_order_goods = "CREATE TABLE IF NOT EXISTS retail_order_goods (\n" +//销售商品明细
                 "    y_price       REAL,\n" +
                 "    barcode       VARCHAR,\n" +
                 "    conversion    INT     DEFAULT (1),\n" +
@@ -1144,7 +1151,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "    barcode_id    INTEGER,\n" +
                 "    order_code    VARCHAR,\n" +
                 "    rog_id        INTEGER PRIMARY KEY AUTOINCREMENT\n" +
-                ");\n",sql_retail_order_pays = "CREATE TABLE if not exists retail_order_pays (\n" +//销售付款明细
+                ");\n",sql_retail_order_pays = "CREATE TABLE IF NOT EXISTS retail_order_pays (\n" +//销售付款明细
                 "    print_info        VARCHAR,\n" +
                 "    return_code       VARCHAR,\n" +
                 "    card_no           VARCHAR,\n" +
@@ -1163,7 +1170,25 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "    pay_method        INT,\n" +
                 "    order_code        CHAR,\n" +
                 "    pay_id            INTEGER PRIMARY KEY AUTOINCREMENT\n" +
-                ");\n";
+                ");\n",sql_goods_group = "CREATE TABLE IF NOT EXISTS goods_group (\n" +
+                "    img_url         VARCHAR,\n" +
+                "    stores_id     INT,\n" +
+                "    type          INT,\n" +
+                "    unit_name     VARCHAR,\n" +
+                "    addtime       INT,\n" +
+                "    status        INT,\n" +
+                "    gp_price      REAL,\n" +
+                "    gp_title      VARCHAR,\n" +
+                "    gp_code       CHAR,\n" +
+                "    gp_id         INTEGER PRIMARY KEY\n" +
+                "                          UNIQUE,\n" +
+                "    mnemonic_code VARCHAR\n" +
+                ");",sql_goods_group_info = "CREATE TABLE IF NOT EXISTS goods_group_info (\n" +
+                "    xnum       INT,\n" +
+                "    barcode_id INT,\n" +
+                "    gp_id      INT,\n" +
+                "    _id        INT UNIQUE\n" +
+                ");";
 
         list.add(sql_shop_stores);
         list.add(sql_shop_category);
@@ -1177,6 +1202,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         list.add(sql_retail_order);
         list.add(sql_retail_order_goods);
         list.add(sql_retail_order_pays);
+        list.add(sql_goods_group);
+        list.add(sql_goods_group_info);
         try {
             db.beginTransaction();
             for (String sql : list) {

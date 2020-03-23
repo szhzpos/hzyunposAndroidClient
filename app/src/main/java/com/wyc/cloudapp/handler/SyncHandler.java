@@ -14,6 +14,9 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static com.wyc.cloudapp.utils.MessageID.SYNC_DIS_INFO_ID;
 
@@ -41,6 +44,7 @@ public class SyncHandler extends Handler {
         JSONObject object = new JSONObject(),info_json,retJson;
         String table_name = "",sys_name = "",url = "",sz_param = "",img_url_info,img_file_name,img_url_col_name = null;
         String[] table_cls = null;
+        boolean code = true;
         try{
             switch (msg.what) {
                 case MessageID.SYNC_GOODS_BASE_ID:
@@ -89,6 +93,13 @@ public class SyncHandler extends Handler {
                     url = mUrl + "/api/cashier_dwn/get_cashier_info";
 
                     object.put("cas_id",mOperId);
+                    object.put("pos_num",mPosNum);
+                    object.put("stores_id",mStoresId);
+                    break;
+                case MessageID.SYNC_GP_INFO_ID://商品组合信息
+                    sys_name = "正在同步商品组合信息";
+                    url = mUrl + "/api/promotion/get_gp_info";
+
                     object.put("pos_num",mPosNum);
                     object.put("stores_id",mStoresId);
                     break;
@@ -153,10 +164,31 @@ public class SyncHandler extends Handler {
                                         }
                                     }
                                 }
+
                                 StringBuilder err = new StringBuilder();
-                                if (!SQLiteHelper.execSQLByBatchReplaceJson(data,table_name ,table_cls,err)) {
-                                    sys_name = sys_name.concat("错误:").concat(err.toString());
+
+                                if (msg.what == MessageID.SYNC_GP_INFO_ID){//商品组合信息要单独处理
+                                    JSONArray goods_list = new JSONArray();
+                                    JSONObject tmp_goods = new JSONObject();
+                                    for (int k = 0,size = data.length();k < size;k++){
+                                        JSONArray tmp = (JSONArray) data.getJSONObject(k).remove("goods_list");
+                                        if (tmp != null)
+                                        for (int j = 0,length = tmp.length();j < length;j++){
+                                            goods_list.put(tmp.get(j));
+                                        }
+                                    }
+                                    tmp_goods.put("goods_group",data);
+                                    tmp_goods.put("goods_group_info",goods_list);
+                                     List<String> goods_group_cols = Arrays.asList("mnemonic_code","gp_id","gp_code","gp_title","gp_price","status","addtime","unit_name","stores_id","img_url"),
+                                            goods_group_info_cols = Arrays.asList("xnum","barcode_id","gp_id","_id");
+
+                                    code = SQLiteHelper.execSQLByBatchReplaceJson(tmp_goods,Arrays.asList("goods_group","goods_group_info"),Arrays.asList(goods_group_cols,goods_group_info_cols),err);
+                                }else{
+                                    code = SQLiteHelper.execSQLByBatchReplaceJson(data,table_name ,table_cls,err);
+                                }
+                                if (!code) {
                                     if (mReportProgress) {
+                                        sys_name = sys_name.concat("错误:").concat(err.toString());
                                         removeCallbacksAndMessages(null);
                                         syncActivityHandler.obtainMessage(MessageID.SYNC_ERR_ID, sys_name).sendToTarget();
                                     }else{
@@ -213,7 +245,7 @@ public class SyncHandler extends Handler {
                     switch (info_json.getString("status")){
                         case "n":
                             syncActivityHandler.obtainMessage(MessageID.NETWORKSTATUS_ID,false).sendToTarget();
-                            Logger.e(prefix + retJson.optString("info"));
+                            Logger.e(prefix + info_json.optString("info"));
                             break;
                         case "y":
                             //Logger.json(info_json.toString());
@@ -237,6 +269,7 @@ public class SyncHandler extends Handler {
         this.obtainMessage(MessageID.SYNC_GOODS_ID).sendToTarget();//商品信息
         this.obtainMessage(MessageID.SYNC_PAY_METHOD_ID).sendToTarget();//支付方式
         this.obtainMessage(MessageID.SYNC_STORES_ID).sendToTarget();//仓库信息
+        this.obtainMessage(MessageID.SYNC_GP_INFO_ID).sendToTarget();//商品组合ID
     }
     public void syncFinish(){
         obtainMessage(MessageID.SYNC_FINISH_ID).sendToTarget();//最后发送同步完成消息

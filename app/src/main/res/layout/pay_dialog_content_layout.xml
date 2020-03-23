@@ -147,7 +147,7 @@
                         android:textAlignment="center" />
 
                     <TextView
-                        android:id="@+id/discount_amt"
+                        android:id="@+id/dis_sum_amt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="66.00"

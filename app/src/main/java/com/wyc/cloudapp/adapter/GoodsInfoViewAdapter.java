@@ -43,7 +43,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
             unit_name =  itemView.findViewById(R.id.unit_name);
             barcode_id =  itemView.findViewById(R.id.barcode_id);
             barcode =  itemView.findViewById(R.id.barcode);
-            buying_price =  itemView.findViewById(R.id.buying_price);
+            buying_price =  itemView.findViewById(R.id.sale_price);
         }
     }
 
@@ -146,8 +146,14 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         }
     }
 
-    public boolean getSingleGoods(@NonNull JSONObject object,final String goods_id,final String barcode_id){
-       return SQLiteHelper.execSql(object,"select goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,buying_price,yh_mode,yh_price from " +
+    public boolean getSingleGoods(@NonNull JSONObject object,final String goods_id,final String barcode_id,int type){//0 查询正常商品 1 组合商品
+        if (type == 1){
+            return SQLiteHelper.execSql(object,"select goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,buying_price,buying_price price," +
+                    "retail_price,trade_price,cost_price,ps_price,tax_rate,tc_mode,tc_rate,yh_mode,yh_price from " +
+                    "barcode_info where goods_status = '1' and goods_id = '" + goods_id + "' and barcode_id = '" + barcode_id +"'");
+        }
+       return SQLiteHelper.execSql(object,"select goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,buying_price,buying_price price," +
+               "retail_price,trade_price,cost_price,ps_price,tax_rate,tc_mode,tc_rate,yh_mode,yh_price from " +
                "barcode_info where goods_status = '1' and goods_id = '" + goods_id + "' and barcode_id = '" + barcode_id +"'");
     }
 

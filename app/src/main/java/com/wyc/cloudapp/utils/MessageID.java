@@ -28,5 +28,6 @@ public final class MessageID {
             QUERY_VIP_INFO_ID = 21,
             QUERY_VIP_LEVEL_ID = 22,
             ADD_VIP_INFO_ID = 23,
-            VIP_C_SUCCESS_ID = 24;
+            VIP_C_SUCCESS_ID = 24,
+            SYNC_GP_INFO_ID = 25;
 }
