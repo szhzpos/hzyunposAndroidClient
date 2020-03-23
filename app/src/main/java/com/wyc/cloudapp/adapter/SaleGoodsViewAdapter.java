@@ -38,13 +38,14 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView row_id,goods_id,goods_title,unit_id,unit_name,barcode_id,barcode,sale_price,sale_num,sale_amt;
+        TextView row_id,gp_id,goods_id,goods_title,unit_id,unit_name,barcode_id,barcode,sale_price,sale_num,sale_amt;
         View mCurrentLayoutItemView;
         MyViewHolder(View itemView) {
             super(itemView);
             mCurrentLayoutItemView = itemView;
             row_id = itemView.findViewById(R.id.row_id);
             goods_id = itemView.findViewById(R.id.goods_id);
+            gp_id = itemView.findViewById(R.id.gp_id);
             goods_title =  itemView.findViewById(R.id.goods_title);
             unit_id =  itemView.findViewById(R.id.unit_id);
             unit_name =  itemView.findViewById(R.id.unit_name);
@@ -71,13 +72,14 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
             if (goods_info != null){
                 myViewHolder.row_id.setText(String.format(Locale.CHINA,"%s%s",i + 1,"、"));
                 myViewHolder.goods_id.setText(goods_info.optString("goods_id"));
+                myViewHolder.gp_id.setText(goods_info.optString("gp_id"));
                 myViewHolder.goods_title.setText(goods_info.optString("goods_title"));
                 myViewHolder.unit_id.setText(goods_info.optString("unit_id"));
                 myViewHolder.unit_name.setText(goods_info.optString("unit_name"));
                 myViewHolder.barcode_id.setText(goods_info.optString("barcode_id"));
                 myViewHolder.barcode.setText(goods_info.optString("barcode"));
                 myViewHolder.sale_price.setText(goods_info.optString("price"));
-                myViewHolder.sale_num.setText(goods_info.optString("sale_num"));
+                myViewHolder.sale_num.setText(goods_info.optString("xnum"));
                 myViewHolder.sale_amt.setText(goods_info.optString("sale_amt"));
 
                 if(myViewHolder.goods_title.getCurrentTextColor() == mContext.getResources().getColor(R.color.blue,null)){
@@ -374,14 +376,17 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     }
 
     private void setCurrentItemIndexAndItemView(View v){
-        TextView tv_id,tv_barcode_id;
+        TextView tv_id,tv_barcode_id,tv_gp_id;
         mCurrentItemView = v;
-        if (null != mCurrentItemView && (tv_id = mCurrentItemView.findViewById(R.id.goods_id)) != null && (tv_barcode_id = mCurrentItemView.findViewById(R.id.barcode_id)) != null){
-            CharSequence id = tv_id.getText(),barcode_id = tv_barcode_id.getText();
+        if (null != mCurrentItemView && (tv_id = mCurrentItemView.findViewById(R.id.goods_id)) != null &&
+                (tv_barcode_id = mCurrentItemView.findViewById(R.id.barcode_id)) != null && (tv_gp_id = mCurrentItemView.findViewById(R.id.gp_id) ) != null){
+
+            CharSequence id = tv_id.getText(),barcode_id = tv_barcode_id.getText(),gp_id = tv_gp_id.getText();
             if (mDatas != null ){
                 for (int i = 0,length = mDatas.length();i < length;i ++){
                     JSONObject json = mDatas.optJSONObject(i);
-                    if (id.equals(json.optString("goods_id")) && barcode_id.equals(json.optString("barcode_id"))){
+                    if (id.equals(json.optString("goods_id")) && barcode_id.equals(json.optString("barcode_id")) &&
+                            gp_id.equals(json.optString("gp_id"))){
                         mCurrentItemIndex = i;
                         return;
                     }
@@ -451,7 +456,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 }
                 notifyDataSetChanged();
             }catch (JSONException e){
-                e.getMessage();
+                e.printStackTrace();
                 MyDialog.ToastMessage("会员折扣错误：" + e.getMessage(),mContext);
             }
         }

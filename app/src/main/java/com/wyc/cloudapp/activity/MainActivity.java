@@ -279,10 +279,7 @@ public class MainActivity extends AppCompatActivity {
         final RecyclerView goods_info_view = findViewById(R.id.goods_info_list);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(MainActivity.this,5);
         goods_info_view.setLayoutManager(gridLayoutManager);
-
         registerGlobalLayoutToRecyclerView(goods_info_view,getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration());
-
-        mGoodsInfoViewAdapter.setDatas(null);
         mGoodsInfoViewAdapter.setOnItemClickListener(new GoodsInfoViewAdapter.OnItemClickListener() {
             View mCurrentView;
             @Override
@@ -291,7 +288,11 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject jsonObject = mGoodsInfoViewAdapter.getItem(pos),content = new JSONObject();
                 if (jsonObject != null){
                     try {
-                        if (mGoodsInfoViewAdapter.getSingleGoods(content,jsonObject.getString("goods_id"),jsonObject.getString("barcode_id"))){
+                        int id = jsonObject.getInt("barcode_id");
+                        if (-1 == id){//组合商品
+                            id = jsonObject.getInt("gp_id");
+                        }
+                        if (mGoodsInfoViewAdapter.getSingleGoods(content,id)){
                             mSaleGoodsViewAdapter.addSaleGoods(content,mVipInfo);
                             mSearch_content.selectAll();
                         }else{
@@ -492,8 +493,6 @@ public class MainActivity extends AppCompatActivity {
                     JSONArray orders = new JSONArray(),sales = mSaleGoodsViewAdapter.getDatas(),
                             pays = myDialog.getContent();
 
-                    Logger.d("sales:%s,pays:%s",sales.toString(),pays.toString());
-
                     String order_code = mOrderCode.getText().toString();
                     try {
                         double sale_sum_amt = Double.valueOf(mSaleSumAmount.getText().toString()),
@@ -539,9 +538,13 @@ public class MainActivity extends AppCompatActivity {
                         for(int i = 0,size = sales.length();i < size;i ++){
                             JSONObject sale = sales.getJSONObject(i);
                             sale.put("order_code",order_code);
-                            sale.put("xnum",sale.remove("xnum"));
-
+                            if (-1 == sale.getInt("gp_id")){
+                                sale.remove("gp_id");
+                            }
+                            sale.remove("goods_id");
                         }
+
+                        Logger.d("orders:%s,sales:%s,pays:%s",orders.toString(),sales.toString(),pays.toString());
 
                     } catch (JSONException e) {
                         e.printStackTrace();

@@ -67,7 +67,7 @@ public class GoodsTypeViewAdapter extends RecyclerView.Adapter<GoodsTypeViewAdap
             }
 
             category_id = view.findViewById(R.id.category_id);
-            if (null != mGoodsInfoAdapter && category_id != null)mGoodsInfoAdapter.setDatas(category_id.getText().toString());
+            if (null != mGoodsInfoAdapter && category_id != null)mGoodsInfoAdapter.setDatas(Integer.valueOf(category_id.getText().toString()));
         });
         return new MyViewHolder(itemView);
     }
@@ -97,7 +97,7 @@ public class GoodsTypeViewAdapter extends RecyclerView.Adapter<GoodsTypeViewAdap
 
     public void setDatas(){
         StringBuilder err = new StringBuilder();
-        mDatas = SQLiteHelper.getList("select category_id,name from shop_category where parent_id='0'",0,0,false,err);
+        mDatas = SQLiteHelper.getList("select category_id,name from shop_category where parent_id='0' union select -1 category_id,'组合商品' name order by category_id desc",0,0,false,err);
         if (mDatas != null){
             this.notifyDataSetChanged();
         }else{
@@ -107,7 +107,7 @@ public class GoodsTypeViewAdapter extends RecyclerView.Adapter<GoodsTypeViewAdap
 
     public void trigger_preView(){
         if (mCurrentItemView != null){
-            if (null != mGoodsInfoAdapter)mGoodsInfoAdapter.setDatas(((TextView) mCurrentItemView.findViewById(R.id.category_id)).getText().toString());
+            if (null != mGoodsInfoAdapter)mGoodsInfoAdapter.setDatas(Integer.valueOf(((TextView) mCurrentItemView.findViewById(R.id.category_id)).getText().toString()));
         }
     }
 
