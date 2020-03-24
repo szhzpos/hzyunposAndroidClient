@@ -46,7 +46,7 @@
 
             <ImageView
                 android:id="@+id/imageView3"
-                android:layout_width="@dimen/top_fun_btn_width"
+                android:layout_width="@dimen/main_top_fun_btn_width"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:contentDescription="@string/deal_sz"
@@ -74,7 +74,7 @@
 
             <ImageView
                 android:id="@+id/imageView"
-                android:layout_width="@dimen/top_fun_btn_width"
+                android:layout_width="@dimen/main_top_fun_btn_width"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:contentDescription="@string/shift_exchange_sz"
@@ -102,7 +102,7 @@
 
             <ImageView
                 android:id="@+id/imageView2"
-                android:layout_width="@dimen/top_fun_btn_width"
+                android:layout_width="@dimen/main_top_fun_btn_width"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:contentDescription="@string/other_sz"

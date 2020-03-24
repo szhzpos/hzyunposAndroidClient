@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.ContentValues;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -34,24 +35,24 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class PayDialog extends Dialog {
     private MainActivity mainActivity;
     private EditText mCashMoneyEt,mZlAmtEt;
-    private onPayStartListener mPayStartListener;//付款完成后触发事件，外部可通过此接口获取付款记录
-    private onPayFinishListener mPayFinishListener;//请求支付完成后触发事件，外部可通过此接口获取支付结果
+    private onPayListener mPayListener;
     private PayMethodViewAdapter mPayMethodViewAdapter;
     private PayDetailViewAdapter mPayDetailViewAdapter;
     private TextView mOrderAmtTv,mDiscountAmtTv,mActualAmtTv,mPayAmtTv,mAmtReceivedTv,mPayBalanceTv;
     private double mOrder_amt = 0.0,mDiscount_amt = 0.0,mActual_amt = 0.0,mPay_amt = 0.0,mAmt_received = 0.0,mPay_balance = 0.0,mCashAmt = 0.0,mZlAmt = 0.0;
     private Button mOK;
     private JSONObject mVip;
+    private boolean mShowPassword = true;
     public PayDialog(MainActivity context){
         super(context);
         mainActivity = context;
@@ -159,13 +160,8 @@ public class PayDialog extends Dialog {
         refreshContent();
     }
 
-    public PayDialog setPayStartListener(onPayStartListener listener) {
-        this.mPayStartListener = listener;
-        return  this;
-    }
-
-    public PayDialog setPayFinishListener(onPayFinishListener listener) {
-        this.mPayFinishListener = listener;
+    public PayDialog setPayFinishListener(onPayListener listener) {
+        this.mPayListener = listener;
         return  this;
     }
 
@@ -173,10 +169,9 @@ public class PayDialog extends Dialog {
         return mPayDetailViewAdapter.getDatas();
     }
 
-    public interface onPayStartListener {
+    public interface onPayListener {
         void onStart(PayDialog myDialog);
-    }
-    public interface onPayFinishListener {
+        void onProgress(PayDialog myDialog,final String info);
         void onSuccess(PayDialog myDialog);
         void onError(PayDialog myDialog,final String err);
     }
@@ -275,8 +270,8 @@ public class PayDialog extends Dialog {
                     refreshContent();
 
                     if (Utils.equalDouble(mActual_amt,mAmt_received)){//支付明细数据发送变化后，计算是否已经付款完成，如果完成触发支付完成事件
-                        if (mPayStartListener != null){
-                            mPayStartListener.onStart(PayDialog.this);
+                        if (mPayListener != null){
+                            mPayListener.onStart(PayDialog.this);
                         }
                     }
                 }catch (JSONException e){
@@ -409,8 +404,8 @@ public class PayDialog extends Dialog {
         return show ? show : initPayContent(mainActivity.showVipInfo(vip));
     }
 
-    public void requestPay(final String order_code, final String url, final String appId, final String appScret, final String stores_id, final String pos_num, Handler handler){
-        if (handler != null)handler.obtainMessage(MessageID.PAY_STATUS_ID,"正在付款...").sendToTarget();
+    public void requestPay(final String order_code, final String url, final String appId, final String appScret, final String stores_id, final String pos_num){
+        if (mPayListener != null)mPayListener.onProgress(PayDialog.this,"正在支付...");
         CustomApplication.execute(()->{
             boolean code = true;
             int is_check;
@@ -424,7 +419,7 @@ public class PayDialog extends Dialog {
             JSONArray pays = SQLiteHelper.getList("select pay_method,pay_money,pay_code,is_check,v_num from retail_order_pays where order_code = '" + order_code +"'",0,0,false,err);
             if (null != pays){
                 try{
-                    for (int i = 0,size = pays.length();i < size;i++){
+                    for (int i = 0,size = pays.length();i < size && code;i++){
                         pay_detail = pays.getJSONObject(i);
 
                         is_check = pay_detail.getInt("is_check");
@@ -469,20 +464,20 @@ public class PayDialog extends Dialog {
 
                                 Logger.i("结账支付参数:url:%s%s,param:%s",url ,unified_pay_order,sz_param);
                                 retJson = httpRequest.sendPost(url + unified_pay_order,sz_param,true);
-                                Logger.i("结账支付请求返回:%s",retJson.toString());
+                                Logger.i("结账支付请求返回:%s",new String(retJson.toString().getBytes(StandardCharsets.UTF_8)));
 
                                 switch (retJson.optInt("flag")){
                                     case 0:
                                         code = false;
                                         err.append("支付错误：").append(retJson.getString("info"));
-                                        return;
+                                        break;
                                     case 1:
-                                        info_json = new JSONObject(retJson.optString("info"));
-                                        switch (info_json.optString("status")){
+                                        info_json = new JSONObject(retJson.getString("info"));
+                                        switch (info_json.getString("status")){
                                             case "n":
                                                 code = false;
                                                 err.append("支付错误：").append(info_json.getString("info"));
-                                                return;
+                                                break;
                                             case "y":
                                                 int res_code = info_json.getInt("res_code");
                                                 switch (res_code){
@@ -493,42 +488,70 @@ public class PayDialog extends Dialog {
                                                     case 2:
                                                         code = false;
                                                         err.append("支付错误：").append(info_json.getString("info"));
-                                                        return;
+                                                        break;
                                                     case 3:
                                                     case 4:
-                                                        if (handler != null)handler.obtainMessage(MessageID.PAY_STATUS_ID,"正在付款结果...").sendToTarget();
-                                                        while (res_code == 3 ||  res_code == 4){
-                                                            data_ = new JSONObject();
-                                                            data_.put("appid",appId);
-                                                            data_.put("pay_code",info_json.getString("pay_code"));
-                                                            data_.put("order_code_son",info_json.getString("order_code_son"));
+                                                        mainActivity.runOnUiThread(()->{
+                                                            if (mPayListener != null)mPayListener.onProgress(PayDialog.this,"正在查询支付状态...");
+                                                        });
+                                                        while (code && (res_code == 3 ||  res_code == 4)){
+                                                            final JSONObject object = new JSONObject();
+                                                            object.put("appid",appId);
+                                                            object.put("pay_code",info_json.getString("pay_code"));
+                                                            object.put("order_code_son",info_json.getString("order_code_son"));
                                                             if (res_code == 4){
-                                                                data_.put("pay_password","");
+                                                                Looper.prepare();
+                                                                final Looper looper = Looper.myLooper();
+
+                                                                mainActivity.runOnUiThread(()->{
+                                                                    ChangeNumOrPriceDialog dialog = new ChangeNumOrPriceDialog(mainActivity,"请输入密码","0");
+                                                                    dialog.setYesOnclickListener(myDialog -> {
+                                                                        looper.quit();
+                                                                        try {
+                                                                            object.put("pay_password",myDialog.getNewNumOrPrice());
+                                                                        } catch (JSONException e) {
+                                                                            e.printStackTrace();
+                                                                        }
+                                                                        myDialog.dismiss();
+                                                                    }).setNoOnclickListener(myDialog -> {
+                                                                        looper.quit();
+                                                                        myDialog.dismiss();
+                                                                    }).show();
+                                                                });
+
+                                                                Looper.loop();
                                                             }
-                                                            sz_param = HttpRequest.generate_request_parm(data_,appScret);
+                                                            sz_param = HttpRequest.generate_request_parm(object,appScret);
 
                                                             Logger.i("结账支付查询参数:url:%s%s,param:%s",url,unified_pay_order,sz_param);
                                                             retJson = httpRequest.sendPost(url + unified_pay_query,sz_param,true);
-                                                            Logger.i("结账支付查询返回:%s",retJson.toString());
+                                                            Logger.i("结账支付查询返回:%s",new String(retJson.toString().getBytes(StandardCharsets.UTF_8)));
 
                                                             switch (retJson.getInt("flag")){
                                                                 case 0:
                                                                     code = false;
-                                                                    err.append("查询支付结果错误：").append(retJson.getString("info"));
-                                                                    return;
+                                                                    err.append(retJson.getString("info"));
+                                                                    break;
                                                                 case 1:
                                                                     info_json = new JSONObject(retJson.optString("info"));
                                                                     Logger.json(info_json.toString());
                                                                     switch (info_json.getString("status")){
                                                                         case "n":
                                                                             code = false;
-                                                                            err.append("查询支付结果错误：").append(info_json.getString("info"));
-                                                                            return;
+                                                                            err.append(info_json.getString("info"));
+                                                                            break;
                                                                         case "y":
                                                                             res_code = info_json.getInt("res_code");
+                                                                            if (res_code == 1){//支付成功
+                                                                                Logger.d_json(info_json.toString());
+                                                                                third_pay_order_id = info_json.getString("pay_code");
+                                                                                discount_money = info_json.getDouble("discount");
+                                                                                pay_time = info_json.getLong("discount");
+                                                                                break;
+                                                                            }
                                                                             if (res_code == 2){//支付失败
                                                                                 code = false;
-                                                                                err.append("支付错误：").append(info_json.getString("info"));
+                                                                                err.append(info_json.getString("info"));
                                                                                 break;
                                                                             }
                                                                             break;
@@ -548,7 +571,6 @@ public class PayDialog extends Dialog {
                                 err.append("付款方式不存在:pay_method_id--").append(pay_method_id);
                             }
                         }
-
                     }
                 }catch (JSONException e){
                     e.printStackTrace();
@@ -566,8 +588,8 @@ public class PayDialog extends Dialog {
                     Logger.d("更新订单状态错误：",err);
                 }
                 mainActivity.runOnUiThread(()->{
-                    if (mPayFinishListener != null){
-                        mPayFinishListener.onError(PayDialog.this,err.toString());
+                    if (mPayListener != null){
+                        mPayListener.onError(PayDialog.this,err.toString());
                     }
                 });
             }else{
@@ -582,14 +604,14 @@ public class PayDialog extends Dialog {
 
                 if (!SQLiteHelper.execBatchUpdateSql(sqls,err)){
                     mainActivity.runOnUiThread(()->{
-                        if (mPayFinishListener != null){
-                            mPayFinishListener.onError(PayDialog.this,err.toString());
+                        if (mPayListener != null){
+                            mPayListener.onError(PayDialog.this,err.toString());
                         }
                     });
                 }else{
                     mainActivity.runOnUiThread(()->{
-                        if (mPayFinishListener != null){
-                            mPayFinishListener.onSuccess(PayDialog.this);
+                        if (mPayListener != null){
+                            mPayListener.onSuccess(PayDialog.this);
                         }
                     });
                 }

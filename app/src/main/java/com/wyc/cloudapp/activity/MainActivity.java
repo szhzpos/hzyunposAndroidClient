@@ -492,16 +492,28 @@ public class MainActivity extends AppCompatActivity {
             final PayDialog dialog = new PayDialog(this);
             if (mVipInfo != null)dialog.showVipInfo(mVipInfo,true);
             if (dialog.initPayContent(datas)){
-                dialog.setPayStartListener(myDialog -> {
-                    try {
-                        if (saveOrderInfo(generateOrderInfo(Utils.JsondeepCopy(datas),Utils.JsondeepCopy(myDialog.getContent())))){
-                            dialog.requestPay(mOrderCode.getText().toString(),mUrl,mAppId,mAppScret,mStoreInfo.getString("stores_id"),mCashierInfo.getString("pos_num"),mHandler);
+                dialog.setPayFinishListener(new PayDialog.onPayListener() {
+                    @Override
+                    public void onStart(PayDialog myDialog) {
+                        try {
+                            if (saveOrderInfo(generateOrderInfo(Utils.JsondeepCopy(datas),Utils.JsondeepCopy(myDialog.getContent())))){
+                                dialog.requestPay(mOrderCode.getText().toString(),mUrl,mAppId,mAppScret,mStoreInfo.getString("stores_id"),mCashierInfo.getString("pos_num"));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            MyDialog.displayErrorMessage("生成订单信息错误：" + e.getMessage(),myDialog.getContext());
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        MyDialog.displayErrorMessage("生成订单信息错误：" + e.getMessage(),this);
                     }
-                }).setPayFinishListener(new PayDialog.onPayFinishListener() {
+
+                    @Override
+                    public void onProgress(PayDialog myDialog,final String info) {
+                        if (mProgressDialog.isShowing()){
+                            mProgressDialog.setMessage(info).refreshMessage();
+                        }else{
+                            mProgressDialog.setCancel(false).setMessage(info).refreshMessage().show();
+                        }
+                    }
+
                     @Override
                     public void onSuccess(PayDialog myDialog) {
                         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
@@ -732,15 +744,16 @@ public class MainActivity extends AppCompatActivity {
             ImageView imageView;
             MainActivity activity = weakHandler.get();
             if (null == activity)return;
-            if (activity.mProgressDialog != null && activity.mProgressDialog.isShowing() && msg.what != MessageID.SYNC_DIS_INFO_ID)activity.mProgressDialog.dismiss();
+
             switch (msg.what){
                 case MessageID.DIS_ERR_INFO_ID:
                 case MessageID.SYNC_ERR_ID://资料同步错误
-                case MessageID.PAY_STATUS_ID:
+                    if (activity.mProgressDialog != null && activity.mProgressDialog.isShowing())activity.mProgressDialog.dismiss();
                     if (msg.obj instanceof String)
                         MyDialog.displayErrorMessage(msg.obj.toString(),activity);
                     break;
                 case MessageID.SYNC_FINISH_ID:
+                    if (activity.mProgressDialog != null && activity.mProgressDialog.isShowing())activity.mProgressDialog.dismiss();
                     activity.mNetworkManagement.start_sync(false);
                     break;
                 case MessageID.TRANSFERSTATUS_ID://传输状态
@@ -782,7 +795,7 @@ public class MainActivity extends AppCompatActivity {
                     if (activity.mProgressDialog != null){
                         activity.mProgressDialog.setMessage(msg.obj.toString()).refreshMessage();
                         if (!activity.mProgressDialog.isShowing()) {
-                            activity.mProgressDialog.show();
+                            activity.mProgressDialog.setCancel(false).show();
                         }
                     }
                     break;

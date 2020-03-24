@@ -154,7 +154,7 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
         mPayAmtEt.setText(String.format(Locale.CHINA,"%.2f",mPayAmt));
         mPayAmtEt.setSelectAllOnFocus(true);
         mPayAmtEt.setOnFocusChangeListener((view, b) -> Utils.hideKeyBoard((EditText) view));
-        mPayAmtEt.postDelayed(()->{ mPayAmtEt.requestFocus();},300);
+        mPayAmtEt.postDelayed(()-> mPayAmtEt.requestFocus(),300);
     }
 
     private void init_pay_code(){

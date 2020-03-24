@@ -57,5 +57,7 @@
     <dimen name="drop_down_height">@dimen/height_45</dimen>
     <dimen name="more_fun_dialog_height">288dp</dimen>
     <dimen name="more_fun_dialog_width">488dp</dimen>
-    <dimen name="top_fun_btn_width">@dimen/width_80</dimen>
+    <dimen name="main_top_fun_btn_width">@dimen/width_80</dimen>
+    <dimen name="more_fun_btn_height">@dimen/height_58</dimen>
+    <dimen name="more_fun_btn_width">@dimen/width_88</dimen>
 </resources>

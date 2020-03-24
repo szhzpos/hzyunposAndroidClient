@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.view.Window;
 import android.view.WindowManager;
@@ -20,14 +21,11 @@ public class CustomProgressDialog extends ProgressDialog
 {
     private String szMessage;
     private TextView mMessage,mShowTimeView;
-    private Myhandler mHandler;
-    private Timer mTimer;
     private long mShowTime = 0;
     private boolean mRestShowTime = true;
     public CustomProgressDialog(Context context)
     {
         super(context,R.style.CustomProgressDialog);
-        mHandler = new Myhandler(this);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -79,22 +77,12 @@ public class CustomProgressDialog extends ProgressDialog
     }
 
     private void startTimer(){
-        if (null == mTimer){
-            mTimer = new Timer();
-            mTimer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    mHandler.obtainMessage(MessageID.DIALOG_SHOW_TIME_ID).sendToTarget();
-                }
-            },0,1000);
-        }
+        updateTime();
     }
 
     private void stopTimer(){
-        if (null != mTimer){
-            mTimer.cancel();
-            mTimer = null;
-        }
+        if (mShowTimeView != null)
+            mShowTimeView.removeCallbacks(null);
     }
 
     public CustomProgressDialog setMessage(final String m){
@@ -103,7 +91,7 @@ public class CustomProgressDialog extends ProgressDialog
     }
 
     public CustomProgressDialog refreshMessage(){
-        mHandler.obtainMessage(MessageID.DIALOG_UPDATE_MESSAGE_ID).sendToTarget();
+        if (null != mMessage)mMessage.postDelayed(()-> mMessage.setText(szMessage),0);
         return this;
     }
 
@@ -112,33 +100,14 @@ public class CustomProgressDialog extends ProgressDialog
         return this;
     }
 
-    public String getSzMessage(){
-        return szMessage;
-    }
-
     public CustomProgressDialog setCancel(boolean b){
         setCancelable(b);
         setCanceledOnTouchOutside(b);
         return this;
     }
-
-    private static class Myhandler extends Handler {
-        private WeakReference<CustomProgressDialog> weakHandler;
-        private Myhandler(CustomProgressDialog customDialog){
-            this.weakHandler = new WeakReference<>(customDialog);
-        }
-        public void handleMessage(Message msg){
-            CustomProgressDialog dialog = weakHandler.get();
-            if (null == dialog)return;
-            switch (msg.what){
-                case MessageID.DIALOG_UPDATE_MESSAGE_ID:
-                    dialog.mMessage.setText(dialog.szMessage);
-                    break;
-                case MessageID.DIALOG_SHOW_TIME_ID:
-                    dialog.mShowTimeView.setText(String.valueOf(++dialog.mShowTime));
-                    if (dialog.mShowTime == 30)dialog.dismiss();
-                    break;
-            }
-        }
+    private void updateTime(){
+        mShowTimeView.setText(String.valueOf(++mShowTime));
+        if (mShowTime == 300)dismiss();
+        mShowTimeView.postDelayed(this::updateTime,1000);
     }
 }
