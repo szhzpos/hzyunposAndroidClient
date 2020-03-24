@@ -21,12 +21,6 @@
         android:visibility="gone" />
 
     <TextView
-        android:id="@+id/unit_id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone" />
-
-    <TextView
         android:id="@+id/goods_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

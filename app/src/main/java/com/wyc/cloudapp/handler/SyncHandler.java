@@ -14,7 +14,6 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.net.HttpURLConnection;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -182,9 +181,9 @@ public class SyncHandler extends Handler {
                                      List<String> goods_group_cols = Arrays.asList("mnemonic_code","gp_id","gp_code","gp_title","gp_price","status","addtime","unit_name","stores_id","img_url"),
                                             goods_group_info_cols = Arrays.asList("xnum","barcode_id","gp_id","_id");
 
-                                    code = SQLiteHelper.execSQLByBatchReplaceJson(tmp_goods,Arrays.asList("goods_group","goods_group_info"),Arrays.asList(goods_group_cols,goods_group_info_cols),err);
+                                    code = SQLiteHelper.execSQLByBatchForJson(tmp_goods,Arrays.asList("goods_group","goods_group_info"),Arrays.asList(goods_group_cols,goods_group_info_cols),err,1);
                                 }else{
-                                    code = SQLiteHelper.execSQLByBatchReplaceJson(data,table_name ,table_cls,err);
+                                    code = SQLiteHelper.execSQLByBatchForJson(data,table_name ,table_cls,err);
                                 }
                                 if (!code) {
                                     if (mReportProgress) {

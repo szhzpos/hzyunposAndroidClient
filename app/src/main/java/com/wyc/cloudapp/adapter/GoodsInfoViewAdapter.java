@@ -13,9 +13,13 @@ import android.widget.TextView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.logger.Logger;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdapter.MyViewHolder> {
 
@@ -139,7 +143,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
     public void fuzzy_search_goods(String search_content){
         StringBuilder err = new StringBuilder();
         String sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,retail_price price\n" +
-                ",ifnull(img_url,'') img_url from barcode_info where goods_status = '1' and  (gp_code like '" + search_content + "%' or mnemonic_code like '" + search_content +"%')\n" +
+                ",ifnull(img_url,'') img_url from barcode_info where goods_status = '1' and  (barcode like '" + search_content + "%' or mnemonic_code like '" + search_content +"%')\n" +
                 "UNION\n" +
                 "select gp_id,-1 goods_id,ifnull(gp_title,'') goods_title,'' unit_id,ifnull(unit_name,'') unit_name,\n" +
                 "-1 barcode_id,ifnull(gp_code,'') barcode,gp_price price,ifnull(img_url,'') img_url from goods_group \n" +
@@ -158,11 +162,11 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
     }
 
     public boolean getSingleGoods(@NonNull JSONObject object,int id){
-       return SQLiteHelper.execSql(object,"select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode," +
-               "retail_price price,ps_price,cost_price,trade_price,buying_price,yh_mode,yh_price from barcode_info where goods_status = '1' and barcode_id = '" + id +"'" +
+       return SQLiteHelper.execSql(object,"select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode," +
+               "retail_price price,ps_price,cost_price,trade_price,buying_price,yh_mode,yh_price,conversion from barcode_info where goods_status = '1' and barcode_id = '" + id +"'" +
                " UNION\n" +
-               "select gp_id ,-1 goods_id,ifnull(gp_title,'') goods_title,'' unit_id,ifnull(unit_name,'') unit_name,\n" +
-               "-1 barcode_id,ifnull(gp_code,'') barcode,gp_price price,0 ps_price,0 cost_price,0 trade_price,gp_price buying_price,0 yh_mode,0 yh_price from goods_group \n" +
+               "select gp_id ,-1 goods_id,ifnull(gp_title,'') goods_title,ifnull(unit_name,'') unit_name,\n" +
+               "-1 barcode_id,ifnull(gp_code,'') barcode,gp_price price,0 ps_price,0 cost_price,0 trade_price,gp_price buying_price,0 yh_mode,0 yh_price,1 conversion from goods_group \n" +
                "where status = '1' and gp_id = '" + id +"'");
     }
 
@@ -174,5 +178,19 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener){
         this.mOnItemClickListener = onItemClickListener;
+    }
+
+    public String generateOrderCode(final String pos_num){
+        String prefix = "P" + pos_num + "-" + new SimpleDateFormat("yyMMddHHmmss").format(new Date()) + "-",order_code ;
+        JSONObject orders= new JSONObject();
+        if (SQLiteHelper.execSql(orders,"SELECT count(order_id) + 1 order_id from retail_order where date(addtime,'unixepoch' ) = date('now')")){
+            order_code =orders.optString("order_id");
+            order_code = prefix + "0000".substring(order_code.length()) + order_code;
+            Logger.d("order_id:%s,length:%d",order_code,order_code.length());
+        }else{
+            order_code = prefix + "0001";;
+            MyDialog.ToastMessage("生成订单号错误：" + orders.optString("info"),mContext);
+        }
+        return order_code;
     }
 }

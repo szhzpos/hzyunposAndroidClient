@@ -16,6 +16,8 @@ import com.wyc.cloudapp.utils.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 public class PayMethodDialog extends AbstractPayDialog {
@@ -79,17 +81,17 @@ public class PayMethodDialog extends AbstractPayDialog {
     @Override
     public JSONObject getContent() {
         try {
-            mPayMethod.put("pamt", mPayAmtEt.getText().toString());
-            mPayMethod.put("pzl",0.00);
             if (mPayCode.getVisibility() == View.VISIBLE){
-                if (mPayCode.getText().length() != 0){
-                    mPayMethod.put("v_num",mPayCode.getText().toString());
-                }else{
+                if (mPayCode.getText().length() == 0){
                     mPayCode.requestFocus();
                     MyDialog.ToastMessage(mPayCode.getHint() + "不能为空！",mContext);
                     return null;
                 }
             }
+            mPayMethod.put("pay_code",getPayCode());
+            mPayMethod.put("pamt", mPayAmtEt.getText().toString());
+            mPayMethod.put("pzl",0.00);
+            mPayMethod.put("v_num",mPayCode.getText().toString());
         } catch (JSONException e) {
             e.printStackTrace();
             MyDialog.ToastMessage("支付错误：" + e.getMessage(),mContext);

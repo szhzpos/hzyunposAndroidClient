@@ -38,7 +38,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView row_id,gp_id,goods_id,goods_title,unit_id,unit_name,barcode_id,barcode,sale_price,sale_num,sale_amt;
+        TextView row_id,gp_id,goods_id,goods_title,unit_name,barcode_id,barcode,sale_price,sale_num,sale_amt;
         View mCurrentLayoutItemView;
         MyViewHolder(View itemView) {
             super(itemView);
@@ -47,7 +47,6 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
             goods_id = itemView.findViewById(R.id.goods_id);
             gp_id = itemView.findViewById(R.id.gp_id);
             goods_title =  itemView.findViewById(R.id.goods_title);
-            unit_id =  itemView.findViewById(R.id.unit_id);
             unit_name =  itemView.findViewById(R.id.unit_name);
             barcode_id =  itemView.findViewById(R.id.barcode_id);
             barcode =  itemView.findViewById(R.id.barcode);
@@ -74,7 +73,6 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 myViewHolder.goods_id.setText(goods_info.optString("goods_id"));
                 myViewHolder.gp_id.setText(goods_info.optString("gp_id"));
                 myViewHolder.goods_title.setText(goods_info.optString("goods_title"));
-                myViewHolder.unit_id.setText(goods_info.optString("unit_id"));
                 myViewHolder.unit_name.setText(goods_info.optString("unit_name"));
                 myViewHolder.barcode_id.setText(goods_info.optString("barcode_id"));
                 myViewHolder.barcode.setText(goods_info.optString("barcode"));
@@ -217,7 +215,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
 
     public void deleteSaleGoods(int index,double num){
         if (0 <= index && index < mDatas.length()){
-            if (num == 0){//等于0全部删除
+            if (num == 0){//等于0删除整条记录
                 mDatas.remove(index);
                 if (mCurrentItemIndex == index){//如果删除的是当前选择的item则重置当前index以及View
                     mCurrentItemIndex = -1;
@@ -239,7 +237,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                     MyDialog.displayErrorMessage("删除商品错误：" + e.getMessage(),mContext);
                 }
             }
-            this.notifyDataSetChanged();
+            notifyDataSetChanged();
         }
     }
 

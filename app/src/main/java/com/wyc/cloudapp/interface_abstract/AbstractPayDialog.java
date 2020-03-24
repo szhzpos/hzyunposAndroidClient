@@ -17,6 +17,9 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.utils.Utils;
 import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 public abstract class AbstractPayDialog extends Dialog implements IPay {
@@ -130,6 +133,10 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
     }
 
     protected abstract void initPayMethod();
+
+    public String getPayCode() {
+        return new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()) + Utils.getNonce_str(8);
+    }
 
     public AbstractPayDialog setYesOnclickListener(onYesOnclickListener listener) {
         if (listener != null){

@@ -53,10 +53,9 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainActivity extends AppCompatActivity {
@@ -395,8 +394,13 @@ public class MainActivity extends AppCompatActivity {
                 if (mKeyboard.getVisibility() == View.GONE){
                     int keyCode = keyEvent.getKeyCode();
                     if (keyCode == KeyEvent.KEYCODE_ENTER){
-                        mGoodsInfoViewAdapter.fuzzy_search_goods(mSearch_content.getText().toString());
-                        mSearch_content.selectAll();
+                        String content = mSearch_content.getText().toString();
+                        if (content.length() == 0){
+                            mGoodsTypeViewAdapter.trigger_preView();
+                        }else{
+                            mGoodsInfoViewAdapter.fuzzy_search_goods(mSearch_content.getText().toString());
+                            mSearch_content.selectAll();
+                        }
                     }
                 }
                 return false;
@@ -483,74 +487,34 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showPayDialog(){
-        JSONArray datas = mSaleGoodsViewAdapter.getDatas();
+        final JSONArray datas = mSaleGoodsViewAdapter.getDatas();
         if (datas.length() != 0){
-            PayDialog dialog = new PayDialog(this);
+            final PayDialog dialog = new PayDialog(this);
             if (mVipInfo != null)dialog.showVipInfo(mVipInfo,true);
             if (dialog.initPayContent(datas)){
-                dialog.setPayFinishListener(myDialog -> {
-                    JSONObject order_info = new JSONObject(),data = new JSONObject();
-                    JSONArray orders = new JSONArray(),sales = mSaleGoodsViewAdapter.getDatas(),
-                            pays = myDialog.getContent();
-
-                    String order_code = mOrderCode.getText().toString();
+                dialog.setPayStartListener(myDialog -> {
                     try {
-                        double sale_sum_amt = Double.valueOf(mSaleSumAmount.getText().toString()),
-                                dis_sum_amt = Double.valueOf(mDisSumAmt.getText().toString()),
-                                total = dis_sum_amt + sale_sum_amt,zl_amt = 0.0;
-
-
-                        long time = System.currentTimeMillis() / 1000;
-
-                        order_info.put("stores_id",mStoreInfo.getString("stores_id"));
-                        order_info.put("order_code",order_code);
-                        order_info.put("total",total);
-                        order_info.put("discount_price",sale_sum_amt);
-                        order_info.put("discount_money",total);
-                        order_info.put("discount",String.format(Locale.CHINA,"%.4f",dis_sum_amt / total));
-                        order_info.put("cashier_id",mCashierInfo.getString("cas_id"));
-                        order_info.put("addtime",time);
-                        order_info.put("pos_code",mCashierInfo.getString("pos_num"));
-                        order_info.put("order_status",1);//订单状态（1未付款，2已付款，3已取消，4已退货）
-                        order_info.put("pay_status",1);//支付状态（1未支付，2已支付，3支付中）
-                        order_info.put("pay_time",time);
-                        order_info.put("upload_status",1);//上传状态（1未上传，2已上传）
-                        order_info.put("upload_time",time);
-                        order_info.put("transfer_status",1);//交班状态（1未交班，2已交班）
-                        order_info.put("transfer_time",0);
-                        order_info.put("is_rk",2);//是否已经扣减库存（1是，2否）
-                        if (mVipInfo != null){
-                            order_info.put("member_id",mVipInfo.getString("member_id"));
-                            order_info.put("mobile",mVipInfo.getString("mobile"));
-                            order_info.put("name",mVipInfo.getString("name"));
-                            order_info.put("card_code",mVipInfo.getString("card_code"));
+                        if (saveOrderInfo(generateOrderInfo(Utils.JsondeepCopy(datas),Utils.JsondeepCopy(myDialog.getContent())))){
+                            dialog.requestPay(mOrderCode.getText().toString(),mUrl,mAppId,mAppScret,mStoreInfo.getString("stores_id"),mCashierInfo.getString("pos_num"),mHandler);
                         }
-                        order_info.put("sc_ids","");
-                        order_info.put("sc_tc_money",0.00);
-                        order_info.put("zl_money",zl_amt);
-                        order_info.put("ss_money",0.0);
-                        order_info.put("remark",mRemark);
-                        order_info.put("zk_cashier_id",zk_cashier_id);//使用折扣的收银员ID,默认当前收银员
-
-                        orders.put(order_info);
-
-                        //处理销售明细
-                        for(int i = 0,size = sales.length();i < size;i ++){
-                            JSONObject sale = sales.getJSONObject(i);
-                            sale.put("order_code",order_code);
-                            if (-1 == sale.getInt("gp_id")){
-                                sale.remove("gp_id");
-                            }
-                            sale.remove("goods_id");
-                        }
-
-                        Logger.d("orders:%s,sales:%s,pays:%s",orders.toString(),sales.toString(),pays.toString());
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                         MyDialog.displayErrorMessage("生成订单信息错误：" + e.getMessage(),this);
                     }
-                    myDialog.dismiss();
+                }).setPayFinishListener(new PayDialog.onPayFinishListener() {
+                    @Override
+                    public void onSuccess(PayDialog myDialog) {
+                        if (mProgressDialog.isShowing())mProgressDialog.dismiss();
+                        resetOrderInfo();
+                        myDialog.dismiss();
+                    }
+
+                    @Override
+                    public void onError(PayDialog myDialog, String err) {
+                        if (mProgressDialog.isShowing())mProgressDialog.dismiss();
+                        resetOrderCode();//提示错误得重置单号
+                        MyDialog.displayErrorMessage("支付错误：" + err,myDialog.getContext());
+                    }
                 }).show();
             }
         }else{
@@ -560,8 +524,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void resetOrderInfo(){
         zk_cashier_id = mRemark  = "";
-
-        mOrderCode.setText(generateOrderCode());
+        resetOrderCode();
+        mSaleGoodsViewAdapter.clearGoods();
         clearVipInfo();
     }
     private void clearVipInfo(){
@@ -575,19 +539,6 @@ public class MainActivity extends AppCompatActivity {
             ((TextView)vip_info_linearLayout.findViewById(R.id.vip_name)).setText(getText(R.string.space_sz));
             ((TextView)vip_info_linearLayout.findViewById(R.id.vip_phone_num)).setText(getText(R.string.space_sz));
         }
-    }
-    private String generateOrderCode(){
-        String prefix = "P" + mCashierInfo.optString("pos_num") + "-" + new android.icu.text.SimpleDateFormat("yyMMddHHmmss").format(new Date()) + "-",order_code ;
-        JSONObject orders= new JSONObject();
-        if (SQLiteHelper.execSql(orders,"SELECT count(order_id) + 1 order_id from retail_order where date(addtime,'unixepoch' ) = date('now')")){
-            order_code =orders.optString("order_id");
-            order_code = prefix + "0000".substring(order_code.length()) + order_code;
-            Logger.d("order_id:%s,length:%d",order_code,order_code.length());
-        }else{
-            order_code = prefix + "0001";;
-            MyDialog.ToastMessage("生成订单号错误：" + orders.optString("info"),this);
-        }
-        return order_code;
     }
     private void registerGlobalLayoutToRecyclerView(@NonNull final View view,final float size,@NonNull final SuperItemDecoration superItemDecoration){
         view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -616,6 +567,131 @@ public class MainActivity extends AppCompatActivity {
     }
     private void setDisCashierId(final String id){
         zk_cashier_id = id;
+    }
+    private JSONObject generateOrderInfo(JSONArray sales_data,JSONArray pays_data) throws JSONException {
+        double sale_sum_amt = Double.valueOf(mSaleSumAmount.getText().toString()),
+                dis_sum_amt = Double.valueOf(mDisSumAmt.getText().toString()),
+                total = dis_sum_amt + sale_sum_amt,zl_amt = 0.0;
+
+        long time = System.currentTimeMillis() / 1000;
+
+        JSONObject order_info = new JSONObject(),data = new JSONObject();
+        JSONArray orders = new JSONArray();
+
+        String order_code = mOrderCode.getText().toString();
+
+        order_info.put("stores_id",mStoreInfo.getString("stores_id"));
+        order_info.put("order_code",order_code);
+        order_info.put("total",total);
+        order_info.put("discount_price",sale_sum_amt);
+        order_info.put("discount_money",total);
+        order_info.put("discount",String.format(Locale.CHINA,"%.4f",dis_sum_amt / total));
+        order_info.put("cashier_id",mCashierInfo.getString("cas_id"));
+        order_info.put("addtime",time);
+        order_info.put("pos_code",mCashierInfo.getString("pos_num"));
+        order_info.put("order_status",1);//订单状态（1未付款，2已付款，3已取消，4已退货）
+        order_info.put("pay_status",1);//支付状态（1未支付，2已支付，3支付中）
+        order_info.put("pay_time",time);
+        order_info.put("upload_status",1);//上传状态（1未上传，2已上传）
+        order_info.put("upload_time",time);
+        order_info.put("transfer_status",1);//交班状态（1未交班，2已交班）
+        order_info.put("transfer_time",0);
+        order_info.put("is_rk",2);//是否已经扣减库存（1是，2否）
+        if (mVipInfo != null){
+            order_info.put("member_id",mVipInfo.getString("member_id"));
+            order_info.put("mobile",mVipInfo.getString("mobile"));
+            order_info.put("name",mVipInfo.getString("name"));
+            order_info.put("card_code",mVipInfo.getString("card_code"));
+        }
+        order_info.put("sc_ids","");
+        order_info.put("sc_tc_money",0.00);
+        order_info.put("zl_money",zl_amt);
+        order_info.put("ss_money",0.0);
+        order_info.put("remark",mRemark);
+        order_info.put("zk_cashier_id",zk_cashier_id);//使用折扣的收银员ID,默认当前收银员
+
+        orders.put(order_info);
+
+        //处理销售明细
+        for(int i = 0,size = sales_data.length();i < size;i ++){
+            JSONObject sale = sales_data.getJSONObject(i);
+            sale.put("order_code",order_code);
+
+            sale.remove("goods_id");
+            sale.remove("discount");
+            sale.remove("discount_amt");
+            sale.remove("sale_amt");
+            sale.remove("order_amt");
+            sale.remove("goods_title");
+            sale.remove("unit_name");
+            sale.remove("yh_mode");
+            sale.remove("yh_price");
+
+            sale.put("y_price",sale.remove("old_price"));
+        }
+
+        //处理付款明细
+        for (int i= 0,size = pays_data.length();i < size;i++){
+            JSONObject tmp = pays_data.getJSONObject(i),pay = new JSONObject();
+
+            Logger.d_json(tmp.toString());
+
+            pay.put("order_code",order_code);
+            pay.put("pay_code",tmp.getString("pay_code"));
+            pay.put("pay_method",tmp.getString("pay_method_id"));
+            pay.put("pay_money",tmp.getDouble("pamt"));
+            pay.put("is_check",tmp.getDouble("is_check"));
+            pay.put("pay_time",0);
+            pay.put("pay_status",1);
+            pay.put("pay_serial_no","");//第三方返回的支付流水号
+            pay.put("remark","");
+            pay.put("zk_money",0.0);
+            pay.put("pre_sale_money",0.0);
+            pay.put("give_change_money",tmp.getDouble("pzl"));
+            pay.put("discount_money",0.0);
+            pay.put("xnote","");
+            pay.put("return_code","");
+            pay.put("v_num",tmp.getString("v_num"));
+            pay.put("print_info","");
+
+            pays_data.put(i,pay);
+        }
+
+        data.put("retail_order",orders);
+        data.put("retail_order_goods",sales_data);
+        data.put("retail_order_pays",pays_data);
+
+        return data;
+    }
+    private boolean saveOrderInfo(JSONObject data){
+        boolean code = true;
+        StringBuilder err = new StringBuilder();
+        List<String>  tables = Arrays.asList("retail_order","retail_order_goods","retail_order_pays");
+                /*retail_order_cols = Arrays.asList("stores_id","order_code","discount","discount_price","total","cashier_id","addtime","pos_code","order_status","pay_status","pay_time","upload_status",
+                        "upload_time","transfer_status","transfer_time","is_rk","mobile","name","card_code","sc_ids","sc_tc_money","member_id","discount_money","zl_money","ss_money","remark","zk_cashier_id"),
+                retail_order_goods_cols = Arrays.asList("order_code","barcode_id","xnum","price","buying_price","retail_price","trade_price","cost_price","ps_price","tax_rate","tc_mode","tc_rate","gp_id",
+                        "zk_cashier_id","total_money","conversion","barcode","y_price"),
+                retail_order_pays_cols = Arrays.asList("order_code","pay_method","pay_money","pay_time","pay_status","pay_serial_no","pay_code","remark","is_check","zk_money","pre_sale_money","give_change_money",
+                        "discount_money","xnote","card_no","return_code","print_info");*/
+                JSONObject count_json = new JSONObject();
+        if ((code = SQLiteHelper.execSql(count_json,"select count(order_code) counts from retail_order where order_code = '" + mOrderCode.getText() +"' and stores_id = '" + mStoreInfo.optString("stores_id") +"'"))){
+            if (0 == count_json.optInt("counts")){
+                if ((code = SQLiteHelper.execSQLByBatchForJson(data,tables,null,err,0))){
+                    Logger.d_json(data.toString());
+                }else{
+                    MyDialog.displayErrorMessage("保存订单信息错误：" + err,this);
+                }
+            }else{
+                code = false;
+                MyDialog.displayErrorMessage("本地已存在此订单信息，请重新下单！",this);
+            }
+        }else{
+            MyDialog.displayErrorMessage("查询订单信息错误：" + count_json.optString("info"),this);
+        }
+        return code;
+    }
+    private void resetOrderCode(){
+        mOrderCode.setText(mGoodsInfoViewAdapter.generateOrderCode(mCashierInfo.optString("pos_num")));
     }
 
     public JSONArray discount(double discount,final String zk_cashier_id){
@@ -660,6 +736,7 @@ public class MainActivity extends AppCompatActivity {
             switch (msg.what){
                 case MessageID.DIS_ERR_INFO_ID:
                 case MessageID.SYNC_ERR_ID://资料同步错误
+                case MessageID.PAY_STATUS_ID:
                     if (msg.obj instanceof String)
                         MyDialog.displayErrorMessage(msg.obj.toString(),activity);
                     break;

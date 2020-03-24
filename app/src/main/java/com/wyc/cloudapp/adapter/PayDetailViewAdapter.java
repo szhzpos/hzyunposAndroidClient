@@ -102,7 +102,7 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
 
                 contentHolder.mCurrentLayoutItemView.setOnTouchListener(new ClickListener(v -> {
                     setCurrentItemIndexAndItemView(v);
-                    deletePayDetail(mCurrentItemIndex,0);
+                    deletePayDetail(mCurrentItemIndex);
                     if (mOnItemDoubleClickListener != null){
                         mOnItemDoubleClickListener.onClick(v,i);
                     }
@@ -198,32 +198,15 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
     }
 
-    public void deletePayDetail(int index,double num){
+    public void deletePayDetail(int index){
         Logger.d("index:%d",index);
         if (0 <= index && index < mDatas.length()){
-            if (num == 0){//等于0全部删除
-                mDatas.remove(index);
-                if (mCurrentItemIndex == index){//如果删除的是当前选择的item则重置当前index以及View
-                    mCurrentItemIndex = -1;
-                    mCurrentItemView = null;
-                }
-            }else{
-                JSONObject jsonObject = mDatas.optJSONObject(index);
-                try {
-                    double current_num = jsonObject.getDouble("sale_num"),
-                            price = jsonObject.getDouble("buying_price");
-                    if ((current_num = current_num - num) <= 0){
-                        mDatas.remove(index);
-                    }else{
-                        jsonObject.put("sale_num",current_num);
-                        jsonObject.put("sale_amount", Utils.formatDouble(current_num * price,4));
-                    }
-                }catch (JSONException e){
-                    e.printStackTrace();
-                    MyDialog.displayErrorMessage("删除商品错误：" + e.getMessage(),mContext);
-                }
+            mDatas.remove(index);
+            if (mCurrentItemIndex == index){//如果删除的是当前选择的item则重置当前index以及View
+                mCurrentItemIndex = -1;
+                mCurrentItemView = null;
             }
-            this.notifyItemRangeRemoved(0,index);
+            notifyDataSetChanged();
         }
     }
 

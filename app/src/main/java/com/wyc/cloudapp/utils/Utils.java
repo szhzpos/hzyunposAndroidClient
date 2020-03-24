@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParser;
@@ -339,7 +340,9 @@ public class Utils {
     public static JSONObject JsondeepCopy(JSONObject jsonObject) throws JSONException {
         return new JSONObject(jsonObject.toString());
     }
-
+    public static JSONArray JsondeepCopy(JSONArray jsons) throws JSONException {
+        return new JSONArray(jsons.toString());
+    }
     public static boolean equalDouble(double a,double b){
         return Math.abs(a - b) < 0.00001;
     }
