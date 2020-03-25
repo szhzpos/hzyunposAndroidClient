@@ -337,6 +337,9 @@ public class MainActivity extends AppCompatActivity {
                 JSONArray datas = mSaleGoodsViewAdapter.getDatas();
                 double sale_sum_num = 0.0,sale_sum_amount = 0.0,dis_sum_amt = 0.0;
                 try {
+
+                    mSaleGoodsViewAdapter.splitCombinationalGoods();
+
                     for (int i = 0,length = datas.length();i < length;i ++){
                         JSONObject jsonObject = datas.getJSONObject(i);
                         sale_sum_num += jsonObject.getDouble("xnum");
@@ -496,7 +499,9 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onStart(PayDialog myDialog) {
                         try {
-                            if (saveOrderInfo(generateOrderInfo(Utils.JsondeepCopy(datas),Utils.JsondeepCopy(myDialog.getContent())))){
+                            JSONObject order = generateOrderInfo(Utils.JsondeepCopy(datas),Utils.JsondeepCopy(myDialog.getContent()));
+                            if (null != order)
+                            if (saveOrderInfo(order)){
                                 dialog.requestPay(mOrderCode.getText().toString(),mUrl,mAppId,mAppScret,mStoreInfo.getString("stores_id"),mCashierInfo.getString("pos_num"));
                             }
                         } catch (JSONException e) {
@@ -589,8 +594,9 @@ public class MainActivity extends AppCompatActivity {
 
         long time = System.currentTimeMillis() / 1000;
 
-        JSONObject order_info = new JSONObject(),data = new JSONObject();
-        JSONArray orders = new JSONArray();
+        JSONObject order_info = new JSONObject(),data = new JSONObject(),tmp_json;
+        JSONArray orders = new JSONArray(),combination_goods = new JSONArray();
+        StringBuilder err = new StringBuilder();
 
         String order_code = mOrderCode.getText().toString();
 
@@ -627,72 +633,65 @@ public class MainActivity extends AppCompatActivity {
         orders.put(order_info);
 
         //处理销售明细
-        for(int i = 0,size = sales_data.length();i < size;i ++){
-            JSONObject sale = sales_data.getJSONObject(i);
-            int gp_id = sale.getInt("gp_id");
+        for(int i = 0;i < sales_data.length();i ++){
+            tmp_json = sales_data.getJSONObject(i);
+            int gp_id = tmp_json.getInt("gp_id");
             if (-1 != gp_id){
-
-                final String order_sum_sql = "select b.xnum xnum,(b.xnum * b.retail_price / a.amt) * b.gp_price / case b.xnum when 0 then 1 else b.xnum end price,\n" +
-                        "b.barcode_id barcode_id,b.barcode barcode,b.conversion conversion,b.gp_id gp_id,b.tc_rate tc_rate,b.tc_mode tc_mode,b.tax_rate tax_rate,b.ps_price ps_price,b.cost_price cost_price\n" +
-                        ",b.trade_price trade_price,b.retail_price retail_price,b.buying_price buying_price from vi_goods_group_info b inner join \n" +
-                        "(select case sum(xnum * retail_price) when 0 then 1 else sum(xnum * retail_price) end amt,gp_id \n" +
-                        "from vi_goods_group_info group by gp_id) a on a.gp_id = b.gp_id where b.gp_id =" +  gp_id +" group by barcode_id;";
-                JSONArray arrays;
-                StringBuilder err = new StringBuilder();
-                if (null != (arrays = SQLiteHelper.getListToJson(order_sum_sql,err))){
-                    for (int k = 0,length = arrays.length();k < length;k++){
-                        JSONObject object = arrays.getJSONObject(k);
-                        object.put("order_code",order_code);
-                        object.put("zk_cashier_id",zk_cashier_id);//使用折扣的收银员ID,默认当前收银员
-                        object.put("total_money",sale.remove("sale_amt"));
-                        object.put("y_price",sale.remove("old_price"));
-
-                        sales_data.put(i,object);
-                    }
-                }else{
-                    Logger.d("拆分组合商品错误：" + err);
-                }
-                Logger.d_json(sales_data.toString());
+                sales_data.remove(i--);
+                /*if (!mSaleGoodsViewAdapter.splitCombinationalGoods(combination_goods,gp_id,tmp_json.getDouble("price"),tmp_json.getDouble("xnum"),err)){
+                    MyDialog.displayErrorMessage("拆分组合商品错误：" + err,this);
+                    return null;
+                }*/
                 continue;
             }
-            sale.put("order_code",order_code);
-            sale.put("zk_cashier_id",zk_cashier_id);//使用折扣的收银员ID,默认当前收银员
-            sale.put("total_money",sale.remove("sale_amt"));
-            sale.put("y_price",sale.remove("old_price"));
+            tmp_json.put("order_code",order_code);
+            tmp_json.put("zk_cashier_id",zk_cashier_id);//使用折扣的收银员ID,默认当前收银员
+            tmp_json.put("total_money",tmp_json.remove("sale_amt"));
+            tmp_json.put("y_price",tmp_json.remove("old_price"));
 
             ///删除不需要的内容
-            sale.remove("goods_id");
-            sale.remove("discount");
-            sale.remove("discount_amt");
-            sale.remove("order_amt");
-            sale.remove("goods_title");
-            sale.remove("unit_name");
-            sale.remove("yh_mode");
-            sale.remove("yh_price");
+            tmp_json.remove("goods_id");
+            tmp_json.remove("discount");
+            tmp_json.remove("discount_amt");
+            tmp_json.remove("order_amt");
+            tmp_json.remove("goods_title");
+            tmp_json.remove("unit_name");
+            tmp_json.remove("yh_mode");
+            tmp_json.remove("yh_price");
+        }
+        //处理组合商品
+        combination_goods = mSaleGoodsViewAdapter.getCombinationalDatas();
+        for(int i = 0,size = combination_goods.length();i < size;i++){
+            tmp_json = combination_goods.getJSONObject(i);
+            tmp_json.put("order_code",order_code);
+            tmp_json.put("zk_cashier_id",zk_cashier_id);//使用折扣的收银员ID,默认当前收银员
+            tmp_json.put("total_money",String.format(Locale.CHINA,"%.2f",tmp_json.getDouble("xnum") * tmp_json.getDouble("price")));
+            tmp_json.put("y_price",tmp_json.getDouble("retail_price"));
 
-
+            sales_data.put(tmp_json);
         }
 
         //处理付款明细
         for (int i= 0,size = pays_data.length();i < size;i++){
-            JSONObject tmp = pays_data.getJSONObject(i),pay = new JSONObject();
+            tmp_json = pays_data.getJSONObject(i);
+            JSONObject pay = new JSONObject();
 
             pay.put("order_code",order_code);
-            pay.put("pay_code",tmp.getString("pay_code"));
-            pay.put("pay_method",tmp.getString("pay_method_id"));
-            pay.put("pay_money",tmp.getDouble("pamt"));
-            pay.put("is_check",tmp.getDouble("is_check"));
+            pay.put("pay_code",tmp_json.getString("pay_code"));
+            pay.put("pay_method",tmp_json.getString("pay_method_id"));
+            pay.put("pay_money",tmp_json.getDouble("pamt"));
+            pay.put("is_check",tmp_json.getDouble("is_check"));
             pay.put("pay_time",0);
             pay.put("pay_status",1);
             pay.put("pay_serial_no","");//第三方返回的支付流水号
             pay.put("remark","");
             pay.put("zk_money",0.0);
             pay.put("pre_sale_money",0.0);
-            pay.put("give_change_money",tmp.getDouble("pzl"));
+            pay.put("give_change_money",tmp_json.getDouble("pzl"));
             pay.put("discount_money",0.0);
             pay.put("xnote","");
             pay.put("return_code","");
-            pay.put("v_num",tmp.getString("v_num"));
+            pay.put("v_num",tmp_json.getString("v_num"));
             pay.put("print_info","");
 
             pays_data.put(i,pay);
@@ -732,11 +731,7 @@ public class MainActivity extends AppCompatActivity {
     private void resetOrderCode(){
         mOrderCode.setText(mGoodsInfoViewAdapter.generateOrderCode(mCashierInfo.optString("pos_num")));
     }
-    private void splitCombinationGodds(){
-
-    }
-
-    public JSONArray discount(double discount,final String zk_cashier_id){
+     public JSONArray discount(double discount,final String zk_cashier_id){
         if (null == zk_cashier_id || "".equals(zk_cashier_id)){
             setDisCashierId(mCashierInfo.optString("cas_id"));
         }else

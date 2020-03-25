@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.network.sync;
 
+import android.content.ContentValues;
 import android.os.Handler;
 import android.os.Message;
 
@@ -269,7 +270,7 @@ public class SyncHandler extends Handler {
                 sql_combination_goods = "SELECT b . retail_price, a . xnum , c.gp_price,c.gp_id,d.zk_cashier_id,d.order_code FROM  goods_group_info a LEFT JOIN  barcode_info b on a . barcode_id = b . barcode_id\n" +
                         " LEFT JOIN goods_group c on c . gp_id = a . gp_id  AND c . status = 1 left join retail_order_goods d on c.gp_id = d.gp_id and d.barcode_id = b.barcode_id " +
                         "WHERE d.order_code = '%2' and d.gp_id in (%1)";
-        int gp_id = -1;
+        int gp_id;
         String order_code;
 
         JSONArray orders,sales ,pays ,combinations;
@@ -333,7 +334,13 @@ public class SyncHandler extends Handler {
                                             err.append(retJson.getString("info"));
                                             break;
                                         case "y":
-                                            Logger.d("order_codes:%s",retJson);
+                                            Logger.d("old_order_code:%s,order_code:%s",order_code,retJson.getString("order_code"));
+                                            ContentValues values = new ContentValues();
+                                            values.put("upload_status",2);
+                                            values.put("upload_time",System.currentTimeMillis() / 1000);
+                                            if (!SQLiteHelper.execUpdateSql("retail_order",values,"order_code = ?",new String[]{order_code},err)){
+                                                code = false;
+                                            }
                                             break;
                                     }
                                     break;
