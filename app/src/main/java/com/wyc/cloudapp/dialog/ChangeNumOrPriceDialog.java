@@ -56,7 +56,11 @@ public class ChangeNumOrPriceDialog extends Dialog {
             }
         });
         findViewById(R.id._close).setOnClickListener(v -> {
-            ChangeNumOrPriceDialog.this.dismiss();
+            if (noOnclickListener != null){
+                noOnclickListener.onNoClick(ChangeNumOrPriceDialog.this);
+            }else{
+                ChangeNumOrPriceDialog.this.dismiss();
+            }
         });
         findViewById(R.id._back).setOnClickListener(v -> {
             View view =  getCurrentFocus();
@@ -110,10 +114,23 @@ public class ChangeNumOrPriceDialog extends Dialog {
         return  this;
     }
 
-    public double getNewNumOrPrice(){
+    public double getContentToDouble(){
         Editable editable = new_price_text.getText();
-        if (editable.length() == 0)return Double.valueOf(mInitVal);
-        return  Double.valueOf(editable.toString());
+        double code = 0.0;
+        try {
+            if (editable.length() == 0){
+                code = Double.valueOf(mInitVal);
+            }else{
+                code = Double.valueOf(editable.toString());
+            }
+        }catch (NumberFormatException e){
+            e.printStackTrace();
+        }
+        return code;
+    }
+
+    public String getContentToStr(){
+        return new_price_text.getText().toString();
     }
 
     public interface onYesOnclickListener {

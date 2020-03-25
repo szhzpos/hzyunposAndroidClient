@@ -134,7 +134,7 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
 
     protected abstract void initPayMethod();
 
-    public String getPayCode() {
+    protected String getPayCode() {
         return new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()) + Utils.getNonce_str(8);
     }
 

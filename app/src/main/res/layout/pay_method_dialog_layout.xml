@@ -83,7 +83,7 @@
                 android:paddingStart="@dimen/margin_5"
                 android:paddingEnd="0dp"
                 android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_14"
+                android:textSize="@dimen/font_size_16"
                 android:visibility="gone" />
 
         </LinearLayout>

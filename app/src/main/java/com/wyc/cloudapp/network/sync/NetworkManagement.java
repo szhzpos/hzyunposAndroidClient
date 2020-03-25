@@ -1,22 +1,9 @@
-package com.wyc.cloudapp.network;
+package com.wyc.cloudapp.network.sync;
 
 import android.os.Handler;
 import android.os.Looper;
 
-import com.wyc.cloudapp.handler.SyncHandler;
-import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.MessageID;
-import com.wyc.cloudapp.utils.http.HttpRequest;
-import com.wyc.cloudapp.utils.Utils;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.net.HttpURLConnection;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NetworkManagement extends Thread {
     private CountDownLatch handlerInitLatch;
@@ -76,5 +63,9 @@ public class NetworkManagement extends Thread {
         }else{
             mSyncHandler.startNetworkTest();
         }
+    }
+    public void sync_order(){
+        if (mSyncHandler == null)mSyncHandler = getHandler();
+        mSyncHandler.startUploadOrder();
     }
 }

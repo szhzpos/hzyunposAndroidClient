@@ -3,7 +3,6 @@ package com.wyc.cloudapp.dialog;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -27,7 +26,6 @@ import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
@@ -52,7 +50,7 @@ public class PayDialog extends Dialog {
     private double mOrder_amt = 0.0,mDiscount_amt = 0.0,mActual_amt = 0.0,mPay_amt = 0.0,mAmt_received = 0.0,mPay_balance = 0.0,mCashAmt = 0.0,mZlAmt = 0.0;
     private Button mOK;
     private JSONObject mVip;
-    private boolean mShowPassword = true;
+
     public PayDialog(MainActivity context){
         super(context);
         mainActivity = context;
@@ -130,7 +128,7 @@ public class PayDialog extends Dialog {
             public void onClick(View view) {
                 ChangeNumOrPriceDialog dialog = new ChangeNumOrPriceDialog(mainActivity,mainActivity.getString(R.string.discount_sz),String.format(Locale.CHINA,"%d",100));
                 dialog.setYesOnclickListener(myDialog -> {
-                    if (initPayContent(mainActivity.discount(myDialog.getNewNumOrPrice(),""))){
+                    if (initPayContent(mainActivity.discount(myDialog.getContentToDouble(),""))){
                         refreshContent();
                         myDialog.dismiss();
                     }
@@ -506,21 +504,22 @@ public class PayDialog extends Dialog {
                                                                 mainActivity.runOnUiThread(()->{
                                                                     ChangeNumOrPriceDialog dialog = new ChangeNumOrPriceDialog(mainActivity,"请输入密码","0");
                                                                     dialog.setYesOnclickListener(myDialog -> {
-                                                                        looper.quit();
                                                                         try {
-                                                                            object.put("pay_password",myDialog.getNewNumOrPrice());
+                                                                            object.put("pay_password",myDialog.getContentToStr());
                                                                         } catch (JSONException e) {
                                                                             e.printStackTrace();
                                                                         }
                                                                         myDialog.dismiss();
-                                                                    }).setNoOnclickListener(myDialog -> {
                                                                         looper.quit();
+                                                                    }).setNoOnclickListener(myDialog -> {
                                                                         myDialog.dismiss();
+                                                                        looper.quit();
                                                                     }).show();
                                                                 });
 
                                                                 Looper.loop();
                                                             }
+
                                                             sz_param = HttpRequest.generate_request_parm(object,appScret);
 
                                                             Logger.i("结账支付查询参数:url:%s%s,param:%s",url,unified_pay_order,sz_param);
@@ -546,7 +545,7 @@ public class PayDialog extends Dialog {
                                                                                 Logger.d_json(info_json.toString());
                                                                                 third_pay_order_id = info_json.getString("pay_code");
                                                                                 discount_money = info_json.getDouble("discount");
-                                                                                pay_time = info_json.getLong("discount");
+                                                                                pay_time = info_json.getLong("pay_time");
                                                                                 break;
                                                                             }
                                                                             if (res_code == 2){//支付失败

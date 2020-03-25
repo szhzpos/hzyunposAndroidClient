@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.handler;
+package com.wyc.cloudapp.network.sync;
 
 import android.os.Handler;
 import android.os.Message;
@@ -26,7 +26,7 @@ public class SyncHandler extends Handler {
     private boolean mReportProgress = true;
     private int mCurrentNeworkStatusCode = HttpURLConnection.HTTP_OK;
     private long mSyncInterval = 3000,mLoseTime = 0;//mSyncInterval 同步时间间隔，默认3秒
-    public SyncHandler(Handler handler,final String url, final String appid, final String appscret,final String stores_id,final String pos_num, final String operid){
+    SyncHandler(Handler handler,final String url, final String appid, final String appscret,final String stores_id,final String pos_num, final String operid){
         this.syncActivityHandler = handler;
         mHttp = new HttpRequest();
         mHttp.setConnTimeOut(3000);
@@ -111,6 +111,9 @@ public class SyncHandler extends Handler {
                         mLoseTime = System.currentTimeMillis();
                         sync();
                     }
+                    return;
+                case MessageID.UPLOAD_ORDER_ID:
+                    uploadOrderInfo();
                     return;
             }
 
@@ -213,10 +216,7 @@ public class SyncHandler extends Handler {
                 Logger.e("%s",sys_name);
         }
     }
-    public void stop(){
-        this.removeCallbacksAndMessages(null);
-        if (mHttp != null)mHttp.clearConnection(HttpRequest.CLOSEMODE.BOTH);
-    }
+
     private void testNetworkStatus(){
         JSONObject data = new JSONObject(),retJson,info_json;
         final String prefix = "网络检测错误：",test_url = mUrl + "/api/heartbeat/index";
@@ -259,10 +259,115 @@ public class SyncHandler extends Handler {
         }
 
     }
-    public void setReportProgress(boolean b){
+    private void uploadOrderInfo() {
+        boolean code = true;
+        final StringBuilder err = new StringBuilder(),order_gp_ids = new StringBuilder();
+        final String sql_orders = "SELECT discount_money,card_code,name,mobile,transfer_time,transfer_status,pay_time,pay_status,order_status,pos_code,addtime,cashier_id,total,\n" +
+                "discount_price,order_code,stores_id,spare_param1,spare_param2,remark FROM retail_order where order_status = 2 and pay_status = 2 and upload_status = 1 limit 50",
+                sql_goods_detail = "select conversion,zk_cashier_id,gp_id,tc_rate,tc_mode,tax_rate,ps_price,cost_price,trade_price,retail_price,buying_price,price,xnum,barcode_id from retail_order_goods where order_code = '%1'",
+                sql_pays_detail = "select print_info,return_code,card_no,xnote,discount_money,give_change_money,pre_sale_money,zk_money,is_check,remark,pay_code,pay_serial_no,pay_status,pay_time,pay_money,pay_method,order_code from retail_order_pays where order_code = '%1'",
+                sql_combination_goods = "SELECT b . retail_price, a . xnum , c.gp_price,c.gp_id,d.zk_cashier_id,d.order_code FROM  goods_group_info a LEFT JOIN  barcode_info b on a . barcode_id = b . barcode_id\n" +
+                        " LEFT JOIN goods_group c on c . gp_id = a . gp_id  AND c . status = 1 left join retail_order_goods d on c.gp_id = d.gp_id and d.barcode_id = b.barcode_id " +
+                        "WHERE d.order_code = '%2' and d.gp_id in (%1)";
+        int gp_id = -1;
+        String order_code;
+
+        JSONArray orders,sales ,pays ,combinations;
+        JSONObject data = new JSONObject(),send_data = new JSONObject(),retJson,tmp_jsonObject;
+        HttpRequest httpRequest = new HttpRequest();
+
+        if (null != (orders = SQLiteHelper.getListToJson(sql_orders,err))){
+            try {
+                for (int i = 0,size = orders.length();i < size;i++){
+                    order_gp_ids.delete(0,order_gp_ids.length());
+
+                    JSONArray order_arr = new JSONArray();
+                    tmp_jsonObject = orders.getJSONObject(i);
+                    order_arr.put(tmp_jsonObject);
+
+                    order_code = tmp_jsonObject.getString("order_code");
+
+                    sales = SQLiteHelper.getListToJson(sql_goods_detail.replace("%1",order_code),err);
+                    pays = SQLiteHelper.getListToJson(sql_pays_detail.replace("%1",order_code),err);
+                    if (null != sales && null != pays){
+
+                        for (int j = 0,j_size = sales.length();j < j_size;j++){
+                            tmp_jsonObject = sales.getJSONObject(j);
+                            gp_id = tmp_jsonObject.getInt("gp_id");
+                            if (-1 != gp_id){
+                                if (j > 0){
+                                    if (gp_id == sales.getJSONObject(j -1).getInt("gp_id"))continue;
+                                }
+                                if (order_gp_ids.length() == 0){
+                                    order_gp_ids.append("'").append(gp_id).append("'");
+                                }else{
+                                    order_gp_ids.append(",").append("'").append(gp_id).append("'");
+                                }
+                            }
+                        }
+
+                        Logger.d(sql_combination_goods.replace("%1",order_gp_ids).replace("%2",order_code));
+
+                        if ((combinations = SQLiteHelper.getListToJson(sql_combination_goods.replace("%1",order_gp_ids).replace("%2",order_code),err)) != null){
+                            data.put("order_arr",order_arr);
+                            data.put("order_goods",sales);
+                            data.put("order_pay",pays);
+                            data.put("order_group",combinations);
+
+                            Logger.d_json(data.toString());
+
+                            send_data.put("appid",mAppId);
+                            send_data.put("data",data);
+
+                            retJson = httpRequest.sendPost(mUrl + "/api/retail/order_upload",HttpRequest.generate_request_parm(send_data,mAppScret),true);
+                            switch (retJson.getInt("flag")){
+                                case 0:
+                                    code = false;
+                                    err.append(retJson.getString("info"));
+                                    break;
+                                case 1:
+                                    retJson = new JSONObject(retJson.getString("info"));
+                                    switch (retJson.getString("status")){
+                                        case "n":
+                                            code = false;
+                                            err.append(retJson.getString("info"));
+                                            break;
+                                        case "y":
+                                            Logger.d("order_codes:%s",retJson);
+                                            break;
+                                    }
+                                    break;
+                            }
+                        }else{
+                            code = false;
+                        }
+                    }else{
+                        code = false;
+                    }
+                }
+            }catch (JSONException e){
+                code = false;
+                err.append(e.getMessage());
+                e.printStackTrace();
+            }
+        }else{
+            code = false;
+        }
+
+        if (!code){
+            Logger.e("上传单据错误：%s",err);
+            syncActivityHandler.obtainMessage(MessageID.TRANSFERSTATUS_ID,false).sendToTarget();
+        }
+    }
+
+    void stop(){
+        this.removeCallbacksAndMessages(null);
+        if (mHttp != null)mHttp.clearConnection(HttpRequest.CLOSEMODE.BOTH);
+    }
+    void setReportProgress(boolean b){
         mReportProgress = b;
     }
-    public void sync(){
+    void sync(){
         this.obtainMessage(MessageID.SYNC_CASHIER_ID).sendToTarget();//收银员
         this.obtainMessage(MessageID.SYNC_GOODS_CATEGORY_ID).sendToTarget();//商品类别
         this.obtainMessage(MessageID.SYNC_GOODS_ID).sendToTarget();//商品信息
@@ -270,13 +375,16 @@ public class SyncHandler extends Handler {
         this.obtainMessage(MessageID.SYNC_STORES_ID).sendToTarget();//仓库信息
         this.obtainMessage(MessageID.SYNC_GP_INFO_ID).sendToTarget();//商品组合ID
     }
-    public void syncFinish(){
+    void syncFinish(){
         obtainMessage(MessageID.SYNC_FINISH_ID).sendToTarget();//最后发送同步完成消息
     }
-    public void startNetworkTest(){
+    void startNetworkTest(){
         if (!hasMessages(MessageID.NETWORKSTATUS_ID)){
             obtainMessage(MessageID.NETWORKSTATUS_ID).sendToTarget();
             postDelayed(this::startNetworkTest,1000);
         }
+    }
+    void startUploadOrder(){
+        obtainMessage(MessageID.UPLOAD_ORDER_ID).sendToTarget();
     }
 }

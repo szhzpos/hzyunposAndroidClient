@@ -33,16 +33,11 @@ public class MyDialog extends Dialog {
     private boolean mIsYes,mIsNo;
     //按钮文本的显示内容
     private String mYesStr,mNoStr;
-
+    private boolean mShowPassword = true;
     private onNoOnclickListener noOnclickListener;//取消按钮被点击了的监听器
     private onYesOnclickListener yesOnclickListener;//确定按钮被点击了的监听器
 
-    /**
-     * 设置取消按钮的显示内容和监听
-     *
-     * @param str
-     * @param onNoOnclickListener
-     */
+
     public MyDialog  setNoOnclickListener(String str, onNoOnclickListener onNoOnclickListener) {
         if (str != null) {
             mNoStr = str;
@@ -53,12 +48,6 @@ public class MyDialog extends Dialog {
         return this;
     }
 
-    /**
-     * 设置确定按钮的显示内容和监听
-     *
-     * @param str
-     * @param onYesOnclickListener
-     */
     public MyDialog setYesOnclickListener(String str, onYesOnclickListener onYesOnclickListener) {
         if (str != null) {
             mYesStr = str;
@@ -172,21 +161,11 @@ public class MyDialog extends Dialog {
         mMessage.setCompoundDrawables(drawable,null,null,null);
     }
 
-    /**
-     * 从外界Activity为Dialog设置标题
-     *
-     * @param title
-     */
     public MyDialog setTitle(String title) {
         mTitleStr = title;
         return  this;
     }
 
-    /**
-     * 从外界Activity为Dialog设置dialog的message
-     *
-     * @param message
-     */
     public MyDialog setMessage(String message) {
         mMessageStr = message;
         return  this;
@@ -207,6 +186,7 @@ public class MyDialog extends Dialog {
             mYes.setVisibility(View.VISIBLE);
         }
     }
+
     public static void displayMessage(String message, Context context){
         final MyDialog builder  = new	MyDialog(context, IconType.INFO);
         builder.setTitle("提示信息").setMessage(message).setNoOnclickListener("确定", Dialog::dismiss).show();

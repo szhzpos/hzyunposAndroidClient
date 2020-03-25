@@ -39,7 +39,7 @@ import com.wyc.cloudapp.dialog.MoreFunDialog;
 import com.wyc.cloudapp.dialog.PayDialog;
 import com.wyc.cloudapp.dialog.VipInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.network.NetworkManagement;
+import com.wyc.cloudapp.network.sync.NetworkManagement;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -517,6 +517,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(PayDialog myDialog) {
                         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
+                        mNetworkManagement.sync_order();
+                        MyDialog.ToastMessage(MainActivity.this.getWindow().getDecorView(),"结账成功！",mOrderCode);
                         resetOrderInfo();
                         myDialog.dismiss();
                     }
@@ -605,7 +607,7 @@ public class MainActivity extends AppCompatActivity {
         order_info.put("pay_status",1);//支付状态（1未支付，2已支付，3支付中）
         order_info.put("pay_time",time);
         order_info.put("upload_status",1);//上传状态（1未上传，2已上传）
-        order_info.put("upload_time",time);
+        order_info.put("upload_time",0);
         order_info.put("transfer_status",1);//交班状态（1未交班，2已交班）
         order_info.put("transfer_time",0);
         order_info.put("is_rk",2);//是否已经扣减库存（1是，2否）
@@ -627,26 +629,53 @@ public class MainActivity extends AppCompatActivity {
         //处理销售明细
         for(int i = 0,size = sales_data.length();i < size;i ++){
             JSONObject sale = sales_data.getJSONObject(i);
-            sale.put("order_code",order_code);
+            int gp_id = sale.getInt("gp_id");
+            if (-1 != gp_id){
 
+                final String order_sum_sql = "select b.xnum xnum,(b.xnum * b.retail_price / a.amt) * b.gp_price / case b.xnum when 0 then 1 else b.xnum end price,\n" +
+                        "b.barcode_id barcode_id,b.barcode barcode,b.conversion conversion,b.gp_id gp_id,b.tc_rate tc_rate,b.tc_mode tc_mode,b.tax_rate tax_rate,b.ps_price ps_price,b.cost_price cost_price\n" +
+                        ",b.trade_price trade_price,b.retail_price retail_price,b.buying_price buying_price from vi_goods_group_info b inner join \n" +
+                        "(select case sum(xnum * retail_price) when 0 then 1 else sum(xnum * retail_price) end amt,gp_id \n" +
+                        "from vi_goods_group_info group by gp_id) a on a.gp_id = b.gp_id where b.gp_id =" +  gp_id +" group by barcode_id;";
+                JSONArray arrays;
+                StringBuilder err = new StringBuilder();
+                if (null != (arrays = SQLiteHelper.getListToJson(order_sum_sql,err))){
+                    for (int k = 0,length = arrays.length();k < length;k++){
+                        JSONObject object = arrays.getJSONObject(k);
+                        object.put("order_code",order_code);
+                        object.put("zk_cashier_id",zk_cashier_id);//使用折扣的收银员ID,默认当前收银员
+                        object.put("total_money",sale.remove("sale_amt"));
+                        object.put("y_price",sale.remove("old_price"));
+
+                        sales_data.put(i,object);
+                    }
+                }else{
+                    Logger.d("拆分组合商品错误：" + err);
+                }
+                Logger.d_json(sales_data.toString());
+                continue;
+            }
+            sale.put("order_code",order_code);
+            sale.put("zk_cashier_id",zk_cashier_id);//使用折扣的收银员ID,默认当前收银员
+            sale.put("total_money",sale.remove("sale_amt"));
+            sale.put("y_price",sale.remove("old_price"));
+
+            ///删除不需要的内容
             sale.remove("goods_id");
             sale.remove("discount");
             sale.remove("discount_amt");
-            sale.remove("sale_amt");
             sale.remove("order_amt");
             sale.remove("goods_title");
             sale.remove("unit_name");
             sale.remove("yh_mode");
             sale.remove("yh_price");
 
-            sale.put("y_price",sale.remove("old_price"));
+
         }
 
         //处理付款明细
         for (int i= 0,size = pays_data.length();i < size;i++){
             JSONObject tmp = pays_data.getJSONObject(i),pay = new JSONObject();
-
-            Logger.d_json(tmp.toString());
 
             pay.put("order_code",order_code);
             pay.put("pay_code",tmp.getString("pay_code"));
@@ -685,12 +714,10 @@ public class MainActivity extends AppCompatActivity {
                         "zk_cashier_id","total_money","conversion","barcode","y_price"),
                 retail_order_pays_cols = Arrays.asList("order_code","pay_method","pay_money","pay_time","pay_status","pay_serial_no","pay_code","remark","is_check","zk_money","pre_sale_money","give_change_money",
                         "discount_money","xnote","card_no","return_code","print_info");*/
-                JSONObject count_json = new JSONObject();
+        JSONObject count_json = new JSONObject();
         if ((code = SQLiteHelper.execSql(count_json,"select count(order_code) counts from retail_order where order_code = '" + mOrderCode.getText() +"' and stores_id = '" + mStoreInfo.optString("stores_id") +"'"))){
             if (0 == count_json.optInt("counts")){
-                if ((code = SQLiteHelper.execSQLByBatchForJson(data,tables,null,err,0))){
-                    Logger.d_json(data.toString());
-                }else{
+                if (!(code = SQLiteHelper.execSQLByBatchForJson(data,tables,null,err,0))){
                     MyDialog.displayErrorMessage("保存订单信息错误：" + err,this);
                 }
             }else{
@@ -704,6 +731,9 @@ public class MainActivity extends AppCompatActivity {
     }
     private void resetOrderCode(){
         mOrderCode.setText(mGoodsInfoViewAdapter.generateOrderCode(mCashierInfo.optString("pos_num")));
+    }
+    private void splitCombinationGodds(){
+
     }
 
     public JSONArray discount(double discount,final String zk_cashier_id){

@@ -14,12 +14,9 @@ public final class MessageID {
             SYNC_FINISH_ID = 7,
             SYNC_DIS_INFO_ID = 8,
             LOGIN_OK_ID = 9,
-            UPDATE_TIME_ID = 10,
             NETWORKSTATUS_ID = 11,
             TRANSFERSTATUS_ID = 12,
             DIS_STORE_INFO_ID = 13,
-            DIALOG_SHOW_TIME_ID = 14,
-            DIALOG_UPDATE_MESSAGE_ID = 15,
             SYNC_GOODS_CATEGORY_ID = 16,
             LOGIN_PW_ERROR_ID = 17,
             LOGIN_ID_ERROR_ID = 18,
@@ -29,5 +26,6 @@ public final class MessageID {
             QUERY_VIP_LEVEL_ID = 22,
             ADD_VIP_INFO_ID = 23,
             VIP_C_SUCCESS_ID = 24,
-            SYNC_GP_INFO_ID = 25;
+            SYNC_GP_INFO_ID = 25,
+            UPLOAD_ORDER_ID = 26;
 }

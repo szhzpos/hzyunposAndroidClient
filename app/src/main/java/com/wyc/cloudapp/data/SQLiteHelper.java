@@ -385,6 +385,19 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
         return array;
     }
+    public static JSONArray getListToJson(@NonNull String sql,StringBuilder err){
+        JSONArray array;
+        synchronized (SQLiteHelper.class){
+            try(Cursor cursor = mDb.rawQuery(sql,null);){
+                array = rs2Json(cursor,0,0,false);
+            } catch (JSONException | SQLiteException e) {
+                err.append("查询错误：").append(e.getMessage());
+                e.printStackTrace();
+                array = null;
+            }
+        }
+        return array;
+    }
     public static List<Map<String,Object>> getList(@NonNull String sql,StringBuilder err){
         List<Map<String,Object>> maps;
         synchronized (SQLiteHelper.class){
@@ -841,7 +854,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                             jsonObj.put(colNames.get(i) , cursor.getInt(i));
                         }else {
                             if(cursor.getString(i)==null){
-                                jsonObj.put(colNames.get(i) , "NULL");
+                                jsonObj.put(colNames.get(i) , "");
                             }else{
                                 jsonObj.put(colNames.get(i) , cursor.getString(i).trim());
                             }
@@ -860,7 +873,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                         jsonObj.put(colNames.get(i), cursor.getInt(i));
                     } else {
                         if (cursor.getString(i) == null) {
-                            jsonObj.put(colNames.get(i), "NULL");
+                            jsonObj.put(colNames.get(i), "");
                         } else {
                             jsonObj.put(colNames.get(i), cursor.getString(i).trim());
                         }
@@ -900,7 +913,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                             values.put(colNames.get(i) , cursor.getInt(i));
                         }else {
                             if(cursor.getString(i) == null){
-                                values.put(colNames.get(i) , "NULL");
+                                values.put(colNames.get(i) , "");
                             }else{
                                 values.put(colNames.get(i) , cursor.getString(i).trim());
                             }
@@ -919,7 +932,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                         values.put(colNames.get(i), cursor.getInt(i));
                     } else {
                         if (cursor.getString(i) == null) {
-                            values.put(colNames.get(i), "NULL");
+                            values.put(colNames.get(i), "");
                         } else {
                             values.put(colNames.get(i), cursor.getString(i).trim());
                         }
@@ -1221,7 +1234,18 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "    barcode_id INT,\n" +
                 "    gp_id      INT,\n" +
                 "    _id        INT UNIQUE\n" +
-                ");";
+                ");",goods_group_view_sql = "CREATE VIEW IF NOT EXISTS vi_goods_group_info AS\n" +//组合商品视图
+                "    SELECT b.*,\n" +
+                "           a.xnum,\n" +
+                "           c.*\n" +
+                "      FROM goods_group_info a\n" +
+                "           LEFT JOIN\n" +
+                "           barcode_info b\n" +
+                "           LEFT JOIN\n" +
+                "           goods_group c\n" +
+                "     WHERE a.barcode_id = b.barcode_id AND \n" +
+                "           c.gp_id = a.gp_id AND \n" +
+                "           c.status = 1;\n";
 
         list.add(sql_shop_stores);
         list.add(sql_shop_category);
@@ -1237,6 +1261,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         list.add(sql_retail_order_pays);
         list.add(sql_goods_group);
         list.add(sql_goods_group_info);
+        list.add(goods_group_view_sql);
         try {
             db.beginTransaction();
             for (String sql : list) {

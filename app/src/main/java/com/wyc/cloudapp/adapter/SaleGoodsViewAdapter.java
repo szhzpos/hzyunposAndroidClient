@@ -5,7 +5,6 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.text.Editable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
@@ -127,14 +126,14 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         boolean exist = false;
         if (goods != null){
             try {
-                String id = goods.getString("goods_id");
+                int barcode_id = goods.getInt("barcode_id"),gp_id = goods.getInt("gp_id");
                 double sel_num = 1.00,sel_amount,price,discount = 1.0,discount_amt = 0.0,new_price = 0.0;
 
                 price = goods.getDouble("price");
 
                 for (int i = 0,length = mDatas.length();i < length;i++){
                     JSONObject tmp = mDatas.getJSONObject(i);
-                    if (id.equals(tmp.getString("goods_id"))){
+                    if (barcode_id == tmp.getInt("barcode_id") && gp_id == tmp.getInt("gp_id")){
                         exist = true;
 
                         double sale_num = tmp.getDouble("xnum");
@@ -200,9 +199,6 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                     goods.put("sale_amt",sel_amount);
                     goods.put("order_amt",Utils.formatDouble(sel_amount + discount_amt,2));
                     mDatas.put(goods);
-
-                    Logger.d_json(goods.toString());
-
                     mCurrentItemIndex = mDatas.length() - 1;
                 }
                 this.notifyDataSetChanged();
@@ -257,7 +253,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                         break;
             }
             dialog.setYesOnclickListener(myDialog -> {
-                updateSaleGoodsInfo(myDialog.getNewNumOrPrice(),type);
+                updateSaleGoodsInfo(myDialog.getContentToDouble(),type);
                 myDialog.dismiss();
             }).setNoOnclickListener(Dialog::dismiss).show();
         }else{
@@ -423,9 +419,9 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 for (int i = 0,length = mDatas.length();i < length;i++){
                     JSONObject jsonObject = mDatas.getJSONObject(i);
 
-                    jsonObject.put("card_code",vip.getString("card_code"));
+                    /*jsonObject.put("card_code",vip.getString("card_code"));
                     jsonObject.put("name",vip.getString("name"));
-                    jsonObject.put("mobile",vip.getString("mobile"));
+                    jsonObject.put("mobile",vip.getString("mobile"));*/
 
                     old_price = jsonObject.getDouble("old_price");
                     xnum = jsonObject.getDouble("xnum");
