@@ -44,6 +44,7 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
         mProgressDialog = new CustomProgressDialog(mContext);
         mOk = findViewById(R.id._ok);
 
+
         //初始化付款码
         init_pay_code();
 
@@ -84,16 +85,14 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
             }
         }
         //回车监听
-        setOnKeyListener(new OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_ENTER){
-                    if (mOk != null)mOk.callOnClick();
-                    return true;
-                }
-                return false;
+        setOnKeyListener((dialog, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_ENTER){
+                if (mOk != null)mOk.callOnClick();
+                return true;
             }
+            return false;
         });
+
     }
 
     private View.OnClickListener button_click = v -> {

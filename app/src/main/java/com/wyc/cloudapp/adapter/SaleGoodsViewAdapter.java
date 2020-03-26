@@ -465,4 +465,14 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         }
         return true;
     }
+
+    public double getSaleSumAmt(){//验证销售金额
+        double amt = 0.0;
+        for (int i = 0,size = mDatas.length();i < size;i++){
+            JSONObject object = mDatas.optJSONObject(i);
+            if (null != object)
+                amt += object.optDouble("sale_amt");
+        }
+        return amt;
+    }
 }

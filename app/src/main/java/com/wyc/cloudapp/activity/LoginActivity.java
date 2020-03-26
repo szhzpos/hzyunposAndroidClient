@@ -30,6 +30,7 @@ import com.wyc.cloudapp.dialog.ConnSettingDialog;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.keyboard.SoftKeyBoardListener;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.network.sync.SyncManagement;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -168,6 +169,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void login(){
+        Logger.d(73 + (5 - 73%5));
         final HttpRequest httpRequest = new HttpRequest();
         mProgressDialog.setCancel(false).setMessage("正在登录...").show();
         myHandler.postDelayed(()->{
@@ -187,7 +189,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     });
                 });
-        },5000);
+        },3000);
 
         CustomApplication.execute(()->{
             JSONObject object = new JSONObject(),param_json = new JSONObject(),cashier_json,retJson,info_json,jsonLogin,store_info;

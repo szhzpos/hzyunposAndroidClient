@@ -149,7 +149,7 @@
                 android:text="@string/back"
                 android:textColor="@color/white"
                 android:textSize="@dimen/num_keyboard_font_size_18"
-                app:layout_constraintStart_toEndOf="@id/_one_hundred"
+                app:layout_constraintStart_toEndOf="@id/_ten"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <Button
@@ -291,7 +291,7 @@
                 app:layout_constraintTop_toBottomOf="@id/_nine" />
 
             <Button
-                android:id="@+id/_eight_hundred"
+                android:id="@+id/_one_hundred"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="@dimen/pay_dialog_button_width"
                 android:layout_height="@dimen/pay_dialog_button_height"
@@ -305,7 +305,7 @@
                 app:layout_constraintStart_toEndOf="@id/_point" />
 
             <Button
-                android:id="@+id/_five_hundred"
+                android:id="@+id/_fifty"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="@dimen/pay_dialog_button_width"
                 android:layout_height="@dimen/pay_dialog_button_height"
@@ -317,10 +317,10 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/num_keyboard_font_size_24"
                 app:layout_constraintStart_toEndOf="@id/_nine"
-                app:layout_constraintTop_toBottomOf="@id/_two_hundred" />
+                app:layout_constraintTop_toBottomOf="@id/_twenty" />
 
             <Button
-                android:id="@+id/_one_hundred"
+                android:id="@+id/_ten"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="@dimen/pay_dialog_button_width"
                 android:layout_height="@dimen/pay_dialog_button_height"
@@ -334,7 +334,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <Button
-                android:id="@+id/_two_hundred"
+                android:id="@+id/_twenty"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="@dimen/pay_dialog_button_width"
                 android:layout_height="@dimen/pay_dialog_button_height"
@@ -346,7 +346,7 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/num_keyboard_font_size_24"
                 app:layout_constraintStart_toEndOf="@id/_six"
-                app:layout_constraintTop_toBottomOf="@+id/_one_hundred" />
+                app:layout_constraintTop_toBottomOf="@+id/_ten" />
 
             <Button
                 android:id="@+id/_cancel"
@@ -360,7 +360,7 @@
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 android:textSize="@dimen/font_size_18"
-                app:layout_constraintStart_toEndOf="@id/_two_hundred"
+                app:layout_constraintStart_toEndOf="@id/_twenty"
                 app:layout_constraintTop_toBottomOf="@id/_back" />
 
             <Button
@@ -374,7 +374,7 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/font_size_18"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/_eight_hundred" />
+                app:layout_constraintStart_toEndOf="@id/_one_hundred" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </LinearLayout>

@@ -237,4 +237,14 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
         mDatas = new JSONArray();
         notifyDataSetChanged();
     }
+
+    public double getPaySumAmt(){//验证付款金额
+        double amt = 0.0;
+        for (int i = 0,size = mDatas.length();i < size;i++){
+            JSONObject object = mDatas.optJSONObject(i);
+            if (null != object)
+                amt += object.optDouble("pamt") - object.optDouble("pzl");
+        }
+        return amt;
+    }
 }

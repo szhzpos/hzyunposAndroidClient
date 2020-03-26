@@ -757,6 +757,9 @@ public class MainActivity extends AppCompatActivity {
     public void set_order_remark(final String remark){
         mRemark = mRemark.concat(remark);
     }
+    public double getSaleSumAmt(){
+        return mSaleGoodsViewAdapter.getSaleSumAmt();
+    }
 
     private static class Myhandler extends Handler {
         private WeakReference<MainActivity> weakHandler;

@@ -2,7 +2,6 @@ package com.wyc.cloudapp.dialog;
 
 import android.app.Dialog;
 import android.content.ContentValues;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Looper;
 import android.text.Editable;
@@ -34,7 +33,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -152,6 +150,7 @@ public class PayDialog extends Dialog {
                 mRemarkEt.clearFocus();
                 mRemarkEt.getText().clear();
                 mRemarkEt.setVisibility(View.GONE);
+                mCashMoneyEt.requestFocus();
             }else{
                 mRemarkEt.setVisibility(View.VISIBLE);
                 mRemarkEt.requestFocus();
@@ -168,6 +167,9 @@ public class PayDialog extends Dialog {
                 tmp_v.setOnClickListener(button_click);
             }
         }
+
+        //根据金额设置按钮数字
+        autoShowValueFromPayAmt();
     }
 
     @Override
@@ -274,26 +276,32 @@ public class PayDialog extends Dialog {
             public void onChanged() {
                 super.onChanged();
                 JSONArray jsonArray = mPayDetailViewAdapter.getDatas();
-                double amt = 0.0,zl_amt = 0.0;
+                double pay_amt = 0.0,zl_amt = 0.0,sale_amt;
                 try {
                     for (int i = 0,length = jsonArray.length();i < length;i ++){//第一个为表头
                         JSONObject object = jsonArray.getJSONObject(i);
-                        amt += object.getDouble("pamt");
+                        pay_amt += object.getDouble("pamt");
                         zl_amt += object.getDouble("pzl");
                     }
 
-                    Logger.d("amt:%f - zl_amt:%f = %f",amt,zl_amt,amt - zl_amt);
+                    Logger.d("amt:%f - zl_amt:%f = %f",pay_amt,zl_amt,pay_amt - zl_amt);
 
-                    mAmt_received = amt - zl_amt;
+                    mAmt_received = pay_amt - zl_amt;
                     mPay_balance = mPay_amt - mAmt_received;
                     mCashAmt = mPay_balance;
 
                     refreshContent();
 
                     if (Utils.equalDouble(mActual_amt,mAmt_received)){//支付明细数据发送变化后，计算是否已经付款完成，如果完成触发支付完成事件
-                        if (mPayListener != null){
-                            mainActivity.set_order_remark(mRemarkEt.getText().toString());
-                            mPayListener.onStart(PayDialog.this);
+                        sale_amt = mainActivity.getSaleSumAmt();
+                        pay_amt = mPayDetailViewAdapter.getPaySumAmt();
+                        if (Utils.equalDouble(sale_amt,pay_amt)){
+                            if (mPayListener != null){
+                                mainActivity.set_order_remark(mRemarkEt.getText().toString());
+                                mPayListener.onStart(PayDialog.this);
+                            }
+                        }else{
+                            MyDialog.displayErrorMessage(String.format(Locale.CHINA,"销售金额:%f  不等于 付款金额:%f",sale_amt,pay_amt),mainActivity);
                         }
                     }
                 }catch (JSONException e){
@@ -310,6 +318,8 @@ public class PayDialog extends Dialog {
 
     public boolean initPayContent(final JSONArray datas){
         boolean isTrue = true;
+
+        if (null == datas)return false;
         clearContent();
         try {
             for (int i = 0,length = datas.length();i < length; i ++){
@@ -649,5 +659,27 @@ public class PayDialog extends Dialog {
     }
     public void clearPayInfo(){
         mPayDetailViewAdapter.clearPayDetail();
+    }
+    private void autoShowValueFromPayAmt(){
+        int amt = (int)mCashAmt,tmp;
+        Button first = findViewById(R.id._ten);
+        if(amt > 100 && amt % 100 != 0) {
+            tmp = amt + (100 - amt % 100);
+            if (tmp - (int)mCashAmt > 50){
+                amt = amt + (50 - amt % 50);
+            }else{
+                amt = tmp;
+            }
+        }else{
+            if (amt % 10 != 0){
+                tmp = amt + (10 - amt % 10);
+                if (tmp - (int)mCashAmt > 5){
+                    amt = amt + (5 - amt % 5);
+                }else{
+                    amt = tmp;
+                }
+            }
+        }
+        first.setText(String.valueOf(amt));
     }
 }
