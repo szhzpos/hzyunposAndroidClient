@@ -90,13 +90,14 @@ public class VipChargeDialog extends AbstractPayDialog {
             if (mPayMethod != null) {
                 Logger.d_json(mPayMethod.toString());
                 if (mPayMethod.optInt("is_check") != 2){ //显示付款码输入框
-                    mPayCode.requestFocus();
                     mPayCode.setVisibility(View.VISIBLE);
+                    mPayCode.requestFocus();
                     mPayCode.setHint(mPayMethod.optString("xtype",""));
                 }else{
                     mPayCode.callOnClick();
                     mPayCode.getText().clear();
                     mPayCode.setVisibility(View.GONE);
+                    mPayAmtEt.requestFocus();
                 }
             }
         });

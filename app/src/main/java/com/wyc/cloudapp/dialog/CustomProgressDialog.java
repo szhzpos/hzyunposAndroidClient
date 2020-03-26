@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.dialog;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.MessageID;
 
 import java.lang.ref.WeakReference;
@@ -32,17 +34,16 @@ public class CustomProgressDialog extends ProgressDialog
     {
         super.onCreate(savedInstanceState);
         init();
+        //开始计时
+        startTimer();
     }
 
     private void init()
     {
         setContentView(R.layout.custom_progress_dialog_layout);
-
         mMessage = findViewById(R.id.title);
         mShowTimeView = findViewById(R.id.show_time);
-
         mMessage.setText(szMessage);
-
         Window window = getWindow();
         if (null != window){
             WindowManager.LayoutParams params = window.getAttributes();
@@ -50,8 +51,8 @@ public class CustomProgressDialog extends ProgressDialog
             params.height = WindowManager.LayoutParams.WRAP_CONTENT;
             window.setAttributes(params);
         }
-
         findViewById(R.id.dialog_linearLayout).setMinimumWidth(100);
+
 
     }
 
@@ -59,12 +60,16 @@ public class CustomProgressDialog extends ProgressDialog
     public void show()
     {
         super.show();
-        startTimer();
     }
 
     @Override
     public void dismiss(){
         super.dismiss();
+    }
+
+    @Override
+    public void onAttachedToWindow (){
+        super.onAttachedToWindow();
     }
 
     @Override

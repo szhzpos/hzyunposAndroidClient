@@ -19,4 +19,5 @@
     <color name="text_color">#494848</color>
     <color name="orange_1">#FFF44336</color>
     <color name="good_name_color">@color/black</color>
+    <color name="pay_detail_header">#731883F7</color>
 </resources>

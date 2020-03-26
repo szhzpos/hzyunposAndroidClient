@@ -5,16 +5,16 @@ import android.os.Looper;
 
 import java.util.concurrent.CountDownLatch;
 
-public class NetworkManagement extends Thread {
+public class SyncManagement extends Thread {
     private CountDownLatch handlerInitLatch;
     private Handler mHandler;
     private SyncHandler mSyncHandler;
     private String mAppId,mAppScret,mUrl,mPosNum,mOperId,mStoresId;
-    private NetworkManagement(Handler handler){
+    private SyncManagement(Handler handler){
         this.mHandler = handler;
         handlerInitLatch = new CountDownLatch(1);
     }
-    public NetworkManagement(Handler handler,final String url, final String appid, final String appscret,final String stores_id,final String pos_num, final String operid){
+    public SyncManagement(Handler handler, final String url, final String appid, final String appscret, final String stores_id, final String pos_num, final String operid){
         this(handler);
 
         mUrl = url ;
@@ -58,6 +58,7 @@ public class NetworkManagement extends Thread {
         if (mSyncHandler == null)mSyncHandler = getHandler();
         mSyncHandler.setReportProgress(b);
         if (b){
+            mSyncHandler.removeCallbacksAndMessages(null);
             mSyncHandler.sync();
             mSyncHandler.syncFinish();
         }else{

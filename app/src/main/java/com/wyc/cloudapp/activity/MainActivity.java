@@ -39,7 +39,7 @@ import com.wyc.cloudapp.dialog.MoreFunDialog;
 import com.wyc.cloudapp.dialog.PayDialog;
 import com.wyc.cloudapp.dialog.VipInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.network.sync.NetworkManagement;
+import com.wyc.cloudapp.network.sync.SyncManagement;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
     private long mCurrentTimestamp = 0;
     private String mAppId,mAppScret,mUrl;
     private TextView mCurrentTimeView,mSaleSumNum,mSaleSumAmount,mOrderCode,mDisSumAmt;
-    private NetworkManagement mNetworkManagement;
+    private SyncManagement mSyncManagement;
     private ImageView mCloseBtn;
     private RecyclerView mSaleGoodsRecyclerView;
     private TableLayout mKeyboard;
@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
         mCloseBtn.setOnClickListener((View V)->{
             MyDialog.displayAskMessage("是否退出收银？",MainActivity.this,(MyDialog myDialog)->{
                 myDialog.dismiss();
-                mNetworkManagement.quit();
+                mSyncManagement.quit();
                 Intent intent = new Intent(MainActivity.this,LoginActivity.class);
                 MainActivity.this.finish();
                 startActivity(intent);
@@ -162,8 +162,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //初始化数据管理对象
-        mNetworkManagement = new NetworkManagement(mHandler,mUrl,mAppId,mAppScret,mStoreInfo.optString("stores_id"),mCashierInfo.optString("pos_num"),mCashierInfo.optString("cas_id"));
-        mNetworkManagement.start_sync(false);
+        mSyncManagement = new SyncManagement(mHandler,mUrl,mAppId,mAppScret,mStoreInfo.optString("stores_id"),mCashierInfo.optString("pos_num"),mCashierInfo.optString("cas_id"));
+        mSyncManagement.start_sync(false);
 
         //重置订单信息
         resetOrderInfo();
@@ -171,20 +171,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
-
         mHandler.postDelayed(()-> mSearch_content.requestFocus(),500);
     }
     @Override
     public void onPause(){
         super.onPause();
-
         mSearch_content.clearFocus();
     }
     @Override
     public void onDestroy(){
         super.onDestroy();
 
-        if (mNetworkManagement != null)mNetworkManagement.quit();
+        if (mSyncManagement != null) mSyncManagement.quit();
         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
         stopSyncCurrentTime();
     }
@@ -337,9 +335,6 @@ public class MainActivity extends AppCompatActivity {
                 JSONArray datas = mSaleGoodsViewAdapter.getDatas();
                 double sale_sum_num = 0.0,sale_sum_amount = 0.0,dis_sum_amt = 0.0;
                 try {
-
-                    mSaleGoodsViewAdapter.splitCombinationalGoods();
-
                     for (int i = 0,length = datas.length();i < length;i ++){
                         JSONObject jsonObject = datas.getJSONObject(i);
                         sale_sum_num += jsonObject.getDouble("xnum");
@@ -386,7 +381,7 @@ public class MainActivity extends AppCompatActivity {
                     if (editable.length() == 0){
                         mGoodsTypeViewAdapter.trigger_preView();
                     }else{
-                        mGoodsInfoViewAdapter.fuzzy_search_goods(editable.toString());
+                        mGoodsInfoViewAdapter.fuzzy_search_goods(mSearch_content);
                     }
                 }
             }
@@ -401,7 +396,7 @@ public class MainActivity extends AppCompatActivity {
                         if (content.length() == 0){
                             mGoodsTypeViewAdapter.trigger_preView();
                         }else{
-                            mGoodsInfoViewAdapter.fuzzy_search_goods(mSearch_content.getText().toString());
+                            mGoodsInfoViewAdapter.fuzzy_search_goods(mSearch_content);
                             mSearch_content.selectAll();
                         }
                     }
@@ -437,7 +432,7 @@ public class MainActivity extends AppCompatActivity {
                         if (editable.length() == 0){
                             mGoodsTypeViewAdapter.trigger_preView();
                         }else{
-                            mGoodsInfoViewAdapter.fuzzy_search_goods(editable.toString());
+                            mGoodsInfoViewAdapter.fuzzy_search_goods(mSearch_content);
                         }
                         mSearch_content.selectAll();
                     }else {
@@ -458,6 +453,7 @@ public class MainActivity extends AppCompatActivity {
 
                             mKeyboard.setVisibility(mKeyboard.getVisibility()== View.VISIBLE ? View.GONE : View.VISIBLE);
                             //registerGlobalLayoutToRecyclerView(findViewById(R.id.goods_info_list),MainActivity.this.getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration());
+                            mSearch_content.selectAll();
                             for(int i = 0,childCounts = mKeyboard.getChildCount();i < childCounts;i ++){
                                 View vObj = mKeyboard.getChildAt(i);
                                 if ( vObj instanceof TableRow){
@@ -476,6 +472,7 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 }
                             }
+                            return true;
                         }
                         break;
                     case MotionEvent.ACTION_MOVE:
@@ -499,9 +496,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onStart(PayDialog myDialog) {
                         try {
-                            JSONObject order = generateOrderInfo(Utils.JsondeepCopy(datas),Utils.JsondeepCopy(myDialog.getContent()));
-                            if (null != order)
-                            if (saveOrderInfo(order)){
+                            if (saveOrderInfo(generateOrderInfo(Utils.JsondeepCopy(datas),Utils.JsondeepCopy(myDialog.getContent())))){
                                 dialog.requestPay(mOrderCode.getText().toString(),mUrl,mAppId,mAppScret,mStoreInfo.getString("stores_id"),mCashierInfo.getString("pos_num"));
                             }
                         } catch (JSONException e) {
@@ -522,7 +517,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(PayDialog myDialog) {
                         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
-                        mNetworkManagement.sync_order();
+                        mSyncManagement.sync_order();
                         MyDialog.ToastMessage(MainActivity.this.getWindow().getDecorView(),"结账成功！",mOrderCode);
                         resetOrderInfo();
                         myDialog.dismiss();
@@ -531,6 +526,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onError(PayDialog myDialog, String err) {
                         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
+                        //myDialog.clearPayInfo();
                         resetOrderCode();//提示错误得重置单号
                         MyDialog.displayErrorMessage("支付错误：" + err,myDialog.getContext());
                     }
@@ -605,7 +601,7 @@ public class MainActivity extends AppCompatActivity {
         order_info.put("total",total);
         order_info.put("discount_price",sale_sum_amt);
         order_info.put("discount_money",total);
-        order_info.put("discount",String.format(Locale.CHINA,"%.4f",dis_sum_amt / total));
+        order_info.put("discount",String.format(Locale.CHINA,"%.4f",sale_sum_amt / total));
         order_info.put("cashier_id",mCashierInfo.getString("cas_id"));
         order_info.put("addtime",time);
         order_info.put("pos_code",mCashierInfo.getString("pos_num"));
@@ -637,30 +633,30 @@ public class MainActivity extends AppCompatActivity {
             tmp_json = sales_data.getJSONObject(i);
             int gp_id = tmp_json.getInt("gp_id");
             if (-1 != gp_id){
-                sales_data.remove(i--);
-                /*if (!mSaleGoodsViewAdapter.splitCombinationalGoods(combination_goods,gp_id,tmp_json.getDouble("price"),tmp_json.getDouble("xnum"),err)){
+                tmp_json = (JSONObject) sales_data.remove(i--);
+                if (!mSaleGoodsViewAdapter.splitCombinationalGoods(combination_goods,gp_id,tmp_json.getDouble("price"),tmp_json.getDouble("xnum"),err)){
                     MyDialog.displayErrorMessage("拆分组合商品错误：" + err,this);
                     return null;
-                }*/
-                continue;
-            }
-            tmp_json.put("order_code",order_code);
-            tmp_json.put("zk_cashier_id",zk_cashier_id);//使用折扣的收银员ID,默认当前收银员
-            tmp_json.put("total_money",tmp_json.remove("sale_amt"));
-            tmp_json.put("y_price",tmp_json.remove("old_price"));
+                }
+                Logger.d_json(combination_goods.toString());
+            }else{
+                tmp_json.put("order_code",order_code);
+                tmp_json.put("zk_cashier_id",zk_cashier_id);//使用折扣的收银员ID,默认当前收银员
+                tmp_json.put("total_money",tmp_json.remove("sale_amt"));
+                tmp_json.put("y_price",tmp_json.remove("old_price"));
 
-            ///删除不需要的内容
-            tmp_json.remove("goods_id");
-            tmp_json.remove("discount");
-            tmp_json.remove("discount_amt");
-            tmp_json.remove("order_amt");
-            tmp_json.remove("goods_title");
-            tmp_json.remove("unit_name");
-            tmp_json.remove("yh_mode");
-            tmp_json.remove("yh_price");
+                ///删除不需要的内容
+                tmp_json.remove("goods_id");
+                tmp_json.remove("discount");
+                tmp_json.remove("discount_amt");
+                tmp_json.remove("order_amt");
+                tmp_json.remove("goods_title");
+                tmp_json.remove("unit_name");
+                tmp_json.remove("yh_mode");
+                tmp_json.remove("yh_price");
+            }
         }
         //处理组合商品
-        combination_goods = mSaleGoodsViewAdapter.getCombinationalDatas();
         for(int i = 0,size = combination_goods.length();i < size;i++){
             tmp_json = combination_goods.getJSONObject(i);
             tmp_json.put("order_code",order_code);
@@ -686,7 +682,7 @@ public class MainActivity extends AppCompatActivity {
             pay.put("pay_serial_no","");//第三方返回的支付流水号
             pay.put("remark","");
             pay.put("zk_money",0.0);
-            pay.put("pre_sale_money",0.0);
+            pay.put("pre_sale_money",tmp_json.getDouble("pamt"));
             pay.put("give_change_money",tmp_json.getDouble("pzl"));
             pay.put("discount_money",0.0);
             pay.put("xnote","");
@@ -704,19 +700,21 @@ public class MainActivity extends AppCompatActivity {
         return data;
     }
     private boolean saveOrderInfo(JSONObject data){
-        boolean code = true;
+        boolean code;
         StringBuilder err = new StringBuilder();
-        List<String>  tables = Arrays.asList("retail_order","retail_order_goods","retail_order_pays");
-                /*retail_order_cols = Arrays.asList("stores_id","order_code","discount","discount_price","total","cashier_id","addtime","pos_code","order_status","pay_status","pay_time","upload_status",
+        JSONObject count_json = new JSONObject();
+        List<String>  tables = Arrays.asList("retail_order","retail_order_goods","retail_order_pays"),
+                retail_order_cols = Arrays.asList("stores_id","order_code","discount","discount_price","total","cashier_id","addtime","pos_code","order_status","pay_status","pay_time","upload_status",
                         "upload_time","transfer_status","transfer_time","is_rk","mobile","name","card_code","sc_ids","sc_tc_money","member_id","discount_money","zl_money","ss_money","remark","zk_cashier_id"),
                 retail_order_goods_cols = Arrays.asList("order_code","barcode_id","xnum","price","buying_price","retail_price","trade_price","cost_price","ps_price","tax_rate","tc_mode","tc_rate","gp_id",
                         "zk_cashier_id","total_money","conversion","barcode","y_price"),
                 retail_order_pays_cols = Arrays.asList("order_code","pay_method","pay_money","pay_time","pay_status","pay_serial_no","pay_code","remark","is_check","zk_money","pre_sale_money","give_change_money",
-                        "discount_money","xnote","card_no","return_code","print_info");*/
-        JSONObject count_json = new JSONObject();
+                        "discount_money","xnote","card_no","return_code","v_num","print_info");
+
+        if (data == null)return false;
         if ((code = SQLiteHelper.execSql(count_json,"select count(order_code) counts from retail_order where order_code = '" + mOrderCode.getText() +"' and stores_id = '" + mStoreInfo.optString("stores_id") +"'"))){
             if (0 == count_json.optInt("counts")){
-                if (!(code = SQLiteHelper.execSQLByBatchForJson(data,tables,null,err,0))){
+                if (!(code = SQLiteHelper.execSQLByBatchForJson(data,tables,Arrays.asList(retail_order_cols,retail_order_goods_cols,retail_order_pays_cols),err,0))){
                     MyDialog.displayErrorMessage("保存订单信息错误：" + err,this);
                 }
             }else{
@@ -739,9 +737,9 @@ public class MainActivity extends AppCompatActivity {
         return mSaleGoodsViewAdapter.discount(discount);
     }
     public void sync(boolean b){
-        if (mNetworkManagement != null){
+        if (mSyncManagement != null){
             if (mProgressDialog != null && !mProgressDialog.isShowing())mProgressDialog.setMessage("正在同步...").show();
-            mNetworkManagement.start_sync(b);
+            mSyncManagement.start_sync(b);
         }
     }
     public JSONArray showVipInfo(@NonNull JSONObject vip){
@@ -779,7 +777,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case MessageID.SYNC_FINISH_ID:
                     if (activity.mProgressDialog != null && activity.mProgressDialog.isShowing())activity.mProgressDialog.dismiss();
-                    activity.mNetworkManagement.start_sync(false);
+                    activity.mSyncManagement.start_sync(false);
                     break;
                 case MessageID.TRANSFERSTATUS_ID://传输状态
                     if (msg.obj instanceof Boolean){
@@ -823,6 +821,8 @@ public class MainActivity extends AppCompatActivity {
                             activity.mProgressDialog.setCancel(false).show();
                         }
                     }
+                    break;
+                case MessageID.DIS_PAY_DIALOG_ID:
                     break;
             }
         }

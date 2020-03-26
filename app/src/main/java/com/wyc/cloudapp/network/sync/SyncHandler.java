@@ -26,7 +26,7 @@ public class SyncHandler extends Handler {
     private String mAppId,mAppScret,mUrl,mPosNum,mOperId,mStoresId;
     private boolean mReportProgress = true;
     private int mCurrentNeworkStatusCode = HttpURLConnection.HTTP_OK;
-    private long mSyncInterval = 3000,mLoseTime = 0;//mSyncInterval 同步时间间隔，默认3秒
+    private long mSyncInterval = 0,mLoseTime = 0;//mSyncInterval 同步时间间隔，默认3秒
     SyncHandler(Handler handler,final String url, final String appid, final String appscret,final String stores_id,final String pos_num, final String operid){
         this.syncActivityHandler = handler;
         mHttp = new HttpRequest();
@@ -97,7 +97,7 @@ public class SyncHandler extends Handler {
                     object.put("stores_id",mStoresId);
                     break;
                 case MessageID.SYNC_GP_INFO_ID://商品组合信息
-                    sys_name = "正在同步商品组合信息";
+                    sys_name = "正在同步组合商品";
                     url = mUrl + "/api/promotion/get_gp_info";
 
                     object.put("pos_num",mPosNum);
@@ -108,9 +108,11 @@ public class SyncHandler extends Handler {
                     return;
                 case MessageID.NETWORKSTATUS_ID:
                     testNetworkStatus();
-                    if (System.currentTimeMillis() - mLoseTime >= mSyncInterval && mCurrentNeworkStatusCode == HttpURLConnection.HTTP_OK){
-                        mLoseTime = System.currentTimeMillis();
-                        sync();
+                    if (mSyncInterval > 0) {
+                        if (System.currentTimeMillis() - mLoseTime >= mSyncInterval && mCurrentNeworkStatusCode == HttpURLConnection.HTTP_OK) {
+                            mLoseTime = System.currentTimeMillis();
+                            sync();
+                        }
                     }
                     return;
                 case MessageID.UPLOAD_ORDER_ID:

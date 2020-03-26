@@ -30,8 +30,7 @@ import com.wyc.cloudapp.dialog.ConnSettingDialog;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.keyboard.SoftKeyBoardListener;
-import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.network.sync.NetworkManagement;
+import com.wyc.cloudapp.network.sync.SyncManagement;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
@@ -48,7 +47,7 @@ public class LoginActivity extends AppCompatActivity {
     private LoginActivity mSelf;
     private CustomProgressDialog mProgressDialog;
     private boolean mCancelLogin = false;//是否主动取消登陆
-    private NetworkManagement mNetworkManagement;
+    private SyncManagement mSyncManagement;
     private Button mCancel;
     private String mAppId,mAppScret,mUrl,mPosNum,mOperId,mStoresId;
     @Override
@@ -117,7 +116,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onDestroy(){
         super.onDestroy();
-        if (mNetworkManagement != null)mNetworkManagement.quit();
+        if (mSyncManagement != null) mSyncManagement.quit();
     }
 
     @Override
@@ -188,7 +187,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     });
                 });
-        },3000);
+        },5000);
 
         CustomApplication.execute(()->{
             JSONObject object = new JSONObject(),param_json = new JSONObject(),cashier_json,retJson,info_json,jsonLogin,store_info;
@@ -307,8 +306,8 @@ public class LoginActivity extends AppCompatActivity {
                             param_json.put("parameter_id","cashierInfo");
                             param_json.put("parameter_content",cashier_json);
                             if (SQLiteHelper.replaceJson(param_json,"local_parameter",null,err)){
-                                activity.mNetworkManagement = new NetworkManagement(this,activity.mUrl,activity.mAppId,activity.mAppScret,activity.mStoresId,activity.mPosNum,activity.mOperId);
-                                activity.mNetworkManagement.start_sync(true);
+                                activity.mSyncManagement = new SyncManagement(this,activity.mUrl,activity.mAppId,activity.mAppScret,activity.mStoresId,activity.mPosNum,activity.mOperId);
+                                activity.mSyncManagement.start_sync(true);
                             }else{
                                 MyDialog.displayMessage("保存收银员信息错误：" + err,activity);
                             }
@@ -336,7 +335,7 @@ public class LoginActivity extends AppCompatActivity {
                     break;
                 case MessageID.SYNC_DIS_INFO_ID://资料同步进度信息
                     if (activity.mProgressDialog != null){
-                        activity.mProgressDialog.setMessage(msg.obj.toString()).refreshMessage();
+                        activity.mProgressDialog.setCancel(false).setMessage(msg.obj.toString()).refreshMessage();
                         if (!activity.mProgressDialog.isShowing()) {
                             activity.mProgressDialog.show();
                         }

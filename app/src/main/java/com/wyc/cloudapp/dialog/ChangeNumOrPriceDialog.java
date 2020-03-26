@@ -4,6 +4,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputType;
+import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -40,9 +42,13 @@ public class ChangeNumOrPriceDialog extends Dialog {
         new_price_text.setOnFocusChangeListener((v, hasFocus) -> Utils.hideKeyBoard((EditText)v));
         new_price_text.postDelayed(()->{
             new_price_text.requestFocus();
-            //new_price_text.setSelection(new_price_text.getText().length());
         },300);
+        if ("".equals(mInitVal)) {
+            new_price_text.setInputType(InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+            new_price_text.setTransformationMethod(PasswordTransformationMethod.getInstance());
+        }
         new_price_text.setText(mInitVal);
+
 
 
         findViewById(R.id._ok).setOnClickListener(v -> {
@@ -53,6 +59,8 @@ public class ChangeNumOrPriceDialog extends Dialog {
         findViewById(R.id.cancel).setOnClickListener(v -> {
             if (noOnclickListener != null){
                 noOnclickListener.onNoClick(ChangeNumOrPriceDialog.this);
+            }else{
+                ChangeNumOrPriceDialog.this.dismiss();
             }
         });
         findViewById(R.id._close).setOnClickListener(v -> {
@@ -129,7 +137,7 @@ public class ChangeNumOrPriceDialog extends Dialog {
         return code;
     }
 
-    public String getContentToStr(){
+    String getContentToStr(){
         return new_price_text.getText().toString();
     }
 

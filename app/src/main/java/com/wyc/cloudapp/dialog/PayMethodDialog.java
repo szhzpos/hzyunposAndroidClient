@@ -102,11 +102,13 @@ public class PayMethodDialog extends AbstractPayDialog {
     @Override
     protected void initPayMethod(){
         if (mPayMethod != null) {
-            Logger.d_json(mPayMethod.toString());
             if (mPayMethod.optInt("is_check") != 2){ //显示付款码输入框
                 mPayCode.postDelayed(()->mPayCode.requestFocus(),350);
                 mPayCode.setVisibility(View.VISIBLE);
                 mPayCode.setHint(mPayMethod.optString("xtype",""));
+                if (Utils.equalDouble(mPayAmt,0.0)){
+                    mPayAmtEt.setVisibility(View.GONE);
+                }
             }else{
                 mPayCode.clearFocus();
                 mPayCode.getText().clear();

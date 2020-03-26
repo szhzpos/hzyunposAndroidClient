@@ -27,5 +27,6 @@ public final class MessageID {
             ADD_VIP_INFO_ID = 23,
             VIP_C_SUCCESS_ID = 24,
             SYNC_GP_INFO_ID = 25,
-            UPLOAD_ORDER_ID = 26;
+            UPLOAD_ORDER_ID = 26,
+            DIS_PAY_DIALOG_ID = 27;
 }

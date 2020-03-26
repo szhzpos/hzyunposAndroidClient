@@ -46,6 +46,8 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
@@ -58,7 +60,7 @@ import androidx.annotation.NonNull;
  * Created by Administrator on 2018-03-06.
  */
 
-public class Utils {
+public final class Utils {
     public static String getDeviceId(Context context) {
         String deviceId = getLocalMac(context).replace(":", "") + getAndroidId(context);
          if ("".equals(deviceId)) {
@@ -345,5 +347,33 @@ public class Utils {
     }
     public static boolean equalDouble(double a,double b){
         return Math.abs(a - b) < 0.00001;
+    }
+
+
+    public static String unicodeToString(String unicode) {
+        StringBuilder sb = new StringBuilder();
+        String[] hex = unicode.split("\\\\u");
+        for (int i = 1; i < hex.length; i++) {
+            int index = Integer.parseInt(hex[i], 16);
+            sb.append((char) index);
+        }
+        return sb.toString();
+    }
+
+    public static StringBuilder unicode2StringWithStringBuilder(@NonNull final StringBuilder unicode) {
+         Pattern patternUnicode = Pattern.compile("\\\\u([0-9a-zA-Z]{4})");
+        Matcher matcher = patternUnicode.matcher(unicode);
+        int offset = 0; //StringBuilder替换长度不等的字符产生的位置偏移
+        String current,code,ch;
+        while (matcher.find()) {
+            current = matcher.group();
+            code = matcher.group(1);
+            if (code != null){
+                ch = String.valueOf((char) Integer.parseInt(code, 16));
+                unicode.replace(matcher.start() + offset, matcher.end() + offset, ch);
+                offset += 1 - current.length(); //1为ch长度
+            }
+        }
+        return unicode;
     }
 }

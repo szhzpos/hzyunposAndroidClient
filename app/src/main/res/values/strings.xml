@@ -96,13 +96,14 @@
     <string name="modify_vip_sz">修改会员</string>
     <string name="vip_charge_sz">会员充值</string>
     <string name="c_amt_hint_sz">请输入充值金额</string>
-    <string name="one_hundred_sz">100</string>
-    <string name="two_hundred_sz">200</string>
-    <string name="five_hundred_sz">500</string>
-    <string name="eight_hundred_sz">800</string>
+    <string name="ten_sz">10</string>
+    <string name="twenty_sz">20</string>
+    <string name="fifty_sz">50</string>
+    <string name="eighty_sz">100</string>
     <string name="pay_amt_sz">请输入付款金额</string>
     <string name="enter_sz">ENT</string>
     <string name="more_fun_dialog_sz">更多功能</string>
     <string name="sync_sz">同步数据</string>
     <string name="setup_sz">参数设置</string>
+    <string name="remark_hint_sz">请输入备注信息</string>
 </resources>

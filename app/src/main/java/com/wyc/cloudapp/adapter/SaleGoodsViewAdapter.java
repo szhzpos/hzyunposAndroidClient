@@ -27,14 +27,13 @@ import java.util.Locale;
 public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdapter.MyViewHolder> {
 
     private Context mContext;
-    private JSONArray mDatas,mCombinationalDatas;
+    private JSONArray mDatas;
     private OnItemClickListener mOnItemClickListener;
     private OnItemDoubleClickListener mOnItemDoubleClickListener;
     private View mCurrentItemView;
     private int mCurrentItemIndex;
     public SaleGoodsViewAdapter(Context context){
         this.mContext = context;
-        mCombinationalDatas = new JSONArray();
         mDatas = new JSONArray();
     }
 
@@ -259,15 +258,14 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
             MyDialog.ToastMessage("请选择需要修改的商品!",mContext);
         }
     }
-    public JSONArray discount(double discount){//整单折
-        double  discount_amt = 0.0,old_price = 0.0,new_price = 0.0,xnum = 0.0;
+    public JSONArray discount(double value){//整单折
+        double  discount_amt = 0.0,old_price = 0.0,new_price = 0.0,xnum = 0.0,discount;
         boolean d_discount = false;//是否折上折
         try {
             for(int i = 0,length = mDatas.length();i < length;i++){
                 JSONObject json = mDatas.getJSONObject(i);
-
                 old_price = json.getDouble("old_price");
-                discount = Utils.formatDouble(discount / 100,4);
+                discount = Utils.formatDouble(value / 100,4);
                 new_price = json.getDouble("price");
                 xnum = json.getDouble("xnum");
 
@@ -298,7 +296,6 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     }
     public void clearGoods(){
         mDatas = new JSONArray();
-        mCombinationalDatas = new JSONArray();
         this.notifyDataSetChanged();
     }
     public JSONObject getCurrentContent() {
@@ -310,7 +307,6 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     public JSONArray getDatas() {
         return mDatas;
     }
-    public JSONArray getCombinationalDatas(){return mCombinationalDatas;}
     public JSONArray updateGoodsInfoToVip(final JSONObject vip){
         double discount = 1.0,new_price = 0.0,old_price,discount_amt = 0.0,xnum = 0.0;
         if (vip != null){
@@ -355,7 +351,6 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         }
         return mDatas;
     }
-
     private void updateSaleGoodsInfo(double value,short type){//type 0 修改数量 1修改价格 2打折
         JSONObject json = getCurrentContent();
         double discount = 1.0,discount_amt = 0.0,old_price = 0.0,new_price = 0.0,xnum = 0.0;
@@ -456,7 +451,8 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 "(select case sum(xnum * retail_price) when 0 then 1 else sum(xnum * retail_price) end amt,gp_id \n" +
                 "from vi_goods_group_info group by gp_id) a on a.gp_id = b.gp_id where b.gp_id =" +  gp_id +" group by barcode_id;";
 
-        Logger.d(sql);
+        Logger.d("拆分组合商品：%s",sql);
+
         JSONArray tmp;
         while (gp_num-- != 0){
             if (null != (tmp = SQLiteHelper.getListToJson(sql,err))){
@@ -469,38 +465,4 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         }
         return true;
     }
-
-    public void splitCombinationalGoods() throws JSONException {
-         int gp_id = 0;
-         double gp_price = 0.0,gp_num = 0.0;
-         StringBuilder err = new StringBuilder();
-         final String sql = "select b.xnum xnum,(b.xnum * b.retail_price / a.amt) * %1 / case b.xnum when 0 then 1 else b.xnum end price," +
-                "b.barcode_id barcode_id,b.barcode barcode,b.conversion conversion,b.gp_id gp_id,b.tc_rate tc_rate,b.tc_mode tc_mode,b.tax_rate tax_rate,b.ps_price ps_price,b.cost_price cost_price\n" +
-                ",b.trade_price trade_price,b.retail_price retail_price,b.buying_price buying_price from vi_goods_group_info b inner join \n" +
-                "(select case sum(xnum * retail_price) when 0 then 1 else sum(xnum * retail_price) end amt,gp_id \n" +
-                "from vi_goods_group_info group by gp_id) a on a.gp_id = b.gp_id where b.gp_id = %2 group by barcode_id;";
-
-         for (int i = 0,length = mDatas.length();i < length;i++){
-             JSONObject jsonObject = mDatas.getJSONObject(i);
-             gp_id = jsonObject.getInt("gp_id");
-             if (-1 != gp_id){
-                 gp_price = jsonObject.getDouble("price");
-                 gp_num = jsonObject.getDouble("xnum");
-                 JSONArray tmp;
-                 while (gp_num-- != 0){
-                     if (null != (tmp = SQLiteHelper.getListToJson(sql.replace("%1",String.valueOf(gp_price)).replace("%2",String.valueOf(gp_id)),err))){
-                         for (int k = 0,size = tmp.length();k < size;k++){
-                             mCombinationalDatas.put(tmp.optJSONObject(k));
-                         }
-                     }else{
-                         MyDialog.displayErrorMessage("拆分组合商品错误：" + err,mContext);
-                         mDatas.remove(i);
-                         notifyDataSetChanged();
-                         return;
-                     }
-                 }
-             }
-         }
-    }
-
 }

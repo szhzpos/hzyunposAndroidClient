@@ -37,7 +37,7 @@ import static android.database.Cursor.FIELD_TYPE_STRING;
  * Created by Administrator on 2018-03-27.
  */
 
-public class SQLiteHelper extends SQLiteOpenHelper {
+public final class SQLiteHelper extends SQLiteOpenHelper {
     public static String IMG_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/img/";
     private static final String DATABASE_NAME = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/order.db";
     private static final int DATABASE_VERSION = 1;//记得修改软件版本
@@ -751,10 +751,10 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                         if (table_cols != null){
                             cls = table_cols.get(k);
                             for (String cl : cls) {
-                                if ("".equals(jsonObject.getString(cl))) {
+                                if ("".equals(jsonObject.optString(cl))) {
                                     statement.bindNull(++columnN0);
                                 } else
-                                    statement.bindString(++columnN0, jsonObject.getString(cl));
+                                    statement.bindString(++columnN0, jsonObject.optString(cl));
                             }
                         }else{
                             iterator = jsonObject.keys();

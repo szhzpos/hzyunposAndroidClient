@@ -88,7 +88,7 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
             headerHolder.pay_detail_amt.setTextColor(mContext.getResources().getColor(R.color.white,null));
             headerHolder.pay_detail_zl.setTextColor(mContext.getResources().getColor(R.color.white,null));
             headerHolder.pay_detail_v_num.setTextColor(mContext.getResources().getColor(R.color.white,null));
-            headerHolder.mCurrentLayoutItemView.setBackgroundColor(mContext.getResources().getColor(R.color.blue_subtransparent,null));
+            headerHolder.mCurrentLayoutItemView.setBackgroundColor(mContext.getResources().getColor(R.color.pay_detail_header,null));
         }else{
             JSONObject pay_detail = mDatas.optJSONObject(i - 1);
             if (pay_detail != null){
@@ -186,6 +186,7 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
 
                     object.put("pamt",Utils.formatDouble(payed_amt + pay_detail_info.getDouble("pamt"),2));
                     object.put("pzl",Utils.formatDouble(zl_amt + pay_detail_info.getDouble("pzl"),2));
+                    object.put("v_num",pay_detail_info.getString("v_num"));
                 }else{
                     mDatas.put(pay_detail_info);
                 }
@@ -218,7 +219,7 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
         setCurrentItemIndexAndItemView(v);
     }
 
-    private JSONObject findPayDetailById(final String id){
+    public JSONObject findPayDetailById(final String id){
         try {
             for (int i = 0,length = mDatas.length();i < length;i ++){//0为表头
                 JSONObject jsonObject = mDatas.getJSONObject(i);
@@ -231,5 +232,9 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
             MyDialog.ToastMessage("查找付款记录错误：" + e.getMessage(),mContext);
         }
         return null;
+    }
+    public void clearPayDetail(){
+        mDatas = new JSONArray();
+        notifyDataSetChanged();
     }
 }

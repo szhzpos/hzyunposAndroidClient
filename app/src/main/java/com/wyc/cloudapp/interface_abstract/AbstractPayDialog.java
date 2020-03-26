@@ -83,6 +83,17 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
                 tmp_v.setOnClickListener(button_click);
             }
         }
+        //回车监听
+        setOnKeyListener(new OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_ENTER){
+                    if (mOk != null)mOk.callOnClick();
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
     private View.OnClickListener button_click = v -> {
