@@ -19,7 +19,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 
 public class CustomApplication extends Application {
-    private static final ThreadPoolExecutor THREAD_POOL_EXECUTOR = (ThreadPoolExecutor)Executors.newFixedThreadPool(8);
+    private static final ThreadPoolExecutor THREAD_POOL_EXECUTOR = (ThreadPoolExecutor)Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2 + 2);
     private GlobalBroadcast globalBroadcast;
     private volatile int netState = 1,netState_mobile = 1;//WiFi 连接状态 1 连接 0 其他
     public CustomApplication(){
@@ -64,5 +64,8 @@ public class CustomApplication extends Application {
 
     public static void execute(Runnable runnable){
         THREAD_POOL_EXECUTOR.execute(runnable);
+    }
+    public static long getTaskCount(){
+        return THREAD_POOL_EXECUTOR.getActiveCount();
     }
 }

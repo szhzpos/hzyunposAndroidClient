@@ -236,7 +236,7 @@ public class AddVipInfoDialog extends Dialog {
         }
     }
     private void addVipInfo(){
-        mProgressDialog.setMessage("正在上传会员信息...").show();
+        mProgressDialog.setMessage("正在上传会员信息...").refreshMessage().show();
         CustomApplication.execute(()->{
             String url = mUrl + "/api/member/mk",sz_param;
             JSONObject object = getVipInfo(),ret_json;

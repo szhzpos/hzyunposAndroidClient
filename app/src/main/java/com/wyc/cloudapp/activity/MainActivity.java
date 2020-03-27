@@ -18,6 +18,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
@@ -81,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         //初始化成员变量
         mHandler = new Myhandler(this);
@@ -171,12 +173,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
-        mHandler.postDelayed(()-> mSearch_content.requestFocus(),500);
     }
     @Override
     public void onPause(){
         super.onPause();
-        mSearch_content.clearFocus();
     }
     @Override
     public void onDestroy(){
@@ -360,9 +360,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initSearch(){
-        mSearch_content.setOnFocusChangeListener((View v, boolean hasFocus)->{
-            Utils.hideKeyBoard((EditText) v);
-        });
+        mSearch_content.setOnFocusChangeListener((v,b)->Utils.hideKeyBoard((EditText) v));
+        mHandler.postDelayed(()-> mSearch_content.requestFocus(),100);
         mSearch_content.setSelectAllOnFocus(true);
         mSearch_content.addTextChangedListener(new TextWatcher() {
             @Override
@@ -435,6 +434,8 @@ public class MainActivity extends AppCompatActivity {
                             mGoodsInfoViewAdapter.fuzzy_search_goods(mSearch_content);
                         }
                         mSearch_content.selectAll();
+                    }else if(v_id == R.id.hide){
+                        mKeyboard.setVisibility(View.GONE);
                     }else {
                         if (mSearch_content.getSelectionStart() != mSearch_content.getSelectionEnd()){
                             editable.replace(0,editable.length(),((Button)view).getText());
@@ -442,7 +443,6 @@ public class MainActivity extends AppCompatActivity {
                         }else
                             editable.append(((Button)view).getText());
                     }
-
                 }
             };
             @Override

@@ -106,6 +106,7 @@ public class PayMethodDialog extends AbstractPayDialog {
                 mPayCode.postDelayed(()->mPayCode.requestFocus(),350);
                 mPayCode.setVisibility(View.VISIBLE);
                 mPayCode.setHint(mPayMethod.optString("xtype",""));
+                mPayAmtEt.setEnabled(false);
                 if (Utils.equalDouble(mPayAmt,0.0)){
                     mPayAmtEt.setVisibility(View.GONE);
                 }

@@ -2,6 +2,7 @@ package com.wyc.cloudapp.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -13,6 +14,7 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Editable;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,6 +57,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         mMain = findViewById(R.id.main);
         mUser_id = findViewById(R.id.user_id);
@@ -86,6 +89,9 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        mUser_id.setOnFocusChangeListener((v, hasFocus) -> Utils.hideKeyBoard((EditText)v));
+        mUser_id.postDelayed(()->mUser_id.requestFocus(),300);
+        mPassword.setOnFocusChangeListener((v, hasFocus) -> Utils.hideKeyBoard((EditText)v));
         mUser_id.setSelectAllOnFocus(true);
         mPassword.setSelectAllOnFocus(true);
 
@@ -106,6 +112,13 @@ public class LoginActivity extends AppCompatActivity {
             dialog.show();
         });
 
+        //初始化数字键盘
+        ConstraintLayout keyboard_linear_layout;
+        keyboard_linear_layout = findViewById(R.id.keyboard);
+        for (int i = 0,child  = keyboard_linear_layout.getChildCount(); i < child;i++){
+            View tmp_v = keyboard_linear_layout.getChildAt(i);
+            tmp_v.setOnClickListener(mKeyboardListener);
+        }
     }
 
     @Override
@@ -148,6 +161,8 @@ public class LoginActivity extends AppCompatActivity {
             SQLiteHelper.initDb(this);
             SQLiteHelper.initGoodsImgDirectory(this);
         }
+        //显示商户域名
+        show_url();
     }
 
     @Override
@@ -168,8 +183,31 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    private View.OnClickListener mKeyboardListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            int v_id = view.getId();
+            EditText et_view = (EditText) getCurrentFocus();
+            if (null == et_view){
+                et_view = mUser_id;
+                mUser_id.requestFocus();
+            }
+            Editable editable = et_view.getText();
+            if (v_id == R.id._ok){
+                editable.clear();
+            }else if (v_id == R.id._back){
+                if (editable.length() != 0)
+                    editable.delete(editable.length() - 1,editable.length());
+            }else{
+                if (et_view.getSelectionStart() != et_view.getSelectionEnd()){
+                    editable.replace(0,editable.length(),((Button)view).getText());
+                    et_view.setSelection(editable.length());
+                }else
+                    editable.append(((Button)view).getText());
+            }
+        }
+    };
     private void login(){
-        Logger.d(73 + (5 - 73%5));
         final HttpRequest httpRequest = new HttpRequest();
         mProgressDialog.setCancel(false).setMessage("正在登录...").show();
         myHandler.postDelayed(()->{
@@ -273,6 +311,31 @@ public class LoginActivity extends AppCompatActivity {
                 myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,param_json.optString("info")).sendToTarget();
             }
         });
+    }
+    private void show_url(){
+        EditText et_url = findViewById(R.id._url_text);
+        if (et_url != null){
+            if(et_url.getText().length() != 0)return;
+            JSONObject param = new JSONObject();
+            if(SQLiteHelper.getLocalParameter("connParam",param)){
+                if (Utils.JsonIsNotEmpty(param)){
+                    try {
+
+                            String url = param.getString("server_url");
+                            if (url.length() != 0){
+                                url = url.substring(url.lastIndexOf('/') + 1);
+                            }
+                            et_url.setText(url);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        MyDialog.ToastMessage(getWindow().getDecorView(),"显示服务器地址：" + e.getMessage(),getCurrentFocus());
+                    }
+                }
+            }else{
+                MyDialog.ToastMessage(getWindow().getDecorView(),param.optString("info"),getCurrentFocus());
+            }
+        }
     }
 
     private static class Myhandler extends Handler {

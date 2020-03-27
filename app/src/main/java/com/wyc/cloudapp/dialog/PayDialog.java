@@ -169,7 +169,7 @@ public class PayDialog extends Dialog {
         }
 
         //根据金额设置按钮数字
-        autoShowValueFromPayAmt();
+         autoShowValueFromPayAmt();
     }
 
     @Override
@@ -318,8 +318,8 @@ public class PayDialog extends Dialog {
 
     public boolean initPayContent(final JSONArray datas){
         boolean isTrue = true;
-
         if (null == datas)return false;
+
         clearContent();
         try {
             for (int i = 0,length = datas.length();i < length; i ++){
@@ -539,7 +539,6 @@ public class PayDialog extends Dialog {
                                                             if (res_code == 4){
                                                                 Looper.prepare();
                                                                 final Looper looper = Looper.myLooper();
-
                                                                 mainActivity.runOnUiThread(()->{
                                                                     ChangeNumOrPriceDialog password_dialog = new ChangeNumOrPriceDialog(mainActivity,"请输入密码","");
                                                                     password_dialog.setOnDismissListener(dialog -> {
@@ -662,24 +661,11 @@ public class PayDialog extends Dialog {
     }
     private void autoShowValueFromPayAmt(){
         int amt = (int)mCashAmt,tmp;
-        Button first = findViewById(R.id._ten);
-        if(amt > 100 && amt % 100 != 0) {
-            tmp = amt + (100 - amt % 100);
-            if (tmp - (int)mCashAmt > 50){
-                amt = amt + (50 - amt % 50);
-            }else{
-                amt = tmp;
-            }
-        }else{
-            if (amt % 10 != 0){
-                tmp = amt + (10 - amt % 10);
-                if (tmp - (int)mCashAmt > 5){
-                    amt = amt + (5 - amt % 5);
-                }else{
-                    amt = tmp;
-                }
-            }
-        }
-        first.setText(String.valueOf(amt));
+        Button first = findViewById(R.id._ten),sec = findViewById(R.id._twenty),third = findViewById(R.id._fifty),fourth = findViewById(R.id._one_hundred);
+        tmp = amt +(5 - amt % 5);
+        first.setText(String.valueOf(tmp));
+        sec.setText(String.valueOf((tmp = tmp +(10- tmp % 10))));
+        third.setText(String.valueOf((tmp = tmp +(20- tmp % 20))));
+        fourth.setText(String.valueOf( tmp +(50- tmp % 50)));
     }
 }

@@ -61,15 +61,15 @@
                 android:layout_width="150dp"
                 android:layout_height="match_parent"
                 android:autofillHints=""
-                android:background="@color/transparent"
+                android:background="@drawable/edit_text_style"
                 android:ems="10"
                 android:focusable="auto"
                 android:hint="@string/pay_amt_sz"
                 android:inputType="numberDecimal"
                 android:paddingStart="@dimen/margin_5"
                 android:paddingEnd="0dp"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16" />
+                android:textColor="@color/orange_1"
+                android:textSize="@dimen/font_size_18" />
 
             <EditText
                 android:id="@+id/pay_code"

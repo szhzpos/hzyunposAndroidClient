@@ -1,9 +1,11 @@
 package com.wyc.cloudapp.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
@@ -21,6 +24,11 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdapter.MyViewHolder> {
 
@@ -28,7 +36,8 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
     private JSONArray mDatas;
     private OnItemClickListener mOnItemClickListener;
     private boolean mSearchLoad = false;//是否按搜索框条件加载
-    private boolean mShowPic = false;
+    private boolean mShowPic = true;
+    private final Map<ImageView,Bitmap> map = new HashMap<>();
     public GoodsInfoViewAdapter(Context context){
         this.mContext = context;
     }
@@ -66,13 +75,21 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
         if (mDatas != null){
             JSONObject goods_info = mDatas.optJSONObject(i);
-            String szImage;
             if (goods_info != null){
-                szImage = (String) goods_info.remove("img_url");
-                if (mShowPic && szImage != null){
-                    if (!"".equals(szImage)){
-                        szImage = szImage.substring(szImage.lastIndexOf("/") + 1);
-                        myViewHolder.goods_img.setImageBitmap(BitmapFactory.decodeFile(SQLiteHelper.IMG_PATH + szImage));
+                final String img_url = (String) goods_info.remove("img_url");
+                if (mShowPic && img_url != null){
+                    if (!"".equals(img_url)){
+                        final String szImage = img_url.substring(img_url.lastIndexOf("/") + 1);
+
+                        CustomApplication.execute(()->{
+                            if (mContext instanceof Activity){
+                                Activity activity = (Activity)mContext;
+                                final Bitmap bitmap = BitmapFactory.decodeFile(SQLiteHelper.IMG_PATH + szImage);
+                                activity.runOnUiThread(()->{
+                                    myViewHolder.goods_img.setImageBitmap(bitmap);
+                                });
+                            }
+                        });
                     }else{
                         myViewHolder.goods_img.setImageDrawable(mContext.getDrawable(R.drawable.nodish));
                     }
@@ -115,7 +132,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         return mDatas == null ? null : mDatas.optJSONObject(i);
     }
 
-    public void setDatas(int id){
+    void setDatas(int id){
         StringBuilder err = new StringBuilder();
         String sql = "",category_id;
         if (-1 == id){
@@ -125,7 +142,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         }else{
             category_id = SQLiteHelper.getString("select category_id from shop_category where path like '" + id +"%'",err);
             if (null == category_id){
-                MyDialog.displayErrorMessage("加载类别错误：" + err,mContext);
+                MyDialog.displayErrorMessage("加载商品错误：" + err,mContext);
                 return;
             }
             category_id = category_id.replace("\r\n",",");
@@ -137,7 +154,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
             if (mSearchLoad)mSearchLoad = false;
             this.notifyDataSetChanged();
         }else{
-            MyDialog.displayErrorMessage("加载类别错误：" + err,mContext);
+            MyDialog.displayErrorMessage("加载商品错误：" + err,mContext);
         }
     }
 
@@ -154,11 +171,11 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         if (mDatas != null){
             if(mDatas.length() != 0){
                 if (!mSearchLoad)mSearchLoad = true;
-                this.notifyDataSetChanged();
             }else{
                 search.selectAll();
                 MyDialog.ToastMessage("无此商品！",mContext);
             }
+            this.notifyDataSetChanged();
         }else{
             search.selectAll();
             MyDialog.displayErrorMessage("搜索商品错误：" + err,mContext);

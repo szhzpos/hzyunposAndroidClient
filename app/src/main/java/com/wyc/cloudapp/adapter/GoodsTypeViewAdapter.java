@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -68,7 +69,9 @@ public class GoodsTypeViewAdapter extends RecyclerView.Adapter<GoodsTypeViewAdap
             }
 
             category_id = view.findViewById(R.id.category_id);
-            if (null != mGoodsInfoAdapter && category_id != null)mGoodsInfoAdapter.setDatas(Integer.valueOf(category_id.getText().toString()));
+            if (null != mGoodsInfoAdapter && category_id != null){
+                mGoodsInfoAdapter.setDatas(Integer.valueOf(category_id.getText().toString()));
+            }
         });
         return new MyViewHolder(itemView);
     }
@@ -80,7 +83,7 @@ public class GoodsTypeViewAdapter extends RecyclerView.Adapter<GoodsTypeViewAdap
             if (goods_type_info != null){
                 myViewHolder.category_id.setText(goods_type_info.optString("category_id"));
                 myViewHolder.category_name.setText(goods_type_info.optString("name"));
-                if (i == 0){//触发第一个类别查询
+                if (i == 1){//触发第一个类别查询
                     myViewHolder.mCurrentLayoutItemView.callOnClick();
                 }
             }
@@ -98,7 +101,7 @@ public class GoodsTypeViewAdapter extends RecyclerView.Adapter<GoodsTypeViewAdap
 
     public void setDatas(){
         StringBuilder err = new StringBuilder();
-        mDatas = SQLiteHelper.getList("select category_id,name from shop_category where parent_id='0' union select -1 category_id,'组合商品' name order by category_id desc",0,0,false,err);
+        mDatas = SQLiteHelper.getList("select category_id,name from shop_category where parent_id='0' union select -1 category_id,'组合商品' name ",0,0,false,err);
         if (mDatas != null){
             this.notifyDataSetChanged();
         }else{

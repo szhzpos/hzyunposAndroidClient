@@ -226,6 +226,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                     }else{
                         jsonObject.put("xnum",current_num);
                         jsonObject.put("sale_amt",Utils.formatDouble(current_num * price,2));
+                        jsonObject.put("order_amt",Utils.formatDouble(current_num * jsonObject.getDouble("old_price"),2));
                     }
                 }catch (JSONException e){
                     e.printStackTrace();
