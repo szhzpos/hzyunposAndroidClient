@@ -48,6 +48,7 @@ public class ClickListener implements View.OnTouchListener {
                 }
             }
         }
+        v.performClick();
         return true;
     }
     private Runnable SingleClick = ()->{

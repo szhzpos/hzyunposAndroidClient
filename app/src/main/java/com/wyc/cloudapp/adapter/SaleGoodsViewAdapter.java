@@ -153,7 +153,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                         tmp.put("discount_amt", discount_amt);
                         tmp.put("xnum",Utils.formatDouble(sale_num + sel_num,4));
                         tmp.put("sale_amt",Utils.formatDouble(sale_amount + sel_amount,2));
-                        tmp.put("order_amt",Utils.formatDouble(sale_amount + sel_amount + discount_amt,2));
+                        tmp.put("old_amt",Utils.formatDouble(sale_amount + sel_amount + discount_amt,2));
 
                         Logger.d_json(tmp.toString());
 
@@ -195,7 +195,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                     goods.put("discount_amt", discount_amt);
                     goods.put("xnum",sel_num);
                     goods.put("sale_amt",sel_amount);
-                    goods.put("order_amt",Utils.formatDouble(sel_amount + discount_amt,2));
+                    goods.put("old_amt",Utils.formatDouble(sel_amount + discount_amt,2));
                     mDatas.put(goods);
                     mCurrentItemIndex = mDatas.length() - 1;
                 }
@@ -226,7 +226,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                     }else{
                         jsonObject.put("xnum",current_num);
                         jsonObject.put("sale_amt",Utils.formatDouble(current_num * price,2));
-                        jsonObject.put("order_amt",Utils.formatDouble(current_num * jsonObject.getDouble("old_price"),2));
+                        jsonObject.put("old_amt",Utils.formatDouble(current_num * jsonObject.getDouble("old_price"),2));
                     }
                 }catch (JSONException e){
                     e.printStackTrace();
@@ -283,7 +283,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 json.put("price",new_price);
 
                 json.put("sale_amt",Utils.formatDouble(xnum * new_price,2));
-                json.put("order_amt",Utils.formatDouble(old_price * xnum,2));
+                json.put("old_amt",Utils.formatDouble(old_price * xnum,2));
 
                 Logger.d_json(json.toString());
             }
@@ -342,7 +342,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                     jsonObject.put("discount_amt", discount_amt);
                     jsonObject.put("price",new_price);
                     jsonObject.put("sale_amt",Utils.formatDouble(xnum * new_price,2));
-                    jsonObject.put("order_amt",Utils.formatDouble(old_price * xnum,2));
+                    jsonObject.put("old_amt",Utils.formatDouble(old_price * xnum,2));
                 }
                 notifyDataSetChanged();
             }catch (JSONException e){
@@ -402,7 +402,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                     break;
             }
             json.put("sale_amt",Utils.formatDouble(xnum * new_price,2));
-            json.put("order_amt",Utils.formatDouble(old_price * xnum,2));
+            json.put("old_amt",Utils.formatDouble(old_price * xnum,2));
 
             Logger.d_json(json.toString());
             notifyDataSetChanged();

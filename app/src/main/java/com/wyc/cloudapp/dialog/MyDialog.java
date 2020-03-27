@@ -2,26 +2,21 @@ package com.wyc.cloudapp.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-
 import com.google.android.material.snackbar.Snackbar;
 import com.wyc.cloudapp.R;
 
+import android.text.Layout;
 import android.text.method.ScrollingMovementMethod;
-import android.view.Display;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-
-import static android.content.Context.WINDOW_SERVICE;
 
 public class MyDialog extends Dialog {
     private Button mYes,mNo;//mYes确定按钮、mNo取消按钮
@@ -33,7 +28,6 @@ public class MyDialog extends Dialog {
     private boolean mIsYes,mIsNo;
     //按钮文本的显示内容
     private String mYesStr,mNoStr;
-    private boolean mShowPassword = true;
     private onNoOnclickListener noOnclickListener;//取消按钮被点击了的监听器
     private onYesOnclickListener yesOnclickListener;//确定按钮被点击了的监听器
 
@@ -226,7 +220,7 @@ public class MyDialog extends Dialog {
     }
 
     public static void ToastMessage(@NonNull View v, final String message, View anchor){
-        Snackbar snackbar = Snackbar.make(v,message, Snackbar.LENGTH_SHORT);
+        Snackbar snackbar = Snackbar.make(v,message, Snackbar.LENGTH_INDEFINITE);
         if (anchor != null)snackbar.setAnchorView(anchor);
         View snackbar_view = snackbar.getView();
         snackbar_view.setBackgroundResource(R.drawable.snackbar_background);

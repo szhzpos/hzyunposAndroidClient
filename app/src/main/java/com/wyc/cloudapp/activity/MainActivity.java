@@ -649,7 +649,7 @@ public class MainActivity extends AppCompatActivity {
                 tmp_json.remove("goods_id");
                 tmp_json.remove("discount");
                 tmp_json.remove("discount_amt");
-                tmp_json.remove("order_amt");
+                tmp_json.remove("old_amt");
                 tmp_json.remove("goods_title");
                 tmp_json.remove("unit_name");
                 tmp_json.remove("yh_mode");

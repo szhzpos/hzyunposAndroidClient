@@ -31,6 +31,13 @@ public class PayMethodDialog extends AbstractPayDialog {
         super.onCreate(savedInstanceState);
 
         mOk.setText(R.string.OK);
+        mOk.setOnClickListener(v -> {
+            if (!Utils.equalDouble(getPayAmt(),0.0)){
+                if (mYesOnclickListener != null)mYesOnclickListener.onYesClick(PayMethodDialog.this);
+            }else{
+                MyDialog.ToastMessage(mDialogWindow.getDecorView(),mContext.getString(R.string.not_zero_hint_sz),null);
+            }
+        });
         setTitle(mPayMethod.optString("name"));
 
         //初始化支付方式
@@ -56,26 +63,14 @@ public class PayMethodDialog extends AbstractPayDialog {
                         Logger.d("index:%d",index);
                         editable.delete(index,editable.length());
                     }
-                    if (Double.valueOf(editable.toString()) - mPayAmt> 0){
+                    if (Double.valueOf(editable.toString()) - mOriginalPayAmt> 0){
                         refreshContent();
-                        MyDialog.ToastMessage("此付款方式不找零！",mContext);
+                        MyDialog.ToastMessage(mDialogWindow.getDecorView(),getTitle().concat(mContext.getString(R.string.not_zl_hint_sz)),null);
                     }
                 }
             }
         });
 
-    }
-    @Override
-    public void setPayAmt(double amt) {
-        super.setPayAmt(amt);
-    }
-
-    @Override
-    public void refreshContent(){
-        if (mPayAmtEt != null){
-            mPayAmtEt.setText(String.format(Locale.CHINA,"%.2f",mPayAmt));
-            mPayAmtEt.selectAll();
-        }
     }
 
     @Override
@@ -84,7 +79,7 @@ public class PayMethodDialog extends AbstractPayDialog {
             if (mPayCode.getVisibility() == View.VISIBLE){
                 if (mPayCode.getText().length() == 0){
                     mPayCode.requestFocus();
-                    MyDialog.ToastMessage(mPayCode.getHint() + "不能为空！",mContext);
+                    MyDialog.ToastMessage(mPayCode.getHint() + mContext.getString(R.string.not_empty_hint_sz),mContext);
                     return null;
                 }
             }
@@ -94,7 +89,7 @@ public class PayMethodDialog extends AbstractPayDialog {
             mPayMethod.put("v_num",mPayCode.getText().toString());
         } catch (JSONException e) {
             e.printStackTrace();
-            MyDialog.ToastMessage("支付错误：" + e.getMessage(),mContext);
+            MyDialog.ToastMessage(mDialogWindow.getDecorView(),e.getMessage(),getCurrentFocus());
             return null;
         }
         return mPayMethod;
@@ -107,13 +102,14 @@ public class PayMethodDialog extends AbstractPayDialog {
                 mPayCode.setVisibility(View.VISIBLE);
                 mPayCode.setHint(mPayMethod.optString("xtype",""));
                 mPayAmtEt.setEnabled(false);
-                if (Utils.equalDouble(mPayAmt,0.0)){
+                if (Utils.equalDouble(mOriginalPayAmt,0.0)){
                     mPayAmtEt.setVisibility(View.GONE);
                 }
             }else{
                 mPayCode.clearFocus();
                 mPayCode.getText().clear();
                 mPayCode.setVisibility(View.GONE);
+                mPayAmtEt.postDelayed(()-> mPayAmtEt.requestFocus(),300);
             }
         }
     }

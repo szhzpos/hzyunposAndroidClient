@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.dialog;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
@@ -57,6 +58,7 @@ public class VipChargeDialog extends AbstractPayDialog {
         setHint(mContext.getString(R.string.c_amt_hint_sz));
 
         //保留两位小数
+        mPayAmtEt.postDelayed(()-> mPayAmtEt.requestFocus(),300);
         mPayAmtEt.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -111,10 +113,10 @@ public class VipChargeDialog extends AbstractPayDialog {
     private void vip_charge(){
         if (mVip != null){
             if (mPayMethod == null){
-                MyDialog.ToastMessage("请选择付款方式！",mContext);
+                MyDialog.ToastMessage(mDialogWindow.getDecorView(),mContext.getString(R.string.select_pay_way_hint_sz),getCurrentFocus());
                 return;
             }
-            if (mPayAmtEt.length() == 0){
+            if (mPayAmtEt.length() == 0 || Utils.equalDouble(getPayAmt(),0.0)){
                 mPayAmtEt.requestFocus();
                 MyDialog.ToastMessage(mPayAmtEt.getHint().toString(),mContext);
                 return;
@@ -199,13 +201,13 @@ public class VipChargeDialog extends AbstractPayDialog {
 
                                                 switch (retJson.optInt("flag")){
                                                     case 0:
-                                                        mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"支付错误：" + retJson.getString("info")).sendToTarget();
+                                                        mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,retJson.getString("info")).sendToTarget();
                                                         return;
                                                     case 1:
                                                         info_json = new JSONObject(retJson.optString("info"));
                                                          switch (info_json.optString("status")){
                                                             case "n":
-                                                                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"支付错误：" + info_json.getString("info")).sendToTarget();
+                                                                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,info_json.getString("info")).sendToTarget();
                                                                 return;
                                                             case "y":
                                                                 int res_code = info_json.getInt("res_code");
@@ -213,7 +215,7 @@ public class VipChargeDialog extends AbstractPayDialog {
                                                                     case 1://支付成功
                                                                         break;
                                                                     case 2:
-                                                                        mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"支付错误：" + info_json.getString("info")).sendToTarget();
+                                                                        mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,info_json.getString("info")).sendToTarget();
                                                                         return;
                                                                     case 3:
                                                                     case 4:
@@ -236,19 +238,19 @@ public class VipChargeDialog extends AbstractPayDialog {
 
                                                                             switch (retJson.getInt("flag")){
                                                                                 case 0:
-                                                                                    mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"查询支付结果错误：" + retJson.getString("info")).sendToTarget();
+                                                                                    mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,retJson.getString("info")).sendToTarget();
                                                                                     return;
                                                                                 case 1:
                                                                                     info_json = new JSONObject(retJson.optString("info"));
                                                                                     Logger.json(info_json.toString());
                                                                                     switch (info_json.getString("status")){
                                                                                         case "n":
-                                                                                            mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"查询支付结果错误：" + info_json.getString("info")).sendToTarget();
+                                                                                            mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,info_json.getString("info")).sendToTarget();
                                                                                             return;
                                                                                         case "y":
                                                                                             res_code = info_json.getInt("res_code");
                                                                                             if (res_code == 2){//支付失败
-                                                                                                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"支付错误：" + info_json.getString("info")).sendToTarget();
+                                                                                                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,info_json.getString("info")).sendToTarget();
                                                                                                 return;
                                                                                             }
                                                                                             break;
@@ -320,6 +322,12 @@ public class VipChargeDialog extends AbstractPayDialog {
         return mVip;
     }
 
+
+
+    @SuppressLint("NewApi")
+    private String generate_pay_son_order_id(){
+        return "MPAY" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Utils.getNonce_str(8);
+    }
     private static class Myhandler extends Handler {
         private WeakReference<VipChargeDialog> weakHandler;
         private Myhandler(VipChargeDialog dialog){
@@ -346,10 +354,6 @@ public class VipChargeDialog extends AbstractPayDialog {
                     break;
             }
         }
-    }
-
-    private String generate_pay_son_order_id(){
-        return "MPAY" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Utils.getNonce_str(8);
     }
 
 }

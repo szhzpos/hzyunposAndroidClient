@@ -36,8 +36,8 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
     private JSONArray mDatas;
     private OnItemClickListener mOnItemClickListener;
     private boolean mSearchLoad = false;//是否按搜索框条件加载
-    private boolean mShowPic = true;
-    private final Map<ImageView,Bitmap> map = new HashMap<>();
+    private boolean mShowPic = false;
+
     public GoodsInfoViewAdapter(Context context){
         this.mContext = context;
     }
@@ -80,7 +80,6 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                 if (mShowPic && img_url != null){
                     if (!"".equals(img_url)){
                         final String szImage = img_url.substring(img_url.lastIndexOf("/") + 1);
-
                         CustomApplication.execute(()->{
                             if (mContext instanceof Activity){
                                 Activity activity = (Activity)mContext;
