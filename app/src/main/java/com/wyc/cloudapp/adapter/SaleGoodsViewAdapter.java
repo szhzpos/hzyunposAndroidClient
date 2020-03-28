@@ -256,7 +256,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 myDialog.dismiss();
             }).setNoOnclickListener(Dialog::dismiss).show();
         }else{
-            MyDialog.ToastMessage("请选择需要修改的商品!",mContext);
+            MyDialog.ToastMessage("请选择需要修改的商品!",mContext,null);
         }
     }
     public JSONArray discount(double value){//整单折
@@ -347,7 +347,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 notifyDataSetChanged();
             }catch (JSONException e){
                 e.printStackTrace();
-                MyDialog.ToastMessage("会员折扣错误：" + e.getMessage(),mContext);
+                MyDialog.ToastMessage("会员折扣错误：" + e.getMessage(),mContext,null);
             }
         }
         return mDatas;

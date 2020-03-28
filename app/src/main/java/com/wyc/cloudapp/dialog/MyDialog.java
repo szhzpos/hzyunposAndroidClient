@@ -1,17 +1,17 @@
 package com.wyc.cloudapp.dialog;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import com.google.android.material.snackbar.Snackbar;
 import com.wyc.cloudapp.R;
-
-import android.text.Layout;
+import com.wyc.cloudapp.listener.WindowCallback;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -213,20 +213,38 @@ public class MyDialog extends Dialog {
         builder.setTitle("提示信息").setMessage(message).setNoOnclickListener(sz, Dialog::dismiss).show();
     }
 
-    public static void ToastMessage(final String message,final Context context){
+    public static boolean ToastMessage(final String message,final Context context,final Window window,boolean b){
+        ToastMessage(message,context,window);
+        return b;
+    }
+
+    public static void ToastMessage(final String message, @NonNull final Context context, final Window window){
         Toast toast = Toast.makeText(context,message,Toast.LENGTH_SHORT);
+        if (null != window){
+            window.setCallback(new WindowCallback(window,toast));
+        }else if (context instanceof Activity){
+            Window w = ((Activity)context).getWindow();
+            w.setCallback(new WindowCallback(w,toast));
+        }
         toast.setGravity(Gravity.CENTER,0,0);
         toast.show();
     }
 
-    public static void ToastMessage(@NonNull View v, final String message, View anchor){
-        Snackbar snackbar = Snackbar.make(v,message, Snackbar.LENGTH_INDEFINITE);
-        if (anchor != null)snackbar.setAnchorView(anchor);
-        View snackbar_view = snackbar.getView();
-        snackbar_view.setBackgroundResource(R.drawable.snackbar_background);
-        TextView tvSnackbarText = snackbar_view.findViewById(R.id.snackbar_text);
-        tvSnackbarText.setTextSize(18);
-        snackbar.show();
+    public static boolean ToastMessage(final Window window, final String message, View anchor,boolean b){
+        ToastMessage( window, message, anchor);
+        return b;
+    }
+    public static void ToastMessage(final Window window, final String message, View anchor){
+        if (null != window){
+            final Snackbar snackbar = Snackbar.make(window.getDecorView(),message, Snackbar.LENGTH_LONG);
+            window.setCallback(new WindowCallback(window,snackbar));
+            if (anchor != null)snackbar.setAnchorView(anchor);
+            View snackbar_view = snackbar.getView();
+            snackbar_view.setBackgroundResource(R.drawable.snackbar_background);
+            TextView tvSnackbarText = snackbar_view.findViewById(R.id.snackbar_text);
+            tvSnackbarText.setTextSize(20);
+            snackbar.show();
+        }
     }
 
     /**

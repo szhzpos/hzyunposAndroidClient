@@ -172,12 +172,12 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                 if (!mSearchLoad)mSearchLoad = true;
             }else{
                 search.selectAll();
-                MyDialog.ToastMessage("无此商品！",mContext);
+                MyDialog.ToastMessage("无此商品！",mContext,null);
             }
             this.notifyDataSetChanged();
         }else{
             search.selectAll();
-            MyDialog.displayErrorMessage("搜索商品错误：" + err,mContext);
+            MyDialog.displayErrorMessage("搜索商品错误：" + err,mContext,null);
         }
     }
 
@@ -211,7 +211,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
             Logger.d("order_id:%s,length:%d",order_code,order_code.length());
         }else{
             order_code = prefix + "0001";;
-            MyDialog.ToastMessage("生成订单号错误：" + orders.optString("info"),mContext);
+            MyDialog.ToastMessage("生成订单号错误：" + orders.optString("info"),mContext,null);
         }
         return order_code;
     }

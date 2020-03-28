@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
+import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
 import org.json.JSONObject;
 
@@ -75,7 +76,7 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
         });
         findViewById(R.id._cancel).setOnClickListener(view -> AbstractPayDialog.this.dismiss());
         mOk.setOnClickListener(v -> {
-            if (mYesOnclickListener != null)mYesOnclickListener.onYesClick(AbstractPayDialog.this);
+            if (verify() && mYesOnclickListener != null)mYesOnclickListener.onYesClick(AbstractPayDialog.this);
         });
 
         //初始化数字键盘
@@ -183,6 +184,18 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
         return new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()) + Utils.getNonce_str(8);
     }
 
+    protected boolean verify(){
+        if (mPayAmtEt.getVisibility() == View.VISIBLE &&(mPayAmtEt.length() == 0 || Utils.equalDouble(getPayAmt(),0.0))){
+            mPayAmtEt.requestFocus();
+            return MyDialog.ToastMessage(mPayAmtEt.getHint().toString().concat(mContext.getString(R.string.not_zero_hint_sz)),mContext,getWindow(),false);
+        }
+        if (mPayCode.getVisibility() == View.VISIBLE && mPayCode.length() == 0){
+            mPayCode.requestFocus();
+            return MyDialog.ToastMessage(mPayCode.getHint().toString().concat(mContext.getString(R.string.not_empty_hint_sz)),mContext,getWindow(),false);
+        }
+        return true;
+    }
+
     public AbstractPayDialog setYesOnclickListener(onYesOnclickListener listener) {
         if (listener != null){
             mYesOnclickListener = listener;
@@ -206,4 +219,5 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
         mPayCode.setSelectAllOnFocus(true);
         mPayCode.setOnFocusChangeListener((view, b) -> Utils.hideKeyBoard((EditText) view));
     }
+
 }

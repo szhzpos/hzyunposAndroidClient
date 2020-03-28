@@ -293,11 +293,11 @@ public class MainActivity extends AppCompatActivity {
                             mSaleGoodsViewAdapter.addSaleGoods(content,mVipInfo);
                             mSearch_content.selectAll();
                         }else{
-                            MyDialog.ToastMessage("选择商品错误：" + content.getString("info"),v.getContext());
+                            MyDialog.ToastMessage("选择商品错误：" + content.getString("info"),v.getContext(),null);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        MyDialog.ToastMessage("选择商品错误：" + e.getMessage(),v.getContext());
+                        MyDialog.ToastMessage("选择商品错误：" + e.getMessage(),v.getContext(),null);
                     }
                 }
             }
@@ -518,7 +518,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess(PayDialog myDialog) {
                         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
                         mSyncManagement.sync_order();
-                        MyDialog.ToastMessage(MainActivity.this.getWindow().getDecorView(),"结账成功！",mOrderCode);
+                        MyDialog.ToastMessage(MainActivity.this.getWindow(),"结账成功！",mOrderCode);
                         resetOrderInfo();
                         myDialog.dismiss();
                     }
@@ -533,7 +533,7 @@ public class MainActivity extends AppCompatActivity {
                 }).show();
             }
         }else{
-            MyDialog.ToastMessage(getWindow().getDecorView(),"已选商品为空！!",getCurrentFocus());
+            MyDialog.ToastMessage(getWindow(),"已选商品为空！!",getCurrentFocus());
         }
     }
 

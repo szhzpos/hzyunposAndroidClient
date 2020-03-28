@@ -97,7 +97,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         File file = new File(IMG_PATH);
         if (!file.exists()){
             if (!file.mkdir()){
-                MyDialog.ToastMessage("初始化商品图片目录错误！",context);
+                MyDialog.ToastMessage("初始化商品图片目录错误！",context,null);
             }
         }
     }

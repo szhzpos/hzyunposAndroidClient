@@ -263,7 +263,7 @@ public class LoginActivity extends AppCompatActivity {
                                         err_info  = info_json.getString("info");
                                         if (err_info.contains("密码")){
                                             myHandler.obtainMessage(MessageID.LOGIN_PW_ERROR_ID,"登录失败：" + err_info).sendToTarget();
-                                        }else if (err_info.contains("账号")){
+                                        }else if (err_info.contains("账号") || err_info.contains("登录")){
                                             myHandler.obtainMessage(MessageID.LOGIN_ID_ERROR_ID,"登录失败：" + err_info).sendToTarget();
                                         }else
                                             myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"登录失败：" + err_info).sendToTarget();
@@ -330,11 +330,11 @@ public class LoginActivity extends AppCompatActivity {
 
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        MyDialog.ToastMessage(getWindow().getDecorView(),"显示服务器地址：" + e.getMessage(),getCurrentFocus());
+                        MyDialog.ToastMessage(getWindow(),"显示服务器地址：" + e.getMessage(),getCurrentFocus());
                     }
                 }
             }else{
-                MyDialog.ToastMessage(getWindow().getDecorView(),param.optString("info"),getCurrentFocus());
+                MyDialog.ToastMessage(getWindow(),param.optString("info"),getCurrentFocus());
             }
         }
     }
@@ -390,14 +390,14 @@ public class LoginActivity extends AppCompatActivity {
                     activity.mUser_id.selectAll();
                     activity.mUser_id.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake_x));
                     if (msg.obj instanceof String)
-                        MyDialog.ToastMessage(activity.getWindow().getDecorView(),msg.obj.toString(),activity.getCurrentFocus());
+                        MyDialog.ToastMessage(msg.obj.toString(),activity,null);
                     break;
                 case MessageID.LOGIN_PW_ERROR_ID://密码错误
                     activity.mPassword.requestFocus();
                     activity.mPassword.selectAll();
                     activity.mPassword.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake_x));
                     if (msg.obj instanceof String)
-                        MyDialog.ToastMessage(activity.getWindow().getDecorView(),msg.obj.toString(),activity.getCurrentFocus());
+                        MyDialog.ToastMessage(msg.obj.toString(),activity,null);
                     break;
                 case MessageID.SYNC_DIS_INFO_ID://资料同步进度信息
                     if (activity.mProgressDialog != null){
@@ -409,11 +409,11 @@ public class LoginActivity extends AppCompatActivity {
                     break;
                 case MessageID.SYNC_GOODS_IMG_ERR_ID:
                     if (msg.obj instanceof String)
-                        MyDialog.ToastMessage(activity.getWindow().getDecorView(),msg.obj.toString(),activity.getCurrentFocus());
+                        MyDialog.ToastMessage(activity.getWindow(),msg.obj.toString(),activity.getCurrentFocus());
                     break;
                 case MessageID.CONN_PARAM_ERR_ID:
                     if (msg.obj instanceof String){
-                        MyDialog.ToastMessage(activity.getWindow().getDecorView(),msg.obj.toString(),activity.getCurrentFocus());
+                        MyDialog.ToastMessage(activity.getWindow(),msg.obj.toString(),activity.getCurrentFocus());
                         activity.findViewById(R.id.setup_ico).callOnClick();
                     }
                     break;

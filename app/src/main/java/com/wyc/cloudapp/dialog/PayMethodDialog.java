@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.dialog;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
@@ -31,13 +32,7 @@ public class PayMethodDialog extends AbstractPayDialog {
         super.onCreate(savedInstanceState);
 
         mOk.setText(R.string.OK);
-        mOk.setOnClickListener(v -> {
-            if (!Utils.equalDouble(getPayAmt(),0.0)){
-                if (mYesOnclickListener != null)mYesOnclickListener.onYesClick(PayMethodDialog.this);
-            }else{
-                MyDialog.ToastMessage(mDialogWindow.getDecorView(),mContext.getString(R.string.not_zero_hint_sz),null);
-            }
-        });
+
         setTitle(mPayMethod.optString("name"));
 
         //初始化支付方式
@@ -65,7 +60,7 @@ public class PayMethodDialog extends AbstractPayDialog {
                     }
                     if (Double.valueOf(editable.toString()) - mOriginalPayAmt> 0){
                         refreshContent();
-                        MyDialog.ToastMessage(mDialogWindow.getDecorView(),getTitle().concat(mContext.getString(R.string.not_zl_hint_sz)),null);
+                        MyDialog.ToastMessage(mDialogWindow,getTitle().concat(mContext.getString(R.string.not_zl_hint_sz)),null);
                     }
                 }
             }
@@ -76,20 +71,13 @@ public class PayMethodDialog extends AbstractPayDialog {
     @Override
     public JSONObject getContent() {
         try {
-            if (mPayCode.getVisibility() == View.VISIBLE){
-                if (mPayCode.getText().length() == 0){
-                    mPayCode.requestFocus();
-                    MyDialog.ToastMessage(mPayCode.getHint() + mContext.getString(R.string.not_empty_hint_sz),mContext);
-                    return null;
-                }
-            }
             mPayMethod.put("pay_code",getPayCode());
             mPayMethod.put("pamt", mPayAmtEt.getText().toString());
             mPayMethod.put("pzl",0.00);
             mPayMethod.put("v_num",mPayCode.getText().toString());
         } catch (JSONException e) {
             e.printStackTrace();
-            MyDialog.ToastMessage(mDialogWindow.getDecorView(),e.getMessage(),getCurrentFocus());
+            MyDialog.ToastMessage(mDialogWindow,e.getMessage(),getCurrentFocus());
             return null;
         }
         return mPayMethod;

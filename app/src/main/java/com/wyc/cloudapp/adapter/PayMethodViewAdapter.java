@@ -95,7 +95,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     }
 
     @Override
-    public void onViewAttachedToWindow (MyViewHolder holder){
+    public void onViewAttachedToWindow (@NonNull MyViewHolder holder){
 
     }
 
@@ -122,7 +122,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
         if (mDatas != null){
             this.notifyDataSetChanged();
         }else{
-            MyDialog.ToastMessage("加载支付方式错误：" + err,mContext);
+            MyDialog.ToastMessage("加载支付方式错误：" + err,mContext,null);
         }
     }
     public JSONObject get_pay_method(@NonNull final String pay_method_id){

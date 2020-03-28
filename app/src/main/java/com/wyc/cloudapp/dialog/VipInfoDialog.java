@@ -244,7 +244,7 @@ public class VipInfoDialog extends Dialog {
 
             });
         }else{
-            MyDialog.ToastMessage("请输入查询内容！",mContext);
+            MyDialog.ToastMessage(mSearchContent.getHint().toString(),mContext,getWindow());
         }
     }
 
@@ -257,7 +257,7 @@ public class VipInfoDialog extends Dialog {
             mAppScret = conn.optString("appScret");
         }else{
             code = false;
-            MyDialog.ToastMessage("查询连接参数错误：" + conn.optString("info"),mContext);
+            MyDialog.ToastMessage("查询连接参数错误：" + conn.optString("info"),mContext,getWindow());
         }
         return code;
     }
@@ -313,7 +313,7 @@ public class VipInfoDialog extends Dialog {
             switch (msg.what){
                 case MessageID.DIS_ERR_INFO_ID:
                     if (msg.obj instanceof String)
-                        MyDialog.ToastMessage(msg.obj.toString(),dialog.mContext);
+                        MyDialog.ToastMessage(msg.obj.toString(),dialog.mContext,dialog.getWindow());
                     break;
                 case MessageID.QUERY_VIP_INFO_ID:
                     if (msg.obj instanceof JSONArray){

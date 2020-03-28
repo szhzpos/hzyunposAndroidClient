@@ -67,7 +67,7 @@ public class AddVipInfoDialog extends Dialog {
         findViewById(R.id.cancel).setOnClickListener(view->AddVipInfoDialog.this.dismiss());
         findViewById(R.id._ok).setOnClickListener(view -> {
             if (m_vip_p_num.length() < 11){
-                MyDialog.ToastMessage("请填写会员手机号！",mContext);
+                MyDialog.ToastMessage("请填写会员手机号！",mContext,getWindow());
             }else{
                 addVipInfo();
             }
@@ -109,7 +109,7 @@ public class AddVipInfoDialog extends Dialog {
         } catch (JSONException e) {
             mVip = null;
             e.printStackTrace();
-            MyDialog.ToastMessage("获取会员信息错误：" + e.getMessage(),mContext);
+            MyDialog.ToastMessage("获取会员信息错误：" + e.getMessage(),mContext,getWindow());
         }
         return mVip;
     }
@@ -296,7 +296,7 @@ public class AddVipInfoDialog extends Dialog {
             switch (msg.what){
                 case MessageID.DIS_ERR_INFO_ID:
                     if (msg.obj instanceof String)
-                        MyDialog.ToastMessage(msg.obj.toString(),dialog.mContext);
+                        MyDialog.ToastMessage(msg.obj.toString(),dialog.mContext,dialog.getWindow());
                     break;
                 case MessageID.QUERY_VIP_LEVEL_ID:
                     if (msg.obj instanceof JSONArray){
@@ -305,7 +305,7 @@ public class AddVipInfoDialog extends Dialog {
                     break;
                     case MessageID.ADD_VIP_INFO_ID:
                         if (msg.obj instanceof String)
-                            MyDialog.ToastMessage(msg.obj.toString(),dialog.mContext);
+                            MyDialog.ToastMessage(msg.obj.toString(),dialog.mContext,dialog.getWindow());
 
                         if (dialog.mYesOnclickListener != null){
                             dialog.mYesOnclickListener.onYesClick(dialog);

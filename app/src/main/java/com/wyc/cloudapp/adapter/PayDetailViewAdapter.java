@@ -193,7 +193,7 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
                 notifyDataSetChanged();
             }catch (JSONException e){
                 e.printStackTrace();
-                MyDialog.ToastMessage("付款错误：" + e.getMessage(),mContext);
+                MyDialog.ToastMessage("付款错误：" + e.getMessage(),mContext,null);
             }
 
         }
@@ -229,7 +229,7 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            MyDialog.ToastMessage("查找付款记录错误：" + e.getMessage(),mContext);
+            MyDialog.ToastMessage("查找付款记录错误：" + e.getMessage(),mContext,null);
         }
         return null;
     }

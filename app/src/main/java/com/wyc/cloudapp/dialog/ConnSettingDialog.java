@@ -98,15 +98,15 @@ public class ConnSettingDialog extends Dialog {
                     param.put("parameter_content",json);
                     StringBuilder err = new StringBuilder();
                     if (SQLiteHelper.replaceJson(param,"local_parameter",null,err)){
-                        MyDialog.ToastMessage("保存成功！",mContext);
+                        MyDialog.ToastMessage("保存成功！",mContext,null);
                         ConnSettingDialog.this.dismiss();
                     }else
                         MyDialog.displayMessage(err.toString(),v.getContext());
                 }else{
-                    MyDialog.ToastMessage(getWindow().getDecorView(),"门店不能为空！",getCurrentFocus());
+                    MyDialog.ToastMessage(getWindow(),"门店不能为空！",getCurrentFocus());
                 }
             } catch (JSONException e) {
-                MyDialog.ToastMessage(getWindow().getDecorView(),"保存错误：" + e.getMessage(),getCurrentFocus());
+                MyDialog.ToastMessage(getWindow(),"保存错误：" + e.getMessage(),getCurrentFocus());
                 e.printStackTrace();
             }
         });
@@ -176,7 +176,7 @@ public class ConnSettingDialog extends Dialog {
     private void queryStoreInfo(){
         if (mUrl.getText().length() == 0){
             mUrl.requestFocus();
-            MyDialog.ToastMessage(getWindow().getDecorView(),"服务器URL不能为空！",getCurrentFocus());
+            MyDialog.ToastMessage(getWindow(),"服务器URL不能为空！",getCurrentFocus());
             return;
         }
 
@@ -230,7 +230,7 @@ public class ConnSettingDialog extends Dialog {
                 }
             }
         }else{
-            MyDialog.ToastMessage(getWindow().getDecorView(),param.optString("info"),getCurrentFocus());
+            MyDialog.ToastMessage(getWindow(),param.optString("info"),getCurrentFocus());
         }
     }
 

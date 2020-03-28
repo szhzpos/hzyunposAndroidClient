@@ -254,7 +254,7 @@ public class PayDialog extends Dialog {
                     } else {
                         if (verifyPayBalance()) {
                             if (Utils.equalDouble(mPay_balance, 0) && mPayDetailViewAdapter.findPayDetailById(pay_method_id) == null) {//剩余金额为零，同时不存在此付款方式的记录。
-                                MyDialog.ToastMessage(mWindow.getDecorView(), "剩余金额为零！", getCurrentFocus());
+                                MyDialog.ToastMessage(mWindow, "剩余金额为零！", getCurrentFocus());
                             } else {
                                 PayMethodDialog payMethodDialog = new PayMethodDialog(mainActivity, pay_method);
                                 payMethodDialog.setPayAmt(mPay_balance);
@@ -267,12 +267,12 @@ public class PayDialog extends Dialog {
                                 }).show();
                             }
                         }else{
-                            MyDialog.ToastMessage(mWindow.getDecorView(),"剩余付款金额不能小于零！",mPayBalanceTv);
+                            MyDialog.ToastMessage(mWindow,"剩余付款金额不能小于零！",mPayBalanceTv);
                         }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    MyDialog.ToastMessage("付款错误：" + e.getMessage(),mainActivity);
+                    MyDialog.ToastMessage("付款错误：" + e.getMessage(),mainActivity,null);
                 }
             }
         });
@@ -319,11 +319,11 @@ public class PayDialog extends Dialog {
                             }
                         }
                     }else{
-                        MyDialog.ToastMessage(mWindow.getDecorView(),"剩余付款金额不能小于零！",mPayBalanceTv);
+                        MyDialog.ToastMessage(mWindow,"剩余付款金额不能小于零！",mPayBalanceTv);
                     }
                 }catch (JSONException e){
                     e.printStackTrace();
-                    MyDialog.ToastMessage("付款错误：" + e.getMessage(),mainActivity);
+                    MyDialog.ToastMessage("付款错误：" + e.getMessage(),mainActivity,null);
                 }
             }
         });
@@ -353,7 +353,7 @@ public class PayDialog extends Dialog {
         } catch (JSONException e) {
             isTrue = false;
             e.printStackTrace();
-            MyDialog.ToastMessage("初始化付款信息错误：" + e.getMessage(),mainActivity);
+            MyDialog.ToastMessage("初始化付款信息错误：" + e.getMessage(),mainActivity,null);
         }
         return isTrue;
     }
@@ -397,14 +397,14 @@ public class PayDialog extends Dialog {
                         mPayDetailViewAdapter.addPayDetail(pay_method_json);
                     }catch (JSONException e){
                         e.printStackTrace();
-                        MyDialog.ToastMessage("现金付款错误：" + e.getMessage(),mainActivity);
+                        MyDialog.ToastMessage("现金付款错误：" + e.getMessage(),mainActivity,null);
                     }
                 }else{
-                    MyDialog.ToastMessage("现金付款方式不存在！",mainActivity);
+                    MyDialog.ToastMessage("现金付款方式不存在！",mainActivity,null);
                 }
             }
         }else{
-            MyDialog.ToastMessage(mWindow.getDecorView(),"剩余付款金额不能小于零！",mPayBalanceTv);
+            MyDialog.ToastMessage(mWindow,"剩余付款金额不能小于零！",mPayBalanceTv);
         }
     }
 
@@ -437,7 +437,7 @@ public class PayDialog extends Dialog {
                     else{
                         mCashMoneyEt.setText(mPayBalanceTv.getText());
                         mCashMoneyEt.selectAll();
-                        MyDialog.ToastMessage("找零不能大于100",mainActivity);
+                        MyDialog.ToastMessage("找零不能大于100",mainActivity,null);
                     }
                 }else{
                     mZlAmt = 0.00;
