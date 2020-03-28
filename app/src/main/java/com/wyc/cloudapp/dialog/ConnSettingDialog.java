@@ -22,6 +22,8 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -151,7 +153,7 @@ public class ConnSettingDialog extends Dialog {
         private Myhandler(ConnSettingDialog dialog){
             this.weakConnSettingDialog = new WeakReference<>(dialog);
         }
-        public void handleMessage(Message msg){
+        public void handleMessage(@NonNull Message msg){
             ConnSettingDialog settingDialog = weakConnSettingDialog.get();
             if (settingDialog == null)return;
             if (settingDialog.mDialog !=null)settingDialog.mDialog.dismiss();

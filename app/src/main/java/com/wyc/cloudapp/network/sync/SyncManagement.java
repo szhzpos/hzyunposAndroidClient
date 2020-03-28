@@ -3,6 +3,8 @@ package com.wyc.cloudapp.network.sync;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.wyc.cloudapp.utils.MessageID;
+
 import java.util.concurrent.CountDownLatch;
 
 public class SyncManagement extends Thread {
@@ -56,11 +58,11 @@ public class SyncManagement extends Thread {
     public void start_sync(boolean b){
         if (!isAlive())start();
         if (mSyncHandler == null)mSyncHandler = getHandler();
-        mSyncHandler.setReportProgress(b);
         if (b){
             mSyncHandler.removeCallbacksAndMessages(null);
+            mSyncHandler.obtainMessage(MessageID.MODFIY_REPORT_PROGRESS_ID,true).sendToTarget();//通过消息保证串行修改
             mSyncHandler.sync();
-            mSyncHandler.syncFinish();
+            mSyncHandler.obtainMessage(MessageID.SYNC_FINISH_ID).sendToTarget();//最后发送同步完成消息;
         }else{
             mSyncHandler.startNetworkTest();
         }

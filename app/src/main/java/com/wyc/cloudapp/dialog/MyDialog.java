@@ -214,7 +214,7 @@ public class MyDialog extends Dialog {
     }
 
     public static boolean ToastMessage(final String message,final Context context,final Window window,boolean b){
-        ToastMessage(message,context,window);
+        if(!b)ToastMessage(message,context,window);//条件为假是提升信息
         return b;
     }
 
@@ -231,7 +231,7 @@ public class MyDialog extends Dialog {
     }
 
     public static boolean ToastMessage(final Window window, final String message, View anchor,boolean b){
-        ToastMessage( window, message, anchor);
+        if(!b)ToastMessage( window, message, anchor);
         return b;
     }
     public static void ToastMessage(final Window window, final String message, View anchor){

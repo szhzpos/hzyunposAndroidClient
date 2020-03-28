@@ -112,7 +112,6 @@ public class VipChargeDialog extends AbstractPayDialog {
 
     private void vip_charge(){
         if (verify()){
-            if (verify()){
                 mProgressDialog.setCancel(false).setMessage("正在生成充值订单...").show();
                 CustomApplication.execute(()->{
                     JSONObject cashier_info = new JSONObject(),store_info = new JSONObject(),data_ = new JSONObject(),retJson,info_json;
@@ -299,7 +298,6 @@ public class VipChargeDialog extends AbstractPayDialog {
                     }
                 });
             }
-        }
     }
 
     @Override
@@ -309,13 +307,8 @@ public class VipChargeDialog extends AbstractPayDialog {
 
     @Override
     public boolean verify(){
-        if (mVip == null){
-            return MyDialog.ToastMessage("会员信息不能为空！",mContext,mDialogWindow,false);
-        }
-        if (mPayMethod == null){
-            return MyDialog.ToastMessage(mDialogWindow,mContext.getString(R.string.select_pay_way_hint_sz),getCurrentFocus(),false);
-        }
-       return super.verify();
+       return MyDialog.ToastMessage("会员信息不能为空！",mContext,mDialogWindow,mVip != null)
+        && MyDialog.ToastMessage(mDialogWindow,mContext.getString(R.string.select_pay_way_hint_sz),getCurrentFocus(),mPayMethod != null) && super.verify();
     }
 
 

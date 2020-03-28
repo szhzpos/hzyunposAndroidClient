@@ -132,6 +132,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onDestroy(){
         super.onDestroy();
         if (mSyncManagement != null) mSyncManagement.quit();
+        if (mProgressDialog.isShowing())mProgressDialog.dismiss();
     }
 
     @Override
@@ -210,7 +211,7 @@ public class LoginActivity extends AppCompatActivity {
     };
     private void login(){
         final HttpRequest httpRequest = new HttpRequest();
-        mProgressDialog.setCancel(false).setMessage("正在登录...").show();
+        mProgressDialog.setCancel(false).setMessage("正在登录...").refreshMessage().show();
         myHandler.postDelayed(()->{
             if (mProgressDialog.isShowing())
                 mProgressDialog.setCancel(true).setOnCancelListener(dialog -> {
@@ -321,13 +322,11 @@ public class LoginActivity extends AppCompatActivity {
             if(SQLiteHelper.getLocalParameter("connParam",param)){
                 if (Utils.JsonIsNotEmpty(param)){
                     try {
-
                             String url = param.getString("server_url");
                             if (url.length() != 0){
                                 url = url.substring(url.lastIndexOf('/') + 1);
                             }
                             et_url.setText(url);
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                         MyDialog.ToastMessage(getWindow(),"显示服务器地址：" + e.getMessage(),getCurrentFocus());

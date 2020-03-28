@@ -562,7 +562,7 @@ public class PayDialog extends Dialog {
                                                     case 3:
                                                     case 4:
                                                         if (mPayListener != null)
-                                                        mainActivity.runOnUiThread(()->{
+                                                            mainActivity.runOnUiThread(()->{
                                                             mPayListener.onProgress(PayDialog.this,"正在查询支付状态...");
                                                         });
                                                         while (mPayStatus && (res_code == 3 ||  res_code == 4)){
