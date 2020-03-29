@@ -28,7 +28,7 @@ public final class SyncHandler extends Handler {
     private String mAppId,mAppScret,mUrl,mPosNum,mOperId,mStoresId;
     private volatile boolean mReportProgress = true;
     private int mCurrentNeworkStatusCode = HttpURLConnection.HTTP_OK;
-    private long mSyncInterval = 5000,mLoseTime = 0;//mSyncInterval 同步时间间隔，默认3秒
+    private long mSyncInterval = 3000,mLoseTime = 0;//mSyncInterval 同步时间间隔，默认3秒
     SyncHandler(Handler handler,final String url, final String appid, final String appscret,final String stores_id,final String pos_num, final String operid){
         this.syncActivityHandler = handler;
         mHttp = new HttpRequest();
@@ -113,7 +113,7 @@ public final class SyncHandler extends Handler {
                     if (mSyncInterval > 0) {
                         if (System.currentTimeMillis() - mLoseTime >= mSyncInterval && mCurrentNeworkStatusCode == HttpURLConnection.HTTP_OK) {
                             mLoseTime = System.currentTimeMillis();
-                            if (mReportProgress)obtainMessage(MessageID.MODFIY_REPORT_PROGRESS_ID,false).sendToTarget();//通过消息保证串行修改
+                            modifyReportProgressStatus(false);
                             sync();
                         }
                     }
@@ -125,7 +125,7 @@ public final class SyncHandler extends Handler {
                     if (msg.obj instanceof  Boolean)
                         mReportProgress = (boolean)msg.obj;
                     return;
-                case MessageID.MARK_id:
+                case MessageID.MARK_GOODS_STATUS_id:
                     upload_barcode_id(null);
                     return;
 
@@ -159,7 +159,9 @@ public final class SyncHandler extends Handler {
                                         code = deal_good_group(data,err);
                                         break;
                                     case MessageID.SYNC_PAY_METHOD_ID:
-                                        down_load_pay_method_img(data,sys_name);
+                                        if((code = SQLiteHelper.execSQLByBatchFromJson(data,table_name ,table_cls,err))){
+                                            down_load_pay_method_img(data,sys_name);
+                                        }
                                         break;
                                     case MessageID.SYNC_GOODS_ID: {
                                         int max_page = info_json.getInt("max_page"),current_page = (int)msg.obj;
@@ -184,8 +186,8 @@ public final class SyncHandler extends Handler {
                     break;
             }
             if (!code) {
+                stopSync();
                 if (mReportProgress) {
-                    removeCallbacksAndMessages(null);
                     syncActivityHandler.obtainMessage(MessageID.SYNC_ERR_ID, sys_name).sendToTarget();
                 }else{
                     syncActivityHandler.obtainMessage(MessageID.TRANSFERSTATUS_ID,false).sendToTarget();
@@ -440,9 +442,8 @@ public final class SyncHandler extends Handler {
         this.removeCallbacksAndMessages(null);
         if (mHttp != null)mHttp.clearConnection(HttpRequest.CLOSEMODE.BOTH);
     }
-
     void sync(){
-        obtainMessage(MessageID.MARK_id).sendToTarget();
+        obtainMessage(MessageID.MARK_GOODS_STATUS_id).sendToTarget();
 
         this.obtainMessage(MessageID.SYNC_CASHIER_ID).sendToTarget();//收银员
         this.obtainMessage(MessageID.SYNC_GOODS_CATEGORY_ID).sendToTarget();//商品类别
@@ -451,7 +452,17 @@ public final class SyncHandler extends Handler {
         this.obtainMessage(MessageID.SYNC_GP_INFO_ID).sendToTarget();//商品组合ID
         this.obtainMessage(MessageID.SYNC_GOODS_ID,0).sendToTarget();//商品信息obj代表当前下载页数
     }
-
+    void stopSync(){
+        removeMessages(MessageID.MARK_GOODS_STATUS_id);
+        removeMessages(MessageID.SYNC_CASHIER_ID);
+        removeMessages(MessageID.SYNC_GOODS_CATEGORY_ID);
+        removeMessages(MessageID.SYNC_STORES_ID);
+        removeMessages(MessageID.SYNC_GP_INFO_ID);
+        removeMessages(MessageID.SYNC_GOODS_ID);
+    }
+    void modifyReportProgressStatus(boolean b){
+        obtainMessage(MessageID.MODFIY_REPORT_PROGRESS_ID,b).sendToTarget();//通过消息保证串行修改
+    }
     void startNetworkTest(){
         if (!hasMessages(MessageID.NETWORKSTATUS_ID)){
             obtainMessage(MessageID.NETWORKSTATUS_ID).sendToTarget();

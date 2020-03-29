@@ -343,12 +343,12 @@ public class LoginActivity extends AppCompatActivity {
     private static class Myhandler extends Handler {
         private WeakReference<LoginActivity> weakHandler;
         private Myhandler(LoginActivity loginActivity){
-            this.weakHandler = new WeakReference<LoginActivity>(loginActivity);
+            this.weakHandler = new WeakReference<>(loginActivity);
         }
         public void handleMessage(@NonNull Message msg){
             LoginActivity activity = weakHandler.get();
             if (null == activity)return;
-            if (activity.mProgressDialog != null && activity.mProgressDialog.isShowing() && msg.what != MessageID.SYNC_DIS_INFO_ID)activity.mProgressDialog.dismiss();
+            if (activity.mProgressDialog != null && activity.mProgressDialog.isShowing() && msg.what != MessageID.SYNC_DIS_INFO_ID && msg.what != MessageID.LOGIN_OK_ID)activity.mProgressDialog.dismiss();
             switch (msg.what){
                 case MessageID.DIS_ERR_INFO_ID:
                 case MessageID.SYNC_ERR_ID://资料同步错误
@@ -407,10 +407,6 @@ public class LoginActivity extends AppCompatActivity {
                             activity.mProgressDialog.show();
                         }
                     }
-                    break;
-                case MessageID.SYNC_GOODS_IMG_ERR_ID:
-                    if (msg.obj instanceof String)
-                        MyDialog.ToastMessage(activity.getWindow(),msg.obj.toString(),activity.getCurrentFocus());
                     break;
                 case MessageID.CONN_PARAM_ERR_ID:
                     if (msg.obj instanceof String){

@@ -1,10 +1,10 @@
 package com.wyc.cloudapp.utils;
 
-public final class MessageID {
+public final  class MessageID {
     private MessageID(){
 
     }
-    public static final int DIS_ERR_INFO_ID = 0,
+    public static final int DIS_ERR_INFO_ID = 30,
             SYNC_GOODS_BASE_ID = 1,
             SYNC_STORES_ID = 2,
             SYNC_GOODS_ID = 3,
@@ -20,7 +20,6 @@ public final class MessageID {
             SYNC_GOODS_CATEGORY_ID = 16,
             LOGIN_PW_ERROR_ID = 17,
             LOGIN_ID_ERROR_ID = 18,
-            SYNC_GOODS_IMG_ERR_ID = 19,
             CONN_PARAM_ERR_ID = 20,
             QUERY_VIP_INFO_ID = 21,
             QUERY_VIP_LEVEL_ID = 22,
@@ -30,5 +29,5 @@ public final class MessageID {
             UPLOAD_ORDER_ID = 26,
             DIS_PAY_DIALOG_ID = 27,
             MODFIY_REPORT_PROGRESS_ID = 28,
-            MARK_id = 29;
+            MARK_GOODS_STATUS_id = 29;
 }

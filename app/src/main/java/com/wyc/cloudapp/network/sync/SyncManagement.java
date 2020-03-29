@@ -59,9 +59,8 @@ public class SyncManagement extends Thread {
         if (!isAlive())start();
         if (mSyncHandler == null)mSyncHandler = getHandler();
         if (b){
-            mSyncHandler.removeCallbacksAndMessages(null);
-            mSyncHandler.startNetworkTest();
-            mSyncHandler.obtainMessage(MessageID.MODFIY_REPORT_PROGRESS_ID,true).sendToTarget();//通过消息保证串行修改
+            mSyncHandler.stopSync();
+            mSyncHandler.modifyReportProgressStatus(true);
             mSyncHandler.sync();
             mSyncHandler.obtainMessage(MessageID.SYNC_FINISH_ID).sendToTarget();//最后发送同步完成消息;
         }else{
