@@ -16,7 +16,6 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.R;
 
@@ -94,7 +93,7 @@ public class CustomePopupWindow extends PopupWindow {
     public void initContent(@NonNull View v, @NonNull  String sql, @NonNull String[] sz, int show,boolean setContent,OngetSelectContent ongetSelectContent){
         //mShowContentType 1 有编码显示编码 2 两个都显示 默认显示名称 setContent设置在没选择内容的情况下是否自动选择内容
         StringBuilder err = new StringBuilder();
-        mShowContents = SQLiteHelper.getList(sql, 0, 0, false,err);
+        mShowContents = SQLiteHelper.getListToJson(sql, 0, 0, false,err);
         StringBuilder stringBuilder = new StringBuilder();
         mView = v;
         mShowContentType = show ;
@@ -127,7 +126,7 @@ public class CustomePopupWindow extends PopupWindow {
     public void initContent(View foucs,@NonNull View v, @NonNull  String sql, @NonNull String[] sz, int show,boolean setContent,OngetSelectContent ongetSelectContent ){
         //mShowContentType 1 有编码显示编码 2 两个都显示 默认显示名称 setContent设置在没选择内容的情况下是否自动选择内容
         StringBuilder err = new StringBuilder();
-        mShowContents = SQLiteHelper.getList(sql, 0, 0, false,err);
+        mShowContents = SQLiteHelper.getListToJson(sql, 0, 0, false,err);
         StringBuilder stringBuilder = new StringBuilder();
         mView = v;
         mFoucs_view = foucs;

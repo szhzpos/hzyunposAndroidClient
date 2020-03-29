@@ -486,7 +486,7 @@ public class PayDialog extends Dialog {
             HttpRequest httpRequest;
             final StringBuilder err = new StringBuilder();
             ContentValues values = new ContentValues();
-            JSONArray pays = SQLiteHelper.getList("select pay_method,pay_money,pay_code,is_check,v_num from retail_order_pays where order_code = '" + order_code +"'",0,0,false,err);
+            JSONArray pays = SQLiteHelper.getListToJson("select pay_method,pay_money,pay_code,is_check,v_num from retail_order_pays where order_code = '" + order_code +"'",0,0,false,err);
             if (null != pays){
                 try{
                     for (int i = 0,size = pays.length();i < size && mPayStatus;i++){

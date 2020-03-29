@@ -1,6 +1,5 @@
 package com.wyc.cloudapp.adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,7 +11,6 @@ import android.widget.TextView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.logger.Logger;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -101,7 +99,7 @@ public class GoodsTypeViewAdapter extends RecyclerView.Adapter<GoodsTypeViewAdap
 
     public void setDatas(){
         StringBuilder err = new StringBuilder();
-        mDatas = SQLiteHelper.getList("select category_id,name from shop_category where parent_id='0' union select -1 category_id,'组合商品' name ",0,0,false,err);
+        mDatas = SQLiteHelper.getListToJson("select category_id,name from shop_category where parent_id='0' union select -1 category_id,'组合商品' name ",0,0,false,err);
         if (mDatas != null){
             this.notifyDataSetChanged();
         }else{

@@ -22,7 +22,7 @@ import java.util.List;
 
 import static com.wyc.cloudapp.utils.MessageID.SYNC_DIS_INFO_ID;
 
-public class SyncHandler extends Handler {
+public final class SyncHandler extends Handler {
     private HttpRequest mHttp;
     private Handler syncActivityHandler;
     private String mAppId,mAppScret,mUrl,mPosNum,mOperId,mStoresId;
@@ -113,7 +113,7 @@ public class SyncHandler extends Handler {
                     if (mSyncInterval > 0) {
                         if (System.currentTimeMillis() - mLoseTime >= mSyncInterval && mCurrentNeworkStatusCode == HttpURLConnection.HTTP_OK) {
                             mLoseTime = System.currentTimeMillis();
-                            obtainMessage(MessageID.MODFIY_REPORT_PROGRESS_ID,false).sendToTarget();//通过消息保证串行修改
+                            if (mReportProgress)obtainMessage(MessageID.MODFIY_REPORT_PROGRESS_ID,false).sendToTarget();//通过消息保证串行修改
                             sync();
                         }
                     }
@@ -125,6 +125,10 @@ public class SyncHandler extends Handler {
                     if (msg.obj instanceof  Boolean)
                         mReportProgress = (boolean)msg.obj;
                     return;
+                case MessageID.MARK_id:
+                    upload_barcode_id(null);
+                    return;
+
             }
 
             if (mReportProgress)
@@ -159,7 +163,7 @@ public class SyncHandler extends Handler {
                                         break;
                                     case MessageID.SYNC_GOODS_ID: {
                                         int max_page = info_json.getInt("max_page"),current_page = (int)msg.obj;
-                                        if((code = SQLiteHelper.execSQLByBatchForJson(data,table_name ,table_cls,err))){
+                                        if((code = SQLiteHelper.execSQLByBatchFromJson(data,table_name ,table_cls,err))){
                                             down_laod_goods_img_and_upload_barcode_id(data,sys_name);//保存成功才能标记已获取
                                         }
                                         if ((current_page++ <= max_page) && code){
@@ -169,7 +173,7 @@ public class SyncHandler extends Handler {
                                     }
                                         break;
                                         default:
-                                            code = SQLiteHelper.execSQLByBatchForJson(data,table_name ,table_cls,err);
+                                            code = SQLiteHelper.execSQLByBatchFromJson(data,table_name ,table_cls,err);
                                             break;
                                 }
                                 if (!code)
@@ -233,7 +237,7 @@ public class SyncHandler extends Handler {
                         Logger.e("网络检测错误：" + info_json.getString("info"));
                         break;
                     case "y":
-                        //Logger.d_json(data.toString());
+                        //Logger.d_json(new JSONArray(info_json.getString("data")).toString());
                         break;
                 }
                 break;
@@ -364,7 +368,7 @@ public class SyncHandler extends Handler {
             }
         }
     }
-    private void down_laod_goods_img_and_upload_barcode_id(@NonNull JSONArray datas,final String sys_name) throws JSONException {
+    private void down_laod_goods_img_and_upload_barcode_id(@NonNull final JSONArray datas,final String sys_name) throws JSONException {
         String img_url_info,img_file_name;
         JSONArray goods_ids = new JSONArray();
         JSONObject object;
@@ -384,20 +388,7 @@ public class SyncHandler extends Handler {
             }
         }
         if (goods_ids.length() != 0){
-            object = new JSONObject();
-            object.put("appid",mAppId);
-            object.put("goods_ids",goods_ids);
-            object.put("pos_num",mPosNum);
-
-            object = mHttp.sendPost(mUrl + "/api/goods/up_goods",HttpRequest.generate_request_parm(object,mAppScret),true);
-            if (object.getInt("flag") == 1){
-                object = new JSONObject(object.getString("info"));
-                if ("n".equals(object.getString("status"))){
-                    Logger.e("标记已获取的商品错误：" + object.getString("info"));
-                }
-            }else{
-                Logger.e("标记已获取的商品错误：" + object.getString("info"));
-            }
+            upload_barcode_id(goods_ids);
         }
     }
     private boolean deal_good_group(@NonNull JSONArray data,StringBuilder err) throws JSONException {
@@ -415,7 +406,34 @@ public class SyncHandler extends Handler {
         List<String> goods_group_cols = Arrays.asList("mnemonic_code", "gp_id", "gp_code", "gp_title", "gp_price", "status", "addtime", "unit_name", "stores_id", "img_url"),
                 goods_group_info_cols = Arrays.asList("xnum", "barcode_id", "gp_id", "_id");
 
-        return SQLiteHelper.execSQLByBatchForJson(tmp_goods, Arrays.asList("goods_group", "goods_group_info"), Arrays.asList(goods_group_cols, goods_group_info_cols), err, 1);
+        return SQLiteHelper.execSQLByBatchFromJson(tmp_goods, Arrays.asList("goods_group", "goods_group_info"), Arrays.asList(goods_group_cols, goods_group_info_cols), err, 1);
+    }
+    private boolean upload_barcode_id(JSONArray datas) throws JSONException {
+        JSONObject object;
+        StringBuilder err = new StringBuilder();
+        if(datas == null){
+            datas = SQLiteHelper.getListToValue("select barcode_id from barcode_info",err);
+            if (null == datas){
+                Logger.e("标记已获取的商品错误：" + err);
+                return false;
+            }
+        }
+        object = new JSONObject();
+        object.put("appid",mAppId);
+        object.put("goods_ids",datas);
+        object.put("pos_num",mPosNum);
+
+        object = mHttp.sendPost(mUrl + "/api/goods/up_goods",HttpRequest.generate_request_parm(object,mAppScret),true);
+        if (object.getInt("flag") == 1){
+            object = new JSONObject(object.getString("info"));
+            if ("n".equals(object.getString("status"))){
+                Logger.e("标记已获取的商品错误：" + object.getString("info"));
+            }
+        }else{
+            Logger.e("标记已获取的商品错误：" + object.getString("info"));
+        }
+
+        return true;
     }
 
     void stop(){
@@ -424,6 +442,8 @@ public class SyncHandler extends Handler {
     }
 
     void sync(){
+        obtainMessage(MessageID.MARK_id).sendToTarget();
+
         this.obtainMessage(MessageID.SYNC_CASHIER_ID).sendToTarget();//收银员
         this.obtainMessage(MessageID.SYNC_GOODS_CATEGORY_ID).sendToTarget();//商品类别
         this.obtainMessage(MessageID.SYNC_PAY_METHOD_ID).sendToTarget();//支付方式

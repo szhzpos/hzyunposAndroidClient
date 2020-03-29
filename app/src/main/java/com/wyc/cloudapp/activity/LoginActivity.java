@@ -38,6 +38,8 @@ import com.wyc.cloudapp.network.sync.SyncManagement;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -370,7 +372,7 @@ public class LoginActivity extends AppCompatActivity {
                         try {
                             param_json.put("parameter_id","cashierInfo");
                             param_json.put("parameter_content",cashier_json);
-                            if (SQLiteHelper.replaceJson(param_json,"local_parameter",null,err)){
+                            if (SQLiteHelper.saveToDatabaseFormJson(param_json,"local_parameter",null,"REPLACE",err)){
                                 activity.mSyncManagement = new SyncManagement(this,activity.mUrl,activity.mAppId,activity.mAppScret,activity.mStoresId,activity.mPosNum,activity.mOperId);
                                 activity.mSyncManagement.start_sync(true);
                             }else{

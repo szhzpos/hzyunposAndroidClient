@@ -714,7 +714,7 @@ public class MainActivity extends AppCompatActivity {
         if (data == null)return false;
         if ((code = SQLiteHelper.execSql(count_json,"select count(order_code) counts from retail_order where order_code = '" + mOrderCode.getText() +"' and stores_id = '" + mStoreInfo.optString("stores_id") +"'"))){
             if (0 == count_json.optInt("counts")){
-                if (!(code = SQLiteHelper.execSQLByBatchForJson(data,tables,Arrays.asList(retail_order_cols,retail_order_goods_cols,retail_order_pays_cols),err,0))){
+                if (!(code = SQLiteHelper.execSQLByBatchFromJson(data,tables,Arrays.asList(retail_order_cols,retail_order_goods_cols,retail_order_pays_cols),err,0))){
                     MyDialog.displayErrorMessage("保存订单信息错误：" + err,this);
                 }
             }else{

@@ -183,7 +183,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         return isTrue;
     }
 
-    public static boolean execSQLByBatchForJson(@NonNull JSONArray jsonArray, String table, StringBuilder err) {
+    private static boolean execSQLByBatchFromJson(@NonNull JSONArray jsonArray, String table, StringBuilder err) {
         boolean isTrue = true;
         StringBuilder stringBuilderHead = new StringBuilder();
         StringBuilder stringBuilderfoot = new StringBuilder();
@@ -225,7 +225,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                     iterator = jsonObject.keys();
                     while(iterator.hasNext()){
                         key = (String) iterator.next();
-                        if ("NULL".equals(jsonObject.optString(key))){
+                        if ("".equals(jsonObject.optString(key))){
                             statement.bindNull(++columnN0);
                         }else
                             statement.bindString(++columnN0,jsonObject.optString(key));
@@ -249,17 +249,19 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         return isTrue;
     }
 
-    public static boolean execSQLByBatchForJson(@NonNull JSONArray jsonArray, String table, String[] cls, StringBuilder err) {
+    public static boolean execSQLByBatchFromJson(@NonNull JSONArray jsonArray, String table, String[] cls, StringBuilder err) {
         boolean isTrue = true;
         StringBuilder stringBuilderHead = new StringBuilder();
         StringBuilder stringBuilderfoot = new StringBuilder();
-        JSONObject jsonObject;
-        String key;
+        JSONObject jsonObject = null;
         SQLiteStatement statement = null;
-        Iterator iterator;
         int columnN0 = 0;
         if (jsonArray.length() == 0) {
             return false;
+        }
+
+        if (cls == null || cls.length == 0){
+            return execSQLByBatchFromJson(jsonArray,table,err);
         }
 
         stringBuilderHead.append("REPLACE INTO ");
@@ -267,26 +269,14 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         stringBuilderHead.append(" (");
         stringBuilderfoot.append("VALUES (");
 
-        if (cls != null && cls.length != 0){
-            for (String cl:cls){
-                stringBuilderHead.append(cl);
-                stringBuilderHead.append(",");
+        for (String cl:cls){
+            stringBuilderHead.append(cl);
+            stringBuilderHead.append(",");
 
-                stringBuilderfoot.append("?");
-                stringBuilderfoot.append(",");
-            }
-        }else{
-            jsonObject = jsonArray.optJSONObject(0);
-            iterator = jsonObject.keys();
-            while(iterator.hasNext()){
-                key = (String) iterator.next();
-                stringBuilderHead.append(key);
-                stringBuilderHead.append(",");
-
-                stringBuilderfoot.append("?");
-                stringBuilderfoot.append(",");
-            }
+            stringBuilderfoot.append("?");
+            stringBuilderfoot.append(",");
         }
+
         stringBuilderHead.replace(stringBuilderHead.length() - 1,stringBuilderHead.length(),")");
         stringBuilderfoot.replace(stringBuilderfoot.length() - 1,stringBuilderfoot.length(),")");
         stringBuilderHead.append(stringBuilderfoot);
@@ -298,22 +288,11 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 for (int i = 0,len = jsonArray.length();i < len; i ++){
                     columnN0 = 0;
                     jsonObject = jsonArray.optJSONObject(i);
-                    if(cls != null && cls.length != 0){
-                        for (String cl:cls){
-                            if ("NULL".equals(jsonObject.optString(cl))){
-                                statement.bindNull(++columnN0);
-                            }else
-                                statement.bindString(++columnN0,jsonObject.optString(cl));
-                        }
-                    }else{
-                        iterator = jsonObject.keys();
-                        while(iterator.hasNext()){
-                            key = (String) iterator.next();
-                            if ("".equals(jsonObject.optString(key))){
-                                statement.bindNull(++columnN0);
-                            }else
-                                statement.bindString(++columnN0,jsonObject.optString(key));
-                        }
+                    for (String cl:cls){
+                        if ("NULL".equals(jsonObject.optString(cl))){
+                            statement.bindNull(++columnN0);
+                        }else
+                            statement.bindString(++columnN0,jsonObject.optString(cl));
                     }
                     statement.execute();
                 }
@@ -369,10 +348,8 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             }
         }
     }
-    public SQLiteDatabase getDB() throws SQLiteException{
-        return mDb;
-    }
-    public static JSONArray getList(@NonNull String sql,Integer minrow,Integer maxrow,boolean row,StringBuilder err){
+
+    public static JSONArray getListToJson(@NonNull String sql, Integer minrow, Integer maxrow, boolean row, StringBuilder err){
         JSONArray array;
         synchronized (SQLiteHelper.class){
             try(Cursor cursor = mDb.rawQuery(sql,null);){
@@ -392,6 +369,19 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 array = rs2Json(cursor,0,0,false);
             } catch (JSONException | SQLiteException e) {
                 err.append("查询错误：").append(e.getMessage());
+                e.printStackTrace();
+                array = null;
+            }
+        }
+        return array;
+    }
+    public static JSONArray getListToValue(@NonNull String sql,StringBuilder err){
+        JSONArray array;
+        synchronized (SQLiteHelper.class){
+            try(Cursor cursor = mDb.rawQuery(sql,null);){
+                array = rs2Values(cursor,0,0,false);
+            } catch (JSONException | SQLiteException e) {
+                if (err !=  null)err.append("查询错误：").append(e.getMessage());
                 e.printStackTrace();
                 array = null;
             }
@@ -424,11 +414,11 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         }
         return result;
     }
-    public static JSONArray getListValues(@NonNull String sql,Integer minrow,Integer maxrow,boolean row,StringBuilder err){
+    public static JSONArray getListContentValues(@NonNull String sql,Integer minrow,Integer maxrow,boolean row,StringBuilder err){
         JSONArray array;
         synchronized (SQLiteHelper.class){
             try(Cursor cursor = mDb.rawQuery(sql,null);){
-                array = rs2Values(cursor,minrow,maxrow,row);
+                array = rs2ContentValues(cursor,minrow,maxrow,row);
             } catch (SQLiteException e) {
                 err.append(e.getMessage());
                 e.printStackTrace();
@@ -437,7 +427,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         }
         return array;
     }
-    public static boolean insertJson(@NonNull final JSONObject json,@NonNull final String table_name,String[] cls,StringBuilder err){
+    public static boolean saveToDatabaseFormJson(@NonNull final JSONObject json,@NonNull final String table_name,String[] cls,final String save_type,StringBuilder err){
         boolean isTrue = true;
         StringBuilder stringBuilderHead = new StringBuilder();
         StringBuilder stringBuilderfoot = new StringBuilder();
@@ -446,84 +436,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         Iterator iterator;
         int columnN0 = 0;
 
-        stringBuilderHead.append("INSERT INTO ");
-        stringBuilderHead.append(table_name);
-        stringBuilderHead.append(" (");
-        stringBuilderfoot.append("VALUES (");
-
-        if (cls != null && cls.length != 0){
-            for (String cl:cls){
-                stringBuilderHead.append(cl);
-                stringBuilderHead.append(",");
-
-                stringBuilderfoot.append("?");
-                stringBuilderfoot.append(",");
-            }
-        }else{
-            iterator = json.keys();
-            while(iterator.hasNext()){
-                key = (String) iterator.next();
-                stringBuilderHead.append(key);
-                stringBuilderHead.append(",");
-
-                stringBuilderfoot.append("?");
-                stringBuilderfoot.append(",");
-            }
-        }
-        stringBuilderHead.replace(stringBuilderHead.length() - 1,stringBuilderHead.length(),")");
-        stringBuilderfoot.replace(stringBuilderfoot.length() - 1,stringBuilderfoot.length(),")");
-        stringBuilderHead.append(stringBuilderfoot);
-
-        synchronized (SQLiteHelper.class){
-            try {
-                mDb.beginTransaction();
-                statement = mDb.compileStatement(stringBuilderHead.toString());
-
-                if(cls != null && cls.length != 0){
-                    for (String cl:cls){
-                        if ("".equals(json.getString(cl))){
-                            statement.bindNull(++columnN0);
-                        }else
-                            statement.bindString(++columnN0,json.getString(cl));
-                    }
-                }else{
-                    iterator = json.keys();
-                    while(iterator.hasNext()){
-                        key = (String) iterator.next();
-                        if ("".equals(json.getString(key))){
-                            statement.bindNull(++columnN0);
-                        }else
-                            statement.bindString(++columnN0,json.getString(key));
-                    }
-                }
-                statement.execute();
-
-                mDb.setTransactionSuccessful();
-            } catch (SQLException | JSONException e) {
-                isTrue = false;
-                err.append(e.getMessage());
-                e.printStackTrace();
-            } finally {
-                if (statement != null){
-                    statement.close();
-                }
-                if (mDb != null){
-                    mDb.endTransaction();
-                }
-            }
-        }
-        return isTrue;
-    }
-    public static boolean replaceJson(@NonNull final JSONObject json,@NonNull final String table_name,String[] cls,StringBuilder err){
-        boolean isTrue = true;
-        StringBuilder stringBuilderHead = new StringBuilder();
-        StringBuilder stringBuilderfoot = new StringBuilder();
-        String key;
-        SQLiteStatement statement = null;
-        Iterator iterator;
-        int columnN0 = 0;
-
-        stringBuilderHead.append("REPLACE INTO ");
+        stringBuilderHead.append(save_type).append(" INTO ");
         stringBuilderHead.append(table_name);
         stringBuilderHead.append(" (");
         stringBuilderfoot.append("VALUES (");
@@ -637,17 +550,16 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
     }
     public static boolean execUpdateSql(@NonNull final String table,final ContentValues values,final String whereClause,final String[] whereArgs,StringBuilder err){
         //执行updata语句    sql要执行的数据库修改语句 如果出错error包含错误信息
-        boolean code = true;
         try {
             synchronized (SQLiteHelper.class){
                 mDb.update(table,values,whereClause,whereArgs);
             }
         }catch (SQLiteException e){
             e.printStackTrace();
-            code = false;
             err.append(e.getMessage());
+            return false;
         }
-        return code;
+        return true;
     }
     public static boolean execInsertSql(@NonNull final String table,final String nullColumnHack,final ContentValues values,StringBuilder err){
         //执行updata语句    sql要执行的数据库修改语句 如果出错error包含错误信息
@@ -685,7 +597,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         return code;
     }
 
-    public static boolean execSQLByBatchForJson(@NonNull JSONObject json, List<String> tables, List<List<String>> table_cols, StringBuilder err, int type ){//type 0 insert 1 replace
+    public static boolean execSQLByBatchFromJson(@NonNull JSONObject json, List<String> tables, List<List<String>> table_cols, StringBuilder err, int type ){//type 0 insert 1 replace
         boolean code = true;
         StringBuilder stringBuilderHead = new StringBuilder();
         StringBuilder stringBuilderfoot = new StringBuilder();
@@ -792,7 +704,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         List<Map<String,Object>> list = new ArrayList<>();
         ArrayList<String> colNames=new ArrayList<String>();
         ArrayList<Integer> coltypes=new ArrayList<Integer>();
-
+        Map<String,Object> map;
         // 获取列数
         int columnCount = cursor.getColumnCount();
         //if(!rs.next()) return "";
@@ -807,7 +719,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         // 遍历ResultSet中的每条数据
 
             do {
-                Map<String,Object> map = new HashMap<>();
+                map = new HashMap<>();
                 for (int i = 0; i < columnCount; i++) {
                     if (coltypes.get(i) == FIELD_TYPE_FLOAT) {
                         map.put(colNames.get(i),cursor.getDouble(i));
@@ -830,6 +742,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         JSONArray array = new JSONArray();
         ArrayList<String> colNames=new ArrayList<String>();
         ArrayList<Integer> coltypes=new ArrayList<Integer>();
+        JSONObject jsonObj;
         int row_count = 0;
         // 获取列数
         int columnCount = cursor.getColumnCount();
@@ -846,7 +759,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             do {
                 row_count++;
                 if (row_count > minRow && row_count <= maxRow){
-                    JSONObject jsonObj = new JSONObject();
+                    jsonObj= new JSONObject();
                     for (int i = 0; i < columnCount; i++) {
                         if(coltypes.get(i) == FIELD_TYPE_FLOAT){
                             jsonObj.put(colNames.get(i) ,cursor.getFloat(i));  /////i = 0;rs里面的是从1开始
@@ -865,7 +778,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             }while(cursor.moveToNext());
         }else {
             do {
-                JSONObject jsonObj = new JSONObject();
+                jsonObj = new JSONObject();
                 for (int i = 0; i < columnCount; i++) {
                     if (coltypes.get(i) == FIELD_TYPE_FLOAT) {
                         jsonObj.put(colNames.get(i),BigDecimal.valueOf(cursor.getDouble(i)));  /////i = 0;rs里面的是从1开始
@@ -884,11 +797,67 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         }
         return array;
     }
-    private static JSONArray rs2Values(Cursor cursor, Integer minRow, Integer maxRow, boolean row) {
+    private static JSONArray rs2Values(Cursor cursor, Integer minRow, Integer maxRow, boolean row) throws JSONException {
         // json数组
         JSONArray array = new JSONArray();
         ArrayList<String> colNames=new ArrayList<String>();
         ArrayList<Integer> coltypes=new ArrayList<Integer>();
+        int row_count = 0;
+        // 获取列数
+        int columnCount = cursor.getColumnCount();
+        if(!cursor.moveToNext()) return array;
+        //获取列名及相关信息
+        for (int i = 0; i < columnCount; i++) {
+            colNames.add(cursor.getColumnName(i));
+            coltypes.add(cursor.getType(i));
+        }
+
+        // 遍历ResultSet中的每条数据
+
+        if(row) {
+            do {
+                row_count++;
+                if (row_count > minRow && row_count <= maxRow){
+                    for (int i = 0; i < columnCount; i++) {
+                        if(coltypes.get(i) == FIELD_TYPE_FLOAT){
+                            array.put(cursor.getFloat(i));
+                        }else if(coltypes.get(i) == FIELD_TYPE_INTEGER){
+                            array.put(cursor.getInt(i));
+                        }else {
+                            if(cursor.getString(i)==null){
+                                array.put( "");
+                            }else{
+                                array.put(cursor.getString(i).trim());
+                            }
+                        }
+                    }
+                }
+            }while(cursor.moveToNext());
+        }else {
+            do {
+                for (int i = 0; i < columnCount; i++) {
+                    if(coltypes.get(i) == FIELD_TYPE_FLOAT){
+                        array.put(cursor.getFloat(i));
+                    }else if(coltypes.get(i) == FIELD_TYPE_INTEGER){
+                        array.put(cursor.getInt(i));
+                    }else {
+                        if(cursor.getString(i)==null){
+                            array.put( "");
+                        }else{
+                            array.put(cursor.getString(i).trim());
+                        }
+                    }
+                }
+            } while (cursor.moveToNext());
+        }
+        return array;
+    }
+    private static JSONArray rs2ContentValues(Cursor cursor, Integer minRow, Integer maxRow, boolean row) {
+        // json数组
+        JSONArray array = new JSONArray();
+        ArrayList<String> colNames=new ArrayList<String>();
+        ArrayList<Integer> coltypes=new ArrayList<Integer>();
+        ContentValues values;
         int  row_count = 0;
         // 获取列数
         int columnCount = cursor.getColumnCount();
@@ -905,7 +874,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             do {
                 row_count++;
                 if (row_count > minRow && row_count <= maxRow){
-                    ContentValues values = new ContentValues();
+                    values = new ContentValues();
                     for (int i = 0; i < columnCount; i++) {
                         if(coltypes.get(i) == FIELD_TYPE_FLOAT){
                             values.put(colNames.get(i) ,cursor.getFloat(i));  /////i = 0;rs里面的是从1开始
@@ -924,7 +893,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             }while(cursor.moveToNext());
         }else {
             do {
-                ContentValues values = new ContentValues();
+                values = new ContentValues();
                 for (int i = 0; i < columnCount; i++) {
                     if (coltypes.get(i) == FIELD_TYPE_FLOAT) {
                         values.put(colNames.get(i),cursor.getDouble(i));

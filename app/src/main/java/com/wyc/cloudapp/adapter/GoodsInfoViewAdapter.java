@@ -24,11 +24,6 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdapter.MyViewHolder> {
 
@@ -148,7 +143,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
             sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,retail_price price,ifnull(img_url,'') img_url from barcode_info where goods_status = '1' and category_id in (" + category_id + ")";
         }
 
-        mDatas = SQLiteHelper.getList(sql,0,0,false,err);
+        mDatas = SQLiteHelper.getListToJson(sql,0,0,false,err);
         if (mDatas != null){
             if (mSearchLoad)mSearchLoad = false;
             this.notifyDataSetChanged();
@@ -166,7 +161,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                 "select gp_id,-1 goods_id,ifnull(gp_title,'') goods_title,'' unit_id,ifnull(unit_name,'') unit_name,\n" +
                 "-1 barcode_id,ifnull(gp_code,'') barcode,gp_price price,ifnull(img_url,'') img_url from goods_group \n" +
                 "where status = '1' and  (barcode like '" + search_content + "%' or mnemonic_code like '" + search_content +"%')";
-        mDatas = SQLiteHelper.getList(sql,0,0,false,err);
+        mDatas = SQLiteHelper.getListToJson(sql,0,0,false,err);
         if (mDatas != null){
             if(mDatas.length() != 0){
                 if (!mSearchLoad)mSearchLoad = true;

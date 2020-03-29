@@ -118,7 +118,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
 
     public void setDatas(final String support_code){
         StringBuilder err = new StringBuilder();
-        mDatas = SQLiteHelper.getList("select *  from pay_method where status = '1' and support like '%" + support_code +"%' order by sort",0,0,false,err);
+        mDatas = SQLiteHelper.getListToJson("select *  from pay_method where status = '1' and support like '%" + support_code +"%' order by sort",0,0,false,err);
         if (mDatas != null){
             this.notifyDataSetChanged();
         }else{
