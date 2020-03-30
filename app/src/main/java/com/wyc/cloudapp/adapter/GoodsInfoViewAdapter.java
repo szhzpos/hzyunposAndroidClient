@@ -31,7 +31,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
     private JSONArray mDatas;
     private OnItemClickListener mOnItemClickListener;
     private boolean mSearchLoad = false;//是否按搜索框条件加载
-    private boolean mShowPic = false;
+    private boolean mShowPic = true;
 
     public GoodsInfoViewAdapter(Context context){
         this.mContext = context;

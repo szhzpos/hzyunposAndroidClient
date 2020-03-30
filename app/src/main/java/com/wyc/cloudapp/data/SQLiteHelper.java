@@ -289,7 +289,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                     columnN0 = 0;
                     jsonObject = jsonArray.optJSONObject(i);
                     for (String cl:cls){
-                        if ("NULL".equals(jsonObject.optString(cl))){
+                        if ("".equals(jsonObject.optString(cl))){
                             statement.bindNull(++columnN0);
                         }else
                             statement.bindString(++columnN0,jsonObject.optString(cl));

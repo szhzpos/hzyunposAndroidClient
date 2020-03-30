@@ -738,7 +738,7 @@ public class MainActivity extends AppCompatActivity {
     }
     public void sync(boolean b){
         if (mSyncManagement != null){
-            if (mProgressDialog != null && !mProgressDialog.isShowing())mProgressDialog.setMessage("正在同步...").show();
+            if (mProgressDialog != null && !mProgressDialog.isShowing())mProgressDialog.setMessage("正在同步...").refreshMessage().show();
             mSyncManagement.start_sync(b);
         }
     }

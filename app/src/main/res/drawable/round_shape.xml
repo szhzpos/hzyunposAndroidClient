@@ -5,8 +5,8 @@
         />
     <!--边框颜色-->
     <stroke
-        android:width="0.0dp"
-        android:color="@color/blue" />
+        android:width="2dp"
+        android:color="@color/white" />
     <!--圆角-->
-    <corners android:radius="3dp"/>
+    <corners android:radius="2dp"/>
 </shape>

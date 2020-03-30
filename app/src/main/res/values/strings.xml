@@ -110,4 +110,7 @@
     <string name="not_empty_hint_sz">不能为空</string>
     <string name="not_zl_hint_sz">不找零</string>
     <string name="select_pay_way_hint_sz">请选择付款方式</string>
+    <string name="base_param_sz">基本参数</string>
+    <string name="peripheral_sz">外设设置</string>
+    <string name="print_layout_sz">打印格式</string>
 </resources>

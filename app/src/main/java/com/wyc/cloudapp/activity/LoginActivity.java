@@ -244,7 +244,6 @@ public class LoginActivity extends AppCompatActivity {
                         mAppScret = param_json.getString("appScret");
                         mOperId = mUser_id.getText().toString();
 
-
                         object.put("appid",mAppId);
                         object.put("cas_account",mOperId);
                         object.put("cas_pwd",mPassword.getText());
@@ -348,7 +347,7 @@ public class LoginActivity extends AppCompatActivity {
         public void handleMessage(@NonNull Message msg){
             LoginActivity activity = weakHandler.get();
             if (null == activity)return;
-            if (activity.mProgressDialog != null && activity.mProgressDialog.isShowing() && msg.what != MessageID.SYNC_DIS_INFO_ID && msg.what != MessageID.LOGIN_OK_ID)activity.mProgressDialog.dismiss();
+            if (activity.mProgressDialog.isShowing() && msg.what != MessageID.SYNC_DIS_INFO_ID && msg.what != MessageID.LOGIN_OK_ID)activity.mProgressDialog.dismiss();
             switch (msg.what){
                 case MessageID.DIS_ERR_INFO_ID:
                 case MessageID.SYNC_ERR_ID://资料同步错误
@@ -366,6 +365,7 @@ public class LoginActivity extends AppCompatActivity {
                     activity.finish();
                     break;
                 case MessageID.LOGIN_OK_ID://登录成功
+                    activity.mProgressDialog.setCancel(false);
                     if (msg.obj instanceof  JSONObject){
                         JSONObject cashier_json = (JSONObject) msg.obj,param_json = new JSONObject();
                         StringBuilder err = new StringBuilder();
@@ -402,7 +402,7 @@ public class LoginActivity extends AppCompatActivity {
                     break;
                 case MessageID.SYNC_DIS_INFO_ID://资料同步进度信息
                     if (activity.mProgressDialog != null){
-                        activity.mProgressDialog.setCancel(false).setMessage(msg.obj.toString()).refreshMessage();
+                        activity.mProgressDialog.setMessage(msg.obj.toString()).refreshMessage();
                         if (!activity.mProgressDialog.isShowing()) {
                             activity.mProgressDialog.show();
                         }
