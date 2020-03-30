@@ -29,5 +29,9 @@ public final  class MessageID {
             UPLOAD_ORDER_ID = 26,
             DIS_PAY_DIALOG_ID = 27,
             MODFIY_REPORT_PROGRESS_ID = 28,
-            MARK_GOODS_STATUS_id = 29;
+            MARK_GOODS_STATUS_id = 29,
+            SYNC_PAUSE_ID = 30,
+            SYNC_CONTINUE_ID= 31,
+            CANCEL_LOGIN_ID = 32;
+
 }

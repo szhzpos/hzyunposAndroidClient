@@ -163,51 +163,6 @@ public final class Utils {
         return Base64.encodeToString(md,Base64.DEFAULT );
     }
 
-    public static Properties loadProperties(@NonNull Context context){
-        FileOutputStream output = null;
-        FileInputStream inputStream = null;
-        Properties properties = null;
-        try{
-            inputStream = context.openFileInput("Properties.properties");//包名/files/文件名
-            properties = new Properties();
-            properties.load(inputStream);
-        }catch (IOException ioe){
-            if(ioe instanceof FileNotFoundException){
-                try{
-                    output = context.openFileOutput("Properties.properties",0);
-                    properties = new Properties();
-                    properties.setProperty("server","192.168.0.254");
-                    properties.setProperty("port","1433");
-                    properties.setProperty("user","sa");
-                    properties.setProperty("password","sa");
-                    properties.setProperty("database","hzpos_sy9");
-                    properties.store(output,null);
-                }catch (IOException e){
-                    MyDialog.displayMessage(e.toString(),context);
-                }finally {
-                    try{
-                        if (output != null) output.close();
-                    }catch (IOException e){
-                        MyDialog.displayMessage(e.toString(), context);
-                    }finally {
-                        output = null;
-                    }
-                }
-            }else{
-                MyDialog.displayMessage("加载配置文件出错" + ioe.toString(), context);
-            }
-        }finally {
-            try{
-                if (inputStream != null) inputStream.close();
-            }catch (IOException e){
-                MyDialog.displayMessage(e.toString(), context);
-            }finally {
-                inputStream = null;
-            }
-        }
-        return  properties;
-    }
-
     public static void setFocus(Activity activity, EditText textView){
         textView.setFocusable(true);
         textView.setFocusableInTouchMode(true);

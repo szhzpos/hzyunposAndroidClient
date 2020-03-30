@@ -1,6 +1,5 @@
 package com.wyc.cloudapp.dialog;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
@@ -16,10 +15,6 @@ import com.wyc.cloudapp.utils.Utils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 public class PayMethodDialog extends AbstractPayDialog {
     public PayMethodDialog(@NonNull Context context,@NonNull JSONObject pay_method) {//show_check_code 是否显示校验码输入框
@@ -60,7 +55,7 @@ public class PayMethodDialog extends AbstractPayDialog {
                     }
                     if (Double.valueOf(editable.toString()) - mOriginalPayAmt> 0){
                         refreshContent();
-                        MyDialog.ToastMessage(mDialogWindow,getTitle().concat(mContext.getString(R.string.not_zl_hint_sz)),null);
+                        MyDialog.SnackbarMessage(mDialogWindow,getTitle().concat(mContext.getString(R.string.not_zl_hint_sz)),null);
                     }
                 }
             }
@@ -77,7 +72,7 @@ public class PayMethodDialog extends AbstractPayDialog {
             mPayMethod.put("v_num",mPayCode.getText().toString());
         } catch (JSONException e) {
             e.printStackTrace();
-            MyDialog.ToastMessage(mDialogWindow,e.getMessage(),getCurrentFocus());
+            MyDialog.SnackbarMessage(mDialogWindow,e.getMessage(),getCurrentFocus());
             return null;
         }
         return mPayMethod;

@@ -202,7 +202,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
 
                 this.notifyDataSetChanged();
             }catch (JSONException e){
-                MyDialog.displayErrorMessage("选择商品错误：" + e.getMessage(),mContext);
+                MyDialog.ToastMessage("选择商品错误：" + e.getMessage(),mContext,null);
                 e.printStackTrace();
             }
         }
@@ -230,7 +230,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                     }
                 }catch (JSONException e){
                     e.printStackTrace();
-                    MyDialog.displayErrorMessage("删除商品错误：" + e.getMessage(),mContext);
+                    MyDialog.ToastMessage("删除商品错误：" + e.getMessage(),mContext,null);
                 }
             }
             notifyDataSetChanged();
@@ -290,7 +290,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
             notifyDataSetChanged();
         } catch (JSONException e) {
             e.printStackTrace();
-            MyDialog.displayErrorMessage("整单折扣错误：" + e.getMessage(),mContext);
+            MyDialog.ToastMessage("整单折扣错误：" + e.getMessage(),mContext,null);
         }
 
         return mDatas;
@@ -408,7 +408,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
             notifyDataSetChanged();
         } catch (JSONException e) {
             e.printStackTrace();
-            MyDialog.displayErrorMessage("修改销售商品信息错误：" + e.getMessage(),mContext);
+            MyDialog.ToastMessage("修改销售商品信息错误：" + e.getMessage(),mContext,null);
         }
     }
     private void setCurrentItemIndexAndItemView(View v){

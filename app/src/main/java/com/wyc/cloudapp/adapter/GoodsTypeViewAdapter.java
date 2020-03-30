@@ -103,7 +103,7 @@ public class GoodsTypeViewAdapter extends RecyclerView.Adapter<GoodsTypeViewAdap
         if (mDatas != null){
             this.notifyDataSetChanged();
         }else{
-            MyDialog.displayErrorMessage("加载类别错误：" + err,mContext);
+            MyDialog.ToastMessage("加载类别错误：" + err,mContext,null);
         }
     }
 

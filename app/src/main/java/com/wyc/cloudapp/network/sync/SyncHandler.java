@@ -52,6 +52,15 @@ public final class SyncHandler extends Handler {
                 case MessageID.SYNC_GOODS_BASE_ID:
 
                     break;
+                case MessageID.SYNC_PAUSE_ID:
+                    synchronized (this){
+                        try {
+                            wait(15000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    return;
                 case MessageID.SYNC_GOODS_CATEGORY_ID:
                     table_name = "shop_category";
                     sys_name = "正在同步商品类别";
@@ -443,14 +452,14 @@ public final class SyncHandler extends Handler {
         if (mHttp != null)mHttp.clearConnection(HttpRequest.CLOSEMODE.BOTH);
     }
     void sync(){
-        obtainMessage(MessageID.MARK_GOODS_STATUS_id).sendToTarget();
+        if (!hasMessages(MessageID.MARK_GOODS_STATUS_id))obtainMessage(MessageID.MARK_GOODS_STATUS_id).sendToTarget();
 
-        this.obtainMessage(MessageID.SYNC_CASHIER_ID).sendToTarget();//收银员
-        this.obtainMessage(MessageID.SYNC_GOODS_CATEGORY_ID).sendToTarget();//商品类别
-        this.obtainMessage(MessageID.SYNC_PAY_METHOD_ID).sendToTarget();//支付方式
-        this.obtainMessage(MessageID.SYNC_STORES_ID).sendToTarget();//仓库信息
-        this.obtainMessage(MessageID.SYNC_GP_INFO_ID).sendToTarget();//商品组合ID
-        this.obtainMessage(MessageID.SYNC_GOODS_ID,0).sendToTarget();//商品信息obj代表当前下载页数
+        if (!hasMessages(MessageID.SYNC_CASHIER_ID))obtainMessage(MessageID.SYNC_CASHIER_ID).sendToTarget();//收银员
+        if (!hasMessages(MessageID.SYNC_GOODS_CATEGORY_ID))obtainMessage(MessageID.SYNC_GOODS_CATEGORY_ID).sendToTarget();//商品类别
+        if (!hasMessages(MessageID.SYNC_PAY_METHOD_ID))obtainMessage(MessageID.SYNC_PAY_METHOD_ID).sendToTarget();//支付方式
+        if (!hasMessages(MessageID.SYNC_STORES_ID))obtainMessage(MessageID.SYNC_STORES_ID).sendToTarget();//仓库信息
+        if (!hasMessages(MessageID.SYNC_GP_INFO_ID))obtainMessage(MessageID.SYNC_GP_INFO_ID).sendToTarget();//商品组合ID
+        if (!hasMessages(MessageID.SYNC_GOODS_ID))obtainMessage(MessageID.SYNC_GOODS_ID,0).sendToTarget();//商品信息obj代表当前下载页数
     }
     void stopSync(){
         removeMessages(MessageID.MARK_GOODS_STATUS_id);
@@ -459,6 +468,7 @@ public final class SyncHandler extends Handler {
         removeMessages(MessageID.SYNC_STORES_ID);
         removeMessages(MessageID.SYNC_GP_INFO_ID);
         removeMessages(MessageID.SYNC_GOODS_ID);
+        removeMessages(MessageID.SYNC_FINISH_ID);
     }
     void modifyReportProgressStatus(boolean b){
         obtainMessage(MessageID.MODFIY_REPORT_PROGRESS_ID,b).sendToTarget();//通过消息保证串行修改
@@ -471,5 +481,13 @@ public final class SyncHandler extends Handler {
     }
     void startUploadOrder(){
         obtainMessage(MessageID.UPLOAD_ORDER_ID).sendToTarget();
+    }
+    void pause(){
+        sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_PAUSE_ID));
+    }
+    void _continue(){
+        synchronized (this){
+            notify();
+        }
     }
 }

@@ -21,7 +21,7 @@ public class Nfc {
     private String passwrod;
     public Nfc(Context activity){
         mActivity = activity;
-        Properties properties = Utils.loadProperties(activity);
+        Properties properties = new Properties();
         int bReadCard = Integer.valueOf(properties.getProperty("bReadCard","0"));
         if(bReadCard == 1){
             mNfcAdapter = NfcAdapter.getDefaultAdapter(mActivity);

@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.minus_num).setOnClickListener(v -> mSaleGoodsViewAdapter.deleteSaleGoods(mSaleGoodsViewAdapter.getCurrentItemIndex(),1));//数量减
         findViewById(R.id.add_num).setOnClickListener(v -> mSaleGoodsViewAdapter.addSaleGoods(mSaleGoodsViewAdapter.getCurrentContent(),mVipInfo));//数量加
         mCloseBtn.setOnClickListener((View V)->{
-            MyDialog.displayAskMessage("是否退出收银？",MainActivity.this,(MyDialog myDialog)->{
+            MyDialog.displayAskMessage(mDialog,"是否退出收银？",MainActivity.this,(MyDialog myDialog)->{
                 myDialog.dismiss();
                 mSyncManagement.quit();
                 Intent intent = new Intent(MainActivity.this,LoginActivity.class);
@@ -150,13 +150,13 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.q_deal_linerLayout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MyDialog.displayMessage("查交易",v.getContext());
+                MyDialog.displayMessage(null,"查交易",v.getContext());
             }
         });
         findViewById(R.id.shift_exchange_linearLayout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MyDialog.displayMessage("交班",v.getContext());
+                MyDialog.displayMessage(null,"交班",v.getContext());
             }
         });
         findViewById(R.id.other_linearLayout).setOnClickListener(v -> {
@@ -181,9 +181,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy(){
         super.onDestroy();
-
+        if (mHandler != null)mHandler.removeCallbacksAndMessages(null);
         if (mSyncManagement != null) mSyncManagement.quit();
         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
+        if (mDialog.isShowing())mDialog.dismiss();
         stopSyncCurrentTime();
     }
 
@@ -348,7 +349,7 @@ public class MainActivity extends AppCompatActivity {
                     mSaleGoodsRecyclerView.scrollToPosition(mSaleGoodsViewAdapter.getCurrentItemIndex());
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    MyDialog.displayErrorMessage("更新销售数据错误：" + e.getMessage(),MainActivity.this);
+                    MyDialog.ToastMessage("更新销售数据错误：" + e.getMessage(),MainActivity.this,null);
                 }
             }
         });
@@ -501,7 +502,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            MyDialog.displayErrorMessage("生成订单信息错误：" + e.getMessage(),myDialog.getContext());
+                            MyDialog.ToastMessage("生成订单信息错误：" + e.getMessage(),myDialog.getContext(),null);
                         }
                     }
 
@@ -518,7 +519,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess(PayDialog myDialog) {
                         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
                         mSyncManagement.sync_order();
-                        MyDialog.ToastMessage(MainActivity.this.getWindow(),"结账成功！",mOrderCode);
+                        MyDialog.SnackbarMessage(MainActivity.this.getWindow(),"结账成功！",mOrderCode);
                         resetOrderInfo();
                         myDialog.dismiss();
                     }
@@ -528,12 +529,12 @@ public class MainActivity extends AppCompatActivity {
                         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
                         //myDialog.clearPayInfo();
                         resetOrderCode();//提示错误得重置单号
-                        MyDialog.displayErrorMessage("支付错误：" + err,myDialog.getContext());
+                        MyDialog.displayErrorMessage(null,"支付错误：" + err,myDialog.getContext());
                     }
                 }).show();
             }
         }else{
-            MyDialog.ToastMessage(getWindow(),"已选商品为空！!",getCurrentFocus());
+            MyDialog.SnackbarMessage(getWindow(),"已选商品为空！!",getCurrentFocus());
         }
     }
 
@@ -635,7 +636,7 @@ public class MainActivity extends AppCompatActivity {
             if (-1 != gp_id){
                 tmp_json = (JSONObject) sales_data.remove(i--);
                 if (!mSaleGoodsViewAdapter.splitCombinationalGoods(combination_goods,gp_id,tmp_json.getDouble("price"),tmp_json.getDouble("xnum"),err)){
-                    MyDialog.displayErrorMessage("拆分组合商品错误：" + err,this);
+                    MyDialog.displayErrorMessage(null,"拆分组合商品错误：" + err,this);
                     return null;
                 }
                 Logger.d_json(combination_goods.toString());
@@ -715,14 +716,14 @@ public class MainActivity extends AppCompatActivity {
         if ((code = SQLiteHelper.execSql(count_json,"select count(order_code) counts from retail_order where order_code = '" + mOrderCode.getText() +"' and stores_id = '" + mStoreInfo.optString("stores_id") +"'"))){
             if (0 == count_json.optInt("counts")){
                 if (!(code = SQLiteHelper.execSQLByBatchFromJson(data,tables,Arrays.asList(retail_order_cols,retail_order_goods_cols,retail_order_pays_cols),err,0))){
-                    MyDialog.displayErrorMessage("保存订单信息错误：" + err,this);
+                    MyDialog.displayErrorMessage(null,"保存订单信息错误：" + err,this);
                 }
             }else{
                 code = false;
-                MyDialog.displayErrorMessage("本地已存在此订单信息，请重新下单！",this);
+                MyDialog.displayErrorMessage(null,"本地已存在此订单信息，请重新下单！",this);
             }
         }else{
-            MyDialog.displayErrorMessage("查询订单信息错误：" + count_json.optString("info"),this);
+            MyDialog.displayErrorMessage(null,"查询订单信息错误：" + count_json.optString("info"),this);
         }
         return code;
     }
@@ -776,7 +777,7 @@ public class MainActivity extends AppCompatActivity {
                 case MessageID.SYNC_ERR_ID://资料同步错误
                     if (activity.mProgressDialog != null && activity.mProgressDialog.isShowing())activity.mProgressDialog.dismiss();
                     if (msg.obj instanceof String)
-                        MyDialog.displayErrorMessage(msg.obj.toString(),activity);
+                        MyDialog.displayErrorMessage(activity.mDialog,msg.obj.toString(),activity);
                     break;
                 case MessageID.SYNC_FINISH_ID:
                     if (activity.mProgressDialog != null && activity.mProgressDialog.isShowing())activity.mProgressDialog.dismiss();

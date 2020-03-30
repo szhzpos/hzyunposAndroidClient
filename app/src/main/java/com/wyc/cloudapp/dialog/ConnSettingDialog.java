@@ -103,12 +103,12 @@ public class ConnSettingDialog extends Dialog {
                         MyDialog.ToastMessage("保存成功！",mContext,null);
                         ConnSettingDialog.this.dismiss();
                     }else
-                        MyDialog.displayMessage(err.toString(),v.getContext());
+                        MyDialog.displayMessage(null,err.toString(),v.getContext());
                 }else{
-                    MyDialog.ToastMessage(getWindow(),"门店不能为空！",getCurrentFocus());
+                    MyDialog.SnackbarMessage(getWindow(),"门店不能为空！",getCurrentFocus());
                 }
             } catch (JSONException e) {
-                MyDialog.ToastMessage(getWindow(),"保存错误：" + e.getMessage(),getCurrentFocus());
+                MyDialog.SnackbarMessage(getWindow(),"保存错误：" + e.getMessage(),getCurrentFocus());
                 e.printStackTrace();
             }
         });
@@ -160,7 +160,7 @@ public class ConnSettingDialog extends Dialog {
             switch (msg.what){
                 case MessageID.DIS_ERR_INFO_ID:
                     if (msg.obj != null)
-                        MyDialog.displayErrorMessage(msg.obj.toString(), settingDialog.mContext);
+                        MyDialog.displayErrorMessage(null,msg.obj.toString(), settingDialog.mContext);
                     break;
                 case MessageID.DIS_STORE_INFO_ID://查询门店信息正确,则要在线请求仓库信息
                     if (msg.obj instanceof  JSONArray){
@@ -178,7 +178,7 @@ public class ConnSettingDialog extends Dialog {
     private void queryStoreInfo(){
         if (mUrl.getText().length() == 0){
             mUrl.requestFocus();
-            MyDialog.ToastMessage(getWindow(),"服务器URL不能为空！",getCurrentFocus());
+            MyDialog.SnackbarMessage(getWindow(),"服务器URL不能为空！",getCurrentFocus());
             return;
         }
 
@@ -228,11 +228,11 @@ public class ConnSettingDialog extends Dialog {
                     mStore_name.setText(mStoreInfo.getString("stores_name"));
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    MyDialog.displayErrorMessage("显示门店信息错误：" + e.getMessage(),mContext);
+                    MyDialog.ToastMessage("显示门店信息错误：" + e.getMessage(),mContext,null);
                 }
             }
         }else{
-            MyDialog.ToastMessage(getWindow(),param.optString("info"),getCurrentFocus());
+            MyDialog.SnackbarMessage(getWindow(),param.optString("info"),getCurrentFocus());
         }
     }
 

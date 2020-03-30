@@ -136,6 +136,29 @@ public class MyDialog extends Dialog {
         mTitle = findViewById(R.id.title_text);
         mMessage = findViewById(R.id.content);
         mMessage.setMovementMethod(ScrollingMovementMethod.getInstance());
+
+    }
+
+    public MyDialog setTitle(String title) {
+        mTitleStr = title;
+        return  this;
+    }
+
+    public MyDialog setMessage(String message) {
+        mMessageStr = message;
+        return  this;
+    }
+
+
+    @Override
+    public void show(){
+        super.show();
+
+        showBtn();
+        showIcon();
+    }
+
+    private void showIcon(){
         Drawable drawable = null;
         switch (mContentIconType){
             case INFO:
@@ -154,21 +177,7 @@ public class MyDialog extends Dialog {
         drawable.setBounds(0,0,drawable.getIntrinsicWidth(),drawable.getIntrinsicHeight());
         mMessage.setCompoundDrawables(drawable,null,null,null);
     }
-
-    public MyDialog setTitle(String title) {
-        mTitleStr = title;
-        return  this;
-    }
-
-    public MyDialog setMessage(String message) {
-        mMessageStr = message;
-        return  this;
-    }
-
-
-    @Override
-    public void show(){
-        super.show();
+    private void showBtn(){
         if (mIsYes && !mIsNo) {
             mNo.setVisibility(View.GONE);
             mYes.setVisibility(View.VISIBLE);
@@ -181,36 +190,44 @@ public class MyDialog extends Dialog {
         }
     }
 
-    public static void displayMessage(String message, Context context){
-        final MyDialog builder  = new	MyDialog(context, IconType.INFO);
-        builder.setTitle("提示信息").setMessage(message).setNoOnclickListener("确定", Dialog::dismiss).show();
+    private void setContentIconType(IconType type){
+        mContentIconType = type;
     }
 
-    public static void displayErrorMessage(String message, Context context){
-        final MyDialog builder  = new	MyDialog(context, IconType.ERROR);
-        builder.setTitle("提示信息").setMessage(message).setNoOnclickListener("取消", Dialog::dismiss).show();
+    public static void displayMessage(MyDialog dialog,String message, Context context){
+        if (dialog == null)
+            dialog = new	MyDialog(context, IconType.INFO);
+        else
+            dialog.setContentIconType(IconType.INFO);
+
+        dialog.setTitle("提示信息").setMessage(message).setNoOnclickListener("确定", Dialog::dismiss).show();
     }
 
-    public static void displayErrorMessage(String message, Context context,onNoOnclickListener no){
-        final MyDialog builder  = new	MyDialog(context, IconType.ERROR);
-        builder.setTitle("提示信息").setMessage(message).setNoOnclickListener("取消",no).show();
+    public static void displayErrorMessage(MyDialog dialog,String message, Context context){
+        if (dialog == null)
+            dialog = new	MyDialog(context, IconType.ERROR);
+        else
+            dialog.setContentIconType(IconType.ERROR);
+
+        dialog.setTitle("提示信息").setMessage(message).setNoOnclickListener("取消", Dialog::dismiss).show();
     }
 
-    public static void displayWarnMessage(String message, Context context){
-        final MyDialog builder  = new	MyDialog(context, IconType.WARN);
-        builder.setTitle("提示信息").setMessage(message).setYesOnclickListener("确定", Dialog::dismiss)
-                .setNoOnclickListener("取消", Dialog::dismiss).show();
+    public static void displayErrorMessage(MyDialog dialog,String message, Context context,onNoOnclickListener no){
+        if (dialog == null)
+            dialog  = new	MyDialog(context, IconType.ERROR);
+        else
+            dialog.setContentIconType(IconType.ERROR);
+
+        dialog.setTitle("提示信息").setMessage(message).setNoOnclickListener("取消",no).show();
     }
 
-    public static void displayAskMessage(String message, Context context,MyDialog.onYesOnclickListener yes,MyDialog.onNoOnclickListener no){
-        final MyDialog builder  = new	MyDialog(context, IconType.ASK);
-        builder.setTitle("提示信息").setMessage(message).setYesOnclickListener("是",yes)
-                .setNoOnclickListener("否", no).show();
-    }
+    public static void displayAskMessage(MyDialog dialog,String message, Context context,MyDialog.onYesOnclickListener yes,MyDialog.onNoOnclickListener no){
+        if (dialog == null)
+            dialog = new MyDialog(context, IconType.ASK);
+        else
+            dialog.setContentIconType(IconType.ASK);
 
-    public static void displayMessage(String message,String sz,Context context ){
-        final MyDialog builder  = new	MyDialog(context);
-        builder.setTitle("提示信息").setMessage(message).setNoOnclickListener(sz, Dialog::dismiss).show();
+        dialog.setTitle("提示信息").setMessage(message).setYesOnclickListener("是",yes).setNoOnclickListener("否", no).show();
     }
 
     public static boolean ToastMessage(final String message,final Context context,final Window window,boolean b){
@@ -230,11 +247,11 @@ public class MyDialog extends Dialog {
         toast.show();
     }
 
-    public static boolean ToastMessage(final Window window, final String message, View anchor,boolean b){
-        if(!b)ToastMessage( window, message, anchor);
+    public static boolean SnackbarMessage(final Window window, final String message, View anchor, boolean b){
+        if(!b) SnackbarMessage( window, message, anchor);
         return b;
     }
-    public static void ToastMessage(final Window window, final String message, View anchor){
+    public static void SnackbarMessage(final Window window, final String message, View anchor){
         if (null != window){
             final Snackbar snackbar = Snackbar.make(window.getDecorView(),message, Snackbar.LENGTH_LONG);
             window.setCallback(new WindowCallback(window,snackbar));

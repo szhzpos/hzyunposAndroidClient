@@ -101,7 +101,7 @@ public class CustomePopupWindow extends PopupWindow {
         mGetSelectContent = ongetSelectContent;
 
         if (isSelect)isSelect = false;
-        if (null != mShowContents && mShowContents.length() != 0) {
+        if (null != mShowContents) {
             if (!mArrayAdapter.isEmpty()) mArrayAdapter.clear();
             if (!isAutoSetContent) mArrayAdapter.add("");
             for (int i = 0, len = mShowContents.length(); i < len; i++) {
@@ -119,7 +119,7 @@ public class CustomePopupWindow extends PopupWindow {
             this.setWidth(mView.getWidth());
            // this.setHeight(82 * 2);
         }else{
-            if (mShowContents == null) MyDialog.displayErrorMessage("查询内容出错： " + err,v.getContext());
+           MyDialog.displayErrorMessage(null,"查询内容出错： " + err,v.getContext());
         }
     }
 
@@ -135,7 +135,7 @@ public class CustomePopupWindow extends PopupWindow {
         mGetSelectContent = ongetSelectContent;
 
         if (isSelect)isSelect = false;
-        if (null != mShowContents && mShowContents.length() != 0) {
+        if (null != mShowContents) {
             if (!mArrayAdapter.isEmpty()) mArrayAdapter.clear();
             if (!isAutoSetContent) mArrayAdapter.add("");
             for (int i = 0, len = mShowContents.length(); i < len; i++) {
@@ -153,7 +153,7 @@ public class CustomePopupWindow extends PopupWindow {
             this.setWidth(mView.getWidth());
             // this.setHeight(82 * 2);
         }else{
-            if (mShowContents == null) MyDialog.displayErrorMessage("查询内容出错： " + err,v.getContext());
+            MyDialog.displayErrorMessage(null,"查询内容出错： " + err,v.getContext());
         }
     }
 

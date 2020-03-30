@@ -136,7 +136,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         }else{
             category_id = SQLiteHelper.getString("select category_id from shop_category where path like '" + id +"%'",err);
             if (null == category_id){
-                MyDialog.displayErrorMessage("加载商品错误：" + err,mContext);
+                MyDialog.ToastMessage("加载商品错误：" + err,mContext,null);
                 return;
             }
             category_id = category_id.replace("\r\n",",");
@@ -148,7 +148,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
             if (mSearchLoad)mSearchLoad = false;
             this.notifyDataSetChanged();
         }else{
-            MyDialog.displayErrorMessage("加载商品错误：" + err,mContext);
+            MyDialog.ToastMessage("加载商品错误：" + err,mContext,null);
         }
     }
 
@@ -172,7 +172,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
             this.notifyDataSetChanged();
         }else{
             search.selectAll();
-            MyDialog.displayErrorMessage("搜索商品错误：" + err,mContext,null);
+            MyDialog.ToastMessage("搜索商品错误：" + err,mContext,null);
         }
     }
 

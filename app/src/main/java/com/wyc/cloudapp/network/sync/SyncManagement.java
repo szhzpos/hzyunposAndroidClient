@@ -40,7 +40,7 @@ public class SyncManagement extends Thread {
         try{
             handlerInitLatch.await();//必须确保Handler初始化
         }catch (InterruptedException e){
-            e.fillInStackTrace();
+            e.printStackTrace();
         }
         return this.mSyncHandler;
     }
@@ -59,7 +59,6 @@ public class SyncManagement extends Thread {
         if (!isAlive())start();
         if (mSyncHandler == null)mSyncHandler = getHandler();
         if (b){
-            mSyncHandler.stopSync();
             mSyncHandler.modifyReportProgressStatus(true);
             mSyncHandler.sync();
             mSyncHandler.obtainMessage(MessageID.SYNC_FINISH_ID).sendToTarget();//最后发送同步完成消息;
@@ -67,8 +66,21 @@ public class SyncManagement extends Thread {
             mSyncHandler.startNetworkTest();
         }
     }
+
+    public void stop_sync(){
+        mSyncHandler.stopSync();
+    }
+
     public void sync_order(){
         if (mSyncHandler == null)mSyncHandler = getHandler();
         mSyncHandler.startUploadOrder();
+    }
+    public void pauseSync(){
+        if (mSyncHandler == null)mSyncHandler = getHandler();
+        mSyncHandler.pause();
+    }
+    public void continueSync(){
+        if (mSyncHandler == null)mSyncHandler = getHandler();
+        mSyncHandler._continue();
     }
 }

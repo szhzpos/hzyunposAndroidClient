@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.app.Dialog;
+
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
@@ -16,7 +17,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.view.Display;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -33,16 +33,12 @@ import com.wyc.cloudapp.dialog.ConnSettingDialog;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.keyboard.SoftKeyBoardListener;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.network.sync.SyncManagement;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.lang.ref.WeakReference;
 
 public class LoginActivity extends AppCompatActivity {
@@ -52,7 +48,7 @@ public class LoginActivity extends AppCompatActivity {
     private Handler myHandler;
     private LoginActivity mSelf;
     private CustomProgressDialog mProgressDialog;
-    private boolean mCancelLogin = false;//是否主动取消登陆
+    private MyDialog myDialog;
     private SyncManagement mSyncManagement;
     private Button mCancel;
     private String mAppId,mAppScret,mUrl,mPosNum,mOperId,mStoresId;
@@ -70,6 +66,7 @@ public class LoginActivity extends AppCompatActivity {
         myHandler = new Myhandler(this);
         mSelf = this;
         mProgressDialog = new CustomProgressDialog(this);
+        myDialog = new MyDialog(this);
 
         SoftKeyBoardListener.setListener(this, new SoftKeyBoardListener.OnSoftKeyBoardChangeListener() {
             ViewGroup.LayoutParams mLayoutParams = mMain.getLayoutParams();
@@ -103,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         mCancel.setOnClickListener((View V)->{
-            MyDialog.displayAskMessage("是否退出？", mSelf, myDialog -> {
+            MyDialog.displayAskMessage(myDialog,"是否退出？", mSelf, myDialog -> {
                 mSelf.finish();
                 myDialog.dismiss();
             }, Dialog::dismiss);
@@ -134,7 +131,9 @@ public class LoginActivity extends AppCompatActivity {
     public void onDestroy(){
         super.onDestroy();
         if (mSyncManagement != null) mSyncManagement.quit();
+        if (myHandler != null)myHandler.removeCallbacksAndMessages(null);
         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
+        if (myDialog.isShowing())myDialog.dismiss();
     }
 
     @Override
@@ -147,13 +146,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onResume();
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             if ((ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))){
-                MyDialog dialogTmp = new MyDialog(this);
-                dialogTmp.setTitle("提示信息").setMessage("APP不能存储数据,请设置允许APP读写手机存储权限").setNoOnclickListener("退出", new MyDialog.onNoOnclickListener() {
-                    @Override
-                    public void onNoClick(MyDialog myDialog) {
-                        myDialog.dismiss();
-                        LoginActivity.this.finish();
-                    }
+                myDialog.setTitle("提示信息").setMessage("APP不能存储数据,请设置允许APP读写手机存储权限").setNoOnclickListener("退出", myDialog -> {
+                    myDialog.dismiss();
+                    LoginActivity.this.finish();
                 }).setYesOnclickListener("重新获取",(MyDialog myDialog)->{
                     myDialog.dismiss();
                     ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},REQUEST_STORAGE_PERMISSIONS );
@@ -217,22 +212,28 @@ public class LoginActivity extends AppCompatActivity {
         myHandler.postDelayed(()->{
             if (mProgressDialog.isShowing())
                 mProgressDialog.setCancel(true).setOnCancelListener(dialog -> {
-                    MyDialog.displayAskMessage("是否取消登录？",mSelf,(MyDialog mydialog)->{
+                    if (mSyncManagement != null)mSyncManagement.pauseSync();
+                    MyDialog.displayAskMessage(myDialog,"是否取消登录？",mSelf,(MyDialog mydialog)->{
                         mydialog.dismiss();
-                        if (mProgressDialog != null && !mProgressDialog.isShowing()){
-                            mProgressDialog.setMessage("正在取消登录...").refreshMessage().show();
+                        if (mSyncManagement != null){
+                            mSyncManagement.continueSync();
+                            mSyncManagement.stop_sync();
                         }
-                        mCancelLogin = true;
                         httpRequest.clearConnection(HttpRequest.CLOSEMODE.POST);
+                        if (mProgressDialog != null && mProgressDialog.isShowing()){
+                            mProgressDialog.dismiss();
+                        }
+                        myHandler.sendMessageAtFrontOfQueue(myHandler.obtainMessage(MessageID.CANCEL_LOGIN_ID));
+
                     },(MyDialog myDialog)->{
                         myDialog.dismiss();
+                        if (mSyncManagement != null)mSyncManagement.continueSync();
                         if (mProgressDialog != null && !mProgressDialog.isShowing()){
                             mProgressDialog.setRestShowTime(false).show();
                         }
                     });
                 });
-        },3000);
-
+        },1000);
         CustomApplication.execute(()->{
             JSONObject object = new JSONObject(),param_json = new JSONObject(),cashier_json,retJson,info_json,jsonLogin,store_info;
             String url,sz_param,err_info;
@@ -330,11 +331,11 @@ public class LoginActivity extends AppCompatActivity {
                             et_url.setText(url);
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        MyDialog.ToastMessage(getWindow(),"显示服务器地址：" + e.getMessage(),getCurrentFocus());
+                        MyDialog.SnackbarMessage(getWindow(),"显示服务器地址：" + e.getMessage(),getCurrentFocus());
                     }
                 }
             }else{
-                MyDialog.ToastMessage(getWindow(),param.optString("info"),getCurrentFocus());
+                MyDialog.SnackbarMessage(getWindow(),param.optString("info"),getCurrentFocus());
             }
         }
     }
@@ -352,12 +353,12 @@ public class LoginActivity extends AppCompatActivity {
                 case MessageID.DIS_ERR_INFO_ID:
                 case MessageID.SYNC_ERR_ID://资料同步错误
                     if (msg.obj != null){
-                        if (activity.mCancelLogin){
-                            activity.finish();
-                        }else{
-                            MyDialog.displayErrorMessage(msg.obj.toString(),activity);
-                        }
+                        MyDialog.displayErrorMessage(activity.myDialog,msg.obj.toString(),activity);
                     }
+                    break;
+                case MessageID.CANCEL_LOGIN_ID:
+                    removeCallbacksAndMessages(null);
+                    activity.finish();
                     break;
                 case MessageID.SYNC_FINISH_ID://同步成功启动主界面
                     Intent intent = new Intent(activity,MainActivity.class);
@@ -365,7 +366,6 @@ public class LoginActivity extends AppCompatActivity {
                     activity.finish();
                     break;
                 case MessageID.LOGIN_OK_ID://登录成功
-                    activity.mProgressDialog.setCancel(false);
                     if (msg.obj instanceof  JSONObject){
                         JSONObject cashier_json = (JSONObject) msg.obj,param_json = new JSONObject();
                         StringBuilder err = new StringBuilder();
@@ -376,14 +376,14 @@ public class LoginActivity extends AppCompatActivity {
                                 activity.mSyncManagement = new SyncManagement(this,activity.mUrl,activity.mAppId,activity.mAppScret,activity.mStoresId,activity.mPosNum,activity.mOperId);
                                 activity.mSyncManagement.start_sync(true);
                             }else{
-                                MyDialog.displayMessage("保存收银员信息错误：" + err,activity);
+                                MyDialog.displayMessage(null,"保存收银员信息错误：" + err,activity);
                             }
                         } catch (JSONException e) {
-                            MyDialog.displayMessage("保存收银员信息错误：" + e.getMessage(),activity);
+                            MyDialog.displayMessage(null,"保存收银员信息错误：" + e.getMessage(),activity);
                             e.printStackTrace();
                         }
                     }else{
-                        MyDialog.displayErrorMessage("收银员信息为空！",activity);
+                        MyDialog.displayErrorMessage(null,"收银员信息为空！",activity);
                     }
                     break;
                 case MessageID.LOGIN_ID_ERROR_ID://账号错误
@@ -410,7 +410,7 @@ public class LoginActivity extends AppCompatActivity {
                     break;
                 case MessageID.CONN_PARAM_ERR_ID:
                     if (msg.obj instanceof String){
-                        MyDialog.ToastMessage(activity.getWindow(),msg.obj.toString(),activity.getCurrentFocus());
+                        MyDialog.SnackbarMessage(activity.getWindow(),msg.obj.toString(),activity.getCurrentFocus());
                         activity.findViewById(R.id.setup_ico).callOnClick();
                     }
                     break;

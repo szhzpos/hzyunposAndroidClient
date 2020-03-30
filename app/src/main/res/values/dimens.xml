@@ -50,7 +50,7 @@
     <dimen name="main_middle_left_width">336dp</dimen>
     <dimen name="login_btn_height">@dimen/height_58</dimen>
     <dimen name="login_btn_width">@dimen/width_118</dimen>
-    <dimen name="login_text_width">268dp</dimen>
+    <dimen name="login_text_width">272dp</dimen>
     <dimen name="login_text_height">@dimen/height_50</dimen>
     <dimen name="pay_dialog_button_width">@dimen/width_75</dimen>
     <dimen name="pay_dialog_button_height">60dp</dimen>

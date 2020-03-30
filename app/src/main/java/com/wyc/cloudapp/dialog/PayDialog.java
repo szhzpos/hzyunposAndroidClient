@@ -254,7 +254,7 @@ public class PayDialog extends Dialog {
                     } else {
                         if (verifyPayBalance()) {
                             if (Utils.equalDouble(mPay_balance, 0) && mPayDetailViewAdapter.findPayDetailById(pay_method_id) == null) {//剩余金额为零，同时不存在此付款方式的记录。
-                                MyDialog.ToastMessage(mWindow, "剩余金额为零！", getCurrentFocus());
+                                MyDialog.SnackbarMessage(mWindow, "剩余金额为零！", getCurrentFocus());
                             } else {
                                 PayMethodDialog payMethodDialog = new PayMethodDialog(mainActivity, pay_method);
                                 payMethodDialog.setPayAmt(mPay_balance);
@@ -267,7 +267,7 @@ public class PayDialog extends Dialog {
                                 }).show();
                             }
                         }else{
-                            MyDialog.ToastMessage(mWindow,"剩余付款金额不能小于零！",mPayBalanceTv);
+                            MyDialog.SnackbarMessage(mWindow,"剩余付款金额不能小于零！",mPayBalanceTv);
                         }
                     }
                 } catch (JSONException e) {
@@ -315,11 +315,11 @@ public class PayDialog extends Dialog {
                                     mPayListener.onStart(PayDialog.this);
                                 }
                             }else{
-                                MyDialog.displayErrorMessage(String.format(Locale.CHINA,"销售金额:%f  不等于 付款金额:%f",sale_amt,pay_amt),mainActivity);
+                                MyDialog.displayErrorMessage(null,String.format(Locale.CHINA,"销售金额:%f  不等于 付款金额:%f",sale_amt,pay_amt),mainActivity);
                             }
                         }
                     }else{
-                        MyDialog.ToastMessage(mWindow,"剩余付款金额不能小于零！",mPayBalanceTv);
+                        MyDialog.SnackbarMessage(mWindow,"剩余付款金额不能小于零！",mPayBalanceTv);
                     }
                 }catch (JSONException e){
                     e.printStackTrace();
@@ -404,7 +404,7 @@ public class PayDialog extends Dialog {
                 }
             }
         }else{
-            MyDialog.ToastMessage(mWindow,"剩余付款金额不能小于零！",mPayBalanceTv);
+            MyDialog.SnackbarMessage(mWindow,"剩余付款金额不能小于零！",mPayBalanceTv);
         }
     }
 
