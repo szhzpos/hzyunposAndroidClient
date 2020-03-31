@@ -1,61 +1,74 @@
 package com.wyc.cloudapp.dialog;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import androidx.fragment.app.DialogFragment;
+
+import androidx.viewpager2.widget.ViewPager2;
+
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.adapter.DemoCollectionPagerAdapter;
 
-public class ParameterSettingDialog extends Dialog {
-    private Button mBase_param_btn,mPeripheral_param_btn,mPrint_format_btn,mCurentBtn;
+public class ParameterSettingDialog extends DialogFragment {
+
     private Context mContext;
+
     public ParameterSettingDialog(@NonNull Context context) {
-        super(context);
         mContext = context;
     }
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.parameter_setting_dialog_layout);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setCancelable(false);
-        setCanceledOnTouchOutside(false);
 
-        mBase_param_btn = findViewById(R.id.base_param_btn);
-        mPeripheral_param_btn = findViewById(R.id.peripheral_param_btn);
-        mPrint_format_btn = findViewById(R.id.print_format_btn);
-
-
-        //按钮事件
-        findViewById(R.id._close).setOnClickListener(v -> ParameterSettingDialog.this.dismiss());
-        mBase_param_btn.setOnClickListener(param_btn_click);
-        mPeripheral_param_btn.setOnClickListener(param_btn_click);
-        mPrint_format_btn.setOnClickListener(param_btn_click);
-
-        //默认显示基本设置
-        mBase_param_btn.callOnClick();
+    }
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,@Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.parameter_setting_dialog_layout, container, false);
+    }
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        final TabLayout tabLayout = view.findViewById(R.id.param_tab);
+        final ViewPager2 viewPager2 = view.findViewById(R.id.view_pager);
+        final DemoCollectionPagerAdapter adapter =  new DemoCollectionPagerAdapter(this);
+        viewPager2.setAdapter(adapter);
+        new TabLayoutMediator(tabLayout, viewPager2,(tab, position) -> tab.setText(adapter.getItem(position).getTitle())).attach();
+        view.findViewById(R.id._close).setOnClickListener(v -> this.dismiss());
+        super.onViewCreated(view, savedInstanceState);
     }
 
-    private View.OnClickListener param_btn_click = (v)->{
-        if (v instanceof Button){
-            Button btn = (Button)v;
-            if (mCurentBtn == null){
-                mCurentBtn = btn;
-                btn.setBackgroundColor(mContext.getColor(R.color.blue));
-                btn.setTextColor(mContext.getColor(R.color.white));
-            }else{
-                if (mCurentBtn != btn){
-                    mCurentBtn.setBackgroundColor(mContext.getColor(R.color.white));
-                    mCurentBtn.setTextColor(mContext.getColor(R.color.blue));
-                    mCurentBtn = btn;
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+    }
 
-                    btn.setBackgroundColor(mContext.getColor(R.color.blue));
-                    btn.setTextColor(mContext.getColor(R.color.white));
-                }
+    @Override
+    public void onStart() {
+        super.onStart();
+        Dialog dialog = getDialog();
+        if (null != dialog){
+            Window window = dialog.getWindow();
+            if (null != window){
+                WindowManager.LayoutParams params = window.getAttributes();
+                params.width = (int)mContext.getResources().getDimension(R.dimen.parm_setting_dialog_width);
+                params.height =(int)mContext.getResources().getDimension(R.dimen.parm_setting_dialog_height);
+                window.setAttributes(params);
             }
         }
-    };
+    }
 
 }

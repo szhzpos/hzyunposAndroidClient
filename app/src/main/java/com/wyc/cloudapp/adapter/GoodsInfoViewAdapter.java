@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -78,7 +79,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                         CustomApplication.execute(()->{
                             if (mContext instanceof Activity){
                                 Activity activity = (Activity)mContext;
-                                final Bitmap bitmap = BitmapFactory.decodeFile(SQLiteHelper.IMG_PATH + szImage);
+                                final Bitmap bitmap = BitmapFactory.decodeFile(LoginActivity.IMG_PATH + szImage);
                                 activity.runOnUiThread(()->{
                                     myViewHolder.goods_img.setImageBitmap(bitmap);
                                 });

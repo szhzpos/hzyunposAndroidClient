@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 
@@ -57,7 +58,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
                 szImage = (String) pay_method_info.remove("pay_img");
                 if (!"".equals(szImage) && szImage != null){
                     szImage = szImage.substring(szImage.lastIndexOf("/") + 1);
-                    drawable = Drawable.createFromPath(SQLiteHelper.IMG_PATH + szImage);
+                    drawable = Drawable.createFromPath(LoginActivity.IMG_PATH + szImage);
                 }else{
                     drawable = mContext.getDrawable(R.drawable.default_pay);
                 }

@@ -27,7 +27,7 @@
             android:id="@+id/cashier_desk_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/margin_8"
+            android:layout_marginEnd="@dimen/margin_8"
             android:contentDescription="@string/cashier_desk_sz"
             app:srcCompat="@drawable/main" />
 
@@ -371,7 +371,6 @@
                     android:id="@+id/current_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="2020-02-19 14:32:59"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/fun_button_font_size_16" />
             </LinearLayout>

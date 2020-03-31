@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
@@ -29,7 +30,7 @@ public class MoreFunDialog extends Dialog {
             @Override
             public void onClick(View v) {
                 ParameterSettingDialog parameterSettingDialog = new ParameterSettingDialog(mContext);
-                parameterSettingDialog.show();
+                parameterSettingDialog.show(((AppCompatActivity)mContext).getSupportFragmentManager(),"");
             }
         });
     }

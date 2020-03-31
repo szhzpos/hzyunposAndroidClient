@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/param_main"
-    android:layout_width="868dp"
-    android:layout_height="588dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@drawable/round_shape"
     android:orientation="vertical">
 
@@ -34,48 +35,53 @@
             android:background="@drawable/close" />
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/fun_btn"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/param_tab"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/parm_setting_btn_height"
-        android:background="@drawable/border_sub_gray"
-        android:orientation="horizontal"
-        android:padding="@dimen/margin_2">
+        android:layout_height="@dimen/parm_setting_item_height"
+        android:layout_margin="@dimen/margin_2"
+        android:background="@drawable/bottom_separator"
+        app:tabGravity="center"
+        app:tabIndicatorColor="@color/blue"
+        app:tabIndicatorFullWidth="true"
+        app:tabIndicatorGravity="stretch"
+        app:tabMinWidth="@dimen/parm_setting_item_width"
+        app:tabMode="scrollable"
+        app:tabPaddingEnd="@dimen/margin_12"
+        app:tabPaddingStart="@dimen/margin_12"
+        app:tabRippleColor="@color/white"
+        app:tabSelectedTextColor="@color/white"
+        app:tabTextAppearance="@style/TextAppearance.AppCompat.Medium"
+        app:tabTextColor="@color/blue">
 
-        <Button
-            android:id="@+id/base_param_btn"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/parm_setting_btn_width"
-            android:layout_height="@dimen/parm_setting_btn_height"
-            android:background="@color/white"
-            android:text="@string/base_param_sz"
-            android:textColor="@color/blue"
-            android:textSize="@dimen/font_size_16" />
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/base_param_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/blue"
+            android:text="@string/base_param_sz" />
 
-        <Button
-            android:id="@+id/peripheral_param_btn"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/parm_setting_btn_width"
-            android:layout_height="@dimen/parm_setting_btn_height"
-            android:background="@color/white"
-            android:text="@string/peripheral_sz"
-            android:textColor="@color/blue"
-            android:textSize="@dimen/font_size_16" />
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/peripheral_param_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/peripheral_sz" />
 
-        <Button
-            android:id="@+id/print_format_btn"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/parm_setting_btn_width"
-            android:layout_height="@dimen/parm_setting_btn_height"
-            android:background="@color/white"
-            android:text="@string/print_layout_sz"
-            android:textColor="@color/blue"
-            android:textSize="@dimen/font_size_16" />
-    </LinearLayout>
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/print_format_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/print_layout_sz" />
 
-    <LinearLayout
-        android:id="@+id/fragment_container"
+    </com.google.android.material.tabs.TabLayout>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/view_pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"></LinearLayout>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:visibility="visible">
+
+    </androidx.viewpager2.widget.ViewPager2>
+
 </LinearLayout>

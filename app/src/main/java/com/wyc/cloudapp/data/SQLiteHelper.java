@@ -38,7 +38,6 @@ import static android.database.Cursor.FIELD_TYPE_STRING;
  */
 
 public final class SQLiteHelper extends SQLiteOpenHelper {
-    public static String IMG_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/img/";
     private static final String DATABASE_NAME = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/order.db";
     private static final int DATABASE_VERSION = 1;//记得修改软件版本
     private static final int MASTER_SOFTWRAW_VERSION = 1;
@@ -91,15 +90,6 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             }
         }
         return code;
-    }
-
-    public static void initGoodsImgDirectory(Context context){
-        File file = new File(IMG_PATH);
-        if (!file.exists()){
-            if (!file.mkdir()){
-                MyDialog.ToastMessage("初始化商品图片目录错误！",context,null);
-            }
-        }
     }
 
     private static boolean checkColumnExists(String tableName, String columnName) throws SQLiteException {

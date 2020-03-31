@@ -3,13 +3,8 @@
     <!-- 形状颜色 -->
     <solid android:color="@color/appColor"
         />
-    <!--边框颜色-->
-    <stroke
-        android:width="2.0dp"
-        android:color="@color/appColor" />
     <!--圆角-->
     <corners
-
         android:topLeftRadius="3dp"
         android:topRightRadius="3dp"/>
 </shape>

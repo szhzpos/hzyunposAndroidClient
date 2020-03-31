@@ -65,6 +65,9 @@
     <dimen name="main_top_fun_btn_width">@dimen/width_80</dimen>
     <dimen name="more_fun_btn_height">@dimen/height_58</dimen>
     <dimen name="more_fun_btn_width">@dimen/width_88</dimen>
-    <dimen name="parm_setting_btn_width">@dimen/width_118</dimen>
-    <dimen name="parm_setting_btn_height">@dimen/height_58</dimen>
+    <dimen name="parm_setting_item_width">@dimen/width_118</dimen>
+    <dimen name="parm_setting_item_height">@dimen/height_58</dimen>
+    <dimen name="parm_setting_dialog_width">868dp</dimen>
+    <dimen name="parm_setting_dialog_height">588dp</dimen>
+
 </resources>

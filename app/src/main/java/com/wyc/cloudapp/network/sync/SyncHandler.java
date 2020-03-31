@@ -6,6 +6,7 @@ import android.os.Message;
 
 import androidx.annotation.NonNull;
 
+import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.MessageID;
@@ -29,7 +30,9 @@ public final class SyncHandler extends Handler {
     private volatile boolean mReportProgress = true;
     private int mCurrentNeworkStatusCode = HttpURLConnection.HTTP_OK;
     private long mSyncInterval = 3000,mLoseTime = 0;//mSyncInterval 同步时间间隔，默认3秒
+    private Thread mThread;
     SyncHandler(Handler handler,final String url, final String appid, final String appscret,final String stores_id,final String pos_num, final String operid){
+        mThread = getLooper().getThread();
         this.syncActivityHandler = handler;
         mHttp = new HttpRequest();
         mHttp.setConnTimeOut(3000);
@@ -119,13 +122,6 @@ public final class SyncHandler extends Handler {
                     return;
                 case MessageID.NETWORKSTATUS_ID:
                     testNetworkStatus();
-                    if (mSyncInterval > 0) {
-                        if (System.currentTimeMillis() - mLoseTime >= mSyncInterval && mCurrentNeworkStatusCode == HttpURLConnection.HTTP_OK) {
-                            mLoseTime = System.currentTimeMillis();
-                            modifyReportProgressStatus(false);
-                            sync();
-                        }
-                    }
                     return;
                 case MessageID.UPLOAD_ORDER_ID:
                     uploadOrderInfo();
@@ -248,6 +244,14 @@ public final class SyncHandler extends Handler {
                         Logger.e("网络检测错误：" + info_json.getString("info"));
                         break;
                     case "y":
+
+                        if (mSyncInterval > 0) {
+                            if (System.currentTimeMillis() - mLoseTime >= mSyncInterval && mCurrentNeworkStatusCode == HttpURLConnection.HTTP_OK) {
+                                mLoseTime = System.currentTimeMillis();
+                                modifyReportProgressStatus(false);
+                                sync();
+                            }
+                        }
                         //Logger.d_json(new JSONArray(info_json.getString("data")).toString());
                         break;
                 }
@@ -369,7 +373,7 @@ public final class SyncHandler extends Handler {
             img_url_info = object.getString("pay_img");
             if (!img_url_info.equals("")){
                 img_file_name = img_url_info.substring(img_url_info.lastIndexOf("/") + 1);
-                File file = new File(SQLiteHelper.IMG_PATH + img_file_name);
+                File file = new File(LoginActivity.IMG_PATH + img_file_name);
                 if (!file.exists()){
                     JSONObject load_img = mHttp.getFile(file,img_url_info);
                     if (load_img.optInt("flag") == 0){
@@ -389,7 +393,7 @@ public final class SyncHandler extends Handler {
             img_url_info = object.getString("img_url");
             if (!img_url_info.equals("")){
                 img_file_name = img_url_info.substring(img_url_info.lastIndexOf("/") + 1);
-                File file = new File(SQLiteHelper.IMG_PATH + img_file_name);
+                File file = new File(LoginActivity.IMG_PATH + img_file_name);
                 if (!file.exists()){
                     JSONObject load_img = mHttp.getFile(file,img_url_info);
                     if (load_img.optInt("flag") == 0){
@@ -422,6 +426,7 @@ public final class SyncHandler extends Handler {
     private boolean upload_barcode_id(JSONArray datas) throws JSONException {
         JSONObject object;
         StringBuilder err = new StringBuilder();
+        String url;
         if(datas == null){
             datas = SQLiteHelper.getListToValue("select barcode_id from barcode_info",err);
             if (null == datas){
@@ -430,20 +435,29 @@ public final class SyncHandler extends Handler {
             }
         }
         object = new JSONObject();
-        object.put("appid",mAppId);
-        object.put("goods_ids",datas);
-        object.put("pos_num",mPosNum);
+        if (datas.length() == 0){
+            url = mUrl + "/api/cashier/clear_download_record";
+            object.put("appid",mAppId);
+            object.put("pos_num",mPosNum);
+            object.put("stores_id",mStoresId);
+            err.append("清除已标记商品错误:");
+        }else{
+            err.append("标记已获取商品错误:");
+            url = mUrl + "/api/goods/up_goods";
+            object.put("appid",mAppId);
+            object.put("goods_ids",datas);
+            object.put("pos_num",mPosNum);
+        }
 
-        object = mHttp.sendPost(mUrl + "/api/goods/up_goods",HttpRequest.generate_request_parm(object,mAppScret),true);
+        object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,mAppScret),true);
         if (object.getInt("flag") == 1){
             object = new JSONObject(object.getString("info"));
             if ("n".equals(object.getString("status"))){
-                Logger.e("标记已获取的商品错误：" + object.getString("info"));
+                Logger.e(err + object.getString("info"));
             }
         }else{
-            Logger.e("标记已获取的商品错误：" + object.getString("info"));
+            Logger.e(err + object.getString("info"));
         }
-
         return true;
     }
 
@@ -452,8 +466,6 @@ public final class SyncHandler extends Handler {
         if (mHttp != null)mHttp.clearConnection(HttpRequest.CLOSEMODE.BOTH);
     }
     void sync(){
-        if (!hasMessages(MessageID.MARK_GOODS_STATUS_id))obtainMessage(MessageID.MARK_GOODS_STATUS_id).sendToTarget();
-
         if (!hasMessages(MessageID.SYNC_CASHIER_ID))obtainMessage(MessageID.SYNC_CASHIER_ID).sendToTarget();//收银员
         if (!hasMessages(MessageID.SYNC_GOODS_CATEGORY_ID))obtainMessage(MessageID.SYNC_GOODS_CATEGORY_ID).sendToTarget();//商品类别
         if (!hasMessages(MessageID.SYNC_PAY_METHOD_ID))obtainMessage(MessageID.SYNC_PAY_METHOD_ID).sendToTarget();//支付方式
@@ -489,5 +501,8 @@ public final class SyncHandler extends Handler {
         synchronized (this){
             notify();
         }
+    }
+    void sign_downloaded(){//标记已下载
+        if (!hasMessages(MessageID.MARK_GOODS_STATUS_id))obtainMessage(MessageID.MARK_GOODS_STATUS_id).sendToTarget();
     }
 }

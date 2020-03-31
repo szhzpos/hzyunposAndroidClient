@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
@@ -39,9 +40,12 @@ import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.File;
 import java.lang.ref.WeakReference;
 
 public class LoginActivity extends AppCompatActivity {
+    public static final String IMG_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/img/";
     private static final int REQUEST_STORAGE_PERMISSIONS  = 800;
     private RelativeLayout mMain;
     private EditText mUser_id,mPassword;
@@ -158,10 +162,10 @@ public class LoginActivity extends AppCompatActivity {
             }
         }else{
             SQLiteHelper.initDb(this);
-            SQLiteHelper.initGoodsImgDirectory(this);
+            initGoodsImgDirectory();
+            //显示商户域名
+            show_url();
         }
-        //显示商户域名
-        show_url();
     }
 
     @Override
@@ -170,7 +174,9 @@ public class LoginActivity extends AppCompatActivity {
             case REQUEST_STORAGE_PERMISSIONS: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     SQLiteHelper.initDb(this);
-                    SQLiteHelper.initGoodsImgDirectory(this);
+                    initGoodsImgDirectory();
+                    //显示商户域名
+                    show_url();
                 } else {
 
                 }
@@ -224,7 +230,6 @@ public class LoginActivity extends AppCompatActivity {
                             mProgressDialog.dismiss();
                         }
                         myHandler.sendMessageAtFrontOfQueue(myHandler.obtainMessage(MessageID.CANCEL_LOGIN_ID));
-
                     },(MyDialog myDialog)->{
                         myDialog.dismiss();
                         if (mSyncManagement != null)mSyncManagement.continueSync();
@@ -362,6 +367,7 @@ public class LoginActivity extends AppCompatActivity {
                     break;
                 case MessageID.SYNC_FINISH_ID://同步成功启动主界面
                     Intent intent = new Intent(activity,MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     activity.startActivity(intent);
                     activity.finish();
                     break;
@@ -414,6 +420,15 @@ public class LoginActivity extends AppCompatActivity {
                         activity.findViewById(R.id.setup_ico).callOnClick();
                     }
                     break;
+            }
+        }
+    }
+
+    public void initGoodsImgDirectory(){
+        File file = new File(IMG_PATH);
+        if (!file.exists()){
+            if (!file.mkdir()){
+                MyDialog.ToastMessage("初始化商品图片目录错误！",this,null);
             }
         }
     }

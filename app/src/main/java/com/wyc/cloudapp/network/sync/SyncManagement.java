@@ -1,10 +1,14 @@
 package com.wyc.cloudapp.network.sync;
 
+import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.MessageID;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.CountDownLatch;
 
 public class SyncManagement extends Thread {
@@ -18,16 +22,19 @@ public class SyncManagement extends Thread {
     }
     public SyncManagement(Handler handler, final String url, final String appid, final String appscret, final String stores_id, final String pos_num, final String operid){
         this(handler);
-
         mUrl = url ;
         mAppId = appid;
         mAppScret = appscret;
         mPosNum = pos_num;
         mOperId = operid;
         mStoresId = stores_id;
+
+        start();
     }
+    @SuppressLint("SimpleDateFormat")
     @Override
     public void run(){
+        Logger.i("SyncManagement<%s>启动:%s",getName(),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS").format(new Date()));
         if (mSyncHandler == null) {
             Looper.prepare();
             mSyncHandler = new SyncHandler(mHandler,mUrl,mAppId,mAppScret,mStoresId,mPosNum,mOperId);
@@ -45,21 +52,28 @@ public class SyncManagement extends Thread {
         return this.mSyncHandler;
     }
 
+    @SuppressLint("SimpleDateFormat")
     public void quit(){
         if (mSyncHandler != null){
+            mSyncHandler.getLooper().quit();//quitSafely
             mSyncHandler.stop();
-            mSyncHandler.getLooper().quit();
+            try {//等待线程退出
+                join(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             mSyncHandler = null;
             mHandler = null;
             handlerInitLatch = null;
         }
+        Logger.i("SyncManagement<%s>退出:%s",getName(),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS").format(new Date()));
     }
 
     public void start_sync(boolean b){
-        if (!isAlive())start();
         if (mSyncHandler == null)mSyncHandler = getHandler();
         if (b){
             mSyncHandler.modifyReportProgressStatus(true);
+            mSyncHandler.sign_downloaded();
             mSyncHandler.sync();
             mSyncHandler.obtainMessage(MessageID.SYNC_FINISH_ID).sendToTarget();//最后发送同步完成消息;
         }else{

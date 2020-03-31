@@ -120,10 +120,10 @@ public class MainActivity extends AppCompatActivity {
         mCloseBtn.setOnClickListener((View V)->{
             MyDialog.displayAskMessage(mDialog,"是否退出收银？",MainActivity.this,(MyDialog myDialog)->{
                 myDialog.dismiss();
-                mSyncManagement.quit();
                 Intent intent = new Intent(MainActivity.this,LoginActivity.class);
-                MainActivity.this.finish();
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
+                MainActivity.this.finish();
             }, Dialog::dismiss);
         });//退出收银
         findViewById(R.id.num).setOnClickListener(view -> mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 0));//数量
@@ -182,7 +182,9 @@ public class MainActivity extends AppCompatActivity {
     public void onDestroy(){
         super.onDestroy();
         if (mHandler != null)mHandler.removeCallbacksAndMessages(null);
-        if (mSyncManagement != null) mSyncManagement.quit();
+        if (mSyncManagement != null) {
+            mSyncManagement.quit();
+        }
         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
         if (mDialog.isShowing())mDialog.dismiss();
         stopSyncCurrentTime();
