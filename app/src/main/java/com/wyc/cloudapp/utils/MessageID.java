@@ -31,7 +31,7 @@ public final  class MessageID {
             MODFIY_REPORT_PROGRESS_ID = 28,
             MARK_GOODS_STATUS_id = 29,
             SYNC_PAUSE_ID = 30,
-            SYNC_CONTINUE_ID= 31,
+            SYNC_THREAD_QUIT_ID= 31,
             CANCEL_LOGIN_ID = 32;
 
 }

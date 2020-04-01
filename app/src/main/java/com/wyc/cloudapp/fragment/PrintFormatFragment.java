@@ -15,6 +15,8 @@ import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
 
+import org.json.JSONObject;
+
 public class PrintFormatFragment extends BaseFragment {
     private static final String mTitle = "打印格式";
     public PrintFormatFragment() {
@@ -23,6 +25,16 @@ public class PrintFormatFragment extends BaseFragment {
     @Override
     public String getTitle() {
         return mTitle;
+    }
+
+    @Override
+    public JSONObject laodContent() {
+        return null;
+    }
+
+    @Override
+    public boolean saveContent() {
+        return false;
     }
 
     @Override

@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 
 import com.wyc.cloudapp.R;
 
+import org.json.JSONObject;
+
 public class PeripheralSettingFragment extends BaseFragment {
     private static final String mTitle = "外设设置";
     public PeripheralSettingFragment() {
@@ -22,6 +24,16 @@ public class PeripheralSettingFragment extends BaseFragment {
     @Override
     public String getTitle() {
         return mTitle;
+    }
+
+    @Override
+    public JSONObject laodContent() {
+        return null;
+    }
+
+    @Override
+    public boolean saveContent() {
+        return false;
     }
 
     @Override

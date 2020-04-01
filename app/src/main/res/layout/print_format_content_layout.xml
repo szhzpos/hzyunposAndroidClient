@@ -1,11 +1,212 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:baselineAligned="false">
 
-    <TextView
-        android:id="@+id/textView22"
+    <LinearLayout
+        android:id="@+id/left"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="打印格式" />
-</LinearLayout>
+        android:layout_weight="1"
+        android:background="@drawable/border_sub_gray"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_45"
+            android:layout_margin="@dimen/margin_1"
+            android:background="@drawable/bottom_separator"
+            android:baselineAligned="false"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/checkout_format"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_8"
+                android:text="@string/checkout_format_sz"
+                android:textColor="@color/appColor"
+                android:textSize="@dimen/font_size_16" />
+
+            <RadioButton
+                android:id="@+id/vip_c_format"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/vip_c_format_sz"
+                android:textColor="@color/appColor"
+                android:textSize="@dimen/font_size_16" />
+        </RadioGroup>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/format_setting_item_height"
+            android:layout_margin="@dimen/margin_1"
+            android:background="@drawable/bottom_separator"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/size_0">
+
+            <TextView
+                android:id="@+id/textView20"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sel_f_sz"
+                android:textColor="@color/text_color" />
+
+            <RadioGroup
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/f_58"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/f_58_sz" />
+
+                <RadioButton
+                    android:id="@+id/f_76"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/f_76_sz" />
+
+                <RadioButton
+                    android:id="@+id/f_80"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/f_80_sz" />
+            </RadioGroup>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/format_setting_item_height"
+            android:layout_margin="@dimen/margin_1"
+            android:background="@drawable/bottom_separator"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/size_0">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/stores_name_sz"
+                android:textColor="@color/text_color" />
+
+            <EditText
+                android:id="@+id/stores_name"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="@dimen/margin_1"
+                android:background="@drawable/left_separator"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/size_0"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_88"
+            android:layout_margin="@dimen/margin_1"
+            android:background="@drawable/bottom_separator"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/size_0">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/footer_info_sz"
+                android:textColor="@color/text_color" />
+
+            <EditText
+                android:id="@+id/editText4"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="@dimen/margin_1"
+                android:background="@drawable/left_separator"
+                android:ems="10"
+                android:gravity="start|top"
+                android:inputType="textMultiLine"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/size_0"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/format_setting_item_height"
+            android:layout_margin="@dimen/margin_1"
+            android:background="@color/white"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/size_0">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/print_c_sz"
+                android:textColor="@color/text_color" />
+
+            <EditText
+                android:layout_width="@dimen/width_45"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_1"
+                android:background="@drawable/border_sub_gray"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingTop="@dimen/size_0"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_18"
+                android:text="@string/footer_s_sz"
+                android:textColor="@color/text_color" />
+
+            <EditText
+                android:layout_width="@dimen/width_45"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_1"
+                android:background="@drawable/border_sub_gray"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingTop="@dimen/size_0"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/save"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_5"
+        android:background="@drawable/button_blue"
+        android:text="@string/save_sz"
+        android:textColor="@color/white_blue"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintRight_toRightOf="@id/left"
+        app:layout_constraintTop_toBottomOf="@id/left" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,6 +3,7 @@ package com.wyc.cloudapp.dialog;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import com.google.android.material.snackbar.Snackbar;
@@ -10,6 +11,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.listener.WindowCallback;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -230,21 +232,57 @@ public class MyDialog extends Dialog {
         dialog.setTitle("提示信息").setMessage(message).setYesOnclickListener("是",yes).setNoOnclickListener("否", no).show();
     }
 
-    public static boolean ToastMessage(final String message,final Context context,final Window window,boolean b){
-        if(!b)ToastMessage(message,context,window);//条件为假是提升信息
+    public static boolean ToastMessage(View anchor,final String message,final Context context,final Window window,boolean b){
+        if(!b)ToastMessage(anchor,message,context,window);//条件为假是提升信息
         return b;
     }
 
     public static void ToastMessage(final String message, @NonNull final Context context, final Window window){
-        Toast toast = Toast.makeText(context,message,Toast.LENGTH_SHORT);
+        Toast toast = new Toast(context);
         if (null != window){
             window.setCallback(new WindowCallback(window,toast));
         }else if (context instanceof Activity){
             Window w = ((Activity)context).getWindow();
             w.setCallback(new WindowCallback(w,toast));
         }
-        toast.setGravity(Gravity.CENTER,0,0);
-        toast.show();
+        View bg = LayoutInflater.from(context).inflate(R.layout.toast_bg,null);
+        if (bg != null){
+            TextView mess = bg.findViewById(R.id.message);
+            if (mess != null){
+                toast.setView(bg);
+                mess.setTextColor(Color.WHITE);
+                mess.setText(message);
+                toast.setGravity(Gravity.CENTER,0,0);
+                toast.show();
+            }
+        }
+    }
+    public static void ToastMessage(View anchor,final String message, @NonNull final Context context, final Window window){
+        Toast toast = new Toast(context);
+        if (null != window){
+            window.setCallback(new WindowCallback(window,toast));
+        }else if (context instanceof Activity){
+            Window w = ((Activity)context).getWindow();
+            w.setCallback(new WindowCallback(w,toast));
+        }
+        View bg = LayoutInflater.from(context).inflate(R.layout.toast_bg,null);
+        if (bg != null){
+            TextView mess = bg.findViewById(R.id.message);
+
+            if (mess != null){
+                toast.setView(bg);
+                mess.setTextColor(Color.WHITE);
+                mess.setText(message);
+                if (null == anchor){
+                    toast.setGravity(Gravity.CENTER,0,0);
+                }else{
+                    int[] location = new int[2];
+                    anchor.getLocationOnScreen(location);
+                    toast.setGravity(Gravity.START,location[0],location[1]);
+                }
+                toast.show();
+            }
+        }
     }
 
     public static boolean SnackbarMessage(final Window window, final String message, View anchor, boolean b){

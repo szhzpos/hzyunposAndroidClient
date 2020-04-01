@@ -397,14 +397,14 @@ public class LoginActivity extends AppCompatActivity {
                     activity.mUser_id.selectAll();
                     activity.mUser_id.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake_x));
                     if (msg.obj instanceof String)
-                        MyDialog.ToastMessage(msg.obj.toString(),activity,null);
+                        MyDialog.ToastMessage(activity.mUser_id,msg.obj.toString(),activity,null);
                     break;
                 case MessageID.LOGIN_PW_ERROR_ID://密码错误
                     activity.mPassword.requestFocus();
                     activity.mPassword.selectAll();
                     activity.mPassword.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake_x));
                     if (msg.obj instanceof String)
-                        MyDialog.ToastMessage(msg.obj.toString(),activity,null);
+                        MyDialog.ToastMessage(activity.mPassword,msg.obj.toString(),activity,null);
                     break;
                 case MessageID.SYNC_DIS_INFO_ID://资料同步进度信息
                     if (activity.mProgressDialog != null){

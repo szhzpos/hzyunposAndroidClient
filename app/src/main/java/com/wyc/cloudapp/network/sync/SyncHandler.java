@@ -133,6 +133,11 @@ public final class SyncHandler extends Handler {
                 case MessageID.MARK_GOODS_STATUS_id:
                     upload_barcode_id(null);
                     return;
+                case MessageID.SYNC_THREAD_QUIT_ID://由于处理程序内部会发送消息，消息队列退出需在处理程序内部处理
+                    if (mHttp != null)mHttp.clearConnection(HttpRequest.CLOSEMODE.BOTH);
+                    this.removeCallbacksAndMessages(null);
+                    getLooper().quit();
+                    return;
 
             }
 
@@ -462,8 +467,7 @@ public final class SyncHandler extends Handler {
     }
 
     void stop(){
-        this.removeCallbacksAndMessages(null);
-        if (mHttp != null)mHttp.clearConnection(HttpRequest.CLOSEMODE.BOTH);
+        sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_THREAD_QUIT_ID));
     }
     void sync(){
         if (!hasMessages(MessageID.SYNC_CASHIER_ID))obtainMessage(MessageID.SYNC_CASHIER_ID).sendToTarget();//收银员

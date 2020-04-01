@@ -55,7 +55,6 @@ public class SyncManagement extends Thread {
     @SuppressLint("SimpleDateFormat")
     public void quit(){
         if (mSyncHandler != null){
-            mSyncHandler.getLooper().quit();//quitSafely
             mSyncHandler.stop();
             try {//等待线程退出
                 join(3000);

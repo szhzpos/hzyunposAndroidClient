@@ -187,11 +187,11 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
     protected boolean verify(){
         if (mPayAmtEt.getVisibility() == View.VISIBLE &&(mPayAmtEt.length() == 0 || Utils.equalDouble(getPayAmt(),0.0))){
             mPayAmtEt.requestFocus();
-            return MyDialog.ToastMessage(mPayAmtEt.getHint().toString().concat(mContext.getString(R.string.not_zero_hint_sz)),mContext,getWindow(),false);
+            return MyDialog.ToastMessage(mPayAmtEt,mPayAmtEt.getHint().toString().concat(mContext.getString(R.string.not_zero_hint_sz)),mContext,getWindow(),false);
         }
         if (mPayCode.getVisibility() == View.VISIBLE && mPayCode.length() == 0){
             mPayCode.requestFocus();
-            return MyDialog.ToastMessage(mPayCode.getHint().toString().concat(mContext.getString(R.string.not_empty_hint_sz)),mContext,getWindow(),false);
+            return MyDialog.ToastMessage(mPayCode,mPayCode.getHint().toString().concat(mContext.getString(R.string.not_empty_hint_sz)),mContext,getWindow(),false);
         }
         return true;
     }

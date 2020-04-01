@@ -2,8 +2,6 @@ package com.wyc.cloudapp.dialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,8 +62,8 @@ public class ParameterSettingDialog extends DialogFragment {
             Window window = dialog.getWindow();
             if (null != window){
                 WindowManager.LayoutParams params = window.getAttributes();
-                params.width = (int)mContext.getResources().getDimension(R.dimen.parm_setting_dialog_width);
-                params.height =(int)mContext.getResources().getDimension(R.dimen.parm_setting_dialog_height);
+                params.width = (int)mContext.getResources().getDimension(R.dimen.param_setting_dialog_width);
+                params.height =(int)mContext.getResources().getDimension(R.dimen.param_setting_dialog_height);
                 window.setAttributes(params);
             }
         }

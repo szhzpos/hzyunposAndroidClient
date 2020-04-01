@@ -307,7 +307,7 @@ public class VipChargeDialog extends AbstractPayDialog {
 
     @Override
     public boolean verify(){
-       return MyDialog.ToastMessage("会员信息不能为空！",mContext,mDialogWindow,mVip != null)
+       return MyDialog.ToastMessage(null,"会员信息不能为空！",mContext,mDialogWindow,mVip != null)
         && MyDialog.SnackbarMessage(mDialogWindow,mContext.getString(R.string.select_pay_way_hint_sz),getCurrentFocus(),mPayMethod != null) && super.verify();
     }
 

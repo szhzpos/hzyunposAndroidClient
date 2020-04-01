@@ -261,7 +261,7 @@
                     android:importantForAutofill="no"
                     android:inputType="textUri"
                     android:paddingStart="@dimen/margin_5"
-                    android:paddingEnd="@dimen/width_0"
+                    android:paddingEnd="@dimen/size_0"
                     android:textColor="@color/text_color" />
 
                 <Space
