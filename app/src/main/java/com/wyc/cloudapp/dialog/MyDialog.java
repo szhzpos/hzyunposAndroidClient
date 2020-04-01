@@ -268,7 +268,6 @@ public class MyDialog extends Dialog {
         View bg = LayoutInflater.from(context).inflate(R.layout.toast_bg,null);
         if (bg != null){
             TextView mess = bg.findViewById(R.id.message);
-
             if (mess != null){
                 toast.setView(bg);
                 mess.setTextColor(Color.WHITE);
@@ -278,7 +277,7 @@ public class MyDialog extends Dialog {
                 }else{
                     int[] location = new int[2];
                     anchor.getLocationOnScreen(location);
-                    toast.setGravity(Gravity.START,location[0],location[1]);
+                    toast.setGravity(Gravity.TOP|Gravity.LEFT,location[0],location[1]);
                 }
                 toast.show();
             }
