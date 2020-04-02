@@ -67,6 +67,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="@dimen/margin_8"
+                        android:tag="_a_week"
                         android:text="@string/a_week_sz"
                         android:textColor="@color/text_color" />
 
@@ -76,6 +77,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="@dimen/margin_8"
                         android:checked="true"
+                        android:tag="_a_month"
                         android:text="@string/a_month_sz"
                         android:textColor="@color/text_color" />
 
@@ -83,6 +85,7 @@
                         android:id="@+id/_three_month"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:tag="_three_month"
                         android:text="@string/three_month_sz"
                         android:textColor="@color/text_color" />
 
@@ -131,30 +134,38 @@
                     android:textOn="@string/on_sz"
                     android:textSize="@dimen/font_size_14" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/dualview_img_show_interval_sz"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_14" />
+                <LinearLayout
+                    android:id="@+id/dual_v"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                <EditText
-                    android:id="@+id/dualview_img_show_interval"
-                    android:layout_width="@dimen/width_78"
-                    android:layout_height="@dimen/height_35"
-                    android:layout_marginEnd="@dimen/margin_2"
-                    android:background="@drawable/border_sub_gray"
-                    android:ems="10"
-                    android:importantForAutofill="no"
-                    android:inputType="number"
-                    android:paddingStart="@dimen/margin_8"
-                    android:paddingEnd="@dimen/size_0" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/dualview_img_show_interval_sz"
+                        android:textColor="@color/text_color"
+                        android:textSize="@dimen/font_size_14" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/sec_sz"
-                    android:textColor="@color/text_color" />
+                    <EditText
+                        android:id="@+id/dualview_img_show_interval"
+                        android:layout_width="@dimen/width_78"
+                        android:layout_height="@dimen/height_35"
+                        android:layout_marginEnd="@dimen/margin_2"
+                        android:background="@drawable/border_sub_gray"
+                        android:ems="10"
+                        android:importantForAutofill="no"
+                        android:inputType="number"
+                        android:paddingStart="@dimen/margin_8"
+                        android:paddingEnd="@dimen/size_0" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/sec_sz"
+                        android:textColor="@color/text_color" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
 
@@ -254,7 +265,7 @@
                 android:orientation="horizontal">
 
                 <Switch
-                    android:id="@+id/mol_switch"
+                    android:id="@+id/auto_mol_switch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/margin_5"
@@ -268,12 +279,19 @@
                     android:textSize="@dimen/font_size_14" />
 
                 <RadioGroup
-                    android:id="@+id/mol_group"
+                    android:id="@+id/_auto_mol_group"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/mol_j"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ml_j_sz"
+                        android:textColor="@color/text_color" />
 
                     <RadioButton
                         android:id="@+id/mol_y"
@@ -283,12 +301,6 @@
                         android:text="@string/ml_y_sz"
                         android:textColor="@color/text_color" />
 
-                    <RadioButton
-                        android:id="@+id/mol_j"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/ml_j_sz"
-                        android:textColor="@color/text_color" />
                 </RadioGroup>
             </LinearLayout>
         </LinearLayout>

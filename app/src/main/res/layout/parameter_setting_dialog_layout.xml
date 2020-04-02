@@ -52,28 +52,7 @@
         app:tabRippleColor="@color/white"
         app:tabSelectedTextColor="@color/white"
         app:tabTextAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:tabTextColor="@color/blue">
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/base_param_item"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/blue"
-            android:text="@string/base_param_sz" />
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/peripheral_param_item"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/peripheral_sz" />
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/print_format_item"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/print_layout_sz" />
-
-    </com.google.android.material.tabs.TabLayout>
+        app:tabTextColor="@color/blue"/>
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"

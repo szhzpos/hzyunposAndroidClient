@@ -24,6 +24,7 @@
     <dimen name="dialog_button_width">@dimen/height_80</dimen>
     <dimen name="dialog_button_height">@dimen/height_40</dimen>
     <dimen name="goods_type_width">@dimen/width_88</dimen>
+    <dimen name="height_30">30dp</dimen>
     <dimen name="height_35">35dp</dimen>
     <dimen name="height_45">45dp</dimen>
     <dimen name="height_50">50dp</dimen>
@@ -70,7 +71,7 @@
     <dimen name="param_setting_item_height">@dimen/height_58</dimen>
     <dimen name="param_setting_dialog_width">808dp</dimen>
     <dimen name="param_setting_dialog_height">528dp</dimen>
-    <dimen name="param_title_height">@dimen/height_35</dimen>
-    <dimen name="param_value_height">@dimen/height_50</dimen>
+    <dimen name="param_title_height">25dp</dimen>
+    <dimen name="param_value_height">@dimen/height_40</dimen>
     <dimen name="format_setting_item_height">@dimen/height_35</dimen>
 </resources>

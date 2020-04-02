@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.app.Dialog;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
@@ -112,8 +113,15 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.setup_ico).setOnClickListener((View v)->{
-            ConnSettingDialog dialog = new ConnSettingDialog(v.getContext());
-            dialog.show();
+            ConnSettingDialog connSettingDialog = new ConnSettingDialog(v.getContext());
+            connSettingDialog.setOnDismissListener(dialog -> {
+                EditText et_url = findViewById(R.id._url_text);
+                String url = connSettingDialog.getUrl();
+                if (url.length() != 0){
+                    et_url.setText(url.substring(url.lastIndexOf('/') + 1));
+                }
+            });
+            connSettingDialog.show();
         });
 
         //初始化数字键盘
@@ -378,6 +386,7 @@ public class LoginActivity extends AppCompatActivity {
                         try {
                             param_json.put("parameter_id","cashierInfo");
                             param_json.put("parameter_content",cashier_json);
+                            param_json.put("parameter_desc","收银员信息");
                             if (SQLiteHelper.saveToDatabaseFormJson(param_json,"local_parameter",null,"REPLACE",err)){
                                 activity.mSyncManagement = new SyncManagement(this,activity.mUrl,activity.mAppId,activity.mAppScret,activity.mStoresId,activity.mPosNum,activity.mOperId);
                                 activity.mSyncManagement.start_sync(true);

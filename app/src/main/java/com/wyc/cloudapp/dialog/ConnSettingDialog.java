@@ -98,6 +98,7 @@ public class ConnSettingDialog extends Dialog {
                     json.put("storeInfo",mStoreInfo.toString());
                     param.put("parameter_id","connParam");
                     param.put("parameter_content",json);
+                    param.put("parameter_desc","门店信息、服务器连接参数");
                     StringBuilder err = new StringBuilder();
                     if (SQLiteHelper.saveToDatabaseFormJson(param,"local_parameter",null,"REPLACE",err)){
                         MyDialog.ToastMessage("保存成功！",mContext,null);
@@ -242,6 +243,10 @@ public class ConnSettingDialog extends Dialog {
             url = "http://" + url;
             mUrl.setText(url);
         }
+    }
+
+    public String getUrl(){
+        return mUrl.getText().toString();
     }
 
 }

@@ -88,7 +88,7 @@
                     android:id="@+id/print_id"
                     style="@style/Platform.Widget.AppCompat.Spinner"
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/height_40"
+                    android:layout_height="@dimen/height_35"
                     android:background="@drawable/spinner_style"
                     android:dropDownWidth="@dimen/height_40"
                     android:minWidth="@dimen/width_88" />
@@ -132,7 +132,7 @@
                     android:id="@+id/spinner7"
                     style="@style/Platform.Widget.AppCompat.Spinner"
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/height_40"
+                    android:layout_height="@dimen/height_35"
                     android:background="@drawable/spinner_style"
                     android:minWidth="@dimen/width_88" />
 
@@ -148,7 +148,7 @@
                     android:id="@+id/rc_id"
                     style="@style/Platform.Widget.AppCompat.Spinner"
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/height_40"
+                    android:layout_height="@dimen/height_35"
                     android:background="@drawable/spinner_style"
                     android:dropDownWidth="@dimen/height_40"
                     android:minWidth="@dimen/width_88" />
@@ -205,7 +205,7 @@
                     android:id="@+id/spinner6"
                     style="@style/Platform.Widget.AppCompat.Spinner"
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/height_40"
+                    android:layout_height="@dimen/height_35"
                     android:background="@drawable/spinner_style"
                     android:dropDownWidth="@dimen/height_40"
                     android:minWidth="@dimen/width_88" />
@@ -222,7 +222,7 @@
                     android:id="@+id/ks_id"
                     style="@style/Platform.Widget.AppCompat.Spinner"
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/height_40"
+                    android:layout_height="@dimen/height_35"
                     android:background="@drawable/spinner_style"
                     android:dropDownWidth="@dimen/height_40"
                     android:minWidth="@dimen/width_88" />
@@ -266,7 +266,7 @@
                     android:id="@+id/spinner5"
                     style="@style/Platform.Widget.AppCompat.Spinner"
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/height_40"
+                    android:layout_height="@dimen/height_35"
                     android:background="@drawable/spinner_style"
                     android:dropDownWidth="@dimen/height_40"
                     android:minWidth="@dimen/width_88" />
@@ -283,7 +283,7 @@
                     android:id="@+id/cashbox_id"
                     style="@style/Platform.Widget.AppCompat.Spinner"
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/height_40"
+                    android:layout_height="@dimen/height_35"
                     android:background="@drawable/spinner_style"
                     android:dropDownWidth="@dimen/height_40"
                     android:minWidth="@dimen/width_88" />

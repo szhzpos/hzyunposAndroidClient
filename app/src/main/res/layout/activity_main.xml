@@ -572,11 +572,13 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/goods_type_list"
         android:layout_width="0dp"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/height_50"
         android:background="@drawable/round_shape"
         android:layoutDirection="ltr"
+        android:paddingStart="@dimen/margin_2"
+        android:paddingEnd="@dimen/margin_1"
         android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/goods_info_list"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/main_middle_middle"
@@ -591,9 +593,9 @@
         android:background="@drawable/round_shape"
         android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@id/keyboard_layout"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/goods_sec_l_type_list"
         app:layout_constraintStart_toEndOf="@+id/main_middle_middle"
-        app:layout_constraintTop_toBottomOf="@+id/goods_type_list">
+        app:layout_constraintTop_toBottomOf="@id/goods_type_list">
 
     </androidx.recyclerview.widget.RecyclerView>
 
@@ -1187,5 +1189,19 @@
             android:textSize="24sp" />
 
     </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/goods_sec_l_type_list"
+        android:layout_width="60dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/margin_2"
+        android:layout_marginEnd="@dimen/margin_2"
+        android:background="@drawable/round_shape"
+        android:paddingTop="@dimen/margin_2"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@id/goods_info_list"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/goods_info_list"
+        app:layout_constraintTop_toTopOf="@id/goods_info_list" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1027,6 +1027,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 ");\n",sql_local_parameter= "CREATE TABLE IF NOT EXISTS local_parameter (\n" +//本地参数
                 "    parameter_id      VARCHAR (20) NOT NULL,\n" +
                 "    parameter_content TEXT,\n" +
+                "    parameter_desc VARCHAR(50),\n" +
                 "    PRIMARY KEY (\n" +
                 "        parameter_id\n" +
                 "    )\n" +

@@ -93,7 +93,7 @@ public class PayDialog extends Dialog {
             ChangeNumOrPriceDialog changeNumOrPriceDialog = new ChangeNumOrPriceDialog(getContext(),mainActivity.getString(R.string.mo_l_sz),String.format(Locale.CHINA,"%.2f",mActual_amt - ((int)mActual_amt)));
             changeNumOrPriceDialog.setYesOnclickListener(myDialog -> {
                 double value = myDialog.getContentToDouble();
-                if (initPayContent(mainActivity.discount((mActual_amt - value) / mOrder_amt * 100,""))){
+                if (initPayContent(mainActivity.discount((mActual_amt - value) / mOrder_amt * 100,null))){
                     refreshContent();
                     myDialog.dismiss();
                 }
@@ -347,7 +347,6 @@ public class PayDialog extends Dialog {
                 mPay_amt = mActual_amt;
                 mPay_balance = mActual_amt - mAmt_received;//剩余付款金额等于应收金额已收金额
                 mCashAmt = mPay_balance;
-
             }
             if (null != mPayDetailViewAdapter)mPayDetailViewAdapter.notifyDataSetChanged();
         } catch (JSONException e) {
@@ -473,7 +472,6 @@ public class PayDialog extends Dialog {
         }
         return show ? show : initPayContent(mainActivity.showVipInfo(vip));
     }
-
     public void requestPay(final String order_code, final String url, final String appId, final String appScret, final String stores_id, final String pos_num){
         if (mPayListener != null)mPayListener.onProgress(PayDialog.this,"正在支付...");
         CustomApplication.execute(()->{

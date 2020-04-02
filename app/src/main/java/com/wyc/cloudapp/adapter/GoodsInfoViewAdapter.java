@@ -36,6 +36,12 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
 
     public GoodsInfoViewAdapter(Context context){
         this.mContext = context;
+        JSONObject jsonObject = new JSONObject();
+        if (SQLiteHelper.getLocalParameter("g_i_show",jsonObject)){
+            mShowPic = (jsonObject.optInt("s",1) == 1);
+        }else{
+            MyDialog.ToastMessage("加载是否显示商品图片参数错误：" + jsonObject.optString("info"),mContext,null);
+        }
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -128,6 +134,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
     }
 
     void setDatas(int id){
+
         StringBuilder err = new StringBuilder();
         String sql = "",category_id;
         if (-1 == id){
@@ -135,7 +142,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                     " -1  barcode_id,ifnull(gp_code,'') barcode,gp_price price,ifnull(img_url,'') img_url from goods_group \n" +
                     "where status = '1'";
         }else{
-            category_id = SQLiteHelper.getString("select category_id from shop_category where path like '" + id +"%'",err);
+            category_id = SQLiteHelper.getString("select category_id from shop_category where path like '%" + id +"%'",err);
             if (null == category_id){
                 MyDialog.ToastMessage("加载商品错误：" + err,mContext,null);
                 return;

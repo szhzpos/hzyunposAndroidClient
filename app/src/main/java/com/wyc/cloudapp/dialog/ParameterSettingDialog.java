@@ -45,6 +45,7 @@ public class ParameterSettingDialog extends DialogFragment {
         final DemoCollectionPagerAdapter adapter =  new DemoCollectionPagerAdapter(this);
         viewPager2.setAdapter(adapter);
         new TabLayoutMediator(tabLayout, viewPager2,(tab, position) -> tab.setText(adapter.getItem(position).getTitle())).attach();
+
         view.findViewById(R.id._close).setOnClickListener(v -> this.dismiss());
         super.onViewCreated(view, savedInstanceState);
     }

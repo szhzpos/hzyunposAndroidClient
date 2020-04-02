@@ -31,7 +31,7 @@ import android.widget.TextView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.GoodsInfoItemDecoration;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
-import com.wyc.cloudapp.adapter.GoodsTypeViewAdapter;
+import com.wyc.cloudapp.adapter.GoodsCategoryViewAdapter;
 import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
 import com.wyc.cloudapp.adapter.SuperItemDecoration;
@@ -61,7 +61,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainActivity extends AppCompatActivity {
     private SaleGoodsViewAdapter mSaleGoodsViewAdapter;
-    private GoodsTypeViewAdapter mGoodsTypeViewAdapter;
+    private GoodsCategoryViewAdapter mGoodsCategoryViewAdapter;
     private GoodsInfoViewAdapter mGoodsInfoViewAdapter;
     private EditText mSearch_content;
     private JSONObject mCashierInfo,mStoreInfo,mVipInfo;
@@ -322,11 +322,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initGoodsTypeAdapter(){
-        mGoodsTypeViewAdapter = new GoodsTypeViewAdapter(this, mGoodsInfoViewAdapter);
         RecyclerView goods_type_view = findViewById(R.id.goods_type_list);
+        mGoodsCategoryViewAdapter = new GoodsCategoryViewAdapter(this, mGoodsInfoViewAdapter,findViewById(R.id.goods_sec_l_type_list));
         goods_type_view.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false));
-        mGoodsTypeViewAdapter.setDatas();
-        goods_type_view.setAdapter(mGoodsTypeViewAdapter);
+        mGoodsCategoryViewAdapter.setDatas(0);
+        goods_type_view.setAdapter(mGoodsCategoryViewAdapter);
     }
 
     private void initSaleGoodsAdapter(){
@@ -381,7 +381,7 @@ public class MainActivity extends AppCompatActivity {
             public void afterTextChanged(Editable editable) {
                 if (mKeyboard.getVisibility() == View.VISIBLE){
                     if (editable.length() == 0){
-                        mGoodsTypeViewAdapter.trigger_preView();
+                        mGoodsCategoryViewAdapter.trigger_preView();
                     }else{
                         mGoodsInfoViewAdapter.fuzzy_search_goods(mSearch_content);
                     }
@@ -396,7 +396,7 @@ public class MainActivity extends AppCompatActivity {
                     if (keyCode == KeyEvent.KEYCODE_ENTER){
                         String content = mSearch_content.getText().toString();
                         if (content.length() == 0){
-                            mGoodsTypeViewAdapter.trigger_preView();
+                            mGoodsCategoryViewAdapter.trigger_preView();
                         }else{
                             mGoodsInfoViewAdapter.fuzzy_search_goods(mSearch_content);
                             mSearch_content.selectAll();
@@ -432,7 +432,7 @@ public class MainActivity extends AppCompatActivity {
                             editable.delete(editable.length() - 1,editable.length());
                     }else if(v_id == R.id.enter){
                         if (editable.length() == 0){
-                            mGoodsTypeViewAdapter.trigger_preView();
+                            mGoodsCategoryViewAdapter.trigger_preView();
                         }else{
                             mGoodsInfoViewAdapter.fuzzy_search_goods(mSearch_content);
                         }
@@ -494,7 +494,7 @@ public class MainActivity extends AppCompatActivity {
         if (datas.length() != 0){
             final PayDialog dialog = new PayDialog(this);
             if (mVipInfo != null)dialog.showVipInfo(mVipInfo,true);
-            if (dialog.initPayContent(datas)){
+            if (dialog.initPayContent(antoMol())){
                 dialog.setPayFinishListener(new PayDialog.onPayListener() {
                     @Override
                     public void onStart(PayDialog myDialog) {
@@ -732,6 +732,40 @@ public class MainActivity extends AppCompatActivity {
     private void resetOrderCode(){
         mOrderCode.setText(mGoodsInfoViewAdapter.generateOrderCode(mCashierInfo.optString("pos_num")));
     }
+    private JSONArray antoMol(){
+        JSONObject object = new JSONObject();
+        double value = 0.0,sum = 0.0,old_amt = 0.0,disSumAmt = 0.0;
+        if (SQLiteHelper.getLocalParameter("auto_mol",object)){
+            int v = 0;
+            JSONArray datas = mSaleGoodsViewAdapter.getDatas();
+            if (object.optInt("s",0) == 1){
+                for (int i = 0,length = datas.length();i < length; i ++){
+                    JSONObject jsonObject = datas.optJSONObject(i);
+                    if (null != jsonObject){
+                        old_amt += jsonObject.optDouble("old_amt");
+                        disSumAmt += jsonObject.optDouble("discount_amt",0.00);
+                    }
+                }
+                sum = old_amt - disSumAmt;
+
+                v = object.optInt("v");
+                switch (v){
+                    case 1://四舍五入到元
+                        value =sum - Utils.formatDouble(sum,0);
+                        break;
+                    case 2://四舍五入到角
+                        value =sum - Utils.formatDouble(sum,1);
+                        break;
+                }
+            }
+        }else{
+            MyDialog.ToastMessage("自动抹零错误：" + object.optString("info"),this,null);
+        }
+        return discount((sum - value) / old_amt * 100,null);
+    }
+
+
+
      public JSONArray discount(double discount,final String zk_cashier_id){
         if (null == zk_cashier_id || "".equals(zk_cashier_id)){
             setDisCashierId(mCashierInfo.optString("cas_id"));
@@ -763,6 +797,7 @@ public class MainActivity extends AppCompatActivity {
     public double getSaleSumAmt(){
         return mSaleGoodsViewAdapter.getSaleSumAmt();
     }
+
 
     private static class Myhandler extends Handler {
         private WeakReference<MainActivity> weakHandler;
