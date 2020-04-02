@@ -361,7 +361,7 @@ public class LoginActivity extends AppCompatActivity {
         public void handleMessage(@NonNull Message msg){
             LoginActivity activity = weakHandler.get();
             if (null == activity)return;
-            if (activity.mProgressDialog.isShowing() && msg.what != MessageID.SYNC_DIS_INFO_ID && msg.what != MessageID.LOGIN_OK_ID)activity.mProgressDialog.dismiss();
+            if (activity.mProgressDialog.isShowing() && msg.what != MessageID.SYNC_DIS_INFO_ID)activity.mProgressDialog.dismiss();
             switch (msg.what){
                 case MessageID.DIS_ERR_INFO_ID:
                 case MessageID.SYNC_ERR_ID://资料同步错误
@@ -391,14 +391,14 @@ public class LoginActivity extends AppCompatActivity {
                                 activity.mSyncManagement = new SyncManagement(this,activity.mUrl,activity.mAppId,activity.mAppScret,activity.mStoresId,activity.mPosNum,activity.mOperId);
                                 activity.mSyncManagement.start_sync(true);
                             }else{
-                                MyDialog.displayMessage(null,"保存收银员信息错误：" + err,activity);
+                                MyDialog.ToastMessage(activity.mUser_id,"保存收银员信息错误：" + err,activity,null);
                             }
                         } catch (JSONException e) {
-                            MyDialog.displayMessage(null,"保存收银员信息错误：" + e.getMessage(),activity);
+                            MyDialog.ToastMessage(activity.mUser_id,"保存收银员信息错误：" + e.getMessage(),activity,null);
                             e.printStackTrace();
                         }
                     }else{
-                        MyDialog.displayErrorMessage(null,"收银员信息为空！",activity);
+                          MyDialog.displayErrorMessage(null,"收银员信息为空！",activity);
                     }
                     break;
                 case MessageID.LOGIN_ID_ERROR_ID://账号错误

@@ -1198,7 +1198,7 @@
         android:layout_marginEnd="@dimen/margin_2"
         android:background="@drawable/round_shape"
         android:paddingTop="@dimen/margin_2"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/goods_info_list"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/goods_info_list"

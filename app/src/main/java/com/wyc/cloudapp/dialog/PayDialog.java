@@ -332,11 +332,42 @@ public class PayDialog extends Dialog {
         recyclerView.addItemDecoration(new DividerItemDecoration(mainActivity,DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(mPayDetailViewAdapter);
     }
+    public void antoMol(final JSONArray datas){
+        JSONObject object = new JSONObject();
+        double value = 0.0,sum = 0.0,old_amt = 0.0,disSumAmt = 0.0,disc = 0.0;
+        if (SQLiteHelper.getLocalParameter("auto_mol",object)){
+            int v = 0;
+            if (object.optInt("s",0) == 1){
+                for (int i = 0,length = datas.length();i < length; i ++){
+                    JSONObject jsonObject = datas.optJSONObject(i);
+                    if (null != jsonObject){
+                        old_amt += jsonObject.optDouble("old_amt");
+                        disSumAmt += jsonObject.optDouble("discount_amt",0.00);
+                    }
+                }
+                sum = old_amt - disSumAmt;
 
-    public boolean initPayContent(final JSONArray datas){
+                v = object.optInt("v");
+                switch (v){
+                    case 1://四舍五入到元
+                        value =sum - Double.valueOf(String.format(Locale.CHINA,"%.0f",sum));
+                        break;
+                    case 2://四舍五入到角
+                        value =sum - Double.valueOf(String.format(Locale.CHINA,"%.1f",sum));
+                        break;
+                }
+                if (!Utils.equalDouble(old_amt,0.0))
+                    mainActivity.discount((sum - value) / old_amt * 100,null);
+            }
+        }else{
+            MyDialog.ToastMessage("自动抹零错误：" + object.optString("info"),mainActivity,null);
+        }
+     }
+    public boolean initPayContent(JSONArray datas){
         boolean isTrue = true;
         if (null == datas)return false;
         clearContent();
+        antoMol(datas);
         try {
             for (int i = 0,length = datas.length();i < length; i ++){
                 JSONObject jsonObject = datas.getJSONObject(i);

@@ -494,7 +494,7 @@ public class MainActivity extends AppCompatActivity {
         if (datas.length() != 0){
             final PayDialog dialog = new PayDialog(this);
             if (mVipInfo != null)dialog.showVipInfo(mVipInfo,true);
-            if (dialog.initPayContent(antoMol())){
+            if (dialog.initPayContent(datas)){
                 dialog.setPayFinishListener(new PayDialog.onPayListener() {
                     @Override
                     public void onStart(PayDialog myDialog) {
@@ -732,39 +732,6 @@ public class MainActivity extends AppCompatActivity {
     private void resetOrderCode(){
         mOrderCode.setText(mGoodsInfoViewAdapter.generateOrderCode(mCashierInfo.optString("pos_num")));
     }
-    private JSONArray antoMol(){
-        JSONObject object = new JSONObject();
-        double value = 0.0,sum = 0.0,old_amt = 0.0,disSumAmt = 0.0;
-        if (SQLiteHelper.getLocalParameter("auto_mol",object)){
-            int v = 0;
-            JSONArray datas = mSaleGoodsViewAdapter.getDatas();
-            if (object.optInt("s",0) == 1){
-                for (int i = 0,length = datas.length();i < length; i ++){
-                    JSONObject jsonObject = datas.optJSONObject(i);
-                    if (null != jsonObject){
-                        old_amt += jsonObject.optDouble("old_amt");
-                        disSumAmt += jsonObject.optDouble("discount_amt",0.00);
-                    }
-                }
-                sum = old_amt - disSumAmt;
-
-                v = object.optInt("v");
-                switch (v){
-                    case 1://四舍五入到元
-                        value =sum - Utils.formatDouble(sum,0);
-                        break;
-                    case 2://四舍五入到角
-                        value =sum - Utils.formatDouble(sum,1);
-                        break;
-                }
-            }
-        }else{
-            MyDialog.ToastMessage("自动抹零错误：" + object.optString("info"),this,null);
-        }
-        return discount((sum - value) / old_amt * 100,null);
-    }
-
-
 
      public JSONArray discount(double discount,final String zk_cashier_id){
         if (null == zk_cashier_id || "".equals(zk_cashier_id)){
