@@ -8,6 +8,7 @@
     <dimen name="margin_8">8dp</dimen>
     <dimen name="margin_12">12dp</dimen>
     <dimen name="margin_18">18dp</dimen>
+    <dimen name="font_size_12">12sp</dimen>
     <dimen name="font_size_14">14sp</dimen>
     <dimen name="font_size_16">16sp</dimen>
     <dimen name="font_size_18">18sp</dimen>
@@ -74,4 +75,5 @@
     <dimen name="param_title_height">25dp</dimen>
     <dimen name="param_value_height">@dimen/height_40</dimen>
     <dimen name="format_setting_item_height">@dimen/height_35</dimen>
+    <dimen name="sec_sale_header_font_size">@dimen/font_size_12</dimen>
 </resources>

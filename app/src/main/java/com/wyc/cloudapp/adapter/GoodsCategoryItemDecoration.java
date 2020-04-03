@@ -7,9 +7,9 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class GoodsTypeItemDecoration extends RecyclerView.ItemDecoration {
+public class GoodsCategoryItemDecoration extends RecyclerView.ItemDecoration {
     private int right;
-    public GoodsTypeItemDecoration(int space){
+    public GoodsCategoryItemDecoration(int space){
         right = space;
     }
     @Override

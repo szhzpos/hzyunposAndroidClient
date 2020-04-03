@@ -291,15 +291,21 @@ public final class Utils {
         return androidId;
     }
 
-    public static boolean JsonIsNotEmpty(JSONObject json){
+    public static boolean JsonIsNotEmpty(final JSONObject json){
         return json != null && json.keys().hasNext();
     }
-    public static JSONObject JsondeepCopy(JSONObject jsonObject) throws JSONException {
+    public static JSONObject JsondeepCopy(final JSONObject jsonObject) throws JSONException {
         return new JSONObject(jsonObject.toString());
     }
-    public static JSONArray JsondeepCopy(JSONArray jsons) throws JSONException {
+    public static JSONArray JsondeepCopy(final JSONArray jsons) throws JSONException {
         return new JSONArray(jsons.toString());
     }
+    public static JSONArray ClearJsons(final JSONArray jsons){
+        if (jsons != null)
+            while (jsons.remove(0) != null);
+        return jsons;
+    }
+
     public static boolean equalDouble(double a,double b){
         return Math.abs(a - b) < 0.00001;
     }

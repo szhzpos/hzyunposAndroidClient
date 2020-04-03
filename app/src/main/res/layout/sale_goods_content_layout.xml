@@ -58,9 +58,9 @@
         android:id="@+id/symbol_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/goods_title"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="@dimen/margin_12"
+        android:layout_centerHorizontal="false"
+        android:layout_marginStart="98dp"
         android:text="@string/currency_symbol_sz"
         android:textColor="@color/text_color" />
 
@@ -79,8 +79,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="false"
+        android:layout_marginStart="48dp"
+        android:layout_toEndOf="@id/sale_price"
         android:textColor="@color/text_color" />
 
     <TextView

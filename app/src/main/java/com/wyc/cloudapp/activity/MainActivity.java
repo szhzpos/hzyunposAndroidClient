@@ -7,13 +7,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.media.MediaRouter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.ReplacementTransformationMethod;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -38,6 +41,7 @@ import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MoreFunDialog;
 import com.wyc.cloudapp.dialog.PayDialog;
+import com.wyc.cloudapp.dialog.SecondDisplay;
 import com.wyc.cloudapp.dialog.VipInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.network.sync.SyncManagement;
@@ -78,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView mSaleGoodsRecyclerView;
     private TableLayout mKeyboard;
     private String mRemark = "",zk_cashier_id;
+    private SecondDisplay mSecondDisplay;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -169,6 +174,9 @@ public class MainActivity extends AppCompatActivity {
 
         //重置订单信息
         resetOrderInfo();
+
+        //初始化副屏
+        initSecondDisplay();
     }
     @Override
     public void onResume(){
@@ -187,6 +195,7 @@ public class MainActivity extends AppCompatActivity {
         }
         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
         if (mDialog.isShowing())mDialog.dismiss();
+        if (mSecondDisplay != null)mSecondDisplay.dismiss();
         stopSyncCurrentTime();
     }
 
@@ -249,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (SQLiteHelper.getLocalParameter("cashierInfo",mCashierInfo)){
             TextView cashier_name = findViewById(R.id.cashier_name),
-                    store_name = findViewById(R.id.store_name),
+                    store_name = findViewById(R.id.sec_store_name),
                     pos_num = findViewById(R.id.pos_num);
 
             cashier_name.setText(mCashierInfo.optString("cas_name"));
@@ -344,7 +353,7 @@ public class MainActivity extends AppCompatActivity {
                         sale_sum_amount += jsonObject.getDouble("sale_amt");
                         dis_sum_amt = jsonObject.getDouble("discount_amt");
                     }
-                    mSaleSumNum.setText(String.format(Locale.CANADA,"%.4f",sale_sum_num));
+                    mSaleSumNum.setText(String.format(Locale.CANADA,"%.3f",sale_sum_num));
                     mSaleSumAmount.setText(String.format(Locale.CANADA,"%.2f",sale_sum_amount));
                     mDisSumAmt.setText(String.format(Locale.CANADA,"%.2f",dis_sum_amt));
 
@@ -353,6 +362,7 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                     MyDialog.ToastMessage("更新销售数据错误：" + e.getMessage(),MainActivity.this,null);
                 }
+                if (mSecondDisplay != null)mSecondDisplay.notifyChange(mSaleGoodsViewAdapter.getCurrentItemIndex());
             }
         });
 
@@ -763,6 +773,28 @@ public class MainActivity extends AppCompatActivity {
     }
     public double getSaleSumAmt(){
         return mSaleGoodsViewAdapter.getSaleSumAmt();
+    }
+
+    private void initSecondDisplay(){
+        JSONObject object = new JSONObject();
+        if (SQLiteHelper.getLocalParameter("dual_v",object)){
+            if (object.optInt("s") == 1){
+                MediaRouter mediaRouter = (MediaRouter) this.getSystemService(Context.MEDIA_ROUTER_SERVICE);
+                if (null != mediaRouter){
+                    MediaRouter.RouteInfo route = mediaRouter.getDefaultRoute();
+                    if (route != null) {
+                        Display presentationDisplay = route.getPresentationDisplay();
+                        if (presentationDisplay != null) {
+                            mSecondDisplay = new SecondDisplay(this, presentationDisplay);
+                            mSecondDisplay.loadAdImg(mUrl,mAppId,mAppScret);
+                            mSecondDisplay.setShowInterval(object.optInt("v")).setDatas(mSaleGoodsViewAdapter.getDatas()).setNavigationInfo(mStoreInfo).show();
+                        }
+                    }
+                }
+            }
+        }else{
+            MyDialog.ToastMessage("初始化双屏错误：" + object.optString("info"),this,null);
+        }
     }
 
 

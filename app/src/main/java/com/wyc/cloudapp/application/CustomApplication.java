@@ -1,34 +1,21 @@
 package com.wyc.cloudapp.application;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Application;
 import android.content.IntentFilter;
-import android.os.Build;
-import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-
-import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.broadcast.GlobalBroadcast;
-import com.wyc.cloudapp.data.SQLiteHelper;
+
 import com.wyc.cloudapp.logger.AndroidLogAdapter;
 import com.wyc.cloudapp.logger.DiskLogAdapter;
 import com.wyc.cloudapp.logger.Logger;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
-
-/**
- * Created by Administrator on 2018-04-17.
- */
+import java.util.concurrent.TimeUnit;
 
 public class CustomApplication extends Application {
-    private static final ThreadPoolExecutor THREAD_POOL_EXECUTOR = (ThreadPoolExecutor)Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2 + 2);
+    private static final ScheduledThreadPoolExecutor THREAD_POOL_EXECUTOR = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2 + 2);
     private volatile int netState = 1,netState_mobile = 1;//WiFi 连接状态 1 连接 0 其他
     public CustomApplication(){
         super();
@@ -61,6 +48,12 @@ public class CustomApplication extends Application {
 
     public static void execute(Runnable runnable){
         THREAD_POOL_EXECUTOR.execute(runnable);
+    }
+    public static ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit){
+        return THREAD_POOL_EXECUTOR.scheduleAtFixedRate(command,initialDelay,period,unit);
+    }
+    public static boolean removeTask(Runnable task){
+        return THREAD_POOL_EXECUTOR.remove(task);
     }
     public static long getTaskCount(){
         return THREAD_POOL_EXECUTOR.getActiveCount();

@@ -3,6 +3,7 @@ package com.wyc.cloudapp.adapter;
 import android.app.Dialog;
 import android.content.Context;
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.View;
@@ -36,7 +37,6 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         this.mContext = context;
         mDatas = new JSONArray();
     }
-
     static class MyViewHolder extends RecyclerView.ViewHolder {
         TextView row_id,gp_id,goods_id,goods_title,unit_name,barcode_id,barcode,sale_price,sale_num,sale_amt;
         View mCurrentLayoutItemView;
@@ -284,8 +284,6 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
 
                 json.put("sale_amt",Utils.formatDouble(xnum * new_price,2));
                 json.put("old_amt",Utils.formatDouble(old_price * xnum,2));
-
-                Logger.d_json(json.toString());
             }
             notifyDataSetChanged();
         } catch (JSONException e) {
@@ -296,7 +294,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         return mDatas;
     }
     public void clearGoods(){
-        mDatas = new JSONArray();
+        Utils.ClearJsons(mDatas);
         this.notifyDataSetChanged();
     }
     public JSONObject getCurrentContent() {
@@ -305,6 +303,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     public int getCurrentItemIndex(){
         return mCurrentItemIndex;
     }
+    public void setCurrentItemIndex(int index){mCurrentItemIndex = index;}
     public JSONArray getDatas() {
         return mDatas;
     }
@@ -476,4 +475,9 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         }
         return amt;
     }
+
+    public void setDatas(@NonNull final JSONArray array){
+        mDatas = array;
+    }
+
 }

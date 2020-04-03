@@ -46,7 +46,7 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 
 public class LoginActivity extends AppCompatActivity {
-    public static final String IMG_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/img/";
+    public static final String IMG_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/goods_img/";
     private static final int REQUEST_STORAGE_PERMISSIONS  = 800;
     private RelativeLayout mMain;
     private EditText mUser_id,mPassword;

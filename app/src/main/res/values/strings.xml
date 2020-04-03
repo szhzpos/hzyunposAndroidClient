@@ -153,4 +153,12 @@
     <string name="footer_info_sz">表尾内容：</string>
     <string name="print_c_sz">打印份数：</string>
     <string name="footer_s_sz">票尾留空：</string>
+    <string name="hotline_sz">服务热线：</string>
+    <string name="stores_address_sz">门店地址：</string>
+    <string name="sec_num_sz">数量</string>
+    <string name="sec_banner_sz">欢迎光临！</string>
+    <string name="sec_sum_sz">小计</string>
+    <string name="sec_n_b_sz">名称/条码</string>
+    <string name="sec_price_sz">价格</string>
+    <string name="sec_r_id_sz">序</string>
 </resources>
