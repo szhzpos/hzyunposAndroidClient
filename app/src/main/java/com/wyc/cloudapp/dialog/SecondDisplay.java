@@ -5,12 +5,11 @@ import android.app.Presentation;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.hardware.display.DisplayManager;
 import android.media.MediaRouter;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.Display;
-import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -48,10 +47,11 @@ public class SecondDisplay extends Presentation {
     private JSONObject mStoreinfo;
     private TextView mSaleSumNum,mSaleSumAmount;
     private int mShowAdImgTimes = 0,mShowInterval = 5;//mShowAdImgTimes显示图片次数
-    private String[] mAdFileNames;
+    private volatile String[] mAdFileNames;
     private ScheduledFuture<?> mShowAdImgFut;
     private TextView mBottomRollTv;
-    public SecondDisplay(Context outerContext, Display display) {
+    private int mCurrentBarcodeId;
+    private SecondDisplay(Context outerContext, Display display) {
         super(outerContext, display);
         mContext = outerContext;
 
@@ -61,7 +61,6 @@ public class SecondDisplay extends Presentation {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.second_disp_content_layout);
-
         mSaleSumNum = findViewById(R.id.sale_sum_num);
         mSaleSumAmount = findViewById(R.id.sale_sum_amt);
         mImageView = findViewById(R.id.banner_img);
@@ -110,32 +109,23 @@ public class SecondDisplay extends Presentation {
     private void displayGoodsImg(){
         final JSONObject sale = mSaleGoodsAdapter.getCurrentContent();
         if (sale != null){
-            final String barcode_id = sale.optString("barcode_id");
-            if (!"".equals(barcode_id)){
+            int barcode_id = sale.optInt("barcode_id");
+            if ( 0 != barcode_id && barcode_id != mCurrentBarcodeId){//当前显示的图片和即将要显示的图片不相同时再显示
                 CustomApplication.execute(()->{
                     final String sql = "select ifnull(img_url,'') img_url from barcode_info where goods_status = '1' and barcode_id = " + barcode_id +
                             " UNION\n" +
                             "select ifnull(img_url,'') img_url from goods_group where status = '1' and gp_id =" + barcode_id;
                     JSONObject object = new JSONObject();
-                    Activity activity = null;
-                    if (mContext instanceof Activity){
-                        activity = (Activity) mContext;
-                    }
                     if (SQLiteHelper.execSql(object,sql)){
                         String img_url = object.optString("img_url");
                         if (!"".equals(img_url)){
                             final String szImage = img_url.substring(img_url.lastIndexOf("/") + 1);
                             final Bitmap bitmap = BitmapFactory.decodeFile(LoginActivity.IMG_PATH + szImage);
-                            if (null != activity)
-                                activity.runOnUiThread(()->{
-                                mImageView.setImageBitmap(bitmap);
-                            });
+                            mImageView.post(()->mImageView.setImageBitmap(bitmap));
+                            mCurrentBarcodeId = barcode_id;
                         }
                     }else{
-                        if (null != activity)
-                            activity.runOnUiThread(()->{
-                                MyDialog.ToastMessage(object.optString("info"), mContext,getWindow());
-                            });
+                        mImageView.post(()->MyDialog.ToastMessage(object.optString("info"), mContext,getWindow()));
                     }
                 });
             }
@@ -162,36 +152,33 @@ public class SecondDisplay extends Presentation {
         notifyChange(0);
         return this;
     }
-    public SecondDisplay setShowInterval(int interval){
+    private void setShowInterval(int interval){
         if (interval > 5){
             mShowInterval = interval;
         }
-        return this;
     }
     public void notifyChange(int index){
-        mSaleGoodsAdapter.setCurrentItemIndex(index);
-        mSaleGoodsAdapter.notifyDataSetChanged();
+        mSaleGoodsAdapter.setCurrentItemIndex(index).notifyDataSetChanged();
     }
 
     public void loadAdImg(final String url,final String appid,final String appScret){
+        final File img_dir = new File(mAdFilePath);
+        if (!img_dir.exists()){
+            if (!img_dir.mkdir()){
+                MyDialog.ToastMessage("初始化广告图片目录错误！",mContext,getWindow());
+                return;
+            }
+        }else{
+            mAdFileNames = img_dir.list();
+        }
         CustomApplication.execute(()->{
             HttpRequest httpRequest = new HttpRequest();
             JSONObject object = new JSONObject();
-            Activity activity = null;
             final String err = "获取广告图片错误：";
+
+            Activity activity = null;
             if (mContext instanceof Activity){
-                activity = (Activity) mContext;
-            }
-            File img_dir = new File(mAdFilePath);
-            if (!img_dir.exists()){
-                if (!img_dir.mkdir()){
-                    if (null != activity){
-                        activity.runOnUiThread(()->{
-                            MyDialog.ToastMessage("初始化广告图片目录错误！",mContext,getWindow());
-                        });
-                    }
-                    return;
-                }
+                activity = (Activity)mContext;
             }
             try {
                 object.put("appid",appid);
@@ -209,37 +196,21 @@ public class SecondDisplay extends Presentation {
                                 if (!file.exists()){
                                     final JSONObject img_obj = httpRequest.getFile(file,img_url_info);
                                     if (img_obj.optInt("flag") == 0){
-                                        if (null != activity){
-                                            activity.runOnUiThread(()->{
-                                                MyDialog.ToastMessage(err + img_obj.optString("info"),mContext,getWindow());
-                                            });
-                                        }
+                                        if (activity != null)activity.runOnUiThread(()->MyDialog.ToastMessage(err + img_obj.optString("info"),mContext,getWindow()));
                                     }
                                 }
                             }
                         }
                         mAdFileNames = img_dir.list();
                     }else{
-                        if (null != activity){
-                            activity.runOnUiThread(()->{
-                                MyDialog.ToastMessage(err + retJson.optString("info"),mContext,getWindow());
-                            });
-                        }
+                        if (activity != null)activity.runOnUiThread(()->MyDialog.ToastMessage(err + retJson.optString("info"),mContext,getWindow()));
                     }
                 }else{
-                    if (null != activity){
-                        activity.runOnUiThread(()->{
-                            MyDialog.ToastMessage(err + retJson.optString("info"), mContext,getWindow());
-                        });
-                    }
+                    if (activity != null)activity.runOnUiThread(()->MyDialog.ToastMessage(err + retJson.optString("info"), mContext,getWindow()));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                if (null != activity){
-                    activity.runOnUiThread(()->{
-                        MyDialog.ToastMessage(err + e.getMessage(), mContext,getWindow());
-                    });
-                }
+                if (activity != null)activity.runOnUiThread(()->MyDialog.ToastMessage(err + e.getMessage(), mContext,getWindow()));
             }
         });
     }
@@ -259,14 +230,9 @@ public class SecondDisplay extends Presentation {
         mShowAdImgFut = CustomApplication.scheduleAtFixedRate(showAdImgRunnable,0,mShowInterval * 1000, TimeUnit.MILLISECONDS);
     }
     private Runnable showAdImgRunnable = ()->{
-        if (mAdFileNames != null){
-            if (mContext instanceof Activity){
-                Activity activity = (Activity)mContext;
-                final Bitmap bitmap = BitmapFactory.decodeFile(mAdFilePath + mAdFileNames[mShowAdImgTimes++ % mAdFileNames.length]);
-                activity.runOnUiThread(()->{
-                    mImageView.setImageBitmap(bitmap);
-                });
-            }
+        if (mAdFileNames != null) {
+            final Bitmap bitmap = BitmapFactory.decodeFile(mAdFilePath + mAdFileNames[mShowAdImgTimes++ % mAdFileNames.length]);
+            mImageView.post(() -> mImageView.setImageBitmap(bitmap));
         }
     };
     private void initBottomRollTv(){
@@ -285,4 +251,45 @@ public class SecondDisplay extends Presentation {
         });
         mBottomRollTv.startAnimation(transtoLeftAnim);
     }
+
+    private static Display getDisplayFromMediaRouter(Context context){
+        Display presentationDisplay = null;
+        MediaRouter mediaRouter = (MediaRouter) context.getSystemService(Context.MEDIA_ROUTER_SERVICE);
+        if (null != mediaRouter){
+            MediaRouter.RouteInfo route = mediaRouter.getDefaultRoute();
+            if (route != null) {
+                presentationDisplay = route.getPresentationDisplay();
+            }
+        }
+        return presentationDisplay;
+    }
+    private static Display getDisplayFromService(Context context){
+        Display presentationDisplay = null;
+        DisplayManager displayManager = (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
+        if (null != displayManager){
+            Display[] displays = displayManager.getDisplays();
+            if (displays != null && displays.length > 1) {
+                presentationDisplay = displays[1];
+            }
+        }
+        return presentationDisplay;
+    }
+
+    public static SecondDisplay getInstantiate(Context context){
+        JSONObject object = new JSONObject();
+        SecondDisplay secondDisplay = null;
+        if (SQLiteHelper.getLocalParameter("dual_v",object)){
+            if (object.optInt("s") == 1){
+                Display presentationDisplay = getDisplayFromService(context);
+                if (presentationDisplay != null) {
+                    secondDisplay = new SecondDisplay(context, presentationDisplay);
+                    secondDisplay.setShowInterval(object.optInt("v"));
+                }
+            }
+        }else{
+            MyDialog.ToastMessage("初始化双屏错误：" + object.optString("info"),context,null);
+        }
+        return secondDisplay;
+    }
+
 }

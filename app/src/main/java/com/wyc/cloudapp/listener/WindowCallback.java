@@ -43,6 +43,7 @@ public class WindowCallback implements Window.Callback {
                 }else if (mObj instanceof Snackbar){
                     ((Snackbar)mObj).dismiss();
                 }
+                mObj = null;//断开引用
             }
             return mWin.superDispatchTouchEvent(event);
         }

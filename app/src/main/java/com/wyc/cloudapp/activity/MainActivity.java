@@ -776,24 +776,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initSecondDisplay(){
-        JSONObject object = new JSONObject();
-        if (SQLiteHelper.getLocalParameter("dual_v",object)){
-            if (object.optInt("s") == 1){
-                MediaRouter mediaRouter = (MediaRouter) this.getSystemService(Context.MEDIA_ROUTER_SERVICE);
-                if (null != mediaRouter){
-                    MediaRouter.RouteInfo route = mediaRouter.getDefaultRoute();
-                    if (route != null) {
-                        Display presentationDisplay = route.getPresentationDisplay();
-                        if (presentationDisplay != null) {
-                            mSecondDisplay = new SecondDisplay(this, presentationDisplay);
-                            mSecondDisplay.loadAdImg(mUrl,mAppId,mAppScret);
-                            mSecondDisplay.setShowInterval(object.optInt("v")).setDatas(mSaleGoodsViewAdapter.getDatas()).setNavigationInfo(mStoreInfo).show();
-                        }
-                    }
-                }
-            }
-        }else{
-            MyDialog.ToastMessage("初始化双屏错误：" + object.optString("info"),this,null);
+        mSecondDisplay = SecondDisplay.getInstantiate(this);
+        if (null != mSecondDisplay){
+            mSecondDisplay.loadAdImg(mUrl,mAppId,mAppScret);
+            mSecondDisplay.setDatas(mSaleGoodsViewAdapter.getDatas()).setNavigationInfo(mStoreInfo).show();
         }
     }
 

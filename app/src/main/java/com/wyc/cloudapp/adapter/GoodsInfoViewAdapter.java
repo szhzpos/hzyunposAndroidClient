@@ -83,13 +83,8 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                     if (!"".equals(img_url)){
                         final String szImage = img_url.substring(img_url.lastIndexOf("/") + 1);
                         CustomApplication.execute(()->{
-                            if (mContext instanceof Activity){
-                                Activity activity = (Activity)mContext;
-                                final Bitmap bitmap = BitmapFactory.decodeFile(LoginActivity.IMG_PATH + szImage);
-                                activity.runOnUiThread(()->{
-                                    myViewHolder.goods_img.setImageBitmap(bitmap);
-                                });
-                            }
+                            final Bitmap bitmap = BitmapFactory.decodeFile(LoginActivity.IMG_PATH + szImage);
+                            myViewHolder.goods_img.post(()-> myViewHolder.goods_img.setImageBitmap(bitmap));
                         });
                     }else{
                         myViewHolder.goods_img.setImageDrawable(mContext.getDrawable(R.drawable.nodish));

@@ -268,10 +268,11 @@ public class CustomePopupWindow extends PopupWindow {
 
     private void setBackgroundAlpha(float bgAlpha) {
         if (mContext instanceof Activity) {
-            WindowManager.LayoutParams lp = ((Activity) mContext).getWindow()
+            Activity a = (Activity)mContext;
+            WindowManager.LayoutParams lp = a.getWindow()
                     .getAttributes();
             lp.alpha = bgAlpha;
-            ((Activity) mContext).getWindow().setAttributes(lp);
+            a.getWindow().setAttributes(lp);
         }
     }
 

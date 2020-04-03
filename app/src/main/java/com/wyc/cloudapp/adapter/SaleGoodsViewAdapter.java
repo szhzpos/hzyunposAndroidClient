@@ -303,7 +303,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     public int getCurrentItemIndex(){
         return mCurrentItemIndex;
     }
-    public void setCurrentItemIndex(int index){mCurrentItemIndex = index;}
+    public SaleGoodsViewAdapter setCurrentItemIndex(int index){mCurrentItemIndex = index;return this;}
     public JSONArray getDatas() {
         return mDatas;
     }
