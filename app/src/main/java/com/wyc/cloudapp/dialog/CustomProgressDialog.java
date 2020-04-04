@@ -59,6 +59,7 @@ public class CustomProgressDialog extends ProgressDialog
     @Override
     public void show()
     {
+
         super.show();
     }
 
@@ -96,7 +97,7 @@ public class CustomProgressDialog extends ProgressDialog
     }
 
     public CustomProgressDialog refreshMessage(){
-        if (null != mMessage)mMessage.postDelayed(()-> mMessage.setText(szMessage),0);
+        if (null != mMessage)mMessage.post(()-> mMessage.setText(szMessage));
         return this;
     }
 

@@ -504,224 +504,211 @@ public class PayDialog extends Dialog {
         return show ? show : initPayContent(mainActivity.showVipInfo(vip));
     }
     public void requestPay(final String order_code, final String url, final String appId, final String appScret, final String stores_id, final String pos_num){
-        if (mPayListener != null)mPayListener.onProgress(PayDialog.this,"正在支付...");
-        CustomApplication.execute(()->{
-            mPayStatus = true;
-            int is_check;
-            long pay_time = 0;
-            double discount_money = 0.0;
-            String pay_method_id,pay_money,pay_code,unified_pay_order,unified_pay_query,sz_param,v_num,third_pay_order_id = "",discount_xnote = "";
-            JSONObject retJson,pay_detail,pay_method_json,info_json;
-            HttpRequest httpRequest;
-            final StringBuilder err = new StringBuilder();
-            ContentValues values = new ContentValues();
-            JSONArray pays = SQLiteHelper.getListToJson("select pay_method,pay_money,pay_code,is_check,v_num from retail_order_pays where order_code = '" + order_code +"'",0,0,false,err);
-            if (null != pays){
-                try{
-                    for (int i = 0,size = pays.length();i < size && mPayStatus;i++){
-                        pay_detail = pays.getJSONObject(i);
+        if (mPayListener != null)mainActivity.runOnUiThread(()->mPayListener.onProgress(PayDialog.this,"正在支付..."));
+        mPayStatus = true;
+        int is_check;
+        long pay_time = 0;
+        double discount_money = 0.0;
+        String pay_method_id,pay_money,pay_code,unified_pay_order,unified_pay_query,sz_param,v_num,third_pay_order_id = "",discount_xnote = "";
+        JSONObject retJson,pay_detail,pay_method_json,info_json;
+        HttpRequest httpRequest;
+        final StringBuilder err = new StringBuilder();
+        ContentValues values = new ContentValues();
+        JSONArray pays = SQLiteHelper.getListToJson("select pay_method,pay_money,pay_code,is_check,v_num from retail_order_pays where order_code = '" + order_code +"'",0,0,false,err);
+        if (null != pays){
+            try{
+                for (int i = 0,size = pays.length();i < size && mPayStatus;i++){
+                    pay_detail = pays.getJSONObject(i);
 
-                        is_check = pay_detail.getInt("is_check");
-                        pay_code = pay_detail.getString("pay_code");
-                        v_num = pay_detail.getString("v_num");
+                    is_check = pay_detail.getInt("is_check");
+                    pay_code = pay_detail.getString("pay_code");
+                    v_num = pay_detail.getString("v_num");
 
-                        pay_time = System.currentTimeMillis()/1000;
-                        //发起支付请求
-                        if (is_check != 2){
+                    pay_time = System.currentTimeMillis()/1000;
+                    //发起支付请求
+                    if (is_check != 2){
 
-                            httpRequest = new HttpRequest();
+                        httpRequest = new HttpRequest();
 
-                            pay_method_id = pay_detail.getString("pay_method");
-                            pay_money = pay_detail.getString("pay_money");
+                        pay_method_id = pay_detail.getString("pay_method");
+                        pay_money = pay_detail.getString("pay_money");
 
-                            pay_method_json = mPayMethodViewAdapter.get_pay_method(pay_method_id);
+                        pay_method_json = mPayMethodViewAdapter.get_pay_method(pay_method_id);
 
-                            if (pay_method_json != null){
+                        if (pay_method_json != null){
 
-                                unified_pay_order = pay_method_json.getString("unified_pay_order");
-                                unified_pay_query = pay_method_json.getString("unified_pay_query");
+                            unified_pay_order = pay_method_json.getString("unified_pay_order");
+                            unified_pay_query = pay_method_json.getString("unified_pay_query");
 
-                                if ("null".equals(unified_pay_order) || "".equals(unified_pay_order)){
-                                    unified_pay_order = "/api/pay2/index";
-                                }
-                                if ("null".equals(unified_pay_query) || "".equals(unified_pay_query)){
-                                    unified_pay_query = "/api/pay2_query/query";
-                                }
+                            if ("null".equals(unified_pay_order) || "".equals(unified_pay_order)){
+                                unified_pay_order = "/api/pay2/index";
+                            }
+                            if ("null".equals(unified_pay_query) || "".equals(unified_pay_query)){
+                                unified_pay_query = "/api/pay2_query/query";
+                            }
 
-                                JSONObject data_ = new JSONObject();
-                                data_.put("appid",appId);
-                                data_.put("stores_id",stores_id);
-                                data_.put("order_code",order_code);
-                                data_.put("pos_num",pos_num);
-                                data_.put("is_wuren",2);
-                                data_.put("order_code_son",pay_code);
-                                data_.put("pay_money", pay_money);
-                                data_.put("pay_method",pay_method_id);
-                                data_.put("pay_code_str",v_num);
+                            JSONObject data_ = new JSONObject();
+                            data_.put("appid",appId);
+                            data_.put("stores_id",stores_id);
+                            data_.put("order_code",order_code);
+                            data_.put("pos_num",pos_num);
+                            data_.put("is_wuren",2);
+                            data_.put("order_code_son",pay_code);
+                            data_.put("pay_money", pay_money);
+                            data_.put("pay_method",pay_method_id);
+                            data_.put("pay_code_str",v_num);
 
-                                sz_param = HttpRequest.generate_request_parm(data_,appScret);
+                            sz_param = HttpRequest.generate_request_parm(data_,appScret);
 
-                                Logger.i("结账支付参数:url:%s%s,param:%s",url ,unified_pay_order,sz_param);
-                                retJson = httpRequest.sendPost(url + unified_pay_order,sz_param,true);
-                                Logger.i("结账支付请求返回:%s",retJson.toString());
+                            Logger.i("结账支付参数:url:%s%s,param:%s",url ,unified_pay_order,sz_param);
+                            retJson = httpRequest.sendPost(url + unified_pay_order,sz_param,true);
+                            Logger.i("结账支付请求返回:%s",retJson.toString());
 
-                                switch (retJson.optInt("flag")){
-                                    case 0:
-                                        mPayStatus = false;
-                                        err.append(retJson.getString("info"));
-                                        break;
-                                    case 1:
-                                        info_json = new JSONObject(retJson.getString("info"));
-                                        switch (info_json.getString("status")){
-                                            case "n":
-                                                mPayStatus = false;
-                                                err.append(info_json.getString("info"));
-                                                break;
-                                            case "y":
-                                                int res_code = info_json.getInt("res_code");
-                                                switch (res_code){
-                                                    case 1://支付成功
-                                                        third_pay_order_id = "";
-                                                        pay_time = System.currentTimeMillis()/1000;
-                                                        break;
-                                                    case 2:
-                                                        mPayStatus = false;
-                                                        err.append(info_json.getString("info"));
-                                                        break;
-                                                    case 3:
-                                                    case 4:
-                                                        if (mPayListener != null)
+                            switch (retJson.optInt("flag")){
+                                case 0:
+                                    mPayStatus = false;
+                                    err.append(retJson.getString("info"));
+                                    break;
+                                case 1:
+                                    info_json = new JSONObject(retJson.getString("info"));
+                                    switch (info_json.getString("status")){
+                                        case "n":
+                                            mPayStatus = false;
+                                            err.append(info_json.getString("info"));
+                                            break;
+                                        case "y":
+                                            int res_code = info_json.getInt("res_code");
+                                            switch (res_code){
+                                                case 1://支付成功
+                                                    third_pay_order_id = "";
+                                                    pay_time = System.currentTimeMillis()/1000;
+                                                    break;
+                                                case 2:
+                                                    mPayStatus = false;
+                                                    err.append(info_json.getString("info"));
+                                                    break;
+                                                case 3:
+                                                case 4:
+                                                    if (mPayListener != null)
+                                                        mainActivity.runOnUiThread(()->mPayListener.onProgress(PayDialog.this,"正在查询支付状态..."));
+
+                                                    while (mPayStatus && (res_code == 3 ||  res_code == 4)){
+                                                        final JSONObject object = new JSONObject();
+                                                        object.put("appid",appId);
+                                                        object.put("pay_code",info_json.getString("pay_code"));
+                                                        object.put("order_code_son",info_json.getString("order_code_son"));
+                                                        if (res_code == 4){
+                                                            Looper.prepare();
+                                                            final Looper looper = Looper.myLooper();
                                                             mainActivity.runOnUiThread(()->{
-                                                            mPayListener.onProgress(PayDialog.this,"正在查询支付状态...");
-                                                        });
-                                                        while (mPayStatus && (res_code == 3 ||  res_code == 4)){
-                                                            final JSONObject object = new JSONObject();
-                                                            object.put("appid",appId);
-                                                            object.put("pay_code",info_json.getString("pay_code"));
-                                                            object.put("order_code_son",info_json.getString("order_code_son"));
-                                                            if (res_code == 4){
-                                                                Looper.prepare();
-                                                                final Looper looper = Looper.myLooper();
-                                                                mainActivity.runOnUiThread(()->{
-                                                                    ChangeNumOrPriceDialog password_dialog = new ChangeNumOrPriceDialog(mainActivity,"请输入密码","");
-                                                                    password_dialog.setOnDismissListener(dialog -> {
-                                                                        if (looper != null)looper.quit();
-                                                                    });
-                                                                    password_dialog.setYesOnclickListener(myDialog -> {
-                                                                        try {
-                                                                            object.put("pay_password",myDialog.getContentToStr());
-                                                                        } catch (JSONException e) {
-                                                                            e.printStackTrace();
-                                                                        }
-                                                                        myDialog.dismiss();
-                                                                    }).setNoOnclickListener(myDialog -> {
-                                                                        mPayStatus = false;
-                                                                        err.append("密码验证已取消！");
-                                                                        myDialog.dismiss();
-                                                                    }).show();
+                                                                ChangeNumOrPriceDialog password_dialog = new ChangeNumOrPriceDialog(mainActivity,"请输入密码","");
+                                                                password_dialog.setOnDismissListener(dialog -> {
+                                                                    if (looper != null)looper.quit();
                                                                 });
+                                                                password_dialog.setYesOnclickListener(myDialog -> {
+                                                                    try {
+                                                                        object.put("pay_password",myDialog.getContentToStr());
+                                                                    } catch (JSONException e) {
+                                                                        e.printStackTrace();
+                                                                    }
+                                                                    myDialog.dismiss();
+                                                                }).setNoOnclickListener(myDialog -> {
+                                                                    mPayStatus = false;
+                                                                    err.append("密码验证已取消！");
+                                                                    myDialog.dismiss();
+                                                                }).show();
+                                                            });
 
-                                                                Looper.loop();
-                                                            }
-                                                            if (mPayStatus){
-                                                                sz_param = HttpRequest.generate_request_parm(object,appScret);
+                                                            Looper.loop();
+                                                        }
+                                                        if (mPayStatus){
+                                                            sz_param = HttpRequest.generate_request_parm(object,appScret);
 
-                                                                Logger.i("结账支付查询参数:url:%s%s,param:%s",url,unified_pay_order,sz_param);
-                                                                retJson = httpRequest.sendPost(url + unified_pay_query,sz_param,true);
-                                                                Logger.i("结账支付查询返回:%s",retJson.toString());
+                                                            Logger.i("结账支付查询参数:url:%s%s,param:%s",url,unified_pay_order,sz_param);
+                                                            retJson = httpRequest.sendPost(url + unified_pay_query,sz_param,true);
+                                                            Logger.i("结账支付查询返回:%s",retJson.toString());
 
-                                                                switch (retJson.getInt("flag")){
-                                                                    case 0:
-                                                                        mPayStatus = false;
-                                                                        err.append(retJson.getString("info"));
-                                                                        break;
-                                                                    case 1:
-                                                                        info_json = new JSONObject(retJson.getString("info"));
-                                                                        Logger.json(info_json.toString());
-                                                                        switch (info_json.getString("status")){
-                                                                            case "n":
+                                                            switch (retJson.getInt("flag")){
+                                                                case 0:
+                                                                    mPayStatus = false;
+                                                                    err.append(retJson.getString("info"));
+                                                                    break;
+                                                                case 1:
+                                                                    info_json = new JSONObject(retJson.getString("info"));
+                                                                    Logger.json(info_json.toString());
+                                                                    switch (info_json.getString("status")){
+                                                                        case "n":
+                                                                            mPayStatus = false;
+                                                                            err.append(info_json.getString("info"));
+                                                                            break;
+                                                                        case "y":
+                                                                            res_code = info_json.getInt("res_code");
+                                                                            if (res_code == 1){//支付成功
+                                                                                Logger.d_json(info_json.toString());
+                                                                                third_pay_order_id = info_json.getString("pay_code");
+                                                                                discount_money = info_json.getDouble("discount");
+                                                                                pay_time = info_json.getLong("pay_time");
+                                                                                break;
+                                                                            }
+                                                                            if (res_code == 2){//支付失败
                                                                                 mPayStatus = false;
                                                                                 err.append(info_json.getString("info"));
                                                                                 break;
-                                                                            case "y":
-                                                                                res_code = info_json.getInt("res_code");
-                                                                                if (res_code == 1){//支付成功
-                                                                                    Logger.d_json(info_json.toString());
-                                                                                    third_pay_order_id = info_json.getString("pay_code");
-                                                                                    discount_money = info_json.getDouble("discount");
-                                                                                    pay_time = info_json.getLong("pay_time");
-                                                                                    break;
-                                                                                }
-                                                                                if (res_code == 2){//支付失败
-                                                                                    mPayStatus = false;
-                                                                                    err.append(info_json.getString("info"));
-                                                                                    break;
-                                                                                }
-                                                                                break;
-                                                                        }
-                                                                        break;
-                                                                }
+                                                                            }
+                                                                            break;
+                                                                    }
+                                                                    break;
                                                             }
                                                         }
-                                                        break;
-                                                }
-                                                break;
-                                        }
-                                        break;
-                                }
-
-                            }else{
-                                mPayStatus = false;
-                                err.append("付款方式不存在:pay_method_id--").append(pay_method_id);
+                                                    }
+                                                    break;
+                                            }
+                                            break;
+                                    }
+                                    break;
                             }
+
+                        }else{
+                            mPayStatus = false;
+                            err.append("付款方式不存在:pay_method_id--").append(pay_method_id);
                         }
                     }
-                }catch (JSONException e){
-                    e.printStackTrace();
-                    mPayStatus = false;
-                    err.append(e.getMessage());
                 }
-            }else{
+            }catch (JSONException e){
+                e.printStackTrace();
                 mPayStatus = false;
+                err.append(e.getMessage());
             }
+        }else{
+            mPayStatus = false;
+        }
 
-            if (!mPayStatus){
-                values.put("order_status",3);
-                values.put("spare_param1",err.toString());
-                if (!SQLiteHelper.execUpdateSql("retail_order",values,"order_code = ?",new String[]{order_code},err)){
-                    Logger.d("更新订单状态错误：",err);
-                }
+        if (!mPayStatus){
+            values.put("order_status",3);
+            values.put("spare_param1",err.toString());
+            if (!SQLiteHelper.execUpdateSql("retail_order",values,"order_code = ?",new String[]{order_code},err)){
+                Logger.d("更新订单状态错误：",err);
+            }
+            if (mPayListener != null)
+                mainActivity.runOnUiThread(()-> mPayListener.onError(PayDialog.this,err.toString()));
+        }else{
+            List<String> sqls = new ArrayList<>();
+            String sql = "update retail_order set order_status = 2,pay_status = 2,pay_time ='" + pay_time +"' where order_code = '" + order_code + "'";
+
+            sqls.add(sql);
+
+            sql = "update retail_order_pays set pay_status = 2,pay_serial_no = '" + third_pay_order_id +"',pay_time = '" + pay_time + "',discount_money = '" + discount_money +"',xnote = '" + discount_xnote +"',return_code = '"+ third_pay_order_id +"' where order_code = '" + order_code + "'";
+
+            sqls.add(sql);
+
+            if (!SQLiteHelper.execBatchUpdateSql(sqls,err)){
                 if (mPayListener != null)
-                mainActivity.runOnUiThread(()->{
-                    mPayListener.onError(PayDialog.this,err.toString());
-                });
+                    mainActivity.runOnUiThread(()-> mPayListener.onError(PayDialog.this,err.toString()));
             }else{
-                List<String> sqls = new ArrayList<>();
-                String sql = "update retail_order set order_status = 2,pay_status = 2,pay_time ='" + pay_time +"' where order_code = '" + order_code + "'";
-
-                sqls.add(sql);
-
-                sql = "update retail_order_pays set pay_status = 2,pay_serial_no = '" + third_pay_order_id +"',pay_time = '" + pay_time + "',discount_money = '" + discount_money +"',xnote = '" + discount_xnote +"',return_code = '"+ third_pay_order_id +"' where order_code = '" + order_code + "'";
-
-                sqls.add(sql);
-
-                if (!SQLiteHelper.execBatchUpdateSql(sqls,err)){
-                    if (mPayListener != null)
-                    mainActivity.runOnUiThread(()->{
-                        mPayListener.onError(PayDialog.this,err.toString());
-                    });
-                }else{
-                    if (mPayListener != null)
-                    mainActivity.runOnUiThread(()->{
-                        mPayListener.onSuccess(PayDialog.this);
-                    });
-                }
+                if (mPayListener != null)
+                    mainActivity.runOnUiThread(()-> mPayListener.onSuccess(PayDialog.this));
             }
-        });
+        }
     }
-    public void clearPayInfo(){
-        mPayDetailViewAdapter.clearPayDetail();
-    }
-
 
 }

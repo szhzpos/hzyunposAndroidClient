@@ -527,26 +527,21 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onProgress(PayDialog myDialog,final String info) {
-                        if (mProgressDialog.isShowing()){
-                            mProgressDialog.setMessage(info).refreshMessage();
-                        }else{
-                            mProgressDialog.setCancel(false).setMessage(info).refreshMessage().show();
-                        }
+                        mProgressDialog.setMessage(info).refreshMessage();
                     }
 
                     @Override
                     public void onSuccess(PayDialog myDialog) {
                         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
                         mSyncManagement.sync_order();
-                        MyDialog.SnackbarMessage(MainActivity.this.getWindow(),"结账成功！",mOrderCode);
                         resetOrderInfo();
                         myDialog.dismiss();
+                        MyDialog.SnackbarMessage(MainActivity.this.getWindow(),"结账成功！",mOrderCode);
                     }
 
                     @Override
                     public void onError(PayDialog myDialog, String err) {
                         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
-                        //myDialog.clearPayInfo();
                         resetOrderCode();//提示错误得重置单号
                         MyDialog.displayErrorMessage(null,"支付错误：" + err,myDialog.getContext());
                     }
