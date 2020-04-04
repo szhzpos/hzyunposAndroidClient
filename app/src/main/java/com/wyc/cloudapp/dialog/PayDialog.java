@@ -420,7 +420,7 @@ public class PayDialog extends Dialog {
                 if ((pay_method_json = mPayMethodViewAdapter.get_pay_method(PayMethodViewAdapter.CASH_METHOD_ID)) != null){
                     try {
                         pay_method_json = Utils.JsondeepCopy(pay_method_json);
-                        pay_method_json.put("pay_code",getPayCode());
+                        pay_method_json.put("pay_code",getCashPayCode());
                         pay_method_json.put("pamt",mCashAmt);
                         pay_method_json.put("pzl",String.format(Locale.CHINA,"%.2f",mZlAmt));
                         pay_method_json.put("v_num","");
@@ -477,8 +477,8 @@ public class PayDialog extends Dialog {
         });
         mCashMoneyEt.postDelayed(()-> mCashMoneyEt.requestFocus(),300);
     }
-    private String getPayCode() {
-        return new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()) + Utils.getNonce_str(8);
+    private String getCashPayCode() {
+        return new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date())+ mainActivity.getPosNum() + Utils.getNonce_str(8);
     }
     private boolean verifyPayBalance(){
       return (mPay_balance > 0.0 || Utils.equalDouble(mPay_balance,0.0));

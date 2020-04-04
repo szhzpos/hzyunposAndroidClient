@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -508,14 +509,20 @@ public class MainActivity extends AppCompatActivity {
                 dialog.setPayFinishListener(new PayDialog.onPayListener() {
                     @Override
                     public void onStart(PayDialog myDialog) {
-                        try {
-                            if (saveOrderInfo(generateOrderInfo(Utils.JsondeepCopy(datas),Utils.JsondeepCopy(myDialog.getContent())))){
-                                dialog.requestPay(mOrderCode.getText().toString(),mUrl,mAppId,mAppScret,mStoreInfo.getString("stores_id"),mCashierInfo.getString("pos_num"));
+                        mProgressDialog.setCancel(false).setMessage("正在保存单据...").refreshMessage().show();
+                        CustomApplication.execute(()->{
+                            StringBuilder err = new StringBuilder();
+                            try {
+                                if (saveOrderInfo(generateOrderInfo(Utils.JsondeepCopy(datas),Utils.JsondeepCopy(myDialog.getContent())),err)){
+                                    dialog.requestPay(mOrderCode.getText().toString(),mUrl,mAppId,mAppScret,mStoreInfo.getString("stores_id"),mCashierInfo.getString("pos_num"));
+                                }else{
+                                    mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,err.toString()).sendToTarget();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"保存单据错误：" + e.getMessage()).sendToTarget();
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            MyDialog.ToastMessage("生成订单信息错误：" + e.getMessage(),myDialog.getContext(),null);
-                        }
+                        });
                     }
 
                     @Override
@@ -648,8 +655,7 @@ public class MainActivity extends AppCompatActivity {
             if (-1 != gp_id){
                 tmp_json = (JSONObject) sales_data.remove(i--);
                 if (!mSaleGoodsViewAdapter.splitCombinationalGoods(combination_goods,gp_id,tmp_json.getDouble("price"),tmp_json.getDouble("xnum"),err)){
-                    MyDialog.displayErrorMessage(null,"拆分组合商品错误：" + err,this);
-                    return null;
+                    throw new JSONException("拆分组合商品错误，" + err);
                 }
                 Logger.d_json(combination_goods.toString());
             }else{
@@ -712,9 +718,8 @@ public class MainActivity extends AppCompatActivity {
 
         return data;
     }
-    private boolean saveOrderInfo(JSONObject data){
+    private boolean saveOrderInfo(final JSONObject data,final StringBuilder err){
         boolean code;
-        StringBuilder err = new StringBuilder();
         JSONObject count_json = new JSONObject();
         List<String>  tables = Arrays.asList("retail_order","retail_order_goods","retail_order_pays"),
                 retail_order_cols = Arrays.asList("stores_id","order_code","discount","discount_price","total","cashier_id","addtime","pos_code","order_status","pay_status","pay_time","upload_status",
@@ -728,22 +733,29 @@ public class MainActivity extends AppCompatActivity {
         if ((code = SQLiteHelper.execSql(count_json,"select count(order_code) counts from retail_order where order_code = '" + mOrderCode.getText() +"' and stores_id = '" + mStoreInfo.optString("stores_id") +"'"))){
             if (0 == count_json.optInt("counts")){
                 if (!(code = SQLiteHelper.execSQLByBatchFromJson(data,tables,Arrays.asList(retail_order_cols,retail_order_goods_cols,retail_order_pays_cols),err,0))){
-                    MyDialog.displayErrorMessage(null,"保存订单信息错误：" + err,this);
+                    err.insert(0,"保存订单信息错误：");
                 }
             }else{
                 code = false;
-                MyDialog.displayErrorMessage(null,"本地已存在此订单信息，请重新下单！",this);
+                err.append("本地已存在此订单信息，请重新下单！");
             }
         }else{
-            MyDialog.displayErrorMessage(null,"查询订单信息错误：" + count_json.optString("info"),this);
+            err.append("查询订单信息错误：").append(count_json.optString("info"));
         }
         return code;
     }
     private void resetOrderCode(){
         mOrderCode.setText(mGoodsInfoViewAdapter.generateOrderCode(mCashierInfo.optString("pos_num")));
     }
+    private void initSecondDisplay(){
+        mSecondDisplay = SecondDisplay.getInstantiate(this);
+        if (null != mSecondDisplay){
+            mSecondDisplay.loadAdImg(mUrl,mAppId,mAppScret);
+            mSecondDisplay.setDatas(mSaleGoodsViewAdapter.getDatas()).setNavigationInfo(mStoreInfo).show();
+        }
+    }
 
-     public JSONArray discount(double discount,final String zk_cashier_id){
+    public JSONArray discount(double discount,final String zk_cashier_id){
         if (null == zk_cashier_id || "".equals(zk_cashier_id)){
             setDisCashierId(mCashierInfo.optString("cas_id"));
         }else
@@ -774,14 +786,12 @@ public class MainActivity extends AppCompatActivity {
     public double getSaleSumAmt(){
         return mSaleGoodsViewAdapter.getSaleSumAmt();
     }
-
-    private void initSecondDisplay(){
-        mSecondDisplay = SecondDisplay.getInstantiate(this);
-        if (null != mSecondDisplay){
-            mSecondDisplay.loadAdImg(mUrl,mAppId,mAppScret);
-            mSecondDisplay.setDatas(mSaleGoodsViewAdapter.getDatas()).setNavigationInfo(mStoreInfo).show();
-        }
+    public String getPosNum(){
+        if (null == mCashierInfo)return "";
+        return mCashierInfo.optString("pos_num");
     }
+
+
 
 
     private static class Myhandler extends Handler {

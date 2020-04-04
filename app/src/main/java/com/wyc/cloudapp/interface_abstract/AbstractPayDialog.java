@@ -1,6 +1,7 @@
 package com.wyc.cloudapp.interface_abstract;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
@@ -181,7 +183,11 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
 
     @SuppressLint("SimpleDateFormat")
     protected String getPayCode() {
-        return new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()) + Utils.getNonce_str(8);
+        String pos_num = "";
+        if (mContext instanceof MainActivity){
+            pos_num = ((MainActivity)mContext).getPosNum();
+        }
+        return new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()) + pos_num + Utils.getNonce_str(8);
     }
 
     protected boolean verify(){
