@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.check_out).setOnClickListener((View v)->{
             v.setEnabled(false);
             showPayDialog();
-            v.setEnabled(true);
+            v.postDelayed(()->v.setEnabled(true),300);
         });//结账
         findViewById(R.id.vip).setOnClickListener(v -> {
             VipInfoDialog vipInfoDialog = new VipInfoDialog(v.getContext());
@@ -197,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
         if (mDialog.isShowing())mDialog.dismiss();
         if (mSecondDisplay != null)mSecondDisplay.dismiss();
-        stopSyncCurrentTime();
+
     }
 
     @Override
@@ -248,9 +248,6 @@ public class MainActivity extends AppCompatActivity {
             mHandler.postDelayed(this::startSyncCurrentTime,1000);
         }
         mCurrentTimeView.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(mCurrentTimestamp));
-    }
-    private void stopSyncCurrentTime(){
-        mHandler.removeCallbacksAndMessages(null);
     }
 
     private void initCashierInfoAndStoreInfo(){
@@ -852,8 +849,6 @@ public class MainActivity extends AppCompatActivity {
                             activity.mProgressDialog.setCancel(false).show();
                         }
                     }
-                    break;
-                case MessageID.DIS_PAY_DIALOG_ID:
                     break;
             }
         }

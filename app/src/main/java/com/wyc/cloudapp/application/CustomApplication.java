@@ -9,6 +9,7 @@ import com.wyc.cloudapp.logger.AndroidLogAdapter;
 import com.wyc.cloudapp.logger.DiskLogAdapter;
 import com.wyc.cloudapp.logger.Logger;
 
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -51,6 +52,12 @@ public class CustomApplication extends Application {
     }
     public static ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit){
         return THREAD_POOL_EXECUTOR.scheduleAtFixedRate(command,initialDelay,period,unit);
+    }
+    public static ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
+        return THREAD_POOL_EXECUTOR.schedule(command,delay,unit);
+    }
+    public static Future<?> submit(Runnable task){
+        return THREAD_POOL_EXECUTOR.submit(task);
     }
     public static boolean removeTask(Runnable task){
         return THREAD_POOL_EXECUTOR.remove(task);
