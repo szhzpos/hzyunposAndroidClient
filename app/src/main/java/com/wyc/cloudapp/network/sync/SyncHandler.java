@@ -30,9 +30,7 @@ public final class SyncHandler extends Handler {
     private volatile boolean mReportProgress = true;
     private int mCurrentNeworkStatusCode = HttpURLConnection.HTTP_OK;
     private long mSyncInterval = 3000,mLoseTime = 0;//mSyncInterval 同步时间间隔，默认3秒
-    private Thread mThread;
     SyncHandler(Handler handler,final String url, final String appid, final String appscret,final String stores_id,final String pos_num, final String operid){
-        mThread = getLooper().getThread();
         this.syncActivityHandler = handler;
         mHttp = new HttpRequest();
         mHttp.setConnTimeOut(3000);

@@ -11,25 +11,26 @@
             <!-- 设置圆角度数 -->
             <corners android:radius="2dp" />
             <!-- 设置背景颜色 -->
-            <solid android:color="#FFFFFF" />
+            <solid android:color="@color/transparent" />
             <!-- padding：设置边距 -->
             <padding
-                android:bottom="5dp"
-                android:left="5dp"
-                android:right="5dp"
-                android:top="5dp" >
+                android:bottom="2dp"
+                android:left="2dp"
+                android:right="2dp"
+                android:top="2dp" >
             </padding>
         </shape>
 
     </item>
 
-    <!-- 第二组item：设置spinner箭头图片(替换默认箭头) -->
+    <!-- 第二组item：设置spinner箭头图片(替换默认箭头)
     <item>
-        <!-- bitmap.gravity：设置spinner的箭头放置位置 -->
-        <!-- bitmap.src：设置替换原spinner的箭头的图片资源 -->
+         bitmap.gravity：设置spinner的箭头放置位置
+         bitmap.src：设置替换原spinner的箭头的图片资源
         <bitmap
             android:gravity="end"
             android:src="@drawable/spinner_btn">
         </bitmap>
     </item>
+    -->
 </layer-list>

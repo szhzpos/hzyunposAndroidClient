@@ -5,14 +5,16 @@ import android.app.Presentation;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.hardware.display.DisplayManager;
 import android.media.MediaRouter;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.Display;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,7 +25,6 @@ import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
 import org.json.JSONArray;
@@ -34,23 +35,29 @@ import java.io.File;
 import java.util.Locale;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class SecondDisplay extends Presentation {
+public class SecondDisplay extends Presentation implements SurfaceHolder.Callback {
     private final String mAdFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/ad_img/";
     private SaleGoodsViewAdapter mSaleGoodsAdapter;
     private RecyclerView mSaleGoodsView;
     private Context mContext;
-    private ImageView mImageView;
     private JSONObject mStoreinfo;
     private TextView mSaleSumNum,mSaleSumAmount;
     private int mShowAdImgTimes = 0,mShowInterval = 5;//mShowAdImgTimes显示图片次数
     private volatile String[] mAdFileNames;
-    private ScheduledFuture<?> mShowAdImgFut;
-    private TextView mBottomRollTv;
+    private Future<?> mShowAdImgFut;
     private int mCurrentBarcodeId;
+    private SurfaceView mSurface;
+    private SurfaceHolder mSurfaceHolder;
+    private Paint mPaint;
+    private long loseTime = 0;
+    private int mBannerTextX = 0;
+    private Bitmap mBannerBitmap = null;
+    private Rect mBottomRect;
+    private volatile boolean mShowBannerImg = true;
     private SecondDisplay(Context outerContext, Display display) {
         super(outerContext, display);
         mContext = outerContext;
@@ -63,25 +70,52 @@ public class SecondDisplay extends Presentation {
         setContentView(R.layout.second_disp_content_layout);
         mSaleSumNum = findViewById(R.id.sale_sum_num);
         mSaleSumAmount = findViewById(R.id.sale_sum_amt);
-        mImageView = findViewById(R.id.banner_img);
-        mBottomRollTv = findViewById(R.id.rolltv);
+        mSurface = findViewById(R.id.surfaceView);
 
         //初始化商品信息
         initSaleGoodsView();
         //初始化导航信息
         initNavigationInfo();
-        //c初始化底部动画
-        initBottomRollTv();
+        //初始化surface
+        initSurfaceView();
     }
     @Override
     public void onAttachedToWindow (){
         super.onAttachedToWindow();
-        showAdImg();
     }
     @Override
     public void  onDetachedFromWindow(){
         super.onDetachedFromWindow();
+
+    }
+
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        showAdImg();
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
         stopShowImg();
+    }
+
+    private void initSurfaceView(){
+        mSurface.setZOrderOnTop(true);
+        mSurface.setBackgroundColor(mContext.getColor(R.color.white));
+        mSurfaceHolder = mSurface.getHolder();
+        mSurfaceHolder.addCallback(this);
+
+        mPaint = new Paint();
+        mPaint.setTextSize(18);
+        mPaint.setAntiAlias(true);
+        mPaint.setFilterBitmap(true);
+        mPaint.setTextAlign(Paint.Align.CENTER);
     }
 
     private void initSaleGoodsView(){
@@ -90,15 +124,20 @@ public class SecondDisplay extends Presentation {
             public void onChanged() {
                 super.onChanged();
                 JSONArray datas = mSaleGoodsAdapter.getDatas();
-                double sale_sum_num = 0.0,sale_sum_amount = 0.0,dis_sum_amt = 0.0;
-                for (int i = 0,length = datas.length();i < length;i ++){
-                    JSONObject jsonObject = datas.optJSONObject(i);
-                    sale_sum_num += jsonObject.optDouble("xnum");
-                    sale_sum_amount += jsonObject.optDouble("sale_amt");
+                double sale_sum_num = 0.0,sale_sum_amount = 0.0;
+                if (datas.length() == 0){
+                    if (!mShowBannerImg) mShowBannerImg = true;
+                    for (int i = 0,length = datas.length();i < length;i ++){
+                        JSONObject jsonObject = datas.optJSONObject(i);
+                        sale_sum_num += jsonObject.optDouble("xnum");
+                        sale_sum_amount += jsonObject.optDouble("sale_amt");
+                    }
+                    mSaleSumNum.setText(String.format(Locale.CANADA,"%.3f",sale_sum_num));
+                    mSaleSumAmount.setText(String.format(Locale.CANADA,"%.2f",sale_sum_amount));
+                    mSaleGoodsView.scrollToPosition(mSaleGoodsAdapter.getCurrentItemIndex());
+                }else{
+                    if (mShowBannerImg) mShowBannerImg = false;
                 }
-                mSaleSumNum.setText(String.format(Locale.CANADA,"%.3f",sale_sum_num));
-                mSaleSumAmount.setText(String.format(Locale.CANADA,"%.2f",sale_sum_amount));
-                mSaleGoodsView.scrollToPosition(mSaleGoodsAdapter.getCurrentItemIndex());
                 displayGoodsImg();
             }
         });
@@ -120,12 +159,11 @@ public class SecondDisplay extends Presentation {
                         String img_url = object.optString("img_url");
                         if (!"".equals(img_url)){
                             final String szImage = img_url.substring(img_url.lastIndexOf("/") + 1);
-                            final Bitmap bitmap = BitmapFactory.decodeFile(LoginActivity.IMG_PATH + szImage);
-                            mImageView.post(()->mImageView.setImageBitmap(bitmap));
+                            mBannerBitmap = BitmapFactory.decodeFile(LoginActivity.IMG_PATH + szImage);
                             mCurrentBarcodeId = barcode_id;
                         }
                     }else{
-                        mImageView.post(()->MyDialog.ToastMessage(object.optString("info"), mContext,getWindow()));
+                        mSurface.post(()->MyDialog.ToastMessage(object.optString("info"), mContext,getWindow()));
                     }
                 });
             }
@@ -222,35 +260,43 @@ public class SecondDisplay extends Presentation {
                 mShowAdImgFut.get(3,TimeUnit.SECONDS);
             } catch (ExecutionException | InterruptedException | CancellationException | TimeoutException e) {
                 e.printStackTrace();
-                Logger.d("停止广告图片：%s",e.getMessage());
             }
         }
     }
     private void showAdImg(){
-        mShowAdImgFut = CustomApplication.scheduleAtFixedRate(showAdImgRunnable,0,mShowInterval * 1000, TimeUnit.MILLISECONDS);
+        mBottomRect = new Rect(0,mSurface.getHeight() - 32,mSurface.getWidth(),mSurface.getBottom());
+        mShowAdImgFut = CustomApplication.scheduleAtFixedRate(showAdImgRunnable,0,50,TimeUnit.MILLISECONDS);
     }
     private Runnable showAdImgRunnable = ()->{
         if (mAdFileNames != null) {
-            final Bitmap bitmap = BitmapFactory.decodeFile(mAdFilePath + mAdFileNames[mShowAdImgTimes++ % mAdFileNames.length]);
-            mImageView.post(() -> mImageView.setImageBitmap(bitmap));
+            Canvas canvas = mSurfaceHolder.lockCanvas();
+            Rect rect = new Rect(0,0,mSurface.getWidth(),mSurface.getHeight() - 32);
+            if (System.currentTimeMillis() - loseTime >= mShowInterval * 1000 && mShowBannerImg){
+                mBannerBitmap = BitmapFactory.decodeFile(mAdFilePath + mAdFileNames[mShowAdImgTimes++ % mAdFileNames.length]);
+                loseTime = System.currentTimeMillis();
+            }
+            if (mBannerBitmap != null)
+                canvas.drawBitmap(mBannerBitmap,new Rect(0,0,mBannerBitmap.getWidth(),mBannerBitmap.getHeight()),rect,null);
+
+            //图片边框
+            mPaint.setStyle(Paint.Style.STROKE);
+            mPaint.setStrokeWidth(1);
+            mPaint.setColor(mContext.getColor(R.color.blue));
+            canvas.drawRect(rect,mPaint);
+            //底部区域
+            mPaint.setStyle(Paint.Style.FILL);
+            mPaint.setColor(mContext.getColor(R.color.white));
+            canvas.drawRect(mBottomRect,mPaint);
+            //底部文字
+            mPaint.setColor(mContext.getColor(R.color.blue));
+            Paint.FontMetrics fontMetrics = mPaint.getFontMetrics();
+            canvas.drawText("欢迎光临！",mBannerTextX,mBottomRect.top + fontMetrics.bottom - fontMetrics.top,mPaint);
+
+            if ((mBannerTextX +=1) > mSurface.getWidth())mBannerTextX = 0;
+
+            mSurfaceHolder.unlockCanvasAndPost(canvas);
         }
     };
-    private void initBottomRollTv(){
-        final Animation transtoLeftAnim = AnimationUtils.loadAnimation(mContext, R.anim.tv_move);
-        transtoLeftAnim.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-            }
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                mBottomRollTv.startAnimation(animation);
-            }
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-            }
-        });
-        mBottomRollTv.startAnimation(transtoLeftAnim);
-    }
 
     private static Display getDisplayFromMediaRouter(Context context){
         Display presentationDisplay = null;
@@ -291,5 +337,4 @@ public class SecondDisplay extends Presentation {
         }
         return secondDisplay;
     }
-
 }

@@ -75,7 +75,7 @@
                     android:id="@+id/print_id_label"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_marginStart="@dimen/margin_12"
+                    android:layout_marginStart="@dimen/margin_5"
                     android:layout_marginTop="@dimen/margin_1"
                     android:layout_marginBottom="@dimen/margin_1"
                     android:background="@drawable/left_separator"
@@ -83,16 +83,20 @@
                     android:paddingStart="@dimen/margin_5"
                     android:paddingEnd="@dimen/size_0"
                     android:text="@string/printer_sz"
-                    android:textColor="@color/text_color" />
+                    android:textColor="@color/text_color"
+                    android:visibility="gone" />
 
                 <Spinner
                     android:id="@+id/print_id"
-                    style="@style/Platform.Widget.AppCompat.Spinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/height_35"
-                    android:background="@drawable/spinner_style"
-                    android:dropDownWidth="@dimen/height_40"
-                    android:minWidth="@dimen/width_88" />
+                    style="@style/Widget.AppCompat.Light.Spinner.DropDown.ActionBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/height_40"
+                    android:layout_marginStart="@dimen/margin_5"
+                    android:layout_marginEnd="@dimen/margin_2"
+                    android:dropDownWidth="wrap_content"
+                    android:foreground="@drawable/spinner_style"
+                    android:minWidth="@dimen/width_88"
+                    android:overlapAnchor="false" />
 
             </LinearLayout>
         </LinearLayout>
