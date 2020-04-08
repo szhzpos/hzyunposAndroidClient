@@ -87,7 +87,7 @@
                     android:visibility="gone" />
 
                 <Spinner
-                    android:id="@+id/print_id"
+                    android:id="@+id/printer_id"
                     style="@style/Widget.AppCompat.Light.Spinner.DropDown.ActionBar"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/height_40"

@@ -18,7 +18,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.adapter.DemoCollectionPagerAdapter;
+import com.wyc.cloudapp.adapter.FragmentPagerAdapter;
 
 public class ParameterSettingDialog extends DialogFragment {
 
@@ -42,7 +42,7 @@ public class ParameterSettingDialog extends DialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         final TabLayout tabLayout = view.findViewById(R.id.param_tab);
         final ViewPager2 viewPager2 = view.findViewById(R.id.view_pager);
-        final DemoCollectionPagerAdapter adapter =  new DemoCollectionPagerAdapter(this);
+        final FragmentPagerAdapter adapter =  new FragmentPagerAdapter(this);
         viewPager2.setAdapter(adapter);
         new TabLayoutMediator(tabLayout, viewPager2,(tab, position) -> tab.setText(adapter.getItem(position).getTitle())).attach();
 

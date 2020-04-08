@@ -17,6 +17,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <RadioGroup
+            android:id="@+id/format_rg"
             android:layout_width="match_parent"
             android:layout_height="@dimen/height_45"
             android:layout_margin="@dimen/margin_1"
@@ -61,6 +62,7 @@
                 android:textColor="@color/text_color" />
 
             <RadioGroup
+                android:id="@+id/format_size_rg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
@@ -132,7 +134,7 @@
                 android:textColor="@color/text_color" />
 
             <EditText
-                android:id="@+id/editText4"
+                android:id="@+id/footer_c"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="@dimen/margin_1"
@@ -164,14 +166,16 @@
                 android:textColor="@color/text_color" />
 
             <EditText
+                android:id="@+id/p_count"
                 android:layout_width="@dimen/width_45"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/margin_1"
                 android:background="@drawable/border_sub_gray"
                 android:ems="10"
-                android:inputType="textPersonName"
-                android:paddingStart="@dimen/margin_5"
+                android:inputType="number"
+                android:padding="@dimen/margin_2"
                 android:paddingTop="@dimen/size_0"
+                android:text="@string/one_sz"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_16" />
 
@@ -183,16 +187,18 @@
                 android:textColor="@color/text_color" />
 
             <EditText
+                android:id="@+id/footer_space"
                 android:layout_width="@dimen/width_45"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/margin_1"
                 android:background="@drawable/border_sub_gray"
                 android:ems="10"
-                android:inputType="textPersonName"
-                android:paddingStart="@dimen/margin_5"
+                android:inputType="number"
+                android:padding="@dimen/margin_2"
                 android:paddingTop="@dimen/size_0"
+                android:text="@string/two_sz"
                 android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16" />
+                android:textSize="@dimen/font_size_14" />
         </LinearLayout>
     </LinearLayout>
 

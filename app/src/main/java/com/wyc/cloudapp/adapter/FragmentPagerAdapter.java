@@ -14,9 +14,9 @@ import com.wyc.cloudapp.fragment.PrintFormatFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DemoCollectionPagerAdapter extends FragmentStateAdapter {
+public class FragmentPagerAdapter extends FragmentStateAdapter {
     private List<BaseFragment> mFragments;
-    public DemoCollectionPagerAdapter(Fragment fragment) {
+    public FragmentPagerAdapter(Fragment fragment) {
         super(fragment);
         mFragments = new ArrayList<>();
         mFragments.add(new BaseParameterFragment());

@@ -206,7 +206,6 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         if (SQLiteHelper.execSql(orders,"SELECT count(order_id) + 1 order_id from retail_order where date(addtime,'unixepoch' ) = date('now')")){
             order_code =orders.optString("order_id");
             order_code = prefix + "0000".substring(order_code.length()) + order_code;
-            Logger.d("order_id:%s,length:%d",order_code,order_code.length());
         }else{
             order_code = prefix + "0001";;
             MyDialog.ToastMessage("生成订单号错误：" + orders.optString("info"),mContext,null);

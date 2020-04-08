@@ -2,6 +2,7 @@ package com.wyc.cloudapp.fragment;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothDevice;
@@ -38,13 +39,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+
+import static android.app.Activity.RESULT_OK;
 
 public class PeripheralSettingFragment extends BaseFragment {
+    private static final String ACTION_USB_PERMISSION = "com.wyc.cloudapp.USB_PERMISSION";
     private static final String mTitle = "外设设置";
     private static final int REQUEST_BLUETOOTH__PERMISSIONS = 0xabc8;
+    private static final int REQUEST_BLUETOOTH_ENABLE = 0X8888;
     private Context mContext;
     private CustomProgressDialog mProgressDialog;
     private View mRootView;
@@ -103,11 +106,13 @@ public class PeripheralSettingFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         mRootView = view;
-        initPrintId();
+        initPrinterId();
         mRootView.findViewById(R.id.save).setOnClickListener(v->saveContent());
+        //加载参数
+        laodContent();
     }
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         {
             IntentFilter intentFilter = new IntentFilter();
@@ -115,6 +120,7 @@ public class PeripheralSettingFragment extends BaseFragment {
             intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
             intentFilter.addAction(BluetoothDevice.ACTION_FOUND);
             intentFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
+            intentFilter.addAction(ACTION_USB_PERMISSION);
             context.registerReceiver(usb_bluetooth_receiver,intentFilter);
         }
         mContext = context;
@@ -131,7 +137,6 @@ public class PeripheralSettingFragment extends BaseFragment {
     @Override
     public void onResume(){
         super.onResume();
-        laodContent();
     }
     @Override
     public void onPause(){
@@ -147,6 +152,12 @@ public class PeripheralSettingFragment extends BaseFragment {
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent){//蓝牙开启回调
+        if (resultCode == RESULT_OK && requestCode == REQUEST_BLUETOOTH_ENABLE){
+            startBlueToothDiscovery();//开始扫描
         }
     }
 
@@ -178,6 +189,11 @@ public class PeripheralSettingFragment extends BaseFragment {
                                         }
                                     }
                                     if (!isExist){
+                                        if (bluetoothDevice_find.getBondState() == BluetoothDevice.BOND_NONE){
+                                            name = name.concat("<未配对>");
+                                        }else{
+                                            name = name.concat("<已配对>");
+                                        }
                                         mPrintIdAdapter.add(name.concat("\r\n").concat(addr));
                                         mPrintIdAdapter.notifyDataSetChanged();
                                     }
@@ -201,11 +217,40 @@ public class PeripheralSettingFragment extends BaseFragment {
                         break;
                     case BluetoothDevice.ACTION_BOND_STATE_CHANGED:
                         Logger.d("ACTION_BOND_STATE_CHANGED");
+                        boolean bond_status = false;
                         BluetoothDevice bluetoothDevice_bound = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                        if (bluetoothDevice_bound != null)
+                        if (bluetoothDevice_bound != null){
                             if (intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE,0) == 12){
-
+                                bond_status = true;
                             }
+                            String addr = bluetoothDevice_bound.getAddress(),tmp,sz;
+                            for(int i = 0,size = mPrintIdAdapter.getCount();i < size;i++){
+                                tmp = mPrintIdAdapter.getItem(i);
+                                if (tmp != null && tmp.contains(addr)){
+                                    mPrintIdAdapter.remove(tmp);
+                                    sz = tmp.substring(tmp.indexOf('<') + 1,tmp.lastIndexOf('>'));
+                                    if (bond_status)
+                                        tmp = tmp.replace(sz,"已配对");
+                                    else
+                                        tmp = tmp.replace(sz,"未配对");
+
+                                    mPrintIdAdapter.add(tmp);
+                                    mPrintIdAdapter.notifyDataSetChanged();
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    case ACTION_USB_PERMISSION:
+                        synchronized (this) {
+                            UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                            if (!intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                                if(device != null){
+                                    mPrintIdAdapter.remove("vid:" + device.getVendorId() + "\r\npid:" + device.getProductId());
+                                    MyDialog.ToastMessage("拒绝权限将无法使用USB打印机",mContext,null);
+                                }
+                            }
+                        }
                         break;
                 }
             }
@@ -218,7 +263,8 @@ public class PeripheralSettingFragment extends BaseFragment {
             case R.id.bluetooth_p:
                 if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     if ((ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION))){
-                        MyDialog.ToastMessage("App不能搜索蓝牙打印机，请设置允许App定位权限",mContext,null);
+                        PeripheralSettingFragment.this.requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},REQUEST_BLUETOOTH__PERMISSIONS );
+                        //MyDialog.ToastMessage("App不能搜索蓝牙打印机，请设置允许App定位权限",mContext,null);
                     }else {
                         PeripheralSettingFragment.this.requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},REQUEST_BLUETOOTH__PERMISSIONS );
                     }
@@ -227,12 +273,7 @@ public class PeripheralSettingFragment extends BaseFragment {
                 }
                 break;
             case R.id.usb_p:
-                UsbManager manager = (UsbManager)mContext.getSystemService(Context.USB_SERVICE);
-                if (null != manager){
-                    HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
-                    UsbDevice device = deviceList.get("deviceName");
-                    Logger.d(deviceList.toString());
-                }
+                startUSBDiscovery(null,null);
                 break;
         }
     }
@@ -247,7 +288,7 @@ public class PeripheralSettingFragment extends BaseFragment {
             }else {
                 MyDialog.displayAskMessage(null, "蓝牙已关闭，是否开启蓝牙功能？", mContext, myDialog -> {
                     Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                    startActivityForResult(enableBtIntent, 0X8888);//请求开启蓝牙
+                    startActivityForResult(enableBtIntent,REQUEST_BLUETOOTH_ENABLE);//请求开启蓝牙
                     myDialog.dismiss();
                 },Dialog::dismiss);
             }
@@ -261,17 +302,41 @@ public class PeripheralSettingFragment extends BaseFragment {
                 bluetoothAdapter.cancelDiscovery();
         }
     }
+    private void bondBlueTooth(final String addr){
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (bluetoothAdapter != null){
+            BluetoothDevice device = bluetoothAdapter.getRemoteDevice(addr);
+            if (device.getBondState() == BluetoothDevice.BOND_NONE){
+                device.createBond();
+            }
+        }
+    }
 
-    private void initPrintId(){
-        Spinner printId = mRootView.findViewById(R.id.print_id);
-        mPrintIdAdapter = new ArrayAdapter<String>(mContext,R.layout.drop_down_style);
+    private void initPrinterId(){
+        Spinner printerId = mRootView.findViewById(R.id.printer_id);
+        mPrintIdAdapter = new ArrayAdapter<>(mContext,R.layout.drop_down_style);
         mPrintIdAdapter.setDropDownViewResource(R.layout.drop_down_style);
         mPrintIdAdapter.add("请选择打印机");
-        printId.setAdapter(mPrintIdAdapter);
-        printId.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        printerId.setAdapter(mPrintIdAdapter);
+        printerId.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                 stopBlueToothDiscovery();
+                String tmp = mPrintIdAdapter.getItem(position);
+                if (null != tmp){
+                    String[] vals = tmp.split("\r\n");
+                    if (vals.length > 1){
+                        RadioGroup radioGroup = mRootView.findViewById(R.id.print_way);
+                        switch (radioGroup.getCheckedRadioButtonId()){
+                            case R.id.bluetooth_p:
+                                bondBlueTooth(vals[1]);
+                                stopBlueToothDiscovery();
+                                break;
+                            case R.id.usb_p:
+                                startUSBDiscovery(vals[0],vals[1]);
+                                break;
+                        }
+                    }
+                }
             }
 
             @Override
@@ -279,7 +344,7 @@ public class PeripheralSettingFragment extends BaseFragment {
                 Logger.d("onNothingSelected");
             }
         });
-        printId.setOnTouchListener((v, event) -> {
+        printerId.setOnTouchListener((v, event) -> {
             v.performClick();
             if (event.getAction() == MotionEvent.ACTION_DOWN){
                 startFindDevice();
@@ -288,11 +353,43 @@ public class PeripheralSettingFragment extends BaseFragment {
         });
     }
 
+    private void startUSBDiscovery(final String vid,final String pid){
+        UsbManager manager = (UsbManager)mContext.getSystemService(Context.USB_SERVICE);
+        if (null != manager){
+            HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
+            UsbDevice device = null;
+            boolean isExist = false;
+            for(String sz:deviceList.keySet()){
+                device = deviceList.get(sz);
+                if (null != device){
+                    if (vid == null && null == pid) {
+                        mPrintIdAdapter.clear();
+                        mPrintIdAdapter.add("vid:" + device.getVendorId() + "\r\npid:" + device.getProductId());
+                    }else{
+                        try {
+                            if (String.valueOf(device.getVendorId()).equals(vid) && pid.equals(String.valueOf(device.getProductId()))){
+                                isExist = true;
+                                break;
+                            }
+                        }catch (NumberFormatException e){
+                            e.printStackTrace();
+                            MyDialog.ToastMessage("请求USB权限错误：" + e.getMessage(),mContext,null);
+                        }
+                    }
+                }
+            }
+            if (isExist || mPrintIdAdapter.getCount() == 1){
+                PendingIntent permissionIntent = PendingIntent.getBroadcast(mContext, 0, new Intent(ACTION_USB_PERMISSION), 0);
+                manager.requestPermission(device, permissionIntent);
+            }
+        }
+    }
+
     private JSONObject get_printer_setting(boolean way) throws JSONException {
         int id = -1,status = 0;
         JSONObject object = new JSONObject();
         RadioGroup radioGroup = mRootView.findViewById(R.id.print_way);
-        Spinner printId = mRootView.findViewById(R.id.print_id);
+        Spinner printerId = mRootView.findViewById(R.id.printer_id);
         if (way){
             switch (radioGroup.getCheckedRadioButtonId()){
                 case R.id.bluetooth_p:
@@ -306,12 +403,25 @@ public class PeripheralSettingFragment extends BaseFragment {
             }
             object.put("id",id);
             object.put("s",status);
-            object.put("v",printId.getSelectedItem());
+            object.put("v",printerId.getSelectedItem());
         }else{
             if (SQLiteHelper.getLocalParameter("printer",object)){
-                radioGroup.check(object.optInt("id"));
+                String printer_info = object.optString("v");
+                int status_id = object.optInt("id");
+                String[] vals = printer_info.split("\r\n");
+                if (vals.length > 1){
+                    switch (status_id){
+                        case R.id.bluetooth_p:
+                            bondBlueTooth(vals[1]);
+                            break;
+                        case R.id.usb_p:
+                            startUSBDiscovery(vals[0],vals[1]);
+                            break;
+                    }
+                }
+                radioGroup.check(status_id);
                 mPrintIdAdapter.clear();
-                mPrintIdAdapter.add(object.optString("v"));
+                mPrintIdAdapter.add(printer_info);
             }else
                 MyDialog.ToastMessage("加载打印机参数错误：" + object.getString("info"),mContext,null);
         }

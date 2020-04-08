@@ -8,8 +8,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbDeviceConnection;
+import android.hardware.usb.UsbEndpoint;
+import android.hardware.usb.UsbInterface;
+import android.hardware.usb.UsbManager;
 import android.media.MediaRouter;
 import android.os.Bundle;
 import android.os.Handler;
@@ -45,10 +53,12 @@ import com.wyc.cloudapp.dialog.PayDialog;
 import com.wyc.cloudapp.dialog.SecondDisplay;
 import com.wyc.cloudapp.dialog.VipInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.logger.Printer;
 import com.wyc.cloudapp.network.sync.SyncManagement;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.print.PrinterCommands;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
@@ -57,11 +67,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainActivity extends AppCompatActivity {
@@ -530,6 +546,9 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(PayDialog myDialog) {
                         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
+                        //get_print_content(mSaleGoodsViewAdapter.getDatas(),myDialog.getContent());
+                        print(get_print_content(mSaleGoodsViewAdapter.getDatas(),myDialog.getContent()));
+
                         mSyncManagement.sync_order();
                         resetOrderInfo();
                         myDialog.dismiss();
@@ -746,6 +765,207 @@ public class MainActivity extends AppCompatActivity {
             mSecondDisplay.setDatas(mSaleGoodsViewAdapter.getDatas()).setNavigationInfo(mStoreInfo).show();
         }
     }
+
+    private void print(@NonNull final String content){
+        JSONObject object = new JSONObject();
+        if (SQLiteHelper.getLocalParameter("printer",object)){
+            Logger.d_json(object.toString());
+
+            int status_id = object.optInt("id");
+            String tmp = object.optString("v");
+            String[] vals = tmp.split("\r\n");
+            if (vals.length > 1){
+                switch (status_id){
+                    case R.id.bluetooth_p:
+                        bluetooth_print(content,vals[1]);
+                        break;
+                    case R.id.usb_p:
+                        usb_print(vals[0],vals[1],content);
+                        break;
+                }
+            }
+        }else {
+            MyDialog.ToastMessage("读取打印机设置错误：" + object.optString("info"),this,null);
+        }
+    }
+    private void bluetooth_print(final  String content,final String device_addr){
+        if(content != null && device_addr != null){
+            CustomApplication.execute(()->{
+                BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                if (bluetoothAdapter != null){
+                    if (bluetoothAdapter.isEnabled()){
+                        BluetoothDevice bluetoothDevice = bluetoothAdapter.getRemoteDevice(device_addr);
+                        BluetoothSocket bluetoothSocket = null;
+                        try {
+                            byte[] bytes = content.getBytes("GB2312");
+                            bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
+                            bluetoothSocket.connect();
+                            OutputStream outputStream = bluetoothSocket.getOutputStream();
+                            outputStream.write(bytes);
+                            outputStream.flush();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            runOnUiThread(()->MyDialog.ToastMessage("打印错误：" + e.getMessage(),this,null));
+                        } finally {
+                            if (bluetoothSocket != null) {
+                                try {
+                                    bluetoothSocket.close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }else{
+                        runOnUiThread(()->MyDialog.ToastMessage("蓝牙已关闭！",this,null));
+                    }
+                }
+            });
+        }
+    }
+    private void usb_print(final String vid,final String pid,final String content){
+        CustomApplication.execute(()->{
+            UsbDevice device = null;
+            UsbInterface usbInterface = null;
+            UsbEndpoint usbEndpoint = null;
+            UsbDeviceConnection connection = null;
+            UsbManager manager = (UsbManager)getSystemService(Context.USB_SERVICE);
+            if (manager != null){
+                HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
+                for(String sz:deviceList.keySet()){
+                    device = deviceList.get(sz);
+                    if (device != null){
+                        if (String.valueOf(device.getVendorId()).equals(vid) && String.valueOf(device.getProductId()).equals(pid)){
+                            break;
+                        }
+                    }
+                }
+                if (null != device){
+                    usbInterface = device.getInterface(0);
+                    usbEndpoint = usbInterface.getEndpoint(0);
+                    connection = manager.openDevice(device);
+                    if (null != connection){
+                        if (connection.claimInterface(usbInterface, true)){
+                            try {
+                                byte[] bytes = content.getBytes("GB2312");
+                                int length =  bytes.length,count = length / 64 + 1;
+                                int c = 0;
+
+                                Logger.d("bytes:%d,count:%d",length,count);
+
+                                byte[] tmp = Arrays.copyOfRange(bytes,0,64);
+                                while (c++ <= count){
+                                    int ret_c = connection.bulkTransfer(usbEndpoint,tmp,tmp.length, 15000);
+                                    tmp = Arrays.copyOfRange(bytes,(c * 64),c * 64 + 64);
+                                    Logger.d("tmp:%d",tmp.length);
+                                    Logger.d("ret_c:%d",ret_c);
+                                }
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                                runOnUiThread(()->MyDialog.ToastMessage(e.getMessage(),this,null));
+                            }finally {
+                                connection.releaseInterface(usbInterface);
+                                connection.close();
+                            }
+                        }else{
+                            runOnUiThread(()->MyDialog.ToastMessage("独占访问打印机错误！",this,null));
+                        }
+                    }else{
+                        runOnUiThread(()->MyDialog.ToastMessage("打开打印机连接错误！",this,null));
+                    }
+                }else{
+                    runOnUiThread(()->MyDialog.ToastMessage("未找到打印机设备！",this,null));
+                }
+            }
+        });
+    }
+    private String get_print_content(JSONArray sales,JSONArray pays){
+        JSONObject print_format_info = new JSONObject();
+        String content = null;
+        if (SQLiteHelper.getLocalParameter("print_f_info",print_format_info)){
+            if (print_format_info.optInt("f") == R.id.checkout_format){
+                switch (print_format_info.optInt("f_z")){
+                    case R.id.f_58:
+                        content = c_format_58(print_format_info,sales,pays);
+                        break;
+                    case R.id.f_76:
+                        break;
+                    case R.id.f_80:
+                        break;
+                }
+            }
+        }else
+            MyDialog.ToastMessage("加载打印格式错误：" + print_format_info.optString("info"),this,getWindow());
+
+        return content;
+    }
+    private String c_format_58(JSONObject format_info,final JSONArray sales,final JSONArray pays){
+        StringBuilder info = new StringBuilder();
+        String store_name,footer_c,new_line,new_line_n,line,rest;
+        int print_count = 1,footer_space = 5;
+        store_name = format_info.optString("s_n");
+        footer_c = format_info.optString("f_c");
+        print_count = format_info.optInt("p_c",1);
+        footer_space = format_info.optInt("f_s",5);
+        new_line = PrinterCommands.commandToStr(PrinterCommands.NEW_LINE);
+        new_line_n = PrinterCommands.commandToStr(PrinterCommands.LINE_SPACING_n);
+        line = "--------------------------------";
+        rest = PrinterCommands.commandToStr(PrinterCommands.RESET);
+
+        info.append(PrinterCommands.commandToStr(PrinterCommands.DOUBLE_HEIGHT)).append(PrinterCommands.commandToStr(PrinterCommands.ALIGN_CENTER))
+                .append(store_name.length() == 0 ?mStoreInfo.optString("stores_name") :store_name).append(new_line).append(new_line).append(rest);
+
+        info.append(PrinterCommands.printTwoData(1,"店号：".concat(mStoreInfo.optString("stores_id")),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()))).append(new_line);
+        info.append(PrinterCommands.printTwoData(1,"机号：".concat(mCashierInfo.optString("pos_num")),"收银员：".concat(mCashierInfo.optString("cas_name")))).append(new_line);
+        info.append("单号：").append(mOrderCode.getText()).append(new_line).append(new_line);
+
+        info.append("商品名称      单价   数量   小计").append(new_line).append(line).append(new_line);
+
+        //商品明细
+        JSONObject info_obj;
+
+        for (int i = 0,size =sales.length();i < size;i ++){
+            info_obj = sales.optJSONObject(i);
+            if (info_obj != null){
+                info.append(PrinterCommands.commandToStr(PrinterCommands.BOLD)).append(info_obj.optString("goods_title")).append(rest);
+                info.append(PrinterCommands.printTwoData(1,info_obj.optString("barcode"),
+                        PrinterCommands.printThreeData(16,info_obj.optString("price"),info_obj.optString("xnum"),info_obj.optString("sale_amt"))));
+
+                info.append(new_line).append(rest).append(new_line_n);
+            }
+        }
+        info.append(PrinterCommands.commandToStr(PrinterCommands.RESET)).append(line).append(new_line);
+        info.append(PrinterCommands.printTwoData(1,"总价：".concat(String.format(Locale.CHINA,"%.2f",Double.valueOf(mSaleSumAmount.getText().toString()) + Double.valueOf(mDisSumAmt.getText().toString())))
+                ,"件数：".concat(mSaleSumNum.getText().toString()))).append(new_line);;
+        info.append(PrinterCommands.printTwoData(1,"应收：".concat(mSaleSumAmount.getText().toString()),"优惠：".concat(mDisSumAmt.getText().toString()))).append(new_line).append(line).append(new_line);
+
+        //支付方式
+        double zl = 0.0,pamt = 0.0;
+        for (int i = 0,size = pays.length();i < size;i++){
+            info_obj = pays.optJSONObject(i);
+            zl = info_obj.optDouble("pzl");
+            pamt = info_obj.optDouble("pamt");
+            info.append(info_obj.optString("name")).append("：").append(pamt - zl).append("元").append(new_line);
+            info.append("预收：").append(pamt);
+            if (!Utils.equalDouble(zl,0.0)){
+                info.append(",").append("找零：").append(zl);
+            }
+            info.append(new_line);
+        }
+        info.append(line).append(new_line);
+        info.append("门店热线：").append(mStoreInfo.optString("telphone")).append(new_line);
+        info.append("门店地址：").append(mStoreInfo.optString("region")).append(new_line);
+
+        info.append(PrinterCommands.commandToStr(PrinterCommands.ALIGN_CENTER)).append(footer_c);
+        for(int i = 0;i < footer_space;i ++)info.append(new_line);
+        info.append(rest);
+
+
+        Logger.d(info);
+
+        return info.toString();
+    }
+
+
 
     public JSONArray discount(double discount,final String zk_cashier_id){
         if (null == zk_cashier_id || "".equals(zk_cashier_id)){

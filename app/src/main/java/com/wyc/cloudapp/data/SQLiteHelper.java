@@ -303,7 +303,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         return isTrue;
     }
 
-    public static boolean getLocalParameter(String parameter_id,@NonNull JSONObject param){
+    public static boolean getLocalParameter(final String parameter_id,@NonNull JSONObject param){
         boolean isTrue = true;
         try (Cursor cursor = mDb.query("local_parameter",new String[]{"parameter_content"},"parameter_id = ?",new String[]{parameter_id},
                 null,null,null)){
