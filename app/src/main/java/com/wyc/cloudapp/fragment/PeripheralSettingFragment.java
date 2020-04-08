@@ -378,7 +378,7 @@ public class PeripheralSettingFragment extends BaseFragment {
                     }
                 }
             }
-            if (isExist || mPrintIdAdapter.getCount() == 1){
+            if (isExist && !manager.hasPermission(device)){
                 PendingIntent permissionIntent = PendingIntent.getBroadcast(mContext, 0, new Intent(ACTION_USB_PERMISSION), 0);
                 manager.requestPermission(device, permissionIntent);
             }

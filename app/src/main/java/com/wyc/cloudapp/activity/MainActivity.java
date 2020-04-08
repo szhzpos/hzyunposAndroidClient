@@ -926,7 +926,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0,size =sales.length();i < size;i ++){
             info_obj = sales.optJSONObject(i);
             if (info_obj != null){
-                info.append(PrinterCommands.commandToStr(PrinterCommands.BOLD)).append(info_obj.optString("goods_title")).append(rest);
+                info.append(PrinterCommands.commandToStr(PrinterCommands.BOLD)).append(info_obj.optString("goods_title")).append(new_line).append(rest);
                 info.append(PrinterCommands.printTwoData(1,info_obj.optString("barcode"),
                         PrinterCommands.printThreeData(16,info_obj.optString("price"),info_obj.optString("xnum"),info_obj.optString("sale_amt"))));
 

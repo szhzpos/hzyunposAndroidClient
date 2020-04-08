@@ -116,8 +116,8 @@ public class PrintFormatFragment extends BaseFragment {
                      fzrg.check(object.optInt("f_z"));
                      stores_name.setText(object.optString("s_n"));
                      footer_c.setText(object.optString("f_c"));
-                     p_count.setText(object.optString("p_c"));
-                     footer_space.setText(object.optString("f_s"));
+                     p_count.setText(object.optString("p_c","1"));
+                     footer_space.setText(object.optString("f_s","5"));
                  }else{
                      MyDialog.ToastMessage("加载打印格式参数错误：" + object.getString("info"),mContext,null);
                  }
