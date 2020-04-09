@@ -74,8 +74,9 @@ public class PrinterCommands {
      */
     public static final byte[] LINE_SPACING_DEFAULT = {0x1b, 0x32};
     public static final byte[] LINE_SPACING_8 = {0x1b,0x33};
-    public static final byte[] LINE_SPACING_n = {0x1b,0x33,0x0f};
-
+    public static final byte[] LINE_SPACING_4 = {0x1b,0x33,0x04};
+    public static final byte[] LINE_SPACING_2 = {0x1b,0x33,0x02};
+    public static final byte[] LINE_SPACING_16 = {0x1b,0x33,0x59};
     /**
      * 换行
      */
@@ -85,6 +86,11 @@ public class PrinterCommands {
      * 退纸
      */
     public static final byte[] BACK_STEP  = {0x1B, 0x6A};
+
+    /**
+     * 开钱箱
+     */
+    public static final byte[] OPEN_CASHBOX  = {0x1B, 0x70,0x0,0x3c,0x79};
 
     /**
      * 打印纸一行最大的字节

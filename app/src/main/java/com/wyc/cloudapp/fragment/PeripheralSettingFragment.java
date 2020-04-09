@@ -322,6 +322,7 @@ public class PeripheralSettingFragment extends BaseFragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String tmp = mPrintIdAdapter.getItem(position);
+                Logger.d(tmp);
                 if (null != tmp){
                     String[] vals = tmp.split("\r\n");
                     if (vals.length > 1){
@@ -362,9 +363,20 @@ public class PeripheralSettingFragment extends BaseFragment {
             for(String sz:deviceList.keySet()){
                 device = deviceList.get(sz);
                 if (null != device){
+                    String value;
                     if (vid == null && null == pid) {
-                        mPrintIdAdapter.clear();
-                        mPrintIdAdapter.add("vid:" + device.getVendorId() + "\r\npid:" + device.getProductId());
+                        value = "vid:" + device.getVendorId() + "\r\npid:" + device.getProductId();
+                        for (int i = 0,size = mPrintIdAdapter.getCount();i < size;i++){
+                            Logger.d("value:%s,mPrintIdAdapter.getItem(i):%s",value,mPrintIdAdapter.getItem(i));
+                            if (value.equals(mPrintIdAdapter.getItem(i))){
+                                isExist = true;
+                                break;
+                            }
+                        }
+                        if (!isExist){
+                            mPrintIdAdapter.add(value);
+                        }
+                        isExist = false;
                     }else{
                         try {
                             if (String.valueOf(device.getVendorId()).equals(vid) && pid.equals(String.valueOf(device.getProductId()))){
@@ -378,7 +390,7 @@ public class PeripheralSettingFragment extends BaseFragment {
                     }
                 }
             }
-            if (isExist && !manager.hasPermission(device)){
+            if ((isExist || mPrintIdAdapter.getCount() == 1) && device != null && !manager.hasPermission(device)){
                 PendingIntent permissionIntent = PendingIntent.getBroadcast(mContext, 0, new Intent(ACTION_USB_PERMISSION), 0);
                 manager.requestPermission(device, permissionIntent);
             }

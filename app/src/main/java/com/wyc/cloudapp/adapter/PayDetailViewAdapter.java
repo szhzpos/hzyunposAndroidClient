@@ -234,7 +234,7 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
         return null;
     }
     public void clearPayDetail(){
-        mDatas = new JSONArray();
+        Utils.ClearJsons(mDatas);
         notifyDataSetChanged();
     }
 

@@ -27,6 +27,7 @@ import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.print.PrinterCommands;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
@@ -85,7 +86,11 @@ public class PayDialog extends Dialog {
 
         //初始化按钮
         mOK = findViewById(R.id._ok);
-        mOK.setOnClickListener(v -> {cash_pay();});
+        mOK.setOnClickListener(v -> {
+            v.setEnabled(false);
+            cash_pay();
+            v.postDelayed(()->v.setEnabled(true),300);
+        });
         mCancel = findViewById(R.id._cancel);
         mCancel.setOnClickListener(v -> PayDialog.this.dismiss());
         findViewById(R.id._close).setOnClickListener(view -> mCancel.callOnClick());
@@ -503,6 +508,11 @@ public class PayDialog extends Dialog {
         }
         return show ? show : initPayContent(mainActivity.showVipInfo(vip));
     }
+    public void open_cashbox(){
+        if (mPayDetailViewAdapter.findPayDetailById(PayMethodViewAdapter.CASH_METHOD_ID) != null){
+            mainActivity.print(PrinterCommands.commandToStr(PrinterCommands.OPEN_CASHBOX));
+        }
+    }
     public void requestPay(final String order_code, final String url, final String appId, final String appScret, final String stores_id, final String pos_num){
         if (mPayListener != null)mainActivity.runOnUiThread(()->mPayListener.onProgress(PayDialog.this,"正在支付..."));
         mPayStatus = true;
@@ -598,12 +608,12 @@ public class PayDialog extends Dialog {
                                                         object.put("pay_code",info_json.getString("pay_code"));
                                                         object.put("order_code_son",info_json.getString("order_code_son"));
                                                         if (res_code == 4){
-                                                            Looper.prepare();
-                                                            final Looper looper = Looper.myLooper();
                                                             mainActivity.runOnUiThread(()->{
                                                                 ChangeNumOrPriceDialog password_dialog = new ChangeNumOrPriceDialog(mainActivity,"请输入密码","");
                                                                 password_dialog.setOnDismissListener(dialog -> {
-                                                                    if (looper != null)looper.quit();
+                                                                    synchronized (this){
+                                                                        notifyAll();
+                                                                    }
                                                                 });
                                                                 password_dialog.setYesOnclickListener(myDialog -> {
                                                                     try {
@@ -618,8 +628,13 @@ public class PayDialog extends Dialog {
                                                                     myDialog.dismiss();
                                                                 }).show();
                                                             });
-
-                                                            Looper.loop();
+                                                            synchronized (this){
+                                                                try {
+                                                                    wait();
+                                                                } catch (InterruptedException e) {
+                                                                    e.printStackTrace();
+                                                                }
+                                                            }
                                                         }
                                                         if (mPayStatus){
                                                             sz_param = HttpRequest.generate_request_parm(object,appScret);
@@ -645,6 +660,11 @@ public class PayDialog extends Dialog {
                                                                             res_code = info_json.getInt("res_code");
                                                                             if (res_code == 1){//支付成功
                                                                                 Logger.d_json(info_json.toString());
+                                                                                if (info_json.has("xnote")){
+                                                                                    JSONObject jsonObject = mPayDetailViewAdapter.findPayDetailById(pay_method_id);
+                                                                                    if (jsonObject != null)
+                                                                                        jsonObject.put("xnote",info_json.getJSONArray("xnote"));
+                                                                                }
                                                                                 third_pay_order_id = info_json.getString("pay_code");
                                                                                 discount_money = info_json.getDouble("discount");
                                                                                 pay_time = info_json.getLong("pay_time");
@@ -705,8 +725,9 @@ public class PayDialog extends Dialog {
                 if (mPayListener != null)
                     mainActivity.runOnUiThread(()-> mPayListener.onError(PayDialog.this,err.toString()));
             }else{
-                if (mPayListener != null)
+                if (mPayListener != null){
                     mainActivity.runOnUiThread(()-> mPayListener.onSuccess(PayDialog.this));
+                }
             }
         }
     }

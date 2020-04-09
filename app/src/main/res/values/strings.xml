@@ -161,4 +161,5 @@
     <string name="sec_n_b_sz">名称/条码</string>
     <string name="sec_price_sz">价格</string>
     <string name="sec_r_id_sz">序</string>
+    <string name="o_cashbox_sz">开钱箱</string>
 </resources>

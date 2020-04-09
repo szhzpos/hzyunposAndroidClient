@@ -6,26 +6,26 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
-import android.media.MediaRouter;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.ReplacementTransformationMethod;
-import android.view.Display;
+
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -53,7 +53,6 @@ import com.wyc.cloudapp.dialog.PayDialog;
 import com.wyc.cloudapp.dialog.SecondDisplay;
 import com.wyc.cloudapp.dialog.VipInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.logger.Printer;
 import com.wyc.cloudapp.network.sync.SyncManagement;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
@@ -365,7 +364,7 @@ public class MainActivity extends AppCompatActivity {
                         JSONObject jsonObject = datas.getJSONObject(i);
                         sale_sum_num += jsonObject.getDouble("xnum");
                         sale_sum_amount += jsonObject.getDouble("sale_amt");
-                        dis_sum_amt = jsonObject.getDouble("discount_amt");
+                        dis_sum_amt += jsonObject.getDouble("discount_amt");
                     }
                     mSaleSumNum.setText(String.format(Locale.CANADA,"%.3f",sale_sum_num));
                     mSaleSumAmount.setText(String.format(Locale.CANADA,"%.2f",sale_sum_amount));
@@ -546,9 +545,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(PayDialog myDialog) {
                         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
-                        //get_print_content(mSaleGoodsViewAdapter.getDatas(),myDialog.getContent());
                         print(get_print_content(mSaleGoodsViewAdapter.getDatas(),myDialog.getContent()));
-
+                        myDialog.open_cashbox();
                         mSyncManagement.sync_order();
                         resetOrderInfo();
                         myDialog.dismiss();
@@ -766,11 +764,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void print(@NonNull final String content){
+    public void print(@NonNull final String content){
         JSONObject object = new JSONObject();
         if (SQLiteHelper.getLocalParameter("printer",object)){
-            Logger.d_json(object.toString());
-
             int status_id = object.optInt("id");
             String tmp = object.optString("v");
             String[] vals = tmp.split("\r\n");
@@ -780,7 +776,7 @@ public class MainActivity extends AppCompatActivity {
                         bluetooth_print(content,vals[1]);
                         break;
                     case R.id.usb_p:
-                        usb_print(vals[0],vals[1],content);
+                        usb_print(vals[0].substring(vals[0].indexOf(":") + 1),vals[1].substring(vals[1].indexOf(":") + 1),content);
                         break;
                 }
             }
@@ -795,24 +791,18 @@ public class MainActivity extends AppCompatActivity {
                 if (bluetoothAdapter != null){
                     if (bluetoothAdapter.isEnabled()){
                         BluetoothDevice bluetoothDevice = bluetoothAdapter.getRemoteDevice(device_addr);
-                        BluetoothSocket bluetoothSocket = null;
-                        try {
-                            byte[] bytes = content.getBytes("GB2312");
-                            bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
-                            bluetoothSocket.connect();
-                            OutputStream outputStream = bluetoothSocket.getOutputStream();
-                            outputStream.write(bytes);
-                            outputStream.flush();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            runOnUiThread(()->MyDialog.ToastMessage("打印错误：" + e.getMessage(),this,null));
-                        } finally {
-                            if (bluetoothSocket != null) {
-                                try {
-                                    bluetoothSocket.close();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
+                        synchronized (this){
+                            try (BluetoothSocket bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
+                                 OutputStream outputStream = bluetoothSocket.getOutputStream();){
+
+                                    byte[] bytes = content.getBytes("GB2312");
+                                    bluetoothSocket.connect();
+                                    outputStream.write(bytes);
+                                    outputStream.flush();
+
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                runOnUiThread(()->MyDialog.ToastMessage("打印错误：" + e.getMessage(),this,null));
                             }
                         }
                     }else{
@@ -826,7 +816,7 @@ public class MainActivity extends AppCompatActivity {
         CustomApplication.execute(()->{
             UsbDevice device = null;
             UsbInterface usbInterface = null;
-            UsbEndpoint usbEndpoint = null;
+            UsbEndpoint usbEndpoint = null,tmpEndpoint;
             UsbDeviceConnection connection = null;
             UsbManager manager = (UsbManager)getSystemService(Context.USB_SERVICE);
             if (manager != null){
@@ -834,6 +824,8 @@ public class MainActivity extends AppCompatActivity {
                 for(String sz:deviceList.keySet()){
                     device = deviceList.get(sz);
                     if (device != null){
+                        Logger.d("name:%s,--vid:%s,--pid:%s",device.getDeviceName(),vid,pid);
+                        Logger.d("name:%s,vid:%d,pid:%d",device.getDeviceName(),device.getVendorId(),device.getProductId());
                         if (String.valueOf(device.getVendorId()).equals(vid) && String.valueOf(device.getProductId()).equals(pid)){
                             break;
                         }
@@ -841,36 +833,45 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (null != device){
                     usbInterface = device.getInterface(0);
-                    usbEndpoint = usbInterface.getEndpoint(0);
-                    connection = manager.openDevice(device);
-                    if (null != connection){
-                        if (connection.claimInterface(usbInterface, true)){
-                            try {
-                                byte[] bytes = content.getBytes("GB2312");
-                                int length =  bytes.length,count = length / 64 + 1;
-                                int c = 0;
-
-                                Logger.d("bytes:%d,count:%d",length,count);
-
-                                byte[] tmp = Arrays.copyOfRange(bytes,0,64);
-                                while (c++ <= count){
-                                    int ret_c = connection.bulkTransfer(usbEndpoint,tmp,tmp.length, 15000);
-                                    tmp = Arrays.copyOfRange(bytes,(c * 64),c * 64 + 64);
-                                    Logger.d("tmp:%d",tmp.length);
-                                    Logger.d("ret_c:%d",ret_c);
+                    for(int i = 0,size = usbInterface.getEndpointCount();i < size; i++){
+                        tmpEndpoint = usbInterface.getEndpoint(i);
+                        if (tmpEndpoint.getDirection() == UsbConstants.USB_DIR_OUT){
+                            Logger.d("EndpointType:%d",tmpEndpoint.getType());
+                            usbEndpoint = tmpEndpoint;
+                            break;
+                        }
+                    }
+                    if (usbEndpoint != null){
+                        connection = manager.openDevice(device);
+                        if (null != connection){
+                            if (connection.claimInterface(usbInterface, true)){
+                                try {
+                                    byte[] bytes = content.getBytes("GB2312");
+                                    int length = bytes.length;
+                                    synchronized (this){
+                                        Logger.d("MaxPacketSize:%d",usbEndpoint.getMaxPacketSize());
+                                        if (usbEndpoint.getMaxPacketSize() > length){
+                                            bytes = Arrays.copyOf(bytes,128);
+                                            length = bytes.length;
+                                        }
+                                        int ret_c = connection.bulkTransfer(usbEndpoint,bytes,length, 500);
+                                        Logger.d("ret_c:%d,bytes.length:%d",ret_c,length);
+                                    }
+                                } catch (UnsupportedEncodingException e) {
+                                    e.printStackTrace();
+                                    runOnUiThread(()->MyDialog.ToastMessage(e.getMessage(),this,null));
+                                }finally {
+                                    connection.releaseInterface(usbInterface);
+                                    connection.close();
                                 }
-                            } catch (UnsupportedEncodingException e) {
-                                e.printStackTrace();
-                                runOnUiThread(()->MyDialog.ToastMessage(e.getMessage(),this,null));
-                            }finally {
-                                connection.releaseInterface(usbInterface);
-                                connection.close();
+                            }else{
+                                runOnUiThread(()->MyDialog.ToastMessage("独占访问打印机错误！",this,null));
                             }
                         }else{
-                            runOnUiThread(()->MyDialog.ToastMessage("独占访问打印机错误！",this,null));
+                            runOnUiThread(()->MyDialog.ToastMessage("打开打印机连接错误！",this,null));
                         }
                     }else{
-                        runOnUiThread(()->MyDialog.ToastMessage("打开打印机连接错误！",this,null));
+                        runOnUiThread(()->MyDialog.ToastMessage("未找到USB输出端口！",this,null));
                     }
                 }else{
                     runOnUiThread(()->MyDialog.ToastMessage("未找到打印机设备！",this,null));
@@ -900,14 +901,14 @@ public class MainActivity extends AppCompatActivity {
     }
     private String c_format_58(JSONObject format_info,final JSONArray sales,final JSONArray pays){
         StringBuilder info = new StringBuilder();
-        String store_name,footer_c,new_line,new_line_n,line,rest;
+        String store_name,footer_c,new_line ,new_line_16,line,rest;
         int print_count = 1,footer_space = 5;
         store_name = format_info.optString("s_n");
         footer_c = format_info.optString("f_c");
         print_count = format_info.optInt("p_c",1);
         footer_space = format_info.optInt("f_s",5);
-        new_line = PrinterCommands.commandToStr(PrinterCommands.NEW_LINE);
-        new_line_n = PrinterCommands.commandToStr(PrinterCommands.LINE_SPACING_n);
+        new_line = "\r\n";//PrinterCommands.commandToStr(PrinterCommands.NEW_LINE);
+        new_line_16 = PrinterCommands.commandToStr(PrinterCommands.LINE_SPACING_16);
         line = "--------------------------------";
         rest = PrinterCommands.commandToStr(PrinterCommands.RESET);
 
@@ -922,20 +923,41 @@ public class MainActivity extends AppCompatActivity {
 
         //商品明细
         JSONObject info_obj;
-
+        double discount_amt = 0.0,xnum = 0.0;
+        int units_num = 0,type = 1;//商品属性 1普通 2称重 3用于服装
         for (int i = 0,size =sales.length();i < size;i ++){
             info_obj = sales.optJSONObject(i);
             if (info_obj != null){
+                type = info_obj.optInt("type");
+                if (type == 2){
+                    units_num +=1;
+                }else{
+                    units_num += info_obj.optInt("xnum");
+                }
+                xnum = info_obj.optDouble("xnum");
+
+                if (i > 0){
+                    info.append(rest);
+                }
+
                 info.append(PrinterCommands.commandToStr(PrinterCommands.BOLD)).append(info_obj.optString("goods_title")).append(new_line).append(rest);
                 info.append(PrinterCommands.printTwoData(1,info_obj.optString("barcode"),
-                        PrinterCommands.printThreeData(16,info_obj.optString("price"),info_obj.optString("xnum"),info_obj.optString("sale_amt"))));
+                        PrinterCommands.printThreeData(16,info_obj.optString("price"),type == 2 ? String.valueOf(xnum) :String.valueOf((int)xnum) ,info_obj.optString("sale_amt"))));
 
-                info.append(new_line).append(rest).append(new_line_n);
+                discount_amt = info_obj.optDouble("discount_amt",0.0);
+                if (!Utils.equalDouble(discount_amt,0.0)){
+                    info.append(new_line).append(PrinterCommands.printTwoData(1,"原价：".concat(info_obj.optString("old_price")),"优惠：".concat(String.valueOf(discount_amt))));
+                }
+                if (i + 1 != size)
+                    info.append(new_line_16);
+
+                info.append(new_line);
             }
         }
-        info.append(PrinterCommands.commandToStr(PrinterCommands.RESET)).append(line).append(new_line);
+        info.append(rest).append(line).append(new_line);
+
         info.append(PrinterCommands.printTwoData(1,"总价：".concat(String.format(Locale.CHINA,"%.2f",Double.valueOf(mSaleSumAmount.getText().toString()) + Double.valueOf(mDisSumAmt.getText().toString())))
-                ,"件数：".concat(mSaleSumNum.getText().toString()))).append(new_line);;
+                ,"件数：".concat(String.valueOf(units_num)))).append(new_line);;
         info.append(PrinterCommands.printTwoData(1,"应收：".concat(mSaleSumAmount.getText().toString()),"优惠：".concat(mDisSumAmt.getText().toString()))).append(new_line).append(line).append(new_line);
 
         //支付方式
@@ -944,21 +966,32 @@ public class MainActivity extends AppCompatActivity {
             info_obj = pays.optJSONObject(i);
             zl = info_obj.optDouble("pzl");
             pamt = info_obj.optDouble("pamt");
-            info.append(info_obj.optString("name")).append("：").append(pamt - zl).append("元").append(new_line);
+            info.append(info_obj.optString("name")).append("：").append(pamt - zl).append("元");
+
+            if (i != 0)info.append(new_line_16).append(new_line);else info.append(new_line);
+
             info.append("预收：").append(pamt);
             if (!Utils.equalDouble(zl,0.0)){
                 info.append(",").append("找零：").append(zl);
             }
             info.append(new_line);
+
+            if (info_obj.has("xnote")){
+                JSONArray xnotes = info_obj.optJSONArray("xnote");
+                if (xnotes != null){
+                    for (int j = 0,length = xnotes.length();j < length;j++){
+                        if (j + 1 != length)
+                            info.append(xnotes.opt(j)).append(new_line);
+                    }
+                }
+            }
         }
         info.append(line).append(new_line);
         info.append("门店热线：").append(mStoreInfo.optString("telphone")).append(new_line);
         info.append("门店地址：").append(mStoreInfo.optString("region")).append(new_line);
 
         info.append(PrinterCommands.commandToStr(PrinterCommands.ALIGN_CENTER)).append(footer_c);
-        for(int i = 0;i < footer_space;i ++)info.append(new_line);
-        info.append(rest);
-
+        for(int i = 0;i < footer_space;i ++)info.append(" ").append(new_line);
 
         Logger.d(info);
 

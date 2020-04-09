@@ -2,9 +2,12 @@ package com.wyc.cloudapp.broadcast;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
@@ -13,6 +16,7 @@ import android.os.Looper;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 
 /**
@@ -32,6 +36,16 @@ public class GlobalBroadcast extends BroadcastReceiver {
                 case "android.intent.action.BOOT_COMPLETED":
                     Intent login = new Intent(context, LoginActivity.class);
                     context.startActivity(login);
+                    break;
+                case "android.hardware.usb.action.USB_DEVICE_ATTACHED":
+                    synchronized (this) {
+                        UsbDevice device =  intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                        UsbManager manager = (UsbManager)context.getSystemService(Context.USB_SERVICE);
+                        if (null != manager && !manager.hasPermission(device)){
+                            PendingIntent permissionIntent = PendingIntent.getBroadcast(context, 0, new Intent("com.wyc.cloudapp.USB_PERMISSION"), 0);
+                            manager.requestPermission(device, permissionIntent);
+                        }
+                    }
                     break;
             }
         }
