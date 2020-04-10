@@ -216,23 +216,10 @@ public final class PrinterCommands {
     }
 
     public static void print(@NonNull final Activity context, @NonNull final String content){
-        JSONObject object = new JSONObject();
-        if (SQLiteHelper.getLocalParameter("printer",object)){
-            int status_id = object.optInt("id");
-            String tmp = object.optString("v");
-            String[] vals = tmp.split("\r\n");
-            if (vals.length > 1){
-                switch (status_id){
-                    case R.id.bluetooth_p:
-                        bluetooth_print(context,content,vals[1]);
-                        break;
-                    case R.id.usb_p:
-                        usb_print(context,vals[0].substring(vals[0].indexOf(":") + 1),vals[1].substring(vals[1].indexOf(":") + 1),content);
-                        break;
-                }
-            }
-        }else {
-            MyDialog.ToastMessage("读取打印机设置错误：" + object.optString("info"),context,null);
+        try {
+            print(context,content.getBytes(CHARACTER_SET));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
     }
 
@@ -245,7 +232,7 @@ public final class PrinterCommands {
             if (vals.length > 1){
                 switch (status_id){
                     case R.id.bluetooth_p:
-
+                        bluetooth_print(context,inbyte,vals[1]);
                         break;
                     case R.id.usb_p:
                         usb_print_byte(context,vals[0].substring(vals[0].indexOf(":") + 1),vals[1].substring(vals[1].indexOf(":") + 1),inbyte);
@@ -257,7 +244,7 @@ public final class PrinterCommands {
         }
     }
 
-    private static void bluetooth_print(@NonNull final Activity context,final  String content,final String device_addr){
+    private static void bluetooth_print(@NonNull final Activity context,final  byte[] content,final String device_addr){
         if(content != null && device_addr != null){
             CustomApplication.execute(()->{
                 BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -268,11 +255,36 @@ public final class PrinterCommands {
                             try (BluetoothSocket bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
                                  OutputStream outputStream = bluetoothSocket.getOutputStream();){
 
-                                byte[] bytes = content.getBytes("GB2312");
                                 bluetoothSocket.connect();
-                                outputStream.write(bytes);
-                                outputStream.flush();
 
+                                byte[] bytes = content,tmpBytes;
+                                int length = bytes.length,max_length = 2048;
+                                int count = length / max_length,tmp_c = 0,mod_length = 0;
+
+                                if (count == 0){
+                                    if (length < 128){
+                                        bytes = Arrays.copyOf(bytes,128);
+                                     }
+                                    outputStream.write(bytes);
+                                }else{
+                                    if ((mod_length = length % max_length) > 0)count += 1;
+                                    while (tmp_c < count){
+                                        if (tmp_c + 1 == count){
+                                            tmpBytes = Arrays.copyOfRange(bytes,tmp_c * max_length,tmp_c * max_length + mod_length);
+                                        }else
+                                            tmpBytes = Arrays.copyOfRange(bytes,tmp_c * max_length,tmp_c * max_length + max_length);
+
+                                        outputStream.write(tmpBytes);
+                                        tmp_c++;
+
+                                        try {
+                                            Thread.sleep(5);
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }
+                                outputStream.flush();
                             } catch (IOException e) {
                                 e.printStackTrace();
                                 context.runOnUiThread(()->MyDialog.ToastMessage("打印错误：" + e.getMessage(),context,null));
@@ -322,7 +334,7 @@ public final class PrinterCommands {
                                 try {
 
                                     byte[] bytes = in_bytes,tmpBytes;
-                                    int length = bytes.length,max_length = 1024;
+                                    int length = bytes.length,max_length = 2048;
                                     int count = length / max_length,tmp_c = 0,ret_c = 0,mod_length = 0;
 
                                     synchronized (PrinterCommands.class){
@@ -370,12 +382,5 @@ public final class PrinterCommands {
                 }
             }
         });
-    }
-    private static void usb_print(@NonNull final Activity context,final String vid,final String pid,final String content){
-        try {
-            usb_print_byte(context,vid,pid,content.getBytes(PrinterCommands.CHARACTER_SET));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
     }
 }

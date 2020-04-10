@@ -11,7 +11,6 @@ import android.graphics.RectF;
 public final class PrintUtilsToBitbmp {
 
     /*************************************************************************
-     * 我们的热敏打印机是RP-POS80S或RP-POS80P或RP-POS80CS或RP-POS80CP打印机
      * 360*360的图片，8个字节（8个像素点）是一个二进制，将二进制转化为十进制数值
      * y轴：24个像素点为一组，即360就是15组（0-14）
      * x轴：360个像素点（0-359）
@@ -86,6 +85,7 @@ public final class PrintUtilsToBitbmp {
      * @return
      */
     public static byte px2Binaryzation(int x, int y, Bitmap bit) {
+        //最高一个字节为alpha;
         byte b;
         int pixel = bit.getPixel(x, y);
         int red = (pixel & 0x00ff0000) >> 16; // 取高两位
