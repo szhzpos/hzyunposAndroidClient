@@ -1,12 +1,38 @@
 package com.wyc.cloudapp.print;
 
+import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
+import android.content.Context;
+import android.hardware.usb.UsbConstants;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbDeviceConnection;
+import android.hardware.usb.UsbEndpoint;
+import android.hardware.usb.UsbInterface;
+import android.hardware.usb.UsbManager;
+
+import androidx.annotation.NonNull;
+
+import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.logger.Logger;
+
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.UUID;
 
-public class PrinterCommands {
-    public static final String  CHARACTER_SET = "GB2312";
+public final class PrinterCommands {
+    private static final String  CHARACTER_SET = "GB2312";
     public static final byte[][] byteCommands = {
             { 0x1b, 0x4d, 0x00 },// 标准ASCII字体
             { 0x1b, 0x4d, 0x01 },// 压缩ASCII字体
@@ -23,6 +49,11 @@ public class PrinterCommands {
      * 复位打印机
      */
     public static final byte[] RESET = {0x1b, 0x40};
+
+    /**
+     * 字符模式
+     */
+    public static final byte[] CHARACTER_MODE= {0x1b, 0x21,0};
 
     /**
      * 左对齐
@@ -184,4 +215,167 @@ public class PrinterCommands {
         return "";
     }
 
+    public static void print(@NonNull final Activity context, @NonNull final String content){
+        JSONObject object = new JSONObject();
+        if (SQLiteHelper.getLocalParameter("printer",object)){
+            int status_id = object.optInt("id");
+            String tmp = object.optString("v");
+            String[] vals = tmp.split("\r\n");
+            if (vals.length > 1){
+                switch (status_id){
+                    case R.id.bluetooth_p:
+                        bluetooth_print(context,content,vals[1]);
+                        break;
+                    case R.id.usb_p:
+                        usb_print(context,vals[0].substring(vals[0].indexOf(":") + 1),vals[1].substring(vals[1].indexOf(":") + 1),content);
+                        break;
+                }
+            }
+        }else {
+            MyDialog.ToastMessage("读取打印机设置错误：" + object.optString("info"),context,null);
+        }
+    }
+
+    public static void print(@NonNull final Activity context, @NonNull final byte[] inbyte){
+        JSONObject object = new JSONObject();
+        if (SQLiteHelper.getLocalParameter("printer",object)){
+            int status_id = object.optInt("id");
+            String tmp = object.optString("v");
+            String[] vals = tmp.split("\r\n");
+            if (vals.length > 1){
+                switch (status_id){
+                    case R.id.bluetooth_p:
+
+                        break;
+                    case R.id.usb_p:
+                        usb_print_byte(context,vals[0].substring(vals[0].indexOf(":") + 1),vals[1].substring(vals[1].indexOf(":") + 1),inbyte);
+                        break;
+                }
+            }
+        }else {
+            MyDialog.ToastMessage("读取打印机设置错误：" + object.optString("info"),context,null);
+        }
+    }
+
+    private static void bluetooth_print(@NonNull final Activity context,final  String content,final String device_addr){
+        if(content != null && device_addr != null){
+            CustomApplication.execute(()->{
+                BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                if (bluetoothAdapter != null){
+                    if (bluetoothAdapter.isEnabled()){
+                        BluetoothDevice bluetoothDevice = bluetoothAdapter.getRemoteDevice(device_addr);
+                        synchronized (PrinterCommands.class){
+                            try (BluetoothSocket bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
+                                 OutputStream outputStream = bluetoothSocket.getOutputStream();){
+
+                                byte[] bytes = content.getBytes("GB2312");
+                                bluetoothSocket.connect();
+                                outputStream.write(bytes);
+                                outputStream.flush();
+
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                context.runOnUiThread(()->MyDialog.ToastMessage("打印错误：" + e.getMessage(),context,null));
+                            }
+                        }
+                    }else{
+                        context.runOnUiThread(()->MyDialog.ToastMessage("蓝牙已关闭！",context,null));
+                    }
+                }
+            });
+        }
+    }
+
+    private static void usb_print_byte(@NonNull final Activity context,final String vid,final String pid,final byte[] in_bytes){
+        CustomApplication.execute(()->{
+            UsbDevice device = null;
+            UsbInterface usbInterface = null;
+            UsbEndpoint usbOutEndpoint = null,usbInEndpoint = null,tmpEndpoint;
+            UsbDeviceConnection connection = null;
+            UsbManager manager = (UsbManager)context.getSystemService(Context.USB_SERVICE);
+            if (manager != null){
+                HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
+                for(String sz:deviceList.keySet()){
+                    device = deviceList.get(sz);
+                    if (device != null){
+                        Logger.d("name:%s,--vid:%s,--pid:%s",device.getDeviceName(),vid,pid);
+                        Logger.d("name:%s,vid:%d,pid:%d",device.getDeviceName(),device.getVendorId(),device.getProductId());
+                        if (String.valueOf(device.getVendorId()).equals(vid) && String.valueOf(device.getProductId()).equals(pid)){
+                            break;
+                        }
+                    }
+                }
+                if (null != device){
+                    usbInterface = device.getInterface(0);
+                    for(int i = 0,size = usbInterface.getEndpointCount();i < size; i++){
+                        tmpEndpoint = usbInterface.getEndpoint(i);
+                        if (tmpEndpoint.getDirection() == UsbConstants.USB_DIR_OUT){
+                            usbOutEndpoint = tmpEndpoint;
+                        }else if (tmpEndpoint.getDirection() == UsbConstants.USB_DIR_IN){
+                            usbInEndpoint =tmpEndpoint;
+                        }
+                    }
+                    if (usbOutEndpoint != null){
+                        connection = manager.openDevice(device);
+                        if (null != connection){
+                            if (connection.claimInterface(usbInterface, true)){
+                                try {
+
+                                    byte[] bytes = in_bytes,tmpBytes;
+                                    int length = bytes.length,max_length = 1024;
+                                    int count = length / max_length,tmp_c = 0,ret_c = 0,mod_length = 0;
+
+                                    synchronized (PrinterCommands.class){
+                                        if (count == 0){
+                                            if (length < 128){
+                                                bytes = Arrays.copyOf(bytes,128);
+                                                length = bytes.length;
+                                            }
+                                            ret_c = connection.bulkTransfer(usbOutEndpoint,bytes,length, 500);
+                                        }else{
+                                            if ((mod_length = length % max_length) > 0)count += 1;
+                                            while (tmp_c < count){
+                                                if (tmp_c + 1 == count){
+                                                    tmpBytes = Arrays.copyOfRange(bytes,tmp_c * max_length,tmp_c * max_length + mod_length);
+                                                }else
+                                                    tmpBytes = Arrays.copyOfRange(bytes,tmp_c * max_length,tmp_c * max_length + max_length);
+
+                                                ret_c += connection.bulkTransfer(usbOutEndpoint,tmpBytes,tmpBytes.length, 500);
+                                                tmp_c++;
+
+                                                try {
+                                                    Thread.sleep(5);
+                                                } catch (InterruptedException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        }
+                                        Logger.d("ret_c:%d,bytes.length:%d",ret_c,length);
+                                    }
+                                } finally {
+                                    connection.releaseInterface(usbInterface);
+                                    connection.close();
+                                }
+                            }else{
+                                context.runOnUiThread(()->MyDialog.ToastMessage("独占访问打印机错误！",context,null));
+                            }
+                        }else{
+                            context.runOnUiThread(()->MyDialog.ToastMessage("打开打印机连接错误！",context,null));
+                        }
+                    }else{
+                        context.runOnUiThread(()->MyDialog.ToastMessage("未找到USB输出端口！",context,null));
+                    }
+                }else{
+                    context.runOnUiThread(()->MyDialog.ToastMessage("未找到打印机设备！",context,null));
+                }
+            }
+        });
+    }
+    private static void usb_print(@NonNull final Activity context,final String vid,final String pid,final String content){
+        try {
+            usb_print_byte(context,vid,pid,content.getBytes(PrinterCommands.CHARACTER_SET));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
 }

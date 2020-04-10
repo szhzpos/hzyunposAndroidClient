@@ -51,7 +51,7 @@ public class PayDialog extends Dialog {
     private double mOrder_amt = 0.0,mDiscount_amt = 0.0,mActual_amt = 0.0,mPay_amt = 0.0,mAmt_received = 0.0,mPay_balance = 0.0,mCashAmt = 0.0,mZlAmt = 0.0;
     private Button mOK,mCancel;
     private JSONObject mVip;
-    private boolean mPayStatus = true;
+    private boolean mPayStatus = true,mOpenCashbox;
     private Window mWindow;
     public PayDialog(MainActivity context){
         super(context);
@@ -295,11 +295,15 @@ public class PayDialog extends Dialog {
                 super.onChanged();
                 JSONArray jsonArray = mPayDetailViewAdapter.getDatas();
                 double pay_amt = 0.0,zl_amt = 0.0,sale_amt;
+                mOpenCashbox = false;
                 try {
                     for (int i = 0,length = jsonArray.length();i < length;i ++){//第一个为表头
                         JSONObject object = jsonArray.getJSONObject(i);
                         pay_amt += object.getDouble("pamt");
                         zl_amt += object.getDouble("pzl");
+                        if (PayMethodViewAdapter.CASH_METHOD_ID.equals(object.getString("pay_method_id"))){
+                            mOpenCashbox = true;
+                        }
                     }
 
                     Logger.d("amt:%f - zl_amt:%f = %f",pay_amt,zl_amt,pay_amt - zl_amt);
@@ -498,6 +502,126 @@ public class PayDialog extends Dialog {
         fourth.setText(String.valueOf( tmp +(50- tmp % 50)));
     }
 
+    private String c_format_58(JSONObject format_info,final JSONArray sales){
+
+        StringBuilder info = new StringBuilder();
+        String store_name = "",footer_c,new_line ,new_line_16,new_line_2,new_line_d,line,pos_num,cas_name;
+        int print_count = 1,footer_space = 5;
+        JSONObject cas_info = mainActivity.getCashierInfo(),st_info = mainActivity.getStoreInfo();
+
+        store_name = format_info.optString("s_n");
+        pos_num = cas_info.optString("pos_num");
+        cas_name = cas_info.optString("cas_name");
+
+        footer_c = format_info.optString("f_c");
+        print_count = format_info.optInt("p_c",1);
+        footer_space = format_info.optInt("f_s",5);
+        new_line = "\r\n";//PrinterCommands.commandToStr(PrinterCommands.NEW_LINE);
+        new_line_16 = PrinterCommands.commandToStr(PrinterCommands.LINE_SPACING_16);
+        new_line_2 = PrinterCommands.commandToStr(PrinterCommands.LINE_SPACING_2);
+        new_line_d = PrinterCommands.commandToStr(PrinterCommands.LINE_SPACING_DEFAULT);
+        line = "--------------------------------";
+
+        if (mOpenCashbox)//开钱箱
+            info.append(PrinterCommands.commandToStr(PrinterCommands.OPEN_CASHBOX));
+
+        info.append(PrinterCommands.commandToStr(PrinterCommands.DOUBLE_HEIGHT)).append(PrinterCommands.commandToStr(PrinterCommands.ALIGN_CENTER))
+                .append(store_name.length() == 0 ?st_info.optString("stores_name") :store_name).append(new_line).append(new_line).append(PrinterCommands.commandToStr(PrinterCommands.NORMAL)).
+                append(PrinterCommands.commandToStr(PrinterCommands.ALIGN_LEFT));
+
+        info.append(PrinterCommands.printTwoData(1,"店号：".concat(st_info.optString("stores_id")),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()))).append(new_line);
+        info.append(PrinterCommands.printTwoData(1,"机号：".concat(pos_num),"收银员：".concat(cas_name))).append(new_line);
+        info.append("单号：").append(mainActivity.getOrderCode()).append(new_line).append(new_line);
+
+        info.append("商品名称      单价   数量   小计").append(new_line_2).append(new_line).append(line).append(new_line_2).append(new_line).append(new_line_d);
+
+        //商品明细
+        JSONObject info_obj;
+        double discount_amt = 0.0,xnum = 0.0;
+        int units_num = 0,type = 1;//商品属性 1普通 2称重 3用于服装
+        for (int i = 0,size =sales.length();i < size;i ++){
+            info_obj = sales.optJSONObject(i);
+            if (info_obj != null){
+                type = info_obj.optInt("type");
+                if (type == 2){
+                    units_num +=1;
+                }else{
+                    units_num += info_obj.optInt("xnum");
+                }
+                xnum = info_obj.optDouble("xnum");
+                discount_amt = info_obj.optDouble("discount_amt",0.0);
+
+                if (i > 0){
+                    info.append(new_line_d);
+                }
+
+                info.append(PrinterCommands.commandToStr(PrinterCommands.BOLD)).append(info_obj.optString("goods_title")).append(new_line).append(PrinterCommands.commandToStr(PrinterCommands.BOLD_CANCEL));
+                info.append(PrinterCommands.printTwoData(1,info_obj.optString("barcode"),
+                        PrinterCommands.printThreeData(16,info_obj.optString("price"),type == 2 ? String.valueOf(xnum) :String.valueOf((int)xnum) ,info_obj.optString("sale_amt"))));
+
+                if (!Utils.equalDouble(discount_amt,0.0)){
+                    info.append(new_line).append(PrinterCommands.printTwoData(1,"原价：".concat(info_obj.optString("old_price")),"优惠：".concat(String.valueOf(discount_amt))));
+                }
+                if (i + 1 != size)
+                    info.append(new_line_16);
+                else
+                    info.append(new_line_2);
+
+                info.append(new_line);
+            }
+        }
+        info.append(line).append(new_line_2).append(new_line).append(new_line_d);
+
+        info.append(PrinterCommands.printTwoData(1,"总价：".concat(String.format(Locale.CHINA,"%.2f",mOrder_amt))
+                ,"件数：".concat(String.valueOf(units_num)))).append(new_line);;
+        info.append(PrinterCommands.printTwoData(1,"应收：".concat(String.format(Locale.CHINA,"%.2f",mActual_amt)),"优惠：".concat(String.format(Locale.CHINA,"%.2f",mDiscount_amt)))).
+                append(new_line_2).append(new_line).append(line).append(new_line_2).append(new_line).append(new_line_d);
+
+        //支付方式
+        double zl = 0.0,pamt = 0.0;
+        JSONArray pays = getContent();
+        for (int i = 0,size = pays.length();i < size;i++){
+            info_obj = pays.optJSONObject(i);
+            zl = info_obj.optDouble("pzl");
+            pamt = info_obj.optDouble("pamt");
+            info.append(info_obj.optString("name")).append("：").append(pamt - zl).append("元").append(new_line);
+
+            info.append("预收：").append(pamt);
+            if (!Utils.equalDouble(zl,0.0)){
+                info.append(",").append("找零：").append(zl);
+            }
+            if (info_obj.has("xnote")){
+                JSONArray xnotes = info_obj.optJSONArray("xnote");
+                if (xnotes != null){
+                    int length = xnotes.length();
+                    if (length > 0){
+                        info.append(new_line);
+                        for (int j = 0;j < length;j++){
+                            if (j + 1 != length)
+                                info.append(xnotes.opt(j)).append(new_line);
+                        }
+                    }
+                }
+            }
+            if (i + 1 != size)
+                info.append(new_line_16);
+            else
+                info.append(new_line_2);
+
+            info.append(new_line).append(new_line_d);
+        }
+        info.append(line).append(new_line_2).append(new_line).append(new_line_d);
+        info.append("门店热线：").append(st_info.optString("telphone")).append(new_line);
+        info.append("门店地址：").append(st_info.optString("region")).append(new_line);
+
+        info.append(PrinterCommands.commandToStr(PrinterCommands.ALIGN_CENTER)).append(footer_c);
+        for(int i = 0;i < footer_space;i ++)info.append(" ").append(new_line);
+
+        Logger.d(info);
+
+        return info.toString();
+    }
+
     public boolean showVipInfo(@NonNull JSONObject vip,boolean show){//show为true则只显示不再刷新已销售商品
         mVip = vip;
         LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
@@ -508,11 +632,28 @@ public class PayDialog extends Dialog {
         }
         return show ? show : initPayContent(mainActivity.showVipInfo(vip));
     }
-    public void open_cashbox(){
-        if (mPayDetailViewAdapter.findPayDetailById(PayMethodViewAdapter.CASH_METHOD_ID) != null){
-            mainActivity.print(PrinterCommands.commandToStr(PrinterCommands.OPEN_CASHBOX));
-        }
+
+    public String get_print_content(JSONArray sales){
+        JSONObject print_format_info = new JSONObject();
+        String content = null;
+        if (SQLiteHelper.getLocalParameter("print_f_info",print_format_info)){
+            if (print_format_info.optInt("f") == R.id.checkout_format){
+                switch (print_format_info.optInt("f_z")){
+                    case R.id.f_58:
+                        content = c_format_58(print_format_info,sales);
+                        break;
+                    case R.id.f_76:
+                        break;
+                    case R.id.f_80:
+                        break;
+                }
+            }
+        }else
+            MyDialog.ToastMessage("加载打印格式错误：" + print_format_info.optString("info"),mainActivity,getWindow());
+
+        return content;
     }
+
     public void requestPay(final String order_code, final String url, final String appId, final String appScret, final String stores_id, final String pos_num){
         if (mPayListener != null)mainActivity.runOnUiThread(()->mPayListener.onProgress(PayDialog.this,"正在支付..."));
         mPayStatus = true;

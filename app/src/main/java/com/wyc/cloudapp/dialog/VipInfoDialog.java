@@ -244,7 +244,7 @@ public class VipInfoDialog extends Dialog {
 
             });
         }else{
-            MyDialog.ToastMessage(mSearchContent.getHint().toString(),mContext,getWindow());
+            MyDialog.ToastMessage(mSearchContent,mSearchContent.getHint().toString(),mContext,getWindow());
         }
     }
 

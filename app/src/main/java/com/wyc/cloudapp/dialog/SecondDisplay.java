@@ -25,6 +25,8 @@ import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
+import com.wyc.cloudapp.print.PrinterCommands;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
 import org.json.JSONArray;
@@ -267,6 +269,9 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
         mBottomRect = new Rect(0,mSurface.getHeight() - 32,mSurface.getWidth(),mSurface.getBottom());
         mShowAdImgFut = CustomApplication.scheduleAtFixedRate(showAdImgRunnable,0,50,TimeUnit.MILLISECONDS);
     }
+
+
+
     private Runnable showAdImgRunnable = ()->{
         if (mAdFileNames != null) {
             Canvas canvas = mSurfaceHolder.lockCanvas();
@@ -275,8 +280,10 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
                 mBannerBitmap = BitmapFactory.decodeFile(mAdFilePath + mAdFileNames[mShowAdImgTimes++ % mAdFileNames.length]);
                 loseTime = System.currentTimeMillis();
             }
-            if (mBannerBitmap != null)
+            if (mBannerBitmap != null){
                 canvas.drawBitmap(mBannerBitmap,new Rect(0,0,mBannerBitmap.getWidth(),mBannerBitmap.getHeight()),rect,null);
+            }
+
 
             //图片边框
             mPaint.setStyle(Paint.Style.STROKE);

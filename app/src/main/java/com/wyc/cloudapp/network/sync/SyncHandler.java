@@ -129,6 +129,8 @@ public final class SyncHandler extends Handler {
                         mReportProgress = (boolean)msg.obj;
                     return;
                 case MessageID.MARK_GOODS_STATUS_id:
+                    if (mReportProgress)
+                        syncActivityHandler.obtainMessage(SYNC_DIS_INFO_ID,"准备同步...").sendToTarget();
                     upload_barcode_id(null);
                     return;
                 case MessageID.SYNC_THREAD_QUIT_ID://由于处理程序内部会发送消息，消息队列退出需在处理程序内部处理

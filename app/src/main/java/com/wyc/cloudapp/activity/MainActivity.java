@@ -7,17 +7,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
-import android.content.Context;
 import android.content.Intent;
-import android.hardware.usb.UsbConstants;
-import android.hardware.usb.UsbDevice;
-import android.hardware.usb.UsbDeviceConnection;
-import android.hardware.usb.UsbEndpoint;
-import android.hardware.usb.UsbInterface;
-import android.hardware.usb.UsbManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -57,6 +49,7 @@ import com.wyc.cloudapp.network.sync.SyncManagement;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
 import com.wyc.cloudapp.print.PrinterCommands;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -66,17 +59,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainActivity extends AppCompatActivity {
@@ -90,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
     private MyDialog mDialog;
     private AtomicBoolean mNetworkStatus = new AtomicBoolean(true);//网络状态
     private AtomicBoolean mTransferStatus = new AtomicBoolean(true);//传输状态
+    private AtomicBoolean mPrintStatus = new AtomicBoolean(true);//打印状态
     private long mCurrentTimestamp = 0;
     private String mAppId,mAppScret,mUrl;
     private TextView mCurrentTimeView,mSaleSumNum,mSaleSumAmount,mOrderCode,mDisSumAmt;
@@ -167,6 +155,20 @@ public class MainActivity extends AppCompatActivity {
                 dialog.dismiss();
             }).show();
         });//会员
+        findViewById(R.id.printer_status).setOnClickListener(v -> {
+            ImageView imageView = (ImageView)v;
+            Bitmap printer = BitmapFactory.decodeResource(getResources(),R.drawable.printer);
+            if (mPrintStatus.get()){
+                mPrintStatus.set(false);
+                imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(printer,15,15));
+                MyDialog.ToastMessage(imageView,"打印功能已关闭！",this,getWindow());
+            }else{
+                mPrintStatus.set(true);
+                imageView.setImageBitmap(printer);
+                MyDialog.ToastMessage(imageView,"打印功能已开启！",this,getWindow());
+            }
+        });//打印状态
+
 
         findViewById(R.id.q_deal_linerLayout).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -545,8 +547,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(PayDialog myDialog) {
                         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
-                        print(get_print_content(mSaleGoodsViewAdapter.getDatas(),myDialog.getContent()));
-                        myDialog.open_cashbox();
+                        if (mPrintStatus.get())
+                            PrinterCommands.print(MainActivity.this,myDialog.get_print_content(mSaleGoodsViewAdapter.getDatas()));
                         mSyncManagement.sync_order();
                         resetOrderInfo();
                         myDialog.dismiss();
@@ -764,242 +766,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void print(@NonNull final String content){
-        JSONObject object = new JSONObject();
-        if (SQLiteHelper.getLocalParameter("printer",object)){
-            int status_id = object.optInt("id");
-            String tmp = object.optString("v");
-            String[] vals = tmp.split("\r\n");
-            if (vals.length > 1){
-                switch (status_id){
-                    case R.id.bluetooth_p:
-                        bluetooth_print(content,vals[1]);
-                        break;
-                    case R.id.usb_p:
-                        usb_print(vals[0].substring(vals[0].indexOf(":") + 1),vals[1].substring(vals[1].indexOf(":") + 1),content);
-                        break;
-                }
-            }
-        }else {
-            MyDialog.ToastMessage("读取打印机设置错误：" + object.optString("info"),this,null);
-        }
-    }
-    private void bluetooth_print(final  String content,final String device_addr){
-        if(content != null && device_addr != null){
-            CustomApplication.execute(()->{
-                BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                if (bluetoothAdapter != null){
-                    if (bluetoothAdapter.isEnabled()){
-                        BluetoothDevice bluetoothDevice = bluetoothAdapter.getRemoteDevice(device_addr);
-                        synchronized (this){
-                            try (BluetoothSocket bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
-                                 OutputStream outputStream = bluetoothSocket.getOutputStream();){
-
-                                    byte[] bytes = content.getBytes("GB2312");
-                                    bluetoothSocket.connect();
-                                    outputStream.write(bytes);
-                                    outputStream.flush();
-
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                                runOnUiThread(()->MyDialog.ToastMessage("打印错误：" + e.getMessage(),this,null));
-                            }
-                        }
-                    }else{
-                        runOnUiThread(()->MyDialog.ToastMessage("蓝牙已关闭！",this,null));
-                    }
-                }
-            });
-        }
-    }
-    private void usb_print(final String vid,final String pid,final String content){
-        CustomApplication.execute(()->{
-            UsbDevice device = null;
-            UsbInterface usbInterface = null;
-            UsbEndpoint usbEndpoint = null,tmpEndpoint;
-            UsbDeviceConnection connection = null;
-            UsbManager manager = (UsbManager)getSystemService(Context.USB_SERVICE);
-            if (manager != null){
-                HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
-                for(String sz:deviceList.keySet()){
-                    device = deviceList.get(sz);
-                    if (device != null){
-                        Logger.d("name:%s,--vid:%s,--pid:%s",device.getDeviceName(),vid,pid);
-                        Logger.d("name:%s,vid:%d,pid:%d",device.getDeviceName(),device.getVendorId(),device.getProductId());
-                        if (String.valueOf(device.getVendorId()).equals(vid) && String.valueOf(device.getProductId()).equals(pid)){
-                            break;
-                        }
-                    }
-                }
-                if (null != device){
-                    usbInterface = device.getInterface(0);
-                    for(int i = 0,size = usbInterface.getEndpointCount();i < size; i++){
-                        tmpEndpoint = usbInterface.getEndpoint(i);
-                        if (tmpEndpoint.getDirection() == UsbConstants.USB_DIR_OUT){
-                            Logger.d("EndpointType:%d",tmpEndpoint.getType());
-                            usbEndpoint = tmpEndpoint;
-                            break;
-                        }
-                    }
-                    if (usbEndpoint != null){
-                        connection = manager.openDevice(device);
-                        if (null != connection){
-                            if (connection.claimInterface(usbInterface, true)){
-                                try {
-                                    byte[] bytes = content.getBytes("GB2312");
-                                    int length = bytes.length;
-                                    synchronized (this){
-                                        Logger.d("MaxPacketSize:%d",usbEndpoint.getMaxPacketSize());
-                                        if (usbEndpoint.getMaxPacketSize() > length){
-                                            bytes = Arrays.copyOf(bytes,128);
-                                            length = bytes.length;
-                                        }
-                                        int ret_c = connection.bulkTransfer(usbEndpoint,bytes,length, 500);
-                                        Logger.d("ret_c:%d,bytes.length:%d",ret_c,length);
-                                    }
-                                } catch (UnsupportedEncodingException e) {
-                                    e.printStackTrace();
-                                    runOnUiThread(()->MyDialog.ToastMessage(e.getMessage(),this,null));
-                                }finally {
-                                    connection.releaseInterface(usbInterface);
-                                    connection.close();
-                                }
-                            }else{
-                                runOnUiThread(()->MyDialog.ToastMessage("独占访问打印机错误！",this,null));
-                            }
-                        }else{
-                            runOnUiThread(()->MyDialog.ToastMessage("打开打印机连接错误！",this,null));
-                        }
-                    }else{
-                        runOnUiThread(()->MyDialog.ToastMessage("未找到USB输出端口！",this,null));
-                    }
-                }else{
-                    runOnUiThread(()->MyDialog.ToastMessage("未找到打印机设备！",this,null));
-                }
-            }
-        });
-    }
-    private String get_print_content(JSONArray sales,JSONArray pays){
-        JSONObject print_format_info = new JSONObject();
-        String content = null;
-        if (SQLiteHelper.getLocalParameter("print_f_info",print_format_info)){
-            if (print_format_info.optInt("f") == R.id.checkout_format){
-                switch (print_format_info.optInt("f_z")){
-                    case R.id.f_58:
-                        content = c_format_58(print_format_info,sales,pays);
-                        break;
-                    case R.id.f_76:
-                        break;
-                    case R.id.f_80:
-                        break;
-                }
-            }
-        }else
-            MyDialog.ToastMessage("加载打印格式错误：" + print_format_info.optString("info"),this,getWindow());
-
-        return content;
-    }
-    private String c_format_58(JSONObject format_info,final JSONArray sales,final JSONArray pays){
-        StringBuilder info = new StringBuilder();
-        String store_name,footer_c,new_line ,new_line_16,line,rest;
-        int print_count = 1,footer_space = 5;
-        store_name = format_info.optString("s_n");
-        footer_c = format_info.optString("f_c");
-        print_count = format_info.optInt("p_c",1);
-        footer_space = format_info.optInt("f_s",5);
-        new_line = "\r\n";//PrinterCommands.commandToStr(PrinterCommands.NEW_LINE);
-        new_line_16 = PrinterCommands.commandToStr(PrinterCommands.LINE_SPACING_16);
-        line = "--------------------------------";
-        rest = PrinterCommands.commandToStr(PrinterCommands.RESET);
-
-        info.append(PrinterCommands.commandToStr(PrinterCommands.DOUBLE_HEIGHT)).append(PrinterCommands.commandToStr(PrinterCommands.ALIGN_CENTER))
-                .append(store_name.length() == 0 ?mStoreInfo.optString("stores_name") :store_name).append(new_line).append(new_line).append(rest);
-
-        info.append(PrinterCommands.printTwoData(1,"店号：".concat(mStoreInfo.optString("stores_id")),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()))).append(new_line);
-        info.append(PrinterCommands.printTwoData(1,"机号：".concat(mCashierInfo.optString("pos_num")),"收银员：".concat(mCashierInfo.optString("cas_name")))).append(new_line);
-        info.append("单号：").append(mOrderCode.getText()).append(new_line).append(new_line);
-
-        info.append("商品名称      单价   数量   小计").append(new_line).append(line).append(new_line);
-
-        //商品明细
-        JSONObject info_obj;
-        double discount_amt = 0.0,xnum = 0.0;
-        int units_num = 0,type = 1;//商品属性 1普通 2称重 3用于服装
-        for (int i = 0,size =sales.length();i < size;i ++){
-            info_obj = sales.optJSONObject(i);
-            if (info_obj != null){
-                type = info_obj.optInt("type");
-                if (type == 2){
-                    units_num +=1;
-                }else{
-                    units_num += info_obj.optInt("xnum");
-                }
-                xnum = info_obj.optDouble("xnum");
-
-                if (i > 0){
-                    info.append(rest);
-                }
-
-                info.append(PrinterCommands.commandToStr(PrinterCommands.BOLD)).append(info_obj.optString("goods_title")).append(new_line).append(rest);
-                info.append(PrinterCommands.printTwoData(1,info_obj.optString("barcode"),
-                        PrinterCommands.printThreeData(16,info_obj.optString("price"),type == 2 ? String.valueOf(xnum) :String.valueOf((int)xnum) ,info_obj.optString("sale_amt"))));
-
-                discount_amt = info_obj.optDouble("discount_amt",0.0);
-                if (!Utils.equalDouble(discount_amt,0.0)){
-                    info.append(new_line).append(PrinterCommands.printTwoData(1,"原价：".concat(info_obj.optString("old_price")),"优惠：".concat(String.valueOf(discount_amt))));
-                }
-                if (i + 1 != size)
-                    info.append(new_line_16);
-
-                info.append(new_line);
-            }
-        }
-        info.append(rest).append(line).append(new_line);
-
-        info.append(PrinterCommands.printTwoData(1,"总价：".concat(String.format(Locale.CHINA,"%.2f",Double.valueOf(mSaleSumAmount.getText().toString()) + Double.valueOf(mDisSumAmt.getText().toString())))
-                ,"件数：".concat(String.valueOf(units_num)))).append(new_line);;
-        info.append(PrinterCommands.printTwoData(1,"应收：".concat(mSaleSumAmount.getText().toString()),"优惠：".concat(mDisSumAmt.getText().toString()))).append(new_line).append(line).append(new_line);
-
-        //支付方式
-        double zl = 0.0,pamt = 0.0;
-        for (int i = 0,size = pays.length();i < size;i++){
-            info_obj = pays.optJSONObject(i);
-            zl = info_obj.optDouble("pzl");
-            pamt = info_obj.optDouble("pamt");
-            info.append(info_obj.optString("name")).append("：").append(pamt - zl).append("元");
-
-            if (i != 0)info.append(new_line_16).append(new_line);else info.append(new_line);
-
-            info.append("预收：").append(pamt);
-            if (!Utils.equalDouble(zl,0.0)){
-                info.append(",").append("找零：").append(zl);
-            }
-            info.append(new_line);
-
-            if (info_obj.has("xnote")){
-                JSONArray xnotes = info_obj.optJSONArray("xnote");
-                if (xnotes != null){
-                    for (int j = 0,length = xnotes.length();j < length;j++){
-                        if (j + 1 != length)
-                            info.append(xnotes.opt(j)).append(new_line);
-                    }
-                }
-            }
-        }
-        info.append(line).append(new_line);
-        info.append("门店热线：").append(mStoreInfo.optString("telphone")).append(new_line);
-        info.append("门店地址：").append(mStoreInfo.optString("region")).append(new_line);
-
-        info.append(PrinterCommands.commandToStr(PrinterCommands.ALIGN_CENTER)).append(footer_c);
-        for(int i = 0;i < footer_space;i ++)info.append(" ").append(new_line);
-
-        Logger.d(info);
-
-        return info.toString();
-    }
-
-
-
     public JSONArray discount(double discount,final String zk_cashier_id){
         if (null == zk_cashier_id || "".equals(zk_cashier_id)){
             setDisCashierId(mCashierInfo.optString("cas_id"));
@@ -1034,6 +800,15 @@ public class MainActivity extends AppCompatActivity {
     public String getPosNum(){
         if (null == mCashierInfo)return "";
         return mCashierInfo.optString("pos_num");
+    }
+    public JSONObject getCashierInfo(){
+        return mCashierInfo;
+    }
+    public JSONObject getStoreInfo(){
+        return mStoreInfo;
+    }
+    public String getOrderCode(){
+        return mOrderCode.getText().toString();
     }
 
 

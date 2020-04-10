@@ -277,7 +277,7 @@ public class MyDialog extends Dialog {
                 }else{
                     int[] location = new int[2];
                     anchor.getLocationOnScreen(location);
-                    toast.setGravity(Gravity.TOP|Gravity.LEFT,location[0],location[1]);
+                    toast.setGravity(Gravity.TOP|Gravity.START,location[0] - 48,location[1] + anchor.getHeight() / 2);
                 }
                 toast.show();
             }
