@@ -25,8 +25,6 @@ import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
-import com.wyc.cloudapp.print.PrinterCommands;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
 import org.json.JSONArray;

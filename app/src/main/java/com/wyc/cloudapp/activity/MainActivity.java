@@ -50,7 +50,7 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
-import com.wyc.cloudapp.print.PrinterCommands;
+import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
@@ -548,7 +548,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess(PayDialog myDialog) {
                         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
                         if (mPrintStatus.get())
-                            PrinterCommands.print(MainActivity.this,myDialog.get_print_content(mSaleGoodsViewAdapter.getDatas()));
+                            Printer.print(MainActivity.this,myDialog.get_print_content(mSaleGoodsViewAdapter.getDatas()));
                         mSyncManagement.sync_order();
                         resetOrderInfo();
                         myDialog.dismiss();

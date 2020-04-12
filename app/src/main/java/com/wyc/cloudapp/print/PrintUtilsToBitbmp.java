@@ -9,7 +9,9 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 
 public final class PrintUtilsToBitbmp {
-
+    private final static int WIDTH = 360;//8的整数倍
+    private final static int HEIGHT = 360;//24的整数倍
+    private final static int PER_POINT = 24;
     /*************************************************************************
      * 360*360的图片，8个字节（8个像素点）是一个二进制，将二进制转化为十进制数值
      * y轴：24个像素点为一组，即360就是15组（0-14）
@@ -23,18 +25,21 @@ public final class PrintUtilsToBitbmp {
      * @return
      */
     public static byte[] draw2PxPoint(Bitmap bit) {
-        byte[] data = new byte[16290];
+        Bitmap newBit = compressBitmap(bit);
+        int w = newBit.getWidth();
+        int h = newBit.getHeight();
+        byte[] data = new byte[w * h + h / PER_POINT*6 + 8 ];//图片大小 + 指令字节 + 留空字节
         int k = 0;
-        for (int j = 0; j < 15; j++) {
+        for (int j = 0; j < h / PER_POINT; j++) {
             data[k++] = 0x1B;
             data[k++] = 0x2A;
             data[k++] = 33; // m=33时，选择24点双密度打印，分辨率达到200DPI。
             data[k++] = 0x68;
             data[k++] = 0x01;
-            for (int i = 0; i < 360; i++) {
+            for (int i = 0; i < w; i++) {
                 for (int m = 0; m < 3; m++) {
                     for (int n = 0; n < 8; n++) {
-                        byte b = px2Binaryzation(i, j * 24 + m * 8 + n, bit);
+                        byte b = px2Binaryzation(i, j * 24 + m * 8 + n,newBit);
                         data[k] += data[k] + b;
                     }
                     k++;
@@ -52,23 +57,25 @@ public final class PrintUtilsToBitbmp {
      * @return
      */
     public static byte[] pic2PxPoint(Bitmap bit){
-        byte[] data = new byte[16290];
+        Bitmap newBit = compressBitmap(bit);
+        int w = newBit.getWidth();
+        int h = newBit.getHeight();
+        byte[] data = new byte[w * h + h / PER_POINT*6 + 8 ];//图片大小 + 指令字节 + 留空字节
         int k = 0;
-        for (int i = 0; i < 15; i++) {
+        for (int i = 0; i < h / PER_POINT; i++) {
             data[k++] = 0x1B;
             data[k++] = 0x2A;
             data[k++] = 33; // m=33时，选择24点双密度打印，分辨率达到200DPI。
             data[k++] = 0x68;
             data[k++] = 0x01;
-            for (int x = 0; x < 360; x++) {
+            for (int x = 0; x < w; x++) {
                 for (int m = 0; m < 3; m++) {
                     byte[]  by = new byte[8];
                     for (int n = 0; n < 8; n++) {
-                        byte b = px2Binaryzation(x, i * 24 + m * 8 +7-n, bit);
+                        byte b = px2Binaryzation(x, i * 24 + m * 8 +7-n, newBit);
                         by[n] = b;
                     }
-                    data[k] = (byte) changePointPx1(by);
-                    k++;
+                    data[k++] = (byte) changePointPx1(by);
                 }
             }
             data[k++] = 10;
@@ -108,42 +115,35 @@ public final class PrintUtilsToBitbmp {
      * @return
      */
     private static int RGB2Gray(int r, int g, int b){
-        int gray = (int) (0.29900 * r + 0.58700 * g + 0.11400 * b);  //灰度转化公式
-        return  gray;
+        return  (int) (0.29900 * r + 0.58700 * g + 0.11400 * b);  //灰度转化公式;
     }
 
     /**
-     * 对图片进行压缩（去除透明度）
+     * 对图片进行压缩（去除透明度）,宽度对齐8，高度对齐24
      * @param bitmapOrg
      */
     public static Bitmap compressPic(Bitmap bitmapOrg) {
         // 获取这个图片的宽和高
         int width = bitmapOrg.getWidth();
         int height = bitmapOrg.getHeight();
-        // 定义预转换成的图片的宽度和高度
-        int newWidth = 360;
-        int newHeight = 360;
-        Bitmap targetBmp = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888);
+        Bitmap targetBmp = Bitmap.createBitmap(alignToN(WIDTH,8), alignToN(HEIGHT,PER_POINT), Bitmap.Config.ARGB_8888);
         Canvas targetCanvas = new Canvas(targetBmp);
         targetCanvas.drawColor(0xffffffff);
-        targetCanvas.drawBitmap(bitmapOrg, new Rect(0, 0, width, height), new Rect(0, 0, newWidth, newHeight), null);
+        targetCanvas.drawBitmap(bitmapOrg, new Rect(0, 0, width, height), new Rect(0, 0, WIDTH, HEIGHT), null);
         return targetBmp;
     }
 
 
     /**
-     * 对图片进行压缩(不去除透明度)
+     * 对图片进行压缩(不去除透明度),宽度对齐8，高度对齐24
      * @param bitmapOrg
      */
     public static Bitmap compressBitmap(Bitmap bitmapOrg) {
-        int width = bitmapOrg.getWidth();
-        int height = bitmapOrg.getHeight();
-        // 定义预转换成的图片的宽度和高度
-        int newWidth = 360;
-        int newHeight = 360;
+        int width = alignToN(bitmapOrg.getWidth(),8);
+        int height = alignToN(bitmapOrg.getHeight(),24);
         // 计算缩放率，新尺寸除原始尺寸
-        float scaleWidth = ((float) newWidth) / width;
-        float scaleHeight = ((float) newHeight) / height;
+        float scaleWidth = ((float) alignToN(WIDTH,8)) / width;
+        float scaleHeight = ((float) alignToN(HEIGHT,24)) / height;
         // 创建操作图片用的matrix对象
         Matrix matrix = new Matrix();
         // 缩放图片动作
@@ -181,24 +181,7 @@ public final class PrintUtilsToBitbmp {
         return v;
     }
 
-    /**
-     * 得到位图的某个点的像素值
-     * @param bitmap
-     * @return
-     */
-    public byte[] getPicPx(Bitmap bitmap){
-        int[] pixels = new int[bitmap.getWidth() * bitmap.getHeight()];// 保存所有的像素的数组，图片宽×高
-        bitmap.getPixels(pixels, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
-        for (int i = 0; i < pixels.length; i++) {
-            int clr = pixels[i];
-            int red = (clr & 0x00ff0000) >> 16; // 取高两位
-            int green = (clr & 0x0000ff00) >> 8; // 取中两位
-            int blue = clr & 0x000000ff; // 取低两位
-            System.out.println("r=" + red + ",g=" + green + ",b=" + blue);
-        }
-        return null;
-    }
-
+    //在bitmap画错误标志<红圈白×>
     public static Bitmap drawErrorSignToBitmap(final Bitmap in,int w,int h){
         Bitmap bitmap = in.copy(Bitmap.Config.ARGB_8888, true);
         int width = bitmap.getWidth(),height = bitmap.getHeight();
@@ -215,6 +198,7 @@ public final class PrintUtilsToBitbmp {
         return bitmap;
     }
 
+    //加权法灰度化图片
     public static Bitmap bitmapGrayScale(Bitmap in){
         int width = in.getWidth();
         int height = in.getHeight();
@@ -233,7 +217,7 @@ public final class PrintUtilsToBitbmp {
         }
         return  Bitmap.createBitmap(pixels,width,height,Bitmap.Config.ARGB_8888);
     }
-
+    //从指定ARGB返回像素值
     private static int getPixel(int a,int r,int g,int b){
         int newPixel = 0;
         newPixel |= (a & 0xff);
@@ -241,5 +225,9 @@ public final class PrintUtilsToBitbmp {
         newPixel = newPixel << 8 | g & 0xff ;
         newPixel = newPixel << 8 | b & 0xff ;
         return newPixel;
+    }
+    //把指定数对齐到目标数
+    private static int alignToN(int num,int N){//N对齐target
+        return num % N != 0  ? num + (N - num % N) : num;
     }
 }

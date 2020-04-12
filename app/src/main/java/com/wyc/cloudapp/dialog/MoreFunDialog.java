@@ -1,16 +1,13 @@
 package com.wyc.cloudapp.dialog;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.print.PrinterCommands;
+import com.wyc.cloudapp.print.Printer;
 
 public class MoreFunDialog extends Dialog {
     private MainActivity mContext;
@@ -27,7 +24,7 @@ public class MoreFunDialog extends Dialog {
         //初始化按钮事件
         findViewById(R.id._close).setOnClickListener(v -> this.dismiss());
         findViewById(R.id.sync_btn).setOnClickListener(v->{mContext.sync(true);this.dismiss();});
-        findViewById(R.id.o_cashbox).setOnClickListener(v -> PrinterCommands.print(mContext,PrinterCommands.commandToStr(PrinterCommands.OPEN_CASHBOX)));
+        findViewById(R.id.o_cashbox).setOnClickListener(v -> Printer.print(mContext, Printer.commandToStr(Printer.OPEN_CASHBOX)));
         findViewById(R.id.setup_btn).setOnClickListener(v -> {
             ParameterSettingDialog parameterSettingDialog = new ParameterSettingDialog(mContext);
             parameterSettingDialog.show(mContext.getSupportFragmentManager(),"");

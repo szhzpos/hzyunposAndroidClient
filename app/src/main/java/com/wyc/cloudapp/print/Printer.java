@@ -25,13 +25,12 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 
-public final class PrinterCommands {
+public final class Printer {
     private static final String  CHARACTER_SET = "GB2312";
     public static final byte[][] byteCommands = {
             { 0x1b, 0x4d, 0x00 },// 标准ASCII字体
@@ -208,7 +207,7 @@ public final class PrinterCommands {
 
     public static String commandToStr(byte[] bytes){
         try {
-            return new String(bytes,PrinterCommands.CHARACTER_SET);
+            return new String(bytes, Printer.CHARACTER_SET);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -251,7 +250,7 @@ public final class PrinterCommands {
                 if (bluetoothAdapter != null){
                     if (bluetoothAdapter.isEnabled()){
                         BluetoothDevice bluetoothDevice = bluetoothAdapter.getRemoteDevice(device_addr);
-                        synchronized (PrinterCommands.class){
+                        synchronized (Printer.class){
                             try (BluetoothSocket bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
                                  OutputStream outputStream = bluetoothSocket.getOutputStream();){
 
@@ -337,7 +336,7 @@ public final class PrinterCommands {
                                     int length = bytes.length,max_length = 2048;
                                     int count = length / max_length,tmp_c = 0,ret_c = 0,mod_length = 0;
 
-                                    synchronized (PrinterCommands.class){
+                                    synchronized (Printer.class){
                                         if (count == 0){
                                             if (length < 128){
                                                 bytes = Arrays.copyOf(bytes,128);

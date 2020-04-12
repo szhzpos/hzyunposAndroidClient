@@ -3,7 +3,6 @@ package com.wyc.cloudapp.dialog;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.os.Bundle;
-import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -24,10 +23,9 @@ import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.PayDetailViewAdapter;
 import com.wyc.cloudapp.adapter.PayMethodItemDecoration;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
-import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.print.PrinterCommands;
+import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
@@ -516,21 +514,21 @@ public class PayDialog extends Dialog {
         footer_c = format_info.optString("f_c");
         print_count = format_info.optInt("p_c",1);
         footer_space = format_info.optInt("f_s",5);
-        new_line = "\r\n";//PrinterCommands.commandToStr(PrinterCommands.NEW_LINE);
-        new_line_16 = PrinterCommands.commandToStr(PrinterCommands.LINE_SPACING_16);
-        new_line_2 = PrinterCommands.commandToStr(PrinterCommands.LINE_SPACING_2);
-        new_line_d = PrinterCommands.commandToStr(PrinterCommands.LINE_SPACING_DEFAULT);
+        new_line = "\r\n";//Printer.commandToStr(Printer.NEW_LINE);
+        new_line_16 = Printer.commandToStr(Printer.LINE_SPACING_16);
+        new_line_2 = Printer.commandToStr(Printer.LINE_SPACING_2);
+        new_line_d = Printer.commandToStr(Printer.LINE_SPACING_DEFAULT);
         line = "--------------------------------";
 
         if (mOpenCashbox)//开钱箱
-            info.append(PrinterCommands.commandToStr(PrinterCommands.OPEN_CASHBOX));
+            info.append(Printer.commandToStr(Printer.OPEN_CASHBOX));
 
-        info.append(PrinterCommands.commandToStr(PrinterCommands.DOUBLE_HEIGHT)).append(PrinterCommands.commandToStr(PrinterCommands.ALIGN_CENTER))
-                .append(store_name.length() == 0 ?st_info.optString("stores_name") :store_name).append(new_line).append(new_line).append(PrinterCommands.commandToStr(PrinterCommands.NORMAL)).
-                append(PrinterCommands.commandToStr(PrinterCommands.ALIGN_LEFT));
+        info.append(Printer.commandToStr(Printer.DOUBLE_HEIGHT)).append(Printer.commandToStr(Printer.ALIGN_CENTER))
+                .append(store_name.length() == 0 ?st_info.optString("stores_name") :store_name).append(new_line).append(new_line).append(Printer.commandToStr(Printer.NORMAL)).
+                append(Printer.commandToStr(Printer.ALIGN_LEFT));
 
-        info.append(PrinterCommands.printTwoData(1,"店号：".concat(st_info.optString("stores_id")),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()))).append(new_line);
-        info.append(PrinterCommands.printTwoData(1,"机号：".concat(pos_num),"收银员：".concat(cas_name))).append(new_line);
+        info.append(Printer.printTwoData(1,"店号：".concat(st_info.optString("stores_id")),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()))).append(new_line);
+        info.append(Printer.printTwoData(1,"机号：".concat(pos_num),"收银员：".concat(cas_name))).append(new_line);
         info.append("单号：").append(mainActivity.getOrderCode()).append(new_line).append(new_line);
 
         info.append("商品名称      单价   数量   小计").append(new_line_2).append(new_line).append(line).append(new_line_2).append(new_line).append(new_line_d);
@@ -555,12 +553,12 @@ public class PayDialog extends Dialog {
                     info.append(new_line_d);
                 }
 
-                info.append(PrinterCommands.commandToStr(PrinterCommands.BOLD)).append(info_obj.optString("goods_title")).append(new_line).append(PrinterCommands.commandToStr(PrinterCommands.BOLD_CANCEL));
-                info.append(PrinterCommands.printTwoData(1,info_obj.optString("barcode"),
-                        PrinterCommands.printThreeData(16,info_obj.optString("price"),type == 2 ? String.valueOf(xnum) :String.valueOf((int)xnum) ,info_obj.optString("sale_amt"))));
+                info.append(Printer.commandToStr(Printer.BOLD)).append(info_obj.optString("goods_title")).append(new_line).append(Printer.commandToStr(Printer.BOLD_CANCEL));
+                info.append(Printer.printTwoData(1,info_obj.optString("barcode"),
+                        Printer.printThreeData(16,info_obj.optString("price"),type == 2 ? String.valueOf(xnum) :String.valueOf((int)xnum) ,info_obj.optString("sale_amt"))));
 
                 if (!Utils.equalDouble(discount_amt,0.0)){
-                    info.append(new_line).append(PrinterCommands.printTwoData(1,"原价：".concat(info_obj.optString("old_price")),"优惠：".concat(String.valueOf(discount_amt))));
+                    info.append(new_line).append(Printer.printTwoData(1,"原价：".concat(info_obj.optString("old_price")),"优惠：".concat(String.valueOf(discount_amt))));
                 }
                 if (i + 1 != size)
                     info.append(new_line_16);
@@ -572,9 +570,9 @@ public class PayDialog extends Dialog {
         }
         info.append(line).append(new_line_2).append(new_line).append(new_line_d);
 
-        info.append(PrinterCommands.printTwoData(1,"总价：".concat(String.format(Locale.CHINA,"%.2f",mOrder_amt))
+        info.append(Printer.printTwoData(1,"总价：".concat(String.format(Locale.CHINA,"%.2f",mOrder_amt))
                 ,"件数：".concat(String.valueOf(units_num)))).append(new_line);;
-        info.append(PrinterCommands.printTwoData(1,"应收：".concat(String.format(Locale.CHINA,"%.2f",mActual_amt)),"优惠：".concat(String.format(Locale.CHINA,"%.2f",mDiscount_amt)))).
+        info.append(Printer.printTwoData(1,"应收：".concat(String.format(Locale.CHINA,"%.2f",mActual_amt)),"优惠：".concat(String.format(Locale.CHINA,"%.2f",mDiscount_amt)))).
                 append(new_line_2).append(new_line).append(line).append(new_line_2).append(new_line).append(new_line_d);
 
         //支付方式
@@ -614,7 +612,7 @@ public class PayDialog extends Dialog {
         info.append("门店热线：").append(st_info.optString("telphone")).append(new_line);
         info.append("门店地址：").append(st_info.optString("region")).append(new_line);
 
-        info.append(PrinterCommands.commandToStr(PrinterCommands.ALIGN_CENTER)).append(footer_c);
+        info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(footer_c);
         for(int i = 0;i < footer_space;i ++)info.append(" ").append(new_line);
 
         Logger.d(info);

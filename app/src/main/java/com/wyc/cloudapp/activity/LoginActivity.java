@@ -59,6 +59,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button mCancel;
     private String mAppId,mAppScret,mUrl,mPosNum,mOperId,mStoresId;
     private Future<?> mLoginTask;
+    private  int count = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
