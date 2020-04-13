@@ -13,6 +13,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.logger.Logger;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -137,4 +138,5 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
         }
         return null;
     }
+
 }

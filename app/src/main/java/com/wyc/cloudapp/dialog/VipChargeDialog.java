@@ -1,6 +1,7 @@
 package com.wyc.cloudapp.dialog;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.interface_abstract.AbstractPayDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -31,11 +33,13 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.util.Date;
+import java.util.Locale;
 
 public class VipChargeDialog extends AbstractPayDialog {
     private JSONObject mVip;
     private Myhandler mHandler;
-    public VipChargeDialog(@NonNull Context context,final JSONObject vip) {
+    private boolean mOpenCashbox = false;
+    VipChargeDialog(@NonNull Context context, final JSONObject vip) {
         super(context);
         mVip = vip;
     }
@@ -47,15 +51,6 @@ public class VipChargeDialog extends AbstractPayDialog {
         setCanceledOnTouchOutside(false);
 
         mHandler = new Myhandler(this);
-
-        //初始化支付方式
-        initPayMethod();
-
-        //初始化按钮事件
-        mOk.setOnClickListener(view -> vip_charge());//父类默认会调用mYesOnclickListener接口，如果覆盖了记得单独调用mYesOnclickListener
-
-        setTitle(mContext.getString(R.string.vip_charge_sz));
-        setHint(mContext.getString(R.string.c_amt_hint_sz));
 
         //保留两位小数
         mPayAmtEt.postDelayed(()-> mPayAmtEt.requestFocus(),300);
@@ -81,6 +76,16 @@ public class VipChargeDialog extends AbstractPayDialog {
                 }
             }
         });
+
+        //初始化支付方式
+        initPayMethod();
+
+        //初始化按钮事件
+        mOk.setOnClickListener(view -> vip_charge());//父类默认会调用mYesOnclickListener接口，如果覆盖了记得单独调用mYesOnclickListener
+
+        setTitle(mContext.getString(R.string.vip_charge_sz));
+        setHint(mContext.getString(R.string.c_amt_hint_sz));
+
     }
 
     @Override
@@ -91,6 +96,10 @@ public class VipChargeDialog extends AbstractPayDialog {
             mPayMethod = payMethodViewAdapter.getItem(pos);
             if (mPayMethod != null) {
                 Logger.d_json(mPayMethod.toString());
+
+                //开钱箱
+                mOpenCashbox = PayMethodViewAdapter.CASH_METHOD_ID.equals(mPayMethod.optString("pay_method_id"));
+
                 if (mPayMethod.optInt("is_check") != 2){ //显示付款码输入框
                     mPayCode.setVisibility(View.VISIBLE);
                     mPayCode.requestFocus();
@@ -275,9 +284,14 @@ public class VipChargeDialog extends AbstractPayDialog {
                                                                 mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,info_json.getString("info")).sendToTarget();
                                                                 break;
                                                             case "y":
-                                                                JSONArray array = new JSONArray(info_json.getString("member"));
-                                                                info_json = array.getJSONObject(0);
-                                                                mHandler.obtainMessage(MessageID.VIP_C_SUCCESS_ID,info_json).sendToTarget();
+                                                                Logger.d("充值成功返回：%s",info_json);
+                                                                JSONArray members = new JSONArray(info_json.getString("member")),money_orders = new JSONArray(info_json.getString("money_order"));
+                                                                JSONObject member = members.getJSONObject(0);
+
+                                                                if (mContext instanceof Activity)
+                                                                    Printer.print((Activity) mContext,get_print_content(member,money_orders.getJSONObject(0),cashier_info,store_info,info_json.optJSONArray("welfare")));
+
+                                                                mHandler.obtainMessage(MessageID.VIP_C_SUCCESS_ID,member).sendToTarget();
                                                                 break;
                                                         }
                                                         break;
@@ -298,6 +312,84 @@ public class VipChargeDialog extends AbstractPayDialog {
                     }
                 });
             }
+    }
+    private String c_format_58(JSONObject format_info,JSONObject member,JSONObject order,JSONObject casher_info,JSONObject stores_info,JSONArray welfare){
+        StringBuilder info = new StringBuilder();
+        String store_name = "",footer_c,new_line,order_code = "";
+        int print_count = 1,footer_space = 5;
+
+        order_code = order.optString("order_code");
+
+        store_name = format_info.optString("s_n");
+
+        footer_c = format_info.optString("f_c");
+        print_count = format_info.optInt("p_c",1);
+        footer_space = format_info.optInt("f_s",5);
+        new_line = "\r\n";//Printer.commandToStr(Printer.NEW_LINE);
+
+        if (mOpenCashbox)//开钱箱
+            info.append(Printer.commandToStr(Printer.OPEN_CASHBOX));
+
+        while (print_count-- > 0) {//打印份数
+            info.append(Printer.commandToStr(Printer.DOUBLE_HEIGHT)).append(Printer.commandToStr(Printer.ALIGN_CENTER))
+                    .append(store_name.length() == 0 ? stores_info.optString("stores_name") : store_name).append(new_line).append(new_line).append(Printer.commandToStr(Printer.NORMAL)).
+                    append(Printer.commandToStr(Printer.ALIGN_LEFT));
+
+            info.append("门店：".concat(stores_info.optString("stores_name"))).append(new_line);
+            info.append("单号：".concat(order_code)).append(new_line);
+            info.append("操作员：".concat(casher_info.optString("cas_name"))).append(new_line);
+            info.append("卡号：".concat(member.optString("card_code"))).append(new_line);
+            info.append("会员姓名：".concat(member.optString("name"))).append(new_line);
+            info.append("支付方式：".concat(order.optString("pay_method_name"))).append(new_line);
+            info.append("充值金额：".concat(order.optString("order_money"))).append(new_line);
+            info.append("赠送金额：".concat(order.optString("give_money"))).append(new_line);
+            info.append("会员余额：".concat(member.optString("money_sum"))).append(new_line);
+            info.append("会员积分：".concat(member.optString("points_sum"))).append(new_line);
+            info.append("会员电话：".concat(member.optString("mobile"))).append(new_line);
+            info.append("时    间：".concat(new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(member.optInt("addtime") * 1000))).append(new_line);
+
+            if (welfare != null && welfare.length() != 0){
+                for (int i = 0,size = welfare.length();i < size;i++){
+                    if (i == 0)info.append("优惠信息").append(new_line);
+                    info.append("  ").append(welfare.opt(i)).append(new_line);
+                }
+            }
+            info.append(new_line).append("门店热线：").append(stores_info.optString("telphone")).append(new_line);
+            info.append("门店地址：").append(stores_info.optString("region")).append(new_line);
+
+            info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(footer_c);
+            for (int i = 0; i < footer_space; i++) info.append(" ").append(new_line);
+
+            if (print_count > 0){
+                info.append(new_line).append(new_line).append(new_line);
+            }
+
+        }
+
+        Logger.d(info);
+
+        return info.toString();
+    }
+
+    private String get_print_content(JSONObject merber,JSONObject order,JSONObject casher_info,JSONObject stores_info,JSONArray welfare){
+        JSONObject print_format_info = new JSONObject();
+        String content = "";
+        if (SQLiteHelper.getLocalParameter("v_f_info",print_format_info)){
+            if (print_format_info.optInt("f") == R.id.vip_c_format){
+                switch (print_format_info.optInt("f_z")){
+                    case R.id.f_58:
+                        content = c_format_58(print_format_info,merber,order,casher_info,stores_info,welfare);
+                        break;
+                    case R.id.f_76:
+                        break;
+                    case R.id.f_80:
+                        break;
+                }
+            }
+        }else
+            MyDialog.ToastMessage("加载打印格式错误：" + print_format_info.optString("info"),getContext(),getWindow());
+
+        return content;
     }
 
     @Override

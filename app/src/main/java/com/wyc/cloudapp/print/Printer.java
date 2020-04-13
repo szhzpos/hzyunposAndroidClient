@@ -275,12 +275,6 @@ public final class Printer {
 
                                         outputStream.write(tmpBytes);
                                         tmp_c++;
-
-                                        try {
-                                            Thread.sleep(5);
-                                        } catch (InterruptedException e) {
-                                            e.printStackTrace();
-                                        }
                                     }
                                 }
                                 outputStream.flush();
@@ -333,7 +327,7 @@ public final class Printer {
                                 try {
 
                                     byte[] bytes = in_bytes,tmpBytes;
-                                    int length = bytes.length,max_length = 2048;
+                                    int length = bytes.length,max_length = 4096;
                                     int count = length / max_length,tmp_c = 0,ret_c = 0,mod_length = 0;
 
                                     synchronized (Printer.class){
@@ -342,7 +336,7 @@ public final class Printer {
                                                 bytes = Arrays.copyOf(bytes,128);
                                                 length = bytes.length;
                                             }
-                                            ret_c = connection.bulkTransfer(usbOutEndpoint,bytes,length, 500);
+                                            ret_c = connection.bulkTransfer(usbOutEndpoint,bytes,length, 1000);
                                         }else{
                                             if ((mod_length = length % max_length) > 0)count += 1;
                                             while (tmp_c < count){
@@ -351,14 +345,8 @@ public final class Printer {
                                                 }else
                                                     tmpBytes = Arrays.copyOfRange(bytes,tmp_c * max_length,tmp_c * max_length + max_length);
 
-                                                ret_c += connection.bulkTransfer(usbOutEndpoint,tmpBytes,tmpBytes.length, 500);
+                                                ret_c += connection.bulkTransfer(usbOutEndpoint,tmpBytes,tmpBytes.length, 30000);
                                                 tmp_c++;
-
-                                                try {
-                                                    Thread.sleep(5);
-                                                } catch (InterruptedException e) {
-                                                    e.printStackTrace();
-                                                }
                                             }
                                         }
                                         Logger.d("ret_c:%d,bytes.length:%d",ret_c,length);

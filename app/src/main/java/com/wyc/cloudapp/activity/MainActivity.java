@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
             v.postDelayed(()->v.setEnabled(true),300);
         });//结账
         findViewById(R.id.vip).setOnClickListener(v -> {
-            VipInfoDialog vipInfoDialog = new VipInfoDialog(v.getContext());
+            VipInfoDialog vipInfoDialog = new VipInfoDialog(this);
             vipInfoDialog.setYesOnclickListener(dialog -> {
                 showVipInfo(dialog.getVip());
                 dialog.dismiss();
@@ -413,23 +413,20 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        mSearch_content.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                if (mKeyboard.getVisibility() == View.GONE){
-                    int keyCode = keyEvent.getKeyCode();
-                    if (keyCode == KeyEvent.KEYCODE_ENTER){
-                        String content = mSearch_content.getText().toString();
-                        if (content.length() == 0){
-                            mGoodsCategoryViewAdapter.trigger_preView();
-                        }else{
-                            mGoodsInfoViewAdapter.fuzzy_search_goods(mSearch_content);
-                            mSearch_content.selectAll();
-                        }
+        mSearch_content.setOnKeyListener((view, i, keyEvent) -> {
+            if (mKeyboard.getVisibility() == View.GONE){
+                int keyCode = keyEvent.getKeyCode();
+                if (keyCode == KeyEvent.KEYCODE_ENTER){
+                    String content = mSearch_content.getText().toString();
+                    if (content.length() == 0){
+                        mGoodsCategoryViewAdapter.trigger_preView();
+                    }else{
+                        mGoodsInfoViewAdapter.fuzzy_search_goods(mSearch_content);
+                        mSearch_content.selectAll();
                     }
                 }
-                return false;
             }
+            return false;
         });
         mSearch_content.setTransformationMethod(new ReplacementTransformationMethod() {
             @Override
@@ -549,6 +546,7 @@ public class MainActivity extends AppCompatActivity {
                         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
                         if (mPrintStatus.get())
                             Printer.print(MainActivity.this,myDialog.get_print_content(mSaleGoodsViewAdapter.getDatas()));
+
                         mSyncManagement.sync_order();
                         resetOrderInfo();
                         myDialog.dismiss();
@@ -810,8 +808,6 @@ public class MainActivity extends AppCompatActivity {
     public String getOrderCode(){
         return mOrderCode.getText().toString();
     }
-
-
 
 
     private static class Myhandler extends Handler {

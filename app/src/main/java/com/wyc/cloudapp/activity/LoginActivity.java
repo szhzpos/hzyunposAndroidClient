@@ -16,6 +16,10 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
+import android.text.InputType;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
+import android.text.method.ReplacementTransformationMethod;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,7 +63,6 @@ public class LoginActivity extends AppCompatActivity {
     private Button mCancel;
     private String mAppId,mAppScret,mUrl,mPosNum,mOperId,mStoresId;
     private Future<?> mLoginTask;
-    private  int count = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,8 +102,28 @@ public class LoginActivity extends AppCompatActivity {
 
         mUser_id.setOnFocusChangeListener((v, hasFocus) -> Utils.hideKeyBoard((EditText)v));
         mUser_id.postDelayed(()->mUser_id.requestFocus(),300);
-        mPassword.setOnFocusChangeListener((v, hasFocus) -> Utils.hideKeyBoard((EditText)v));
         mUser_id.setSelectAllOnFocus(true);
+
+        mPassword.setTransformationMethod(new ReplacementTransformationMethod() {
+            @Override
+            protected char[] getOriginal() {
+                StringBuilder strWord = new StringBuilder();
+                for (char i = 0; i < 256; i++) {
+                    strWord.append(i);
+                }
+                return strWord.toString().toCharArray();
+            }
+
+            @Override
+            protected char[] getReplacement() {
+                char[] charReplacement = new char[255];
+                for (int i = 0; i < 255; i++) {
+                    charReplacement[i] = '*';
+                }
+                return charReplacement;
+            }
+        });
+        mPassword.setOnFocusChangeListener((v, hasFocus) -> Utils.hideKeyBoard((EditText)v));
         mPassword.setSelectAllOnFocus(true);
 
         findViewById(R.id.b_login).setOnClickListener((View v)->{

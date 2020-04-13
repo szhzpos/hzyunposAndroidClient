@@ -72,6 +72,7 @@
                     android:id="@+id/f_58"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:checked="true"
                     android:text="@string/f_58_sz" />
 
                 <RadioButton

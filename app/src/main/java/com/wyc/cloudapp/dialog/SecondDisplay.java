@@ -25,6 +25,8 @@ import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
+import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
 import org.json.JSONArray;
@@ -125,8 +127,8 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
                 super.onChanged();
                 JSONArray datas = mSaleGoodsAdapter.getDatas();
                 double sale_sum_num = 0.0,sale_sum_amount = 0.0;
-                if (datas.length() == 0){
-                    if (!mShowBannerImg) mShowBannerImg = true;
+                if (datas.length() != 0){
+                    if (mShowBannerImg) mShowBannerImg = false;
                     for (int i = 0,length = datas.length();i < length;i ++){
                         JSONObject jsonObject = datas.optJSONObject(i);
                         sale_sum_num += jsonObject.optDouble("xnum");
@@ -136,7 +138,8 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
                     mSaleSumAmount.setText(String.format(Locale.CANADA,"%.2f",sale_sum_amount));
                     mSaleGoodsView.scrollToPosition(mSaleGoodsAdapter.getCurrentItemIndex());
                 }else{
-                    if (mShowBannerImg) mShowBannerImg = false;
+                    mCurrentBarcodeId = 0;
+                    if (!mShowBannerImg) mShowBannerImg = true;
                 }
                 displayGoodsImg();
             }

@@ -164,7 +164,7 @@ public class GoodsCategoryViewAdapter extends RecyclerView.Adapter<GoodsCategory
     public void trigger_preView(){
         int id = 0;
         if (mCurrentItemView != null){
-            if (mChildGoodsCategoryView != null && mChildGoodsCategoryAdpter.mCurrentItemView != null){
+            if (mChildShow && mChildGoodsCategoryView != null && mChildGoodsCategoryAdpter.mCurrentItemView != null){
                 id = Integer.valueOf(((TextView) mChildGoodsCategoryAdpter.mCurrentItemView.findViewById(R.id.category_id)).getText().toString());
             }else{
                 id = Integer.valueOf(((TextView) mCurrentItemView.findViewById(R.id.category_id)).getText().toString());
