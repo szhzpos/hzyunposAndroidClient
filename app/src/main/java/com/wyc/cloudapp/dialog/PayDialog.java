@@ -24,6 +24,7 @@ import com.wyc.cloudapp.adapter.PayDetailViewAdapter;
 import com.wyc.cloudapp.adapter.PayMethodItemDecoration;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.interface_abstract.AbstractPayDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.Utils;
@@ -267,6 +268,9 @@ public class PayDialog extends Dialog {
                                         mPayDetailViewAdapter.addPayDetail(jsonObject);
                                         dialog.dismiss();
                                     }
+                                }).setCancelListener(dialog -> {
+                                    mPayMethodViewAdapter.showDefaultPayMethod(null);
+                                    dialog.dismiss();
                                 }).show();
                             }
                         }else{

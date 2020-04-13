@@ -23,7 +23,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     private Context mContext;
     private JSONArray mDatas;
     private OnItemClickListener mOnItemClickListener;
-    private View mCurrentItemView;//当前选择的类别item
+    private View mCurrentItemView,mDefaultPayMethodView;//当前选择的付款方式item
     private int mWidth;
     public PayMethodViewAdapter(Context context,int width){
         this.mContext = context;
@@ -70,6 +70,10 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
                 pay_method_id = pay_method_info.optString("pay_method_id");
                 myViewHolder.pay_method_id.setText(pay_method_id);
                 myViewHolder.pay_method_name.setText(pay_method_info.optString("name"));
+
+                if(PayMethodViewAdapter.CASH_METHOD_ID.equals(pay_method_id)){//默认现金
+                    showDefaultPayMethod(myViewHolder.mCurrentLayoutItemView);
+                }
 
                 if (mOnItemClickListener != null){
                     myViewHolder.mCurrentLayoutItemView.setOnClickListener(view -> {
@@ -127,8 +131,8 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
             MyDialog.ToastMessage("加载支付方式错误：" + err,mContext,null);
         }
     }
-    public JSONObject get_pay_method(@NonNull final String pay_method_id){
-        if (mDatas != null){
+    public JSONObject get_pay_method(final String pay_method_id){
+        if (mDatas != null && pay_method_id != null){
             for (int i = 0,lengh = mDatas.length();i < lengh;i++){
                 JSONObject jsonObject = mDatas.optJSONObject(i);
                 if (pay_method_id.equals(jsonObject.optString("pay_method_id"))){
@@ -137,6 +141,30 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
             }
         }
         return null;
+    }
+
+    public void getCurrentPayMethod(){
+        if (mCurrentItemView != null)mCurrentItemView.callOnClick();
+    }
+
+    public void showDefaultPayMethod(View view){
+        View sign;
+        if (view != null)mDefaultPayMethodView = view;
+        if (mDefaultPayMethodView != null){
+            if (null != mCurrentItemView){
+                if (mCurrentItemView != mDefaultPayMethodView){
+                    sign = mDefaultPayMethodView.findViewById(R.id.sel_sign);
+                    if (sign != null)sign.setVisibility(View.VISIBLE);
+
+                    sign = mCurrentItemView.findViewById(R.id.sel_sign);
+                    if (sign != null)sign.setVisibility(View.GONE);
+                }
+            }else{
+                sign = mDefaultPayMethodView.findViewById(R.id.sel_sign);
+                if (sign != null)sign.setVisibility(View.VISIBLE);
+            }
+            mCurrentItemView = mDefaultPayMethodView;
+        }
     }
 
 }

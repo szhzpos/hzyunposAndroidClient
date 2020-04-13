@@ -37,6 +37,7 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
     protected double mOriginalPayAmt = 0.0;
     protected Window mDialogWindow;
     private TextView mTitleTv;
+    private onCancelListener mCancelListener;
     public AbstractPayDialog(@NonNull Context context) {
         super(context);
         mContext = context;
@@ -59,7 +60,7 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
         init_c_amount();
 
         //初始化按钮事件
-        findViewById(R.id._close).setOnClickListener(view-> AbstractPayDialog.this.dismiss());
+        findViewById(R.id._close).setOnClickListener(view-> findViewById(R.id._cancel).callOnClick());
         findViewById(R.id._back).setOnClickListener(v -> {
             View view =  getCurrentFocus();
             if (view != null) {
@@ -76,7 +77,12 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
                 }
             }
         });
-        findViewById(R.id._cancel).setOnClickListener(view -> AbstractPayDialog.this.dismiss());
+        findViewById(R.id._cancel).setOnClickListener(view -> {
+            if (mCancelListener != null)
+                mCancelListener.onCancel(AbstractPayDialog.this);
+            else
+                AbstractPayDialog.this.dismiss();
+        });
         mOk.setOnClickListener(v -> {
             if (verify() && mYesOnclickListener != null)mYesOnclickListener.onYesClick(AbstractPayDialog.this);
         });
@@ -167,7 +173,7 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
         }
     }
 
-    protected double getPayAmt(){
+    private double getPayAmt(){
         if (mPayAmtEt != null){
             try {
                 return Double.valueOf(mPayAmtEt.getText().toString());
@@ -208,9 +214,16 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
         }
         return this;
     }
+    public AbstractPayDialog setCancelListener(onCancelListener listener){
+        mCancelListener = listener;
+        return this;
+    }
 
     public interface onYesOnclickListener {
         void onYesClick(AbstractPayDialog dialog);
+    }
+    public interface onCancelListener{
+        void onCancel(AbstractPayDialog dialog);
     }
 
     private void init_c_amount(){

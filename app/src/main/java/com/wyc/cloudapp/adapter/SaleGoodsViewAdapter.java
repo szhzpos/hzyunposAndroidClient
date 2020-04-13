@@ -3,7 +3,6 @@ package com.wyc.cloudapp.adapter;
 import android.app.Dialog;
 import android.content.Context;
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.View;
@@ -15,7 +14,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.listener.ClickListener;
+import com.wyc.cloudapp.callback.ClickListener;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 

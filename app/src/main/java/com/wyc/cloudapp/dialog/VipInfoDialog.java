@@ -2,6 +2,9 @@ package com.wyc.cloudapp.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -11,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,6 +23,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -39,6 +44,7 @@ public class VipInfoDialog extends Dialog {
     private TextView mVip_name,mVip_sex,mVip_p_num,mVip_card_id,mVip_balance,mVip_integral;
     private Button mSearchBtn,mModfiyBtn,mChargeBtn,mAddBtn;
     private onYesOnclickListener mYesOnclickListener;//确定按钮被点击了的监听器
+    private boolean mPrintStatus = true;
     public VipInfoDialog(@NonNull Context context) {
         super(context);
         mContext = context;
@@ -126,7 +132,7 @@ public class VipInfoDialog extends Dialog {
         });
         mChargeBtn.setOnClickListener(view -> {
             if (mVip != null){
-                VipChargeDialog vipChargeDialog = new VipChargeDialog(mContext,mVip);
+                VipChargeDialog vipChargeDialog = new VipChargeDialog(mContext,mVip,mPrintStatus);
                 vipChargeDialog.setYesOnclickListener(dialog -> {
                     showVipInfo(dialog.getContent());
                     dialog.dismiss();
@@ -135,6 +141,19 @@ public class VipInfoDialog extends Dialog {
                 serchVip(mSearchContent.getText().toString(),mChargeBtn.getId());
             }
         });
+        findViewById(R.id.v_printer_status).setOnClickListener(v -> {
+            ImageView imageView = (ImageView)v;
+            Bitmap printer = BitmapFactory.decodeResource(mContext.getResources(),R.drawable.printer);
+            if (mPrintStatus){
+                mPrintStatus = false;
+                imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(printer,15,15));
+                MyDialog.ToastMessage(imageView,"打印功能已关闭！",mContext,getWindow());
+            }else{
+                mPrintStatus = true;
+                imageView.setImageBitmap(printer);
+                MyDialog.ToastMessage(imageView,"打印功能已开启！",mContext,getWindow());
+            }
+        });//打印状态
 
         //初始化数字键盘
         ConstraintLayout keyboard_linear_layout;

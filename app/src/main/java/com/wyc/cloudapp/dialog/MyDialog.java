@@ -8,7 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import com.google.android.material.snackbar.Snackbar;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.listener.WindowCallback;
+import com.wyc.cloudapp.callback.WindowCallback;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -277,7 +277,7 @@ public class MyDialog extends Dialog {
                 }else{
                     int[] location = new int[2];
                     anchor.getLocationOnScreen(location);
-                    toast.setGravity(Gravity.TOP|Gravity.START,location[0] - 48,location[1] + anchor.getHeight() / 2);
+                    toast.setGravity(Gravity.TOP|Gravity.START,location[0] - 68,location[1]);
                 }
                 toast.show();
             }

@@ -39,9 +39,12 @@ public class VipChargeDialog extends AbstractPayDialog {
     private JSONObject mVip;
     private Myhandler mHandler;
     private boolean mOpenCashbox = false;
-    VipChargeDialog(@NonNull Context context, final JSONObject vip) {
+    private PayMethodViewAdapter mPayMethodViewAdapter;
+    private boolean mPrintStatus = true;
+    VipChargeDialog(@NonNull Context context, final JSONObject vip,boolean s) {
         super(context);
         mVip = vip;
+        mPrintStatus = s;
     }
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -90,10 +93,10 @@ public class VipChargeDialog extends AbstractPayDialog {
 
     @Override
     protected void initPayMethod(){
-        final PayMethodViewAdapter payMethodViewAdapter = new PayMethodViewAdapter(mContext,94);
-        payMethodViewAdapter.setDatas("3");
-        payMethodViewAdapter.setOnItemClickListener((v, pos) -> {
-            mPayMethod = payMethodViewAdapter.getItem(pos);
+        mPayMethodViewAdapter = new PayMethodViewAdapter(mContext,94);
+        mPayMethodViewAdapter.setDatas("3");
+        mPayMethodViewAdapter.setOnItemClickListener((v, pos) -> {
+            mPayMethod = mPayMethodViewAdapter.getItem(pos);
             if (mPayMethod != null) {
                 Logger.d_json(mPayMethod.toString());
 
@@ -116,7 +119,7 @@ public class VipChargeDialog extends AbstractPayDialog {
         recyclerView.setVisibility(View.VISIBLE);
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL,false));
         recyclerView.addItemDecoration(new PayMethodItemDecoration(2));
-        recyclerView.setAdapter(payMethodViewAdapter);
+        recyclerView.setAdapter(mPayMethodViewAdapter);
     }
 
     private void vip_charge(){
@@ -288,7 +291,7 @@ public class VipChargeDialog extends AbstractPayDialog {
                                                                 JSONArray members = new JSONArray(info_json.getString("member")),money_orders = new JSONArray(info_json.getString("money_order"));
                                                                 JSONObject member = members.getJSONObject(0);
 
-                                                                if (mContext instanceof Activity)
+                                                                if (mPrintStatus && mContext instanceof Activity)
                                                                     Printer.print((Activity) mContext,get_print_content(member,money_orders.getJSONObject(0),cashier_info,store_info,info_json.optJSONArray("welfare")));
 
                                                                 mHandler.obtainMessage(MessageID.VIP_C_SUCCESS_ID,member).sendToTarget();
@@ -399,8 +402,8 @@ public class VipChargeDialog extends AbstractPayDialog {
 
     @Override
     public boolean verify(){
-       return MyDialog.ToastMessage(null,"会员信息不能为空！",mContext,mDialogWindow,mVip != null)
-        && MyDialog.ToastMessage(mPayAmtEt,mContext.getString(R.string.select_pay_way_hint_sz),getContext(),mDialogWindow,mPayMethod != null) && super.verify();
+       if (mPayMethod == null)mPayMethodViewAdapter.getCurrentPayMethod();
+       return MyDialog.ToastMessage(null,"会员信息不能为空！",mContext,mDialogWindow,mVip != null) && super.verify();
     }
 
 
