@@ -14,6 +14,7 @@ import android.widget.TextView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.callback.EditTextReplacement;
 import com.wyc.cloudapp.utils.Utils;
 
 public class ChangeNumOrPriceDialog extends Dialog {
@@ -46,7 +47,7 @@ public class ChangeNumOrPriceDialog extends Dialog {
         },300);
         if ("".equals(mInitVal)) {
             new_price_text.setInputType(InputType.TYPE_NUMBER_VARIATION_PASSWORD);
-            new_price_text.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            new_price_text.setTransformationMethod(new EditTextReplacement());
         }
         new_price_text.setText(mInitVal);
 

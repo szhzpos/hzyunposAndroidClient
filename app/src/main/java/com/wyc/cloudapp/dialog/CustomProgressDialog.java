@@ -53,7 +53,6 @@ public class CustomProgressDialog extends ProgressDialog
         }
         findViewById(R.id.dialog_linearLayout).setMinimumWidth(100);
 
-
     }
 
     @Override

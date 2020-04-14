@@ -300,6 +300,9 @@ public final class Utils {
     public static boolean JsonIsNotEmpty(final JSONObject json){
         return json != null && json.keys().hasNext();
     }
+    public static boolean JsonIsNotEmpty(final JSONArray jsons){
+        return jsons != null && jsons.length() != 0;
+    }
     public static JSONObject JsondeepCopy(final JSONObject jsonObject) throws JSONException {
         return new JSONObject(jsonObject.toString());
     }

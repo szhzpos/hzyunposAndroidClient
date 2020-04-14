@@ -40,6 +40,7 @@ import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
 import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.dialog.HangBillDialog;
 import com.wyc.cloudapp.dialog.MoreFunDialog;
 import com.wyc.cloudapp.dialog.PayDialog;
 import com.wyc.cloudapp.dialog.SecondDisplay;
@@ -139,7 +140,6 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.discount).setOnClickListener(v-> {
             setDisCashierId(mCashierInfo.optString("cas_id"));
             mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 2);});//打折
-
         findViewById(R.id.change_price).setOnClickListener(v-> {
             setDisCashierId(mCashierInfo.optString("cas_id"));
             mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 1);});//改价
@@ -168,7 +168,19 @@ public class MainActivity extends AppCompatActivity {
                 MyDialog.ToastMessage(imageView,"打印功能已开启！",this,getWindow());
             }
         });//打印状态
-
+        findViewById(R.id.tmp_order).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                HangBillDialog hangBillDialog = new HangBillDialog(MainActivity.this);
+                JSONArray datas = mSaleGoodsViewAdapter.getDatas();
+                if (Utils.JsonIsNotEmpty(datas)){
+                    if (hangBillDialog.save(datas)){
+                        resetOrderInfo();
+                    }
+                }else
+                    hangBillDialog.show();
+            }
+        });
 
         findViewById(R.id.q_deal_linerLayout).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -544,6 +556,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(PayDialog myDialog) {
                         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
+
                         if (mPrintStatus.get())
                             Printer.print(MainActivity.this,myDialog.get_print_content(mSaleGoodsViewAdapter.getDatas()));
 

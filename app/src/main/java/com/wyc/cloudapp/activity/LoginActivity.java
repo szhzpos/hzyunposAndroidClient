@@ -32,6 +32,7 @@ import android.widget.RelativeLayout;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.callback.EditTextReplacement;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.ConnSettingDialog;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
@@ -104,25 +105,7 @@ public class LoginActivity extends AppCompatActivity {
         mUser_id.postDelayed(()->mUser_id.requestFocus(),300);
         mUser_id.setSelectAllOnFocus(true);
 
-        mPassword.setTransformationMethod(new ReplacementTransformationMethod() {
-            @Override
-            protected char[] getOriginal() {
-                StringBuilder strWord = new StringBuilder();
-                for (char i = 0; i < 256; i++) {
-                    strWord.append(i);
-                }
-                return strWord.toString().toCharArray();
-            }
-
-            @Override
-            protected char[] getReplacement() {
-                char[] charReplacement = new char[255];
-                for (int i = 0; i < 255; i++) {
-                    charReplacement[i] = '*';
-                }
-                return charReplacement;
-            }
-        });
+        mPassword.setTransformationMethod(new EditTextReplacement());
         mPassword.setOnFocusChangeListener((v, hasFocus) -> Utils.hideKeyBoard((EditText)v));
         mPassword.setSelectAllOnFocus(true);
 
@@ -377,11 +360,11 @@ public class LoginActivity extends AppCompatActivity {
                             et_url.setText(url);
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        MyDialog.SnackbarMessage(getWindow(),"显示服务器地址：" + e.getMessage(),getCurrentFocus());
+                        MyDialog.ToastMessage("显示服务器地址：" + e.getMessage(),this,getWindow());
                     }
                 }
             }else{
-                MyDialog.SnackbarMessage(getWindow(),param.optString("info"),getCurrentFocus());
+                MyDialog.ToastMessage(param.optString("info"),this,getWindow());
             }
         }
     }

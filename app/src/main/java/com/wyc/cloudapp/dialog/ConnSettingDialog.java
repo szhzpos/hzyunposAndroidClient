@@ -233,7 +233,7 @@ public class ConnSettingDialog extends Dialog {
                 }
             }
         }else{
-            MyDialog.SnackbarMessage(getWindow(),param.optString("info"),getCurrentFocus());
+            MyDialog.ToastMessage(param.optString("info"),mContext,getWindow());
         }
     }
 

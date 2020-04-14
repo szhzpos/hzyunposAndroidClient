@@ -587,7 +587,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         return code;
     }
 
-    public static boolean execSQLByBatchFromJson(@NonNull JSONObject json, List<String> tables, List<List<String>> table_cols, StringBuilder err, int type ){//type 0 insert 1 replace
+    public static boolean execSQLByBatchFromJson(@NonNull JSONObject json, List<String> tables, List<List<String>> table_cols,@NonNull StringBuilder err, int type ){//type 0 insert 1 replace
         boolean code = true;
         StringBuilder stringBuilderHead = new StringBuilder();
         StringBuilder stringBuilderfoot = new StringBuilder();
@@ -687,6 +687,11 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         }
 
          return code;
+    }
+    public static Cursor getCursor(final String sql,final String[] selectArgs){
+        synchronized(SQLiteHelper.class){
+            return mDb.rawQuery(sql,selectArgs);
+        }
     }
 
     private static List<Map<String,Object>> rs2List(Cursor cursor) {
@@ -1205,8 +1210,34 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "           goods_group c\n" +
                 "     WHERE a.barcode_id = b.barcode_id AND \n" +
                 "           c.gp_id = a.gp_id AND \n" +
-                "           c.status = 1;\n";
-
+                "           c.status = 1;\n",
+                sql_hangbill = "CREATE TABLE IF NOT EXISTS hangbill (\n" +
+                "_id   INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
+                "hang_id   INT  NOT NULL UNIQUE,\n" +
+                "amt      NUMERIC (18, 4),\n" +
+                "cas_id     INT,\n" +
+                "cas_name     VARCHAR,\n" +
+                "oper_date   DATETIME NOT NULL DEFAULT ( (datetime('now', 'localtime'))));",
+                sql_hangbill_detail = "CREATE TABLE IF NOT EXISTS hangbill_detail (\n" +
+                "_id     INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
+                "hang_id  INT NOT NULL,\n" +
+                "row_id  INT  NOT NULL,\n" +
+                "stores_id       VARCHAR (4)     NOT NULL,\n" +
+                "barcode_id  VARCHAR (8)     NOT NULL,\n" +
+                "barcode  VARCHAR     NOT NULL,\n" +
+                "goods_title  VARCHAR      ,\n" +
+                "old_price   NUMERIC (18, 4) NOT NULL,\n" +
+                "sale_price     NUMERIC (18, 4) NOT NULL,\n" +
+                "xnum      NUMERIC (18, 4) NOT NULL,\n" +
+                "unit_name      VARCHAR NOT NULL,\n" +
+                "sale_amt     NUMERIC (18, 4) NOT NULL,\n" +
+                "vip_no         VARCHAR (15),\n" +
+                "discount  NUMERIC (18, 4) NOT NULL,\n" +
+                "discount_amt NUMERIC (18, 4) NOT NULL,\n" +
+                "sale_man          VARCHAR (4),\n" +
+                "cas_id        VARCHAR (4)     NOT NULL,\n" +
+                "remark         VARCHAR (50),\n" +
+                "oper_date      DATETIME        NOT NULL DEFAULT ( (datetime('now', 'localtime') )) );";
         list.add(sql_shop_stores);
         list.add(sql_shop_category);
         list.add(sql_barcode_info);
@@ -1222,6 +1253,8 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         list.add(sql_goods_group);
         list.add(sql_goods_group_info);
         list.add(goods_group_view_sql);
+        list.add(sql_hangbill);
+        list.add(sql_hangbill_detail);
         try {
             db.beginTransaction();
             for (String sql : list) {

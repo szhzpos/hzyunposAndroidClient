@@ -86,7 +86,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:text="@string/vip_phone_sz"
+                    android:text="@string/vip_ph_num_sz"
                     android:textAlignment="center"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/font_size_16" />

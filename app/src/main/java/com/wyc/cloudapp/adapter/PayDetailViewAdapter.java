@@ -199,7 +199,7 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
     }
 
-    public void deletePayDetail(int index){
+    private void deletePayDetail(int index){
         Logger.d("index:%d",index);
         if (0 <= index && index < mDatas.length()){
             mDatas.remove(index);

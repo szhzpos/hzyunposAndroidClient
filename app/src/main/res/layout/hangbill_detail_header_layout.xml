@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/table_row_height"
+    android:background="@color/table_header_color"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/barcode"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:text="@string/barcode_sz"
+        android:textColor="@color/white"
+        android:textSize="@dimen/font_size_18" />
+
+    <TextView
+        android:id="@+id/goods_title"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:text="@string/g_name_sz"
+        android:textColor="@color/white"
+        android:textSize="@dimen/font_size_18" />
+
+    <TextView
+        android:id="@+id/xnum"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:text="@string/sec_num_sz"
+        android:textColor="@color/white"
+        android:textSize="@dimen/font_size_18" />
+
+    <TextView
+        android:id="@+id/h_sale_price"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:text="@string/sec_price_sz"
+        android:textColor="@color/white"
+        android:textSize="@dimen/font_size_18" />
+
+    <TextView
+        android:id="@+id/h_discount"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:text="@string/discount_sz"
+        android:textColor="@color/white"
+        android:textSize="@dimen/font_size_18" />
+
+    <TextView
+        android:id="@+id/h_sale_amt"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:text="@string/sec_sum_sz"
+        android:textColor="@color/white"
+        android:textSize="@dimen/font_size_18" />
+</LinearLayout>

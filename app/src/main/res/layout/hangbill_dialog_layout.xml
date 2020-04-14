@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="888dp"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dialog_head_heigth"
+        android:background="@drawable/dialog_top_round_shap"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/hangbill_sz"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/font_size_24" />
+
+        <Button
+            android:id="@+id/_close"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/size_35"
+            android:layout_height="@dimen/size_35"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="@dimen/margin_2"
+            android:background="@drawable/close" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/border_sub_gray"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:baselineAligned="false"
+            android:orientation="horizontal">
+
+            <ListView
+                android:id="@+id/hangbill_list"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_marginTop="@dimen/margin_2"
+                android:layout_weight="1"
+                android:background="@drawable/border_sub_gray"
+                android:divider="@color/blue_subtransparent"
+                android:dividerHeight="@dimen/margin_1"
+                android:footerDividersEnabled="false"
+                android:headerDividersEnabled="true" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/s_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/height_35"
+                    android:layout_marginStart="@dimen/margin_2"
+                    android:layout_marginTop="@dimen/margin_2"
+                    android:layout_marginEnd="@dimen/margin_2"
+                    android:background="@drawable/border_sub_gray"
+                    android:ems="10"
+                    android:importantForAutofill="no"
+                    android:inputType="textPersonName"
+                    android:paddingStart="@dimen/margin_5"
+                    android:paddingEnd="@dimen/margin_5" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/keyboard"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_2"
+                    android:layout_marginTop="@dimen/margin_2"
+                    android:layout_marginEnd="@dimen/margin_2"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false">
+
+                    <Button
+                        android:id="@+id/_one"
+                        style="@style/Widget.AppCompat.Button.Borderless"
+                        android:layout_width="@dimen/login_keybord_button_width"
+                        android:layout_height="@dimen/login_keybord_button_height"
+                        android:background="@drawable/button_sub_blue"
+                        android:text="@string/one_sz"
+                        android:textAlignment="center"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/num_keyboard_font_size_24"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <Button
+                        android:id="@+id/_two"
+                        style="@style/Widget.AppCompat.Button.Borderless"
+                        android:layout_width="@dimen/login_keybord_button_width"
+                        android:layout_height="@dimen/login_keybord_button_height"
+                        android:layout_marginStart="@dimen/margin_2"
+                        android:layout_weight="2.5"
+                        android:background="@drawable/button_sub_blue"
+                        android:text="@string/two_sz"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/num_keyboard_font_size_24"
+                        app:layout_constraintStart_toEndOf="@+id/_one"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <Button
+                        android:id="@+id/_three"
+                        style="@style/Widget.AppCompat.Button.Borderless"
+                        android:layout_width="@dimen/login_keybord_button_width"
+                        android:layout_height="@dimen/login_keybord_button_height"
+                        android:layout_marginStart="@dimen/margin_2"
+                        android:background="@drawable/button_sub_blue"
+                        android:text="@string/three_sz"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/num_keyboard_font_size_24"
+                        app:layout_constraintStart_toEndOf="@+id/_two"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <Button
+                        android:id="@+id/_back"
+                        style="@style/Widget.AppCompat.Button.Borderless"
+                        android:layout_width="@dimen/login_keybord_button_width"
+                        android:layout_height="@dimen/login_keybord_button_height"
+                        android:layout_marginStart="@dimen/margin_2"
+                        android:background="@drawable/button_sub_blue"
+                        android:text="@string/back"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/num_keyboard_font_size_18"
+                        app:layout_constraintStart_toEndOf="@id/_six"
+                        app:layout_constraintTop_toTopOf="@id/_six" />
+
+                    <Button
+                        android:id="@+id/_four"
+                        style="@style/Widget.AppCompat.Button.Borderless"
+                        android:layout_width="@dimen/login_keybord_button_width"
+                        android:layout_height="@dimen/login_keybord_button_height"
+                        android:layout_marginTop="@dimen/margin_2"
+                        android:background="@drawable/button_sub_blue"
+                        android:focusable="auto"
+                        android:text="@string/four_sz"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/num_keyboard_font_size_24"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/_one" />
+
+                    <Button
+                        android:id="@+id/_five"
+                        style="@style/Widget.AppCompat.Button.Borderless"
+                        android:layout_width="@dimen/login_keybord_button_width"
+                        android:layout_height="@dimen/login_keybord_button_height"
+                        android:layout_marginStart="@dimen/margin_2"
+                        android:layout_marginTop="@dimen/margin_2"
+                        android:layout_weight="2.5"
+                        android:background="@drawable/button_sub_blue"
+                        android:text="@string/five_sz"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/num_keyboard_font_size_24"
+                        app:layout_constraintStart_toEndOf="@+id/_four"
+                        app:layout_constraintTop_toBottomOf="@+id/_two" />
+
+                    <Button
+                        android:id="@+id/_six"
+                        style="@style/Widget.AppCompat.Button.Borderless"
+                        android:layout_width="@dimen/login_keybord_button_width"
+                        android:layout_height="@dimen/login_keybord_button_height"
+                        android:layout_marginStart="@dimen/margin_2"
+                        android:layout_marginTop="@dimen/margin_2"
+                        android:layout_weight="2.5"
+                        android:background="@drawable/button_sub_blue"
+                        android:text="@string/six_sz"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/num_keyboard_font_size_24"
+                        app:layout_constraintStart_toEndOf="@+id/_five"
+                        app:layout_constraintTop_toBottomOf="@+id/_three" />
+
+                    <Button
+                        android:id="@+id/_seven"
+                        style="@style/Widget.AppCompat.Button.Borderless"
+                        android:layout_width="@dimen/login_keybord_button_width"
+                        android:layout_height="@dimen/login_keybord_button_height"
+                        android:layout_marginTop="@dimen/margin_2"
+                        android:background="@drawable/button_sub_blue"
+                        android:text="@string/seven_sz"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/num_keyboard_font_size_24"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/_four" />
+
+                    <Button
+                        android:id="@+id/_eight"
+                        style="@style/Widget.AppCompat.Button.Borderless"
+                        android:layout_width="@dimen/login_keybord_button_width"
+                        android:layout_height="@dimen/login_keybord_button_height"
+                        android:layout_marginStart="@dimen/margin_2"
+                        android:layout_marginTop="@dimen/margin_2"
+                        android:layout_weight="2.5"
+                        android:background="@drawable/button_sub_blue"
+                        android:text="@string/eight_sz"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/num_keyboard_font_size_24"
+                        app:layout_constraintStart_toEndOf="@+id/_seven"
+                        app:layout_constraintTop_toBottomOf="@+id/_five" />
+
+                    <Button
+                        android:id="@+id/_nine"
+                        style="@style/Widget.AppCompat.Button.Borderless"
+                        android:layout_width="@dimen/login_keybord_button_width"
+                        android:layout_height="@dimen/login_keybord_button_height"
+                        android:layout_marginStart="@dimen/margin_2"
+                        android:layout_marginTop="@dimen/margin_2"
+                        android:layout_weight="2.5"
+                        android:background="@drawable/button_sub_blue"
+                        android:text="@string/nine_sz"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/num_keyboard_font_size_24"
+                        app:layout_constraintStart_toEndOf="@+id/_eight"
+                        app:layout_constraintTop_toBottomOf="@+id/_six" />
+
+                    <Button
+                        android:id="@+id/_zero"
+                        style="@style/Widget.AppCompat.Button.Borderless"
+                        android:layout_width="@dimen/login_keybord_button_width"
+                        android:layout_height="@dimen/login_keybord_button_height"
+                        android:layout_marginStart="@dimen/margin_2"
+                        android:background="@drawable/button_sub_blue"
+                        android:text="@string/zero_sz"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/num_keyboard_font_size_24"
+                        app:layout_constraintStart_toEndOf="@id/_three"
+                        app:layout_constraintTop_toTopOf="@id/_three" />
+
+                    <Button
+                        android:id="@+id/_ok"
+                        style="@style/Widget.AppCompat.Button.Borderless"
+                        android:layout_width="@dimen/login_keybord_button_width"
+                        android:layout_height="@dimen/login_keybord_button_height"
+                        android:layout_marginStart="@dimen/margin_2"
+                        android:background="@drawable/button_sub_blue"
+                        android:text="@string/OK"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/font_size_18"
+                        app:layout_constraintStart_toEndOf="@id/_nine"
+                        app:layout_constraintTop_toTopOf="@id/_nine" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/hangbill_details_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/margin_2"
+            android:background="@drawable/border_sub_gray"
+            android:divider="@color/blue_subtransparent"
+            android:dividerHeight="@dimen/margin_1" />
+
+    </LinearLayout>
+</LinearLayout>
