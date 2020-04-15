@@ -14,11 +14,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
@@ -44,7 +46,7 @@ import static android.content.Context.WINDOW_SERVICE;
 public class HangBillDialog extends Dialog {
     private MainActivity mContext;
     private SimpleCursorAdapter mHbCursorAdapter,mHbDetailCursorAdapter;
-    private ListView mHangBillList,mHangBillDetails;
+    private ListView mHangBillList,mHangBillDetails,header,mDetailHeader;
     private View mCurrentSelectedRow;
     public HangBillDialog(@NonNull MainActivity context) {
         super(context);
@@ -90,8 +92,12 @@ public class HangBillDialog extends Dialog {
     }
 
     private void initHangBillList(){
+        //表头
+        header = findViewById(R.id.header);
+        header.addHeaderView(LayoutInflater.from(mContext).inflate(R.layout.hangbill_header_layout,null));
+        header.setAdapter(new SimpleCursorAdapter(mContext,R.layout.hangbill_header_layout,null,null,null,1));
+        //表中区
         mHangBillList = findViewById(R.id.hangbill_list);
-        mHangBillList.addHeaderView(LayoutInflater.from(mContext).inflate(R.layout.hangbill_header_layout,null));
         mHbCursorAdapter = new SimpleCursorAdapter(mContext,R.layout.hangbill_content_layout,null,new String[]{"_id","hang_id","h_amt","h_cas_name","oper_date"},new int[]{R.id._id,R.id.hang_id,R.id.h_amt,R.id.h_cas_name,R.id.h_time},1);
         mHbCursorAdapter.registerDataSetObserver(new DataSetObserver() {
             @Override
@@ -113,7 +119,6 @@ public class HangBillDialog extends Dialog {
             return false;
         });
         mHangBillList.setOnItemClickListener((parent, view, position, id) -> {
-            if (position == 0)return;
             TextView hang_id_v = view.findViewById(R.id.hang_id);
             if (null != hang_id_v){
                 if (mCurrentSelectedRow != null){
@@ -162,22 +167,23 @@ public class HangBillDialog extends Dialog {
     }
 
     private void initHangBillDetail(){
+        //表头
+        mDetailHeader = findViewById(R.id.h_detail_header);
+        mDetailHeader.addHeaderView(LayoutInflater.from(mContext).inflate(R.layout.hangbill_detail_header_layout,null));
+        mDetailHeader.setAdapter(new SimpleCursorAdapter(mContext,R.layout.hangbill_detail_header_layout,null,null,null,1));
+        //表中区
         mHangBillDetails = findViewById(R.id.hangbill_details_list);
-        mHangBillDetails.addHeaderView(LayoutInflater.from(mContext).inflate(R.layout.hangbill_detail_header_layout,null));
         mHbDetailCursorAdapter = new SimpleCursorAdapter(mContext,R.layout.hangbill_detail_content_layout,null,new String[]{"_id","barcode","goods_title","xnum","sale_price","discount","sale_amt"},
                 new int[]{R.id._id,R.id.barcode,R.id.goods_title,R.id.xnum,R.id.h_sale_price,R.id.h_discount,R.id.h_sale_amt},1);
-        mHbDetailCursorAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
-            @Override
-            public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
-                String col_name = cursor.getColumnName(columnIndex);
-                if ("sale_price".equals(col_name) || "sale_amt".equals(col_name)){
-                    if (view instanceof TextView){
-                        ((TextView) view).setText(String.format(Locale.CHINA,"%.2f",cursor.getDouble(columnIndex)));
-                    }
-                    return true;
+        mHbDetailCursorAdapter.setViewBinder((view, cursor, columnIndex) -> {
+            String col_name = cursor.getColumnName(columnIndex);
+            if ("sale_price".equals(col_name) || "sale_amt".equals(col_name)){
+                if (view instanceof TextView){
+                    ((TextView) view).setText(String.format(Locale.CHINA,"%.2f",cursor.getDouble(columnIndex)));
                 }
-                return false;
+                return true;
             }
+            return false;
         });
         mHangBillDetails.setAdapter(mHbDetailCursorAdapter);
     }
@@ -221,28 +227,6 @@ public class HangBillDialog extends Dialog {
             }
         }
     }
-    private View.OnClickListener mKeyboardListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            int v_id = view.getId();
-            EditText et_view = (EditText) getCurrentFocus();
-            if (et_view  != null){
-                Editable editable = et_view.getText();
-                if (v_id == R.id._ok){
-
-                }else if (v_id == R.id._back){
-                    if (editable.length() != 0)
-                        editable.delete(editable.length() - 1,editable.length());
-                }else{
-                    if (et_view.getSelectionStart() != et_view.getSelectionEnd()){
-                        editable.replace(0,editable.length(),((Button)view).getText());
-                        et_view.setSelection(editable.length());
-                    }else
-                        editable.append(((Button)view).getText());
-                }
-            }
-        }
-    };
 
     public boolean save(JSONArray array){
         boolean code = true;

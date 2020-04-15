@@ -35,31 +35,57 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="match_parent"
         android:background="@drawable/border_sub_gray"
         android:orientation="horizontal">
 
-        <ListView
-            android:id="@+id/hangbill_list"
-            android:layout_width="288dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_2"
-            android:layout_marginTop="@dimen/margin_2"
-            android:background="@drawable/border_sub_gray"
-            android:divider="@color/blue_subtransparent"
-            android:dividerHeight="@dimen/margin_1"
-            android:footerDividersEnabled="false"
-            android:headerDividersEnabled="true" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <ListView
-            android:id="@+id/hangbill_details_list"
+            <ListView
+                android:id="@+id/header"
+                android:layout_width="308dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_marginTop="@dimen/margin_2"
+                android:background="@drawable/border_sub_gray" />
+
+            <ListView
+                android:id="@+id/hangbill_list"
+                android:layout_width="308dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/margin_2"
+                android:background="@drawable/border_sub_gray"
+                android:divider="@color/blue_subtransparent"
+                android:dividerHeight="@dimen/margin_1" />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="@dimen/margin_2"
-            android:background="@drawable/border_sub_gray"
-            android:divider="@color/blue_subtransparent"
-            android:dividerHeight="@dimen/margin_1" />
+            android:orientation="vertical">
+
+            <ListView
+                android:id="@+id/h_detail_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_marginTop="@dimen/margin_2"
+                android:background="@drawable/border_sub_gray" />
+
+            <ListView
+                android:id="@+id/hangbill_details_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:layout_marginBottom="@dimen/margin_2"
+                android:background="@drawable/border_sub_gray">
+
+            </ListView>
+        </LinearLayout>
 
     </LinearLayout>
 </LinearLayout>

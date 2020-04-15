@@ -6,20 +6,24 @@
 
     <TextView
         android:id="@+id/barcode"
-        android:layout_width="match_parent"
+        android:layout_width="128dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:background="@drawable/left_blue_separator"
         android:gravity="center"
+        android:paddingStart="@dimen/margin_5"
+        android:paddingEnd="@dimen/margin_5"
         android:text="@string/barcode_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16" />
 
     <TextView
         android:id="@+id/goods_title"
-        android:layout_width="match_parent"
+        android:layout_width="208dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:background="@drawable/left_blue_separator"
         android:gravity="center"
+        android:paddingStart="@dimen/margin_5"
+        android:paddingEnd="@dimen/margin_5"
         android:text="@string/g_name_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16" />
@@ -29,7 +33,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
+        android:background="@drawable/left_blue_separator"
         android:gravity="center"
+        android:paddingStart="@dimen/margin_5"
+        android:paddingEnd="@dimen/margin_5"
         android:text="@string/sec_num_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16" />
@@ -39,7 +46,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
+        android:background="@drawable/left_blue_separator"
         android:gravity="center"
+        android:paddingStart="@dimen/margin_5"
+        android:paddingEnd="@dimen/margin_5"
         android:text="@string/sec_price_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16" />
@@ -49,7 +59,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
+        android:background="@drawable/left_blue_separator"
         android:gravity="center"
+        android:paddingStart="@dimen/margin_5"
+        android:paddingEnd="@dimen/margin_5"
         android:text="@string/discount_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16" />
@@ -59,7 +72,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
+        android:background="@drawable/left_right_blue_separator"
         android:gravity="center"
+        android:paddingStart="@dimen/margin_5"
+        android:paddingEnd="@dimen/margin_5"
         android:text="@string/sec_sum_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16" />
