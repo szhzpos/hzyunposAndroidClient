@@ -24,10 +24,10 @@
 
     <TextView
         android:id="@+id/hang_id"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_weight="1"
         android:gravity="center"
+        android:minWidth="68dp"
         android:paddingTop="@dimen/margin_8"
         android:paddingBottom="@dimen/margin_8"
         android:text="@string/hang_id_sz"
@@ -56,14 +56,15 @@
         android:paddingBottom="@dimen/margin_8"
         android:text="@string/oper_sz"
         android:textColor="@color/white"
-        android:textSize="@dimen/font_size_18" />
+        android:textSize="@dimen/font_size_18"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/h_time"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:minWidth="288dp"
+        android:minWidth="168dp"
         android:paddingTop="@dimen/margin_8"
         android:paddingBottom="@dimen/margin_8"
         android:text="@string/time_sz"
