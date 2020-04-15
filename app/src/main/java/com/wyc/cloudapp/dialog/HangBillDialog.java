@@ -43,7 +43,6 @@ import static android.content.Context.WINDOW_SERVICE;
 
 public class HangBillDialog extends Dialog {
     private MainActivity mContext;
-    private EditText mS_content;
     private SimpleCursorAdapter mHbCursorAdapter,mHbDetailCursorAdapter;
     private ListView mHangBillList,mHangBillDetails;
     private View mCurrentSelectedRow;
@@ -57,8 +56,6 @@ public class HangBillDialog extends Dialog {
         setCancelable(false);
         setCanceledOnTouchOutside(false);
 
-        //搜索内容text
-        initSearch();
         //初始化表格
         initHangBillList();
         initHangBillDetail();
@@ -79,15 +76,6 @@ public class HangBillDialog extends Dialog {
                 dialogWindow.setAttributes(lp);
             }
         }
-
-        //初始化数字键盘
-        ConstraintLayout keyboard_linear_layout;
-        keyboard_linear_layout = findViewById(R.id.keyboard);
-        for (int i = 0,child  = keyboard_linear_layout.getChildCount(); i < child;i++){
-            View tmp_v = keyboard_linear_layout.getChildAt(i);
-            tmp_v.setOnClickListener(mKeyboardListener);
-        }
-
     }
 
     @Override
@@ -99,29 +87,6 @@ public class HangBillDialog extends Dialog {
         if (mHbDetailCursorAdapter != null){
             mHbDetailCursorAdapter.changeCursor(null);
         }
-    }
-
-    private void initSearch(){
-        mS_content = findViewById(R.id.s_content);
-        mS_content.setOnFocusChangeListener((v,b)-> Utils.hideKeyBoard((EditText) v));
-        mS_content.postDelayed(()-> mS_content.requestFocus(),100);
-        mS_content.setSelectAllOnFocus(true);
-        mS_content.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                loadHangBill(s.toString());
-            }
-        });
     }
 
     private void initHangBillList(){
@@ -139,9 +104,7 @@ public class HangBillDialog extends Dialog {
             }
         });
         mHbCursorAdapter.setViewBinder((view, cursor, columnIndex) -> {
-            //setViewBackgroundColor(view,false);
-            int col_type = cursor.getType(columnIndex);
-            if (col_type == Cursor.FIELD_TYPE_FLOAT || col_type == Cursor.FIELD_TYPE_INTEGER){
+            if ("h_amt".equals(cursor.getColumnName(columnIndex))){
                 if (view instanceof TextView){
                     ((TextView) view).setText(String.format(Locale.CHINA,"%.2f",cursor.getDouble(columnIndex)));
                 }
