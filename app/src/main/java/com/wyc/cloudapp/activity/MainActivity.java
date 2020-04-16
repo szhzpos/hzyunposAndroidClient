@@ -11,6 +11,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -88,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
     private TableLayout mKeyboard;
     private String mRemark = "",zk_cashier_id;
     private SecondDisplay mSecondDisplay;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -171,14 +176,50 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.tmp_order).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                HangBillDialog hangBillDialog = new HangBillDialog(MainActivity.this);
+                final HangBillDialog hangBillDialog = new HangBillDialog(MainActivity.this);
                 JSONArray datas = mSaleGoodsViewAdapter.getDatas();
                 if (Utils.JsonIsNotEmpty(datas)){
-                    if (hangBillDialog.save(datas)){
-                        resetOrderInfo();
+                    MyDialog.displayAskMessage(null, "是否挂单？", MainActivity.this, new MyDialog.onYesOnclickListener() {
+                        @Override
+                        public void onYesClick(MyDialog myDialog) {
+                            StringBuilder err = new StringBuilder();
+                            if (hangBillDialog.save(datas,mVipInfo,err)){
+                                resetOrderInfo();
+                                MyDialog.ToastMessage(mSaleGoodsRecyclerView,"挂单成功！",MainActivity.this,null);
+                                myDialog.dismiss();
+                            }else{
+                                MyDialog.ToastMessage(mSaleGoodsRecyclerView,"保存挂单错误：" + err,MainActivity.this,null);
+                            }
+                        }
+                    }, Dialog::dismiss);
+                }else{
+                    if (hangBillDialog.getHangCounts() > 1){
+                        hangBillDialog.setGetBillDetailListener(new HangBillDialog.OnGetBillListener() {
+                            @Override
+                            public void onGet(JSONArray array,final JSONObject vip) {
+                                if (null != vip)showVipInfo(vip);
+                                JSONObject barcode_id_obj,goods_info;
+                                for (int i = 0,length = array.length();i < length;i ++){
+                                    barcode_id_obj = array.optJSONObject(i);
+                                    if (barcode_id_obj != null){
+                                        goods_info = new JSONObject();
+                                        if (mGoodsInfoViewAdapter.getSingleGoods(goods_info,barcode_id_obj.optInt("barcode_id"))){
+                                            mSaleGoodsViewAdapter.addSaleGoods(goods_info,mVipInfo);
+                                            hangBillDialog.dismiss();
+                                        }else{
+                                            MyDialog.ToastMessage(mSaleGoodsRecyclerView,"查询商品信息错误：" + goods_info.optString("info"),MainActivity.this,getWindow());
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                        hangBillDialog.show();
+                    }else{
+                        MyDialog.ToastMessage(mSaleGoodsRecyclerView,"无挂单信息！",MainActivity.this,null);
                     }
-                }else
-                    hangBillDialog.show();
+                }
+
             }
         });
 

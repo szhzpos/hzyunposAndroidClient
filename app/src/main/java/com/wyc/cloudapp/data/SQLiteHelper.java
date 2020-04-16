@@ -564,7 +564,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         }
         return code;
     }
-    public static boolean execBatchUpdateSql(@NonNull final List<String> list,StringBuilder err){
+    public static boolean execBatchUpdateSql(@NonNull final List<String> list,@NonNull StringBuilder err){
         //执行updata语句    sql要执行的数据库修改语句 如果出错error包含错误信息
         boolean code = true;
         try {
@@ -757,7 +757,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                     jsonObj= new JSONObject();
                     for (int i = 0; i < columnCount; i++) {
                         if(coltypes.get(i) == FIELD_TYPE_FLOAT){
-                            jsonObj.put(colNames.get(i) ,cursor.getFloat(i));  /////i = 0;rs里面的是从1开始
+                            jsonObj.put(colNames.get(i) ,cursor.getDouble(i));
                         }else if(coltypes.get(i) == FIELD_TYPE_INTEGER){
                             jsonObj.put(colNames.get(i) , cursor.getInt(i));
                         }else {
@@ -776,7 +776,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 jsonObj = new JSONObject();
                 for (int i = 0; i < columnCount; i++) {
                     if (coltypes.get(i) == FIELD_TYPE_FLOAT) {
-                        jsonObj.put(colNames.get(i),BigDecimal.valueOf(cursor.getDouble(i)));  /////i = 0;rs里面的是从1开始
+                        jsonObj.put(colNames.get(i),BigDecimal.valueOf(cursor.getDouble(i)));
                     } else if (coltypes.get(i) == FIELD_TYPE_INTEGER) {
                         jsonObj.put(colNames.get(i), cursor.getInt(i));
                     } else {
@@ -795,7 +795,6 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
     private static JSONArray rs2Values(Cursor cursor, Integer minRow, Integer maxRow, boolean row) throws JSONException {
         // json数组
         JSONArray array = new JSONArray();
-        ArrayList<String> colNames=new ArrayList<String>();
         ArrayList<Integer> coltypes=new ArrayList<Integer>();
         int row_count = 0;
         // 获取列数
@@ -803,7 +802,6 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         if(!cursor.moveToNext()) return array;
         //获取列名及相关信息
         for (int i = 0; i < columnCount; i++) {
-            colNames.add(cursor.getColumnName(i));
             coltypes.add(cursor.getType(i));
         }
 
@@ -815,7 +813,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 if (row_count > minRow && row_count <= maxRow){
                     for (int i = 0; i < columnCount; i++) {
                         if(coltypes.get(i) == FIELD_TYPE_FLOAT){
-                            array.put(cursor.getFloat(i));
+                            array.put(cursor.getDouble(i));
                         }else if(coltypes.get(i) == FIELD_TYPE_INTEGER){
                             array.put(cursor.getInt(i));
                         }else {
@@ -832,7 +830,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             do {
                 for (int i = 0; i < columnCount; i++) {
                     if(coltypes.get(i) == FIELD_TYPE_FLOAT){
-                        array.put(cursor.getFloat(i));
+                        array.put(cursor.getDouble(i));
                     }else if(coltypes.get(i) == FIELD_TYPE_INTEGER){
                         array.put(cursor.getInt(i));
                     }else {
@@ -872,9 +870,9 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                     values = new ContentValues();
                     for (int i = 0; i < columnCount; i++) {
                         if(coltypes.get(i) == FIELD_TYPE_FLOAT){
-                            values.put(colNames.get(i) ,cursor.getFloat(i));  /////i = 0;rs里面的是从1开始
+                            values.put(colNames.get(i) ,cursor.getDouble(i));
                         }else if(coltypes.get(i) == FIELD_TYPE_INTEGER){
-                            values.put(colNames.get(i) , cursor.getInt(i));
+                            values.put(colNames.get(i) ,cursor.getInt(i));
                         }else {
                             if(cursor.getString(i) == null){
                                 values.put(colNames.get(i) , "");
@@ -1217,6 +1215,9 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "amt      NUMERIC (18, 4),\n" +
                 "cas_id     INT,\n" +
                 "cas_name     VARCHAR,\n" +
+                "card_code     VARCHAR,\n" +
+                "vip_name     VARCHAR,\n" +
+                "vip_mobile     VARCHAR,\n" +
                 "oper_date   DATETIME NOT NULL DEFAULT ( (datetime('now', 'localtime'))));",
                 sql_hangbill_detail = "CREATE TABLE IF NOT EXISTS hangbill_detail (\n" +
                 "_id     INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
@@ -1231,7 +1232,6 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "xnum      NUMERIC (18, 4) NOT NULL,\n" +
                 "unit_name      VARCHAR NOT NULL,\n" +
                 "sale_amt     NUMERIC (18, 4) NOT NULL,\n" +
-                "vip_no         VARCHAR (15),\n" +
                 "discount  NUMERIC (18, 4) NOT NULL,\n" +
                 "discount_amt NUMERIC (18, 4) NOT NULL,\n" +
                 "sale_man          VARCHAR (4),\n" +

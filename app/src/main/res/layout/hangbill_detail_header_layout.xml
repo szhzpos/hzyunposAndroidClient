@@ -7,7 +7,7 @@
 
     <TextView
         android:id="@+id/barcode"
-        android:layout_width="128dp"
+        android:layout_width="@dimen/hang_bill_detail_bacode_w"
         android:layout_height="match_parent"
         android:gravity="center"
         android:paddingTop="@dimen/margin_8"
@@ -18,7 +18,7 @@
 
     <TextView
         android:id="@+id/goods_title"
-        android:layout_width="208dp"
+        android:layout_width="@dimen/hang_bill_detail_g_title_w"
         android:layout_height="match_parent"
         android:gravity="center"
         android:paddingTop="@dimen/margin_8"

@@ -20,7 +20,7 @@
     <string name="clear_sz">清空</string>
     <string name="discount_sz">折扣</string>
     <string name="change_price_sz">改价</string>
-    <string name="tmp_order_sz">挂单/取单</string>
+    <string name="tmp_order_sz">挂单</string>
     <string name="vip_button_sz">会员</string>
     <string name="sale_man_sz">营业员</string>
     <string name="check_out_sz">收款</string>
@@ -168,4 +168,6 @@
     <string name="barcode_sz">条码</string>
     <string name="g_name_sz">商品名称</string>
     <string name="hangbill_sz">挂单</string>
+    <string name="to_checkout_sz">去结账</string>
+    <string name="del_hang_bill">删除挂单</string>
 </resources>

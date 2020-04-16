@@ -204,6 +204,7 @@ public final class PrintUtilsToBitbmp {
         paint.setColor(Color.WHITE);
         canvas.drawLine(rectF.left+2,rectF.top+2,rectF.right-2,rectF.bottom-2,paint);
         canvas.drawLine(rectF.right-2,rectF.top+2, rectF.left+2,rectF.bottom-2,paint);
+
         return bitmap;
     }
 

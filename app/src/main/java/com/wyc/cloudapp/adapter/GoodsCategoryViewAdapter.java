@@ -76,7 +76,13 @@ public class GoodsCategoryViewAdapter extends RecyclerView.Adapter<GoodsCategory
 
             category_id = view.findViewById(R.id.category_id);
             if (null != mGoodsInfoAdapter && category_id != null){
-                mGoodsInfoAdapter.setDatas(Integer.valueOf(category_id.getText().toString()));
+                int id = -1;
+                try {
+                    id =  Integer.valueOf(category_id.getText().toString());
+                }catch (NumberFormatException e){
+                    e.printStackTrace();
+                }
+                mGoodsInfoAdapter.setDatas(id);
                 showSecGoodsType();
             }
         });

@@ -228,37 +228,43 @@ public class VipInfoDialog extends Dialog {
         }
     };
 
-    public void serchVip(final String ph_num,int btn_id){
-        if(ph_num != null && ph_num.length() != 0){
-            mProgressDialog.setMessage("正在查询会员...").show();
-            CustomApplication.execute(()->{
-                String url = mUrl + "/api/member/get_member_info",sz_param;
-                JSONObject object = new JSONObject(),ret_json;
-                HttpRequest httpRequest = new HttpRequest();
-                try {
-                    object.put("appid",mAppId);
-                    object.put("mobile",ph_num);
-                    sz_param = HttpRequest.generate_request_parm(object,mAppScret);
-                    ret_json = httpRequest.sendPost(url,sz_param,true);
-                    switch (ret_json.getInt("flag")){
-                        case 0:
-                            mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"查询会员错误：" + ret_json.optString("info")).sendToTarget();
-                            break;
-                        case 1:
-                            ret_json = new JSONObject(ret_json.getString("info"));
-                            switch (ret_json.getString("status")){
-                                case "n":
-                                    mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"查询会员错误：" + ret_json.optString("info")).sendToTarget();
-                                    break;
-                                case "y":
-                                    mHandler.obtainMessage(MessageID.QUERY_VIP_INFO_ID,btn_id,0,new JSONArray(ret_json.getString("list"))).sendToTarget();
-                                    break;
-                            }
+    public static JSONArray serchVip(final String mobile) throws JSONException {
+        JSONObject object = new JSONObject(),ret_json;
+        HttpRequest httpRequest = new HttpRequest();
+        JSONArray vips = null;
+        if (SQLiteHelper.getLocalParameter("connParam",object)){
+            object.put("appid",object.optString("appId"));
+            object.put("mobile",mobile);
+            ret_json = httpRequest.sendPost(object.optString("server_url") + "/api/member/get_member_info",HttpRequest.generate_request_parm(object,object.optString("appScret")),true);
+            switch (ret_json.getInt("flag")){
+                case 0:
+                    throw new JSONException(ret_json.optString("info"));
+                case 1:
+                    ret_json = new JSONObject(ret_json.getString("info"));
+                    switch (ret_json.getString("status")){
+                        case "n":
+                            throw new JSONException(ret_json.optString("info"));
+                        case "y":
+                            vips = new JSONArray(ret_json.getString("list"));
                             break;
                     }
+                    break;
+            }
+        }else{
+            throw new JSONException(object.optString("info"));
+        }
+        return vips;
+    }
+
+    private void serchVip(final String ph_num, int btn_id){
+        if(ph_num != null && ph_num.length() != 0){
+            mProgressDialog.setMessage("正在查询会员...").show();
+             CustomApplication.execute(()->{
+                try {
+                    mHandler.obtainMessage(MessageID.QUERY_VIP_INFO_ID,btn_id,0,serchVip(ph_num)).sendToTarget();
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"查询会员级别错误：" + e.getMessage()).sendToTarget();
+                    mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"查询会员信息错误：" + e.getMessage()).sendToTarget();
                 }
 
             });
