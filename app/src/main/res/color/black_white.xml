@@ -3,6 +3,7 @@
     <!-- pressed -->
     <!-- focused -->
     <!-- normal -->
+    <item android:state_activated="true" android:color="@color/white"/>
     <item android:state_pressed="true" android:color="@color/white" />
     <item android:state_hovered="true" android:color="@color/white" />
     <item android:state_focused="true" android:color="@color/white" />

@@ -30,6 +30,11 @@ public class MoreFunDialog extends Dialog {
             parameterSettingDialog.show(mContext.getSupportFragmentManager(),"");
             this.dismiss();
         });
+        findViewById(R.id.barcode_scale).setOnClickListener(v -> {
+            BarCodeScaleDownDialog barCodeScaleDownDialog = new BarCodeScaleDownDialog(mContext);
+            barCodeScaleDownDialog.show();
+            this.dismiss();
+        });
     }
 
 

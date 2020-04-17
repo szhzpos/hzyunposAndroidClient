@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.database.sqlite.SQLiteException;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
 
@@ -11,6 +12,7 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewParent;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
@@ -24,6 +26,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.logger.Logger;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,8 +43,10 @@ import static android.content.Context.WINDOW_SERVICE;
 public class HangBillDialog extends Dialog {
     private MainActivity mContext;
     private SimpleCursorAdapter mHbCursorAdapter,mHbDetailCursorAdapter;
-    private View mCurrentSelectedRow,mVipInfoView;
+    private View mVipInfoView;
+    private String mCurrentHangId;
     private OnGetBillListener mGetListener;
+    private ListView mHangBillList;
     public HangBillDialog(@NonNull MainActivity context) {
         super(context);
         mContext = context;
@@ -53,21 +58,18 @@ public class HangBillDialog extends Dialog {
         setCanceledOnTouchOutside(false);
 
         //初始化表格
-        initHangBillList();
         initHangBillDetail();
+        initHangBillList();
 
         //初始化按钮事件
         findViewById(R.id._close).setOnClickListener(v->HangBillDialog.this.dismiss());
         findViewById(R.id.del_hang_b).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (null != mCurrentSelectedRow) {
-                    TextView h_id_v = mCurrentSelectedRow.findViewById(R.id.hang_id);
-                    if (null != h_id_v) {
-                        StringBuilder err = new StringBuilder();
-                        if (!deleteBill(h_id_v.getText().toString(),err)){
-                            MyDialog.ToastMessage("删除挂单信息错误：" + err, mContext, getWindow());
-                        }
+                if (null != mCurrentHangId) {
+                    StringBuilder err = new StringBuilder();
+                    if (!deleteBill(mCurrentHangId,err)){
+                        MyDialog.ToastMessage("删除挂单信息错误：" + err, mContext, getWindow());
                     }
                 } else {
                     MyDialog.ToastMessage("请选择需要删除的记录！", mContext, getWindow());
@@ -75,53 +77,10 @@ public class HangBillDialog extends Dialog {
             }
         });
         findViewById(R.id.to_checkout).setOnClickListener(v -> {
-            if (mGetListener != null && mHbDetailCursorAdapter != null){
-                if (mCurrentSelectedRow != null){
-                    TextView hang_id_v = mCurrentSelectedRow.findViewById(R.id.hang_id),card_code_v = mCurrentSelectedRow.findViewById(R.id.card_code);
-                    if (hang_id_v != null){
-                        final StringBuilder err = new StringBuilder();
-                        final String hang_id = hang_id_v.getText().toString();
-                        final JSONArray barcode_ids = SQLiteHelper.getListToJson("SELECT barcode_id FROM hangbill_detail where hang_id = " + hang_id,err);
-                        if (null != barcode_ids){
-                             if (null != card_code_v){
-                                 final String  card_code = card_code_v.getText().toString();
-                                 if (!"".equals(card_code)){
-                                     final CustomProgressDialog progressDialog = new CustomProgressDialog(mContext);
-                                     progressDialog.setCancel(false).setMessage("正在查询会员信息...").show();
-                                     CustomApplication.execute(()->{
-                                         try {
-                                             final JSONArray vips = VipInfoDialog.serchVip(card_code);
-                                             mContext.runOnUiThread(()->{
-                                                 if (deleteBill(hang_id,err)){
-                                                     mContext.runOnUiThread(()->mGetListener.onGet(barcode_ids,vips.optJSONObject(0)));
-                                                 }else{
-                                                     mContext.runOnUiThread(()->MyDialog.ToastMessage("删除挂单信息错误：" + err,mContext,null));
-                                                 }
-                                             });
-                                         } catch (JSONException e) {
-                                             e.printStackTrace();
-                                             mContext.runOnUiThread(()->MyDialog.ToastMessage(e.getMessage(),mContext,null));
-                                         }
-                                         progressDialog.dismiss();
-                                     });
-                                 }else{
-                                     if (deleteBill(hang_id,err)){
-                                         mGetListener.onGet(barcode_ids,null);
-                                     }else{
-                                         MyDialog.ToastMessage("删除挂单信息错误：" + err, mContext, getWindow());
-                                     }
-                                 }
-
-                            }
-
-                        }else{
-                            MyDialog.ToastMessage("查询挂单明细错误：" + err,mContext,getWindow());
-                        }
-                    }
-                }
-            }
+            to_checkout();
         });
 
+        //初始化窗口尺寸
         WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
         if (m != null){
             Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
@@ -154,19 +113,35 @@ public class HangBillDialog extends Dialog {
         header.addHeaderView(LayoutInflater.from(mContext).inflate(R.layout.hangbill_header_layout,null));
         header.setAdapter(new SimpleCursorAdapter(mContext,R.layout.hangbill_header_layout,null,null,null,1));
         //表中区
-        ListView mHangBillList = findViewById(R.id.hangbill_list);
-        mHbCursorAdapter = new SimpleCursorAdapter(mContext,R.layout.hangbill_content_layout,null,new String[]{"_id","hang_id","h_amt","h_cas_name","oper_date","card_code","vip_name","vip_mobile"},new int[]{R.id._id,R.id.hang_id,R.id.h_amt,R.id.h_cas_name,R.id.h_time,R.id.card_code,R.id.vip_name,R.id.vip_mobile},1);
+        mHangBillList = findViewById(R.id.hangbill_list);
+        mHbCursorAdapter = new SimpleCursorAdapter(mContext,R.layout.hangbill_content_layout,null,new String[]{"_id","hang_id","h_amt","oper_date"},new int[]{R.id._id,R.id.hang_id,R.id.h_amt,R.id.h_time},1);
         mHbCursorAdapter.registerDataSetObserver(new DataSetObserver() {
             @Override
             public void onChanged() {
                 super.onChanged();
-                if (mCurrentSelectedRow != null){
-                    setViewBackgroundColor(mCurrentSelectedRow,false);;
-                    mCurrentSelectedRow = null;
-                }
+            }
+            @Override
+            public void onInvalidated() {
+                super.onInvalidated();
             }
         });
-        mHbCursorAdapter.setViewBinder((view, cursor, columnIndex) -> {
+        mHbCursorAdapter.setViewBinder(((view, cursor, columnIndex) -> {
+            if (view.getId() == R.id.hang_id ){
+                TextView hang_id_v = (TextView)view;
+                View view_tmp = (View)hang_id_v.getParent();
+
+                if (mCurrentHangId == null){
+                    mCurrentHangId = hang_id_v.getText().toString();
+                    setViewBackgroundColor(view_tmp,true);
+                }else{
+                    if (mCurrentHangId.equals(cursor.getString(columnIndex))){
+                        setViewBackgroundColor(view_tmp,true);
+                    }else{
+                        setViewBackgroundColor(view_tmp,false);
+                    }
+                }
+                return false;
+            }
             if ("h_amt".equals(cursor.getColumnName(columnIndex))){
                 if (view instanceof TextView){
                     ((TextView) view).setText(String.format(Locale.CHINA,"%.2f",cursor.getDouble(columnIndex)));
@@ -174,21 +149,22 @@ public class HangBillDialog extends Dialog {
                 return true;
             }
             return false;
-        });
+        }));
         mHangBillList.setOnItemClickListener((parent, view, position, id) -> {
+            if (view == null)return;
             TextView hang_id_v = view.findViewById(R.id.hang_id);
-            if (null != hang_id_v){
-                if (mCurrentSelectedRow != null){
-                    setViewBackgroundColor(mCurrentSelectedRow,false);;
-                  }
-                mCurrentSelectedRow = view;
-                setViewBackgroundColor(mCurrentSelectedRow,true);
+            if (hang_id_v != null){
+                mCurrentHangId = hang_id_v.getText().toString();
                 showVipInfo();
-                loadHangBillDetail(hang_id_v.getText().toString());
+                loadHangBillDetail(mCurrentHangId);
+                mHbCursorAdapter.notifyDataSetChanged();
             }
         });
         mHangBillList.setAdapter(mHbCursorAdapter);
         loadHangBill(null);
+        if (mHbCursorAdapter.getCount() != 0){
+            mHangBillList.performItemClick(mHangBillList.getAdapter().getView(0, null, null), 0, mHangBillList.getItemIdAtPosition(0));
+        }
     }
 
     private void setViewBackgroundColor(View view,boolean s){
@@ -248,7 +224,7 @@ public class HangBillDialog extends Dialog {
 
     private void loadHangBill(final String hang_id){
         if (mHbCursorAdapter != null){
-            String sql = "SELECT _id,hang_id,amt h_amt,cas_name h_cas_name,oper_date,card_code,vip_name,vip_mobile FROM hangbill";
+            String sql = "SELECT _id,hang_id,amt h_amt,oper_date FROM hangbill";
             if (hang_id != null){
                 sql = sql + " where hang_id like '" + hang_id +"%'";
             }
@@ -298,21 +274,18 @@ public class HangBillDialog extends Dialog {
     }
 
     private void showVipInfo(){
-        if (mCurrentSelectedRow != null){
-            TextView name,mobile,t_name,t_mobile;
-            name = mCurrentSelectedRow.findViewById(R.id.vip_name);
-            mobile = mCurrentSelectedRow.findViewById(R.id.vip_mobile);
-            if (null != name && null != mobile){
-                CharSequence sz_name = name.getText(),sz_mobile = mobile.getText();
+        if (mCurrentHangId != null){
+            JSONObject object = new JSONObject();
+            if (SQLiteHelper.execSql(object,"SELECT ifnull(vip_name,'') vip_name,ifnull(vip_mobile,'') vip_mobile FROM hangbill where hang_id = " + mCurrentHangId)){
+                String sz_name = object.optString("vip_name"),sz_mobile = object.optString("vip_mobile");
                 if (null == mVipInfoView){
                     mVipInfoView = findViewById(R.id.vip_info_linearLayout);
                 }
-                if (sz_mobile.length() != 0 && sz_name.length() != 0){
+                if (!"".equals(sz_mobile) && !"".equals(sz_name)){
                     if (mVipInfoView.getVisibility() == View.GONE){
                         mVipInfoView.setVisibility(View.VISIBLE);
                     }
-                    t_name = mVipInfoView.findViewById(R.id.vip_name);
-                    t_mobile = mVipInfoView.findViewById(R.id.vip_phone_num);
+                    TextView t_name = mVipInfoView.findViewById(R.id.vip_name),t_mobile = mVipInfoView.findViewById(R.id.vip_phone_num);
                     if (null != t_name && null != t_mobile){
                         t_name.setText(sz_name);
                         t_mobile.setText(sz_mobile);
@@ -321,6 +294,53 @@ public class HangBillDialog extends Dialog {
                     if (mVipInfoView.getVisibility() == View.VISIBLE){
                         mVipInfoView.setVisibility(View.GONE);
                     }
+                }
+            }else{
+                MyDialog.ToastMessage("显示会员信息错误：" + object.optString("info"),mContext,getWindow());
+            }
+        }
+    }
+
+    private void to_checkout(){
+        if (mGetListener != null && mHbDetailCursorAdapter != null){
+            if (mCurrentHangId != null){
+                final StringBuilder err = new StringBuilder();
+                final JSONArray barcode_ids = SQLiteHelper.getListToJson("SELECT barcode_id FROM hangbill_detail where hang_id = " + mCurrentHangId, err);
+                if (null != barcode_ids) {
+                    JSONObject object = new JSONObject();
+                    if (SQLiteHelper.execSql(object,"SELECT ifnull(card_code,'') card_code FROM hangbill where hang_id = " + mCurrentHangId)){
+                        String card_code = object.optString("card_code");
+                        if (!"".equals(card_code)) {
+                            final CustomProgressDialog progressDialog = new CustomProgressDialog(mContext);
+                            progressDialog.setCancel(false).setMessage("正在查询会员信息...").show();
+                            CustomApplication.execute(() -> {
+                                try {
+                                    final JSONArray vips = VipInfoDialog.serchVip(card_code);
+                                    mContext.runOnUiThread(() -> {
+                                        if (deleteBill(mCurrentHangId, err)) {
+                                            mContext.runOnUiThread(() -> mGetListener.onGet(barcode_ids, vips.optJSONObject(0)));
+                                        } else {
+                                            mContext.runOnUiThread(() -> MyDialog.ToastMessage("删除挂单信息错误：" + err, mContext, null));
+                                        }
+                                    });
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                    mContext.runOnUiThread(() -> MyDialog.ToastMessage(e.getMessage(), mContext, null));
+                                }
+                                progressDialog.dismiss();
+                            });
+                        } else {
+                            if (deleteBill(mCurrentHangId, err)) {
+                                mGetListener.onGet(barcode_ids, null);
+                            } else {
+                                MyDialog.ToastMessage("删除挂单信息错误：" + err, mContext, getWindow());
+                            }
+                        }
+                    }else{
+                        MyDialog.ToastMessage("查询会员信息错误：" + object.optString("info"),mContext,getWindow());
+                    }
+                } else {
+                    MyDialog.ToastMessage("查询挂单明细错误：" + err, mContext, getWindow());
                 }
             }
         }

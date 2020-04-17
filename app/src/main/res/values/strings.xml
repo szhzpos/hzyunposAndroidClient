@@ -70,7 +70,7 @@
     <string name="point_sz">.</string>
     <string name="d_zero_point_sz">.00</string>
     <string name="z_p_z_sz">0.00</string>
-    <string name="pay_detail_row_id_sz">序号</string>
+    <string name="pay_detail_row_id_sz">@string/row_id_sz</string>
     <string name="pay_detail_name_sz">支付方式</string>
     <string name="pay_detail_amt_sz">金额</string>
     <string name="pay_detail_zl_sz">找零</string>
@@ -170,4 +170,18 @@
     <string name="hangbill_sz">挂单</string>
     <string name="to_checkout_sz">去结账</string>
     <string name="del_hang_bill">删除挂单</string>
+    <string name="barcode_scale_sz">条码秤下发</string>
+    <string name="add_scale_sz">新增称</string>
+    <string name="del_scale_sz">删除称</string>
+    <string name="d_to_scale_sz">下发传称</string>
+    <string name="row_id_sz">序号</string>
+    <string name="checked_sz">选中</string>
+    <string name="product_t_sz">型号</string>
+    <string name="ip_sz">IP</string>
+    <string name="port">端口</string>
+    <string name="d_category_sz">分类</string>
+    <string name="down_s_sz">下发状态</string>
+    <string name="b_code_s_d_sz">条码秤下发</string>
+    <string name="manufacturer_sz">厂商</string>
+    <string name="scalse_name_sz">称名</string>
 </resources>

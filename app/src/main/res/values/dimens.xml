@@ -47,6 +47,7 @@
     <dimen name="width_118">118dp</dimen>
     <dimen name="width_208">208dp</dimen>
     <dimen name="width_128">128dp</dimen>
+    <dimen name="width_888">888dp</dimen>
     <dimen name="size_0">0dp</dimen>
     <dimen name="size_35">35dp</dimen>
     <dimen name="dialog_head_heigth">@dimen/height_45</dimen>
@@ -82,4 +83,6 @@
     <dimen name="table_row_height">@dimen/height_50</dimen>
     <dimen name="hang_bill_detail_bacode_w">@dimen/width_128</dimen>
     <dimen name="hang_bill_detail_g_title_w">@dimen/width_208</dimen>
+    <dimen name="hang_bill_dialog_w">@dimen/width_888</dimen>
+    <dimen name="b_scalse_dialog_w">@dimen/width_888</dimen>
 </resources>

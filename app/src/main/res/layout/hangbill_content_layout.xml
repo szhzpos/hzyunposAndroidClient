@@ -35,9 +35,10 @@
         android:id="@+id/hang_id"
         android:layout_width="@dimen/width_68"
         android:layout_height="match_parent"
+        android:background="@color/transparent"
         android:gravity="center"
         android:text="@string/hang_id_sz"
-        android:textColor="@color/text_color"
+        android:textColor="@color/black_white"
         android:textSize="@dimen/font_size_16" />
 
     <TextView
@@ -45,9 +46,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
+        android:background="@color/transparent"
         android:gravity="center"
         android:text="@string/h_amt_sz"
-        android:textColor="@color/text_color"
+        android:textColor="@color/black_white"
         android:textSize="@dimen/font_size_16" />
 
     <TextView
@@ -55,6 +57,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
+        android:background="@color/transparent"
         android:gravity="center"
         android:text="@string/oper_sz"
         android:textColor="@color/text_color"
@@ -65,9 +68,10 @@
         android:id="@+id/h_time"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:background="@color/transparent"
         android:gravity="center"
         android:minWidth="168dp"
         android:text="@string/time_sz"
-        android:textColor="@color/text_color"
+        android:textColor="@color/black_white"
         android:textSize="@dimen/font_size_16" />
 </LinearLayout>
