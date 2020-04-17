@@ -41,8 +41,8 @@ public class BarCodeScaleDownDialog extends Dialog {
         findViewById(R.id.add_scale).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AddBarCodeSacalseDialog addBarCodeSacalseDialog = new AddBarCodeSacalseDialog(mContext);
-                addBarCodeSacalseDialog.show();
+                AddBarCodeScalseDialog addBarCodeScalseDialog = new AddBarCodeScalseDialog(mContext);
+                addBarCodeScalseDialog.show();
             }
         });
 
