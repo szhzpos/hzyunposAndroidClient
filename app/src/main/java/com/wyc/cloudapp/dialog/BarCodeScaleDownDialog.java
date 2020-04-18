@@ -17,6 +17,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.BarCodeScaleAdapter;
+import com.wyc.cloudapp.logger.Logger;
+
+import org.json.JSONObject;
 
 import static android.content.Context.WINDOW_SERVICE;
 
@@ -42,6 +45,14 @@ public class BarCodeScaleDownDialog extends Dialog {
             @Override
             public void onClick(View v) {
                 AddBarCodeScalseDialog addBarCodeScalseDialog = new AddBarCodeScalseDialog(mContext);
+                addBarCodeScalseDialog.setGetContent(new AddBarCodeScalseDialog.OnGetContent() {
+                    @Override
+                    public void getContent(JSONObject object) {
+                        mBarCodeScaleAdapter.addScalse(object);
+
+                        Logger.d(mBarCodeScaleAdapter.toString());
+                    }
+                });
                 addBarCodeScalseDialog.show();
             }
         });

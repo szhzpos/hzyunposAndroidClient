@@ -10,13 +10,11 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.callback.ClickListener;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -33,18 +31,19 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         mDatas = new JSONArray();
     }
     static class ContentHolder extends RecyclerView.ViewHolder {
-        private TextView row_id,product_type,scale_ip,scale_port,goods_category,down_status,scale_rmk;
+        private TextView row_id,product_type,scale_ip,scale_port,g_c_name,g_c_id,down_status,scale_rmk;
         private CheckBox s_checked;
         private View mCurrentLayoutItemView;//当前布局的item
         ContentHolder(View itemView) {
             super(itemView);
             mCurrentLayoutItemView = itemView;
-            row_id = itemView.findViewById(R.id.row_id);
+            row_id = itemView.findViewById(R.id._id);
             s_checked =  itemView.findViewById(R.id.s_checked);
             product_type =  itemView.findViewById(R.id.product_type);
             scale_ip =  itemView.findViewById(R.id.scale_ip);
             scale_port =  itemView.findViewById(R.id.scale_port);
-            goods_category =  itemView.findViewById(R.id.goods_category);
+            g_c_name =  itemView.findViewById(R.id.g_c_name);
+            g_c_id =  itemView.findViewById(R.id.g_c_id);
             down_status =  itemView.findViewById(R.id.down_status);
             scale_rmk =  itemView.findViewById(R.id.scale_rm);
         }
@@ -67,6 +66,7 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             holder = new HeaderHolder(itemView);
         }else{
             itemView = View.inflate(mContext, R.layout.barcode_scale_detail_layout, null);
+            itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.table_row_height)));
             holder = new ContentHolder(itemView);
         }
 
@@ -85,7 +85,8 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 contentHolder.product_type.setText(content.optString("product_type"));
                 contentHolder.scale_ip.setText(content.optString("scale_ip"));
                 contentHolder.scale_port.setText(content.optString("scale_port"));
-                contentHolder.goods_category.setText(content.optString("goods_category"));
+                contentHolder.g_c_name.setText(content.optString("g_c_name"));
+                contentHolder.g_c_id.setText(content.optString("g_c_id"));
                 contentHolder.down_status.setText("");
                 contentHolder.scale_rmk.setText(content.optString("remark"));
 
@@ -176,11 +177,16 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
     }
 
+    public void addScalse(@NonNull JSONObject object){
+        mDatas.put(object);
+        notifyDataSetChanged();
+    }
+
     private void setSelectStatus(View v){
         if(null != mCurrentItemView){
-            mCurrentItemView.setBackgroundColor(mContext.getResources().getColor(R.color.white,null));
+            //mCurrentItemView.setBackgroundColor(mContext.getResources().getColor(R.color.white,null));
         }
-        v.setBackgroundColor(mContext.getResources().getColor(R.color.pink,null));
+        //v.setBackgroundColor(mContext.getResources().getColor(R.color.pink,null));
         setCurrentItemIndexAndItemView(v);
     }
 

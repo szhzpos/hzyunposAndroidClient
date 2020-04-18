@@ -20,7 +20,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:id="@+id/first"
+        android:id="@+id/ip_f"
         android:layout_width="match_parent"
         android:layout_height="@dimen/plain_text_height_40"
         android:layout_margin="@dimen/margin_1"
@@ -60,7 +60,7 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/first">
+        app:layout_constraintTop_toBottomOf="@+id/ip_f">
 
         <TextView
             android:id="@+id/textView13"
@@ -83,7 +83,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/third"
+        android:id="@+id/ip_th"
         android:layout_width="match_parent"
         android:layout_height="@dimen/plain_text_height_40"
         android:layout_margin="@dimen/margin_1"
@@ -113,7 +113,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/fourth"
+        android:id="@+id/ip_fo"
         android:layout_width="match_parent"
         android:layout_height="@dimen/plain_text_height_40"
         android:layout_margin="@dimen/margin_1"
@@ -121,7 +121,7 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/third">
+        app:layout_constraintTop_toBottomOf="@id/ip_th">
 
         <TextView
             android:id="@+id/textView9"
@@ -156,7 +156,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/cancel"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/fourth" />
+        app:layout_constraintTop_toBottomOf="@id/ip_fo" />
 
     <Button
         android:id="@+id/cancel"
@@ -170,6 +170,6 @@
         android:textSize="@dimen/font_size_18"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/fourth" />
+        app:layout_constraintTop_toBottomOf="@id/ip_fo" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

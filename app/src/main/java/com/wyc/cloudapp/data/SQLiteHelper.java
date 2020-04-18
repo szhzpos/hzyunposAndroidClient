@@ -963,7 +963,8 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    depth       INT,\n" +
                 "    parent_id   CHAR    DEFAULT (0),\n" +
                 "    name        CHAR,\n" +
-                "    category_id INTEGER UNIQUE\n" +
+                "    category_id INTEGER UNIQUE,\n" +
+                "    _id INTEGER PRIMARY KEY AUTOINCREMENT\n" +
                 ");\n",sql_barcode_info = "CREATE TABLE IF NOT EXISTS barcode_info (\n" +//商品档案
                 "    points_max_money REAL    DEFAULT (0),\n" +
                 "    img_url  VARCHAR,\n" +

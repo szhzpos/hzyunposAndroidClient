@@ -23,7 +23,7 @@
 
     <TextView
         android:id="@+id/product_type"
-        android:layout_width="@dimen/width_88"
+        android:layout_width="@dimen/width_128"
         android:layout_height="match_parent"
         android:gravity="center"
         android:padding="@dimen/margin_2"
@@ -33,7 +33,7 @@
 
     <TextView
         android:id="@+id/scale_ip"
-        android:layout_width="@dimen/width_88"
+        android:layout_width="@dimen/width_128"
         android:layout_height="match_parent"
         android:gravity="center"
         android:padding="@dimen/margin_2"
@@ -52,8 +52,15 @@
         android:textSize="@dimen/font_size_16" />
 
     <TextView
-        android:id="@+id/goods_category"
-        android:layout_width="@dimen/width_88"
+        android:id="@+id/g_c_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:visibility="visible" />
+
+    <TextView
+        android:id="@+id/g_c_name"
+        android:layout_width="@dimen/width_118"
         android:layout_height="match_parent"
         android:gravity="center"
         android:padding="@dimen/margin_2"

@@ -314,6 +314,14 @@ public final class Utils {
             while (jsons.remove(0) != null);
         return jsons;
     }
+    public static void moveJsonArray(final JSONArray from,final JSONArray to){
+        if (from != null && to != null){
+            Object o;
+            while (null != (o = from.remove(0))){
+                to.put(o);
+            }
+        }
+    }
 
     public static boolean equalDouble(double a,double b){
         return Math.abs(a - b) < 0.00001;

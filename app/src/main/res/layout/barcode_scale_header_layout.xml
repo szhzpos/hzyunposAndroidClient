@@ -31,7 +31,7 @@
 
     <TextView
         android:id="@+id/product_type"
-        android:layout_width="@dimen/width_88"
+        android:layout_width="@dimen/width_128"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/margin_8"
         android:layout_marginBottom="@dimen/margin_8"
@@ -43,7 +43,7 @@
 
     <TextView
         android:id="@+id/scale_ip"
-        android:layout_width="@dimen/width_88"
+        android:layout_width="@dimen/width_128"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/margin_8"
         android:layout_marginBottom="@dimen/margin_8"
@@ -66,8 +66,8 @@
         android:textSize="@dimen/font_size_18" />
 
     <TextView
-        android:id="@+id/goods_category"
-        android:layout_width="@dimen/width_88"
+        android:id="@+id/g_c_name"
+        android:layout_width="@dimen/width_118"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/margin_8"
         android:layout_marginBottom="@dimen/margin_8"

@@ -28,6 +28,7 @@ import org.json.JSONObject;
  */
 
 public class CustomePopupWindow extends PopupWindow {
+    public static  final String SEPARATE = "\t";
     private ListView mListView;
     private ArrayAdapter mArrayAdapter, mTmpAdapter;
     private boolean isSelect = false,isAutoSetContent;
@@ -42,8 +43,9 @@ public class CustomePopupWindow extends PopupWindow {
         mContext = context;
         setOutsideTouchable(true);
         this.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
-        this.setBackgroundDrawable(new ColorDrawable(0xffffffff));
+        this.setBackgroundDrawable(mContext.getDrawable(R.drawable.border_sub_gray));
         mListView = new ListView(context);
+        mListView.setPadding(2,2,2,2);
         mArrayAdapter = new ArrayAdapter(context,R.layout.drop_down_style);//由于要重复显示 在构造中直接新建对象，并且在取消显示的时候只是清空内容没有清除对象，这样不会导致系统重复分配释放内存
         mTmpAdapter = new ArrayAdapter(context,R.layout.drop_down_style);
 
@@ -51,8 +53,8 @@ public class CustomePopupWindow extends PopupWindow {
         mListView.setOnItemClickListener((adapterView, view1, i, l) -> {
             String szTmp,szView = ((TextView)view1).getText().toString();
             String[] sz_arr;
-            if (szView.contains("\t")){
-                sz_arr = szView.split("\t");
+            if (szView.contains(SEPARATE)){
+                sz_arr = szView.split(SEPARATE);
                 switch (mShowContentType){
                     case 1:
                         szTmp =sz_arr[0];
@@ -61,8 +63,8 @@ public class CustomePopupWindow extends PopupWindow {
                         szTmp = szView;
                         break;
                     case 3:
-                        mView.setTag(szView.split("\t")[0]);
-                        szTmp = szView.split("\t")[1];
+                        mView.setTag(szView.split(SEPARATE)[0]);
+                        szTmp = szView.split(SEPARATE)[1];
                         break;
                     default:
                         szTmp =sz_arr[1];
@@ -106,7 +108,7 @@ public class CustomePopupWindow extends PopupWindow {
             if (!isAutoSetContent) mArrayAdapter.add("");
             for (int i = 0, len = mShowContents.length(); i < len; i++) {
                 for (String tmp : sz){
-                    if (stringBuilder.length() > 0)stringBuilder.append('\t');
+                    if (stringBuilder.length() > 0)stringBuilder.append(SEPARATE);
                     if ("NULL".equals(mShowContents.optJSONObject(i).optString(tmp)))
                         stringBuilder.append(" ");
                     else
@@ -117,7 +119,6 @@ public class CustomePopupWindow extends PopupWindow {
             }
             mListView.setAdapter(mArrayAdapter);
             this.setWidth(mView.getWidth());
-           // this.setHeight(82 * 2);
         }else{
            MyDialog.displayErrorMessage(null,"查询内容出错： " + err,v.getContext());
         }
@@ -140,7 +141,7 @@ public class CustomePopupWindow extends PopupWindow {
             if (!isAutoSetContent) mArrayAdapter.add("");
             for (int i = 0, len = mShowContents.length(); i < len; i++) {
                 for (String tmp : sz){
-                    if (stringBuilder.length() > 0)stringBuilder.append('\t');
+                    if (stringBuilder.length() > 0)stringBuilder.append(SEPARATE);
                     if ("NULL".equals(mShowContents.optJSONObject(i).optString(tmp)))
                         stringBuilder.append(" ");
                     else
@@ -151,13 +152,12 @@ public class CustomePopupWindow extends PopupWindow {
             }
             mListView.setAdapter(mArrayAdapter);
             this.setWidth(mView.getWidth());
-            // this.setHeight(82 * 2);
         }else{
             MyDialog.displayErrorMessage(null,"查询内容出错： " + err,v.getContext());
         }
     }
 
-    public void initContent(View foucs,@NonNull View v, @NonNull  JSONArray array, @NonNull String[] sz, int show,boolean setContent,OngetSelectContent ongetSelectContent ){
+    public void initContent(View foucs,@NonNull View v, @NonNull  JSONArray array,String[] sz, int show,boolean setContent,OngetSelectContent ongetSelectContent ){
         //show 1 有编码显示编码 2 两个都显示 默认显示名称 setContent设置在没选择内容的情况下是否自动选择内容
 
         StringBuilder stringBuilder = new StringBuilder();
@@ -172,20 +172,22 @@ public class CustomePopupWindow extends PopupWindow {
         if (!mArrayAdapter.isEmpty()) mArrayAdapter.clear();
         if (!isAutoSetContent) mArrayAdapter.add("");
         for (int i = 0, len = mShowContents.length(); i < len; i++) {
-            for (String tmp : sz){
-                if (stringBuilder.length() > 0)stringBuilder.append('\t');
-                if ("NULL".equals(mShowContents.optJSONObject(i).optString(tmp)))
-                    stringBuilder.append(" ");
-                else
-                    stringBuilder.append(mShowContents.optJSONObject(i).optString(tmp));
+            if (sz != null){
+                for (String tmp : sz){
+                    if (stringBuilder.length() > 0)stringBuilder.append(SEPARATE);
+                    if ("NULL".equals(mShowContents.optJSONObject(i).optString(tmp)))
+                        stringBuilder.append(" ");
+                    else
+                        stringBuilder.append(mShowContents.optJSONObject(i).optString(tmp));
+                }
+                mArrayAdapter.add(stringBuilder.toString());
+                stringBuilder.delete(0,stringBuilder.length());
+            }else {
+                mArrayAdapter.add(mShowContents.opt(i));
             }
-            mArrayAdapter.add(stringBuilder.toString());
-            stringBuilder.delete(0,stringBuilder.length());
         }
         mListView.setAdapter(mArrayAdapter);
         this.setWidth(mView.getWidth());
-        // this.setHeight(82 * 2);
-
     }
 
     public void updateContent(CharSequence charSequence){
@@ -214,25 +216,24 @@ public class CustomePopupWindow extends PopupWindow {
     @Override
     public void dismiss(){
         super.dismiss();
-
         if (isAutoSetContent) {
             if (!isSelect && mListView.getAdapter() != null) {
                 if (!mListView.getAdapter().isEmpty()) {
                     String szView = mListView.getAdapter().getItem(0).toString(), szTmp;
-                    if (szView.contains("\t")) {
+                    if (szView.contains(SEPARATE)) {
                         switch (mShowContentType) {
                             case 1:
-                                szTmp = szView.split("\t")[0];
+                                szTmp = szView.split(SEPARATE)[0];
                                 break;
                             case 2:
                                 szTmp = szView;
                                 break;
                             case 3:
-                                this.mView.setTag(szView.split("\t")[0]);
-                                szTmp = szView.split("\t")[1];
+                                this.mView.setTag(szView.split(SEPARATE)[0]);
+                                szTmp = szView.split(SEPARATE)[1];
                                 break;
                             default:
-                                szTmp = szView.split("\t")[1];
+                                szTmp = szView.split(SEPARATE)[1];
                                 break;
                         }
                     } else {
