@@ -16,10 +16,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
-import android.text.InputType;
-import android.text.method.HideReturnsTransformationMethod;
-import android.text.method.PasswordTransformationMethod;
-import android.text.method.ReplacementTransformationMethod;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +34,6 @@ import com.wyc.cloudapp.dialog.ConnSettingDialog;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.keyboard.SoftKeyBoardListener;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.network.sync.SyncManagement;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -403,7 +398,7 @@ public class LoginActivity extends AppCompatActivity {
                             param_json.put("parameter_id","cashierInfo");
                             param_json.put("parameter_content",cashier_json);
                             param_json.put("parameter_desc","收银员信息");
-                            if (SQLiteHelper.saveToDatabaseFormJson(param_json,"local_parameter",null,"REPLACE",err)){
+                            if (SQLiteHelper.saveFormJson(param_json,"local_parameter",null,"REPLACE",err)){
                                 activity.mSyncManagement = new SyncManagement(this,activity.mUrl,activity.mAppId,activity.mAppScret,activity.mStoresId,activity.mPosNum,activity.mOperId);
                                 activity.mSyncManagement.start_sync(true);
                             }else{

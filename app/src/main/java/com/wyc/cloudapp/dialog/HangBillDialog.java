@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.database.sqlite.SQLiteException;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
 
@@ -12,7 +11,6 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewParent;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
@@ -26,7 +24,6 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.logger.Logger;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 
 import static android.content.Context.WINDOW_SERVICE;
 
@@ -114,7 +110,7 @@ public class HangBillDialog extends Dialog {
         header.setAdapter(new SimpleCursorAdapter(mContext,R.layout.hangbill_header_layout,null,null,null,1));
         //表中区
         mHangBillList = findViewById(R.id.hangbill_list);
-        mHbCursorAdapter = new SimpleCursorAdapter(mContext,R.layout.hangbill_content_layout,null,new String[]{"_id","hang_id","h_amt","oper_date"},new int[]{R.id._id,R.id.hang_id,R.id.h_amt,R.id.h_time},1);
+        mHbCursorAdapter = new SimpleCursorAdapter(mContext,R.layout.hangbill_content_layout,null,new String[]{"_id","hang_id","h_amt","oper_date"},new int[]{R.id.row_id,R.id.hang_id,R.id.h_amt,R.id.h_time},1);
         mHbCursorAdapter.registerDataSetObserver(new DataSetObserver() {
             @Override
             public void onChanged() {
@@ -208,7 +204,7 @@ public class HangBillDialog extends Dialog {
         //表中区
         ListView mHangBillDetails = findViewById(R.id.hangbill_details_list);
         mHbDetailCursorAdapter = new SimpleCursorAdapter(mContext,R.layout.hangbill_detail_content_layout,null,new String[]{"_id","barcode","goods_title","xnum","sale_price","discount","sale_amt"},
-                new int[]{R.id._id,R.id.barcode,R.id.goods_title,R.id.xnum,R.id.h_sale_price,R.id.h_discount,R.id.h_sale_amt},1);
+                new int[]{R.id.row_id,R.id.barcode,R.id.goods_title,R.id.xnum,R.id.h_sale_price,R.id.h_discount,R.id.h_sale_amt},1);
         mHbDetailCursorAdapter.setViewBinder((view, cursor, columnIndex) -> {
             String col_name = cursor.getColumnName(columnIndex);
             if ("sale_price".equals(col_name) || "sale_amt".equals(col_name)){

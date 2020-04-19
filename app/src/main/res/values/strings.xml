@@ -184,4 +184,5 @@
     <string name="b_code_s_d_sz">条码秤下发</string>
     <string name="manufacturer_sz">厂商</string>
     <string name="scalse_name_sz">称名</string>
+    <string name="modify_scale_sz">修改称</string>
 </resources>

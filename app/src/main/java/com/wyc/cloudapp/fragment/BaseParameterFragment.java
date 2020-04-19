@@ -85,7 +85,7 @@ public class BaseParameterFragment extends BaseFragment {
             content.put("parameter_content",get_auto_mol(true));
             content.put("parameter_desc","自动抹零设置");
             array.put(content);
-            if (!SQLiteHelper.execSQLByBatchFromJson(array,"local_parameter",null,err)){
+            if (!SQLiteHelper.execSQLByBatchFromJson(array,"local_parameter",null,err,1)){
                 MyDialog.ToastMessage(null,err.toString(),mContext,null);
             }else{
                 MyDialog.ToastMessage(null,"保存成功！",mContext,null);

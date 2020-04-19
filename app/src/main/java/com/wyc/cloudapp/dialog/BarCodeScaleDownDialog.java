@@ -19,6 +19,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.BarCodeScaleAdapter;
 import com.wyc.cloudapp.logger.Logger;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static android.content.Context.WINDOW_SERVICE;
@@ -41,19 +42,29 @@ public class BarCodeScaleDownDialog extends Dialog {
 
         //初始化按钮事件
         findViewById(R.id._close).setOnClickListener(v -> this.dismiss());
-        findViewById(R.id.add_scale).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.add_scale).setOnClickListener(v -> {
+            AddBarCodeScaleDialog addBarCodeScaleDialog = new AddBarCodeScaleDialog(mContext);
+            addBarCodeScaleDialog.setGetContent(object -> {
+
+                mBarCodeScaleAdapter.addScale(object);
+
+                Logger.d(mBarCodeScaleAdapter.toString());
+            });
+            addBarCodeScaleDialog.show();
+        });
+        findViewById(R.id.del_scale).setOnClickListener(v -> mBarCodeScaleAdapter.deleteScale());
+        findViewById(R.id.download_to_scale).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AddBarCodeScalseDialog addBarCodeScalseDialog = new AddBarCodeScalseDialog(mContext);
-                addBarCodeScalseDialog.setGetContent(new AddBarCodeScalseDialog.OnGetContent() {
-                    @Override
-                    public void getContent(JSONObject object) {
-                        mBarCodeScaleAdapter.addScalse(object);
-
-                        Logger.d(mBarCodeScaleAdapter.toString());
-                    }
-                });
-                addBarCodeScalseDialog.show();
+                Logger.d_json(mBarCodeScaleAdapter.getCurrentScalseInfos().toString());
+            }
+        });
+        findViewById(R.id.modfy_scale).setOnClickListener(v -> {
+            JSONArray array = mBarCodeScaleAdapter.getCurrentScalseInfos();
+            if (array != null && array.length() != 0){
+                AddBarCodeScaleDialog addBarCodeScaleDialog = new AddBarCodeScaleDialog(mContext,array.optJSONObject(0));
+                addBarCodeScaleDialog.setGetContent(object -> mBarCodeScaleAdapter.addScale(object));
+                addBarCodeScaleDialog.show();
             }
         });
 
@@ -79,5 +90,7 @@ public class BarCodeScaleDownDialog extends Dialog {
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
         recyclerView.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(mBarCodeScaleAdapter);
+        //加载信息
+        mBarCodeScaleAdapter.setDatas();
     }
 }

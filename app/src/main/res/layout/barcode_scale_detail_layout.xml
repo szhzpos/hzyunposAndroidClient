@@ -7,12 +7,17 @@
 
     <TextView
         android:id="@+id/_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/row_id"
         android:layout_width="@dimen/width_45"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:padding="@dimen/margin_2"
+        android:padding="@dimen/margin_5"
         android:text="@string/row_id_sz"
-        android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16" />
 
     <CheckBox
@@ -55,12 +60,11 @@
         android:id="@+id/g_c_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/g_c_name"
-        android:layout_width="@dimen/width_118"
+        android:layout_width="@dimen/width_128"
         android:layout_height="match_parent"
         android:gravity="center"
         android:padding="@dimen/margin_2"
@@ -75,7 +79,6 @@
         android:layout_weight="1"
         android:gravity="center"
         android:padding="@dimen/margin_2"
-        android:text="@string/down_s_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16" />
 
@@ -86,7 +89,6 @@
         android:layout_weight="1"
         android:gravity="center"
         android:padding="@dimen/margin_2"
-        android:text="@string/remark_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16" />
 </LinearLayout>

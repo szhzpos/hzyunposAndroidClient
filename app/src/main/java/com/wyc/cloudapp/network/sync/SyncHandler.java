@@ -169,13 +169,13 @@ public final class SyncHandler extends Handler {
                                         code = deal_good_group(data,err);
                                         break;
                                     case MessageID.SYNC_PAY_METHOD_ID:
-                                        if((code = SQLiteHelper.execSQLByBatchFromJson(data,table_name ,table_cls,err))){
+                                        if((code = SQLiteHelper.execSQLByBatchFromJson(data,table_name ,table_cls,err,1))){
                                             down_load_pay_method_img(data,sys_name);
                                         }
                                         break;
                                     case MessageID.SYNC_GOODS_ID: {
                                         int max_page = info_json.getInt("max_page"),current_page = (int)msg.obj;
-                                        if((code = SQLiteHelper.execSQLByBatchFromJson(data,table_name ,table_cls,err))){
+                                        if((code = SQLiteHelper.execSQLByBatchFromJson(data,table_name ,table_cls,err,1))){
                                             down_laod_goods_img_and_upload_barcode_id(data,sys_name);//保存成功才能标记已获取
                                         }
                                         if ((current_page++ <= max_page) && code){
@@ -185,7 +185,7 @@ public final class SyncHandler extends Handler {
                                     }
                                         break;
                                         default:
-                                            code = SQLiteHelper.execSQLByBatchFromJson(data,table_name ,table_cls,err);
+                                            code = SQLiteHelper.execSQLByBatchFromJson(data,table_name ,table_cls,err,1);
                                             break;
                                 }
                                 if (!code)

@@ -57,7 +57,7 @@ public class PrintFormatFragment extends BaseFragment {
         StringBuilder err = new StringBuilder();
         try {
             array.put(get_print_format_content(true));
-            if (!SQLiteHelper.execSQLByBatchFromJson(array,"local_parameter",null,err)){
+            if (!SQLiteHelper.execSQLByBatchFromJson(array,"local_parameter",null,err,1)){
                 MyDialog.ToastMessage(null,err.toString(),mContext,null);
             }else{
                 MyDialog.ToastMessage(null,"保存成功！",mContext,null);

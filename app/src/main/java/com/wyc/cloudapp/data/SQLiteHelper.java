@@ -19,7 +19,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.math.BigDecimal;
 
 import java.util.ArrayList;
@@ -107,7 +106,9 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         return result ;
     }
 
-    public static boolean execSQLByBatchInsertJson(@NonNull JSONArray jsonArray,String table,StringBuilder err) {
+    private static boolean execSQLByBatchFromJson(@NonNull JSONArray jsonArray, String table, StringBuilder err,int type) {
+        //type 0 insert 1 replace
+
         boolean isTrue = true;
         StringBuilder stringBuilderHead = new StringBuilder();
         StringBuilder stringBuilderfoot = new StringBuilder();
@@ -120,73 +121,11 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             return false;
         }
 
-        stringBuilderHead.append("INSERT INTO ");
-        stringBuilderHead.append(table);
-        stringBuilderHead.append(" (");
-        stringBuilderfoot.append("VALUES (");
+        if (type == 1)
+            stringBuilderHead.append("REPLACE INTO ");
+        else
+            stringBuilderHead.append("INSERT INTO ");
 
-        jsonObject = jsonArray.optJSONObject(0);
-        iterator = jsonObject.keys();
-        while(iterator.hasNext()){
-            key = (String) iterator.next();
-            stringBuilderHead.append(key);
-            stringBuilderHead.append(",");
-
-            stringBuilderfoot.append("?");
-            stringBuilderfoot.append(",");
-        }
-        stringBuilderHead.replace(stringBuilderHead.length() - 1,stringBuilderHead.length(),")");
-        stringBuilderfoot.replace(stringBuilderfoot.length() - 1,stringBuilderfoot.length(),")");
-        stringBuilderHead.append(stringBuilderfoot);
-
-        synchronized(SQLiteHelper.class){
-            try {
-                mDb.beginTransaction();
-                statement = mDb.compileStatement(stringBuilderHead.toString());
-                for (int i = 0,len = jsonArray.length();i < len; i ++){
-                    columnN0 = 0;
-                    jsonObject = jsonArray.optJSONObject(i);
-                    iterator = jsonObject.keys();
-                    while(iterator.hasNext()){
-                        key = (String) iterator.next();
-                        if ("".equals(jsonObject.optString(key))){
-                            statement.bindNull(++columnN0);
-                        }else
-                            statement.bindString(++columnN0,jsonObject.optString(key));
-                    }
-                    statement.executeInsert();
-                }
-                mDb.setTransactionSuccessful();
-            } catch (SQLException e) {
-                isTrue = false;
-                err.append(e.getMessage());
-                e.printStackTrace();
-            } finally {
-                if (statement != null){
-                    statement.close();
-                }
-                if (mDb != null){
-                    mDb.endTransaction();
-                }
-            }
-        }
-        return isTrue;
-    }
-
-    private static boolean execSQLByBatchFromJson(@NonNull JSONArray jsonArray, String table, StringBuilder err) {
-        boolean isTrue = true;
-        StringBuilder stringBuilderHead = new StringBuilder();
-        StringBuilder stringBuilderfoot = new StringBuilder();
-        JSONObject jsonObject;
-        String key;
-        SQLiteStatement statement = null;
-        Iterator iterator;
-        int columnN0 = 0;
-        if (jsonArray.length() == 0) {
-            return false;
-        }
-
-        stringBuilderHead.append("REPLACE INTO ");
         stringBuilderHead.append(table);
         stringBuilderHead.append(" (");
         stringBuilderfoot.append("VALUES (");
@@ -238,8 +177,69 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         }
         return isTrue;
     }
+    private static boolean saveFormJson(@NonNull final JSONObject json, @NonNull final String table_name, final String save_type, StringBuilder err){
+        boolean isTrue = true;
+        StringBuilder stringBuilderHead = new StringBuilder();
+        StringBuilder stringBuilderfoot = new StringBuilder();
+        String key;
+        SQLiteStatement statement = null;
+        Iterator iterator;
+        int columnN0 = 0;
 
-    public static boolean execSQLByBatchFromJson(@NonNull JSONArray jsonArray, String table, String[] cls, StringBuilder err) {
+        stringBuilderHead.append(save_type).append(" INTO ");
+        stringBuilderHead.append(table_name);
+        stringBuilderHead.append(" (");
+        stringBuilderfoot.append("VALUES (");
+
+        iterator = json.keys();
+        while(iterator.hasNext()){
+            key = (String) iterator.next();
+            stringBuilderHead.append(key);
+            stringBuilderHead.append(",");
+
+            stringBuilderfoot.append("?");
+            stringBuilderfoot.append(",");
+        }
+
+        stringBuilderHead.replace(stringBuilderHead.length() - 1,stringBuilderHead.length(),")");
+        stringBuilderfoot.replace(stringBuilderfoot.length() - 1,stringBuilderfoot.length(),")");
+        stringBuilderHead.append(stringBuilderfoot);
+
+        synchronized (SQLiteHelper.class){
+            try {
+                mDb.beginTransaction();
+                statement = mDb.compileStatement(stringBuilderHead.toString());
+
+                iterator = json.keys();
+                while(iterator.hasNext()){
+                    key = (String) iterator.next();
+                    if ("".equals(json.getString(key))){
+                        statement.bindNull(++columnN0);
+                    }else
+                        statement.bindString(++columnN0,json.getString(key));
+                }
+                statement.execute();
+
+                mDb.setTransactionSuccessful();
+            } catch (SQLException | JSONException e) {
+                isTrue = false;
+                err.append(e.getMessage());
+                e.printStackTrace();
+            } finally {
+                if (statement != null){
+                    statement.close();
+                }
+                if (mDb != null){
+                    mDb.endTransaction();
+                }
+            }
+        }
+        return isTrue;
+    }
+
+    public static boolean execSQLByBatchFromJson(@NonNull JSONArray jsonArray, String table, String[] cls, StringBuilder err,int type) {
+        //type 0 insert 1 replace
+
         boolean isTrue = true;
         StringBuilder stringBuilderHead = new StringBuilder();
         StringBuilder stringBuilderfoot = new StringBuilder();
@@ -251,10 +251,14 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         }
 
         if (cls == null || cls.length == 0){
-            return execSQLByBatchFromJson(jsonArray,table,err);
+            return execSQLByBatchFromJson(jsonArray,table,err,type);
         }
 
-        stringBuilderHead.append("REPLACE INTO ");
+        if (type == 1)
+            stringBuilderHead.append("REPLACE INTO ");
+        else
+            stringBuilderHead.append("INSERT INTO ");
+
         stringBuilderHead.append(table);
         stringBuilderHead.append(" (");
         stringBuilderfoot.append("VALUES (");
@@ -417,39 +421,32 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         }
         return array;
     }
-    public static boolean saveToDatabaseFormJson(@NonNull final JSONObject json,@NonNull final String table_name,String[] cls,final String save_type,StringBuilder err){
+
+
+    public static boolean saveFormJson(@NonNull final JSONObject json, @NonNull final String table_name, String[] cls, final String save_type, StringBuilder err){
         boolean isTrue = true;
         StringBuilder stringBuilderHead = new StringBuilder();
         StringBuilder stringBuilderfoot = new StringBuilder();
-        String key;
         SQLiteStatement statement = null;
-        Iterator iterator;
         int columnN0 = 0;
+
+        if (cls == null || cls.length == 0){
+            return saveFormJson(json,table_name,save_type,err);
+        }
 
         stringBuilderHead.append(save_type).append(" INTO ");
         stringBuilderHead.append(table_name);
         stringBuilderHead.append(" (");
         stringBuilderfoot.append("VALUES (");
 
-        if (cls != null && cls.length != 0){
-            for (String cl:cls){
-                stringBuilderHead.append(cl);
-                stringBuilderHead.append(",");
+        for (String cl:cls){
+            stringBuilderHead.append(cl);
+            stringBuilderHead.append(",");
 
-                stringBuilderfoot.append("?");
-                stringBuilderfoot.append(",");
-            }
-        }else{
-            iterator = json.keys();
-            while(iterator.hasNext()){
-                key = (String) iterator.next();
-                stringBuilderHead.append(key);
-                stringBuilderHead.append(",");
-
-                stringBuilderfoot.append("?");
-                stringBuilderfoot.append(",");
-            }
+            stringBuilderfoot.append("?");
+            stringBuilderfoot.append(",");
         }
+
         stringBuilderHead.replace(stringBuilderHead.length() - 1,stringBuilderHead.length(),")");
         stringBuilderfoot.replace(stringBuilderfoot.length() - 1,stringBuilderfoot.length(),")");
         stringBuilderHead.append(stringBuilderfoot);
@@ -458,23 +455,11 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             try {
                 mDb.beginTransaction();
                 statement = mDb.compileStatement(stringBuilderHead.toString());
-
-                if(cls != null && cls.length != 0){
-                    for (String cl:cls){
-                        if ("".equals(json.getString(cl))){
-                            statement.bindNull(++columnN0);
-                        }else
-                            statement.bindString(++columnN0,json.getString(cl));
-                    }
-                }else{
-                    iterator = json.keys();
-                    while(iterator.hasNext()){
-                        key = (String) iterator.next();
-                        if ("".equals(json.getString(key))){
-                            statement.bindNull(++columnN0);
-                        }else
-                            statement.bindString(++columnN0,json.getString(key));
-                    }
+                for (String cl:cls){
+                    if ("".equals(json.getString(cl))){
+                        statement.bindNull(++columnN0);
+                    }else
+                        statement.bindString(++columnN0,json.getString(cl));
                 }
                 statement.execute();
 
@@ -557,6 +542,18 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         try {
             synchronized (SQLiteHelper.class){
                 mDb.insert(table,nullColumnHack,values);
+            }
+        }catch (SQLiteException e){
+            code = false;
+            err.append(e.getMessage());
+        }
+        return code;
+    }
+    public static boolean execDelete(String table, String whereClause, String[] whereArgs,StringBuilder err){
+        boolean code = true;
+        try {
+            synchronized (SQLiteHelper.class){
+                mDb.delete(table,whereClause,whereArgs);
             }
         }catch (SQLiteException e){
             code = false;
@@ -1238,7 +1235,18 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "sale_man          VARCHAR (4),\n" +
                 "cas_id        VARCHAR (4)     NOT NULL,\n" +
                 "remark         VARCHAR (50),\n" +
-                "oper_date      DATETIME        NOT NULL DEFAULT ( (datetime('now', 'localtime') )) );";
+                "oper_date      DATETIME        NOT NULL DEFAULT ( (datetime('now', 'localtime') )) );",
+                sql_barcode_scale_info = "CREATE TABLE IF NOT EXISTS barcode_scalse_info (\n" +
+                "    _id         INTEGER PRIMARY KEY AUTOINCREMENT\n" +
+                "                        NOT NULL,\n" +
+                "    s_manufacturer VARCHAR NOT NULL,\n" +
+                "    s_product_t VARCHAR NOT NULL,\n" +
+                "    scale_ip    VARCHAR NOT NULL,\n" +
+                "    scale_port  INTEGER NOT NULL,\n" +
+                "    g_c_id      VARCHAR NOT NULL,\n" +
+                "    g_c_name    VARCHAR NOT NULL,\n" +
+                "    remark      VARCHAR\n" +
+                ");";
         list.add(sql_shop_stores);
         list.add(sql_shop_category);
         list.add(sql_barcode_info);
@@ -1256,6 +1264,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         list.add(goods_group_view_sql);
         list.add(sql_hangbill);
         list.add(sql_hangbill_detail);
+        list.add(sql_barcode_scale_info);
         try {
             db.beginTransaction();
             for (String sql : list) {

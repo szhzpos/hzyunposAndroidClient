@@ -82,7 +82,7 @@ public class PeripheralSettingFragment extends BaseFragment {
             content.put("parameter_desc", "打印机设置");
             array.put(content);
 
-            if (!SQLiteHelper.execSQLByBatchFromJson(array,"local_parameter",null,err)){
+            if (!SQLiteHelper.execSQLByBatchFromJson(array,"local_parameter",null,err,1)){
                 MyDialog.ToastMessage(null,err.toString(),mContext,null);
             }else{
                 MyDialog.ToastMessage(null,"保存成功！",mContext,null);

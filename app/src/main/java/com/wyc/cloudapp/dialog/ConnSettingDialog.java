@@ -100,7 +100,7 @@ public class ConnSettingDialog extends Dialog {
                     param.put("parameter_content",json);
                     param.put("parameter_desc","门店信息、服务器连接参数");
                     StringBuilder err = new StringBuilder();
-                    if (SQLiteHelper.saveToDatabaseFormJson(param,"local_parameter",null,"REPLACE",err)){
+                    if (SQLiteHelper.saveFormJson(param,"local_parameter",null,"REPLACE",err)){
                         MyDialog.ToastMessage("保存成功！",mContext,null);
                         ConnSettingDialog.this.dismiss();
                     }else
