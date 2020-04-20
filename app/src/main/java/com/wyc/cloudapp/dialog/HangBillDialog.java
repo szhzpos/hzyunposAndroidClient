@@ -24,6 +24,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;

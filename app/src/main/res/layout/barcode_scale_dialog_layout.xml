@@ -90,6 +90,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="@dimen/margin_2"
-        android:background="@drawable/border_sub_gray" />
+        android:background="@drawable/border_sub_gray"
+        android:padding="@dimen/margin_1" />
 
 </LinearLayout>

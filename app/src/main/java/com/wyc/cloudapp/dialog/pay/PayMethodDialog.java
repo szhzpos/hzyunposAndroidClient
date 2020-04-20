@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.dialog;
+package com.wyc.cloudapp.dialog.pay;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -9,7 +9,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.interface_abstract.AbstractPayDialog;
+import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 

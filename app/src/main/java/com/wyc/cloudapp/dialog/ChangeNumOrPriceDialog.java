@@ -51,40 +51,12 @@ public class ChangeNumOrPriceDialog extends Dialog {
         }
         new_price_text.setText(mInitVal);
 
-
-
-        findViewById(R.id._ok).setOnClickListener(v -> {
-            if (yesOnclickListener != null){
-                yesOnclickListener.onYesClick(ChangeNumOrPriceDialog.this);
-            }
-        });
-        findViewById(R.id.cancel).setOnClickListener(v -> {
-            if (noOnclickListener != null){
-                noOnclickListener.onNoClick(ChangeNumOrPriceDialog.this);
-            }else{
-                ChangeNumOrPriceDialog.this.dismiss();
-            }
-        });
+        //初始化按钮
         findViewById(R.id._close).setOnClickListener(v -> {
             if (noOnclickListener != null){
                 noOnclickListener.onNoClick(ChangeNumOrPriceDialog.this);
             }else{
                 ChangeNumOrPriceDialog.this.dismiss();
-            }
-        });
-        findViewById(R.id._back).setOnClickListener(v -> {
-            View view =  getCurrentFocus();
-            if (view != null) {
-                if (view.getId() == R.id.new_numOrprice_text) {
-                    EditText tmp_edit = ((EditText)view);
-                    int index = tmp_edit.getSelectionStart(),end = tmp_edit.getSelectionEnd();
-                    if (index != end && end  == tmp_edit.getText().length()){
-                        tmp_edit.setText(mContext.getString(R.string.space_sz));
-                    }else{
-                        if (index == 0)return;
-                        tmp_edit.getText().delete(index - 1, index);
-                    }
-                }
             }
         });
 
@@ -94,8 +66,45 @@ public class ChangeNumOrPriceDialog extends Dialog {
         for (int i = 0,child  = keyboard_layout.getChildCount(); i < child;i++){
             View tmp_v = keyboard_layout.getChildAt(i);
             int id = tmp_v.getId();
-            if (tmp_v instanceof Button && !(id == R.id._back || id == R.id.cancel || id == R.id._ok )){
-                tmp_v.setOnClickListener(button_click);
+            if (tmp_v instanceof Button){
+                switch (id) {
+                    case R.id._back:
+                        findViewById(id).setOnClickListener(v -> {
+                            View view =  getCurrentFocus();
+                            if (view != null) {
+                                if (view.getId() == R.id.new_numOrprice_text) {
+                                    EditText tmp_edit = ((EditText)view);
+                                    int index = tmp_edit.getSelectionStart(),end = tmp_edit.getSelectionEnd();
+                                    if (index != end && end  == tmp_edit.getText().length()){
+                                        tmp_edit.setText(mContext.getString(R.string.space_sz));
+                                    }else{
+                                        if (index == 0)return;
+                                        tmp_edit.getText().delete(index - 1, index);
+                                    }
+                                }
+                            }
+                        });
+                        break;
+                    case R.id.cancel:
+                        findViewById(id).setOnClickListener(v -> {
+                            if (noOnclickListener != null){
+                                noOnclickListener.onNoClick(ChangeNumOrPriceDialog.this);
+                            }else{
+                                ChangeNumOrPriceDialog.this.dismiss();
+                            }
+                        });
+                        break;
+                    case R.id._ok:
+                        findViewById(id).setOnClickListener(v -> {
+                            if (yesOnclickListener != null){
+                                yesOnclickListener.onYesClick(ChangeNumOrPriceDialog.this);
+                            }
+                        });
+                        break;
+                    default:
+                        tmp_v.setOnClickListener(button_click);
+                        break;
+                }
             }
         }
 
@@ -139,7 +148,7 @@ public class ChangeNumOrPriceDialog extends Dialog {
         return code;
     }
 
-    String getContentToStr(){
+    public String getContentToStr(){
         return new_price_text.getText().toString();
     }
 

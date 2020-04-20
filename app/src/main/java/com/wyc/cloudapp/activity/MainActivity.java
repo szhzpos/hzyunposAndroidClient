@@ -11,10 +11,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.RectF;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -46,9 +42,9 @@ import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.HangBillDialog;
 import com.wyc.cloudapp.dialog.MoreFunDialog;
-import com.wyc.cloudapp.dialog.PayDialog;
+import com.wyc.cloudapp.dialog.pay.PayDialog;
 import com.wyc.cloudapp.dialog.SecondDisplay;
-import com.wyc.cloudapp.dialog.VipInfoDialog;
+import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.network.sync.SyncManagement;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -66,8 +62,6 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -90,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView mCloseBtn;
     private RecyclerView mSaleGoodsRecyclerView;
     private TableLayout mKeyboard;
-    private String mRemark = "",zk_cashier_id;
+    private String mZkCashierId = "";
     private SecondDisplay mSecondDisplay;
 
     @Override
@@ -433,9 +427,7 @@ public class MainActivity extends AppCompatActivity {
                 if (mSecondDisplay != null)mSecondDisplay.notifyChange(mSaleGoodsViewAdapter.getCurrentItemIndex());
             }
         });
-
         registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray__subtransparent)));
-
         mSaleGoodsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
         mSaleGoodsRecyclerView.setAdapter(mSaleGoodsViewAdapter);
     }
@@ -574,19 +566,16 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onStart(PayDialog myDialog) {
                         mProgressDialog.setCancel(false).setMessage("正在保存单据...").refreshMessage().show();
-                        CustomApplication.execute(()->{
-                            StringBuilder err = new StringBuilder();
-                            try {
-                                if (saveOrderInfo(generateOrderInfo(Utils.JsondeepCopy(datas),Utils.JsondeepCopy(myDialog.getContent())),err)){
-                                    dialog.requestPay(mOrderCode.getText().toString(),mUrl,mAppId,mAppScret,mStoreInfo.getString("stores_id"),mCashierInfo.getString("pos_num"));
-                                }else{
-                                    mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,err.toString()).sendToTarget();
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"保存单据错误：" + e.getMessage()).sendToTarget();
-                            }
-                        });
+                        StringBuilder err = new StringBuilder();
+                        if (myDialog.saveOrderInfo(err)){
+                            CustomApplication.execute(()->{
+                                myDialog.requestPay(mOrderCode.getText().toString(),mUrl,mAppId,mAppScret,mStoreInfo.optString("stores_id"),mCashierInfo.optString("pos_num"));
+                            });
+
+                        }else{
+                            mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,err.toString()).sendToTarget();
+                        }
+
                     }
 
                     @Override
@@ -621,7 +610,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void resetOrderInfo(){
-        zk_cashier_id = mRemark  = "";
+        mZkCashierId = "";
         resetOrderCode();
         mSaleGoodsViewAdapter.clearGoods();
         clearVipInfo();
@@ -664,149 +653,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     private void setDisCashierId(final String id){
-        zk_cashier_id = id;
+        mZkCashierId = id;
     }
-    private JSONObject generateOrderInfo(JSONArray sales_data,JSONArray pays_data) throws JSONException {
-        double sale_sum_amt = Double.valueOf(mSaleSumAmount.getText().toString()),
-                dis_sum_amt = Double.valueOf(mDisSumAmt.getText().toString()),
-                total = dis_sum_amt + sale_sum_amt,zl_amt = 0.0;
 
-        long time = System.currentTimeMillis() / 1000;
-
-        JSONObject order_info = new JSONObject(),data = new JSONObject(),tmp_json;
-        JSONArray orders = new JSONArray(),combination_goods = new JSONArray();
-        StringBuilder err = new StringBuilder();
-
-        String order_code = mOrderCode.getText().toString();
-
-        order_info.put("stores_id",mStoreInfo.getString("stores_id"));
-        order_info.put("order_code",order_code);
-        order_info.put("total",total);
-        order_info.put("discount_price",sale_sum_amt);
-        order_info.put("discount_money",total);
-        order_info.put("discount",String.format(Locale.CHINA,"%.4f",sale_sum_amt / total));
-        order_info.put("cashier_id",mCashierInfo.getString("cas_id"));
-        order_info.put("addtime",time);
-        order_info.put("pos_code",mCashierInfo.getString("pos_num"));
-        order_info.put("order_status",1);//订单状态（1未付款，2已付款，3已取消，4已退货）
-        order_info.put("pay_status",1);//支付状态（1未支付，2已支付，3支付中）
-        order_info.put("pay_time",time);
-        order_info.put("upload_status",1);//上传状态（1未上传，2已上传）
-        order_info.put("upload_time",0);
-        order_info.put("transfer_status",1);//交班状态（1未交班，2已交班）
-        order_info.put("transfer_time",0);
-        order_info.put("is_rk",2);//是否已经扣减库存（1是，2否）
-        if (mVipInfo != null){
-            order_info.put("member_id",mVipInfo.getString("member_id"));
-            order_info.put("mobile",mVipInfo.getString("mobile"));
-            order_info.put("name",mVipInfo.getString("name"));
-            order_info.put("card_code",mVipInfo.getString("card_code"));
-        }
-        order_info.put("sc_ids","");
-        order_info.put("sc_tc_money",0.00);
-        order_info.put("zl_money",zl_amt);
-        order_info.put("ss_money",0.0);
-        order_info.put("remark",mRemark);
-        order_info.put("zk_cashier_id",zk_cashier_id);//使用折扣的收银员ID,默认当前收银员
-
-        orders.put(order_info);
-
-        //处理销售明细
-        for(int i = 0;i < sales_data.length();i ++){
-            tmp_json = sales_data.getJSONObject(i);
-            int gp_id = tmp_json.getInt("gp_id");
-            if (-1 != gp_id){
-                tmp_json = (JSONObject) sales_data.remove(i--);
-                if (!mSaleGoodsViewAdapter.splitCombinationalGoods(combination_goods,gp_id,tmp_json.getDouble("price"),tmp_json.getDouble("xnum"),err)){
-                    throw new JSONException("拆分组合商品错误，" + err);
-                }
-                Logger.d_json(combination_goods.toString());
-            }else{
-                tmp_json.put("order_code",order_code);
-                tmp_json.put("zk_cashier_id",zk_cashier_id);//使用折扣的收银员ID,默认当前收银员
-                tmp_json.put("total_money",tmp_json.remove("sale_amt"));
-                tmp_json.put("y_price",tmp_json.remove("old_price"));
-
-                ///删除不需要的内容
-                tmp_json.remove("goods_id");
-                tmp_json.remove("discount");
-                tmp_json.remove("discount_amt");
-                tmp_json.remove("old_amt");
-                tmp_json.remove("goods_title");
-                tmp_json.remove("unit_name");
-                tmp_json.remove("yh_mode");
-                tmp_json.remove("yh_price");
-            }
-        }
-        //处理组合商品
-        for(int i = 0,size = combination_goods.length();i < size;i++){
-            tmp_json = combination_goods.getJSONObject(i);
-            tmp_json.put("order_code",order_code);
-            tmp_json.put("zk_cashier_id",zk_cashier_id);//使用折扣的收银员ID,默认当前收银员
-            tmp_json.put("total_money",String.format(Locale.CHINA,"%.2f",tmp_json.getDouble("xnum") * tmp_json.getDouble("price")));
-            tmp_json.put("y_price",tmp_json.getDouble("retail_price"));
-
-            sales_data.put(tmp_json);
-        }
-
-        //处理付款明细
-        for (int i= 0,size = pays_data.length();i < size;i++){
-            tmp_json = pays_data.getJSONObject(i);
-            JSONObject pay = new JSONObject();
-
-            pay.put("order_code",order_code);
-            pay.put("pay_code",tmp_json.getString("pay_code"));
-            pay.put("pay_method",tmp_json.getString("pay_method_id"));
-            pay.put("pay_money",tmp_json.getDouble("pamt"));
-            pay.put("is_check",tmp_json.getDouble("is_check"));
-            pay.put("pay_time",0);
-            pay.put("pay_status",1);
-            pay.put("pay_serial_no","");//第三方返回的支付流水号
-            pay.put("remark","");
-            pay.put("zk_money",0.0);
-            pay.put("pre_sale_money",tmp_json.getDouble("pamt"));
-            pay.put("give_change_money",tmp_json.getDouble("pzl"));
-            pay.put("discount_money",0.0);
-            pay.put("xnote","");
-            pay.put("return_code","");
-            pay.put("v_num",tmp_json.getString("v_num"));
-            pay.put("print_info","");
-
-            pays_data.put(i,pay);
-        }
-
-        data.put("retail_order",orders);
-        data.put("retail_order_goods",sales_data);
-        data.put("retail_order_pays",pays_data);
-
-        return data;
-    }
-    private boolean saveOrderInfo(final JSONObject data,final StringBuilder err){
-        boolean code;
-        JSONObject count_json = new JSONObject();
-        List<String>  tables = Arrays.asList("retail_order","retail_order_goods","retail_order_pays"),
-                retail_order_cols = Arrays.asList("stores_id","order_code","discount","discount_price","total","cashier_id","addtime","pos_code","order_status","pay_status","pay_time","upload_status",
-                        "upload_time","transfer_status","transfer_time","is_rk","mobile","name","card_code","sc_ids","sc_tc_money","member_id","discount_money","zl_money","ss_money","remark","zk_cashier_id"),
-                retail_order_goods_cols = Arrays.asList("order_code","barcode_id","xnum","price","buying_price","retail_price","trade_price","cost_price","ps_price","tax_rate","tc_mode","tc_rate","gp_id",
-                        "zk_cashier_id","total_money","conversion","barcode","y_price"),
-                retail_order_pays_cols = Arrays.asList("order_code","pay_method","pay_money","pay_time","pay_status","pay_serial_no","pay_code","remark","is_check","zk_money","pre_sale_money","give_change_money",
-                        "discount_money","xnote","card_no","return_code","v_num","print_info");
-
-        if (data == null)return false;
-        if ((code = SQLiteHelper.execSql(count_json,"select count(order_code) counts from retail_order where order_code = '" + mOrderCode.getText() +"' and stores_id = '" + mStoreInfo.optString("stores_id") +"'"))){
-            if (0 == count_json.optInt("counts")){
-                if (!(code = SQLiteHelper.execSQLByBatchFromJson(data,tables,Arrays.asList(retail_order_cols,retail_order_goods_cols,retail_order_pays_cols),err,0))){
-                    err.insert(0,"保存订单信息错误：");
-                }
-            }else{
-                code = false;
-                err.append("本地已存在此订单信息，请重新下单！");
-            }
-        }else{
-            err.append("查询订单信息错误：").append(count_json.optString("info"));
-        }
-        return code;
-    }
     private void resetOrderCode(){
         mOrderCode.setText(mGoodsInfoViewAdapter.generateOrderCode(mCashierInfo.optString("pos_num")));
     }
@@ -843,9 +692,7 @@ public class MainActivity extends AppCompatActivity {
 
         return  mSaleGoodsViewAdapter.updateGoodsInfoToVip(mVipInfo);
     }
-    public void set_order_remark(final String remark){
-        mRemark = mRemark.concat(remark);
-    }
+
     public double getSaleSumAmt(){
         return mSaleGoodsViewAdapter.getSaleSumAmt();
     }
@@ -862,7 +709,12 @@ public class MainActivity extends AppCompatActivity {
     public String getOrderCode(){
         return mOrderCode.getText().toString();
     }
-
+    public String  getDisCashierId(){
+        return mZkCashierId;
+    }
+    public @NonNull SaleGoodsViewAdapter getSaleGoodsViewAdapter(){
+        return mSaleGoodsViewAdapter;
+    }
 
     private static class Myhandler extends Handler {
         private WeakReference<MainActivity> weakHandler;

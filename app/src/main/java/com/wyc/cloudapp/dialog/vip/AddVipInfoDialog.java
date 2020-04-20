@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.dialog;
+package com.wyc.cloudapp.dialog.vip;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -19,6 +19,8 @@ import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.dialog.CustomProgressDialog;
+import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;

@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.dialog.barcodeScales.BarCodeScaleDownDialog;
 import com.wyc.cloudapp.print.Printer;
 
 public class MoreFunDialog extends Dialog {

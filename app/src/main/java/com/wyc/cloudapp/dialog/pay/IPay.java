@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.interface_abstract;
+package com.wyc.cloudapp.dialog.pay;
 
 import org.json.JSONObject;
 

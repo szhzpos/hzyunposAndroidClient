@@ -1,10 +1,9 @@
-package com.wyc.cloudapp.dialog;
+package com.wyc.cloudapp.dialog.vip;
 
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -23,6 +22,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.dialog.CustomProgressDialog;
+import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
@@ -82,28 +83,7 @@ public class VipInfoDialog extends Dialog {
 
         //初始化按钮事件
         findViewById(R.id._close).setOnClickListener( v ->VipInfoDialog.this.dismiss());
-        findViewById(R.id._back).setOnClickListener(v -> {
-            View view =  getCurrentFocus();
-            if (view != null) {
-                if (view.getId() == R.id.search_content) {
-                    EditText tmp_edit = ((EditText)view);
-                    int index = tmp_edit.getSelectionStart(),end = tmp_edit.getSelectionEnd();
-                    if (index != end && end  == tmp_edit.getText().length()){
-                        tmp_edit.setText(mContext.getString(R.string.space_sz));
-                    }else{
-                        if (index == 0)return;
-                        tmp_edit.getText().delete(index - 1, index);
-                    }
-                }
-            }
-        });
-        mSearchBtn.setOnClickListener(view -> {
-            if (mVip == null)
-                serchVip(mSearchContent.getText().toString(),0);
-            else{
-                if (mYesOnclickListener != null)mYesOnclickListener.onYesClick(VipInfoDialog.this);
-            }
-        });
+
         mAddBtn.setOnClickListener(view -> {
             AddVipInfoDialog dialog = new AddVipInfoDialog(mContext,null,mUrl,mAppId,mAppScret);
             dialog.setOnShowListener(dialog12 -> mSearchContent.clearFocus());
@@ -161,8 +141,39 @@ public class VipInfoDialog extends Dialog {
         for (int i = 0,child  = keyboard_linear_layout.getChildCount(); i < child;i++){
             View tmp_v = keyboard_linear_layout.getChildAt(i);
             int id = tmp_v.getId();
-            if (tmp_v instanceof Button && !(id == R.id._back || id == R.id.cancel || id == R.id._ok)){
-                tmp_v.setOnClickListener(button_click);
+            if (tmp_v instanceof Button){
+                switch (id) {
+                    case R.id._back:
+                        findViewById(R.id._back).setOnClickListener(v -> {
+                            View view = getCurrentFocus();
+                            if (view != null) {
+                                if (view.getId() == R.id.search_content) {
+                                    EditText tmp_edit = ((EditText) view);
+                                    int index = tmp_edit.getSelectionStart(), end = tmp_edit.getSelectionEnd();
+                                    if (index != end && end == tmp_edit.getText().length()) {
+                                        tmp_edit.setText(mContext.getString(R.string.space_sz));
+                                    } else {
+                                        if (index == 0) return;
+                                        tmp_edit.getText().delete(index - 1, index);
+                                    }
+                                }
+                            }
+                        });
+                        break;
+                    case R.id._ok:
+                        mSearchBtn.setOnClickListener(view -> {
+                            if (mVip == null)
+                                serchVip(mSearchContent.getText().toString(), 0);
+                            else {
+                                if (mYesOnclickListener != null)
+                                    mYesOnclickListener.onYesClick(VipInfoDialog.this);
+                            }
+                        });
+                        break;
+                    default:
+                        tmp_v.setOnClickListener(button_click);
+                        break;
+                }
             }
         }
 

@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.dialog;
+package com.wyc.cloudapp.dialog.vip;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -20,7 +20,8 @@ import com.wyc.cloudapp.adapter.PayMethodItemDecoration;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.interface_abstract.AbstractPayDialog;
+import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.pay.AbstractPayDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.MessageID;

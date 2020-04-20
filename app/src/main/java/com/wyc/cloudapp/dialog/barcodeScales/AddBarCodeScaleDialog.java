@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.dialog;
+package com.wyc.cloudapp.dialog.barcodeScales;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -10,6 +10,7 @@ import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -21,12 +22,17 @@ import androidx.annotation.NonNull;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.dialog.CustomePopupWindow;
+import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AddBarCodeScaleDialog extends Dialog {
     private final static String CATEGORY_SEPARATE = ",";
@@ -37,11 +43,11 @@ public class AddBarCodeScaleDialog extends Dialog {
     private JSONArray mCategoryInfo,mManufacturerInfos, mScaleInfos;
     private OnGetContentCallBack mGetContent;
     private JSONObject mModifyScale;
-    public AddBarCodeScaleDialog(@NonNull Context context) {
+    AddBarCodeScaleDialog(@NonNull Context context) {
         super(context);
         mContext = context;
     }
-    public AddBarCodeScaleDialog(@NonNull Context context,JSONObject object) {
+    AddBarCodeScaleDialog(@NonNull Context context,JSONObject object) {
         this(context);
         mModifyScale = object;
     }
@@ -77,6 +83,12 @@ public class AddBarCodeScaleDialog extends Dialog {
             }
         });
 
+    }
+
+    @Override
+    public void onAttachedToWindow(){
+        super.onAttachedToWindow();
+
         //修内容
         if (mModifyScale != null){
             initModifyScaleInfo();
@@ -98,7 +110,7 @@ public class AddBarCodeScaleDialog extends Dialog {
                     public void getContent(JSONObject json) {
                         if (json != null){
                             if ("DH".equals(json.optString("s_id"))){
-                                mPort.setText("3030");
+                                mPort.setText("4001");
                             }
                         }
                     }
@@ -164,7 +176,7 @@ public class AddBarCodeScaleDialog extends Dialog {
     private void initScalseInfo(){
         mManufacturerInfos = new JSONArray();
         try {
-            mManufacturerInfos.put(getDHManufacturer());
+            mManufacturerInfos.put(AbstractBarcodeScale.getDHManufacturer());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -205,29 +217,9 @@ public class AddBarCodeScaleDialog extends Dialog {
         }
     };
 
-    private JSONObject getDHManufacturer() throws JSONException {
-        JSONObject object = new JSONObject();
-        JSONArray products = new JSONArray();
-
-        object.put("name","大华系列");
-
-        products.put(getScalseProduct("DH","大华TM-15A"));
-
-        object.put("products",products);
-
-        return object;
-    }
-
-    private JSONObject getScalseProduct(final String s_id,final String s_type) throws JSONException {
-        JSONObject object = new JSONObject();
-        object.put("s_id",s_id);
-        object.put("s_type",s_type);
-         return object;
-    }
-
     private void chooseDialog() throws JSONException {
         StringBuilder err = new StringBuilder();
-        final JSONArray tmps = SQLiteHelper.getListToJson("SELECT category_id, name FROM shop_category",err),category_info_copy = Utils.JsondeepCopy(mCategoryInfo);
+        final JSONArray tmps = SQLiteHelper.getListToJson("SELECT category_id, name FROM shop_category where parent_id = 0",err),category_info_copy = Utils.JsondeepCopy(mCategoryInfo);
         if (tmps == null){
             MyDialog.ToastMessage(err.toString(),mContext,getWindow());
             return;
@@ -235,15 +227,18 @@ public class AddBarCodeScaleDialog extends Dialog {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         int tmps_len = tmps.length();
-        final String[] items = new String[tmps_len];
+        //final String[] items = new String[tmps_len];
         final boolean[] isCheckeds  = new boolean[tmps_len];
 
         JSONObject object;
         int c_id = -1;
 
+        final List<String> list = new ArrayList<>();
+
+
         for (int i = 0,size = tmps.length();i < size;i++){
             object = tmps.optJSONObject(i);
-            items[i] = object.optString("name");
+            list.add(object.optString("name"));
 
             c_id = object.optInt("category_id");
 
@@ -258,7 +253,7 @@ public class AddBarCodeScaleDialog extends Dialog {
             }
         }
 
-        builder.setMultiChoiceItems(items, isCheckeds, (dialog, which, isChecked) -> {
+        builder.setMultiChoiceItems(list.toArray(new String[tmps_len]), isCheckeds, (dialog, which, isChecked) -> {
             JSONObject object1 = tmps.optJSONObject(which);
             int id = object1.optInt("category_id");
             if (isChecked){
@@ -295,6 +290,7 @@ public class AddBarCodeScaleDialog extends Dialog {
         builder.setNegativeButton(mContext.getString(R.string.cancel), (dialog, which) -> {
             dialog.dismiss();
         });
+
         AlertDialog alertDialog = builder.create();
 
         int blue = mContext.getColor(R.color.blue);

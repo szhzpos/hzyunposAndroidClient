@@ -133,8 +133,7 @@ public final class Utils {
 
     @NonNull
     public static String getMD5(byte[] data) {
-        char hexDigits[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-                'A', 'B', 'C', 'D', 'E', 'F' };
+        char[] hexDigits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9','A', 'B', 'C', 'D', 'E', 'F' };
         MessageDigest mdTemp = null;
         StringBuilder hexstr = new StringBuilder();
         try {
@@ -152,6 +151,16 @@ public final class Utils {
         } catch (NoSuchAlgorithmException | NullPointerException e) {
             hexstr.delete(0,hexstr.length());
             e.printStackTrace();
+        }
+        return hexstr.toString();
+    }
+
+    public static String byteToHex(byte[] data){
+        StringBuilder hexstr = new StringBuilder();
+        char[] hexDigits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9','A', 'B', 'C', 'D', 'E', 'F' };
+        for (byte datum : data) {
+            hexstr.append(hexDigits[datum >>> 4 & 0x0f]);
+            hexstr.append(hexDigits[datum & 0x0f]);
         }
         return hexstr.toString();
     }

@@ -170,10 +170,9 @@
     <string name="hangbill_sz">挂单</string>
     <string name="to_checkout_sz">去结账</string>
     <string name="del_hang_bill">删除挂单</string>
-    <string name="barcode_scale_sz">条码秤下发</string>
-    <string name="add_scale_sz">新增称</string>
-    <string name="del_scale_sz">删除称</string>
-    <string name="d_to_scale_sz">下发传称</string>
+    <string name="add_scale_sz">新增秤</string>
+    <string name="del_scale_sz">删除秤</string>
+    <string name="d_to_scale_sz">下发传秤</string>
     <string name="row_id_sz">序号</string>
     <string name="checked_sz">选中</string>
     <string name="product_t_sz">型号</string>
@@ -183,6 +182,6 @@
     <string name="down_s_sz">下发状态</string>
     <string name="b_code_s_d_sz">条码秤下发</string>
     <string name="manufacturer_sz">厂商</string>
-    <string name="scalse_name_sz">称名</string>
-    <string name="modify_scale_sz">修改称</string>
+    <string name="scalse_name_sz">秤名</string>
+    <string name="modify_scale_sz">修改秤</string>
 </resources>

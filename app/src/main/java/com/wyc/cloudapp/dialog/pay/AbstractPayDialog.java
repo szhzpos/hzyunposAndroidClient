@@ -1,7 +1,6 @@
-package com.wyc.cloudapp.interface_abstract;
+package com.wyc.cloudapp.dialog.pay;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -61,31 +60,6 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
 
         //初始化按钮事件
         findViewById(R.id._close).setOnClickListener(view-> findViewById(R.id._cancel).callOnClick());
-        findViewById(R.id._back).setOnClickListener(v -> {
-            View view =  getCurrentFocus();
-            if (view != null) {
-                int id = view.getId();
-                if (id == R.id.c_amt || id == R.id.pay_code) {
-                    EditText tmp_edit = ((EditText)view);
-                    int index = tmp_edit.getSelectionStart(),end = tmp_edit.getSelectionEnd();
-                    if (index != end && end  == tmp_edit.getText().length()){
-                        tmp_edit.setText(mContext.getString(R.string.space_sz));
-                    }else{
-                        if (index == 0)return;
-                        tmp_edit.getText().delete(index - 1, index);
-                    }
-                }
-            }
-        });
-        findViewById(R.id._cancel).setOnClickListener(view -> {
-            if (mCancelListener != null)
-                mCancelListener.onCancel(AbstractPayDialog.this);
-            else
-                AbstractPayDialog.this.dismiss();
-        });
-        mOk.setOnClickListener(v -> {
-            if (verify() && mYesOnclickListener != null)mYesOnclickListener.onYesClick(AbstractPayDialog.this);
-        });
 
         //初始化数字键盘
         ConstraintLayout keyboard_linear_layout;
@@ -93,8 +67,43 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
         for (int i = 0,child  = keyboard_linear_layout.getChildCount(); i < child;i++){
             View tmp_v = keyboard_linear_layout.getChildAt(i);
             int id = tmp_v.getId();
-            if (tmp_v instanceof Button && !(id == R.id._back || id == R.id._cancel || id == R.id._ok)){
-                tmp_v.setOnClickListener(button_click);
+            if (tmp_v instanceof Button){
+                switch (id){
+                    case R.id._back:
+                        findViewById(id).setOnClickListener(v -> {
+                            View view =  getCurrentFocus();
+                            if (view != null) {
+                                int tmp_id = view.getId();
+                                if (tmp_id == R.id.c_amt || tmp_id == R.id.pay_code) {
+                                    EditText tmp_edit = ((EditText)view);
+                                    int index = tmp_edit.getSelectionStart(),end = tmp_edit.getSelectionEnd();
+                                    if (index != end && end  == tmp_edit.getText().length()){
+                                        tmp_edit.setText(mContext.getString(R.string.space_sz));
+                                    }else{
+                                        if (index == 0)return;
+                                        tmp_edit.getText().delete(index - 1, index);
+                                    }
+                                }
+                            }
+                        });
+                        break;
+                    case R.id._cancel:
+                        findViewById(id).setOnClickListener(view -> {
+                            if (mCancelListener != null)
+                                mCancelListener.onCancel(AbstractPayDialog.this);
+                            else
+                                AbstractPayDialog.this.dismiss();
+                        });
+                        break;
+                    case R.id._ok:
+                        mOk.setOnClickListener(v -> {
+                            if (verify() && mYesOnclickListener != null)mYesOnclickListener.onYesClick(AbstractPayDialog.this);
+                        });
+                        break;
+                    default:
+                        tmp_v.setOnClickListener(button_click);
+                        break;
+                }
             }
         }
         //回车监听
