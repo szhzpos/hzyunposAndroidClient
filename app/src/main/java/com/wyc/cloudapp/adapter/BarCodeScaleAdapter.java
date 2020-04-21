@@ -177,7 +177,7 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
     public void setDatas(){
         StringBuilder err = new StringBuilder();
-        mDatas = SQLiteHelper.getListToJson("SELECT _id,s_manufacturer,s_product_t,scale_ip,scale_port,g_c_id,g_c_name,remark FROM barcode_scalse_info",err);
+        mDatas = SQLiteHelper.getListToJson("SELECT _id,s_manufacturer,s_class_id,s_product_t,scale_ip,scale_port,g_c_id,g_c_name,remark FROM barcode_scalse_info",err);
         if (mDatas != null){
             notifyDataSetChanged();
         }else{
@@ -223,6 +223,7 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 if (object != null){
                     if (object.optString("_id").equals(scale.optString("_id"))){
                         mDatas.remove(i);
+                        notifyDataSetChanged();
                         break;
                     }
                 }
@@ -230,8 +231,7 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
 
         if (SQLiteHelper.saveFormJson(scale,"barcode_scalse_info",null,svae_type,err)){
-            mDatas.put(scale);
-            notifyDataSetChanged();
+            setDatas();
         }else{
             MyDialog.ToastMessage("保存条码秤错误：" + err,mContext,null);
         }

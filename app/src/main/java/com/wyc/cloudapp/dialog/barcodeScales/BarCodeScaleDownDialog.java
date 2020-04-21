@@ -23,6 +23,7 @@ import com.wyc.cloudapp.utils.Utils;
 
 import org.apache.log4j.net.SocketServer;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,7 +62,6 @@ public class BarCodeScaleDownDialog extends Dialog {
 
                 mBarCodeScaleAdapter.addScale(object);
 
-                Logger.d(mBarCodeScaleAdapter.toString());
             });
             addBarCodeScaleDialog.show();
         });
@@ -71,14 +71,24 @@ public class BarCodeScaleDownDialog extends Dialog {
             @Override
             public void onClick(View v) {
                 Logger.d_json(mBarCodeScaleAdapter.getCurrentScalseInfos().toString());
-                CustomApplication.execute(()->{
-                    try {
-                        download();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                JSONArray scale_infos = mBarCodeScaleAdapter.getCurrentScalseInfos();
+                StringBuilder err = new StringBuilder();
+                for (int i = 0,size = scale_infos.length();i < size;i++){
+                    final JSONObject object = scale_infos.optJSONObject(i);
+                    if (null != object){
+                        CustomApplication.execute(()->{
+                            try{
+                                if (!AbstractBarcodeScale.scaleDownLoad(object,err)){
+                                    Logger.d("下载错误：%s",err);
+                                }
+                            }catch (Exception e){
+                                e.printStackTrace();
+                                Logger.i("条码秤下载最外层异常捕获：%s" + e.getMessage());
+                            }
+                        });
                     }
-                });
-            }
+                }
+             }
         });
         findViewById(R.id.modfy_scale).setOnClickListener(v -> {
             JSONArray array = mBarCodeScaleAdapter.getCurrentScalseInfos();
@@ -113,46 +123,5 @@ public class BarCodeScaleDownDialog extends Dialog {
         recyclerView.setAdapter(mBarCodeScaleAdapter);
         //加载信息
         mBarCodeScaleAdapter.setDatas();
-    }
-
-    private void download() throws IOException {
-
-        byte[] jj = new byte[]{0x0D,0x0A,0x03};
-
-
-
-
-        byte[] bytes = new byte[1024];
-        Socket socket = new Socket();
-        socket.connect(new InetSocketAddress("192.168.0.150",4001),3000);
-        socket.setSoTimeout(5000);
-        Logger.d(socket.getInetAddress().toString());
-        OutputStream outputStream = socket.getOutputStream();
-        List<Byte> bys = new ArrayList<>();
-
-        byte[] bs = "撒打发斯蒂芬阿斯顿发放".getBytes("GB2312");
-        String t,s = "";
-        for (int i = 0; i < bs.length; i++) {
-            int a = Integer.parseInt(Utils.byteToHex(new byte[]{bs[i]}), 16);
-            t = (a - 0x80 - 0x20) + "";
-            if(t.length() == 1){
-                t = 0 + t;
-            }
-            s += t;
-        }
-        Logger.d("区位码：%s",s);
-
-
-        //2281080
-        String sz = "!0V0003A0015001002000000000000803000000000000000000000000000000000000000000000000B" + s +"C186642525028D186642525028E" + new String(jj,"GB2312");
-
-        byte[] down = sz.getBytes("GB2312");
-        Logger.d(Utils.byteToHex(down));
-
-        outputStream.write(down);
-
-        InputStream inputStream = socket.getInputStream();
-        inputStream.read(bytes);
-        Logger.d("服务器返回数据：" + new String(bytes,"GB2312"));
     }
 }

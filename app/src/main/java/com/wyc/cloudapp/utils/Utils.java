@@ -133,26 +133,16 @@ public final class Utils {
 
     @NonNull
     public static String getMD5(byte[] data) {
-        char[] hexDigits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9','A', 'B', 'C', 'D', 'E', 'F' };
         MessageDigest mdTemp = null;
-        StringBuilder hexstr = new StringBuilder();
         try {
             mdTemp = MessageDigest.getInstance("MD5" );
             mdTemp.update(data);
             byte [] md = mdTemp.digest();
-            for(int i = 0;i < md.length;i++){
-/*            shaHex = Integer.toHexString(md[i] & 0xFF);
-            if (shaHex.length() < 2) {
-                hexstr.append(0);
-            }*/
-                hexstr.append(hexDigits[md[i] >>> 4 & 0x0f]);
-                hexstr.append(hexDigits[md[i]  & 0x0f]);
-            }
+            return byteToHex(md);
         } catch (NoSuchAlgorithmException | NullPointerException e) {
-            hexstr.delete(0,hexstr.length());
             e.printStackTrace();
+            return "";
         }
-        return hexstr.toString();
     }
 
     public static String byteToHex(byte[] data){
@@ -176,6 +166,16 @@ public final class Utils {
             return null;
         }
         return Base64.encodeToString(md,Base64.DEFAULT );
+    }
+
+    public static String substringFormRight(final String original,int count){
+        //count 从右边开始字符数
+        if (null == original || original.isEmpty()){
+            return "";
+        }
+        int length = original.length();
+        int start =length  - count;
+        return original.substring(start < 0 ? 0 :start,length);
     }
 
     public static void setFocus(Activity activity, EditText textView){

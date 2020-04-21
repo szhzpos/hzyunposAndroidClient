@@ -144,7 +144,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                 return;
             }
             category_id = category_id.replace("\r\n",",");
-            sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,type,retail_price price,ifnull(img_url,'') img_url from barcode_info where goods_status = '1' and category_id in (" + category_id + ")";
+            sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,type,retail_price price,ifnull(img_url,'') img_url from barcode_info where (goods_status = '1' and barcode_status = '1') and category_id in (" + category_id + ")";
         }
 
         mDatas = SQLiteHelper.getListToJson(sql,0,0,false,err);
@@ -160,7 +160,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         final StringBuilder err = new StringBuilder();
         final String search_content = search.getText().toString();
         String sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,type,retail_price price\n" +
-                ",ifnull(img_url,'') img_url from barcode_info where goods_status = '1' and  (barcode like '" + search_content + "%' or mnemonic_code like '" + search_content +"%')\n" +
+                ",ifnull(img_url,'') img_url from barcode_info where (goods_status = '1' and barcode_status = '1') and  (barcode like '" + search_content + "%' or mnemonic_code like '" + search_content +"%')\n" +
                 "UNION\n" +
                 "select gp_id,-1 goods_id,ifnull(gp_title,'') goods_title,'' unit_id,ifnull(unit_name,'') unit_name,\n" +
                 "-1 barcode_id,ifnull(gp_code,'') barcode,type,gp_price price,ifnull(img_url,'') img_url from goods_group \n" +
@@ -182,7 +182,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
 
     public boolean getSingleGoods(@NonNull JSONObject object,int id){
        return SQLiteHelper.execSql(object,"select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,type," +
-               "retail_price,retail_price price,tc_rate,tc_mode,tax_rate,ps_price,cost_price,trade_price,buying_price,yh_mode,yh_price,conversion from barcode_info where goods_status = '1' and barcode_id = '" + id +"'" +
+               "retail_price,retail_price price,tc_rate,tc_mode,tax_rate,ps_price,cost_price,trade_price,buying_price,yh_mode,yh_price,conversion from barcode_info where (goods_status = '1' and barcode_status = '1') and barcode_id = '" + id +"'" +
                " UNION\n" +
                "select gp_id ,-1 goods_id,ifnull(gp_title,'') goods_title,ifnull(unit_name,'') unit_name,\n" +
                "-1 barcode_id,ifnull(gp_code,'') barcode,type,gp_price retail_price,gp_price price,0 tc_rate,0 tc_mode,0 tax_rate,0 ps_price,0 cost_price,0 trade_price,gp_price buying_price,0 yh_mode,0 yh_price,1 conversion from goods_group \n" +

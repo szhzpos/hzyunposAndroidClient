@@ -164,7 +164,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 mDb.setTransactionSuccessful();
             } catch (SQLException e) {
                 isTrue = false;
-                err.append(e.getMessage());
+                if (err != null)err.append(e.getMessage());
                 e.printStackTrace();
             } finally {
                 if (statement != null){
@@ -223,7 +223,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 mDb.setTransactionSuccessful();
             } catch (SQLException | JSONException e) {
                 isTrue = false;
-                err.append(e.getMessage());
+                if (err != null)err.append(e.getMessage());
                 e.printStackTrace();
             } finally {
                 if (statement != null){
@@ -293,7 +293,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 mDb.setTransactionSuccessful();
             } catch (SQLException e) {
                 isTrue = false;
-                err.append(e.getMessage());
+                if (err != null)err.append(e.getMessage());
                 e.printStackTrace();
             } finally {
                 if (statement != null){
@@ -349,7 +349,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             try(Cursor cursor = mDb.rawQuery(sql,null);){
                 array = rs2Json(cursor,minrow,maxrow,row);
             } catch (JSONException | SQLiteException e) {
-                err.append("查询错误：").append(e.getMessage());
+                if (err != null)err.append("查询错误：").append(e.getMessage());
                 e.printStackTrace();
                 array = null;
             }
@@ -362,7 +362,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             try(Cursor cursor = mDb.rawQuery(sql,null);){
                 array = rs2Json(cursor,0,0,false);
             } catch (JSONException | SQLiteException e) {
-                err.append("查询错误：").append(e.getMessage());
+                if (err != null)err.append("查询错误：").append(e.getMessage());
                 e.printStackTrace();
                 array = null;
             }
@@ -388,7 +388,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             try(Cursor cursor = mDb.rawQuery(sql,null);){
                 maps = rs2List(cursor);
             } catch (SQLiteException e) {
-                err.append("查询出错：" ).append(e.getLocalizedMessage());
+                if (err != null)err.append("查询出错：" ).append(e.getLocalizedMessage());
                 e.printStackTrace();
                 maps = null;
             }
@@ -401,7 +401,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             try(Cursor cursor = mDb.rawQuery(sql,null);){
                 result = rs2Txt(cursor);
             } catch (SQLiteException e) {
-                err.append("查询错误：").append(e.getMessage());
+                if (err != null)err.append("查询错误：").append(e.getMessage());
                 result = null;
                 e.printStackTrace();
             }
@@ -414,7 +414,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             try(Cursor cursor = mDb.rawQuery(sql,null);){
                 array = rs2ContentValues(cursor,minrow,maxrow,row);
             } catch (SQLiteException e) {
-                err.append(e.getMessage());
+                if (err != null)err.append(e.getMessage());
                 e.printStackTrace();
                 array=null;
             }
@@ -466,7 +466,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 mDb.setTransactionSuccessful();
             } catch (SQLException | JSONException e) {
                 isTrue = false;
-                err.append(e.getMessage());
+                if (err != null)err.append(e.getMessage());
                 e.printStackTrace();
             } finally {
                 if (statement != null){
@@ -531,7 +531,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             }
         }catch (SQLiteException e){
             e.printStackTrace();
-            err.append(e.getMessage());
+            if (err != null)err.append(e.getMessage());
             return false;
         }
         return true;
@@ -545,7 +545,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             }
         }catch (SQLiteException e){
             code = false;
-            err.append(e.getMessage());
+            if (err != null)err.append(e.getMessage());
         }
         return code;
     }
@@ -557,7 +557,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             }
         }catch (SQLiteException e){
             code = false;
-            err.append(e.getMessage());
+            if (err != null)err.append(e.getMessage());
         }
         return code;
     }
@@ -579,7 +579,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         }catch (SQLiteException e){
             e.printStackTrace();
             code = false;
-            err.append(e.getMessage());
+            if (err != null)err.append(e.getMessage());
         }
         return code;
     }
@@ -671,7 +671,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 mDb.setTransactionSuccessful();
             } catch (SQLException | JSONException e) {
                 code = false;
-                err.append(e.getMessage());
+                if (err != null)err.append(e.getMessage());
                 e.printStackTrace();
             } finally {
                 if (statement != null){
@@ -1240,6 +1240,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    _id         INTEGER PRIMARY KEY AUTOINCREMENT\n" +
                 "                        NOT NULL,\n" +
                 "    s_manufacturer VARCHAR NOT NULL,\n" +
+                "    s_class_id VARCHAR NOT NULL,\n" +
                 "    s_product_t VARCHAR NOT NULL,\n" +
                 "    scale_ip    VARCHAR NOT NULL,\n" +
                 "    scale_port  INTEGER NOT NULL,\n" +
