@@ -197,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
                                     barcode_id_obj = array.optJSONObject(i);
                                     if (barcode_id_obj != null){
                                         goods_info = new JSONObject();
-                                        if (mGoodsInfoViewAdapter.getSingleGoods(goods_info,barcode_id_obj.optInt("barcode_id"))){
+                                        if (mGoodsInfoViewAdapter.getSingleGoodsBarcodeId(goods_info,barcode_id_obj.optInt("barcode_id"))){
                                             mSaleGoodsViewAdapter.addSaleGoods(goods_info,mVipInfo);
                                             hangBillDialog.dismiss();
                                         }else{
@@ -366,7 +366,7 @@ public class MainActivity extends AppCompatActivity {
                             if (-1 == id){//组合商品
                                 id = jsonObject.getInt("gp_id");
                             }
-                            if (mGoodsInfoViewAdapter.getSingleGoods(content,id)){
+                            if (mGoodsInfoViewAdapter.getSingleGoodsBarcodeId(content,id)){
                                 mSaleGoodsViewAdapter.addSaleGoods(content,mVipInfo);
                                 mSearch_content.selectAll();
                             }else{
@@ -440,28 +440,6 @@ public class MainActivity extends AppCompatActivity {
         mSearch_content.setOnFocusChangeListener((v,b)->Utils.hideKeyBoard((EditText) v));
         mHandler.postDelayed(()-> mSearch_content.requestFocus(),100);
         mSearch_content.setSelectAllOnFocus(true);
-        mSearch_content.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (mKeyboard.getVisibility() == View.VISIBLE){
-                    if (editable.length() == 0){
-                        mGoodsCategoryViewAdapter.trigger_preView();
-                    }else{
-                        mGoodsInfoViewAdapter.fuzzy_search_goods(mSearch_content);
-                    }
-                }
-            }
-        });
         mSearch_content.setOnKeyListener((view, i, keyEvent) -> {
             if (mKeyboard.getVisibility() == View.GONE){
                 int keyCode = keyEvent.getKeyCode();
@@ -552,7 +530,6 @@ public class MainActivity extends AppCompatActivity {
                     case MotionEvent.ACTION_MOVE:
                         break;
                     case MotionEvent.ACTION_UP:
-                        //barcode_text.performClick();
                         break;
                 }
                 return false;

@@ -233,7 +233,7 @@ public class MyDialog extends Dialog {
     }
 
     public static boolean ToastMessage(View anchor,final String message,final Context context,final Window window,boolean b){
-        if(!b)ToastMessage(anchor,message,context,window);//条件为假是提升信息
+        if(!b)ToastMessage(anchor,message,context,window);//条件为假是提示信息
         return b;
     }
 

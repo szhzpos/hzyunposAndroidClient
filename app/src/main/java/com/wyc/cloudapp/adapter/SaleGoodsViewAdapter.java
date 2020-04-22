@@ -127,11 +127,13 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         if (goods != null){
             try {
                 int barcode_id = goods.getInt("barcode_id"),gp_id = goods.getInt("gp_id");
-                double sel_num = 1.00,sel_amount,price,discount = 1.0,discount_amt = 0.0,new_price = 0.0;
+                double sel_num = 1.00,sel_amount,price,discount = 1.0,discount_amt = 0.0,new_price = 0.0,
+                sale_num = 0.0,sale_amount = 0.0,sale_discount_amt = 0.0;
+
+                boolean isBarcodeWeighingGoods = goods.has(GoodsInfoViewAdapter.I_W_G_MARK);
 
                 price = goods.getDouble("price");
-
-                if (goods.has("xnum")){
+                if (isBarcodeWeighingGoods){
                     sel_num = goods.getDouble("xnum");
                 }
                 for (int i = 0,length = mDatas.length();i < length;i++){
@@ -139,13 +141,17 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                     if (barcode_id == tmp.getInt("barcode_id") && gp_id == tmp.getInt("gp_id")){
                         exist = true;
 
-                        double sale_num = tmp.getDouble("xnum");
-                        double sale_amount = tmp.getDouble("sale_amt");
-                        double sale_discount_amt = tmp.getDouble("discount_amt");
+                        sale_num = tmp.getDouble("xnum");
+                        sale_amount = tmp.getDouble("sale_amt");
+                        sale_discount_amt = tmp.getDouble("discount_amt");
 
                         discount  = tmp.optDouble("discount",1.0);
                         new_price = Utils.formatDouble(price * discount,2);
-                        sel_amount = Utils.formatDouble(sel_num * new_price,2);
+
+                        if (isBarcodeWeighingGoods){
+                            sel_amount = goods.optDouble("sale_amt");
+                        }else
+                            sel_amount = Utils.formatDouble(sel_num * new_price,2);
 
                         discount_amt = Utils.formatDouble((sel_num * (price - new_price)) + sale_discount_amt,2);
 
@@ -188,7 +194,11 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                         new_price = Utils.formatDouble(price * discount,2);
                     }
 
-                    sel_amount = Utils.formatDouble(sel_num * new_price,2);
+                    if (isBarcodeWeighingGoods){
+                        sel_amount = goods.optDouble("sale_amt");
+                    }else
+                        sel_amount = Utils.formatDouble(sel_num * new_price,2);
+
                     discount_amt = Utils.formatDouble(sel_num * (price - new_price),2);
 
                     goods.put("old_price", price);
