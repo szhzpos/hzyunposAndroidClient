@@ -1,5 +1,13 @@
 package com.wyc.cloudapp.dialog.barcodeScales;
 
+import android.os.Build;
+import android.view.View;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+
+import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -11,10 +19,11 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public abstract class AbstractBarcodeScale implements IBarCodeScale {
     final static String CATEGORY_SEPARATE = ",";
-
     @Override
     public boolean parse() {
         return false;
@@ -25,43 +34,55 @@ public abstract class AbstractBarcodeScale implements IBarCodeScale {
         StringBuilder z_b_c = new StringBuilder();
         byte[] bytes;
         for (int i = 0,length = content.length();i < length;i++){
-            sub_tmp = content.substring(i,i+1);
+            sub_tmp = String.valueOf(content.charAt(i));
             bytes = sub_tmp.getBytes("GB2312");
-            for (byte aByte : bytes) {
-                int a = Integer.parseInt(Utils.byteToHex(new byte[]{aByte}), 16);
-                t = (a - 0x80 - 0x20) + "";
-                if (t.length() == 1) {
-                    t = 0 + t;
+            if (check(sub_tmp)){
+                for (byte aByte : bytes) {
+                    int a = Integer.parseInt(Utils.byteToHex(new byte[]{aByte}), 16);
+                    t = (a - 0x80 - 0x20) + "";
+                    if (t.length() == 1) {
+                        t = 0 + t;
+                    }
+                    z_b_c.append(t);
                 }
-                z_b_c.append(t);
+            }else{
+                z_b_c.append(Integer.parseInt(Utils.byteToHex(bytes), 16));
             }
         }
+
         return z_b_c.toString();
     }
-    public static boolean check(String fstrData) {
-        char c = fstrData.charAt(0);
-        if (((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))) {
-            return true;
-        } else {
-            return false;
-        }
+
+    private boolean check(String str)
+    {
+        final Pattern p = Pattern.compile("[\u4e00-\u9fa5]");
+        Matcher m = p.matcher(str);
+        return m.find();
     }
 
-    static boolean scaleDownLoad(JSONObject scales_info,final StringBuilder err){
+    protected boolean getBarcodePrefix(@NonNull final JSONObject object){
+        return SQLiteHelper.getLocalParameter("scale_setting",object);
+    }
+
+    static boolean scaleDownLoad(@NonNull JSONObject scales_info, final TextView view){
         boolean code = false;
-        if (null != scales_info){
-            String class_id = scales_info.optString("s_class_id");
-            try {
-                Class<?> scale_class = Class.forName("com.wyc.cloudapp.dialog.barcodeScales." + class_id);
-                Constructor<?> constructor = scale_class.getConstructor();
-                IBarCodeScale iBarCodeScale = (IBarCodeScale)constructor.newInstance();
-                code = iBarCodeScale.down(scales_info,err);
-            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
-                e.printStackTrace();
-                if (null != err)err.append(e.getMessage());
+        try {
+            Class<?> scale_class = Class.forName("com.wyc.cloudapp.dialog.barcodeScales." + scales_info.optString("s_class_id"));
+            Constructor<?> constructor = scale_class.getConstructor();
+            IBarCodeScale barcodeScale = (AbstractBarcodeScale)constructor.newInstance();
+            if (null != view){
+                barcodeScale.setUpdateStatus(s -> view.post(()->{
+                    view.setText(s);
+                }));
             }
-        }else{
-            if (err != null)err.append("秤信息不能为空！");
+            code = barcodeScale.down(scales_info);
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
+            e.printStackTrace();
+            if (null != view){
+                view.post(()->{
+                    view.setText(e.getMessage());
+                });
+            }
         }
         return code;
     }

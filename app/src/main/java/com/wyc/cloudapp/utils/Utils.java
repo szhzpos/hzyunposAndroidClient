@@ -323,6 +323,15 @@ public final class Utils {
             while (jsons.remove(0) != null);
         return jsons;
     }
+    public static JSONObject ClearJsonObject(final JSONObject object){
+        if (object != null){
+            Iterator<String> iterator = object.keys();
+            while (iterator.hasNext()){
+                object.remove(iterator.next());
+            }
+        }
+        return object;
+    }
     public static void moveJsonArray(final JSONArray from,final JSONArray to){
         if (from != null && to != null){
             Object o;

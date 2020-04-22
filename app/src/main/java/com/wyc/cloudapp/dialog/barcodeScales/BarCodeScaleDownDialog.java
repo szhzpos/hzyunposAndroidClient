@@ -6,9 +6,9 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.Gravity;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -18,23 +18,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.BarCodeScaleAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.Utils;
 
-import org.apache.log4j.net.SocketServer;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketAddress;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
 import static android.content.Context.WINDOW_SERVICE;
 
@@ -67,29 +53,25 @@ public class BarCodeScaleDownDialog extends Dialog {
         });
         findViewById(R.id.del_scale).setOnClickListener(v -> mBarCodeScaleAdapter.deleteScale()
         );
-        findViewById(R.id.download_to_scale).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Logger.d_json(mBarCodeScaleAdapter.getCurrentScalseInfos().toString());
-                JSONArray scale_infos = mBarCodeScaleAdapter.getCurrentScalseInfos();
-                StringBuilder err = new StringBuilder();
-                for (int i = 0,size = scale_infos.length();i < size;i++){
-                    final JSONObject object = scale_infos.optJSONObject(i);
-                    if (null != object){
-                        CustomApplication.execute(()->{
-                            try{
-                                if (!AbstractBarcodeScale.scaleDownLoad(object,err)){
-                                    Logger.d("下载错误：%s",err);
-                                }
-                            }catch (Exception e){
-                                e.printStackTrace();
-                                Logger.i("条码秤下载最外层异常捕获：%s" + e.getMessage());
-                            }
-                        });
-                    }
+        findViewById(R.id.download_to_scale).setOnClickListener(v -> {
+            JSONArray scale_infos = mBarCodeScaleAdapter.getCurrentScalseInfos();
+            for (int i = 0,size = scale_infos.length();i < size;i++){
+                final JSONObject object = scale_infos.optJSONObject(i);
+                if (null != object){
+                    CustomApplication.execute(()->{
+                        TextView textView = mBarCodeScaleAdapter.getTextStatus(object.optString("_id"));
+                        try{
+                            boolean code =AbstractBarcodeScale.scaleDownLoad(object,textView);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                            textView.post(()->{
+                                textView.setText("条码秤下载最外层异常捕获：".concat(e.getMessage()+""));
+                            });
+                        }
+                    });
                 }
-             }
-        });
+            }
+         });
         findViewById(R.id.modfy_scale).setOnClickListener(v -> {
             JSONArray array = mBarCodeScaleAdapter.getCurrentScalseInfos();
             if (array != null && array.length() != 0){

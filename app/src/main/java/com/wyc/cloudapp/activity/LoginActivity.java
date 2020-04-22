@@ -34,6 +34,7 @@ import com.wyc.cloudapp.dialog.ConnSettingDialog;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.keyboard.SoftKeyBoardListener;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.network.sync.SyncManagement;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -300,7 +301,7 @@ public class LoginActivity extends AppCompatActivity {
                                         store_info = new JSONObject(param_json.getString("storeInfo"));
                                         mStoresId = store_info.getString("stores_id");
 
-                                        url = mUrl + "/api/cashier/set_ps";
+                                        url = mUrl + "/api_v2/pos/set_ps";
                                         jsonLogin = new JSONObject();
                                         jsonLogin.put("appid", mAppId);
                                         jsonLogin.put("pos_code", Utils.getDeviceId(mSelf));
@@ -319,8 +320,13 @@ public class LoginActivity extends AppCompatActivity {
                                                         myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "设置收银终端错误：" + info_json.optString("info")).sendToTarget();
                                                         break;
                                                     case "y":
-                                                        cashier_json.put("pos_num", (mPosNum = info_json.getString("pos_num")));
-                                                        myHandler.obtainMessage(MessageID.LOGIN_OK_ID, cashier_json).sendToTarget();
+                                                        StringBuilder err = new StringBuilder();
+                                                        if (SQLiteHelper.saveLocalParameter("scale_setting",info_json.getJSONObject("scale"),"条码秤信息",err)){
+                                                            cashier_json.put("pos_num", (mPosNum = info_json.getString("pos_num")));
+                                                            myHandler.obtainMessage(MessageID.LOGIN_OK_ID, cashier_json).sendToTarget();
+                                                        }else{
+                                                            myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "保存条码秤信息错误：" + err).sendToTarget();
+                                                        }
                                                         break;
                                                 }
                                         }

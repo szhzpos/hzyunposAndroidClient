@@ -22,19 +22,21 @@ import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdapter.MyViewHolder> {
-
+    public static String I_W_G_MARK = "IWG";//计重、计份并且通过扫条码选择的商品标志
     private Context mContext;
     private JSONArray mDatas;
     private OnItemClickListener mOnItemClickListener;
     private boolean mSearchLoad = false;//是否按搜索框条件加载
     private boolean mShowPic = true;
-
+    private JSONObject mScaleSetting;
     public GoodsInfoViewAdapter(Context context){
         this.mContext = context;
         JSONObject jsonObject = new JSONObject();
@@ -159,13 +161,69 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
     public void fuzzy_search_goods(@NonNull final EditText search){
         final StringBuilder err = new StringBuilder();
         final String search_content = search.getText().toString();
-        String sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,type,retail_price price\n" +
-                ",ifnull(img_url,'') img_url from barcode_info where (goods_status = '1' and barcode_status = '1') and  (barcode like '" + search_content + "%' or mnemonic_code like '" + search_content +"%')\n" +
-                "UNION\n" +
-                "select gp_id,-1 goods_id,ifnull(gp_title,'') goods_title,'' unit_id,ifnull(unit_name,'') unit_name,\n" +
-                "-1 barcode_id,ifnull(gp_code,'') barcode,type,gp_price price,ifnull(img_url,'') img_url from goods_group \n" +
-                "where status = '1' and  (barcode like '" + search_content + "%' or mnemonic_code like '" + search_content +"%')";
-        mDatas = SQLiteHelper.getListToJson(sql,0,0,false,err);
+        if (isWeighingGoods(search_content)){
+            JSONObject object = new JSONObject(),barcodeRuleObj = new JSONObject();
+            getItemIdFrom(search_content,barcodeRuleObj);
+            try {
+                if (getSingleGoodsByItemId(object,barcodeRuleObj.getInt("item_id"))){
+                    double xnum = 0.0,price = 0.0;
+                    if (mDatas == null){
+                        mDatas = new JSONArray();
+                    }else
+                        Utils.ClearJsons(mDatas);
+
+                    if (Utils.JsonIsNotEmpty(object)){
+                        int metering_id = object.getInt("metering_id");
+                        int amt_point = mScaleSetting.getInt("moneyLen");
+                        double amt = barcodeRuleObj.getDouble("amt") / Math.pow(10,amt_point);
+
+                        if (barcodeRuleObj.has("weight") && barcodeRuleObj.has("amt")){
+                            int w_point = mScaleSetting.getInt("weightLen");
+                            double weight = barcodeRuleObj.getDouble("weight") / Math.pow(10,w_point);
+                            if (metering_id == 0){//计重
+                                xnum = weight;
+                            }else{//计份
+                                xnum = 1;
+                            }
+                            price = amt / (weight == 0 ? 1 : weight);
+                        }else{
+                            price = object.getDouble("price");
+                            if (metering_id == 0){//计重
+                                xnum = amt / (price == 0 ? 1 : price);
+                            }else{//计份
+                                xnum = 1;
+                            }
+                        }
+                        Logger.d("price：%f,xnum:%f,sale_amt:%f",price,(amt / (price == 0 ? 1 : price)),amt);
+
+                        object.put("price",price);
+                        object.put("xnum",String.format(Locale.CHINA,"%.3f",xnum));
+                        object.put("sale_amt",amt);
+
+                        object.put(I_W_G_MARK,1);
+
+                        Logger.d("计重商品：%s",object.toString(1));
+
+                        mDatas.put(object);
+                    }
+                }else{
+                    mDatas = null;
+                    err.append(object.optString("info"));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                mDatas = null;
+                err.append(object.optString("info"));
+            }
+        }else{
+            String sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,type,retail_price price\n" +
+                    ",ifnull(img_url,'') img_url from barcode_info where (goods_status = '1' and barcode_status = '1') and  (barcode like '" + search_content + "%' or mnemonic_code like '" + search_content +"%')\n" +
+                    "UNION\n" +
+                    "select gp_id,-1 goods_id,ifnull(gp_title,'') goods_title,'' unit_id,ifnull(unit_name,'') unit_name,\n" +
+                    "-1 barcode_id,ifnull(gp_code,'') barcode,type,gp_price price,ifnull(img_url,'') img_url from goods_group \n" +
+                    "where status = '1' and  (barcode like '" + search_content + "%' or mnemonic_code like '" + search_content +"%')";
+            mDatas = SQLiteHelper.getListToJson(sql,0,0,false,err);
+        }
         if (mDatas != null){
             if(mDatas.length() != 0){
                 if (!mSearchLoad)mSearchLoad = true;
@@ -189,9 +247,15 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                "where status = '1' and gp_id = '" + id +"'");
     }
 
-
-
-
+    private boolean getSingleGoodsByItemId(@NonNull JSONObject object,int id){
+        Logger.d("only_coding:%d",id);
+        return SQLiteHelper.execSql(object,"select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,type," +
+                "retail_price,retail_price price,tc_rate,tc_mode,tax_rate,ps_price,cost_price,trade_price,buying_price,yh_mode,yh_price,metering_id,conversion from barcode_info where (goods_status = '1' and barcode_status = '1') and only_coding = '" + id +"'" +
+                " UNION\n" +
+                "select gp_id ,-1 goods_id,ifnull(gp_title,'') goods_title,ifnull(unit_name,'') unit_name,\n" +
+                "-1 barcode_id,ifnull(gp_code,'') barcode,type,gp_price retail_price,gp_price price,0 tc_rate,0 tc_mode,0 tax_rate,0 ps_price,0 cost_price,0 trade_price,gp_price buying_price,0 yh_mode,0 yh_price,1 metering_id,1 conversion from goods_group \n" +
+                "where status = '1' and gp_id = '" + id +"'");
+    }
 
     public interface OnItemClickListener{
         void onClick(View v,int pos);
@@ -212,5 +276,77 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
             MyDialog.ToastMessage("生成订单号错误：" + orders.optString("info"),mContext,null);
         }
         return order_code;
+    }
+
+
+    private boolean isWeighingGoods(final String barcode){
+        if (mScaleSetting == null){
+            mScaleSetting = new JSONObject();
+            if (!SQLiteHelper.getLocalParameter("scale_setting",mScaleSetting)){
+                MyDialog.ToastMessage("加载条码参数错误：" + mScaleSetting.optString("info"),mContext,null);
+            }
+        }
+        String prefix = mScaleSetting.optString("prefix","-1"),tmp = "";
+        int length = prefix.length();
+
+        if (barcode.length() > length){
+            tmp = barcode.substring(0,length);
+        }
+        Logger.d("barcode:%s,prefix:%s,tmp:%s",barcode,prefix,tmp);
+
+        return prefix.equals(tmp);
+    }
+
+    private void getItemIdFrom(final String barcode,final JSONObject object){
+        if (mScaleSetting != null && barcode != null){
+            final String barcodeRule = mScaleSetting.optString("barcodeRule");
+            if (barcode.length() == barcodeRule.length()){
+                String tmp,parse_str = "",sub_sz;
+                try {
+                    for (int i = 0,size = barcodeRule.length();i < size;i++){
+                        tmp = barcodeRule.substring(i,i + 1);
+                        if (parse_str.contains(tmp)){
+                            parse_str = parse_str.concat(tmp);
+                        }else{
+                            if (parse_str.isEmpty()){
+                                parse_str = parse_str.concat(tmp);
+                            }else{
+                                //*F=电子秤前缀 W=货号 E=金额 N=重量 C=核验 0=反校验
+                                int start = i - parse_str.length();
+                                sub_sz = barcode.substring(start,i);
+                                Logger.d("barcode:%s,parse_str:%s,tmp:%s,sub_sz:%s",barcode,parse_str,tmp,sub_sz);
+                                switch (String.valueOf(parse_str.charAt(0))){
+                                    case "F":
+                                        object.put("prefix",sub_sz);
+                                        break;
+                                    case "W":
+                                        object.put("item_id",sub_sz);
+                                        break;
+                                    case "E":
+                                        object.put("amt",sub_sz);
+                                        break;
+                                    case "N":
+                                        object.put("weight",sub_sz);
+                                        break;
+                                    case "C":
+                                        object.put("check",sub_sz);
+                                        break;
+                                    case "0":
+                                        object.put("uncheck",sub_sz);
+                                        break;
+
+                                }
+                                parse_str = "";
+                                parse_str = parse_str.concat(tmp);
+                            }
+                        }
+                    }
+                    Logger.d("条码解析内容：%s",object.toString(1));
+                }catch (JSONException e){
+                    e.printStackTrace();
+                    MyDialog.ToastMessage("条码解析错误：" + e.getMessage(),mContext,null);
+                }
+            }
+        }
     }
 }

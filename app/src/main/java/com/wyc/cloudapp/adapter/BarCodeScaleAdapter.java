@@ -20,21 +20,19 @@ import com.wyc.cloudapp.utils.Utils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int HEADER = -1;
     private static final int CONTENT = -2;
     private Context mContext;
     private JSONArray mDatas;
-    private List<String> mCurrentItemIndexList;
-    private OnItemClickListener mOnItemClickListener;
-    private OnItemDoubleClickListener mOnItemDoubleClickListener;
+    private Map<String,TextView> mCurrentItemIndexMap;
     public BarCodeScaleAdapter(Context context){
         this.mContext = context;
         mDatas = new JSONArray();
-        mCurrentItemIndexList = new ArrayList<>();
+        mCurrentItemIndexMap = new HashMap<>();
     }
     static class ContentHolder extends RecyclerView.ViewHolder {
         private TextView _id,row_id,product_type,scale_ip,scale_port,g_c_name,g_c_id,down_status,scale_rmk;
@@ -98,15 +96,7 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                 contentHolder.s_checked.setChecked(false);
                 contentHolder.s_checked.setOnCheckedChangeListener(checkedChangeListener);
-                contentHolder.mCurrentLayoutItemView.setOnTouchListener(new ClickListener(v -> {
-                    if (mOnItemDoubleClickListener != null){
-                        mOnItemDoubleClickListener.onClick(v,i);
-                    }
-                }, v -> {
-                    setSelectStatus(v);
-                    if (mOnItemClickListener != null){
-                        mOnItemClickListener.onClick(v,i); }
-                }));
+                contentHolder.mCurrentLayoutItemView.setOnClickListener(itemClick);
             }
         }
     }
@@ -126,39 +116,25 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private CompoundButton.OnCheckedChangeListener checkedChangeListener = (buttonView, isChecked) -> {
         View v = (View) buttonView.getParent();
-        final TextView _id = v.findViewById(R.id._id);
-        if (_id != null){
-            String id = _id.getText().toString();
+        final TextView _id = v.findViewById(R.id._id),down_status = v.findViewById(R.id.down_status);
+        if (_id != null && null != down_status){
+            final String sz_id = _id.getText().toString();
             if (isChecked){
-                mCurrentItemIndexList.add(id);
+                mCurrentItemIndexMap.put(sz_id,down_status);
             }else {
-                mCurrentItemIndexList.remove(id);
+                mCurrentItemIndexMap.remove(sz_id);
             }
         }
     };
+    private View.OnClickListener itemClick = this::setSelectStatus;
 
-    public interface OnItemClickListener{
-        void onClick(View v,int pos);
-    }
-    public interface OnItemDoubleClickListener{
-        void onClick(View v,int pos);
-    }
-
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener){
-        this.mOnItemClickListener = onItemClickListener;
-    }
-    public void setOnItemDoubleClickListener(OnItemDoubleClickListener onItemDoubleClickListener){
-        this.mOnItemDoubleClickListener = onItemDoubleClickListener;
-    }
     public JSONArray getCurrentScalseInfos() {
         JSONArray scalses = new JSONArray();
         JSONObject object;
-        String _id;
-        for (int i = 0,size = mCurrentItemIndexList.size();i < size;i++){
-            _id = mCurrentItemIndexList.get(i);
+        for (String t_id : mCurrentItemIndexMap.keySet()){
             for (int j = 0,length = mDatas.length();j < length;j++){
                 object = mDatas.optJSONObject(j);
-                if (object != null && _id.equals(object.optString("_id"))){
+                if (object != null && t_id.equals(object.optString("_id"))){
                     scalses.put(object);
                     break;
                 }
@@ -168,8 +144,8 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
 
-    public List<String> getCurrentItemIndexList(){
-        return mCurrentItemIndexList;
+    public TextView getTextStatus(final String id){
+        return mCurrentItemIndexMap.get(id);
     }
 
     public @NonNull JSONArray getDatas(){
@@ -187,19 +163,17 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     public void deleteScale(){
         JSONObject object;
-        String id;
-        Logger.d("mCurrentItemIndexList:%s",mCurrentItemIndexList);
+        Logger.d("mCurrentItemIndexMap:%s", mCurrentItemIndexMap);
         Logger.d("mDatas:%s",mDatas);
-        for (int j = 0;j < mCurrentItemIndexList.size();j++){
-            id = mCurrentItemIndexList.get(j);
+        for (final String t_id : mCurrentItemIndexMap.keySet()){
             for (int i = 0,size = mDatas.length();i < size;i++){
                 object = mDatas.optJSONObject(i);
                 if (object != null){
-                    if (object.optString("_id").equals(id)){
+                    if (object.optString("_id").equals(t_id)){
                         StringBuilder err = new StringBuilder();
-                        if (SQLiteHelper.execDelete("barcode_scalse_info","_id=?",new String[]{id},err)){
+                        if (SQLiteHelper.execDelete("barcode_scalse_info","_id=?",new String[]{t_id},err)){
                             mDatas.remove(i);
-                            mCurrentItemIndexList.remove(j--);
+                            mCurrentItemIndexMap.remove(t_id);
                         }else{
                             MyDialog.ToastMessage("删除称信息错误：" + err,mContext,null);
                         }
@@ -229,7 +203,6 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 }
             }
         }
-
         if (SQLiteHelper.saveFormJson(scale,"barcode_scalse_info",null,svae_type,err)){
             setDatas();
         }else{
@@ -250,7 +223,8 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     public void clearScale(){
         Utils.ClearJsons(mDatas);
-        mCurrentItemIndexList.clear();
+        mCurrentItemIndexMap.clear();
         notifyDataSetChanged();
     }
+
 }

@@ -131,6 +131,9 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
 
                 price = goods.getDouble("price");
 
+                if (goods.has("xnum")){
+                    sel_num = goods.getDouble("xnum");
+                }
                 for (int i = 0,length = mDatas.length();i < length;i++){
                     JSONObject tmp = mDatas.getJSONObject(i);
                     if (barcode_id == tmp.getInt("barcode_id") && gp_id == tmp.getInt("gp_id")){

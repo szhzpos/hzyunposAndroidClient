@@ -359,15 +359,19 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject jsonObject = mGoodsInfoViewAdapter.getItem(pos),content = new JSONObject();
                 if (jsonObject != null){
                     try {
-                        int id = jsonObject.getInt("barcode_id");
-                        if (-1 == id){//组合商品
-                            id = jsonObject.getInt("gp_id");
-                        }
-                        if (mGoodsInfoViewAdapter.getSingleGoods(content,id)){
-                            mSaleGoodsViewAdapter.addSaleGoods(content,mVipInfo);
-                            mSearch_content.selectAll();
+                        if (jsonObject.has(GoodsInfoViewAdapter.I_W_G_MARK)){//计重、计份并且通过扫条码选择的商品标志
+                            mSaleGoodsViewAdapter.addSaleGoods(Utils.JsondeepCopy(jsonObject),mVipInfo);
                         }else{
-                            MyDialog.ToastMessage("选择商品错误：" + content.getString("info"),v.getContext(),null);
+                            int id = jsonObject.getInt("barcode_id");
+                            if (-1 == id){//组合商品
+                                id = jsonObject.getInt("gp_id");
+                            }
+                            if (mGoodsInfoViewAdapter.getSingleGoods(content,id)){
+                                mSaleGoodsViewAdapter.addSaleGoods(content,mVipInfo);
+                                mSearch_content.selectAll();
+                            }else{
+                                MyDialog.ToastMessage("选择商品错误：" + content.getString("info"),v.getContext(),null);
+                            }
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -467,7 +471,7 @@ public class MainActivity extends AppCompatActivity {
                         mGoodsCategoryViewAdapter.trigger_preView();
                     }else{
                         mGoodsInfoViewAdapter.fuzzy_search_goods(mSearch_content);
-                        mSearch_content.selectAll();
+                        mSearch_content.getText().clear();
                     }
                 }
             }

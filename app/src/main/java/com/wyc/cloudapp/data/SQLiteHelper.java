@@ -307,7 +307,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         return isTrue;
     }
 
-    public static boolean getLocalParameter(final String parameter_id,@NonNull JSONObject param){
+    public static boolean getLocalParameter(final String parameter_id,@NonNull final JSONObject param){
         boolean isTrue = true;
         try (Cursor cursor = mDb.query("local_parameter",new String[]{"parameter_content"},"parameter_id = ?",new String[]{parameter_id},
                 null,null,null)){
@@ -331,6 +331,14 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             e.printStackTrace();
         }
         return isTrue;
+    }
+
+    public static boolean saveLocalParameter(final String parameter_id,JSONObject content,final String desc,final StringBuilder err){
+        ContentValues values = new ContentValues();
+        values.put("parameter_id",parameter_id);
+        values.put("parameter_content",content.toString());
+        values.put("parameter_desc",desc);
+        return execInsertSql("local_parameter",null,values,err);
     }
 
     public static void closeDB(){
@@ -541,7 +549,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         boolean code = true;
         try {
             synchronized (SQLiteHelper.class){
-                mDb.insert(table,nullColumnHack,values);
+                mDb.replaceOrThrow(table,nullColumnHack,values);
             }
         }catch (SQLiteException e){
             code = false;
