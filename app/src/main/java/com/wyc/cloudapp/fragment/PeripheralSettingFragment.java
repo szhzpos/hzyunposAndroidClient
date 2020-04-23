@@ -29,15 +29,14 @@ import android.widget.ArrayAdapter;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.wyc.cloudapp.utils.Utils;
 
 import java.util.HashMap;
 
@@ -51,7 +50,7 @@ public class PeripheralSettingFragment extends BaseFragment {
     private Context mContext;
     private CustomProgressDialog mProgressDialog;
     private View mRootView;
-    private ArrayAdapter<String> mPrintIdAdapter;
+    private ArrayAdapter<String> mPrintIdAdapter,mProTypeAdaper,mSerialPortAdaper;
     public PeripheralSettingFragment() {
     }
 
@@ -62,35 +61,34 @@ public class PeripheralSettingFragment extends BaseFragment {
 
     @Override
     public JSONObject laodContent() {
-        try {
-            get_printer_setting(false);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            MyDialog.ToastMessage(null,e.getMessage(),mContext,null);
-        }
+        get_printer_setting(false);
+        get_serial_scale_setting(false);
         return null;
     }
 
     @Override
     public boolean saveContent() {
+        final String p_id_key  = "parameter_id",p_c_key = "parameter_content",p_desc_key = "parameter_desc";
         JSONObject content = new JSONObject();
         JSONArray array = new JSONArray();
         StringBuilder err = new StringBuilder();
-        try {
-            content.put("parameter_id", "printer");
-            content.put("parameter_content", get_printer_setting(true));
-            content.put("parameter_desc", "打印机设置");
-            array.put(content);
+        content.put(p_id_key, "printer");
+        content.put(p_c_key, get_printer_setting(true));
+        content.put(p_desc_key, "打印机设置");
+        array.add(content);
 
-            if (!SQLiteHelper.execSQLByBatchFromJson(array,"local_parameter",null,err,1)){
-                MyDialog.ToastMessage(null,err.toString(),mContext,null);
-            }else{
-                MyDialog.ToastMessage(null,"保存成功！",mContext,null);
-            }
-        }catch (JSONException e){
-            e.printStackTrace();
-            MyDialog.ToastMessage(null,e.getMessage(),mContext,null);
+        content = new JSONObject();
+        content.put(p_id_key, "serial_port_scale");
+        content.put(p_c_key, get_serial_scale_setting(true));
+        content.put(p_desc_key, "串口秤设置");
+        array.add(content);
+
+        if (!SQLiteHelper.execSQLByBatchFromJson(array,"local_parameter",null,err,1)){
+            MyDialog.ToastMessage(null,err.toString(),mContext,null);
+        }else{
+            MyDialog.ToastMessage(null,"保存成功！",mContext,null);
         }
+
         return false;
     }
 
@@ -106,8 +104,11 @@ public class PeripheralSettingFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         mRootView = view;
-        initPrinterId();
         mRootView.findViewById(R.id.save).setOnClickListener(v->saveContent());
+        //初始化
+        initPrinterId();
+        initSerialScale();
+
         //加载参数
         laodContent();
     }
@@ -181,7 +182,7 @@ public class PeripheralSettingFragment extends BaseFragment {
                                     for(int i = 1,size = mPrintIdAdapter.getCount();i < size;i++){
                                         content = mPrintIdAdapter.getItem(i);
                                         if (content != null){
-                                             szs = content.split("\r\n");
+                                             szs = content.split("\t");
                                             if (szs.length > 1 && addr.equals(szs[1])){
                                                 isExist = true;
                                                 break;
@@ -194,7 +195,7 @@ public class PeripheralSettingFragment extends BaseFragment {
                                         }else{
                                             name = name.concat("<已配对>");
                                         }
-                                        mPrintIdAdapter.add(name.concat("\r\n").concat(addr));
+                                        mPrintIdAdapter.add(name.concat("\t").concat(addr));
                                         mPrintIdAdapter.notifyDataSetChanged();
                                     }
                                 }
@@ -246,7 +247,7 @@ public class PeripheralSettingFragment extends BaseFragment {
                             UsbDevice device = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                             if (!intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                                 if(device != null){
-                                    mPrintIdAdapter.remove("vid:" + device.getVendorId() + "\r\npid:" + device.getProductId());
+                                    mPrintIdAdapter.remove("vid:" + device.getVendorId() + "\tpid:" + device.getProductId());
                                     MyDialog.ToastMessage("拒绝权限将无法使用USB打印机",mContext,null);
                                 }
                             }
@@ -277,7 +278,6 @@ public class PeripheralSettingFragment extends BaseFragment {
                 break;
         }
     }
-
     private void startBlueToothDiscovery(){
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter != null )
@@ -311,49 +311,6 @@ public class PeripheralSettingFragment extends BaseFragment {
             }
         }
     }
-
-    private void initPrinterId(){
-        Spinner printerId = mRootView.findViewById(R.id.printer_id);
-        mPrintIdAdapter = new ArrayAdapter<>(mContext,R.layout.drop_down_style);
-        mPrintIdAdapter.setDropDownViewResource(R.layout.drop_down_style);
-        mPrintIdAdapter.add("请选择打印机");
-        printerId.setAdapter(mPrintIdAdapter);
-        printerId.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String tmp = mPrintIdAdapter.getItem(position);
-                Logger.d(tmp);
-                if (null != tmp){
-                    String[] vals = tmp.split("\r\n");
-                    if (vals.length > 1){
-                        RadioGroup radioGroup = mRootView.findViewById(R.id.print_way);
-                        switch (radioGroup.getCheckedRadioButtonId()){
-                            case R.id.bluetooth_p:
-                                bondBlueTooth(vals[1]);
-                                stopBlueToothDiscovery();
-                                break;
-                            case R.id.usb_p:
-                                startUSBDiscovery(vals[0],vals[1]);
-                                break;
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                Logger.d("onNothingSelected");
-            }
-        });
-        printerId.setOnTouchListener((v, event) -> {
-            v.performClick();
-            if (event.getAction() == MotionEvent.ACTION_DOWN){
-                startFindDevice();
-            }
-            return false;
-        });
-    }
-
     private void startUSBDiscovery(final String vid,final String pid){
         UsbManager manager = (UsbManager)mContext.getSystemService(Context.USB_SERVICE);
         if (null != manager){
@@ -365,7 +322,7 @@ public class PeripheralSettingFragment extends BaseFragment {
                 if (null != device){
                     String value;
                     if (vid == null && null == pid) {
-                        value = "vid:" + device.getVendorId() + "\r\npid:" + device.getProductId();
+                        value = "vid:" + device.getVendorId() + "\tpid:" + device.getProductId();
                         for (int i = 0,size = mPrintIdAdapter.getCount();i < size;i++){
                             Logger.d("value:%s,mPrintIdAdapter.getItem(i):%s",value,mPrintIdAdapter.getItem(i));
                             if (value.equals(mPrintIdAdapter.getItem(i))){
@@ -396,8 +353,47 @@ public class PeripheralSettingFragment extends BaseFragment {
             }
         }
     }
+    private void initPrinterId(){
+        Spinner printerId = mRootView.findViewById(R.id.printer_id);
+        mPrintIdAdapter = new ArrayAdapter<>(mContext,R.layout.drop_down_style);
+        mPrintIdAdapter.setDropDownViewResource(R.layout.drop_down_style);
+        mPrintIdAdapter.add("请选择打印机");
+        printerId.setAdapter(mPrintIdAdapter);
+        printerId.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String tmp = mPrintIdAdapter.getItem(position);
+                if (null != tmp){
+                    String[] vals = tmp.split("\t");
+                    if (vals.length > 1){
+                        RadioGroup radioGroup = mRootView.findViewById(R.id.print_way);
+                        switch (radioGroup.getCheckedRadioButtonId()){
+                            case R.id.bluetooth_p:
+                                bondBlueTooth(vals[1]);
+                                stopBlueToothDiscovery();
+                                break;
+                            case R.id.usb_p:
+                                startUSBDiscovery(vals[0],vals[1]);
+                                break;
+                        }
+                    }
+                }
+            }
 
-    private JSONObject get_printer_setting(boolean way) throws JSONException {
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                Logger.d("onNothingSelected");
+            }
+        });
+        printerId.setOnTouchListener((v, event) -> {
+            v.performClick();
+            if (event.getAction() == MotionEvent.ACTION_DOWN){
+                startFindDevice();
+            }
+            return false;
+        });
+    }
+    private JSONObject get_printer_setting(boolean way) {
         int id = -1,status = 0;
         JSONObject object = new JSONObject();
         RadioGroup radioGroup = mRootView.findViewById(R.id.print_way);
@@ -418,9 +414,9 @@ public class PeripheralSettingFragment extends BaseFragment {
             object.put("v",printerId.getSelectedItem());
         }else{
             if (SQLiteHelper.getLocalParameter("printer",object)){
-                String printer_info = object.optString("v");
-                int status_id = object.optInt("id");
-                String[] vals = printer_info.split("\r\n");
+                String printer_info = Utils.getNullStringAsEmpty(object,"v");
+                int status_id = object.getIntValue("id");
+                String[] vals = printer_info.split("\t");
                 if (vals.length > 1){
                     switch (status_id){
                         case R.id.bluetooth_p:
@@ -438,6 +434,54 @@ public class PeripheralSettingFragment extends BaseFragment {
                 MyDialog.ToastMessage("加载打印机参数错误：" + object.getString("info"),mContext,null);
         }
 
+        return object;
+    }
+
+    private void initSerialScale(){
+        Spinner pro_type = mRootView.findViewById(R.id.pro_type),ser_port = mRootView.findViewById(R.id.ser_port);
+        mSerialPortAdaper = new ArrayAdapter<>(mContext,R.layout.drop_down_style);
+        mProTypeAdaper = new ArrayAdapter<>(mContext,R.layout.drop_down_style);
+        mSerialPortAdaper.setDropDownViewResource(R.layout.drop_down_style);
+        mProTypeAdaper.setDropDownViewResource(R.layout.drop_down_style);
+
+        //协议类型
+        mProTypeAdaper.add("大华ACS-A");
+        pro_type.setAdapter(mProTypeAdaper);
+
+        //端口
+        android_serialport_api.SerialPortFinder mSerialPortFinder = new android_serialport_api.SerialPortFinder();
+        String[] entryValues = mSerialPortFinder.getAllDevicesPath();
+        for(String value : entryValues){
+            mSerialPortAdaper.add(value);
+        }
+        ser_port.setAdapter(mSerialPortAdaper);
+
+    }
+    private JSONObject get_serial_scale_setting(boolean way){
+        JSONObject object = new JSONObject();
+        Spinner pro_type_s = mRootView.findViewById(R.id.pro_type),ser_port_s = mRootView.findViewById(R.id.ser_port);
+        if (way){
+            object.put("pro_type",pro_type_s.getSelectedItem());
+            object.put("ser_port",ser_port_s.getSelectedItem());
+        }else{
+            if (SQLiteHelper.getLocalParameter("serial_port_scale",object)){
+                final String pro_type = Utils.getNullStringAsEmpty(object,"pro_type"),
+                        ser_port = Utils.getNullStringAsEmpty(object,"ser_port");
+                for (int i = 0,size = mProTypeAdaper.getCount();i < size;i ++){
+                    if (pro_type.equals(mProTypeAdaper.getItem(i))){
+                        pro_type_s.setSelection(i);
+                        break;
+                    }
+                }
+                for (int i = 0,size = mSerialPortAdaper.getCount();i < size;i ++){
+                    if (ser_port.equals(mSerialPortAdaper.getItem(i))){
+                        ser_port_s.setSelection(i);
+                        break;
+                    }
+                }
+            }else
+                MyDialog.ToastMessage("加载串口秤参数错误：" + object.getString("info"),mContext,null);
+        }
         return object;
     }
 

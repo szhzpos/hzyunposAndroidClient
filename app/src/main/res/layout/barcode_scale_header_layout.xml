@@ -61,7 +61,7 @@
         android:layout_marginBottom="@dimen/margin_8"
         android:gravity="center"
         android:padding="@dimen/margin_2"
-        android:text="@string/port"
+        android:text="@string/port_sz"
         android:textColor="@color/white"
         android:textSize="@dimen/font_size_18" />
 

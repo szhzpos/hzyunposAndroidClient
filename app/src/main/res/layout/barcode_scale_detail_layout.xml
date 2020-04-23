@@ -52,7 +52,7 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:padding="@dimen/margin_2"
-        android:text="@string/port"
+        android:text="@string/port_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16" />
 

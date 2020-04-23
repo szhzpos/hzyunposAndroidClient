@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dialog_head_heigth"
+        android:background="@drawable/dialog_top_round_shap"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center"
+            android:text="@string/goods_i_s"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24" />
+
+        <Button
+            android:id="@+id/_close"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/size_35"
+            android:layout_height="@dimen/size_35"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="@dimen/margin_2"
+            android:background="@drawable/close" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_1"
+        android:background="@drawable/border_sub_gray"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/w_g_img"
+            android:layout_width="188dp"
+            android:layout_height="168dp"
+            android:contentDescription="@string/space_sz"
+            android:scaleType="fitXY" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/margin_1"
+            android:layout_weight="1"
+            android:background="@drawable/left_separator"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_45"
+                    android:layout_marginStart="@dimen/margin_5"
+                    android:gravity="center"
+                    android:text="@string/name_sz"
+                    android:textAlignment="viewEnd"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_18" />
+
+                <TextView
+                    android:id="@+id/w_g_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="start|center_vertical"
+                    android:paddingStart="@dimen/margin_8"
+                    android:paddingEnd="@dimen/size_0"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_18" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_45"
+                    android:layout_marginStart="@dimen/margin_5"
+                    android:gravity="center"
+                    android:text="@string/g_price_sz"
+                    android:textAlignment="viewEnd"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_18" />
+
+                <TextView
+                    android:id="@+id/w_g_price"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/height_45"
+                    android:gravity="start|center_vertical"
+                    android:paddingStart="@dimen/margin_8"
+                    android:paddingEnd="@dimen/size_0"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_18" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_45"
+                    android:layout_marginStart="@dimen/margin_5"
+                    android:gravity="center"
+                    android:text="@string/weigh_sz"
+                    android:textAlignment="viewEnd"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_18" />
+
+                <EditText
+                    android:id="@+id/w_value"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/margin_1"
+                    android:background="@drawable/border_sub_gray"
+                    android:ems="8"
+                    android:focusable="auto"
+                    android:focusableInTouchMode="true"
+                    android:inputType="numberSigned|numberDecimal"
+                    android:padding="@dimen/margin_5"
+                    android:textSize="@dimen/font_size_18" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_45"
+                    android:layout_marginStart="@dimen/margin_5"
+                    android:gravity="center"
+                    android:text="@string/amt_sz"
+                    android:textAlignment="viewEnd"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_18" />
+
+                <TextView
+                    android:id="@+id/w_amt"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/height_45"
+                    android:gravity="start|center_vertical"
+                    android:paddingStart="@dimen/margin_8"
+                    android:paddingEnd="@dimen/size_0"
+                    android:text="@string/z_p_z_sz"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_18" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/keyboard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_2">
+
+            <Button
+                android:id="@+id/_one"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_weight="2.5"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/one_sz"
+                android:textAlignment="center"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/_two"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_weight="2.5"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/two_sz"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_24"
+                app:layout_constraintStart_toEndOf="@+id/_one"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/_three"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_weight="2.5"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/three_sz"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_24"
+                app:layout_constraintStart_toEndOf="@+id/_two"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/_back"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_weight="2.5"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/back"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_18"
+                app:layout_constraintStart_toEndOf="@+id/_three"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/_four"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_marginTop="@dimen/margin_2"
+                android:layout_weight="2.5"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/four_sz"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/_one" />
+
+            <Button
+                android:id="@+id/_five"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_marginTop="@dimen/margin_2"
+                android:layout_weight="2.5"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/five_sz"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_24"
+                app:layout_constraintStart_toEndOf="@+id/_four"
+                app:layout_constraintTop_toBottomOf="@+id/_two" />
+
+            <Button
+                android:id="@+id/_six"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_marginTop="@dimen/margin_2"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/six_sz"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_24"
+                app:layout_constraintStart_toEndOf="@+id/_five"
+                app:layout_constraintTop_toBottomOf="@+id/_three" />
+
+            <Button
+                android:id="@+id/cancel"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_marginTop="@dimen/margin_2"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/cancel"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_18"
+                app:layout_constraintStart_toEndOf="@+id/_six"
+                app:layout_constraintTop_toBottomOf="@+id/_back" />
+
+            <Button
+                android:id="@+id/_seven"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_marginTop="@dimen/margin_2"
+                android:layout_weight="2.5"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/seven_sz"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/_four" />
+
+            <Button
+                android:id="@+id/_eight"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_marginTop="@dimen/margin_2"
+                android:layout_weight="2.5"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/eight_sz"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_24"
+                app:layout_constraintStart_toEndOf="@+id/_seven"
+                app:layout_constraintTop_toBottomOf="@+id/_five" />
+
+            <Button
+                android:id="@+id/_nine"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_marginTop="@dimen/margin_2"
+                android:layout_weight="2.5"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/nine_sz"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_24"
+                app:layout_constraintStart_toEndOf="@+id/_eight"
+                app:layout_constraintTop_toBottomOf="@+id/_six" />
+
+            <Button
+                android:id="@+id/button15"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_marginTop="@dimen/margin_2"
+                android:layout_weight="2.5"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/point_sz"
+                android:textAlignment="center"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_24"
+                app:layout_constraintStart_toEndOf="@+id/button16"
+                app:layout_constraintTop_toBottomOf="@+id/_nine" />
+
+            <Button
+                android:id="@+id/_zero"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_marginTop="@dimen/margin_2"
+                android:layout_weight="2.5"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/zero_sz"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/_seven" />
+
+            <Button
+                android:id="@+id/button16"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_marginTop="@dimen/margin_2"
+                android:layout_weight="2.5"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/d_zero_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_24"
+                app:layout_constraintStart_toEndOf="@+id/_zero"
+                app:layout_constraintTop_toBottomOf="@+id/_eight" />
+
+            <Button
+                android:id="@+id/_ok"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="122dp"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_marginTop="@dimen/margin_2"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/OK"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_18"
+                app:layout_constraintStart_toEndOf="@+id/_nine"
+                app:layout_constraintTop_toBottomOf="@+id/cancel" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

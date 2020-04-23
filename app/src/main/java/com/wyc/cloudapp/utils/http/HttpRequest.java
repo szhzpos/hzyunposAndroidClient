@@ -2,6 +2,9 @@ package com.wyc.cloudapp.utils.http;
 
 import androidx.annotation.NonNull;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.logger.AndroidLogAdapter;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
@@ -12,21 +15,17 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParserException;
 
 public final class HttpRequest {
@@ -98,7 +97,7 @@ public final class HttpRequest {
                 content.put("info",Utils.unicode2StringWithStringBuilder(result).toString());
             }
             content.put("rsCode", mGetCode);
-        } catch (IOException | JSONException  e) {
+        } catch (IOException | JSONException e) {
             try {
                 content.put("flag", 0);
                 content.put("rsCode", HttpURLConnection.HTTP_BAD_REQUEST);
@@ -208,7 +207,7 @@ public final class HttpRequest {
                 }else {
                     Map<String,String> map = Utils.parseXml(reader);
                     content.put("flag", 1);
-                    content.put("info", new JSONObject(map));
+                    content.put("info", JSON.toJSON(map));
                 }
             }
             content.put("rsCode", mPostCode);
@@ -253,8 +252,7 @@ public final class HttpRequest {
         Map<String,String> map = new HashMap<>(),sortMap;
         StringBuilder builder = new StringBuilder();
         String signStr = null;
-        for (Iterator<String> it = json.keys(); it.hasNext(); ) {
-            String key = it.next();
+        for (String key : json.keySet()) {
             map.put(key, json.getString(key));
         }
         sortMap = new TreeMap<>(map);

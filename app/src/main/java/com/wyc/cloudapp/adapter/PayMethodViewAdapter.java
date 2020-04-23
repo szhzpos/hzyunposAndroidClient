@@ -9,14 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdapter.MyViewHolder> {
     public static final String CASH_METHOD_ID = "1";//现金支付方式id
@@ -52,7 +51,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
         if (mDatas != null){
-            JSONObject pay_method_info = mDatas.optJSONObject(i);
+            JSONObject pay_method_info = mDatas.getJSONObject(i);
             String szImage,pay_method_id;
             Drawable drawable = null;
             if (pay_method_info != null){
@@ -67,9 +66,9 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
                     drawable.setBounds(0, 0, 32,32);
                     myViewHolder.pay_method_name.setCompoundDrawables(null,drawable,null,null);
                 }
-                pay_method_id = pay_method_info.optString("pay_method_id");
+                pay_method_id = pay_method_info.getString("pay_method_id");
                 myViewHolder.pay_method_id.setText(pay_method_id);
-                myViewHolder.pay_method_name.setText(pay_method_info.optString("name"));
+                myViewHolder.pay_method_name.setText(pay_method_info.getString("name"));
 
                 if(PayMethodViewAdapter.CASH_METHOD_ID.equals(pay_method_id)){//默认现金
                     showDefaultPayMethod(myViewHolder.mCurrentLayoutItemView);
@@ -107,7 +106,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
 
     @Override
     public int getItemCount() {
-        return mDatas == null ? 0 : mDatas.length();
+        return mDatas == null ? 0 : mDatas.size();
     }
 
     public interface OnItemClickListener{
@@ -119,7 +118,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     }
 
     public JSONObject getItem(int i){
-        return mDatas == null ? null : mDatas.optJSONObject(i);
+        return mDatas == null ? null : mDatas.getJSONObject(i);
     }
 
     public void setDatas(final String support_code){
@@ -133,9 +132,9 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     }
     public JSONObject get_pay_method(final String pay_method_id){
         if (mDatas != null && pay_method_id != null){
-            for (int i = 0,lengh = mDatas.length();i < lengh;i++){
-                JSONObject jsonObject = mDatas.optJSONObject(i);
-                if (pay_method_id.equals(jsonObject.optString("pay_method_id"))){
+            for (int i = 0,lengh = mDatas.size();i < lengh;i++){
+                JSONObject jsonObject = mDatas.getJSONObject(i);
+                if (pay_method_id.equals(jsonObject.getString("pay_method_id"))){
                     return jsonObject;
                 }
             }

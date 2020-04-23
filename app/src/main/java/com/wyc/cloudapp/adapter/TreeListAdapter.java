@@ -10,15 +10,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.utils.Utils;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyViewHolder> {
     private JSONArray mDatas;
@@ -51,19 +48,19 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        final JSONObject item = mDatas.optJSONObject(position);
+        final JSONObject item = mDatas.getJSONObject(position);
         if (item != null){
             //holder.icon = itemView.findViewById(R.id.item_ico);
             holder.selected_status.setChecked(false);
-            holder.item_id.setText(item.optString("item_id"));
-            holder.item_name.setText(item.optString("item_name"));
+            holder.item_id.setText(item.getString("item_id"));
+            holder.item_name.setText(item.getString("item_name"));
             holder.mCurrentLayoutItemView.setOnClickListener(itemListener);
         }
     }
 
     @Override
     public int getItemCount() {
-        return mDatas.length();
+        return mDatas.size();
     }
 
     public void setDatas(JSONArray datas){

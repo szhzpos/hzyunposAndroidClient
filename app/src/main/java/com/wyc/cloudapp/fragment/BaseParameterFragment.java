@@ -9,20 +9,17 @@ import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Switch;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class BaseParameterFragment extends BaseFragment {
     private static final String mTitle = "基本参数";
@@ -38,61 +35,53 @@ public class BaseParameterFragment extends BaseFragment {
 
     @Override
     public JSONObject laodContent() {
-        try {
-            get_save_period(false);
-            get_dual_view(false);
-            get_goods_img_show(false);
-            get_sec_level_category_show(false);
-            get_auto_mol(false);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            MyDialog.ToastMessage(null,e.getMessage(),mContext,null);
-        }
-        return null;
+         get_save_period(false);
+        get_dual_view(false);
+        get_goods_img_show(false);
+        get_sec_level_category_show(false);
+        get_auto_mol(false);
+         return null;
     }
 
     @Override
     public boolean saveContent() {
+        final String p_id_key  = "parameter_id",p_c_key = "parameter_content",p_desc_key = "parameter_desc";
         JSONObject content = new JSONObject();
         JSONArray array = new JSONArray();
         StringBuilder err = new StringBuilder();
-        try {
-            content.put("parameter_id","d_s_period");
-            content.put("parameter_content",get_save_period(true));
-            content.put("parameter_desc","本地数据保存周期");
-            array.put(content);
 
-            content = new JSONObject();
-            content.put("parameter_id","dual_v");
-            content.put("parameter_content",get_dual_view(true));
-            content.put("parameter_desc","双屏设置");
-            array.put(content);
+        content.put(p_id_key,"d_s_period");
+        content.put(p_c_key,get_save_period(true));
+        content.put(p_desc_key,"本地数据保存周期");
+        array.add(content);
 
-            content = new JSONObject();
-            content.put("parameter_id","g_i_show");
-            content.put("parameter_content",get_goods_img_show(true));
-            content.put("parameter_desc","显示商品图片设置");
-            array.put(content);
+        content = new JSONObject();
+        content.put(p_id_key,"dual_v");
+        content.put(p_c_key,get_dual_view(true));
+        content.put(p_desc_key,"双屏设置");
+        array.add(content);
 
-            content = new JSONObject();
-            content.put("parameter_id","sec_l_c_show");
-            content.put("parameter_content",get_sec_level_category_show(true));
-            content.put("parameter_desc","二级类别显示设置");
-            array.put(content);
+        content = new JSONObject();
+        content.put(p_id_key,"g_i_show");
+        content.put(p_c_key,get_goods_img_show(true));
+        content.put(p_desc_key,"显示商品图片设置");
+        array.add(content);
 
-            content = new JSONObject();
-            content.put("parameter_id","auto_mol");
-            content.put("parameter_content",get_auto_mol(true));
-            content.put("parameter_desc","自动抹零设置");
-            array.put(content);
-            if (!SQLiteHelper.execSQLByBatchFromJson(array,"local_parameter",null,err,1)){
-                MyDialog.ToastMessage(null,err.toString(),mContext,null);
-            }else{
-                MyDialog.ToastMessage(null,"保存成功！",mContext,null);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-            MyDialog.ToastMessage(null,e.getMessage(),mContext,null);
+        content = new JSONObject();
+        content.put(p_id_key,"sec_l_c_show");
+        content.put(p_c_key,get_sec_level_category_show(true));
+        content.put(p_desc_key,"二级类别显示设置");
+        array.add(content);
+
+        content = new JSONObject();
+        content.put(p_id_key,"auto_mol");
+        content.put(p_c_key,get_auto_mol(true));
+        content.put(p_desc_key,"自动抹零设置");
+        array.add(content);
+        if (!SQLiteHelper.execSQLByBatchFromJson(array,"local_parameter",null,err,1)){
+            MyDialog.ToastMessage(null,err.toString(),mContext,null);
+        }else{
+            MyDialog.ToastMessage(null,"保存成功！",mContext,null);
         }
         return false;
     }
@@ -170,7 +159,7 @@ public class BaseParameterFragment extends BaseFragment {
         }
     }
 
-    private JSONObject get_save_period(boolean way) throws JSONException {
+    private JSONObject get_save_period(boolean way){
         //数据保存周期
         JSONObject value_obj = new JSONObject();
         RadioGroup group = mRootView.findViewById(R.id.save_period);
@@ -185,14 +174,14 @@ public class BaseParameterFragment extends BaseFragment {
             }
         }else{
             if (SQLiteHelper.getLocalParameter("d_s_period",value_obj)){
-                group.check(value_obj.optInt("id",R.id._a_month));//触发click事件,不需要单独保存value
+                group.check(Utils.getNotKeyAsDefault(value_obj,"id",R.id._a_month));//触发click事件,不需要单独保存value
             }else{
                 MyDialog.ToastMessage("加载数据保存周期参数错误：" + value_obj.getString("info"),mContext,null);
             }
         }
         return value_obj;
     }
-    private JSONObject get_dual_view(boolean b) throws JSONException {
+    private JSONObject get_dual_view(boolean b){
         //双屏
         JSONObject value_obj = new JSONObject();
         Switch dual_view_sh = mRootView.findViewById(R.id._dual_view_switch);
@@ -213,7 +202,7 @@ public class BaseParameterFragment extends BaseFragment {
         }else{
             if (SQLiteHelper.getLocalParameter("dual_v",value_obj)){
 
-                status = value_obj.optInt("s",0);
+                status = value_obj.getIntValue("s");
                 dual_view_sh.setChecked(status == 1);
                 View dual_v = mRootView.findViewById(R.id.dual_v);
                 if (status == 1){
@@ -229,7 +218,7 @@ public class BaseParameterFragment extends BaseFragment {
 
         return value_obj;
     }
-    private JSONObject get_goods_img_show(boolean b) throws JSONException {
+    private JSONObject get_goods_img_show(boolean b){
         JSONObject value_obj = new JSONObject();
         Switch sh = mRootView.findViewById(R.id._goods_img_show_switch);
         int status = 0;
@@ -240,7 +229,7 @@ public class BaseParameterFragment extends BaseFragment {
             value_obj.put("s",status);
         }else{
             if (SQLiteHelper.getLocalParameter("g_i_show",value_obj)){
-                sh.setChecked(value_obj.optInt("s",1) == 1);//默认显示
+                sh.setChecked(Utils.getNotKeyAsDefault(value_obj,"s",1) == 1);
             }else{
                 MyDialog.ToastMessage("加载商品显示图片参数错误：" + value_obj.getString("info"),mContext,null);
             }
@@ -248,7 +237,7 @@ public class BaseParameterFragment extends BaseFragment {
 
         return value_obj;
     }
-    private JSONObject get_sec_level_category_show(boolean b) throws JSONException {
+    private JSONObject get_sec_level_category_show(boolean b){
         JSONObject value_obj = new JSONObject();
         Switch sh = mRootView.findViewById(R.id._sec_level_category_show);
         int status = 0;
@@ -259,14 +248,14 @@ public class BaseParameterFragment extends BaseFragment {
             value_obj.put("s",status);
         }else{
             if (SQLiteHelper.getLocalParameter("sec_l_c_show",value_obj)){
-                sh.setChecked(value_obj.optInt("s",0) == 1);
+                sh.setChecked(value_obj.getIntValue("s") == 1);
             }else{
                 MyDialog.ToastMessage("加载商品显示图片参数错误：" + value_obj.getString("info"),mContext,null);
             }
         }
         return value_obj;
     }
-    private JSONObject get_auto_mol(boolean b) throws JSONException {
+    private JSONObject get_auto_mol(boolean b) {
         JSONObject value_obj = new JSONObject();
         Switch sh = mRootView.findViewById(R.id.auto_mol_switch);
         int status = 0,value = 0,id = -1;
@@ -291,9 +280,9 @@ public class BaseParameterFragment extends BaseFragment {
         }else{
             if (SQLiteHelper.getLocalParameter("auto_mol",value_obj)){
                 RadioGroup rg = mRootView.findViewById(R.id._auto_mol_group);
-                status = value_obj.optInt("s",1);
+                status = Utils.getNotKeyAsDefault(value_obj,"s",1);
                 if (status == 1){
-                    id = value_obj.optInt("id",R.id.mol_j);
+                    id =Utils.getNotKeyAsDefault(value_obj,"id",R.id.mol_j);
                     if (id == -1)id = R.id.mol_j;
                     rg.check(id);
                 }

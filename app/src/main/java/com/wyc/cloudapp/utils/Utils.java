@@ -14,9 +14,6 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -48,6 +45,10 @@ import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
 import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
 import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 import androidx.annotation.NonNull;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * Created by Administrator on 2018-03-06.
@@ -294,36 +295,55 @@ public final class Utils {
     }
 
     public static boolean JsonIsNotEmpty(final JSONObject json){
-        return json != null && json.keys().hasNext();
+        return json != null && !json.isEmpty();
     }
     public static boolean JsonIsNotEmpty(final JSONArray jsons){
-        return jsons != null && jsons.length() != 0;
+        return jsons != null && !jsons.isEmpty();
     }
-    public static JSONObject JsondeepCopy(final JSONObject jsonObject) throws JSONException {
-        return new JSONObject(jsonObject.toString());
+    public static JSONObject JsondeepCopy(final JSONObject jsonObject){
+        return JSON.parseObject(jsonObject.toJSONString());
     }
-    public static JSONArray JsondeepCopy(final JSONArray jsons) throws JSONException {
-        return new JSONArray(jsons.toString());
+    public static JSONArray JsondeepCopy(final JSONArray jsons){
+        return JSON.parseArray(jsons.toJSONString());
     }
-    public static JSONArray ClearJsons(final JSONArray jsons){
-        if (jsons != null)
-            while (jsons.remove(0) != null);
-        return jsons;
-    }
-    public static JSONObject ClearJsonObject(final JSONObject object){
-        if (object != null){
-            Iterator<String> iterator = object.keys();
-            while (iterator.hasNext()){
-                object.remove(iterator.next());
-            }
+    public static double getNotKeyAsDefault(final JSONObject object, final String key, double default_v){
+        if (object.containsKey(key)){
+            return object.getDoubleValue(key);
         }
+        return default_v;
+    }
+    public static int getNotKeyAsDefault(final JSONObject object, final String key, int default_v){
+        if (object.containsKey(key)){
+            return object.getIntValue(key);
+        }
+        return default_v;
+    }
+    public static String getNullOrEmptyStringAsDefault(final JSONObject object,final String key, final String default_v){
+        final String value = object.getString(key);
+        if (value != null && !"".equals(value)){
+            return object.getString(key);
+        }
+        return default_v;
+    }
+    public static String getNullStringAsEmpty(final JSONObject object,final String key){
+        final String value = object.getString(key);
+        return value == null ? "" :value;
+    }
+
+    public static JSONObject getNullObjectAsEmpty(final JSONObject object){
+        if (object == null)return new JSONObject();
         return object;
     }
+    public static JSONArray getNullObjectAsEmpty(final JSONArray array){
+        if (array == null)return new JSONArray();
+        return array;
+    }
+
     public static void moveJsonArray(final JSONArray from,final JSONArray to){
         if (from != null && to != null){
             Object o;
             while (null != (o = from.remove(0))){
-                to.put(o);
+                to.add(o);
             }
         }
     }

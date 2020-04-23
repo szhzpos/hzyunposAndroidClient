@@ -20,18 +20,16 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
-import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.http.HttpRequest;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.util.Locale;
@@ -127,12 +125,12 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
                 super.onChanged();
                 JSONArray datas = mSaleGoodsAdapter.getDatas();
                 double sale_sum_num = 0.0,sale_sum_amount = 0.0;
-                if (datas.length() != 0){
+                if (datas.size() != 0){
                     if (mShowBannerImg) mShowBannerImg = false;
-                    for (int i = 0,length = datas.length();i < length;i ++){
-                        JSONObject jsonObject = datas.optJSONObject(i);
-                        sale_sum_num += jsonObject.optDouble("xnum");
-                        sale_sum_amount += jsonObject.optDouble("sale_amt");
+                    for (int i = 0,length = datas.size();i < length;i ++){
+                        JSONObject jsonObject = datas.getJSONObject(i);
+                        sale_sum_num += jsonObject.getDoubleValue("xnum");
+                        sale_sum_amount += jsonObject.getDoubleValue("sale_amt");
                     }
                     mSaleSumNum.setText(String.format(Locale.CANADA,"%.3f",sale_sum_num));
                     mSaleSumAmount.setText(String.format(Locale.CANADA,"%.2f",sale_sum_amount));
@@ -151,7 +149,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
     private void displayGoodsImg(){
         final JSONObject sale = mSaleGoodsAdapter.getCurrentContent();
         if (sale != null){
-            int barcode_id = sale.optInt("barcode_id");
+            int barcode_id = sale.getIntValue("barcode_id");
             if ( 0 != barcode_id && barcode_id != mCurrentBarcodeId){//当前显示的图片和即将要显示的图片不相同时再显示
                 CustomApplication.execute(()->{
                     final String sql = "select ifnull(img_url,'') img_url from barcode_info where goods_status = '1' and barcode_id = " + barcode_id +
@@ -159,14 +157,14 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
                             "select ifnull(img_url,'') img_url from goods_group where status = '1' and gp_id =" + barcode_id;
                     JSONObject object = new JSONObject();
                     if (SQLiteHelper.execSql(object,sql)){
-                        String img_url = object.optString("img_url");
+                        String img_url = object.getString("img_url");
                         if (!"".equals(img_url)){
                             final String szImage = img_url.substring(img_url.lastIndexOf("/") + 1);
                             mBannerBitmap = BitmapFactory.decodeFile(LoginActivity.IMG_PATH + szImage);
                             mCurrentBarcodeId = barcode_id;
                         }
                     }else{
-                        mSurface.post(()->MyDialog.ToastMessage(object.optString("info"), mContext,getWindow()));
+                        mSurface.post(()->MyDialog.ToastMessage(object.getString("info"), mContext,getWindow()));
                     }
                 });
             }
@@ -176,9 +174,9 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
         if (mStoreinfo != null){
             TextView stores_name = findViewById(R.id.sec_store_name),stores_hotline = findViewById(R.id.sec_stores_hotline),
             stores_addr = findViewById(R.id.sec_stores_addr);
-            stores_name.setText(mStoreinfo.optString("stores_name"));
-            stores_hotline.setText(mStoreinfo.optString("telphone"));
-            stores_addr.setText(mStoreinfo.optString("region"));
+            stores_name.setText(mStoreinfo.getString("stores_name"));
+            stores_hotline.setText(mStoreinfo.getString("telphone"));
+            stores_addr.setText(mStoreinfo.getString("region"));
         }
     }
     public SecondDisplay setNavigationInfo(JSONObject object){
@@ -224,30 +222,30 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
             try {
                 object.put("appid",appid);
                 final JSONObject retJson = httpRequest.setConnTimeOut(10000).sendPost(url  + "/api/get_config/get_sc_ad",HttpRequest.generate_request_parm(object,appScret),true);
-                if (retJson.getInt("flag") == 1){
-                    object = new JSONObject(retJson.getString("info"));
+                if (retJson.getIntValue("flag") == 1){
+                    object = JSON.parseObject(retJson.getString("info"));
                     if ("y".equals(object.getString("status"))){
                         String img_url_info,img_file_name;
-                        JSONArray imgs = new JSONArray(object.getString("sc_logo_list"));
-                        for(int i = 0,size = imgs.length();i < size;i++){
+                        JSONArray imgs = JSON.parseArray(object.getString("sc_logo_list"));
+                        for(int i = 0,size = imgs.size();i < size;i++){
                             img_url_info = imgs.getString(i);
                             if (!img_url_info.equals("")){
                                 img_file_name = img_url_info.substring(img_url_info.lastIndexOf("/") + 1);
                                 File file = new File(mAdFilePath + img_file_name);
                                 if (!file.exists()){
                                     final JSONObject img_obj = httpRequest.getFile(file,img_url_info);
-                                    if (img_obj.optInt("flag") == 0){
-                                        if (activity != null)activity.runOnUiThread(()->MyDialog.ToastMessage(err + img_obj.optString("info"),mContext,getWindow()));
+                                    if (img_obj.getIntValue("flag") == 0){
+                                        if (activity != null)activity.runOnUiThread(()->MyDialog.ToastMessage(err + img_obj.getString("info"),mContext,getWindow()));
                                     }
                                 }
                             }
                         }
                         mAdFileNames = img_dir.list();
                     }else{
-                        if (activity != null)activity.runOnUiThread(()->MyDialog.ToastMessage(err + retJson.optString("info"),mContext,getWindow()));
+                        if (activity != null)activity.runOnUiThread(()->MyDialog.ToastMessage(err + retJson.getString("info"),mContext,getWindow()));
                     }
                 }else{
-                    if (activity != null)activity.runOnUiThread(()->MyDialog.ToastMessage(err + retJson.optString("info"), mContext,getWindow()));
+                    if (activity != null)activity.runOnUiThread(()->MyDialog.ToastMessage(err + retJson.getString("info"), mContext,getWindow()));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -333,15 +331,15 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
         JSONObject object = new JSONObject();
         SecondDisplay secondDisplay = null;
         if (SQLiteHelper.getLocalParameter("dual_v",object)){
-            if (object.optInt("s") == 1){
+            if (object.getIntValue("s") == 1){
                 Display presentationDisplay = getDisplayFromService(context);
                 if (presentationDisplay != null) {
                     secondDisplay = new SecondDisplay(context, presentationDisplay);
-                    secondDisplay.setShowInterval(object.optInt("v"));
+                    secondDisplay.setShowInterval(object.getIntValue("v"));
                 }
             }
         }else{
-            MyDialog.ToastMessage("初始化双屏错误：" + object.optString("info"),context,null);
+            MyDialog.ToastMessage("初始化双屏错误：" + object.getString("info"),context,null);
         }
         return secondDisplay;
     }

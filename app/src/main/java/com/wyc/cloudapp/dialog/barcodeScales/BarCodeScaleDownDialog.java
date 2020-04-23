@@ -14,13 +14,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.BarCodeScaleAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import static android.content.Context.WINDOW_SERVICE;
 
@@ -55,11 +54,11 @@ public class BarCodeScaleDownDialog extends Dialog {
         );
         findViewById(R.id.download_to_scale).setOnClickListener(v -> {
             JSONArray scale_infos = mBarCodeScaleAdapter.getCurrentScalseInfos();
-            for (int i = 0,size = scale_infos.length();i < size;i++){
-                final JSONObject object = scale_infos.optJSONObject(i);
+            for (int i = 0,size = scale_infos.size();i < size;i++){
+                final JSONObject object = scale_infos.getJSONObject(i);
                 if (null != object){
                     CustomApplication.execute(()->{
-                        TextView textView = mBarCodeScaleAdapter.getTextStatus(object.optString("_id"));
+                        TextView textView = mBarCodeScaleAdapter.getTextStatus(object.getString("_id"));
                         try{
                             boolean code =AbstractBarcodeScale.scaleDownLoad(object,textView);
                         }catch (Exception e){
@@ -74,8 +73,8 @@ public class BarCodeScaleDownDialog extends Dialog {
          });
         findViewById(R.id.modfy_scale).setOnClickListener(v -> {
             JSONArray array = mBarCodeScaleAdapter.getCurrentScalseInfos();
-            if (array != null && array.length() != 0){
-                AddBarCodeScaleDialog addBarCodeScaleDialog = new AddBarCodeScaleDialog(mContext,array.optJSONObject(0));
+            if (array != null && array.size() != 0){
+                AddBarCodeScaleDialog addBarCodeScaleDialog = new AddBarCodeScaleDialog(mContext,array.getJSONObject(0));
                 addBarCodeScaleDialog.setGetContent(object -> mBarCodeScaleAdapter.addScale(object));
                 addBarCodeScaleDialog.show();
             }

@@ -2,7 +2,6 @@ package com.wyc.cloudapp.dialog;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import androidx.annotation.NonNull;
 
@@ -15,13 +14,11 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.R;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 
 /**
  * Created by Administrator on 2018-04-23.
@@ -84,7 +81,7 @@ public class CustomePopupWindow extends PopupWindow {
             },300);
 
             if (mGetSelectContent != null){
-                mGetSelectContent.getContent(mShowContents.optJSONObject(i));
+                mGetSelectContent.getContent(mShowContents.getJSONObject(i));
             }
 
             dismiss();
@@ -106,13 +103,13 @@ public class CustomePopupWindow extends PopupWindow {
         if (null != mShowContents) {
             if (!mArrayAdapter.isEmpty()) mArrayAdapter.clear();
             if (!isAutoSetContent) mArrayAdapter.add("");
-            for (int i = 0, len = mShowContents.length(); i < len; i++) {
+            for (int i = 0, len = mShowContents.size(); i < len; i++) {
                 for (String tmp : sz){
                     if (stringBuilder.length() > 0)stringBuilder.append(SEPARATE);
-                    if ("NULL".equals(mShowContents.optJSONObject(i).optString(tmp)))
+                    if ("NULL".equals(mShowContents.getJSONObject(i).getString(tmp)))
                         stringBuilder.append(" ");
                     else
-                        stringBuilder.append(mShowContents.optJSONObject(i).optString(tmp));
+                        stringBuilder.append(mShowContents.getJSONObject(i).getString(tmp));
                 }
                 mArrayAdapter.add(stringBuilder.toString());
                 stringBuilder.delete(0,stringBuilder.length());
@@ -139,13 +136,13 @@ public class CustomePopupWindow extends PopupWindow {
         if (null != mShowContents) {
             if (!mArrayAdapter.isEmpty()) mArrayAdapter.clear();
             if (!isAutoSetContent) mArrayAdapter.add("");
-            for (int i = 0, len = mShowContents.length(); i < len; i++) {
+            for (int i = 0, len = mShowContents.size(); i < len; i++) {
                 for (String tmp : sz){
                     if (stringBuilder.length() > 0)stringBuilder.append(SEPARATE);
-                    if ("NULL".equals(mShowContents.optJSONObject(i).optString(tmp)))
+                    if ("NULL".equals(mShowContents.getJSONObject(i).getString(tmp)))
                         stringBuilder.append(" ");
                     else
-                        stringBuilder.append(mShowContents.optJSONObject(i).optString(tmp));
+                        stringBuilder.append(mShowContents.getJSONObject(i).getString(tmp));
                 }
                 mArrayAdapter.add(stringBuilder.toString());
                 stringBuilder.delete(0,stringBuilder.length());
@@ -171,19 +168,19 @@ public class CustomePopupWindow extends PopupWindow {
         if (isSelect)isSelect = false;
         if (!mArrayAdapter.isEmpty()) mArrayAdapter.clear();
         if (!isAutoSetContent) mArrayAdapter.add("");
-        for (int i = 0, len = mShowContents.length(); i < len; i++) {
+        for (int i = 0, len = mShowContents.size(); i < len; i++) {
             if (sz != null){
                 for (String tmp : sz){
                     if (stringBuilder.length() > 0)stringBuilder.append(SEPARATE);
-                    if ("NULL".equals(mShowContents.optJSONObject(i).optString(tmp)))
+                    if ("NULL".equals(mShowContents.getJSONObject(i).getString(tmp)))
                         stringBuilder.append(" ");
                     else
-                        stringBuilder.append(mShowContents.optJSONObject(i).optString(tmp));
+                        stringBuilder.append(mShowContents.getJSONObject(i).getString(tmp));
                 }
                 mArrayAdapter.add(stringBuilder.toString());
                 stringBuilder.delete(0,stringBuilder.length());
             }else {
-                mArrayAdapter.add(mShowContents.opt(i));
+                mArrayAdapter.add(mShowContents.get(i));
             }
         }
         mListView.setAdapter(mArrayAdapter);

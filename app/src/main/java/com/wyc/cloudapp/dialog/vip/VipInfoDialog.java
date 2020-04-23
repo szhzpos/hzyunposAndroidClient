@@ -19,6 +19,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -29,11 +33,8 @@ import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.lang.ref.WeakReference;
+import java.util.Locale;
 
 public class VipInfoDialog extends Dialog {
     private EditText mSearchContent;
@@ -91,7 +92,7 @@ public class VipInfoDialog extends Dialog {
             dialog.setYesOnclickListener(dialog13 -> {
                 JSONObject jsonObject = dialog13.getVipInfo();
                 if (jsonObject != null){
-                    mSearchContent.setText(jsonObject.optString("mobile"));
+                    mSearchContent.setText(jsonObject.getString("mobile"));
                     mSearchBtn.callOnClick();
                 }
                 dialog13.dismiss();
@@ -244,25 +245,25 @@ public class VipInfoDialog extends Dialog {
         HttpRequest httpRequest = new HttpRequest();
         JSONArray vips = null;
         if (SQLiteHelper.getLocalParameter("connParam",object)){
-            object.put("appid",object.optString("appId"));
+            object.put("appid",object.getString("appId"));
             object.put("mobile",mobile);
-            ret_json = httpRequest.sendPost(object.optString("server_url") + "/api/member/get_member_info",HttpRequest.generate_request_parm(object,object.optString("appScret")),true);
-            switch (ret_json.getInt("flag")){
+            ret_json = httpRequest.sendPost(object.getString("server_url") + "/api/member/get_member_info",HttpRequest.generate_request_parm(object,object.getString("appScret")),true);
+            switch (ret_json.getIntValue("flag")){
                 case 0:
-                    throw new JSONException(ret_json.optString("info"));
+                    throw new JSONException(ret_json.getString("info"));
                 case 1:
-                    ret_json = new JSONObject(ret_json.getString("info"));
+                    ret_json = JSON.parseObject(ret_json.getString("info"));
                     switch (ret_json.getString("status")){
                         case "n":
-                            throw new JSONException(ret_json.optString("info"));
+                            throw new JSONException(ret_json.getString("info"));
                         case "y":
-                            vips = new JSONArray(ret_json.getString("list"));
+                            vips = JSON.parseArray(ret_json.getString("list"));
                             break;
                     }
                     break;
             }
         }else{
-            throw new JSONException(object.optString("info"));
+            throw new JSONException(object.getString("info"));
         }
         return vips;
     }
@@ -288,12 +289,12 @@ public class VipInfoDialog extends Dialog {
         JSONObject conn = new JSONObject();
         boolean code = true;
         if (SQLiteHelper.getLocalParameter("connParam",conn)){
-            mUrl = conn.optString("server_url");
-            mAppId = conn.optString("appId");
-            mAppScret = conn.optString("appScret");
+            mUrl = conn.getString("server_url");
+            mAppId = conn.getString("appId");
+            mAppScret = conn.getString("appScret");
         }else{
             code = false;
-            MyDialog.ToastMessage("查询连接参数错误：" + conn.optString("info"),mContext,getWindow());
+            MyDialog.ToastMessage("查询连接参数错误：" + conn.getString("info"),mContext,getWindow());
         }
         return code;
     }
@@ -301,12 +302,12 @@ public class VipInfoDialog extends Dialog {
     private void showVipInfo(JSONObject object){
         mVip = object;
         mSearchBtn.setText(mContext.getString(R.string.OK));
-        mVip_name.setText(object.optString("name"));
-        mVip_sex.setText(object.optString("sex"));
-        mVip_p_num.setText(object.optString("mobile"));
-        mVip_card_id.setText(object.optString("card_code"));
-        mVip_balance.setText(object.optString("money_sum","0.00"));
-        mVip_integral.setText(object.optString("points_sum","0.0"));
+        mVip_name.setText(object.getString("name"));
+        mVip_sex.setText(object.getString("sex"));
+        mVip_p_num.setText(object.getString("mobile"));
+        mVip_card_id.setText(object.getString("card_code"));
+        mVip_balance.setText(String.format(Locale.CHINA,"%.2f",object.getDouble("money_sum")));
+        mVip_integral.setText(String.format(Locale.CHINA,"%.2f",object.getDouble("points_sum")));
     }
 
     private void clearVipInfo(){
@@ -354,8 +355,8 @@ public class VipInfoDialog extends Dialog {
                 case MessageID.QUERY_VIP_INFO_ID:
                     if (msg.obj instanceof JSONArray){
                         JSONArray array = (JSONArray)msg.obj;
-                        if (array.length() == 1){
-                            dialog.showVipInfo(array.optJSONObject(0));
+                        if (array.size() == 1){
+                            dialog.showVipInfo(array.getJSONObject(0));
 
                             //触发修改或充值按钮点击事件；做这两个操作之前客户可能没查询会员，必须先查询再操作。
                             Button btn = dialog.findViewById(msg.arg1);

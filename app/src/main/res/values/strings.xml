@@ -177,11 +177,17 @@
     <string name="checked_sz">选中</string>
     <string name="product_t_sz">型号</string>
     <string name="ip_sz">IP</string>
-    <string name="port">端口</string>
+    <string name="port_sz">端口</string>
     <string name="d_category_sz">分类</string>
     <string name="down_s_sz">下发状态</string>
     <string name="b_code_s_d_sz">条码秤下发</string>
     <string name="manufacturer_sz">厂商</string>
     <string name="scalse_name_sz">秤名</string>
     <string name="modify_scale_sz">修改秤</string>
+    <string name="serial_scale_sz">串口秤</string>
+    <string name="pro_t_sz">协议类型</string>
+    <string name="goods_i_s">商品信息</string>
+    <string name="g_price_sz">价格：</string>
+    <string name="name_sz">名称：</string>
+    <string name="weigh_sz">重量：</string>
 </resources>

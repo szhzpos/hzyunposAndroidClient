@@ -14,13 +14,13 @@ import android.hardware.usb.UsbManager;
 
 import androidx.annotation.NonNull;
 
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
-
-import org.json.JSONObject;
+import com.wyc.cloudapp.utils.Utils;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -225,9 +225,9 @@ public final class Printer {
     public static void print(@NonNull final Activity context, @NonNull final byte[] inbyte){
         JSONObject object = new JSONObject();
         if (SQLiteHelper.getLocalParameter("printer",object)){
-            int status_id = object.optInt("id");
-            String tmp = object.optString("v");
-            String[] vals = tmp.split("\r\n");
+            int status_id = object.getIntValue("id");
+            String tmp = Utils.getNullStringAsEmpty(object,"v");
+            String[] vals = tmp.split("\t");
             if (vals.length > 1){
                 switch (status_id){
                     case R.id.bluetooth_p:
@@ -239,7 +239,7 @@ public final class Printer {
                 }
             }
         }else {
-            MyDialog.ToastMessage("读取打印机设置错误：" + object.optString("info"),context,null);
+            MyDialog.ToastMessage("读取打印机设置错误：" + object.getString("info"),context,null);
         }
     }
 

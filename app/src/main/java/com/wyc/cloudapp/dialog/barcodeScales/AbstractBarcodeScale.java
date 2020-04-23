@@ -1,21 +1,14 @@
 package com.wyc.cloudapp.dialog.barcodeScales;
 
-import android.os.Build;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -67,7 +60,7 @@ public abstract class AbstractBarcodeScale implements IBarCodeScale {
     static boolean scaleDownLoad(@NonNull JSONObject scales_info, final TextView view){
         boolean code = false;
         try {
-            Class<?> scale_class = Class.forName("com.wyc.cloudapp.dialog.barcodeScales." + scales_info.optString("s_class_id"));
+            Class<?> scale_class = Class.forName("com.wyc.cloudapp.dialog.barcodeScales." + scales_info.getString("s_class_id"));
             Constructor<?> constructor = scale_class.getConstructor();
             IBarCodeScale barcodeScale = (AbstractBarcodeScale)constructor.newInstance();
             if (null != view){
@@ -87,20 +80,20 @@ public abstract class AbstractBarcodeScale implements IBarCodeScale {
         return code;
     }
 
-    static JSONObject getDHManufacturer() throws JSONException {
+    static JSONObject getDHManufacturer(){
         JSONObject object = new JSONObject();
         JSONArray products = new JSONArray();
 
         object.put("name","大华系列");
 
-        products.put(getScalseProduct("DH15A","大华TM-15A"));
+        products.add(getScalseProduct("DH15A","大华TM-15A"));
 
         object.put("products",products);
 
         return object;
     }
 
-    private static JSONObject getScalseProduct(final String s_id,final String s_type) throws JSONException {
+    private static JSONObject getScalseProduct(final String s_id,final String s_type){
         JSONObject object = new JSONObject();
         object.put("s_id",s_id);
         object.put("s_type",s_type);

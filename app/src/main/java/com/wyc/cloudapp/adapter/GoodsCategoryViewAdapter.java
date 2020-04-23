@@ -9,12 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class GoodsCategoryViewAdapter extends RecyclerView.Adapter<GoodsCategoryViewAdapter.MyViewHolder> {
 
@@ -92,10 +91,10 @@ public class GoodsCategoryViewAdapter extends RecyclerView.Adapter<GoodsCategory
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
         if (mDatas != null){
-            JSONObject goods_type_info = mDatas.optJSONObject(i);
+            JSONObject goods_type_info = mDatas.getJSONObject(i);
             if (goods_type_info != null){
-                myViewHolder.category_id.setText(goods_type_info.optString("category_id"));
-                myViewHolder.category_name.setText(goods_type_info.optString("name"));
+                myViewHolder.category_id.setText(goods_type_info.getString("category_id"));
+                myViewHolder.category_name.setText(goods_type_info.getString("name"));
                 if (i == 1){//一级分类触发第二个类别查询
                         if (mChildGoodsCategoryView != null){
                             myViewHolder.mCurrentLayoutItemView.callOnClick();
@@ -107,11 +106,11 @@ public class GoodsCategoryViewAdapter extends RecyclerView.Adapter<GoodsCategory
 
     @Override
     public int getItemCount() {
-        return mDatas == null ? 0 : mDatas.length();
+        return mDatas == null ? 0 : mDatas.size();
     }
 
     public JSONObject getItem(int i){
-       return mDatas == null ? null : mDatas.optJSONObject(i);
+       return mDatas == null ? null : mDatas.getJSONObject(i);
     }
 
     public void setDatas(int parent_id){
@@ -161,9 +160,9 @@ public class GoodsCategoryViewAdapter extends RecyclerView.Adapter<GoodsCategory
     private void laodChildShow(){
         JSONObject jsonObject = new JSONObject();
         if (SQLiteHelper.getLocalParameter("sec_l_c_show",jsonObject)){
-            mChildShow = jsonObject.optInt("s",0) == 1;
+            mChildShow = jsonObject.getIntValue("s") == 1;
         }else{
-            MyDialog.ToastMessage("加载是否显示商品二级类别参数错误：" + jsonObject.optString("info"),mContext,null);
+            MyDialog.ToastMessage("加载是否显示商品二级类别参数错误：" + jsonObject.getString("info"),mContext,null);
         }
     }
 

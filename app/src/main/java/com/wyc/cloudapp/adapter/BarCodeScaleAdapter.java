@@ -10,15 +10,13 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.callback.ClickListener;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -81,18 +79,18 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder myViewHolder, int i) {
         if (myViewHolder instanceof ContentHolder){
-            JSONObject content = mDatas.optJSONObject(i - 1);
+            JSONObject content = mDatas.getJSONObject(i - 1);
             if (content != null){
                 ContentHolder contentHolder = (ContentHolder)myViewHolder;
                 contentHolder.row_id.setText(String.valueOf(i));
-                contentHolder._id.setText(content.optString("_id"));
-                contentHolder.product_type.setText(content.optString("s_product_t"));
-                contentHolder.scale_ip.setText(content.optString("scale_ip"));
-                contentHolder.scale_port.setText(content.optString("scale_port"));
-                contentHolder.g_c_name.setText(content.optString("g_c_name"));
-                contentHolder.g_c_id.setText(content.optString("g_c_id"));
+                contentHolder._id.setText(content.getString("_id"));
+                contentHolder.product_type.setText(content.getString("s_product_t"));
+                contentHolder.scale_ip.setText(content.getString("scale_ip"));
+                contentHolder.scale_port.setText(content.getString("scale_port"));
+                contentHolder.g_c_name.setText(content.getString("g_c_name"));
+                contentHolder.g_c_id.setText(content.getString("g_c_id"));
                // contentHolder.down_status.setText("");
-                contentHolder.scale_rmk.setText(content.optString("remark"));
+                contentHolder.scale_rmk.setText(content.getString("remark"));
 
                 contentHolder.s_checked.setChecked(false);
                 contentHolder.s_checked.setOnCheckedChangeListener(checkedChangeListener);
@@ -103,7 +101,7 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public int getItemCount() {
-        return mDatas == null ? 1 : mDatas.length() + 1;
+        return mDatas == null ? 1 : mDatas.size() + 1;
     }
 
     @Override
@@ -132,10 +130,10 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         JSONArray scalses = new JSONArray();
         JSONObject object;
         for (String t_id : mCurrentItemIndexMap.keySet()){
-            for (int j = 0,length = mDatas.length();j < length;j++){
-                object = mDatas.optJSONObject(j);
-                if (object != null && t_id.equals(object.optString("_id"))){
-                    scalses.put(object);
+            for (int j = 0,length = mDatas.size();j < length;j++){
+                object = mDatas.getJSONObject(j);
+                if (object != null && t_id.equals(object.getString("_id"))){
+                    scalses.add(object);
                     break;
                 }
             }
@@ -166,10 +164,10 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         Logger.d("mCurrentItemIndexMap:%s", mCurrentItemIndexMap);
         Logger.d("mDatas:%s",mDatas);
         for (final String t_id : mCurrentItemIndexMap.keySet()){
-            for (int i = 0,size = mDatas.length();i < size;i++){
-                object = mDatas.optJSONObject(i);
+            for (int i = 0,size = mDatas.size();i < size;i++){
+                object = mDatas.getJSONObject(i);
                 if (object != null){
-                    if (object.optString("_id").equals(t_id)){
+                    if (object.getString("_id").equals(t_id)){
                         StringBuilder err = new StringBuilder();
                         if (SQLiteHelper.execDelete("barcode_scalse_info","_id=?",new String[]{t_id},err)){
                             mDatas.remove(i);
@@ -190,12 +188,12 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         String svae_type = "INSERT";
         JSONObject object;
 
-        if (scale.has("_id")){
+        if (scale.containsKey("_id")){
             svae_type = "REPLACE";
-            for (int i = 0,size = mDatas.length();i < size;i++){
-                object = mDatas.optJSONObject(i);
+            for (int i = 0,size = mDatas.size();i < size;i++){
+                object = mDatas.getJSONObject(i);
                 if (object != null){
-                    if (object.optString("_id").equals(scale.optString("_id"))){
+                    if (object.getString("_id").equals(scale.getString("_id"))){
                         mDatas.remove(i);
                         notifyDataSetChanged();
                         break;
@@ -222,7 +220,7 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     public void clearScale(){
-        Utils.ClearJsons(mDatas);
+        mDatas.fluentClear();
         mCurrentItemIndexMap.clear();
         notifyDataSetChanged();
     }

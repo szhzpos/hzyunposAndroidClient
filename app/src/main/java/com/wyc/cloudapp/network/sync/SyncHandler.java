@@ -6,15 +6,16 @@ import android.os.Message;
 
 import androidx.annotation.NonNull;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.net.HttpURLConnection;
@@ -148,13 +149,13 @@ public final class SyncHandler extends Handler {
             sz_param = HttpRequest.generate_request_parm(object,mAppScret);
 
             retJson = mHttp.sendPost(url,sz_param,true);
-            switch (retJson.getInt("flag")) {
+            switch (retJson.getIntValue("flag")) {
                 case 0:
                     code = false;
-                    sys_name = sys_name.concat("错误:").concat(retJson.optString("info"));
+                    sys_name = sys_name.concat("错误:").concat(retJson.getString("info"));
                     break;
                 case 1:
-                    info_json = new JSONObject(retJson.getString("info"));
+                    info_json = JSON.parseObject(retJson.getString("info"));
                     switch (info_json.getString("status")){
                         case "n":
                             code = false;
@@ -162,7 +163,7 @@ public final class SyncHandler extends Handler {
                             break;
                         case "y":
                             JSONArray data = info_json.getJSONArray("data");
-                            if(data.length() != 0){
+                            if(data.size() != 0){
                                 StringBuilder err = new StringBuilder();
                                 switch (msg.what){
                                     case MessageID.SYNC_GP_INFO_ID:
@@ -174,7 +175,7 @@ public final class SyncHandler extends Handler {
                                         }
                                         break;
                                     case MessageID.SYNC_GOODS_ID: {
-                                        int max_page = info_json.getInt("max_page"),current_page = (int)msg.obj;
+                                        int max_page = info_json.getIntValue("max_page"),current_page = (int)msg.obj;
                                         if((code = SQLiteHelper.execSQLByBatchFromJson(data,table_name ,table_cls,err,1))){
                                             down_laod_goods_img_and_upload_barcode_id(data,sys_name);//保存成功才能标记已获取
                                         }
@@ -229,8 +230,8 @@ public final class SyncHandler extends Handler {
         data.put("randstr", Utils.getNonce_str(8));
         data.put("cas_id",mOperId);
         retJson = mHttp.sendPost(test_url,HttpRequest.generate_request_parm(data,mAppScret),true);
-        err_code = retJson.getInt("rsCode");
-        switch (retJson.getInt("flag")) {
+        err_code = retJson.getIntValue("rsCode");
+        switch (retJson.getIntValue("flag")) {
             case 0:
                 if (mCurrentNeworkStatusCode != err_code){
                     Logger.e("连接服务器错误：" + retJson.getString("info"));
@@ -242,7 +243,7 @@ public final class SyncHandler extends Handler {
                 if (mCurrentNeworkStatusCode != HttpURLConnection.HTTP_OK){//如果之前网络响应状态不为OK,则重连成功
                     Logger.i("重新连接服务器成功！");
                 }
-                info_json = new JSONObject(retJson.getString("info"));
+                info_json = JSON.parseObject(retJson.getString("info"));
                 switch (info_json.getString("status")){
                     case "n":
                         syncActivityHandler.obtainMessage(MessageID.NETWORKSTATUS_ID,false).sendToTarget();
@@ -283,12 +284,12 @@ public final class SyncHandler extends Handler {
 
         if (null != (orders = SQLiteHelper.getListToJson(sql_orders,err))){
             try {
-                for (int i = 0,size = orders.length();i < size;i++){
+                for (int i = 0,size = orders.size();i < size;i++){
                     order_gp_ids.delete(0,order_gp_ids.length());
 
                     JSONArray order_arr = new JSONArray();
                     tmp_jsonObject = orders.getJSONObject(i);
-                    order_arr.put(tmp_jsonObject);
+                    order_arr.add(tmp_jsonObject);
 
                     order_code = tmp_jsonObject.getString("order_code");
 
@@ -296,12 +297,12 @@ public final class SyncHandler extends Handler {
                     pays = SQLiteHelper.getListToJson(sql_pays_detail.replace("%1",order_code),err);
                     if (null != sales && null != pays){
 
-                        for (int j = 0,j_size = sales.length();j < j_size;j++){
+                        for (int j = 0,j_size = sales.size();j < j_size;j++){
                             tmp_jsonObject = sales.getJSONObject(j);
-                            gp_id = tmp_jsonObject.getInt("gp_id");
+                            gp_id = tmp_jsonObject.getIntValue("gp_id");
                             if (-1 != gp_id){
                                 if (j > 0){
-                                    if (gp_id == sales.getJSONObject(j -1).getInt("gp_id"))continue;
+                                    if (gp_id == sales.getJSONObject(j -1).getIntValue("gp_id"))continue;
                                 }
                                 if (order_gp_ids.length() == 0){
                                     order_gp_ids.append("'").append(gp_id).append("'");
@@ -325,13 +326,13 @@ public final class SyncHandler extends Handler {
                             send_data.put("data",data);
 
                             retJson = httpRequest.sendPost(mUrl + "/api/retail/order_upload",HttpRequest.generate_request_parm(send_data,mAppScret),true);
-                            switch (retJson.getInt("flag")){
+                            switch (retJson.getIntValue("flag")){
                                 case 0:
                                     code = false;
                                     err.append(retJson.getString("info"));
                                     break;
                                 case 1:
-                                    retJson = new JSONObject(retJson.getString("info"));
+                                    retJson = JSON.parseObject(retJson.getString("info"));
                                     switch (retJson.getString("status")){
                                         case "n":
                                             code = false;
@@ -373,7 +374,7 @@ public final class SyncHandler extends Handler {
     private void down_load_pay_method_img(@NonNull final JSONArray datas,final String sys_name) throws JSONException {
         String img_url_info,img_file_name;
         JSONObject object;
-        for (int k = 0,length = datas.length();k < length;k++){
+        for (int k = 0,length = datas.size();k < length;k++){
             object = datas.getJSONObject(k);
             img_url_info = object.getString("pay_img");
             if (!img_url_info.equals("")){
@@ -381,7 +382,7 @@ public final class SyncHandler extends Handler {
                 File file = new File(LoginActivity.IMG_PATH + img_file_name);
                 if (!file.exists()){
                     JSONObject load_img = mHttp.getFile(file,img_url_info);
-                    if (load_img.optInt("flag") == 0){
+                    if (load_img.getIntValue("flag") == 0){
                         Logger.e(sys_name + "图片错误：" + load_img.getString("info"));
                     }
                 }
@@ -392,33 +393,33 @@ public final class SyncHandler extends Handler {
         String img_url_info,img_file_name;
         JSONArray goods_ids = new JSONArray();
         JSONObject object;
-        for (int k = 0,length = datas.length();k < length;k++){
+        for (int k = 0,length = datas.size();k < length;k++){
             object = datas.getJSONObject(k);
-            goods_ids.put(object.getInt("barcode_id"));
+            goods_ids.add(object.getIntValue("barcode_id"));
             img_url_info = object.getString("img_url");
             if (!img_url_info.equals("")){
                 img_file_name = img_url_info.substring(img_url_info.lastIndexOf("/") + 1);
                 File file = new File(LoginActivity.IMG_PATH + img_file_name);
                 if (!file.exists()){
                     JSONObject load_img = mHttp.getFile(file,img_url_info);
-                    if (load_img.optInt("flag") == 0){
+                    if (load_img.getIntValue("flag") == 0){
                         Logger.e(sys_name + "图片错误：" + load_img.getString("info"));
                     }
                 }
             }
         }
-        if (goods_ids.length() != 0){
+        if (goods_ids.size() != 0){
             upload_barcode_id(goods_ids);
         }
     }
     private boolean deal_good_group(@NonNull JSONArray data,StringBuilder err) throws JSONException {
         JSONArray goods_list = new JSONArray();
         JSONObject tmp_goods = new JSONObject();
-        for (int k = 0, size = data.length(); k < size; k++) {
+        for (int k = 0, size = data.size(); k < size; k++) {
             JSONArray tmp = (JSONArray) data.getJSONObject(k).remove("goods_list");
             if (tmp != null)
-                for (int j = 0, length = tmp.length(); j < length; j++) {
-                    goods_list.put(tmp.get(j));
+                for (int j = 0, length = tmp.size(); j < length; j++) {
+                    goods_list.add(tmp.get(j));
                 }
         }
         tmp_goods.put("goods_group", data);
@@ -440,7 +441,7 @@ public final class SyncHandler extends Handler {
             }
         }
         object = new JSONObject();
-        if (datas.length() == 0){
+        if (datas.size() == 0){
             url = mUrl + "/api/cashier/clear_download_record";
             object.put("appid",mAppId);
             object.put("pos_num",mPosNum);
@@ -455,8 +456,8 @@ public final class SyncHandler extends Handler {
         }
 
         object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,mAppScret),true);
-        if (object.getInt("flag") == 1){
-            object = new JSONObject(object.getString("info"));
+        if (object.getIntValue("flag") == 1){
+            object = JSON.parseObject(object.getString("info"));
             if ("n".equals(object.getString("status"))){
                 Logger.e(err + object.getString("info"));
             }

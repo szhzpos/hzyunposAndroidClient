@@ -8,15 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.callback.ClickListener;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int HEADER = -1;
@@ -87,15 +85,15 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
             headerHolder.pay_detail_v_num.setTextColor(mContext.getResources().getColor(R.color.white,null));
             ((View)headerHolder.pay_detail_v_num.getParent()).setBackgroundColor(mContext.getResources().getColor(R.color.pay_detail_header,null));
         }else{
-            JSONObject pay_detail = mDatas.optJSONObject(i - 1);
+            JSONObject pay_detail = mDatas.getJSONObject(i - 1);
             if (pay_detail != null){
                 ContentHolder contentHolder = (ContentHolder)myViewHolder;
                 contentHolder.row_id.setText(String.valueOf(i));
-                contentHolder.pay_method_id.setText(pay_detail.optString("pay_method_id"));
-                contentHolder.pay_method_name.setText(pay_detail.optString("name"));
-                contentHolder.pay_detail_amt.setText(pay_detail.optString("pamt"));
-                contentHolder.pay_detail_zl.setText(pay_detail.optString("pzl"));
-                contentHolder.pay_detail_v_num.setText(pay_detail.optString("v_num"));
+                contentHolder.pay_method_id.setText(pay_detail.getString("pay_method_id"));
+                contentHolder.pay_method_name.setText(pay_detail.getString("name"));
+                contentHolder.pay_detail_amt.setText(pay_detail.getString("pamt"));
+                contentHolder.pay_detail_zl.setText(pay_detail.getString("pzl"));
+                contentHolder.pay_detail_v_num.setText(pay_detail.getString("v_num"));
 
                 contentHolder.mCurrentLayoutItemView.setOnTouchListener(new ClickListener(v -> {
                     setCurrentItemIndexAndItemView(v);
@@ -119,7 +117,7 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public int getItemCount() {
-        return mDatas == null ? 1 : mDatas.length() + 1;
+        return mDatas == null ? 1 : mDatas.size() + 1;
     }
 
     @Override
@@ -144,7 +142,7 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
         this.mOnItemDoubleClickListener = onItemDoubleClickListener;
     }
     public JSONObject getCurrentContent() {
-        return mDatas.optJSONObject(mCurrentItemIndex);
+        return mDatas.getJSONObject(mCurrentItemIndex);
     }
 
     private void setCurrentItemIndexAndItemView(View v){
@@ -153,9 +151,9 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
         if (null != mCurrentItemView && (tv_id = mCurrentItemView.findViewById(R.id.pay_method_id)) != null){
             String id = tv_id.getText().toString();
             if (mDatas != null ){
-                for (int i = 0,length = mDatas.length();i < length;i ++){
-                    JSONObject json = mDatas.optJSONObject(i);
-                    if (id.equals(json.optString("pay_method_id"))){
+                for (int i = 0,length = mDatas.size();i < length;i ++){
+                    JSONObject json = mDatas.getJSONObject(i);
+                    if (id.equals(json.getString("pay_method_id"))){
                         mCurrentItemIndex = i;
                         return;
                     }
@@ -175,30 +173,24 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     public void addPayDetail(JSONObject pay_detail_info){
         if (pay_detail_info != null){
-            try {
-                JSONObject object = findPayDetailById(pay_detail_info.getString("pay_method_id"));
-                if (object != null){
-                    double payed_amt = object.getDouble("pamt"),
-                            zl_amt = object.getDouble("pzl");
+            JSONObject object = findPayDetailById(pay_detail_info.getString("pay_method_id"));
+            if (object != null){
+                double payed_amt = object.getDouble("pamt"),
+                        zl_amt = object.getDouble("pzl");
 
-                    object.put("pamt",Utils.formatDouble(payed_amt + pay_detail_info.getDouble("pamt"),2));
-                    object.put("pzl",Utils.formatDouble(zl_amt + pay_detail_info.getDouble("pzl"),2));
-                    object.put("v_num",pay_detail_info.getString("v_num"));
-                }else{
-                    mDatas.put(pay_detail_info);
-                }
-                notifyDataSetChanged();
-            }catch (JSONException e){
-                e.printStackTrace();
-                MyDialog.ToastMessage("付款错误：" + e.getMessage(),mContext,null);
+                object.put("pamt",Utils.formatDouble(payed_amt + pay_detail_info.getDouble("pamt"),2));
+                object.put("pzl",Utils.formatDouble(zl_amt + pay_detail_info.getDouble("pzl"),2));
+                object.put("v_num",pay_detail_info.getString("v_num"));
+            }else{
+                mDatas.add(pay_detail_info);
             }
-
+            notifyDataSetChanged();
         }
     }
 
     private void deletePayDetail(int index){
         Logger.d("index:%d",index);
-        if (0 <= index && index < mDatas.length()){
+        if (0 <= index && index < mDatas.size()){
             mDatas.remove(index);
             if (mCurrentItemIndex == index){//如果删除的是当前选择的item则重置当前index以及View
                 mCurrentItemIndex = -1;
@@ -217,30 +209,25 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     public JSONObject findPayDetailById(final String id){
-        try {
-            for (int i = 0,length = mDatas.length();i < length;i ++){//0为表头
-                JSONObject jsonObject = mDatas.getJSONObject(i);
-                if (id != null && id.equals(jsonObject.getString("pay_method_id"))){
-                    return jsonObject;
-                }
+        for (int i = 0,length = mDatas.size();i < length;i ++){//0为表头
+            JSONObject jsonObject = mDatas.getJSONObject(i);
+            if (id != null && id.equals(jsonObject.getString("pay_method_id"))){
+                return jsonObject;
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
-            MyDialog.ToastMessage("查找付款记录错误：" + e.getMessage(),mContext,null);
         }
         return null;
     }
     public void clearPayDetail(){
-        Utils.ClearJsons(mDatas);
+        mDatas.fluentClear();
         notifyDataSetChanged();
     }
 
     public double getPaySumAmt(){//验证付款金额
         double amt = 0.0;
-        for (int i = 0,size = mDatas.length();i < size;i++){
-            JSONObject object = mDatas.optJSONObject(i);
+        for (int i = 0,size = mDatas.size();i < size;i++){
+            JSONObject object = mDatas.getJSONObject(i);
             if (null != object)
-                amt += object.optDouble("pamt") - object.optDouble("pzl");
+                amt += object.getDoubleValue("pamt") - object.getDoubleValue("pzl");
         }
         return amt;
     }

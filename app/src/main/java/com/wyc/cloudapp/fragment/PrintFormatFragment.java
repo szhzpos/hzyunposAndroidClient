@@ -1,30 +1,23 @@
 package com.wyc.cloudapp.fragment;
 
-import android.app.Dialog;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.logger.Logger;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.wyc.cloudapp.utils.Utils;
 
 public class PrintFormatFragment extends BaseFragment {
     private static final String mTitle = "打印格式";
@@ -42,12 +35,9 @@ public class PrintFormatFragment extends BaseFragment {
 
     @Override
     public JSONObject laodContent() {
-        try {
-            get_print_format_content(false);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            MyDialog.ToastMessage(null,e.getMessage(),mContext,null);
-        }
+
+        get_print_format_content(false);
+
         return null;
     }
 
@@ -55,16 +45,11 @@ public class PrintFormatFragment extends BaseFragment {
     public boolean saveContent() {
         JSONArray array = new JSONArray();
         StringBuilder err = new StringBuilder();
-        try {
-            array.put(get_print_format_content(true));
-            if (!SQLiteHelper.execSQLByBatchFromJson(array,"local_parameter",null,err,1)){
-                MyDialog.ToastMessage(null,err.toString(),mContext,null);
-            }else{
-                MyDialog.ToastMessage(null,"保存成功！",mContext,null);
-            }
-        }catch (JSONException e){
-            e.printStackTrace();
-            MyDialog.ToastMessage(null,e.getMessage(),mContext,null);
+        array.add(get_print_format_content(true));
+        if (!SQLiteHelper.execSQLByBatchFromJson(array,"local_parameter",null,err,1)){
+            MyDialog.ToastMessage(null,err.toString(),mContext,null);
+        }else{
+            MyDialog.ToastMessage(null,"保存成功！",mContext,null);
         }
         return false;
     }
@@ -103,7 +88,7 @@ public class PrintFormatFragment extends BaseFragment {
         super.onDetach();
     }
 
-    private JSONObject get_print_format_content(boolean way) throws JSONException {
+    private JSONObject get_print_format_content(boolean way){
         JSONObject object = new JSONObject(),content = new JSONObject();
 
         if (mRootView != null){
@@ -133,14 +118,14 @@ public class PrintFormatFragment extends BaseFragment {
                  content.put("parameter_desc", "打印格式信息");
              }else{
                  if (SQLiteHelper.getLocalParameter(parameter_id,object)){
-                     id = object.optInt("f",-1);
+                     id = Utils.getNotKeyAsDefault(object,"f",-1);
                      if (id != -1){
                          frg.check(id);
-                         fzrg.check(object.optInt("f_z"));
-                         stores_name.setText(object.optString("s_n"));
-                         footer_c.setText(object.optString("f_c"));
-                         p_count.setText(object.optString("p_c","1"));
-                         footer_space.setText(object.optString("f_s","5"));
+                         fzrg.check(object.getIntValue("f_z"));
+                         stores_name.setText(object.getString("s_n"));
+                         footer_c.setText(object.getString("f_c"));
+                         p_count.setText(Utils.getNullOrEmptyStringAsDefault(object,"p_c","1"));
+                         footer_space.setText(Utils.getNullOrEmptyStringAsDefault(object,"f_s","5"));
                      }
                  }else{
                      MyDialog.ToastMessage("加载打印格式参数错误：" + object.getString("info"),mContext,null);

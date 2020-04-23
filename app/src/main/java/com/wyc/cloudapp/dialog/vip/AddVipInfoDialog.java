@@ -17,6 +17,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
@@ -24,10 +28,6 @@ import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.util.Locale;
@@ -95,24 +95,18 @@ public class AddVipInfoDialog extends Dialog {
 
     public JSONObject getVipInfo(){
         String phone_num = m_vip_p_num.getText().toString();
-        try {
-            if (mVip != null){
-                mVip.put("member_id",mMemberId);
-            }else{
-                mVip = new JSONObject();
-                mVip.put("login_pwd",phone_num.substring(phone_num.length() - 6));
-            }
-            mVip.put("mobile",phone_num);
-            mVip.put("name",m_vip_name.getText());
-            mVip.put("birthday",m_vip_birthday.getText());
-            mVip.put("card_code",m_card_id.getText());
-            mVip.put("grade_id",mVipGradeId);
-            mVip.put("sex",mSex);
-        } catch (JSONException e) {
-            mVip = null;
-            e.printStackTrace();
-            MyDialog.ToastMessage("获取会员信息错误：" + e.getMessage(),mContext,getWindow());
+        if (mVip != null){
+            mVip.put("member_id",mMemberId);
+        }else{
+            mVip = new JSONObject();
+            mVip.put("login_pwd",phone_num.substring(phone_num.length() - 6));
         }
+        mVip.put("mobile",phone_num);
+        mVip.put("name",m_vip_name.getText());
+        mVip.put("birthday",m_vip_birthday.getText());
+        mVip.put("card_code",m_card_id.getText());
+        mVip.put("grade_id",mVipGradeId);
+        mVip.put("sex",mSex);
         return mVip;
     }
 
@@ -148,10 +142,10 @@ public class AddVipInfoDialog extends Dialog {
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext,R.layout.drop_down_style);
         final String sz_male = "男",sz_woman = "女";
         if (mVip != null){
-            if (sz_male.equals(mVip.optString("sex"))){
+            if (sz_male.equals(mVip.getString("sex"))){
                 arrayAdapter.add(sz_male);
                 arrayAdapter.add(sz_woman);
-            }else if(sz_woman.equals(mVip.optString("sex"))){
+            }else if(sz_woman.equals(mVip.getString("sex"))){
                 arrayAdapter.add(sz_woman);
                 arrayAdapter.add(sz_male);
             }else{
@@ -189,18 +183,18 @@ public class AddVipInfoDialog extends Dialog {
                 object.put("appid",mAppId);
                 sz_param = HttpRequest.generate_request_parm(object,mAppScret);
                 ret_json = httpRequest.sendPost(url,sz_param,true);
-                switch (ret_json.getInt("flag")){
+                switch (ret_json.getIntValue("flag")){
                     case 0:
-                        mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"查询会员级别错误：" + ret_json.optString("info")).sendToTarget();
+                        mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"查询会员级别错误：" + ret_json.getString("info")).sendToTarget();
                         break;
                     case 1:
-                        ret_json = new JSONObject(ret_json.getString("info"));
+                        ret_json = JSON.parseObject(ret_json.getString("info"));
                         switch (ret_json.getString("status")){
                             case "n":
-                                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"查询会员级别错误：" + ret_json.optString("info")).sendToTarget();
+                                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"查询会员级别错误：" + ret_json.getString("info")).sendToTarget();
                                 break;
                             case "y":
-                                mHandler.obtainMessage(MessageID.QUERY_VIP_LEVEL_ID,new JSONArray(ret_json.getString("grade_list"))).sendToTarget();
+                                mHandler.obtainMessage(MessageID.QUERY_VIP_LEVEL_ID,JSON.parseArray(ret_json.getString("grade_list"))).sendToTarget();
                                 break;
                         }
                         break;
@@ -216,19 +210,19 @@ public class AddVipInfoDialog extends Dialog {
         Spinner m_vip_level = findViewById(R.id.n_vip_level);
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext,R.layout.drop_down_style);
 
-        if (array.length() != 0){
-            mVipGradeId = array.optJSONObject(0).optString("grade_id");
-            for(int i = 0,length = array.length();i < length;i++){
-                JSONObject object = array.optJSONObject(i);
-                arrayAdapter.add(object.optString("grade_name"));
+        if (array.size() != 0){
+            mVipGradeId = array.getJSONObject(0).getString("grade_id");
+            for(int i = 0,length = array.size();i < length;i++){
+                JSONObject object = array.getJSONObject(i);
+                arrayAdapter.add(object.getString("grade_name"));
             }
             m_vip_level.setAdapter(arrayAdapter);
             m_vip_level.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    JSONObject jsonObject = array.optJSONObject(position);
+                    JSONObject jsonObject = array.getJSONObject(position);
                     if (jsonObject != null)
-                        mVipGradeId = jsonObject.optString("grade_id");
+                        mVipGradeId = jsonObject.getString("grade_id");
                 }
                 @Override
                 public void onNothingSelected(AdapterView<?> parent) {
@@ -243,7 +237,7 @@ public class AddVipInfoDialog extends Dialog {
             String url = mUrl + "/api/member/mk",sz_param;
             JSONObject object = getVipInfo(),ret_json;
 
-            if (mVip.has("member_id")){
+            if (mVip.containsKey("member_id")){
                 url = mUrl + "/api/member/up";
             }
 
@@ -254,18 +248,18 @@ public class AddVipInfoDialog extends Dialog {
                     sz_param = HttpRequest.generate_request_parm(object,mAppScret);
 
                     ret_json = httpRequest.sendPost(url,sz_param,true);
-                    switch (ret_json.getInt("flag")){
+                    switch (ret_json.getIntValue("flag")){
                         case 0:
-                            mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"上传会员信息错误：" + ret_json.optString("info")).sendToTarget();
+                            mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"上传会员信息错误：" + ret_json.getString("info")).sendToTarget();
                             break;
                         case 1:
-                            ret_json = new JSONObject(ret_json.getString("info"));
+                            ret_json = JSON.parseObject((ret_json.getString("info")));
                             switch (ret_json.getString("status")){
                                 case "n":
-                                    mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"上传会员信息错误：" + ret_json.optString("info")).sendToTarget();
+                                    mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"上传会员信息错误：" + ret_json.getString("info")).sendToTarget();
                                     break;
                                 case "y":
-                                    mHandler.obtainMessage(MessageID.ADD_VIP_INFO_ID,ret_json.optString("info")).sendToTarget();
+                                    mHandler.obtainMessage(MessageID.ADD_VIP_INFO_ID,ret_json.getString("info")).sendToTarget();
                                     break;
                             }
                             break;
@@ -279,11 +273,11 @@ public class AddVipInfoDialog extends Dialog {
     }
     private void showVipInfo(){
         ((TextView)findViewById(R.id.title)).setText(R.string.modify_vip_sz);
-        mMemberId = mVip.optString("member_id");
-        m_vip_p_num.setText(mVip.optString("mobile"));
-        m_vip_name.setText(mVip.optString("name"));
-        m_card_id.setText(mVip.optString("card_code"));
-        m_vip_birthday.setText(mVip.optString("birthday"));
+        mMemberId = mVip.getString("member_id");
+        m_vip_p_num.setText(mVip.getString("mobile"));
+        m_vip_name.setText(mVip.getString("name"));
+        m_card_id.setText(mVip.getString("card_code"));
+        m_vip_birthday.setText(mVip.getString("birthday"));
     }
 
     private static class Myhandler extends Handler {

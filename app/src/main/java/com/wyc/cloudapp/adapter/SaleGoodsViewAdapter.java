@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
@@ -17,10 +19,6 @@ import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.callback.ClickListener;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.Locale;
 
@@ -66,18 +64,18 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
         if (mDatas != null){
-            final JSONObject goods_info = mDatas.optJSONObject(i);
+            final JSONObject goods_info = mDatas.getJSONObject(i);
             if (goods_info != null){
                 myViewHolder.row_id.setText(String.format(Locale.CHINA,"%s%s",i + 1,"、"));
-                myViewHolder.goods_id.setText(goods_info.optString("goods_id"));
-                myViewHolder.gp_id.setText(goods_info.optString("gp_id"));
-                myViewHolder.goods_title.setText(goods_info.optString("goods_title"));
-                myViewHolder.unit_name.setText(goods_info.optString("unit_name"));
-                myViewHolder.barcode_id.setText(goods_info.optString("barcode_id"));
-                myViewHolder.barcode.setText(goods_info.optString("barcode"));
-                myViewHolder.sale_price.setText(goods_info.optString("price"));
-                myViewHolder.sale_num.setText(goods_info.optString("xnum"));
-                myViewHolder.sale_amt.setText(goods_info.optString("sale_amt"));
+                myViewHolder.goods_id.setText(goods_info.getString("goods_id"));
+                myViewHolder.gp_id.setText(goods_info.getString("gp_id"));
+                myViewHolder.goods_title.setText(goods_info.getString("goods_title"));
+                myViewHolder.unit_name.setText(goods_info.getString("unit_name"));
+                myViewHolder.barcode_id.setText(goods_info.getString("barcode_id"));
+                myViewHolder.barcode.setText(goods_info.getString("barcode"));
+                myViewHolder.sale_price.setText(goods_info.getString("price"));
+                myViewHolder.sale_num.setText(goods_info.getString("xnum"));
+                myViewHolder.sale_amt.setText(goods_info.getString("sale_amt"));
 
                 if(myViewHolder.goods_title.getCurrentTextColor() == mContext.getResources().getColor(R.color.blue,null)){
                     myViewHolder.goods_title.setTextColor(mContext.getColor(R.color.black));//需要重新设置颜色；不然重用之后内容颜色为重用之前的。
@@ -105,7 +103,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
 
     @Override
     public int getItemCount() {
-        return mDatas == null ? 0 : mDatas.length();
+        return mDatas == null ? 0 : mDatas.size();
     }
 
     public interface OnItemClickListener{
@@ -125,103 +123,98 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     public void addSaleGoods(JSONObject goods,final JSONObject vip){
         boolean exist = false;
         if (goods != null){
-            try {
-                int barcode_id = goods.getInt("barcode_id"),gp_id = goods.getInt("gp_id");
-                double sel_num = 1.00,sel_amount,price,discount = 1.0,discount_amt = 0.0,new_price = 0.0,
-                sale_num = 0.0,sale_amount = 0.0,sale_discount_amt = 0.0;
+            int barcode_id = goods.getIntValue("barcode_id"),gp_id = goods.getIntValue("gp_id");
+            double sel_num = 1.00,sel_amount,price,discount = 1.0,discount_amt = 0.0,new_price = 0.0,
+            sale_num = 0.0,sale_amount = 0.0,sale_discount_amt = 0.0;
 
-                boolean isBarcodeWeighingGoods = goods.has(GoodsInfoViewAdapter.I_W_G_MARK);
+            boolean isBarcodeWeighingGoods = goods.containsKey(GoodsInfoViewAdapter.I_W_G_MARK);
 
-                price = goods.getDouble("price");
-                if (isBarcodeWeighingGoods){
-                    sel_num = goods.getDouble("xnum");
-                }
-                for (int i = 0,length = mDatas.length();i < length;i++){
-                    JSONObject tmp = mDatas.getJSONObject(i);
-                    if (barcode_id == tmp.getInt("barcode_id") && gp_id == tmp.getInt("gp_id")){
-                        exist = true;
+            price = goods.getDoubleValue("price");
+            if (isBarcodeWeighingGoods){
+                sel_num = goods.getDoubleValue("xnum");
+            }
+            for (int i = 0,length = mDatas.size();i < length;i++){
+                JSONObject tmp = mDatas.getJSONObject(i);
+                if (barcode_id == tmp.getIntValue("barcode_id") && gp_id == tmp.getIntValue("gp_id")){
+                    exist = true;
 
-                        sale_num = tmp.getDouble("xnum");
-                        sale_amount = tmp.getDouble("sale_amt");
-                        sale_discount_amt = tmp.getDouble("discount_amt");
+                    sale_num = tmp.getDoubleValue("xnum");
+                    sale_amount = tmp.getDoubleValue("sale_amt");
+                    sale_discount_amt = tmp.getDoubleValue("discount_amt");
 
-                        discount  = tmp.optDouble("discount",1.0);
-                        new_price = Utils.formatDouble(price * discount,2);
+                    discount  = Utils.getNotKeyAsDefault(tmp,"discount",1.0);
 
-                        if (isBarcodeWeighingGoods){
-                            sel_amount = goods.optDouble("sale_amt");
-                        }else
-                            sel_amount = Utils.formatDouble(sel_num * new_price,2);
-
-                        discount_amt = Utils.formatDouble((sel_num * (price - new_price)) + sale_discount_amt,2);
-
-                        tmp.put("old_price", price);
-                        tmp.put("price", new_price);
-                        tmp.put("discount", discount);
-                        tmp.put("discount_amt", discount_amt);
-                        tmp.put("xnum",Utils.formatDouble(sale_num + sel_num,4));
-                        tmp.put("sale_amt",Utils.formatDouble(sale_amount + sel_amount,2));
-                        tmp.put("old_amt",Utils.formatDouble(sale_amount + sel_amount + discount_amt,2));
-
-                        Logger.d_json(tmp.toString());
-
-                        mCurrentItemIndex = i;
-
-                        break;
-                    }
-                }
-                if (!exist){
-                    if (vip != null){
-                        goods.put("card_code",vip.getString("card_code"));
-                        goods.put("name",vip.getString("name"));
-                        goods.put("mobile",vip.getString("mobile"));
-                        switch (goods.getInt("yh_mode")){
-                            case 0://无优惠
-                                discount  = 1.0;
-                                new_price = price;
-                                break;
-                            case 1://会员价
-                                new_price = Utils.formatDouble(goods.getDouble("yh_price"),2);
-                                discount  = Utils.formatDouble(new_price / (price == 0 ? 1 : price),2);
-                                break;
-                            case 2://会员折扣
-                                discount  = Utils.formatDouble(vip.optDouble("discount",1.0) / 10,2);
-                                new_price = Utils.formatDouble(price * discount,2);
-                                break;
-                        }
-                    }else{
-                        discount  = Utils.formatDouble(goods.optDouble("discount",1.0),2);
-                        new_price = Utils.formatDouble(price * discount,2);
-                    }
+                    new_price = Utils.formatDouble(price * discount,2);
 
                     if (isBarcodeWeighingGoods){
-                        sel_amount = goods.optDouble("sale_amt");
+                        sel_amount = goods.getDoubleValue("sale_amt");
                     }else
                         sel_amount = Utils.formatDouble(sel_num * new_price,2);
 
-                    discount_amt = Utils.formatDouble(sel_num * (price - new_price),2);
+                    discount_amt = Utils.formatDouble((sel_num * (price - new_price)) + sale_discount_amt,2);
 
-                    goods.put("old_price", price);
-                    goods.put("price",new_price);
-                    goods.put("discount", discount);
-                    goods.put("discount_amt", discount_amt);
-                    goods.put("xnum",sel_num);
-                    goods.put("sale_amt",sel_amount);
-                    goods.put("old_amt",Utils.formatDouble(sel_amount + discount_amt,2));
-                    mDatas.put(goods);
-                    mCurrentItemIndex = mDatas.length() - 1;
+                    tmp.put("old_price", price);
+                    tmp.put("price", new_price);
+                    tmp.put("discount", discount);
+                    tmp.put("discount_amt", discount_amt);
+                    tmp.put("xnum",Utils.formatDouble(sale_num + sel_num,4));
+                    tmp.put("sale_amt",Utils.formatDouble(sale_amount + sel_amount,2));
+                    tmp.put("old_amt",Utils.formatDouble(sale_amount + sel_amount + discount_amt,2));
+
+                    Logger.d_json(tmp.toString());
+
+                    mCurrentItemIndex = i;
+
+                    break;
+                }
+            }
+            if (!exist){
+                if (vip != null){
+                    goods.put("card_code",vip.getString("card_code"));
+                    goods.put("name",vip.getString("name"));
+                    goods.put("mobile",vip.getString("mobile"));
+                    switch (goods.getIntValue("yh_mode")){
+                        case 0://无优惠
+                            discount  = 1.0;
+                            new_price = price;
+                            break;
+                        case 1://会员价
+                            new_price = Utils.formatDouble(goods.getDoubleValue("yh_price"),2);
+                            discount  = Utils.formatDouble(new_price / (price == 0 ? 1 : price),2);
+                            break;
+                        case 2://会员折扣
+                            discount  = Utils.formatDouble(Utils.getNotKeyAsDefault(goods,"discount",10.0) / 10,2);
+                            new_price = Utils.formatDouble(price * discount,2);
+                            break;
+                    }
+                }else{
+                    discount  = Utils.formatDouble(Utils.getNotKeyAsDefault(goods,"discount",1.0),2);
+                    new_price = Utils.formatDouble(price * discount,2);
                 }
 
-                this.notifyDataSetChanged();
-            }catch (JSONException e){
-                MyDialog.ToastMessage("选择商品错误：" + e.getMessage(),mContext,null);
-                e.printStackTrace();
+                if (isBarcodeWeighingGoods){
+                    sel_amount = goods.getDoubleValue("sale_amt");
+                }else
+                    sel_amount = Utils.formatDouble(sel_num * new_price,2);
+
+                discount_amt = Utils.formatDouble(sel_num * (price - new_price),2);
+
+                goods.put("old_price", price);
+                goods.put("price",new_price);
+                goods.put("discount", discount);
+                goods.put("discount_amt", discount_amt);
+                goods.put("xnum",sel_num);
+                goods.put("sale_amt",sel_amount);
+                goods.put("old_amt",Utils.formatDouble(sel_amount + discount_amt,2));
+                mDatas.add(goods);
+                mCurrentItemIndex = mDatas.size() - 1;
             }
+            this.notifyDataSetChanged();
         }
     }
 
     public void deleteSaleGoods(int index,double num){
-        if (0 <= index && index < mDatas.length()){
+        if (0 <= index && index < mDatas.size()){
             if (num == 0){//等于0删除整条记录
                 mDatas.remove(index);
                 if (mCurrentItemIndex == index){//如果删除的是当前选择的item则重置当前index以及View
@@ -229,20 +222,15 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                     mCurrentItemView = null;
                 }
             }else{
-                JSONObject jsonObject = mDatas.optJSONObject(index);
-                try {
-                    double current_num = jsonObject.getDouble("xnum"),
-                            price = jsonObject.getDouble("price");
-                    if ((current_num = current_num - num) <= 0){
-                        mDatas.remove(index);
-                    }else{
-                        jsonObject.put("xnum",current_num);
-                        jsonObject.put("sale_amt",Utils.formatDouble(current_num * price,2));
-                        jsonObject.put("old_amt",Utils.formatDouble(current_num * jsonObject.getDouble("old_price"),2));
-                    }
-                }catch (JSONException e){
-                    e.printStackTrace();
-                    MyDialog.ToastMessage("删除商品错误：" + e.getMessage(),mContext,null);
+                JSONObject jsonObject = mDatas.getJSONObject(index);
+                double current_num = jsonObject.getDoubleValue("xnum"),
+                        price = jsonObject.getDoubleValue("price");
+                if ((current_num = current_num - num) <= 0){
+                    mDatas.remove(index);
+                }else{
+                    jsonObject.put("xnum",current_num);
+                    jsonObject.put("sale_amt",Utils.formatDouble(current_num * price,2));
+                    jsonObject.put("old_amt",Utils.formatDouble(current_num * jsonObject.getDoubleValue("old_price"),2));
                 }
             }
             notifyDataSetChanged();
@@ -254,13 +242,13 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
             ChangeNumOrPriceDialog dialog;
             switch (type){
                 case 1:
-                    dialog = new ChangeNumOrPriceDialog(mContext,"新价格",cur_json.optString("price"));
+                    dialog = new ChangeNumOrPriceDialog(mContext,"新价格",cur_json.getString("price"));
                     break;
                 case 2:
-                    dialog = new ChangeNumOrPriceDialog(mContext,mContext.getString(R.string.discount_sz),String.format(Locale.CHINA,"%.0f",cur_json.optDouble("discount",1.0)*100));
+                    dialog = new ChangeNumOrPriceDialog(mContext,mContext.getString(R.string.discount_sz),String.format(Locale.CHINA,"%.0f",Utils.getNotKeyAsDefault(cur_json,"discount",1.0)*100));
                     break;
                     default:
-                        dialog = new ChangeNumOrPriceDialog(mContext,"新数量",String.format(Locale.CHINA,"%.2f",cur_json.optDouble("xnum",1.0)));
+                        dialog = new ChangeNumOrPriceDialog(mContext,"新数量",String.format(Locale.CHINA,"%.2f",Utils.getNotKeyAsDefault(cur_json,"xnum",1.0)));
                         break;
             }
             dialog.setYesOnclickListener(myDialog -> {
@@ -274,13 +262,118 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     public JSONArray discount(double value){//整单折
         double  discount_amt = 0.0,old_price = 0.0,new_price = 0.0,xnum = 0.0,discount;
         boolean d_discount = false;//是否折上折
-        try {
-            for(int i = 0,length = mDatas.length();i < length;i++){
-                JSONObject json = mDatas.getJSONObject(i);
-                old_price = json.getDouble("old_price");
+        for(int i = 0,length = mDatas.size();i < length;i++){
+            JSONObject json = mDatas.getJSONObject(i);
+            old_price = json.getDoubleValue("old_price");
+            discount = Utils.formatDouble(value / 100,4);
+            new_price = json.getDoubleValue("price");
+            xnum = json.getDoubleValue("xnum");
+
+            if (d_discount){
+                new_price = Utils.formatDouble(new_price * discount,2);
+            }else{
+                new_price = Utils.formatDouble(old_price * discount,2);
+            }
+
+            discount_amt = Utils.formatDouble(xnum * (old_price - new_price),2);
+
+            json.put("discount", discount);
+            json.put("discount_amt", discount_amt);
+            json.put("price",new_price);
+
+            json.put("sale_amt",Utils.formatDouble(xnum * new_price,2));
+            json.put("old_amt",Utils.formatDouble(old_price * xnum,2));
+        }
+        notifyDataSetChanged();
+        return mDatas;
+    }
+    public void clearGoods(){
+        mDatas.fluentClear();
+        this.notifyDataSetChanged();
+    }
+    public JSONObject getCurrentContent() {
+        return mDatas.getJSONObject(mCurrentItemIndex);
+    }
+    public int getCurrentItemIndex(){
+        return mCurrentItemIndex;
+    }
+    public SaleGoodsViewAdapter setCurrentItemIndex(int index){mCurrentItemIndex = index;return this;}
+    public JSONArray getDatas() {
+        return mDatas;
+    }
+    public JSONArray updateGoodsInfoToVip(final JSONObject vip){
+        double discount = 1.0,new_price = 0.0,old_price,discount_amt = 0.0,xnum = 0.0;
+        if (vip != null){
+            for (int i = 0,length = mDatas.size();i < length;i++){
+                JSONObject jsonObject = mDatas.getJSONObject(i);
+
+                /*jsonObject.put("card_code",vip.getString("card_code"));
+                jsonObject.put("name",vip.getString("name"));
+                jsonObject.put("mobile",vip.getString("mobile"));*/
+
+                old_price = jsonObject.getDoubleValue("old_price");
+                xnum = jsonObject.getDoubleValue("xnum");
+
+                switch (jsonObject.getIntValue("yh_mode")){
+                    case 0://无优惠
+                        discount  = 1.0;
+                        new_price = old_price;
+                        break;
+                    case 1://会员价
+                        new_price = Utils.formatDouble(jsonObject.getDoubleValue("yh_price"),2);
+                        discount  = Utils.formatDouble(new_price / (old_price == 0 ? 1 : old_price),2);
+                        break;
+                    case 2://会员折扣
+                        discount  = Utils.formatDouble(Utils.getNotKeyAsDefault(vip,"discount",1.0) / 10,2);
+                        new_price = Utils.formatDouble(old_price * discount,2);
+                        break;
+                }
+                discount_amt = Utils.formatDouble(xnum * (old_price - new_price),2);
+
+                jsonObject.put("discount", discount);
+                jsonObject.put("discount_amt", discount_amt);
+                jsonObject.put("price",new_price);
+                jsonObject.put("sale_amt",Utils.formatDouble(xnum * new_price,2));
+                jsonObject.put("old_amt",Utils.formatDouble(old_price * xnum,2));
+            }
+            notifyDataSetChanged();
+        }
+        return mDatas;
+    }
+    public void updateSaleGoodsInfo(double value,short type){//type 0 修改数量 1修改价格 2打折
+        JSONObject json = getCurrentContent();
+        double discount = 1.0,discount_amt = 0.0,old_price = 0.0,new_price = 0.0,xnum = 0.0;
+        boolean d_discount = false;//是否折上折
+        old_price = json.getDoubleValue("old_price");
+        switch (type){
+            case 0:
+                if (value <= 0){
+                    deleteSaleGoods(getCurrentItemIndex(),0);
+                }else{
+                    xnum = value;
+                    new_price = json.getDoubleValue("price");
+                    discount_amt = xnum * (old_price - new_price);
+
+                    json.put("discount_amt", Utils.formatDouble(discount_amt + json.getDoubleValue("discount_amt"),2));
+                    json.put("xnum",Utils.formatDouble(xnum,4));
+
+                }
+                break;
+            case 1:
+                xnum = json.getDoubleValue("xnum");
+
+                new_price = value;
+                discount = Utils.formatDouble(new_price / old_price,4);
+                discount_amt = Utils.formatDouble(xnum * (old_price - new_price),2);
+
+                json.put("discount", discount);
+                json.put("discount_amt", discount_amt);
+                json.put("price",Utils.formatDouble(new_price,2));
+                break;
+            case 2:
                 discount = Utils.formatDouble(value / 100,4);
-                new_price = json.getDouble("price");
-                xnum = json.getDouble("xnum");
+                new_price = json.getDoubleValue("price");
+                xnum = json.getDoubleValue("xnum");
 
                 if (d_discount){
                     new_price = Utils.formatDouble(new_price * discount,2);
@@ -293,134 +386,13 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 json.put("discount", discount);
                 json.put("discount_amt", discount_amt);
                 json.put("price",new_price);
-
-                json.put("sale_amt",Utils.formatDouble(xnum * new_price,2));
-                json.put("old_amt",Utils.formatDouble(old_price * xnum,2));
-            }
-            notifyDataSetChanged();
-        } catch (JSONException e) {
-            e.printStackTrace();
-            MyDialog.ToastMessage("整单折扣错误：" + e.getMessage(),mContext,null);
+                break;
         }
+        json.put("sale_amt",Utils.formatDouble(xnum * new_price,2));
+        json.put("old_amt",Utils.formatDouble(old_price * xnum,2));
 
-        return mDatas;
-    }
-    public void clearGoods(){
-        Utils.ClearJsons(mDatas);
-        this.notifyDataSetChanged();
-    }
-    public JSONObject getCurrentContent() {
-        return mDatas.optJSONObject(mCurrentItemIndex);
-    }
-    public int getCurrentItemIndex(){
-        return mCurrentItemIndex;
-    }
-    public SaleGoodsViewAdapter setCurrentItemIndex(int index){mCurrentItemIndex = index;return this;}
-    public JSONArray getDatas() {
-        return mDatas;
-    }
-    public JSONArray updateGoodsInfoToVip(final JSONObject vip){
-        double discount = 1.0,new_price = 0.0,old_price,discount_amt = 0.0,xnum = 0.0;
-        if (vip != null){
-            try {
-                for (int i = 0,length = mDatas.length();i < length;i++){
-                    JSONObject jsonObject = mDatas.getJSONObject(i);
-
-                    /*jsonObject.put("card_code",vip.getString("card_code"));
-                    jsonObject.put("name",vip.getString("name"));
-                    jsonObject.put("mobile",vip.getString("mobile"));*/
-
-                    old_price = jsonObject.getDouble("old_price");
-                    xnum = jsonObject.getDouble("xnum");
-
-                    switch (jsonObject.getInt("yh_mode")){
-                        case 0://无优惠
-                            discount  = 1.0;
-                            new_price = old_price;
-                            break;
-                        case 1://会员价
-                            new_price = Utils.formatDouble(jsonObject.getDouble("yh_price"),2);
-                            discount  = Utils.formatDouble(new_price / (old_price == 0 ? 1 : old_price),2);
-                            break;
-                        case 2://会员折扣
-                            discount  = Utils.formatDouble(vip.optDouble("discount",1.0) / 10,2);
-                            new_price = Utils.formatDouble(old_price * discount,2);
-                            break;
-                    }
-                    discount_amt = Utils.formatDouble(xnum * (old_price - new_price),2);
-
-                    jsonObject.put("discount", discount);
-                    jsonObject.put("discount_amt", discount_amt);
-                    jsonObject.put("price",new_price);
-                    jsonObject.put("sale_amt",Utils.formatDouble(xnum * new_price,2));
-                    jsonObject.put("old_amt",Utils.formatDouble(old_price * xnum,2));
-                }
-                notifyDataSetChanged();
-            }catch (JSONException e){
-                e.printStackTrace();
-                MyDialog.ToastMessage("会员折扣错误：" + e.getMessage(),mContext,null);
-            }
-        }
-        return mDatas;
-    }
-    private void updateSaleGoodsInfo(double value,short type){//type 0 修改数量 1修改价格 2打折
-        JSONObject json = getCurrentContent();
-        double discount = 1.0,discount_amt = 0.0,old_price = 0.0,new_price = 0.0,xnum = 0.0;
-        boolean d_discount = false;//是否折上折
-        try {
-            old_price = json.getDouble("old_price");
-            switch (type){
-                case 0:
-                    if (value <= 0){
-                        deleteSaleGoods(getCurrentItemIndex(),0);
-                    }else{
-                        xnum = value;
-                        new_price = json.getDouble("price");
-                        discount_amt = xnum * (old_price - new_price);
-
-                        json.put("discount_amt", Utils.formatDouble(discount_amt + json.getDouble("discount_amt"),2));
-                        json.put("xnum",Utils.formatDouble(xnum,4));
-
-                    }
-                    break;
-                case 1:
-                    xnum = json.getDouble("xnum");
-
-                    new_price = value;
-                    discount = Utils.formatDouble(new_price / old_price,4);
-                    discount_amt = Utils.formatDouble(xnum * (old_price - new_price),2);
-
-                    json.put("discount", discount);
-                    json.put("discount_amt", discount_amt);
-                    json.put("price",Utils.formatDouble(new_price,2));
-                    break;
-                case 2:
-                    discount = Utils.formatDouble(value / 100,4);
-                    new_price = json.getDouble("price");
-                    xnum = json.getDouble("xnum");
-
-                    if (d_discount){
-                        new_price = Utils.formatDouble(new_price * discount,2);
-                    }else{
-                        new_price = Utils.formatDouble(old_price * discount,2);
-                    }
-
-                    discount_amt = Utils.formatDouble(xnum * (old_price - new_price),2);
-
-                    json.put("discount", discount);
-                    json.put("discount_amt", discount_amt);
-                    json.put("price",new_price);
-                    break;
-            }
-            json.put("sale_amt",Utils.formatDouble(xnum * new_price,2));
-            json.put("old_amt",Utils.formatDouble(old_price * xnum,2));
-
-            Logger.d_json(json.toString());
-            notifyDataSetChanged();
-        } catch (JSONException e) {
-            e.printStackTrace();
-            MyDialog.ToastMessage("修改销售商品信息错误：" + e.getMessage(),mContext,null);
-        }
+        Logger.d_json(json.toString());
+        notifyDataSetChanged();
     }
     private void setCurrentItemIndexAndItemView(View v){
         TextView tv_id,tv_barcode_id,tv_gp_id;
@@ -430,10 +402,10 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
 
             CharSequence id = tv_id.getText(),barcode_id = tv_barcode_id.getText(),gp_id = tv_gp_id.getText();
             if (mDatas != null ){
-                for (int i = 0,length = mDatas.length();i < length;i ++){
-                    JSONObject json = mDatas.optJSONObject(i);
-                    if (id.equals(json.optString("goods_id")) && barcode_id.equals(json.optString("barcode_id")) &&
-                            gp_id.equals(json.optString("gp_id"))){
+                for (int i = 0,length = mDatas.size();i < length;i ++){
+                    JSONObject json = mDatas.getJSONObject(i);
+                    if (id.equals(json.getString("goods_id")) && barcode_id.equals(json.getString("barcode_id")) &&
+                            gp_id.equals(json.getString("gp_id"))){
                         mCurrentItemIndex = i;
                         return;
                     }
@@ -468,8 +440,8 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         JSONArray tmp;
         while (gp_num-- != 0){
             if (null != (tmp = SQLiteHelper.getListToJson(sql,err))){
-                for (int k = 0,length = tmp.length();k < length;k++){
-                    arrays.put(tmp.optJSONObject(k));
+                for (int k = 0,length = tmp.size();k < length;k++){
+                    arrays.add(tmp.getJSONObject(k));
                 }
             }else{
                 return false;
@@ -480,10 +452,10 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
 
     public double getSaleSumAmt(){//验证销售金额
         double amt = 0.0;
-        for (int i = 0,size = mDatas.length();i < size;i++){
-            JSONObject object = mDatas.optJSONObject(i);
+        for (int i = 0,size = mDatas.size();i < size;i++){
+            JSONObject object = mDatas.getJSONObject(i);
             if (null != object)
-                amt += object.optDouble("sale_amt");
+                amt += object.getDoubleValue("sale_amt");
         }
         return amt;
     }

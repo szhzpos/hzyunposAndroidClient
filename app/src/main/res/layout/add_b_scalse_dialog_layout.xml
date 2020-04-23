@@ -225,13 +225,13 @@
                 android:background="@drawable/left_separator"
                 android:gravity="center"
                 android:padding="@dimen/margin_5"
-                android:text="@string/port"
+                android:text="@string/port_sz"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/blue"
                 android:textSize="@dimen/font_size_16" />
 
             <EditText
-                android:id="@+id/s_port"
+                android:id="@+id/ser_port"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="@dimen/margin_1"

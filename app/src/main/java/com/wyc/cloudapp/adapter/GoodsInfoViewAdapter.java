@@ -1,6 +1,5 @@
 package com.wyc.cloudapp.adapter;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import androidx.annotation.NonNull;
@@ -14,6 +13,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -21,10 +22,6 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -42,9 +39,9 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         this.mContext = context;
         JSONObject jsonObject = new JSONObject();
         if (SQLiteHelper.getLocalParameter("g_i_show",jsonObject)){
-            mShowPic = (jsonObject.optInt("s",1) == 1);
+            mShowPic = (Utils.getNotKeyAsDefault(jsonObject,"s",1) == 1);
         }else{
-            MyDialog.ToastMessage("加载是否显示商品图片参数错误：" + jsonObject.optString("info"),mContext,null);
+            MyDialog.ToastMessage("加载是否显示商品图片参数错误：" + jsonObject.getString("info"),mContext,null);
         }
     }
 
@@ -56,7 +53,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
             super(itemView);
             mCurrentItemView = itemView;
 
-            goods_img = itemView.findViewById(R.id.goods_img);
+            goods_img = itemView.findViewById(R.id.g_img);
             goods_id = itemView.findViewById(R.id.goods_id);
             gp_id = itemView.findViewById(R.id.gp_id);
             goods_title =  itemView.findViewById(R.id.goods_title);
@@ -80,9 +77,9 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
         if (mDatas != null){
-            JSONObject goods_info = mDatas.optJSONObject(i);
+            JSONObject goods_info = mDatas.getJSONObject(i);
             if (goods_info != null){
-                final String img_url = goods_info.optString("img_url");
+                final String img_url = goods_info.getString("img_url");
                 if (mShowPic){
                     if (!"".equals(img_url)){
                         final String szImage = img_url.substring(img_url.lastIndexOf("/") + 1);
@@ -97,14 +94,14 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                     myViewHolder.goods_img.setVisibility(View.GONE);
                 }
 
-                myViewHolder.goods_id.setText(goods_info.optString("goods_id"));
-                myViewHolder.gp_id.setText(goods_info.optString("gp_id"));
-                myViewHolder.goods_title.setText(goods_info.optString("goods_title"));
-                myViewHolder.unit_id.setText(goods_info.optString("unit_id"));
-                myViewHolder.unit_name.setText(goods_info.optString("unit_name"));
-                myViewHolder.barcode_id.setText(goods_info.optString("barcode_id"));
-                myViewHolder.barcode.setText(goods_info.optString("barcode"));
-                myViewHolder.price.setText(goods_info.optString("price"));
+                myViewHolder.goods_id.setText(goods_info.getString("goods_id"));
+                myViewHolder.gp_id.setText(goods_info.getString("gp_id"));
+                myViewHolder.goods_title.setText(goods_info.getString("goods_title"));
+                myViewHolder.unit_id.setText(goods_info.getString("unit_id"));
+                myViewHolder.unit_name.setText(goods_info.getString("unit_name"));
+                myViewHolder.barcode_id.setText(goods_info.getString("barcode_id"));
+                myViewHolder.barcode.setText(goods_info.getString("barcode"));
+                myViewHolder.price.setText(goods_info.getString("price"));
 
                 if(myViewHolder.goods_title.getCurrentTextColor() == mContext.getResources().getColor(R.color.blue,null)){
                     myViewHolder.goods_title.setTextColor(mContext.getColor(R.color.good_name_color));//需要重新设置颜色；不然重用之后内容颜色为重用之前的。
@@ -116,7 +113,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                     });
                 }
 
-                if (mSearchLoad && mDatas.length() == 1 && null != myViewHolder.mCurrentItemView){//搜索只有一个的时候自动选择
+                if (mSearchLoad && mDatas.size() == 1 && null != myViewHolder.mCurrentItemView){//搜索只有一个的时候自动选择
                         myViewHolder.mCurrentItemView.callOnClick();
                 }
             }
@@ -125,11 +122,11 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
 
     @Override
     public int getItemCount() {
-        return mDatas == null ? 0 : mDatas.length();
+        return mDatas == null ? 0 : mDatas.size();
     }
 
     public JSONObject getItem(int i){
-        return mDatas == null ? null : mDatas.optJSONObject(i);
+        return mDatas == null ? null : mDatas.getJSONObject(i);
     }
 
     void setDatas(int id){
@@ -166,56 +163,50 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
             final ContentValues barcodeRuleObj = new ContentValues();
             if (parseBarcodeRule(search_content,barcodeRuleObj)){
                 final JSONObject object = new JSONObject();
-                try {
-                    if (getSingleGoodsByItemId(object,barcodeRuleObj.getAsInteger("item_id"))){
-                        double xnum = 0.0,price = 0.0;
-                        if (mDatas == null){
-                            mDatas = new JSONArray();
-                        }else
-                            Utils.ClearJsons(mDatas);
+                if (getSingleGoodsByItemId(object,barcodeRuleObj.getAsInteger("item_id"))){
+                    double xnum = 0.0,price = 0.0;
+                    if (mDatas == null){
+                        mDatas = new JSONArray();
+                    }else
+                        mDatas.fluentClear();
 
-                        if (Utils.JsonIsNotEmpty(object)){
-                            int metering_id = object.getInt("metering_id");
-                            int amt_point = mScaleSetting.getInt("moneyLen");
-                            double amt = barcodeRuleObj.getAsDouble("amt") / Math.pow(10,amt_point);
+                    if (Utils.JsonIsNotEmpty(object)){
+                        int metering_id = object.getIntValue("metering_id");
+                        int amt_point = mScaleSetting.getIntValue("moneyLen");
+                        double amt = barcodeRuleObj.getAsDouble("amt") / Math.pow(10,amt_point);
 
-                            if (barcodeRuleObj.containsKey("weight") && barcodeRuleObj.containsKey("amt")){
-                                int w_point = mScaleSetting.getInt("weightLen");
-                                double weight = barcodeRuleObj.getAsDouble("weight") / Math.pow(10,w_point);
-                                if (metering_id == 0){//计重
-                                    xnum = weight;
-                                }else{//计份
-                                    xnum = 1;
-                                }
-                                price = amt / (weight == 0 ? 1 : weight);
-                            }else{
-                                price = object.getDouble("price");
-                                if (metering_id == 0){//计重
-                                    xnum = amt / (price == 0 ? 1 : price);
-                                }else{//计份
-                                    xnum = 1;
-                                }
+                        if (barcodeRuleObj.containsKey("weight") && barcodeRuleObj.containsKey("amt")){
+                            int w_point = mScaleSetting.getIntValue("weightLen");
+                            double weight = barcodeRuleObj.getAsDouble("weight") / Math.pow(10,w_point);
+                            if (metering_id == 0){//计重
+                                xnum = weight;
+                            }else{//计份
+                                xnum = 1;
                             }
-                            Logger.d("price：%f,xnum:%f,sale_amt:%f",price,(amt / (price == 0 ? 1 : price)),amt);
-
-                            object.put("price",price);
-                            object.put("xnum",String.format(Locale.CHINA,"%.3f",xnum));
-                            object.put("sale_amt",amt);
-
-                            object.put(I_W_G_MARK,1);
-
-                            Logger.d("计重商品：%s",object.toString(1));
-
-                            mDatas.put(object);
+                            price = amt / (weight == 0 ? 1 : weight);
+                        }else{
+                            price = object.getDoubleValue("price");
+                            if (metering_id == 0){//计重
+                                xnum = amt / (price == 0 ? 1 : price);
+                            }else{//计份
+                                xnum = 1;
+                            }
                         }
-                    }else{
-                        mDatas = null;
-                        err.append(object.optString("info"));
+                        Logger.d("price：%f,xnum:%f,sale_amt:%f",price,(amt / (price == 0 ? 1 : price)),amt);
+
+                        object.put("price",price);
+                        object.put("xnum",String.format(Locale.CHINA,"%.3f",xnum));
+                        object.put("sale_amt",amt);
+
+                        object.put(I_W_G_MARK,1);
+
+                        Logger.d("计重商品：%s",object.toJSONString());
+
+                        mDatas.add(object);
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                }else{
                     mDatas = null;
-                    err.append(object.optString("info"));
+                    err.append(object.getString("info"));
                 }
             }
         }else{
@@ -228,7 +219,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
             mDatas = SQLiteHelper.getListToJson(sql,0,0,false,err);
         }
         if (mDatas != null){
-            if(mDatas.length() != 0){
+            if(mDatas.size() != 0){
                 if (!mSearchLoad)mSearchLoad = true;
             }else{
                 search.selectAll();
@@ -272,11 +263,11 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         String prefix = "P" + pos_num + "-" + new SimpleDateFormat("yyMMddHHmmss").format(new Date()) + "-",order_code ;
         JSONObject orders= new JSONObject();
         if (SQLiteHelper.execSql(orders,"SELECT count(order_id) + 1 order_id from retail_order where date(addtime,'unixepoch' ) = date('now')")){
-            order_code =orders.optString("order_id");
+            order_code =orders.getString("order_id");
             order_code = prefix + "0000".substring(order_code.length()) + order_code;
         }else{
             order_code = prefix + "0001";;
-            MyDialog.ToastMessage("生成订单号错误：" + orders.optString("info"),mContext,null);
+            MyDialog.ToastMessage("生成订单号错误：" + orders.getString("info"),mContext,null);
         }
         return order_code;
     }
@@ -286,10 +277,10 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         if (mScaleSetting == null){
             mScaleSetting = new JSONObject();
             if (!SQLiteHelper.getLocalParameter("scale_setting",mScaleSetting)){
-                MyDialog.ToastMessage("加载条码秤参数错误：" + mScaleSetting.optString("info"),mContext,null);
+                MyDialog.ToastMessage("加载条码秤参数错误：" + mScaleSetting.getString("info"),mContext,null);
             }
         }
-        String prefix = mScaleSetting.optString("prefix","-1"),tmp = "";
+        String prefix = mScaleSetting.getString("prefix"),tmp = "";
         int length = prefix.length();
         if (barcode.length() > length){
             tmp = barcode.substring(0,length);
@@ -300,7 +291,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
 
     private boolean parseBarcodeRule(final String barcode,final ContentValues object){
         if (mScaleSetting == null || barcode == null || null == object)return false;
-        final String barcodeRule = mScaleSetting.optString("barcodeRule");
+        final String barcodeRule = mScaleSetting.getString("barcodeRule");
         boolean code = true;
         if (MyDialog.ToastMessage(null,"输入条码长度与参数设置的不一致",mContext,null,(code = barcode.length() == barcodeRule.length()))){
             String sub_sz;

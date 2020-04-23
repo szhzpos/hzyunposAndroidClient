@@ -8,13 +8,11 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class PayMethodDialog extends AbstractPayDialog {
     public PayMethodDialog(@NonNull Context context,@NonNull JSONObject pay_method) {//show_check_code 是否显示校验码输入框
@@ -28,7 +26,7 @@ public class PayMethodDialog extends AbstractPayDialog {
 
         mOk.setText(R.string.OK);
 
-        setTitle(mPayMethod.optString("name"));
+        setTitle(mPayMethod.getString("name"));
 
         //初始化支付方式
         initPayMethod();
@@ -65,25 +63,19 @@ public class PayMethodDialog extends AbstractPayDialog {
 
     @Override
     public JSONObject getContent() {
-        try {
-            mPayMethod.put("pay_code",getPayCode());
-            mPayMethod.put("pamt", mPayAmtEt.getText().toString());
-            mPayMethod.put("pzl",0.00);
-            mPayMethod.put("v_num",mPayCode.getText().toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-            MyDialog.SnackbarMessage(mDialogWindow,e.getMessage(),getCurrentFocus());
-            return null;
-        }
-        return mPayMethod;
+        mPayMethod.put("pay_code",getPayCode());
+        mPayMethod.put("pamt", mPayAmtEt.getText().toString());
+        mPayMethod.put("pzl",0.00);
+        mPayMethod.put("v_num",mPayCode.getText().toString());
+         return mPayMethod;
     }
     @Override
     protected void initPayMethod(){
         if (mPayMethod != null) {
-            if (mPayMethod.optInt("is_check") != 2){ //显示付款码输入框
+            if (mPayMethod.getIntValue("is_check") != 2){ //显示付款码输入框
                 mPayCode.postDelayed(()->mPayCode.requestFocus(),350);
                 mPayCode.setVisibility(View.VISIBLE);
-                mPayCode.setHint(mPayMethod.optString("xtype",""));
+                mPayCode.setHint(mPayMethod.getString("xtype"));
                 mPayAmtEt.setEnabled(false);
                 if (Utils.equalDouble(mOriginalPayAmt,0.0)){
                     mPayAmtEt.setVisibility(View.GONE);

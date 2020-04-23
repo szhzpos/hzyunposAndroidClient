@@ -20,15 +20,14 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -274,7 +273,7 @@ public class HangBillDialog extends Dialog {
         if (mCurrentHangId != null){
             JSONObject object = new JSONObject();
             if (SQLiteHelper.execSql(object,"SELECT ifnull(vip_name,'') vip_name,ifnull(vip_mobile,'') vip_mobile FROM hangbill where hang_id = " + mCurrentHangId)){
-                String sz_name = object.optString("vip_name"),sz_mobile = object.optString("vip_mobile");
+                String sz_name = object.getString("vip_name"),sz_mobile = object.getString("vip_mobile");
                 if (null == mVipInfoView){
                     mVipInfoView = findViewById(R.id.vip_info_linearLayout);
                 }
@@ -293,7 +292,7 @@ public class HangBillDialog extends Dialog {
                     }
                 }
             }else{
-                MyDialog.ToastMessage("显示会员信息错误：" + object.optString("info"),mContext,getWindow());
+                MyDialog.ToastMessage("显示会员信息错误：" + object.getString("info"),mContext,getWindow());
             }
         }
     }
@@ -306,7 +305,7 @@ public class HangBillDialog extends Dialog {
                 if (null != barcode_ids) {
                     JSONObject object = new JSONObject();
                     if (SQLiteHelper.execSql(object,"SELECT ifnull(card_code,'') card_code FROM hangbill where hang_id = " + mCurrentHangId)){
-                        String card_code = object.optString("card_code");
+                        String card_code = object.getString("card_code");
                         if (!"".equals(card_code)) {
                             final CustomProgressDialog progressDialog = new CustomProgressDialog(mContext);
                             progressDialog.setCancel(false).setMessage("正在查询会员信息...").show();
@@ -315,7 +314,7 @@ public class HangBillDialog extends Dialog {
                                     final JSONArray vips = VipInfoDialog.serchVip(card_code);
                                     mContext.runOnUiThread(() -> {
                                         if (deleteBill(mCurrentHangId, err)) {
-                                            mContext.runOnUiThread(() -> mGetListener.onGet(barcode_ids, vips.optJSONObject(0)));
+                                            mContext.runOnUiThread(() -> mGetListener.onGet(barcode_ids, vips.getJSONObject(0)));
                                         } else {
                                             mContext.runOnUiThread(() -> MyDialog.ToastMessage("删除挂单信息错误：" + err, mContext, null));
                                         }
@@ -334,7 +333,7 @@ public class HangBillDialog extends Dialog {
                             }
                         }
                     }else{
-                        MyDialog.ToastMessage("查询会员信息错误：" + object.optString("info"),mContext,getWindow());
+                        MyDialog.ToastMessage("查询会员信息错误：" + object.getString("info"),mContext,getWindow());
                     }
                 } else {
                     MyDialog.ToastMessage("查询挂单明细错误：" + err, mContext, getWindow());
@@ -359,7 +358,7 @@ public class HangBillDialog extends Dialog {
                 hang_id = getHangCounts();
 
                 if (hang_id > 0){
-                    for (int i = 0,length = array.length();i < length; i++){
+                    for (int i = 0,length = array.size();i < length; i++){
                         tmp_obj = new JSONObject();
                         data = array.getJSONObject(i);
                         amt += data.getDouble("sale_amt");
@@ -367,7 +366,7 @@ public class HangBillDialog extends Dialog {
                         tmp_obj.put("hang_id",hang_id);
                         tmp_obj.put("row_id",i + 1);
                         tmp_obj.put("stores_id",stores_id);
-                        tmp_obj.put("barcode_id",data.getInt("barcode_id"));
+                        tmp_obj.put("barcode_id",data.getIntValue("barcode_id"));
                         tmp_obj.put("barcode",data.getString("barcode"));
                         tmp_obj.put("goods_title",data.getString("goods_title"));
                         tmp_obj.put("old_price",data.getDouble("old_price"));
@@ -377,10 +376,10 @@ public class HangBillDialog extends Dialog {
                         tmp_obj.put("sale_amt",data.getDouble("sale_amt"));
                         tmp_obj.put("discount",data.getDouble("discount") * 100);
                         tmp_obj.put("discount_amt",data.getDouble("discount_amt"));
-                        tmp_obj.put("sale_man",data.optString("sale_man"));
+                        tmp_obj.put("sale_man",data.getString("sale_man"));
                         tmp_obj.put("cas_id",cas_id);
 
-                        details.put(tmp_obj);
+                        details.add(tmp_obj);
                     }
                     data = new JSONObject();
                     data.put("hang_id",hang_id);
@@ -392,7 +391,7 @@ public class HangBillDialog extends Dialog {
                         data.put("vip_name",vip.getString("name"));
                         data.put("vip_mobile",vip.getString("mobile"));
                     }
-                    orders.put(data);
+                    orders.add(data);
 
                     data = new JSONObject();
                     data.put("hangbill",orders);
@@ -416,10 +415,10 @@ public class HangBillDialog extends Dialog {
     public int getHangCounts(){
         JSONObject data = new JSONObject();
         if (!SQLiteHelper.execSql(data,"select ifnull(max(hang_id),0) + 1 hang_id from hangbill")){
-            mContext.runOnUiThread(()->MyDialog.ToastMessage("查询挂单号错误：" + data.optString("info"),mContext,mContext.getWindow()));
+            mContext.runOnUiThread(()->MyDialog.ToastMessage("查询挂单号错误：" + data.getString("info"),mContext,mContext.getWindow()));
             return 0;
         }
-        return data.optInt("hang_id");
+        return data.getIntValue("hang_id");
     }
 
     public void setGetBillDetailListener(OnGetBillListener listener){

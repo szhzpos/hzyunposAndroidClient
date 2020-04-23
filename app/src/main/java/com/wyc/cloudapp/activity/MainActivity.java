@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.text.method.ReplacementTransformationMethod;
 
 import android.view.KeyEvent;
@@ -32,6 +31,9 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.GoodsInfoItemDecoration;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
@@ -40,6 +42,7 @@ import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
 import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.dialog.GoodsWeighDialog;
 import com.wyc.cloudapp.dialog.HangBillDialog;
 import com.wyc.cloudapp.dialog.MoreFunDialog;
 import com.wyc.cloudapp.dialog.pay.PayDialog;
@@ -56,9 +59,7 @@ import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.alibaba.fastjson.JSONArray;
 
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
@@ -137,10 +138,10 @@ public class MainActivity extends AppCompatActivity {
         });//退出收银
         findViewById(R.id.num).setOnClickListener(view -> mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 0));//数量
         findViewById(R.id.discount).setOnClickListener(v-> {
-            setDisCashierId(mCashierInfo.optString("cas_id"));
+            setDisCashierId(mCashierInfo.getString("cas_id"));
             mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 2);});//打折
         findViewById(R.id.change_price).setOnClickListener(v-> {
-            setDisCashierId(mCashierInfo.optString("cas_id"));
+            setDisCashierId(mCashierInfo.getString("cas_id"));
             mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 1);});//改价
         findViewById(R.id.check_out).setOnClickListener((View v)->{
             v.setEnabled(false);
@@ -190,18 +191,18 @@ public class MainActivity extends AppCompatActivity {
                     if (hangBillDialog.getHangCounts() > 1){
                         hangBillDialog.setGetBillDetailListener(new HangBillDialog.OnGetBillListener() {
                             @Override
-                            public void onGet(JSONArray array,final JSONObject vip) {
+                            public void onGet(JSONArray array, final JSONObject vip) {
                                 if (null != vip)showVipInfo(vip);
                                 JSONObject barcode_id_obj,goods_info;
-                                for (int i = 0,length = array.length();i < length;i ++){
-                                    barcode_id_obj = array.optJSONObject(i);
+                                for (int i = 0,length = array.size();i < length;i ++){
+                                    barcode_id_obj = array.getJSONObject(i);
                                     if (barcode_id_obj != null){
                                         goods_info = new JSONObject();
-                                        if (mGoodsInfoViewAdapter.getSingleGoodsBarcodeId(goods_info,barcode_id_obj.optInt("barcode_id"))){
+                                        if (mGoodsInfoViewAdapter.getSingleGoodsBarcodeId(goods_info,barcode_id_obj.getIntValue("barcode_id"))){
                                             mSaleGoodsViewAdapter.addSaleGoods(goods_info,mVipInfo);
                                             hangBillDialog.dismiss();
                                         }else{
-                                            MyDialog.ToastMessage(mSaleGoodsRecyclerView,"查询商品信息错误：" + goods_info.optString("info"),MainActivity.this,getWindow());
+                                            MyDialog.ToastMessage(mSaleGoodsRecyclerView,"查询商品信息错误：" + goods_info.getString("info"),MainActivity.this,getWindow());
                                             return;
                                         }
                                     }
@@ -234,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //初始化数据管理对象
-        mSyncManagement = new SyncManagement(mHandler,mUrl,mAppId,mAppScret,mStoreInfo.optString("stores_id"),mCashierInfo.optString("pos_num"),mCashierInfo.optString("cas_id"));
+        mSyncManagement = new SyncManagement(mHandler,mUrl,mAppId,mAppScret,mStoreInfo.getString("stores_id"),mCashierInfo.getString("pos_num"),mCashierInfo.getString("cas_id"));
         mSyncManagement.start_sync(false);
 
         //重置订单信息
@@ -279,13 +280,13 @@ public class MainActivity extends AppCompatActivity {
                         JSONObject json = new JSONObject(),retJson,info_json;
                         json.put("appid",mAppId);
                         retJson = httpRequest.setConnTimeOut(3000).setReadTimeOut(3000).sendPost(mUrl + "/api/cashier/get_time",HttpRequest.generate_request_parm(json,mAppScret),true);
-                        switch (retJson.optInt("flag")) {
+                        switch (retJson.getIntValue("flag")) {
                             case 0:
                                 mCurrentTimestamp = System.currentTimeMillis();
                                 Logger.e("同步时间错误:%s",retJson.getString("info"));
                                 break;
                             case 1:
-                                info_json = new JSONObject(retJson.getString("info"));
+                                info_json = JSON.parseObject(retJson.getString("info"));
                                 switch (info_json.getString("status")){
                                     case "n":
                                         mCurrentTimestamp = System.currentTimeMillis();
@@ -323,25 +324,25 @@ public class MainActivity extends AppCompatActivity {
                     store_name = findViewById(R.id.sec_store_name),
                     pos_num = findViewById(R.id.pos_num);
 
-            cashier_name.setText(mCashierInfo.optString("cas_name"));
-            pos_num.setText(mCashierInfo.optString("pos_num"));
+            cashier_name.setText(mCashierInfo.getString("cas_name"));
+            pos_num.setText(mCashierInfo.getString("pos_num"));
             if (SQLiteHelper.getLocalParameter("connParam",mStoreInfo)){
                 try {
                     mUrl = mStoreInfo.getString("server_url");
                     mAppId = mStoreInfo.getString("appId");
                     mAppScret = mStoreInfo.getString("appScret");
 
-                    mStoreInfo = new JSONObject(mStoreInfo.getString("storeInfo"));
-                    store_name.setText(String.format("%s%s%s%s",mStoreInfo.getString("stores_name"),"[",mStoreInfo.optString("stores_id"),"]"));
+                    mStoreInfo = JSON.parseObject(mStoreInfo.getString("storeInfo"));
+                    store_name.setText(String.format("%s%s%s%s",mStoreInfo.getString("stores_name"),"[",mStoreInfo.getString("stores_id"),"]"));
                 } catch (JSONException e) {
                     e.printStackTrace();
                     mDialog.setMessage(e.getMessage()).setNoOnclickListener("取消", myDialog -> MainActivity.this.finish()).show();
                 }
             }else{
-                mDialog.setMessage(mCashierInfo.optString("info")).setNoOnclickListener("取消", myDialog -> MainActivity.this.finish()).show();
+                mDialog.setMessage(mCashierInfo.getString("info")).setNoOnclickListener("取消", myDialog -> MainActivity.this.finish()).show();
             }
         }else{
-            mDialog.setMessage(mStoreInfo.optString("info")).setNoOnclickListener("取消", myDialog -> MainActivity.this.finish()).show();
+            mDialog.setMessage(mStoreInfo.getString("info")).setNoOnclickListener("取消", myDialog -> MainActivity.this.finish()).show();
         }
     }
 
@@ -359,15 +360,23 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject jsonObject = mGoodsInfoViewAdapter.getItem(pos),content = new JSONObject();
                 if (jsonObject != null){
                     try {
-                        if (jsonObject.has(GoodsInfoViewAdapter.I_W_G_MARK)){//计重、计份并且通过扫条码选择的商品标志
+                        if (jsonObject.containsKey(GoodsInfoViewAdapter.I_W_G_MARK)){//计重、计份并且通过扫条码选择的商品标志
                             mSaleGoodsViewAdapter.addSaleGoods(Utils.JsondeepCopy(jsonObject),mVipInfo);
                         }else{
-                            int id = jsonObject.getInt("barcode_id");
+                            int id = jsonObject.getIntValue("barcode_id");
                             if (-1 == id){//组合商品
-                                id = jsonObject.getInt("gp_id");
+                                id = jsonObject.getIntValue("gp_id");
                             }
                             if (mGoodsInfoViewAdapter.getSingleGoodsBarcodeId(content,id)){
                                 mSaleGoodsViewAdapter.addSaleGoods(content,mVipInfo);
+                                if(content.getIntValue("type") == 2){//type 1 普通 2散装称重 3鞋帽
+                                    GoodsWeighDialog goodsWeighDialog = new GoodsWeighDialog(MainActivity.this,content.getString("barcode_id"));
+                                    goodsWeighDialog.setOnYesOnclickListener(myDialog -> {
+                                        mSaleGoodsViewAdapter.updateSaleGoodsInfo(myDialog.getContent(),(short) 0);
+                                        myDialog.dismiss();
+                                    });
+                                    goodsWeighDialog.show();
+                                }
                                 mSearch_content.selectAll();
                             }else{
                                 MyDialog.ToastMessage("选择商品错误：" + content.getString("info"),v.getContext(),null);
@@ -413,7 +422,7 @@ public class MainActivity extends AppCompatActivity {
                 JSONArray datas = mSaleGoodsViewAdapter.getDatas();
                 double sale_sum_num = 0.0,sale_sum_amount = 0.0,dis_sum_amt = 0.0;
                 try {
-                    for (int i = 0,length = datas.length();i < length;i ++){
+                    for (int i = 0,length = datas.size();i < length;i ++){
                         JSONObject jsonObject = datas.getJSONObject(i);
                         sale_sum_num += jsonObject.getDouble("xnum");
                         sale_sum_amount += jsonObject.getDouble("sale_amt");
@@ -539,7 +548,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showPayDialog(){
         final JSONArray datas = mSaleGoodsViewAdapter.getDatas();
-        if (datas.length() != 0){
+        if (datas.size() != 0){
             final PayDialog dialog = new PayDialog(this);
             if (mVipInfo != null)dialog.showVipInfo(mVipInfo,true);
             if (dialog.initPayContent(datas)){
@@ -550,7 +559,7 @@ public class MainActivity extends AppCompatActivity {
                         StringBuilder err = new StringBuilder();
                         if (myDialog.saveOrderInfo(err)){
                             CustomApplication.execute(()->{
-                                myDialog.requestPay(mOrderCode.getText().toString(),mUrl,mAppId,mAppScret,mStoreInfo.optString("stores_id"),mCashierInfo.optString("pos_num"));
+                                myDialog.requestPay(mOrderCode.getText().toString(),mUrl,mAppId,mAppScret,mStoreInfo.getString("stores_id"),mCashierInfo.getString("pos_num"));
                             });
 
                         }else{
@@ -638,7 +647,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void resetOrderCode(){
-        mOrderCode.setText(mGoodsInfoViewAdapter.generateOrderCode(mCashierInfo.optString("pos_num")));
+        mOrderCode.setText(mGoodsInfoViewAdapter.generateOrderCode(mCashierInfo.getString("pos_num")));
     }
     private void initSecondDisplay(){
         mSecondDisplay = SecondDisplay.getInstantiate(this);
@@ -650,7 +659,7 @@ public class MainActivity extends AppCompatActivity {
 
     public JSONArray discount(double discount,final String zk_cashier_id){
         if (null == zk_cashier_id || "".equals(zk_cashier_id)){
-            setDisCashierId(mCashierInfo.optString("cas_id"));
+            setDisCashierId(mCashierInfo.getString("cas_id"));
         }else
             setDisCashierId(zk_cashier_id);
         return mSaleGoodsViewAdapter.discount(discount);
@@ -668,8 +677,8 @@ public class MainActivity extends AppCompatActivity {
 
         LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
         vip_info_linearLayout.setVisibility(View.VISIBLE);
-        ((TextView)vip_info_linearLayout.findViewById(R.id.vip_name)).setText(mVipInfo.optString("name"));
-        ((TextView)vip_info_linearLayout.findViewById(R.id.vip_phone_num)).setText(mVipInfo.optString("mobile"));
+        ((TextView)vip_info_linearLayout.findViewById(R.id.vip_name)).setText(mVipInfo.getString("name"));
+        ((TextView)vip_info_linearLayout.findViewById(R.id.vip_phone_num)).setText(mVipInfo.getString("mobile"));
 
         return  mSaleGoodsViewAdapter.updateGoodsInfoToVip(mVipInfo);
     }
@@ -679,7 +688,7 @@ public class MainActivity extends AppCompatActivity {
     }
     public String getPosNum(){
         if (null == mCashierInfo)return "";
-        return mCashierInfo.optString("pos_num");
+        return mCashierInfo.getString("pos_num");
     }
     public JSONObject getCashierInfo(){
         return mCashierInfo;

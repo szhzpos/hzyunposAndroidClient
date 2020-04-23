@@ -2,20 +2,16 @@ package com.wyc.cloudapp.dialog.barcodeScales;
 
 import androidx.annotation.NonNull;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.dialog.MyDialog;
+
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
+
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -37,12 +33,12 @@ public class DH15A extends AbstractBarcodeScale {
     @Override
     public boolean down(JSONObject scales_info){
         boolean code = false;
-        String ip = scales_info.optString("scale_ip"),goods_c_id = scales_info.optString("g_c_id");
-        int port = scales_info.optInt("scale_port");
+        String ip = scales_info.getString("scale_ip"),goods_c_id = scales_info.getString("g_c_id");
+        int port = scales_info.getIntValue("scale_port");
         JSONArray records = new JSONArray();
         final JSONObject object = new JSONObject();
         if (code = SQLiteHelper.getLocalParameter("scale_setting",object)){
-            final String prefix = object.optString("prefix");
+            final String prefix = object.getString("prefix");
             if (goods_c_id.contains(AbstractBarcodeScale.CATEGORY_SEPARATE)){
                 String[] ids = goods_c_id.split("\\" + AbstractBarcodeScale.CATEGORY_SEPARATE);
                 for (String id : ids) {
@@ -56,7 +52,7 @@ public class DH15A extends AbstractBarcodeScale {
             }
         }else{
             if (mCallback != null){
-                mCallback.updata(object.optString("info"));
+                mCallback.updata(object.getString("info"));
             }
         }
         return code;
@@ -81,10 +77,10 @@ public class DH15A extends AbstractBarcodeScale {
                     outputStream.write(new byte[]{0x21,0x30,0x49,0x41,0x0D,0x0A,0x03});
                     outputStream.write(new byte[]{0x21,0x30,0x48,0x41,0x0D,0x0A,0x03});
 
-                    for (int i = 0,size = records.length();i < size;i++){
-                        record_obj = records.optJSONObject(i);
+                    for (int i = 0,size = records.size();i < size;i++){
+                        record_obj = records.getJSONObject(i);
                         if (null != record_obj){
-                            outputStream.write(record_obj.optString("r").getBytes(CHARACTER_SET));
+                            outputStream.write(record_obj.getString("r").getBytes(CHARACTER_SET));
                             if (mCallback != null){
                                 mCallback.updata(String.format(Locale.CHINA,"正在下发<%d>...",i+1));
                             }
@@ -101,7 +97,7 @@ public class DH15A extends AbstractBarcodeScale {
                 e.printStackTrace();
                 if (mCallback != null){
                     if (record_obj != null){
-                        mCallback.updata(record_obj.optString("title") + " 下发失败！");
+                        mCallback.updata(record_obj.getString("title") + " 下发失败！");
                     }else{
                         mCallback.updata("下发错误：" + e.getMessage());
                     }
@@ -124,7 +120,7 @@ public class DH15A extends AbstractBarcodeScale {
                 String plu_code,item_id,m_id,title,shelf_life,price,tmp_item_id,tmp_title;
                 try {
                     final String end_code = new String(new byte[]{0x0D,0x0A,0x03},CHARACTER_SET);
-                    for (int i = 0,size = goods.length();i < size;i++){
+                    for (int i = 0,size = goods.size();i < size;i++){
                         tmp_obj = goods.getJSONObject(i);
                         m_id = tmp_obj.getString("metering_id");
                         plu_code = Utils.substringFormRight("0000" + i + 1,4);
@@ -145,10 +141,10 @@ public class DH15A extends AbstractBarcodeScale {
                                 .replace("%4",shelf_life).replace("%5",title).replace("%6",prefix).replace("%7",m_id) + end_code);
                         record_obj.put("item_id",tmp_item_id);
                         record_obj.put("title",tmp_title);
-                        data_records.put(record_obj);
+                        data_records.add(record_obj);
                     }
                     code = true;
-                }catch (JSONException | UnsupportedEncodingException e){
+                }catch (UnsupportedEncodingException e){
                     e.printStackTrace();
                     err.append(e.getMessage());
                 }

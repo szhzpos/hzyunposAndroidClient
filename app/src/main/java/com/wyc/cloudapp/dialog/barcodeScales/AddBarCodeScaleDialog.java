@@ -10,7 +10,6 @@ import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -19,17 +18,14 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomePopupWindow;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -60,7 +56,7 @@ public class AddBarCodeScaleDialog extends Dialog {
         setCanceledOnTouchOutside(false);
 
         mScaleName = findViewById(R.id.remark);
-        mPort = findViewById(R.id.s_port);
+        mPort = findViewById(R.id.ser_port);
         mGCategoryEt = findViewById(R.id.g_c_name);
 
         mPopupWindow = new CustomePopupWindow(mContext);
@@ -109,7 +105,7 @@ public class AddBarCodeScaleDialog extends Dialog {
             if (mScaleInfos != null){
                 mPopupWindow.initContent(null, mProductType, mScaleInfos, new String[]{"s_type"}, 2, true, json -> {
                     if (json != null){
-                        String class_id = json.optString("s_id");
+                        String class_id = json.getString("s_id");
                         try {
                             Class<?> scale_class = Class.forName("com.wyc.cloudapp.dialog.barcodeScales." + class_id);
                             Constructor<?> constructor = scale_class.getConstructor();
@@ -147,7 +143,7 @@ public class AddBarCodeScaleDialog extends Dialog {
             mPopupWindow.initContent(null, mManufacturerEt,mManufacturerInfos, new String[]{"name"}, 0, true, new CustomePopupWindow.OngetSelectContent() {
                 @Override
                 public void getContent(JSONObject json) {
-                    mScaleInfos = json.optJSONArray("products");
+                    mScaleInfos = json.getJSONArray("products");
                 }
             });
             mPopupWindow.setClippingEnabled(false);
@@ -155,10 +151,10 @@ public class AddBarCodeScaleDialog extends Dialog {
             mPopupWindow.show(getWindow().getDecorView(),3);
         });
         //默认第一个
-        JSONObject object = mManufacturerInfos.optJSONObject(0);
+        JSONObject object = mManufacturerInfos.getJSONObject(0);
         if (object != null){
-            mManufacturerEt.setText(object.optString("name"));
-            mScaleInfos = object.optJSONArray("products");
+            mManufacturerEt.setText(object.getString("name"));
+            mScaleInfos = object.getJSONArray("products");
         }
     }
 
@@ -171,22 +167,13 @@ public class AddBarCodeScaleDialog extends Dialog {
             }
         });
         mGCategoryEt.setOnClickListener(v -> {
-            try {
-                chooseDialog();
-            } catch (JSONException e) {
-                e.printStackTrace();
-                MyDialog.ToastMessage(e.getMessage(),mContext,getWindow());
-            }
+            chooseDialog();
         });
     }
 
     private void initScalseInfo(){
         mManufacturerInfos = new JSONArray();
-        try {
-            mManufacturerInfos.put(AbstractBarcodeScale.getDHManufacturer());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        mManufacturerInfos.add(AbstractBarcodeScale.getDHManufacturer());
     }
 
     private void initIP(){
@@ -224,7 +211,7 @@ public class AddBarCodeScaleDialog extends Dialog {
         }
     };
 
-    private void chooseDialog() throws JSONException {
+    private void chooseDialog(){
         StringBuilder err = new StringBuilder();
         final JSONArray tmps = SQLiteHelper.getListToJson("SELECT category_id, name FROM shop_category where parent_id = 0",err),category_info_copy = Utils.JsondeepCopy(mCategoryInfo);
         if (tmps == null){
@@ -233,7 +220,7 @@ public class AddBarCodeScaleDialog extends Dialog {
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        int tmps_len = tmps.length();
+        int tmps_len = tmps.size();
         //final String[] items = new String[tmps_len];
         final boolean[] isCheckeds  = new boolean[tmps_len];
 
@@ -243,16 +230,16 @@ public class AddBarCodeScaleDialog extends Dialog {
         final List<String> list = new ArrayList<>();
 
 
-        for (int i = 0,size = tmps.length();i < size;i++){
-            object = tmps.optJSONObject(i);
-            list.add(object.optString("name"));
+        for (int i = 0,size = tmps.size();i < size;i++){
+            object = tmps.getJSONObject(i);
+            list.add(object.getString("name"));
 
-            c_id = object.optInt("category_id");
+            c_id = object.getIntValue("category_id");
 
-            for (int j = 0,length = category_info_copy.length();j < length; j++){
-                object = category_info_copy.optJSONObject(j);
+            for (int j = 0,length = category_info_copy.size();j < length; j++){
+                object = category_info_copy.getJSONObject(j);
                 if (object != null){
-                    if (object.optInt("category_id") == c_id){
+                    if (object.getIntValue("category_id") == c_id){
                         isCheckeds[i] = true;
                         break;
                     }
@@ -261,15 +248,15 @@ public class AddBarCodeScaleDialog extends Dialog {
         }
 
         builder.setMultiChoiceItems(list.toArray(new String[tmps_len]), isCheckeds, (dialog, which, isChecked) -> {
-            JSONObject object1 = tmps.optJSONObject(which);
-            int id = object1.optInt("category_id");
+            JSONObject object1 = tmps.getJSONObject(which);
+            int id = object1.getIntValue("category_id");
             if (isChecked){
-                category_info_copy.put(object1);
+                category_info_copy.add(object1);
             }else {
-                for (int j = 0,length = category_info_copy.length();j < length; j++) {
-                    object1 = category_info_copy.optJSONObject(j);
+                for (int j = 0,length = category_info_copy.size();j < length; j++) {
+                    object1 = category_info_copy.getJSONObject(j);
                     if (object1 != null) {
-                        if (object1.optInt("category_id") == id) {
+                        if (object1.getIntValue("category_id") == id) {
                             category_info_copy.remove(j);
                             break;
                         }
@@ -282,13 +269,13 @@ public class AddBarCodeScaleDialog extends Dialog {
             JSONObject object12;
             StringBuilder names = new StringBuilder();
             mCategoryInfo = category_info_copy;
-            for (int i = 0,size = mCategoryInfo.length();i < size;i++){
-                object12 = mCategoryInfo.optJSONObject(i);
+            for (int i = 0,size = mCategoryInfo.size();i < size;i++){
+                object12 = mCategoryInfo.getJSONObject(i);
                 if ( null != object12){
                     if (names.length() != 0){
                         names.append(AbstractBarcodeScale.CATEGORY_SEPARATE);
                     }
-                    names.append(object12.optString("name"));
+                    names.append(object12.getString("name"));
                 }
             }
             mGCategoryEt.setText(names);
@@ -372,24 +359,19 @@ public class AddBarCodeScaleDialog extends Dialog {
         JSONObject object;
         StringBuilder sb_name = new StringBuilder();
         String sz_name;
-        try {
-            if (ids.length == names.length){
-                for (int i = 0,length = ids.length;i < length;i++){
-                    object = new JSONObject();
-                    sz_name = names[i];
-                    object.put("category_id",ids[i]);
-                    object.put("name",sz_name);
-                    mCategoryInfo.put(object);
-                    if (sb_name.length() != 0){
-                        sb_name.append(AbstractBarcodeScale.CATEGORY_SEPARATE);
-                    }
-                    sb_name.append(sz_name);
+        if (ids.length == names.length){
+            for (int i = 0,length = ids.length;i < length;i++){
+                object = new JSONObject();
+                sz_name = names[i];
+                object.put("category_id",ids[i]);
+                object.put("name",sz_name);
+                mCategoryInfo.add(object);
+                if (sb_name.length() != 0){
+                    sb_name.append(AbstractBarcodeScale.CATEGORY_SEPARATE);
                 }
-                mGCategoryEt.setText(sb_name.toString());
+                sb_name.append(sz_name);
             }
-        }catch (JSONException e){
-            e.printStackTrace();
-            MyDialog.ToastMessage("设置分类错误：" + e.getMessage(),mContext,getWindow());
+            mGCategoryEt.setText(sb_name.toString());
         }
     }
 
@@ -405,56 +387,50 @@ public class AddBarCodeScaleDialog extends Dialog {
             MyDialog.ToastMessage(mIP,"IP不能为空",mContext,getWindow());
         }else if (port.isEmpty()){
             MyDialog.ToastMessage(mPort,"端口不能为空",mContext,getWindow());
-        }else if (mCategoryInfo.length() == 0){
+        }else if (mCategoryInfo.size() == 0){
             MyDialog.ToastMessage("商品分类不能为空",mContext,getWindow());
         }else{
-            try {
-                if (mModifyScale != null){
-                    object.put("_id",mModifyScale.optInt("_id"));
-                }
-
-                object.put("remark",name);
-                object.put("s_manufacturer",mManufacturerEt.getText().toString());
-                object.put("s_class_id",mProductType.getTag());
-                object.put("s_product_t",p_type);
-                object.put("scale_ip",ip);
-                object.put("scale_port",port);
-
-                for (int i = 0,size = mCategoryInfo.length();i < size;i++){
-                    tmp = mCategoryInfo.optJSONObject(i);
-                    if ( null != tmp){
-                        if (names.length() != 0){
-                            names.append(AbstractBarcodeScale.CATEGORY_SEPARATE);
-                        }
-                        if (ids.length() != 0){
-                            ids.append(AbstractBarcodeScale.CATEGORY_SEPARATE);
-                        }
-                        names.append(tmp.optString("name"));
-                        ids.append(tmp.optString("category_id"));
-                    }
-                }
-                object.put("g_c_name",names);
-                object.put("g_c_id",ids);
-                if (mGetContent != null){
-                    mGetContent.getContent(object);
-                }
-                code = true;
-            } catch (JSONException e) {
-                e.printStackTrace();
-                MyDialog.ToastMessage(e.getMessage(),mContext,getWindow());
+            if (mModifyScale != null){
+                object.put("_id",mModifyScale.getIntValue("_id"));
             }
-        }
+            object.put("remark",name);
+            object.put("s_manufacturer",mManufacturerEt.getText().toString());
+            object.put("s_class_id",mProductType.getTag());
+            object.put("s_product_t",p_type);
+            object.put("scale_ip",ip);
+            object.put("scale_port",port);
+
+            for (int i = 0,size = mCategoryInfo.size();i < size;i++){
+                tmp = mCategoryInfo.getJSONObject(i);
+                if ( null != tmp){
+                    if (names.length() != 0){
+                        names.append(AbstractBarcodeScale.CATEGORY_SEPARATE);
+                    }
+                    if (ids.length() != 0){
+                        ids.append(AbstractBarcodeScale.CATEGORY_SEPARATE);
+                    }
+                    names.append(tmp.getString("name"));
+                    ids.append(tmp.getString("category_id"));
+                }
+            }
+            object.put("g_c_name",names);
+            object.put("g_c_id",ids);
+            if (mGetContent != null){
+                mGetContent.getContent(object);
+            }
+            code = true;
+         }
         return code;
     }
 
     private void initModifyScaleInfo(){
-        mScaleName.setText(mModifyScale.optString("remark"));
-        mManufacturerEt.setText(mModifyScale.optString("s_manufacturer"));
-        mProductType.setText(mModifyScale.optString("s_product_t"));
-        mProductType.setTag(mModifyScale.optString("s_class_id"));
-        setIP(mModifyScale.optString("scale_ip"));
-        mPort.setText(mModifyScale.optString("scale_port"));
-        setCategoryInfo(mModifyScale.optString("g_c_id"),mModifyScale.optString("g_c_name"));
+        mScaleName.setText(mModifyScale.getString("remark"));
+        mManufacturerEt.setText(mModifyScale.getString("s_manufacturer"));
+        mProductType.setText(mModifyScale.getString("s_product_t"));
+        mProductType.setTag(mModifyScale.getString("s_class_id"));
+        setIP(mModifyScale.getString("scale_ip"));
+        mPort.setText(mModifyScale.getString("scale_port"));
+        setCategoryInfo(mModifyScale.getString("g_c_id"),mModifyScale.getString("g_c_name"));
     }
 
     void setGetContent(OnGetContentCallBack listener){

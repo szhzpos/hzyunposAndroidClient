@@ -104,84 +104,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_5"
             android:background="@drawable/border_sub_gray"
             android:orientation="vertical"
-            android:visibility="invisible">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/param_title_height"
-                android:layout_margin="@dimen/margin_1"
-                android:background="@drawable/bottom_separator"
-                android:gravity="center_vertical"
-                android:paddingStart="@dimen/margin_12"
-                android:paddingEnd="@dimen/size_0"
-                android:text="@string/vip_rc_sz"
-                android:textColor="@color/appColor"
-                android:textSize="@dimen/font_size_16" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/param_value_height"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_5"
-                    android:text="@string/rc_sz"
-                    android:textColor="@color/text_color" />
-
-                <Spinner
-                    android:id="@+id/spinner7"
-                    style="@style/Platform.Widget.AppCompat.Spinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/height_35"
-                    android:background="@drawable/spinner_style"
-                    android:minWidth="@dimen/width_88" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_18"
-                    android:layout_marginEnd="@dimen/size_0"
-                    android:text="@string/interface_sz"
-                    android:textColor="@color/text_color" />
-
-                <Spinner
-                    android:id="@+id/rc_id"
-                    style="@style/Platform.Widget.AppCompat.Spinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/height_35"
-                    android:background="@drawable/spinner_style"
-                    android:dropDownWidth="@dimen/height_40"
-                    android:minWidth="@dimen/width_88" />
-            </LinearLayout>
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/right"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_1"
-        android:layout_marginTop="@dimen/margin_1"
-        android:layout_marginEnd="@dimen/margin_1"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/left"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/border_sub_gray"
-            android:orientation="vertical">
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="match_parent"
@@ -199,7 +124,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/param_value_height"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="visible">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -237,12 +163,88 @@
             </LinearLayout>
         </LinearLayout>
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/right"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_1"
+        android:layout_marginTop="@dimen/margin_1"
+        android:layout_marginEnd="@dimen/margin_1"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/left"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border_sub_gray"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/param_title_height"
+                android:layout_margin="@dimen/margin_1"
+                android:background="@drawable/bottom_separator"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/margin_12"
+                android:paddingEnd="@dimen/size_0"
+                android:text="@string/serial_scale_sz"
+                android:textColor="@color/appColor"
+                android:textSize="@dimen/font_size_16" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/param_value_height"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_5"
+                    android:layout_marginEnd="@dimen/margin_5"
+                    android:text="@string/pro_t_sz"
+                    android:textColor="@color/text_color" />
+
+                <Spinner
+                    android:id="@+id/pro_type"
+                    style="@style/Widget.AppCompat.Light.Spinner.DropDown.ActionBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_40"
+                    android:foreground="@drawable/spinner_style"
+                    android:minWidth="@dimen/width_128" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_18"
+                    android:layout_marginEnd="@dimen/margin_5"
+                    android:text="@string/port_sz"
+                    android:textColor="@color/text_color" />
+
+                <Spinner
+                    android:id="@+id/ser_port"
+                    style="@style/Widget.AppCompat.Light.Spinner.DropDown.ActionBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_40"
+                    android:foreground="@drawable/spinner_style"
+                    android:minWidth="@dimen/width_118" />
+            </LinearLayout>
+        </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_5"
             android:background="@drawable/border_sub_gray"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="match_parent"

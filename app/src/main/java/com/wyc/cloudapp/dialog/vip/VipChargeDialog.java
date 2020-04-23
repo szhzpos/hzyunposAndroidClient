@@ -15,6 +15,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.PayMethodItemDecoration;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
@@ -27,10 +31,6 @@ import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.util.Date;
@@ -102,12 +102,12 @@ public class VipChargeDialog extends AbstractPayDialog {
                 Logger.d_json(mPayMethod.toString());
 
                 //开钱箱
-                mOpenCashbox = PayMethodViewAdapter.CASH_METHOD_ID.equals(mPayMethod.optString("pay_method_id"));
+                mOpenCashbox = PayMethodViewAdapter.CASH_METHOD_ID.equals(mPayMethod.getString("pay_method_id"));
 
-                if (mPayMethod.optInt("is_check") != 2){ //显示付款码输入框
+                if (mPayMethod.getIntValue("is_check") != 2){ //显示付款码输入框
                     mPayCode.setVisibility(View.VISIBLE);
                     mPayCode.requestFocus();
-                    mPayCode.setHint(mPayMethod.optString("xtype",""));
+                    mPayCode.setHint(mPayMethod.getString("xtype"));
                 }else{
                     mPayCode.callOnClick();
                     mPayCode.getText().clear();
@@ -137,8 +137,8 @@ public class VipChargeDialog extends AbstractPayDialog {
                                 String url = store_info.getString("server_url"),appId = store_info.getString("appId"),
                                         appScret = store_info.getString("appScret"),stores_id,sz_param,order_code;
 
-                                store_info = new JSONObject(store_info.getString("storeInfo"));
-                                stores_id = store_info.optString("stores_id");
+                                store_info = JSON.parseObject((store_info.getString("storeInfo")));
+                                stores_id = store_info.getString("stores_id");
 
                                 data_.put("appid",appId);
                                 data_.put("stores_id",stores_id);
@@ -152,13 +152,13 @@ public class VipChargeDialog extends AbstractPayDialog {
                                 retJson = httpRequest.sendPost(url + "/api/member/mk_money_order",sz_param,true);
                                 Logger.i("生成充值订单返回:%s",retJson.toString());
 
-                                switch (retJson.optInt("flag")) {
+                                switch (retJson.getIntValue("flag")) {
                                     case 0:
                                         mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,retJson.getString("info")).sendToTarget();
                                         break;
                                     case 1:
-                                        info_json = new JSONObject(retJson.optString("info"));
-                                        switch (info_json.optString("status")){
+                                        info_json = JSON.parseObject(retJson.getString("info"));
+                                        switch (info_json.getString("status")){
                                             case "n":
                                                 mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,info_json.getString("info")).sendToTarget();
                                                 break;
@@ -168,7 +168,7 @@ public class VipChargeDialog extends AbstractPayDialog {
                                                 order_code = info_json.getString("order_code");
 
                                                 //发起支付请求
-                                                if (mPayMethod.getInt("is_check") != 2){
+                                                if (mPayMethod.getIntValue("is_check") != 2){
                                                     String unified_pay_order = mPayMethod.getString("unified_pay_order"),
                                                             unified_pay_query = mPayMethod.getString("unified_pay_query");
 
@@ -188,7 +188,7 @@ public class VipChargeDialog extends AbstractPayDialog {
                                                     data_.put("is_wuren",2);
                                                     data_.put("order_code_son",generate_pay_son_order_id());
                                                     data_.put("pay_money", mPayAmtEt.getText().toString());
-                                                    data_.put("pay_method",mPayMethod.optString("pay_method_id"));
+                                                    data_.put("pay_method",mPayMethod.getString("pay_method_id"));
                                                     data_.put("pay_code_str",mPayCode.getText().toString());
 
                                                     sz_param = HttpRequest.generate_request_parm(data_,appScret);
@@ -197,18 +197,18 @@ public class VipChargeDialog extends AbstractPayDialog {
                                                     retJson = httpRequest.sendPost(url + unified_pay_order,sz_param,true);
                                                     Logger.i("会员充值支付请求返回:%s",retJson.toString());
 
-                                                    switch (retJson.optInt("flag")){
+                                                    switch (retJson.getIntValue("flag")){
                                                         case 0:
                                                             mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,retJson.getString("info")).sendToTarget();
                                                             return;
                                                         case 1:
-                                                            info_json = new JSONObject(retJson.optString("info"));
-                                                            switch (info_json.optString("status")){
+                                                            info_json = JSON.parseObject(retJson.getString("info"));
+                                                            switch (info_json.getString("status")){
                                                                 case "n":
                                                                     mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,info_json.getString("info")).sendToTarget();
                                                                     return;
                                                                 case "y":
-                                                                    int res_code = info_json.getInt("res_code");
+                                                                    int res_code = info_json.getIntValue("res_code");
                                                                     switch (res_code){
                                                                         case 1://支付成功
                                                                             break;
@@ -234,19 +234,19 @@ public class VipChargeDialog extends AbstractPayDialog {
                                                                                 retJson = httpRequest.sendPost(url + unified_pay_query,sz_param,true);
                                                                                 Logger.i("会员充值支付查询返回:%s",retJson.toString());
 
-                                                                                switch (retJson.getInt("flag")){
+                                                                                switch (retJson.getIntValue("flag")){
                                                                                     case 0:
                                                                                         mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,retJson.getString("info")).sendToTarget();
                                                                                         return;
                                                                                     case 1:
-                                                                                        info_json = new JSONObject(retJson.optString("info"));
+                                                                                        info_json = JSON.parseObject(retJson.getString("info"));
                                                                                         Logger.json(info_json.toString());
                                                                                         switch (info_json.getString("status")){
                                                                                             case "n":
                                                                                                 mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,info_json.getString("info")).sendToTarget();
                                                                                                 return;
                                                                                             case "y":
-                                                                                                res_code = info_json.getInt("res_code");
+                                                                                                res_code = info_json.getIntValue("res_code");
                                                                                                 if (res_code == 2){//支付失败
                                                                                                     mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,info_json.getString("info")).sendToTarget();
                                                                                                     return;
@@ -271,29 +271,29 @@ public class VipChargeDialog extends AbstractPayDialog {
                                                 data_.put("appid",appId);
                                                 data_.put("order_code",order_code);
                                                 data_.put("case_pay_money", mPayAmtEt.getText().toString());
-                                                data_.put("pay_method",mPayMethod.optString("pay_method_id"));
+                                                data_.put("pay_method",mPayMethod.getString("pay_method_id"));
 
                                                 url = url + "/api/member/cl_money_order";
                                                 sz_param = HttpRequest.generate_request_parm(data_,appScret);
                                                 retJson = httpRequest.sendPost(url,sz_param,true);
 
-                                                switch (retJson.optInt("flag")) {
+                                                switch (retJson.getIntValue("flag")) {
                                                     case 0:
                                                         mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,retJson.getString("info")).sendToTarget();
                                                         break;
                                                     case 1:
-                                                        info_json = new JSONObject(retJson.optString("info"));
-                                                        switch (info_json.optString("status")){
+                                                        info_json = JSON.parseObject(retJson.getString("info"));
+                                                        switch (info_json.getString("status")){
                                                             case "n":
                                                                 mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,info_json.getString("info")).sendToTarget();
                                                                 break;
                                                             case "y":
                                                                 Logger.d("充值成功返回：%s",info_json);
-                                                                JSONArray members = new JSONArray(info_json.getString("member")),money_orders = new JSONArray(info_json.getString("money_order"));
+                                                                JSONArray members = JSON.parseArray(info_json.getString("member")),money_orders = JSON.parseArray(info_json.getString("money_order"));
                                                                 JSONObject member = members.getJSONObject(0);
 
                                                                 if (mPrintStatus && mContext instanceof Activity)
-                                                                    Printer.print((Activity) mContext,get_print_content(member,money_orders.getJSONObject(0),cashier_info,store_info,info_json.optJSONArray("welfare")));
+                                                                    Printer.print((Activity) mContext,get_print_content(member,money_orders.getJSONObject(0),cashier_info,store_info,info_json.getJSONArray("welfare")));
 
                                                                 mHandler.obtainMessage(MessageID.VIP_C_SUCCESS_ID,member).sendToTarget();
                                                                 break;
@@ -309,10 +309,10 @@ public class VipChargeDialog extends AbstractPayDialog {
                                 MyDialog.ToastMessage("参数解析错误：" + e.getMessage(),mContext,mDialogWindow);
                             }
                         }else{
-                            MyDialog.ToastMessage("查询仓库信息错误：" + store_info.optString("info"),mContext,mDialogWindow);
+                            MyDialog.ToastMessage("查询仓库信息错误：" + store_info.getString("info"),mContext,mDialogWindow);
                         }
                     }else{
-                        MyDialog.ToastMessage("查询收银员信息错误：" + cashier_info.optString("info"),mContext,mDialogWindow);
+                        MyDialog.ToastMessage("查询收银员信息错误：" + cashier_info.getString("info"),mContext,mDialogWindow);
                     }
                 });
             }
@@ -322,13 +322,13 @@ public class VipChargeDialog extends AbstractPayDialog {
         String store_name = "",footer_c,new_line,order_code = "";
         int print_count = 1,footer_space = 5;
 
-        order_code = order.optString("order_code");
+        order_code = order.getString("order_code");
 
-        store_name = format_info.optString("s_n");
+        store_name = format_info.getString("s_n");
 
-        footer_c = format_info.optString("f_c");
-        print_count = format_info.optInt("p_c",1);
-        footer_space = format_info.optInt("f_s",5);
+        footer_c = format_info.getString("f_c");
+        print_count = format_info.getIntValue("p_c");
+        footer_space = format_info.getIntValue("f_s");
         new_line = "\r\n";//Printer.commandToStr(Printer.NEW_LINE);
 
         if (mOpenCashbox)//开钱箱
@@ -336,30 +336,29 @@ public class VipChargeDialog extends AbstractPayDialog {
 
         while (print_count-- > 0) {//打印份数
             info.append(Printer.commandToStr(Printer.DOUBLE_HEIGHT)).append(Printer.commandToStr(Printer.ALIGN_CENTER))
-                    .append(store_name.length() == 0 ? stores_info.optString("stores_name") : store_name).append(new_line).append(new_line).append(Printer.commandToStr(Printer.NORMAL)).
+                    .append(store_name.length() == 0 ? stores_info.getString("stores_name") : store_name).append(new_line).append(new_line).append(Printer.commandToStr(Printer.NORMAL)).
                     append(Printer.commandToStr(Printer.ALIGN_LEFT));
 
-            info.append("门店：".concat(stores_info.optString("stores_name"))).append(new_line);
+            info.append("门店：".concat(Utils.getNullOrEmptyStringAsDefault(stores_info,"stores_name",""))).append(new_line);
             info.append("单号：".concat(order_code)).append(new_line);
-            info.append("操作员：".concat(casher_info.optString("cas_name"))).append(new_line);
-            info.append("卡号：".concat(member.optString("card_code"))).append(new_line);
-            info.append("会员姓名：".concat(member.optString("name"))).append(new_line);
-            info.append("支付方式：".concat(order.optString("pay_method_name"))).append(new_line);
-            info.append("充值金额：".concat(order.optString("order_money"))).append(new_line);
-            info.append("赠送金额：".concat(order.optString("give_money"))).append(new_line);
-            info.append("会员余额：".concat(member.optString("money_sum"))).append(new_line);
-            info.append("会员积分：".concat(member.optString("points_sum"))).append(new_line);
-            info.append("会员电话：".concat(member.optString("mobile"))).append(new_line);
-            info.append("时    间：".concat(new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(member.optInt("addtime") * 1000))).append(new_line);
-
-            if (welfare != null && welfare.length() != 0){
-                for (int i = 0,size = welfare.length();i < size;i++){
+            info.append("操作员：".concat(Utils.getNullOrEmptyStringAsDefault(stores_info,"cas_name",""))).append(new_line);
+            info.append("卡号：".concat(Utils.getNullOrEmptyStringAsDefault(stores_info,"card_code",""))).append(new_line);
+            info.append("会员姓名：".concat(Utils.getNullOrEmptyStringAsDefault(stores_info,"name",""))).append(new_line);
+            info.append("支付方式：".concat(Utils.getNullOrEmptyStringAsDefault(stores_info,"pay_method_name",""))).append(new_line);
+            info.append("充值金额：".concat(Utils.getNullOrEmptyStringAsDefault(stores_info,"order_money",""))).append(new_line);
+            info.append("赠送金额：".concat(Utils.getNullOrEmptyStringAsDefault(stores_info,"give_money",""))).append(new_line);
+            info.append("会员余额：".concat(Utils.getNullOrEmptyStringAsDefault(stores_info,"money_sum",""))).append(new_line);
+            info.append("会员积分：".concat(Utils.getNullOrEmptyStringAsDefault(stores_info,"points_sum",""))).append(new_line);
+            info.append("会员电话：".concat(Utils.getNullOrEmptyStringAsDefault(stores_info,"mobile",""))).append(new_line);
+            info.append("时    间：".concat(new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(member.getIntValue("addtime") * 1000))).append(new_line);
+            if (welfare != null && welfare.size() != 0){
+                for (int i = 0,size = welfare.size();i < size;i++){
                     if (i == 0)info.append("优惠信息").append(new_line);
-                    info.append("  ").append(welfare.opt(i)).append(new_line);
+                    info.append("  ").append(welfare.getString(i)).append(new_line);
                 }
             }
-            info.append(new_line).append("门店热线：").append(stores_info.optString("telphone")).append(new_line);
-            info.append("门店地址：").append(stores_info.optString("region")).append(new_line);
+            info.append(new_line).append("门店热线：").append(Utils.getNullOrEmptyStringAsDefault(stores_info,"telphone","")).append(new_line);
+            info.append("门店地址：").append(Utils.getNullOrEmptyStringAsDefault(stores_info,"region","")).append(new_line);
 
             info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(footer_c);
             for (int i = 0; i < footer_space; i++) info.append(" ").append(new_line);
@@ -379,8 +378,8 @@ public class VipChargeDialog extends AbstractPayDialog {
         JSONObject print_format_info = new JSONObject();
         String content = "";
         if (SQLiteHelper.getLocalParameter("v_f_info",print_format_info)){
-            if (print_format_info.optInt("f") == R.id.vip_c_format){
-                switch (print_format_info.optInt("f_z")){
+            if (print_format_info.getIntValue("f") == R.id.vip_c_format){
+                switch (print_format_info.getIntValue("f_z")){
                     case R.id.f_58:
                         content = c_format_58(print_format_info,merber,order,casher_info,stores_info,welfare);
                         break;
@@ -391,7 +390,7 @@ public class VipChargeDialog extends AbstractPayDialog {
                 }
             }
         }else
-            MyDialog.ToastMessage("加载打印格式错误：" + print_format_info.optString("info"),getContext(),getWindow());
+            MyDialog.ToastMessage("加载打印格式错误：" + print_format_info.getString("info"),getContext(),getWindow());
 
         return content;
     }

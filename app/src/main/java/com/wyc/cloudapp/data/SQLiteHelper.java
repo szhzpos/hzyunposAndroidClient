@@ -12,15 +12,16 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.os.Environment;
 import androidx.annotation.NonNull;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.math.BigDecimal;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -66,7 +67,6 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
     public void onConfigure (SQLiteDatabase db){
         db.execSQL("PRAGMA foreign_keys=ON;");
     }
-
     public static boolean initDb(Context context){
         boolean code = true;
         if (mDb == null){
@@ -106,18 +106,16 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         return result ;
     }
 
-    private static boolean execSQLByBatchFromJson(@NonNull JSONArray jsonArray, String table, StringBuilder err,int type) {
+    private static boolean execSQLByBatchFromJson(@NonNull JSONArray jsonArray, String table, StringBuilder err, int type) {
         //type 0 insert 1 replace
 
         boolean isTrue = true;
         StringBuilder stringBuilderHead = new StringBuilder();
         StringBuilder stringBuilderfoot = new StringBuilder();
         JSONObject jsonObject;
-        String key;
         SQLiteStatement statement = null;
-        Iterator iterator;
         int columnN0 = 0;
-        if (jsonArray.length() == 0) {
+        if (jsonArray.isEmpty()) {
             return false;
         }
 
@@ -130,10 +128,8 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         stringBuilderHead.append(" (");
         stringBuilderfoot.append("VALUES (");
 
-        jsonObject = jsonArray.optJSONObject(0);
-        iterator = jsonObject.keys();
-        while(iterator.hasNext()){
-            key = (String) iterator.next();
+        jsonObject = jsonArray.getJSONObject(0);
+        for (String key : jsonObject.keySet()){
             stringBuilderHead.append(key);
             stringBuilderHead.append(",");
 
@@ -148,16 +144,16 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             try {
                 mDb.beginTransaction();
                 statement = mDb.compileStatement(stringBuilderHead.toString());
-                for (int i = 0,len = jsonArray.length();i < len; i ++){
+                for (int i = 0,len = jsonArray.size();i < len; i ++){
                     columnN0 = 0;
-                    jsonObject = jsonArray.optJSONObject(i);
-                    iterator = jsonObject.keys();
-                    while(iterator.hasNext()){
-                        key = (String) iterator.next();
-                        if ("".equals(jsonObject.optString(key))){
+                    jsonObject = jsonArray.getJSONObject(i);
+                    String value;
+                    for (String key : jsonObject.keySet()){
+                        value = jsonObject.getString(key);
+                        if (null == value || "".equals(value)){
                             statement.bindNull(++columnN0);
                         }else
-                            statement.bindString(++columnN0,jsonObject.optString(key));
+                            statement.bindString(++columnN0,value);
                     }
                     statement.execute();
                 }
@@ -181,9 +177,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         boolean isTrue = true;
         StringBuilder stringBuilderHead = new StringBuilder();
         StringBuilder stringBuilderfoot = new StringBuilder();
-        String key;
         SQLiteStatement statement = null;
-        Iterator iterator;
         int columnN0 = 0;
 
         stringBuilderHead.append(save_type).append(" INTO ");
@@ -191,9 +185,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         stringBuilderHead.append(" (");
         stringBuilderfoot.append("VALUES (");
 
-        iterator = json.keys();
-        while(iterator.hasNext()){
-            key = (String) iterator.next();
+        for (String key : json.keySet()){
             stringBuilderHead.append(key);
             stringBuilderHead.append(",");
 
@@ -209,14 +201,13 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             try {
                 mDb.beginTransaction();
                 statement = mDb.compileStatement(stringBuilderHead.toString());
-
-                iterator = json.keys();
-                while(iterator.hasNext()){
-                    key = (String) iterator.next();
-                    if ("".equals(json.getString(key))){
+                String value;
+                for (String key : json.keySet()){
+                    value = json.getString(key);
+                    if (null == value || "".equals(value)){
                         statement.bindNull(++columnN0);
                     }else
-                        statement.bindString(++columnN0,json.getString(key));
+                        statement.bindString(++columnN0,value);
                 }
                 statement.execute();
 
@@ -246,7 +237,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         JSONObject jsonObject = null;
         SQLiteStatement statement = null;
         int columnN0 = 0;
-        if (jsonArray.length() == 0) {
+        if (jsonArray.isEmpty()) {
             return false;
         }
 
@@ -279,14 +270,17 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             try {
                 mDb.beginTransaction();
                 statement = mDb.compileStatement(stringBuilderHead.toString());
-                for (int i = 0,len = jsonArray.length();i < len; i ++){
+                String value;
+                for (int i = 0,len = jsonArray.size();i < len; i ++){
                     columnN0 = 0;
-                    jsonObject = jsonArray.optJSONObject(i);
+                    jsonObject = jsonArray.getJSONObject(i);
                     for (String cl:cls){
-                        if ("".equals(jsonObject.optString(cl))){
+                        value = jsonObject.getString(cl);
+                        if (null == value || "".equals(value)){
                             statement.bindNull(++columnN0);
-                        }else
-                            statement.bindString(++columnN0,jsonObject.optString(cl));
+                        }else {
+                            statement.bindString(++columnN0,value);
+                        }
                     }
                     statement.execute();
                 }
@@ -314,11 +308,8 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             if (!cursor.moveToNext()){
                 return true;
             }
-            JSONObject json = new JSONObject(cursor.getString(0));
-            Iterator<String> iterator = json.keys();
-            String key;
-            while(iterator.hasNext()){
-                key = iterator.next();
+            JSONObject json = JSON.parseObject(cursor.getString(0));
+            for (String key : json.keySet()){
                 param.put(key,json.getString(key));
             }
         } catch (JSONException | SQLiteException e) {
@@ -463,11 +454,13 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             try {
                 mDb.beginTransaction();
                 statement = mDb.compileStatement(stringBuilderHead.toString());
+                String value;
                 for (String cl:cls){
-                    if ("".equals(json.getString(cl))){
+                    value = json.getString(cl);
+                    if (null == value || "".equals(value)){
                         statement.bindNull(++columnN0);
                     }else
-                        statement.bindString(++columnN0,json.getString(cl));
+                        statement.bindString(++columnN0,value);
                 }
                 statement.execute();
 
@@ -597,12 +590,12 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         StringBuilder stringBuilderHead = new StringBuilder();
         StringBuilder stringBuilderfoot = new StringBuilder();
         JSONObject jsonObject;
-        String table,key;
+        String table,value;
         SQLiteStatement statement = null;
         int columnN0 = 0;
         List<String> cls;
         JSONArray arrays;
-        Iterator iterator;
+
         synchronized (SQLiteHelper.class){
             try {
                 mDb.beginTransaction();
@@ -634,10 +627,8 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                             stringBuilderfoot.append(",");
                         }
                     }else{
-                        jsonObject = arrays.optJSONObject(0);
-                        iterator = jsonObject.keys();
-                        while(iterator.hasNext()){
-                            key = (String) iterator.next();
+                        jsonObject = arrays.getJSONObject(0);
+                        for (String key:jsonObject.keySet()){
                             stringBuilderHead.append(key);
                             stringBuilderHead.append(",");
 
@@ -652,25 +643,25 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
 
 
                     statement = mDb.compileStatement(stringBuilderHead.toString());
-                    for (int i = 0, len = arrays.length(); i < len; i++) {
+                    for (int i = 0, len = arrays.size(); i < len; i++) {
                         columnN0 = 0;
                         jsonObject = arrays.getJSONObject(i);
                         if (table_cols != null){
                             cls = table_cols.get(k);
                             for (String cl : cls) {
-                                if ("".equals(jsonObject.optString(cl))) {
+                                value = jsonObject.getString(cl);
+                                if (null == value || "".equals(value)) {
                                     statement.bindNull(++columnN0);
                                 } else
-                                    statement.bindString(++columnN0, jsonObject.optString(cl));
+                                    statement.bindString(++columnN0,value);
                             }
                         }else{
-                            iterator = jsonObject.keys();
-                            while(iterator.hasNext()){
-                                key = (String) iterator.next();
-                                if ("".equals(jsonObject.optString(key))){
+                            for (String key:jsonObject.keySet()){
+                                value = jsonObject.getString(key);
+                                if (null == value || "".equals(value)){
                                     statement.bindNull(++columnN0);
                                 }else
-                                    statement.bindString(++columnN0,jsonObject.optString(key));
+                                    statement.bindString(++columnN0,value);
                             }
                         }
                         statement.execute();
@@ -773,7 +764,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                             }
                         }
                     }
-                    array.put(jsonObj);
+                    array.add(jsonObj);
                 }
             }while(cursor.moveToNext());
         }else {
@@ -792,7 +783,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                         }
                     }
                 }
-                array.put(jsonObj);
+                array.add(jsonObj);
             } while (cursor.moveToNext());
         }
         return array;
@@ -818,14 +809,14 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 if (row_count > minRow && row_count <= maxRow){
                     for (int i = 0; i < columnCount; i++) {
                         if(coltypes.get(i) == FIELD_TYPE_FLOAT){
-                            array.put(cursor.getDouble(i));
+                            array.add(cursor.getDouble(i));
                         }else if(coltypes.get(i) == FIELD_TYPE_INTEGER){
-                            array.put(cursor.getInt(i));
+                            array.add(cursor.getInt(i));
                         }else {
                             if(cursor.getString(i)==null){
-                                array.put( "");
+                                array.add( "");
                             }else{
-                                array.put(cursor.getString(i).trim());
+                                array.add(cursor.getString(i).trim());
                             }
                         }
                     }
@@ -835,14 +826,14 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             do {
                 for (int i = 0; i < columnCount; i++) {
                     if(coltypes.get(i) == FIELD_TYPE_FLOAT){
-                        array.put(cursor.getDouble(i));
+                        array.add(cursor.getDouble(i));
                     }else if(coltypes.get(i) == FIELD_TYPE_INTEGER){
-                        array.put(cursor.getInt(i));
+                        array.add(cursor.getInt(i));
                     }else {
                         if(cursor.getString(i)==null){
-                            array.put( "");
+                            array.add( "");
                         }else{
-                            array.put(cursor.getString(i).trim());
+                            array.add(cursor.getString(i).trim());
                         }
                     }
                 }
@@ -886,7 +877,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                             }
                         }
                     }
-                    array.put(values);
+                    array.add(values);
                 }
             }while(cursor.moveToNext());
         }else {
@@ -905,7 +896,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                         }
                     }
                 }
-                array.put(values);
+                array.add(values);
             } while (cursor.moveToNext());
         }
         return array;

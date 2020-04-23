@@ -3,6 +3,8 @@ package com.wyc.cloudapp.application;
 import android.app.Application;
 import android.content.IntentFilter;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.wyc.cloudapp.broadcast.GlobalBroadcast;
 
 import com.wyc.cloudapp.logger.AndroidLogAdapter;
@@ -22,16 +24,26 @@ public class CustomApplication extends Application {
     public CustomApplication(){
         super();
     }
-
     @Override
     public  void  onCreate(){
         super.onCreate();
+
         Logger.addLogAdapter(new AndroidLogAdapter());
         Logger.addLogAdapter(new DiskLogAdapter());//日志记录磁盘
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
         intentFilter.addAction("confirm_connection");
         registerReceiver(new GlobalBroadcast(),intentFilter);
+    }
+    static{
+        //是否输出值为null的字段,默认为false
+        JSON.DEFAULT_GENERATE_FEATURE |= SerializerFeature.WriteMapNullValue.getMask();
+        //数值字段如果为null,输出为0,而非null
+        JSON.DEFAULT_GENERATE_FEATURE |= SerializerFeature.WriteNullNumberAsZero.getMask();
+        //List字段如果为null,输出为[],而非null
+        JSON.DEFAULT_GENERATE_FEATURE |= SerializerFeature.WriteNullListAsEmpty.getMask();
+        //字符类型字段如果为null,输出为 "",而非null
+        JSON.DEFAULT_GENERATE_FEATURE |= SerializerFeature.WriteNullStringAsEmpty.getMask();
     }
 
     public synchronized int getNetState(){

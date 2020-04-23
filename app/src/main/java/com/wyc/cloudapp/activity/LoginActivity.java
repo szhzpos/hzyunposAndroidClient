@@ -26,6 +26,9 @@ import android.widget.EditText;
 
 import android.widget.RelativeLayout;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.callback.EditTextReplacement;
@@ -39,8 +42,6 @@ import com.wyc.cloudapp.network.sync.SyncManagement;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -280,12 +281,12 @@ public class LoginActivity extends AppCompatActivity {
 
                         retJson = httpRequest.setReadTimeOut(3000).setConnTimeOut(3000).sendPost(url, sz_param, true);
 
-                        switch (retJson.optInt("flag")) {
+                        switch (retJson.getIntValue("flag")) {
                             case 0:
-                                myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, retJson.optString("info")).sendToTarget();
+                                myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, retJson.getString("info")).sendToTarget();
                                 break;
                             case 1:
-                                info_json = new JSONObject(retJson.getString("info"));
+                                info_json = JSON.parseObject(retJson.getString("info"));
                                 switch (info_json.getString("status")) {
                                     case "n":
                                         err_info = info_json.getString("info");
@@ -297,8 +298,8 @@ public class LoginActivity extends AppCompatActivity {
                                             myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "登录失败：" + err_info).sendToTarget();
                                         break;
                                     case "y":
-                                        cashier_json = new JSONObject(info_json.getString("cashier"));
-                                        store_info = new JSONObject(param_json.getString("storeInfo"));
+                                        cashier_json = JSON.parseObject(info_json.getString("cashier"));
+                                        store_info = JSON.parseObject(param_json.getString("storeInfo"));
                                         mStoresId = store_info.getString("stores_id");
 
                                         url = mUrl + "/api_v2/pos/set_ps";
@@ -309,15 +310,15 @@ public class LoginActivity extends AppCompatActivity {
                                         jsonLogin.put("stores_id", mStoresId);
                                         sz_param = HttpRequest.generate_request_parm(jsonLogin, mAppScret);
                                         retJson = httpRequest.sendPost(url, sz_param, true);
-                                        switch (retJson.getInt("flag")) {
+                                        switch (retJson.getIntValue("flag")) {
                                             case 0:
-                                                myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "设置收银终端错误：" + retJson.optString("info")).sendToTarget();
+                                                myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "设置收银终端错误：" + retJson.getString("info")).sendToTarget();
                                                 break;
                                             case 1:
-                                                info_json = new JSONObject(retJson.getString("info"));
+                                                info_json = JSON.parseObject(retJson.getString("info"));
                                                 switch (info_json.getString("status")) {
                                                     case "n":
-                                                        myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "设置收银终端错误：" + info_json.optString("info")).sendToTarget();
+                                                        myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "设置收银终端错误：" + info_json.getString("info")).sendToTarget();
                                                         break;
                                                     case "y":
                                                         StringBuilder err = new StringBuilder();
@@ -342,7 +343,7 @@ public class LoginActivity extends AppCompatActivity {
                     myHandler.obtainMessage(MessageID.CONN_PARAM_ERR_ID, "连接参数不能为空！").sendToTarget();
                 }
             } else {
-                myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, param_json.optString("info")).sendToTarget();
+                myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, param_json.getString("info")).sendToTarget();
             }
         });
     }
@@ -365,7 +366,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }
             }else{
-                MyDialog.ToastMessage(param.optString("info"),this,getWindow());
+                MyDialog.ToastMessage(param.getString("info"),this,getWindow());
             }
         }
     }
