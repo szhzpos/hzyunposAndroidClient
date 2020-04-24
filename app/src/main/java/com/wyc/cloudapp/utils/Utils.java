@@ -10,6 +10,7 @@ import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.util.Base64;
 
+import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -345,6 +346,13 @@ public final class Utils {
             while (null != (o = from.remove(0))){
                 to.add(o);
             }
+        }
+    }
+
+    public static void  disableView(final View v,final long mill){
+        if (v != null){
+            v.setEnabled(false);
+            v.postDelayed(()->v.setEnabled(true),mill);
         }
     }
 

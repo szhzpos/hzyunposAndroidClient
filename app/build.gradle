@@ -13,7 +13,7 @@ android {
 
         externalNativeBuild {
             cmake {
-                cppFlags ""
+                cppFlags "-std=c++11"
                 //生成多个版本的so文件
                 abiFilters 'arm64-v8a','armeabi-v7a','x86','x86_64'
             }
@@ -32,7 +32,8 @@ android {
     }
     externalNativeBuild {
         cmake {
-            path "CMakeLists.txt"  // 设置所要编写的c源码位置，以及编译后so文件的名字
+            path "src/main/java/jni/CMakeLists.txt"
+            version "3.10.2"
         }
     }
     sourceSets.main {

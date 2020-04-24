@@ -47,6 +47,7 @@ import com.wyc.cloudapp.dialog.HangBillDialog;
 import com.wyc.cloudapp.dialog.MoreFunDialog;
 import com.wyc.cloudapp.dialog.pay.PayDialog;
 import com.wyc.cloudapp.dialog.SecondDisplay;
+import com.wyc.cloudapp.dialog.serialScales.AbstractSerialScale;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.network.sync.SyncManagement;
@@ -87,7 +88,6 @@ public class MainActivity extends AppCompatActivity {
     private TableLayout mKeyboard;
     private String mZkCashierId = "";
     private SecondDisplay mSecondDisplay;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -144,9 +144,8 @@ public class MainActivity extends AppCompatActivity {
             setDisCashierId(mCashierInfo.getString("cas_id"));
             mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 1);});//改价
         findViewById(R.id.check_out).setOnClickListener((View v)->{
-            v.setEnabled(false);
+            Utils.disableView(v,500);
             showPayDialog();
-            v.postDelayed(()->v.setEnabled(true),300);
         });//结账
         findViewById(R.id.vip).setOnClickListener(v -> {
             VipInfoDialog vipInfoDialog = new VipInfoDialog(this);
@@ -356,8 +355,9 @@ public class MainActivity extends AppCompatActivity {
             View mCurrentView;
             @Override
             public void onClick(View v, int pos) {
+                Utils.disableView(v,500);
                 set_selected_status(v);//设置选中状态
-                JSONObject jsonObject = mGoodsInfoViewAdapter.getItem(pos),content = new JSONObject();
+                final JSONObject jsonObject = mGoodsInfoViewAdapter.getItem(pos),content = new JSONObject();
                 if (jsonObject != null){
                     try {
                         if (jsonObject.containsKey(GoodsInfoViewAdapter.I_W_G_MARK)){//计重、计份并且通过扫条码选择的商品标志

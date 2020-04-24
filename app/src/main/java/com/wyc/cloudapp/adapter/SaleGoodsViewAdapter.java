@@ -214,11 +214,16 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     }
 
     public void deleteSaleGoods(int index,double num){
-        if (0 <= index && index < mDatas.size()){
+        int size = mDatas.size();
+        if (0 <= index && index < size){
             if (num == 0){//等于0删除整条记录
                 mDatas.remove(index);
                 if (mCurrentItemIndex == index){//如果删除的是当前选择的item则重置当前index以及View
-                    mCurrentItemIndex = -1;
+                    if (index == size - 1){
+                        mCurrentItemIndex--;
+                    }else{
+                        mCurrentItemIndex =  mDatas.size() - 1;
+                    }
                     mCurrentItemView = null;
                 }
             }else{
@@ -226,7 +231,14 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 double current_num = jsonObject.getDoubleValue("xnum"),
                         price = jsonObject.getDoubleValue("price");
                 if ((current_num = current_num - num) <= 0){
+                    Logger.d("index:%d,mCurrentItemIndex:%d",index,mCurrentItemIndex);
                     mDatas.remove(index);
+                    if (index == size - 1){
+                        mCurrentItemIndex--;
+                    }else{
+                        mCurrentItemIndex = mDatas.size() - 1;
+                    }
+                    mCurrentItemView = null;
                 }else{
                     jsonObject.put("xnum",current_num);
                     jsonObject.put("sale_amt",Utils.formatDouble(current_num * price,2));
@@ -292,7 +304,10 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         this.notifyDataSetChanged();
     }
     public JSONObject getCurrentContent() {
-        return mDatas.getJSONObject(mCurrentItemIndex);
+        if (0 <= mCurrentItemIndex && mCurrentItemIndex <= mDatas.size() - 1){
+            return mDatas.getJSONObject(mCurrentItemIndex);
+        }
+        return new JSONObject();
     }
     public int getCurrentItemIndex(){
         return mCurrentItemIndex;
@@ -340,7 +355,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         }
         return mDatas;
     }
-    public void updateSaleGoodsInfo(double value,short type){//type 0 修改数量 1修改价格 2打折
+    public void updateSaleGoodsInfo(double value,int type){//type 0 修改数量 1修改价格 2打折
         JSONObject json = getCurrentContent();
         double discount = 1.0,discount_amt = 0.0,old_price = 0.0,new_price = 0.0,xnum = 0.0;
         boolean d_discount = false;//是否折上折

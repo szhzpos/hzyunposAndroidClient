@@ -141,10 +141,6 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
     public void setOnItemDoubleClickListener(OnItemDoubleClickListener onItemDoubleClickListener){
         this.mOnItemDoubleClickListener = onItemDoubleClickListener;
     }
-    public JSONObject getCurrentContent() {
-        return mDatas.getJSONObject(mCurrentItemIndex);
-    }
-
     private void setCurrentItemIndexAndItemView(View v){
         TextView tv_id;
         mCurrentItemView = v;
@@ -161,10 +157,6 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
             }
         }
         mCurrentItemIndex = -1;
-    }
-
-    public int getCurrentItemIndex(){
-        return mCurrentItemIndex;
     }
 
     public @NonNull JSONArray getDatas(){
@@ -189,11 +181,15 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     private void deletePayDetail(int index){
-        Logger.d("index:%d",index);
-        if (0 <= index && index < mDatas.size()){
+        int size = mDatas.size();
+        if (0 <= index && index < size){
             mDatas.remove(index);
             if (mCurrentItemIndex == index){//如果删除的是当前选择的item则重置当前index以及View
-                mCurrentItemIndex = -1;
+                if (index == size - 1){
+                    mCurrentItemIndex--;
+                }else{
+                    mCurrentItemIndex++;
+                }
                 mCurrentItemView = null;
             }
             notifyDataSetChanged();

@@ -27,7 +27,6 @@ public class CustomApplication extends Application {
     @Override
     public  void  onCreate(){
         super.onCreate();
-
         Logger.addLogAdapter(new AndroidLogAdapter());
         Logger.addLogAdapter(new DiskLogAdapter());//日志记录磁盘
         IntentFilter intentFilter = new IntentFilter();
@@ -35,7 +34,8 @@ public class CustomApplication extends Application {
         intentFilter.addAction("confirm_connection");
         registerReceiver(new GlobalBroadcast(),intentFilter);
     }
-    static{
+
+    static {
         //是否输出值为null的字段,默认为false
         JSON.DEFAULT_GENERATE_FEATURE |= SerializerFeature.WriteMapNullValue.getMask();
         //数值字段如果为null,输出为0,而非null

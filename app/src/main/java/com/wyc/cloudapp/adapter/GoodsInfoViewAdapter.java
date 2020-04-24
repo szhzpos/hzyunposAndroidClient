@@ -233,21 +233,21 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
     }
 
     public boolean getSingleGoodsBarcodeId(@NonNull JSONObject object, int id){
-       return SQLiteHelper.execSql(object,"select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,type," +
+       return SQLiteHelper.execSql(object,"select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,ifnull(type,0) type," +
                "retail_price,retail_price price,tc_rate,tc_mode,tax_rate,ps_price,cost_price,trade_price,buying_price,yh_mode,yh_price,conversion from barcode_info where goods_status = '1' and barcode_status = '1' and barcode_id = '" + id +"'" +
                " UNION\n" +
                "select gp_id ,-1 goods_id,ifnull(gp_title,'') goods_title,ifnull(unit_name,'') unit_name,\n" +
-               "-1 barcode_id,ifnull(gp_code,'') barcode,type,gp_price retail_price,gp_price price,0 tc_rate,0 tc_mode,0 tax_rate,0 ps_price,0 cost_price,0 trade_price,gp_price buying_price,0 yh_mode,0 yh_price,1 conversion from goods_group \n" +
+               "-1 barcode_id,ifnull(gp_code,'') barcode,ifnull(type,0) type,gp_price retail_price,gp_price price,0 tc_rate,0 tc_mode,0 tax_rate,0 ps_price,0 cost_price,0 trade_price,gp_price buying_price,0 yh_mode,0 yh_price,1 conversion from goods_group \n" +
                "where status = '1' and gp_id = '" + id +"'");
     }
 
     private boolean getSingleGoodsByItemId(@NonNull JSONObject object,int id){
         Logger.d("only_coding:%d",id);
-        return SQLiteHelper.execSql(object,"select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,type," +
+        return SQLiteHelper.execSql(object,"select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,ifnull(type,0) type," +
                 "retail_price,retail_price price,tc_rate,tc_mode,tax_rate,ps_price,cost_price,trade_price,buying_price,yh_mode,yh_price,metering_id,conversion from barcode_info where (goods_status = '1' and barcode_status = '1') and only_coding = '" + id +"'" +
                 " UNION\n" +
                 "select gp_id ,-1 goods_id,ifnull(gp_title,'') goods_title,ifnull(unit_name,'') unit_name,\n" +
-                "-1 barcode_id,ifnull(gp_code,'') barcode,type,gp_price retail_price,gp_price price,0 tc_rate,0 tc_mode,0 tax_rate,0 ps_price,0 cost_price,0 trade_price,gp_price buying_price,0 yh_mode,0 yh_price,1 metering_id,1 conversion from goods_group \n" +
+                "-1 barcode_id,ifnull(gp_code,'') barcode,ifnull(type,0) type,gp_price retail_price,gp_price price,0 tc_rate,0 tc_mode,0 tax_rate,0 ps_price,0 cost_price,0 trade_price,gp_price buying_price,0 yh_mode,0 yh_price,1 metering_id,1 conversion from goods_group \n" +
                 "where status = '1' and gp_id = '" + id +"'");
     }
 

@@ -35,6 +35,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.serialScales.AbstractSerialScale;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -50,7 +51,8 @@ public class PeripheralSettingFragment extends BaseFragment {
     private Context mContext;
     private CustomProgressDialog mProgressDialog;
     private View mRootView;
-    private ArrayAdapter<String> mPrintIdAdapter,mProTypeAdaper,mSerialPortAdaper;
+    private ArrayAdapter<String> mPrintIdAdapter,mSerialPortAdaper;
+    private JSONArray mProTypes;
     public PeripheralSettingFragment() {
     }
 
@@ -440,13 +442,20 @@ public class PeripheralSettingFragment extends BaseFragment {
     private void initSerialScale(){
         Spinner pro_type = mRootView.findViewById(R.id.pro_type),ser_port = mRootView.findViewById(R.id.ser_port);
         mSerialPortAdaper = new ArrayAdapter<>(mContext,R.layout.drop_down_style);
-        mProTypeAdaper = new ArrayAdapter<>(mContext,R.layout.drop_down_style);
+        ArrayAdapter<String> proTypeAdaper = new ArrayAdapter<>(mContext,R.layout.drop_down_style);
         mSerialPortAdaper.setDropDownViewResource(R.layout.drop_down_style);
-        mProTypeAdaper.setDropDownViewResource(R.layout.drop_down_style);
+        proTypeAdaper.setDropDownViewResource(R.layout.drop_down_style);
 
         //协议类型
-        mProTypeAdaper.add("大华ACS-A");
-        pro_type.setAdapter(mProTypeAdaper);
+        mProTypes = AbstractSerialScale.generateProductType();
+        JSONObject tmp_obj;
+        for (int i = 0,size = mProTypes.size();i < size;i++){
+            tmp_obj = mProTypes.getJSONObject(i);
+            if (null != tmp_obj){
+                proTypeAdaper.add(Utils.getNullStringAsEmpty(tmp_obj,"name"));
+            }
+        }
+        pro_type.setAdapter(proTypeAdaper);
 
         //端口
         android_serialport_api.SerialPortFinder mSerialPortFinder = new android_serialport_api.SerialPortFinder();
@@ -461,16 +470,19 @@ public class PeripheralSettingFragment extends BaseFragment {
         JSONObject object = new JSONObject();
         Spinner pro_type_s = mRootView.findViewById(R.id.pro_type),ser_port_s = mRootView.findViewById(R.id.ser_port);
         if (way){
-            object.put("pro_type",pro_type_s.getSelectedItem());
+            object = mProTypes.getJSONObject(pro_type_s.getSelectedItemPosition());
             object.put("ser_port",ser_port_s.getSelectedItem());
         }else{
             if (SQLiteHelper.getLocalParameter("serial_port_scale",object)){
-                final String pro_type = Utils.getNullStringAsEmpty(object,"pro_type"),
+                final String cls_id = Utils.getNullStringAsEmpty(object,"cls_id"),name = Utils.getNullStringAsEmpty(object,"name"),
                         ser_port = Utils.getNullStringAsEmpty(object,"ser_port");
-                for (int i = 0,size = mProTypeAdaper.getCount();i < size;i ++){
-                    if (pro_type.equals(mProTypeAdaper.getItem(i))){
-                        pro_type_s.setSelection(i);
-                        break;
+                for (int i = 0,size = mProTypes.size();i < size;i ++){
+                    object = mProTypes.getJSONObject(i);
+                    if (null != object){
+                        if (cls_id.equals(Utils.getNullStringAsEmpty(object,"cls_id"))){
+                            pro_type_s.setSelection(i);
+                            break;
+                        }
                     }
                 }
                 for (int i = 0,size = mSerialPortAdaper.getCount();i < size;i ++){

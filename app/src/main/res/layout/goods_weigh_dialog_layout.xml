@@ -44,8 +44,8 @@
 
         <ImageView
             android:id="@+id/w_g_img"
-            android:layout_width="188dp"
-            android:layout_height="168dp"
+            android:layout_width="128dp"
+            android:layout_height="108dp"
             android:contentDescription="@string/space_sz"
             android:scaleType="fitXY" />
 
@@ -94,13 +94,22 @@
                     android:layout_marginStart="@dimen/margin_5"
                     android:gravity="center"
                     android:text="@string/g_price_sz"
-                    android:textAlignment="viewEnd"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/font_size_18" />
 
                 <TextView
                     android:id="@+id/w_g_price"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_45"
+                    android:gravity="start|center_vertical"
+                    android:paddingStart="@dimen/margin_8"
+                    android:paddingEnd="@dimen/size_0"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_18" />
+
+                <TextView
+                    android:id="@+id/unit_name"
+                    android:layout_width="wrap_content"
                     android:layout_height="@dimen/height_45"
                     android:gravity="start|center_vertical"
                     android:paddingStart="@dimen/margin_8"

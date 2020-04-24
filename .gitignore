@@ -3,6 +3,7 @@
 /local.properties
 /.idea/workspace.xml
 /.idea/libraries
+/.idea/caches/
 .DS_Store
 /app/build
 /app/release/
@@ -12,3 +13,4 @@
 /app/build/
 /android/build/
 .externalNativeBuild
+/app/.cxx
