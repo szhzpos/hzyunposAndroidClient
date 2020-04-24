@@ -1,7 +1,5 @@
 package com.wyc.cloudapp.dialog.serialScales;
 
-import android.widget.ArrayAdapter;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -18,28 +16,34 @@ public abstract class AbstractSerialScale implements ISerialScale {
     volatile boolean mReading = true;
     SerialPort mSerialPort;
     OnReadStatus mOnReadStatus;
-    public static AbstractSerialScale readWeight(final StringBuilder err){
-        JSONObject object = new JSONObject();
+    public static int readWeight(final JSONObject object){
+        int code = -1;
         AbstractSerialScale serialScale = null;
         if (SQLiteHelper.getLocalParameter("serial_port_scale",object)){
             final String cls_id = Utils.getNullStringAsEmpty(object,"cls_id"),
-                    ser_port = Utils.getNullStringAsEmpty(object,"ser_port");
-            try {
-                Class<?> scale_class = Class.forName("com.wyc.cloudapp.dialog.serialScales." + cls_id);
-                Constructor<?> constructor = scale_class.getConstructor();
-                serialScale = (AbstractSerialScale)constructor.newInstance();
-                serialScale.init(ser_port);
-                serialScale.startRead();
-            } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException | IOException | SecurityException e) {
-                e.printStackTrace();
-                if (serialScale != null){
-                    serialScale.stopRead();
-                    serialScale = null;
+                    ser_port = Utils.getNullOrEmptyStringAsDefault(object,"ser_port","NONE");
+            if (!"NONE".equals(ser_port)){
+                try {
+                    Class<?> scale_class = Class.forName("com.wyc.cloudapp.dialog.serialScales." + cls_id);
+                    Constructor<?> constructor = scale_class.getConstructor();
+                    serialScale = (AbstractSerialScale)constructor.newInstance();
+                    serialScale.init(ser_port);
+                    serialScale.startRead();
+                    object.fluentClear().put("info",serialScale);
+                    code = 0;
+                } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException | IOException | SecurityException e) {
+                    code = -1;
+                    e.printStackTrace();
+                    if (serialScale != null){
+                        serialScale.stopRead();
+                    }
+                    object.fluentClear().put("info",e.getMessage());
                 }
-                if (err != null)err.append(e.getMessage());
+            }else{
+                code = 1;
             }
         }
-        return serialScale;
+        return code;
     }
 
     private void init(String port) throws IOException,SecurityException  {

@@ -177,15 +177,16 @@ public class GoodsWeighDialog extends Dialog {
         if (code){
             if (!object.isEmpty()){
                 final TextView name = findViewById(R.id.w_g_name),unit = findViewById(R.id.unit_name);
-                final ImageView imageView = findViewById(R.id.w_g_img);
+                name.setText(Utils.getNullStringAsEmpty(object,"goods_title"));
+                mPriceTv.setText(Utils.getNullOrEmptyStringAsDefault(object,"price","0.0"));
+                unit.setText("/".concat(Utils.getNullStringAsEmpty(object,"unit_name")));
+
                 final String img_url = Utils.getNullStringAsEmpty(object,"img_url");
+                final ImageView imageView = findViewById(R.id.w_g_img);
                 if (!"".equals(img_url)){
                     final String szImage = img_url.substring(img_url.lastIndexOf("/") + 1);
                     final Bitmap bitmap = BitmapFactory.decodeFile(LoginActivity.IMG_PATH + szImage);
                     imageView.setImageBitmap(bitmap);
-                    name.setText(Utils.getNullStringAsEmpty(object,"goods_title"));
-                    mPriceTv.setText(Utils.getNullOrEmptyStringAsDefault(object,"price","0.0"));
-                    unit.setText("/".concat(Utils.getNullStringAsEmpty(object,"unit_name")));
                 }else{
                     imageView.setImageDrawable(mContext.getDrawable(R.drawable.nodish));
                 }
@@ -196,22 +197,28 @@ public class GoodsWeighDialog extends Dialog {
     }
 
     private void read(){
-        StringBuilder err = new StringBuilder();
-        if (null != (mSerialScale = AbstractSerialScale.readWeight(err))){
-            mSerialScale.setOnReadFinish(new AbstractSerialScale.OnReadStatus() {
-                @Override
-                public void onFinish(double num) {
-                    mWvalueEt.post(()->{
-                        mWvalueEt.setText(String.format(Locale.CHINA,"%.3f",num));
+        JSONObject object = new JSONObject();
+        int code = AbstractSerialScale.readWeight(object);
+        if (code >= 0){
+            if (code == 0){
+                mSerialScale = (AbstractSerialScale) object.get("info");
+                if (mSerialScale != null){
+                    mSerialScale.setOnReadFinish(new AbstractSerialScale.OnReadStatus() {
+                        @Override
+                        public void onFinish(double num) {
+                            mWvalueEt.post(()->{
+                                mWvalueEt.setText(String.format(Locale.CHINA,"%.3f",num));
+                            });
+                        }
+                        @Override
+                        public void onError(String err) {
+                            mWvalueEt.post(()-> MyDialog.ToastMessage("读串口错误：" + err,mContext,getWindow()));
+                        }
                     });
                 }
-                @Override
-                public void onError(String err) {
-                    mWvalueEt.post(()-> MyDialog.ToastMessage("读串口错误：" + err,mContext,getWindow()));
-                }
-            });
+            }
         }else{
-            MyDialog.ToastMessage("读串口错误：" + err,mContext,getWindow());
+            MyDialog.ToastMessage("读串口错误：" + Utils.getNullStringAsEmpty(object,"info"),mContext,getWindow());
         }
     }
 

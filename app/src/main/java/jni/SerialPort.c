@@ -26,7 +26,6 @@
 
 #include "android/log.h"
 static const char *TAG="serial_port";
-#define LOGI(fmt, args...) __android_log_print(ANDROID_LOG_INFO,  TAG, fmt, ##args)
 #define LOGD(fmt, args...) __android_log_print(ANDROID_LOG_DEBUG, TAG, fmt, ##args)
 #define LOGE(fmt, args...) __android_log_print(ANDROID_LOG_ERROR, TAG, fmt, ##args)
 
@@ -73,7 +72,7 @@ static speed_t getBaudrate(jint baudrate)
  * Method:    open
  * Signature: (Ljava/lang/String;II)Ljava/io/FileDescriptor;
  */
-JNIEXPORT jobject JNICALL Java_android_1serialport_1api_SerialPort_open
+JNIEXPORT jobject JNICALL _open
   (JNIEnv *env, jclass thiz, jstring path, jint baudrate, jint flags)
 {
 	int fd;
@@ -149,7 +148,7 @@ JNIEXPORT jobject JNICALL Java_android_1serialport_1api_SerialPort_open
  * Method:    close
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_android_1serialport_1api_SerialPort_close
+JNIEXPORT void JNICALL _close
   (JNIEnv *env, jobject thiz)
 {
 	jclass SerialPortClass = (*env)->GetObjectClass(env, thiz);
@@ -165,3 +164,25 @@ JNIEXPORT void JNICALL Java_android_1serialport_1api_SerialPort_close
 	close(descriptor);
 }
 
+JNIEXPORT jint JNI_OnLoad(JavaVM* vm,void * r){
+	LOGD("JNI_OnLoad");
+    JNIEnv* env = NULL;
+    jint result = -1;
+    if ((*vm)->GetEnv(vm,(void**)&env, JNI_VERSION_1_4) != JNI_OK) {
+        return result;
+    };
+    JNINativeMethod methods [] = {
+			{"open","(Ljava/lang/String;II)Ljava/io/FileDescriptor;",(void *)_open},
+			{"close","()V",(void *)_close},
+	};
+    jclass class = (*env)->FindClass(env,"android_serialport_api/SerialPort");
+    if (!class){
+        LOGD("FindClass failure");
+        return result;
+    }
+	if((*env)->RegisterNatives(env,class,methods,sizeof(methods)/ sizeof(methods[0])) < 0){
+		LOGD("RegisterNatives failure ");
+        return result;
+	}
+	return JNI_VERSION_1_6;
+}

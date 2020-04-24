@@ -40,7 +40,7 @@ import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.HashMap;
-
+import android_serialport_api.SerialPortFinder;
 import static android.app.Activity.RESULT_OK;
 
 public class PeripheralSettingFragment extends BaseFragment {
@@ -458,8 +458,10 @@ public class PeripheralSettingFragment extends BaseFragment {
         pro_type.setAdapter(proTypeAdaper);
 
         //端口
-        android_serialport_api.SerialPortFinder mSerialPortFinder = new android_serialport_api.SerialPortFinder();
+        SerialPortFinder mSerialPortFinder = new SerialPortFinder();
+
         String[] entryValues = mSerialPortFinder.getAllDevicesPath();
+        mSerialPortAdaper.add("NONE");
         for(String value : entryValues){
             mSerialPortAdaper.add(value);
         }
