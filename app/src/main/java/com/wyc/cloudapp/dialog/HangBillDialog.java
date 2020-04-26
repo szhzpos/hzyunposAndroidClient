@@ -25,6 +25,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
@@ -301,7 +302,7 @@ public class HangBillDialog extends Dialog {
         if (mGetListener != null && mHbDetailCursorAdapter != null){
             if (mCurrentHangId != null){
                 final StringBuilder err = new StringBuilder();
-                final JSONArray barcode_ids = SQLiteHelper.getListToJson("SELECT barcode_id FROM hangbill_detail where hang_id = " + mCurrentHangId, err);
+                final JSONArray barcode_ids = SQLiteHelper.getListToJson("SELECT barcode_id,only_coding,gp_id,"+ GoodsInfoViewAdapter.W_G_MARK +",sale_price price,xnum,sale_amt FROM hangbill_detail where hang_id = " + mCurrentHangId, err);
                 if (null != barcode_ids) {
                     JSONObject object = new JSONObject();
                     if (SQLiteHelper.execSql(object,"SELECT ifnull(card_code,'') card_code FROM hangbill where hang_id = " + mCurrentHangId)){
@@ -366,8 +367,11 @@ public class HangBillDialog extends Dialog {
                         tmp_obj.put("hang_id",hang_id);
                         tmp_obj.put("row_id",i + 1);
                         tmp_obj.put("stores_id",stores_id);
+                        tmp_obj.put("gp_id",data.getIntValue("gp_id"));
                         tmp_obj.put("barcode_id",data.getIntValue("barcode_id"));
                         tmp_obj.put("barcode",data.getString("barcode"));
+                        tmp_obj.put("only_coding",data.getIntValue("only_coding"));
+                        tmp_obj.put(GoodsInfoViewAdapter.W_G_MARK,data.getString(GoodsInfoViewAdapter.W_G_MARK));
                         tmp_obj.put("goods_title",data.getString("goods_title"));
                         tmp_obj.put("old_price",data.getDouble("old_price"));
                         tmp_obj.put("sale_price",data.getDouble("price"));

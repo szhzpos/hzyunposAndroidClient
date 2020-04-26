@@ -41,28 +41,25 @@ public class SerialPort {
 
 		/* Check access permission */
 		if (!device.canRead() || !device.canWrite()) {
+			/* Missing read/write permission, trying to chmod the file */
+			Process su;
+			su = Runtime.getRuntime().exec("/system/bin/su");
+			String cmd = "chmod 666 " + device.getAbsolutePath() + "\n"
+					+ "exit\n";
+			su.getOutputStream().write(cmd.getBytes());
+
 			try {
-				/* Missing read/write permission, trying to chmod the file */
-				Process su;
-				su = Runtime.getRuntime().exec("/system/bin/su");
-				String cmd = "chmod 666 " + device.getAbsolutePath() + "\n"
-						+ "exit\n";
-				su.getOutputStream().write(cmd.getBytes());
 				if ((su.waitFor() != 0) || !device.canRead()
 						|| !device.canWrite()) {
-					throw new SecurityException("设备不能读写！");
+					throw new SecurityException("device can't read or write!");
 				}
-			} catch (Exception e) {
+			} catch (InterruptedException e) {
 				e.printStackTrace();
 				throw new SecurityException(e.getMessage());
 			}
 		}
 
 		mFd = open(device.getAbsolutePath(), baudrate, flags);
-		if (mFd == null) {
-			Log.e(TAG, "native open returns null");
-			throw new IOException();
-		}
 		mFileInputStream = new FileInputStream(mFd);
 		mFileOutputStream = new FileOutputStream(mFd);
 	}
@@ -77,7 +74,7 @@ public class SerialPort {
 	}
 
 	// JNI
-	private native static FileDescriptor open(String path, int baudrate, int flags);
+	private native static FileDescriptor open(String path, int baudrate, int flags) throws IOException;
 	public native void close();
 	static {
 		System.loadLibrary("serial_port");

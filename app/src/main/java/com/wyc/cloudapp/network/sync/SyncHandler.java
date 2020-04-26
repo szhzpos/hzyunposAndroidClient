@@ -86,7 +86,7 @@ public final class SyncHandler extends Handler {
                     url = mUrl + "/api/goods/get_goods_all";
                     object.put("pos_num",mPosNum);
                     object.put("page",msg.obj);
-                    object.put("limit",20);
+                    object.put("limit",100);
                     break;
                 case MessageID.SYNC_PAY_METHOD_ID://支付方式
                     table_name = "pay_method";

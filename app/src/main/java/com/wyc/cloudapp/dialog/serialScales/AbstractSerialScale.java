@@ -31,7 +31,8 @@ public abstract class AbstractSerialScale implements ISerialScale {
                     serialScale.startRead();
                     object.fluentClear().put("info",serialScale);
                     code = 0;
-                } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException | IOException | SecurityException e) {
+                } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InstantiationException |
+                        InvocationTargetException | IOException | SecurityException e) {
                     code = -1;
                     e.printStackTrace();
                     if (serialScale != null){
@@ -46,7 +47,7 @@ public abstract class AbstractSerialScale implements ISerialScale {
         return code;
     }
 
-    private void init(String port) throws IOException,SecurityException  {
+    private void init(String port) throws IOException, SecurityException {
         mSerialPort = new SerialPort(new File(port), 9600, 0);
     }
 

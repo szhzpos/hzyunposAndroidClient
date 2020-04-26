@@ -42,12 +42,10 @@ import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
 import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.dialog.GoodsWeighDialog;
 import com.wyc.cloudapp.dialog.HangBillDialog;
 import com.wyc.cloudapp.dialog.MoreFunDialog;
 import com.wyc.cloudapp.dialog.pay.PayDialog;
 import com.wyc.cloudapp.dialog.SecondDisplay;
-import com.wyc.cloudapp.dialog.serialScales.AbstractSerialScale;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.network.sync.SyncManagement;
@@ -193,11 +191,15 @@ public class MainActivity extends AppCompatActivity {
                             public void onGet(JSONArray array, final JSONObject vip) {
                                 if (null != vip)showVipInfo(vip);
                                 JSONObject barcode_id_obj,goods_info;
+                                int id = -1;
                                 for (int i = 0,length = array.size();i < length;i ++){
                                     barcode_id_obj = array.getJSONObject(i);
                                     if (barcode_id_obj != null){
                                         goods_info = new JSONObject();
-                                        if (mGoodsInfoViewAdapter.getSingleGoodsBarcodeId(goods_info,barcode_id_obj.getIntValue("barcode_id"))){
+                                        final String isBarcodeWeighingGoods = barcode_id_obj.getString(GoodsInfoViewAdapter.W_G_MARK);
+                                        id = mGoodsInfoViewAdapter.getId(barcode_id_obj);
+                                        if (mGoodsInfoViewAdapter.getSingleGoods(goods_info,isBarcodeWeighingGoods,id)){
+                                            goods_info.put("xnum",barcode_id_obj.getDoubleValue("xnum"));//挂单取出重量
                                             mSaleGoodsViewAdapter.addSaleGoods(goods_info,mVipInfo);
                                             hangBillDialog.dismiss();
                                         }else{
@@ -355,36 +357,17 @@ public class MainActivity extends AppCompatActivity {
             View mCurrentView;
             @Override
             public void onClick(View v, int pos) {
-                Utils.disableView(v,500);
+                Utils.disableView(v,300);
                 set_selected_status(v);//设置选中状态
                 final JSONObject jsonObject = mGoodsInfoViewAdapter.getItem(pos),content = new JSONObject();
                 if (jsonObject != null){
-                    try {
-                        if (jsonObject.containsKey(GoodsInfoViewAdapter.I_W_G_MARK)){//计重、计份并且通过扫条码选择的商品标志
-                            mSaleGoodsViewAdapter.addSaleGoods(Utils.JsondeepCopy(jsonObject),mVipInfo);
-                        }else{
-                            int id = jsonObject.getIntValue("barcode_id");
-                            if (-1 == id){//组合商品
-                                id = jsonObject.getIntValue("gp_id");
-                            }
-                            if (mGoodsInfoViewAdapter.getSingleGoodsBarcodeId(content,id)){
-                                mSaleGoodsViewAdapter.addSaleGoods(content,mVipInfo);
-                                if(content.getIntValue("type") == 2){//type 1 普通 2散装称重 3鞋帽
-                                    GoodsWeighDialog goodsWeighDialog = new GoodsWeighDialog(MainActivity.this,content.getString("barcode_id"));
-                                    goodsWeighDialog.setOnYesOnclickListener(myDialog -> {
-                                        mSaleGoodsViewAdapter.updateSaleGoodsInfo(myDialog.getContent(),(short) 0);
-                                        myDialog.dismiss();
-                                    });
-                                    goodsWeighDialog.show();
-                                }
-                                mSearch_content.selectAll();
-                            }else{
-                                MyDialog.ToastMessage("选择商品错误：" + content.getString("info"),v.getContext(),null);
-                            }
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        MyDialog.ToastMessage("选择商品错误：" + e.getMessage(),v.getContext(),null);
+                    final String weigh_barcode_info = jsonObject.getString(GoodsInfoViewAdapter.W_G_MARK);
+                    int id = mGoodsInfoViewAdapter.getId(jsonObject);
+                    if (mGoodsInfoViewAdapter.getSingleGoods(content,weigh_barcode_info,id)){
+                        mSaleGoodsViewAdapter.addSaleGoods(content,mVipInfo);
+                        mSearch_content.selectAll();
+                    }else{
+                        MyDialog.ToastMessage("选择商品错误：" + content.getString("info"),v.getContext(),null);
                     }
                 }
             }

@@ -18,6 +18,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 
@@ -1139,6 +1140,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 ");\n",sql_retail_order_goods = "CREATE TABLE IF NOT EXISTS retail_order_goods (\n" +//销售商品明细
                 "    y_price       REAL,\n" +
                 "    barcode       VARCHAR,\n" +
+                "    "+ GoodsInfoViewAdapter.W_G_MARK +"       VARCHAR,\n" +
                 "    conversion    INT     DEFAULT (1),\n" +
                 "    total_money   REAL,\n" +
                 "    zk_cashier_id INT,\n" +
@@ -1221,8 +1223,11 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "hang_id  INT NOT NULL,\n" +
                 "row_id  INT  NOT NULL,\n" +
                 "stores_id       VARCHAR (4)     NOT NULL,\n" +
-                "barcode_id  VARCHAR (8)     NOT NULL,\n" +
+                "gp_id  INT     NOT NULL,\n" +
+                "barcode_id  INT     NOT NULL,\n" +
                 "barcode  VARCHAR     NOT NULL,\n" +
+                "only_coding  INT     NOT NULL,\n" +
+                "    "+ GoodsInfoViewAdapter.W_G_MARK +"       VARCHAR,\n" +
                 "goods_title  VARCHAR      ,\n" +
                 "old_price   NUMERIC (18, 4) NOT NULL,\n" +
                 "sale_price     NUMERIC (18, 4) NOT NULL,\n" +

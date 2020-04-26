@@ -67,6 +67,14 @@ static speed_t getBaudrate(jint baudrate)
 	}
 }
 
+void JNU_ThrowByName(JNIEnv *env, const char *name, const char *msg)
+{
+ 	jclass cls = (*env)->FindClass(env, name);
+	if (cls != NULL) {
+		(*env)->ThrowNew(env, cls, msg);
+	}
+	(*env)->DeleteLocalRef(env, cls);
+}
 /*
  * Class:     android_serialport_SerialPort
  * Method:    open
@@ -78,13 +86,13 @@ JNIEXPORT jobject JNICALL _open
 	int fd;
 	speed_t speed;
 	jobject mFileDescriptor;
-
 	/* Check arguments */
 	{
 		speed = getBaudrate(baudrate);
 		if (speed == -1) {
 			/* TODO: throw an exception */
 			LOGE("Invalid baudrate");
+			JNU_ThrowByName(env,"java/io/IOException","Invalid baudrate");//抛出异常后需立即返回，把异常交给调用层处理；如果没有返回JNI层会继续执行引发未知后果
 			return NULL;
 		}
 	}
@@ -102,6 +110,7 @@ JNIEXPORT jobject JNICALL _open
 			/* Throw an exception */
 			LOGE("Cannot open port");
 			/* TODO: throw an exception */
+			JNU_ThrowByName(env,"java/io/IOException","Cannot open port");
 			return NULL;
 		}
 	}
@@ -115,6 +124,7 @@ JNIEXPORT jobject JNICALL _open
 			LOGE("tcgetattr() failed");
 			close(fd);
 			/* TODO: throw an exception */
+			JNU_ThrowByName(env,"java/io/IOException","tcgetattr() failed");
 			return NULL;
 		}
 
@@ -127,6 +137,7 @@ JNIEXPORT jobject JNICALL _open
 			LOGE("tcsetattr() failed");
 			close(fd);
 			/* TODO: throw an exception */
+			JNU_ThrowByName(env,"java/io/IOException","tcsetattr() failed");
 			return NULL;
 		}
 	}

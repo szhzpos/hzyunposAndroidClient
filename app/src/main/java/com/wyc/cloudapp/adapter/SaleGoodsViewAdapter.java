@@ -13,8 +13,10 @@ import android.widget.TextView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
+import com.wyc.cloudapp.dialog.GoodsWeighDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.callback.ClickListener;
 import com.wyc.cloudapp.logger.Logger;
@@ -120,96 +122,23 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         this.mOnItemDoubleClickListener = onItemDoubleClickListener;
     }
 
-    public void addSaleGoods(JSONObject goods,final JSONObject vip){
-        boolean exist = false;
-        if (goods != null){
-            int barcode_id = goods.getIntValue("barcode_id"),gp_id = goods.getIntValue("gp_id");
-            double sel_num = 1.00,sel_amount,price,discount = 1.0,discount_amt = 0.0,new_price = 0.0,
-            sale_num = 0.0,sale_amount = 0.0,sale_discount_amt = 0.0;
-
-            boolean isBarcodeWeighingGoods = goods.containsKey(GoodsInfoViewAdapter.I_W_G_MARK);
-
-            price = goods.getDoubleValue("price");
-            if (isBarcodeWeighingGoods){
-                sel_num = goods.getDoubleValue("xnum");
+    public void addSaleGoods(final JSONObject goods,final JSONObject vip){
+        if (null != goods){
+            double xnum = goods.getDoubleValue("xnum");//如果不存在xnum,返回0.0；新增的商品不存在xnum字段，以及该字段值不会为0;挂单以及条码秤称重商品已经存在
+            boolean isBarcodeWeighingGoods = !Utils.getNullStringAsEmpty(goods,GoodsInfoViewAdapter.W_G_MARK).isEmpty(),isZero = Utils.equalDouble(xnum,0.0);
+            if(!isBarcodeWeighingGoods && isZero && goods.getIntValue("type") == 2){//type 1 普通 2散装称重 3鞋帽
+                GoodsWeighDialog goodsWeighDialog = new GoodsWeighDialog(mContext,goods.getString("barcode_id"));
+                goodsWeighDialog.setOnYesOnclickListener(myDialog -> {
+                    double num = myDialog.getContent();
+                    if (!Utils.equalDouble(num,0.0))
+                        addSaleGoods(goods,num,false,vip);
+                    myDialog.dismiss();
+                });
+                goodsWeighDialog.show();
+            }else{
+                if (isZero)xnum = 1.0;
+                addSaleGoods(goods,xnum,isBarcodeWeighingGoods,vip);
             }
-            for (int i = 0,length = mDatas.size();i < length;i++){
-                JSONObject tmp = mDatas.getJSONObject(i);
-                if (barcode_id == tmp.getIntValue("barcode_id") && gp_id == tmp.getIntValue("gp_id")){
-                    exist = true;
-
-                    sale_num = tmp.getDoubleValue("xnum");
-                    sale_amount = tmp.getDoubleValue("sale_amt");
-                    sale_discount_amt = tmp.getDoubleValue("discount_amt");
-
-                    discount  = Utils.getNotKeyAsDefault(tmp,"discount",1.0);
-
-                    new_price = Utils.formatDouble(price * discount,2);
-
-                    if (isBarcodeWeighingGoods){
-                        sel_amount = goods.getDoubleValue("sale_amt");
-                    }else
-                        sel_amount = Utils.formatDouble(sel_num * new_price,2);
-
-                    discount_amt = Utils.formatDouble((sel_num * (price - new_price)) + sale_discount_amt,2);
-
-                    tmp.put("old_price", price);
-                    tmp.put("price", new_price);
-                    tmp.put("discount", discount);
-                    tmp.put("discount_amt", discount_amt);
-                    tmp.put("xnum",Utils.formatDouble(sale_num + sel_num,4));
-                    tmp.put("sale_amt",Utils.formatDouble(sale_amount + sel_amount,2));
-                    tmp.put("old_amt",Utils.formatDouble(sale_amount + sel_amount + discount_amt,2));
-
-                    Logger.d_json(tmp.toString());
-
-                    mCurrentItemIndex = i;
-
-                    break;
-                }
-            }
-            if (!exist){
-                if (vip != null){
-                    goods.put("card_code",vip.getString("card_code"));
-                    goods.put("name",vip.getString("name"));
-                    goods.put("mobile",vip.getString("mobile"));
-                    switch (goods.getIntValue("yh_mode")){
-                        case 0://无优惠
-                            discount  = 1.0;
-                            new_price = price;
-                            break;
-                        case 1://会员价
-                            new_price = Utils.formatDouble(goods.getDoubleValue("yh_price"),2);
-                            discount  = Utils.formatDouble(new_price / (price == 0 ? 1 : price),2);
-                            break;
-                        case 2://会员折扣
-                            discount  = Utils.formatDouble(Utils.getNotKeyAsDefault(goods,"discount",10.0) / 10,2);
-                            new_price = Utils.formatDouble(price * discount,2);
-                            break;
-                    }
-                }else{
-                    discount  = Utils.formatDouble(Utils.getNotKeyAsDefault(goods,"discount",1.0),2);
-                    new_price = Utils.formatDouble(price * discount,2);
-                }
-
-                if (isBarcodeWeighingGoods){
-                    sel_amount = goods.getDoubleValue("sale_amt");
-                }else
-                    sel_amount = Utils.formatDouble(sel_num * new_price,2);
-
-                discount_amt = Utils.formatDouble(sel_num * (price - new_price),2);
-
-                goods.put("old_price", price);
-                goods.put("price",new_price);
-                goods.put("discount", discount);
-                goods.put("discount_amt", discount_amt);
-                goods.put("xnum",sel_num);
-                goods.put("sale_amt",sel_amount);
-                goods.put("old_amt",Utils.formatDouble(sel_amount + discount_amt,2));
-                mDatas.add(goods);
-                mCurrentItemIndex = mDatas.size() - 1;
-            }
-            this.notifyDataSetChanged();
         }
     }
 
@@ -355,7 +284,8 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         }
         return mDatas;
     }
-    public void updateSaleGoodsInfo(double value,int type){//type 0 修改数量 1修改价格 2打折
+
+    private void updateSaleGoodsInfo(double value,int type){//type 0 修改数量 1修改价格 2打折
         JSONObject json = getCurrentContent();
         double discount = 1.0,discount_amt = 0.0,old_price = 0.0,new_price = 0.0,xnum = 0.0;
         boolean d_discount = false;//是否折上折
@@ -441,6 +371,85 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         goods_name.setTextColor(mContext.getColor(R.color.blue));
 
         if (mCurrentItemView != v)setCurrentItemIndexAndItemView(v);
+    }
+    private void addSaleGoods(final JSONObject goods,double num,boolean isBarcodeWeighingGoods,final JSONObject vip){
+        boolean exist = false;
+        int barcode_id = goods.getIntValue("barcode_id"),gp_id = goods.getIntValue("gp_id");
+        double  sel_amount,price,discount = 1.0,discount_amt = 0.0,new_price = 0.0,
+                sale_num = 0.0,sale_amount = 0.0,sale_discount_amt = 0.0;
+        JSONObject tmp_obj;
+
+        price = goods.getDoubleValue("price");
+
+        for (int i = 0,length = mDatas.size();i < length;i++){
+            tmp_obj = mDatas.getJSONObject(i);
+            if (barcode_id == tmp_obj.getIntValue("barcode_id") && gp_id == tmp_obj.getIntValue("gp_id")){
+                exist = true;
+                sale_num = tmp_obj.getDoubleValue("xnum");
+                sale_amount = tmp_obj.getDoubleValue("sale_amt");
+                sale_discount_amt = tmp_obj.getDoubleValue("discount_amt");
+                discount  = Utils.getNotKeyAsDefault(tmp_obj,"discount",1.0);
+                new_price = Utils.formatDouble(price * discount,2);
+                if (isBarcodeWeighingGoods){
+                    sel_amount = goods.getDoubleValue("sale_amt");
+                }else
+                    sel_amount = Utils.formatDouble(num * new_price,2);
+                discount_amt = Utils.formatDouble((num * (price - new_price)) + sale_discount_amt,2);
+                tmp_obj.put("old_price", price);
+                tmp_obj.put("price", new_price);
+                tmp_obj.put("discount", discount);
+                tmp_obj.put("discount_amt", discount_amt);
+                tmp_obj.put("xnum",Utils.formatDouble(sale_num + num,4));
+                tmp_obj.put("sale_amt",Utils.formatDouble(sale_amount + sel_amount,2));
+                tmp_obj.put("old_amt",Utils.formatDouble(sale_amount + sel_amount + discount_amt,2));
+                Logger.d_json(tmp_obj.toString());
+                mCurrentItemIndex = i;
+                break;
+            }
+        }
+
+        if (!exist){
+            if (vip != null){
+                goods.put("card_code",vip.getString("card_code"));
+                goods.put("name",vip.getString("name"));
+                goods.put("mobile",vip.getString("mobile"));
+                switch (goods.getIntValue("yh_mode")){
+                    case 0://无优惠
+                        discount  = 1.0;
+                        new_price = price;
+                        break;
+                    case 1://会员价
+                        new_price = Utils.formatDouble(goods.getDoubleValue("yh_price"),2);
+                        discount  = Utils.formatDouble(new_price / (price == 0 ? 1 : price),2);
+                        break;
+                    case 2://会员折扣
+                        discount  = Utils.formatDouble(Utils.getNotKeyAsDefault(goods,"discount",10.0) / 10,2);
+                        new_price = Utils.formatDouble(price * discount,2);
+                        break;
+                }
+            }else{
+                discount  = Utils.formatDouble(Utils.getNotKeyAsDefault(goods,"discount",1.0),2);
+                new_price = Utils.formatDouble(price * discount,2);
+            }
+
+            if (isBarcodeWeighingGoods){
+                sel_amount = goods.getDoubleValue("sale_amt");
+            }else
+                sel_amount = Utils.formatDouble(num * new_price,2);
+
+            discount_amt = Utils.formatDouble(num * (price - new_price),2);
+
+            goods.put("old_price", price);
+            goods.put("price",new_price);
+            goods.put("discount", discount);
+            goods.put("discount_amt", discount_amt);
+            goods.put("xnum",num);
+            goods.put("sale_amt",sel_amount);
+            goods.put("old_amt",Utils.formatDouble(sel_amount + discount_amt,2));
+            mDatas.add(goods);
+            mCurrentItemIndex = mDatas.size() - 1;
+        }
+        this.notifyDataSetChanged();
     }
 
     public boolean splitCombinationalGoods(final JSONArray arrays,int gp_id,double gp_price,double gp_num,StringBuilder err){

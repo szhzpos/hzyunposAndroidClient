@@ -253,7 +253,7 @@ public class MyDialog extends Dialog {
                 mess.setTextColor(Color.WHITE);
                 mess.setText(message);
                 toast.setGravity(Gravity.CENTER,0,0);
-                toast.setDuration(Toast.LENGTH_LONG);
+                //toast.setDuration(Toast.LENGTH_LONG);
                 toast.show();
             }
         }
@@ -280,7 +280,7 @@ public class MyDialog extends Dialog {
                     anchor.getLocationOnScreen(location);
                     toast.setGravity(Gravity.TOP|Gravity.START,location[0] - 68,location[1]);
                 }
-                toast.setDuration(Toast.LENGTH_LONG);
+                //toast.setDuration(Toast.LENGTH_LONG);
                 toast.show();
             }
         }

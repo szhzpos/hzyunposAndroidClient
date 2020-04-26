@@ -57,8 +57,5 @@ public class DhSerialScale extends AbstractSerialScale {
     @Override
     public void stopRead() {
         mReading = false;
-        if (mSerialPort != null){
-            mSerialPort.close();
-        }
     }
 }
