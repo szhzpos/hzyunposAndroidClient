@@ -74,19 +74,31 @@ public class DH15A extends AbstractBarcodeScale {
                 socket.connect(new InetSocketAddress(ip,port),10000);
                 socket.setSoTimeout(10000);
                 try (OutputStream outputStream = socket.getOutputStream(); BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream(),CHARACTER_SET)) ){
+
                     outputStream.write(new byte[]{0x21,0x30,0x49,0x41,0x0D,0x0A,0x03});
                     outputStream.write(new byte[]{0x21,0x30,0x48,0x41,0x0D,0x0A,0x03});
 
                     for (int i = 0,size = records.size();i < size;i++){
                         record_obj = records.getJSONObject(i);
                         if (null != record_obj){
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            outputStream.write(("!0J" + record_obj.getString("plu") +"A"+ new String(new byte[]{0x0D,0x0A,0x03},CHARACTER_SET)).getBytes(CHARACTER_SET));
+                            Logger.d("回收返回：%s",bufferedReader.readLine());
+
                             outputStream.write(record_obj.getString("r").getBytes(CHARACTER_SET));
+
                             if (mCallback != null){
                                 mCallback.updata(String.format(Locale.CHINA,"正在下发<%d>...",i+1));
                             }
 
+
+
                             Logger.d("record_obj:%s",record_obj);
-                            Logger.d("下载返回：%s",bufferedReader.readLine());
+                            Logger.d("下发返回：%s",bufferedReader.readLine());
                         }
                     }
                     if (mCallback != null){
@@ -123,7 +135,7 @@ public class DH15A extends AbstractBarcodeScale {
                     for (int i = 0,size = goods.size();i < size;i++){
                         tmp_obj = goods.getJSONObject(i);
                         m_id = tmp_obj.getString("metering_id");
-                        plu_code = Utils.substringFormRight("0000" + i + 1,4);
+                        plu_code = Utils.substringFormRight("0000" + (i + 1),4);
 
                         tmp_item_id = tmp_obj.getString("only_coding");
                         item_id = Utils.substringFormRight("0000000" + tmp_item_id,7);
@@ -139,8 +151,10 @@ public class DH15A extends AbstractBarcodeScale {
                         record_obj = new JSONObject();
                         record_obj.put("r",sz_data_record.replace("%1",plu_code).replace("%2",item_id).replace("%3",price)
                                 .replace("%4",shelf_life).replace("%5",title).replace("%6",prefix).replace("%7",m_id) + end_code);
+                        record_obj.put("plu",plu_code);
                         record_obj.put("item_id",tmp_item_id);
                         record_obj.put("title",tmp_title);
+
                         data_records.add(record_obj);
                     }
                     code = true;

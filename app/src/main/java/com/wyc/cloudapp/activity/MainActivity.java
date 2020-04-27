@@ -628,9 +628,8 @@ public class MainActivity extends AppCompatActivity {
     private void setDisCashierId(final String id){
         mZkCashierId = id;
     }
-
     private void resetOrderCode(){
-        mOrderCode.setText(mGoodsInfoViewAdapter.generateOrderCode(mCashierInfo.getString("pos_num")));
+        mOrderCode.setText(mSaleGoodsViewAdapter.generateOrderCode(mCashierInfo.getString("pos_num"),1));
     }
     private void initSecondDisplay(){
         mSecondDisplay = SecondDisplay.getInstantiate(this);
@@ -665,14 +664,11 @@ public class MainActivity extends AppCompatActivity {
 
         return  mSaleGoodsViewAdapter.updateGoodsInfoToVip(mVipInfo);
     }
-
     public double getSaleSumAmt(){
         return mSaleGoodsViewAdapter.getSaleSumAmt();
     }
-    public String getPosNum(){
-        if (null == mCashierInfo)return "";
-        return mCashierInfo.getString("pos_num");
-    }
+    public int getOrderType(){return mSaleGoodsViewAdapter.getOrderType();}
+    public String getPosNum(){if (null == mCashierInfo)return "";return mCashierInfo.getString("pos_num");}
     public JSONObject getCashierInfo(){
         return mCashierInfo;
     }

@@ -477,7 +477,7 @@ public class PayDialog extends Dialog {
 
             if (-1 != gp_id){
                 tmp_json = (JSONObject) sales_data.remove(i--);
-                if (!saleGoodsViewAdapter.splitCombinationalGoods(combination_goods,gp_id,tmp_json.getDouble("price"),tmp_json.getDouble("xnum"),err)){
+                if (!saleGoodsViewAdapter.splitCombinationalGoods(combination_goods,gp_id,tmp_json.getDouble("price"),tmp_json.getDouble("xnum"),tmp_json.getIntValue("dis_type"),err)){
                     throw new JSONException("拆分组合商品错误，" + err);
                 }
                 Logger.d_json(combination_goods.toString());
@@ -556,6 +556,7 @@ public class PayDialog extends Dialog {
         order_info.put("transfer_status",1);//交班状态（1未交班，2已交班）
         order_info.put("transfer_time",0);
         order_info.put("is_rk",2);//是否已经扣减库存（1是，2否）
+        order_info.put("type",mainActivity.getOrderType());
         if (mVip != null){
             order_info.put("member_id",mVip.getString("member_id"));
             order_info.put("mobile",mVip.getString("mobile"));
@@ -581,9 +582,9 @@ public class PayDialog extends Dialog {
         JSONObject count_json = new JSONObject(),data;
         List<String>  tables = Arrays.asList("retail_order","retail_order_goods","retail_order_pays"),
                 retail_order_cols = Arrays.asList("stores_id","order_code","discount","discount_price","total","cashier_id","addtime","pos_code","order_status","pay_status","pay_time","upload_status",
-                        "upload_time","transfer_status","transfer_time","is_rk","mobile","name","card_code","sc_ids","sc_tc_money","member_id","discount_money","zl_money","ss_money","remark","zk_cashier_id"),
+                        "upload_time","transfer_status","transfer_time","is_rk","mobile","name","card_code","sc_ids","sc_tc_money","member_id","type","discount_money","zl_money","ss_money","remark","zk_cashier_id"),
                 retail_order_goods_cols = Arrays.asList("order_code","barcode_id","xnum","price","buying_price","retail_price","trade_price","cost_price","ps_price","tax_rate","tc_mode","tc_rate","gp_id",
-                        "zk_cashier_id","total_money", GoodsInfoViewAdapter.W_G_MARK,"conversion","barcode","y_price"),
+                        "zk_cashier_id","total_money","dis_type",GoodsInfoViewAdapter.W_G_MARK,"conversion","barcode","y_price"),
                 retail_order_pays_cols = Arrays.asList("order_code","pay_method","pay_money","pay_time","pay_status","pay_serial_no","pay_code","remark","is_check","zk_money","pre_sale_money","give_change_money",
                         "discount_money","xnote","card_no","return_code","v_num","print_info");
 
@@ -891,11 +892,11 @@ public class PayDialog extends Dialog {
         int print_count = 1,footer_space = 5;
         JSONObject cas_info = mainActivity.getCashierInfo(),st_info = mainActivity.getStoreInfo();
 
-        store_name = format_info.getString("s_n");
+        store_name = Utils.getNullStringAsEmpty(format_info,"s_n");
         pos_num = Utils.getNullOrEmptyStringAsDefault(cas_info,"pos_num","");
         cas_name = Utils.getNullOrEmptyStringAsDefault(cas_info,"cas_name","");;
 
-        footer_c = format_info.getString("f_c");
+        footer_c = Utils.getNullStringAsEmpty(format_info,"f_c");
         print_count = Utils.getNotKeyAsDefault(format_info,"p_c",1);
         footer_space = Utils.getNotKeyAsDefault(format_info,"f_s",5);
         new_line = "\r\n";//Printer.commandToStr(Printer.NEW_LINE);
@@ -909,10 +910,10 @@ public class PayDialog extends Dialog {
 
         while (print_count-- > 0) {//打印份数
             info.append(Printer.commandToStr(Printer.DOUBLE_HEIGHT)).append(Printer.commandToStr(Printer.ALIGN_CENTER))
-                    .append(store_name.length() == 0 ? st_info.getString("stores_name") : store_name).append(new_line).append(new_line).append(Printer.commandToStr(Printer.NORMAL)).
+                    .append(store_name.length() == 0 ? Utils.getNullStringAsEmpty(st_info,"stores_name") : store_name).append(new_line).append(new_line).append(Printer.commandToStr(Printer.NORMAL)).
                     append(Printer.commandToStr(Printer.ALIGN_LEFT));
 
-            info.append(Printer.printTwoData(1, "店号：".concat(st_info.getString("stores_id")), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()))).append(new_line);
+            info.append(Printer.printTwoData(1, "店号：".concat(Utils.getNullStringAsEmpty(st_info,"stores_id")), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()))).append(new_line);
             info.append(Printer.printTwoData(1, "机号：".concat(pos_num), "收银员：".concat(cas_name))).append(new_line);
             info.append("单号：").append(mainActivity.getOrderCode()).append(new_line).append(new_line);
 
@@ -938,12 +939,12 @@ public class PayDialog extends Dialog {
                         info.append(new_line_d);
                     }
 
-                    info.append(Printer.commandToStr(Printer.BOLD)).append(info_obj.getString("goods_title")).append(new_line).append(Printer.commandToStr(Printer.BOLD_CANCEL));
-                    info.append(Printer.printTwoData(1, info_obj.getString("barcode"),
-                            Printer.printThreeData(16, info_obj.getString("price"), type == 2 ? String.valueOf(xnum) : String.valueOf((int) xnum), info_obj.getString("sale_amt"))));
+                    info.append(Printer.commandToStr(Printer.BOLD)).append(Utils.getNullStringAsEmpty(info_obj,"goods_title")).append(new_line).append(Printer.commandToStr(Printer.BOLD_CANCEL));
+                    info.append(Printer.printTwoData(1,Utils.getNullStringAsEmpty(info_obj,"barcode"),
+                            Printer.printThreeData(16,Utils.getNullStringAsEmpty(info_obj,"price"), type == 2 ? String.valueOf(xnum) : String.valueOf((int) xnum),Utils.getNullStringAsEmpty(info_obj,"sale_amt"))));
 
                     if (!Utils.equalDouble(discount_amt, 0.0)) {
-                        info.append(new_line).append(Printer.printTwoData(1, "原价：".concat(info_obj.getString("old_price")), "优惠：".concat(String.valueOf(discount_amt))));
+                        info.append(new_line).append(Printer.printTwoData(1, "原价：".concat(Utils.getNullStringAsEmpty(info_obj,"old_price")), "优惠：".concat(String.valueOf(discount_amt))));
                     }
                     if (i + 1 != size)
                         info.append(new_line_16);

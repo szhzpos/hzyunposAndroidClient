@@ -14,7 +14,8 @@ import android_serialport_api.SerialPort;
 
 public abstract class AbstractSerialScale implements ISerialScale {
     volatile boolean mReading = true;
-    SerialPort mSerialPort;
+    String mPort;
+    SerialPort mSerialPort = null;
     OnReadStatus mOnReadStatus;
     public static int readWeight(final JSONObject object){
         int code = -1;
@@ -25,19 +26,14 @@ public abstract class AbstractSerialScale implements ISerialScale {
             if (!"NONE".equals(ser_port)){
                 try {
                     Class<?> scale_class = Class.forName("com.wyc.cloudapp.dialog.serialScales." + cls_id);
-                    Constructor<?> constructor = scale_class.getConstructor();
-                    serialScale = (AbstractSerialScale)constructor.newInstance();
-                    serialScale.init(ser_port);
-                    serialScale.startRead();
+                    Constructor<?> constructor = scale_class.getConstructor(String.class);
+                    serialScale = (AbstractSerialScale)constructor.newInstance(ser_port);
                     object.fluentClear().put("info",serialScale);
                     code = 0;
                 } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InstantiationException |
-                        InvocationTargetException | IOException | SecurityException e) {
+                        InvocationTargetException e) {
                     code = -1;
                     e.printStackTrace();
-                    if (serialScale != null){
-                        serialScale.stopRead();
-                    }
                     object.fluentClear().put("info",e.getMessage());
                 }
             }else{
@@ -47,23 +43,26 @@ public abstract class AbstractSerialScale implements ISerialScale {
         return code;
     }
 
-    private void init(String port) throws IOException, SecurityException {
-        mSerialPort = new SerialPort(new File(port), 9600, 0);
+    public interface OnReadStatus {
+        void onFinish(double num);
+        void onError(final String err);
     }
-
-    public void setOnReadFinish(OnReadStatus listener){
+    public ISerialScale setOnReadListener(OnReadStatus listener){
         mOnReadStatus = listener;
+        return this;
     }
-
    public static JSONArray generateProductType(){
         JSONArray array = new JSONArray();
+
         JSONObject object = new JSONObject();
-
-
         object.put("cls_id","DhSerialScale");
         object.put("name","大华ACS-A");
         array.add(object);
 
+       object = new JSONObject();
+       object.put("cls_id","DjSerialScale");
+       object.put("name","顶尖ACS-OS2X");
+       array.add(object);
 
         return array;
     }

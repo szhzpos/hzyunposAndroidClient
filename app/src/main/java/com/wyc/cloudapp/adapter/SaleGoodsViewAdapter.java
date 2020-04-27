@@ -22,6 +22,8 @@ import com.wyc.cloudapp.callback.ClickListener;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdapter.MyViewHolder> {
@@ -32,6 +34,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     private OnItemDoubleClickListener mOnItemDoubleClickListener;
     private View mCurrentItemView;
     private int mCurrentItemIndex;
+    private int mOrderType = 1;//订单类型 1线下 2线上
     public SaleGoodsViewAdapter(Context context){
         this.mContext = context;
         mDatas = new JSONArray();
@@ -221,7 +224,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
             json.put("discount", discount);
             json.put("discount_amt", discount_amt);
             json.put("price",new_price);
-
+            json.put("dis_type",6);
             json.put("sale_amt",Utils.formatDouble(xnum * new_price,2));
             json.put("old_amt",Utils.formatDouble(old_price * xnum,2));
         }
@@ -248,13 +251,9 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     public JSONArray updateGoodsInfoToVip(final JSONObject vip){
         double discount = 1.0,new_price = 0.0,old_price,discount_amt = 0.0,xnum = 0.0;
         if (vip != null){
+            JSONObject jsonObject;
             for (int i = 0,length = mDatas.size();i < length;i++){
-                JSONObject jsonObject = mDatas.getJSONObject(i);
-
-                /*jsonObject.put("card_code",vip.getString("card_code"));
-                jsonObject.put("name",vip.getString("name"));
-                jsonObject.put("mobile",vip.getString("mobile"));*/
-
+                jsonObject = mDatas.getJSONObject(i);
                 old_price = jsonObject.getDoubleValue("old_price");
                 xnum = jsonObject.getDoubleValue("xnum");
 
@@ -273,7 +272,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                         break;
                 }
                 discount_amt = Utils.formatDouble(xnum * (old_price - new_price),2);
-
+                jsonObject.put("dis_type",5);
                 jsonObject.put("discount", discount);
                 jsonObject.put("discount_amt", discount_amt);
                 jsonObject.put("price",new_price);
@@ -284,7 +283,20 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         }
         return mDatas;
     }
-
+    public String generateOrderCode(final String pos_num,int order_type){
+        String prefix = "N" + pos_num + "-" + new SimpleDateFormat("yyMMddHHmmss").format(new Date()) + "-",order_code ;
+        JSONObject orders= new JSONObject();
+        if (SQLiteHelper.execSql(orders,"SELECT count(order_id) + 1 order_id from retail_order where date(addtime,'unixepoch' ) = date('now')")){
+            order_code =orders.getString("order_id");
+            order_code = prefix + "0000".substring(order_code.length()) + order_code;
+            mOrderType = order_type;
+        }else{
+            order_code = prefix + "0001";;
+            MyDialog.ToastMessage("生成订单号错误：" + orders.getString("info"),mContext,null);
+        }
+        return order_code;
+    }
+    public int getOrderType(){return mOrderType;}
     private void updateSaleGoodsInfo(double value,int type){//type 0 修改数量 1修改价格 2打折
         JSONObject json = getCurrentContent();
         double discount = 1.0,discount_amt = 0.0,old_price = 0.0,new_price = 0.0,xnum = 0.0;
@@ -301,7 +313,6 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
 
                     json.put("discount_amt", Utils.formatDouble(discount_amt + json.getDoubleValue("discount_amt"),2));
                     json.put("xnum",Utils.formatDouble(xnum,4));
-
                 }
                 break;
             case 1:
@@ -311,11 +322,13 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 discount = Utils.formatDouble(new_price / old_price,4);
                 discount_amt = Utils.formatDouble(xnum * (old_price - new_price),2);
 
+                json.put("dis_type", 4);
                 json.put("discount", discount);
                 json.put("discount_amt", discount_amt);
                 json.put("price",Utils.formatDouble(new_price,2));
                 break;
             case 2:
+                json.put("dis_type",6);
                 discount = Utils.formatDouble(value / 100,4);
                 new_price = json.getDoubleValue("price");
                 xnum = json.getDoubleValue("xnum");
@@ -413,6 +426,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 goods.put("card_code",vip.getString("card_code"));
                 goods.put("name",vip.getString("name"));
                 goods.put("mobile",vip.getString("mobile"));
+
                 switch (goods.getIntValue("yh_mode")){
                     case 0://无优惠
                         discount  = 1.0;
@@ -427,6 +441,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                         new_price = Utils.formatDouble(price * discount,2);
                         break;
                 }
+                goods.put("dis_type",5);
             }else{
                 discount  = Utils.formatDouble(Utils.getNotKeyAsDefault(goods,"discount",1.0),2);
                 new_price = Utils.formatDouble(price * discount,2);
@@ -439,6 +454,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
 
             discount_amt = Utils.formatDouble(num * (price - new_price),2);
 
+            goods.put("dis_type",0);//无优惠
             goods.put("old_price", price);
             goods.put("price",new_price);
             goods.put("discount", discount);
@@ -452,7 +468,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         this.notifyDataSetChanged();
     }
 
-    public boolean splitCombinationalGoods(final JSONArray arrays,int gp_id,double gp_price,double gp_num,StringBuilder err){
+    public boolean splitCombinationalGoods(final JSONArray arrays,int gp_id,double gp_price,double gp_num,int dis_type,StringBuilder err){
         final String sql = "select b.xnum xnum,(b.xnum * b.retail_price / a.amt) * " + gp_price +" / case b.xnum when 0 then 1 else b.xnum end price," +
                 "b.barcode_id barcode_id,b.barcode barcode,b.conversion conversion,b.gp_id gp_id,b.tc_rate tc_rate,b.tc_mode tc_mode,b.tax_rate tax_rate,b.ps_price ps_price,b.cost_price cost_price\n" +
                 ",b.trade_price trade_price,b.retail_price retail_price,b.buying_price buying_price from vi_goods_group_info b inner join \n" +
@@ -462,10 +478,13 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         Logger.d("拆分组合商品：%s",sql);
 
         JSONArray tmp;
+        JSONObject tmp_obj;
         while (gp_num-- != 0){
             if (null != (tmp = SQLiteHelper.getListToJson(sql,err))){
                 for (int k = 0,length = tmp.size();k < length;k++){
-                    arrays.add(tmp.getJSONObject(k));
+                    tmp_obj = tmp.getJSONObject(k);
+                    tmp_obj.put("dis_type",dis_type);
+                    arrays.add(tmp_obj);
                 }
             }else{
                 return false;

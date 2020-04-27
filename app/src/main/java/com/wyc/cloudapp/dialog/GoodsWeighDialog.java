@@ -19,21 +19,11 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.LoginActivity;
-import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.serialScales.AbstractSerialScale;
-import com.wyc.cloudapp.dialog.serialScales.ISerialScale;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
 import java.util.Locale;
-import java.util.Vector;
-
-import android_serialport_api.SerialPort;
 
 public class GoodsWeighDialog extends Dialog {
     private Context mContext;
@@ -203,7 +193,7 @@ public class GoodsWeighDialog extends Dialog {
             if (code == 0){
                 mSerialScale = (AbstractSerialScale) object.get("info");
                 if (mSerialScale != null){
-                    mSerialScale.setOnReadFinish(new AbstractSerialScale.OnReadStatus() {
+                    mSerialScale.setOnReadListener(new AbstractSerialScale.OnReadStatus() {
                         @Override
                         public void onFinish(double num) {
                             mWvalueEt.post(()->{
@@ -214,7 +204,7 @@ public class GoodsWeighDialog extends Dialog {
                         public void onError(String err) {
                             mWvalueEt.post(()-> MyDialog.ToastMessage("读串口错误：" + err,mContext,getWindow()));
                         }
-                    });
+                    }).startRead();
                 }
             }
         }else{

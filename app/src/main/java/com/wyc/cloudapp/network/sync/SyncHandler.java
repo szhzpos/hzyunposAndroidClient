@@ -129,7 +129,7 @@ public final class SyncHandler extends Handler {
                     if (msg.obj instanceof  Boolean)
                         mReportProgress = (boolean)msg.obj;
                     return;
-                case MessageID.MARK_GOODS_STATUS_id:
+                case MessageID.MARK_GOODS_STATUS_ID:
                     if (mReportProgress)
                         syncActivityHandler.obtainMessage(SYNC_DIS_INFO_ID,"准备同步...").sendToTarget();
                     upload_barcode_id(null);
@@ -268,9 +268,9 @@ public final class SyncHandler extends Handler {
     private void uploadOrderInfo() {
         boolean code = true;
         final StringBuilder err = new StringBuilder(),order_gp_ids = new StringBuilder();
-        final String sql_orders = "SELECT discount_money,card_code,name,mobile,transfer_time,transfer_status,pay_time,pay_status,order_status,pos_code,addtime,cashier_id,total,\n" +
+        final String sql_orders = "SELECT discount_money,card_code,name,mobile,type,transfer_time,transfer_status,pay_time,pay_status,order_status,pos_code,addtime,cashier_id,total,\n" +
                 "discount_price,order_code,stores_id,spare_param1,spare_param2,remark FROM retail_order where order_status = 2 and pay_status = 2 and upload_status = 1 limit 50",
-                sql_goods_detail = "select conversion,zk_cashier_id,gp_id,tc_rate,tc_mode,tax_rate,ps_price,cost_price,trade_price,retail_price,buying_price,price,xnum,barcode_id from retail_order_goods where order_code = '%1'",
+                sql_goods_detail = "select conversion,zk_cashier_id,dis_type,gp_id,tc_rate,tc_mode,tax_rate,ps_price,cost_price,trade_price,retail_price,buying_price,(total_money - xnum * retail_price) dis_money,price,xnum,barcode_id from retail_order_goods where order_code = '%1'",
                 sql_pays_detail = "select print_info,return_code,card_no,xnote,discount_money,give_change_money,pre_sale_money,zk_money,is_check,remark,pay_code,pay_serial_no,pay_status,pay_time,pay_money,pay_method,order_code from retail_order_pays where order_code = '%1'",
                 sql_combination_goods = "SELECT b . retail_price, a . xnum , c.gp_price,c.gp_id,d.zk_cashier_id,d.order_code FROM  goods_group_info a LEFT JOIN  barcode_info b on a . barcode_id = b . barcode_id\n" +
                         " LEFT JOIN goods_group c on c . gp_id = a . gp_id  AND c . status = 1 left join retail_order_goods d on c.gp_id = d.gp_id and d.barcode_id = b.barcode_id " +
@@ -278,8 +278,8 @@ public final class SyncHandler extends Handler {
         int gp_id;
         String order_code;
 
-        JSONArray orders,sales ,pays ,combinations;
-        JSONObject data = new JSONObject(),send_data = new JSONObject(),retJson,tmp_jsonObject;
+        JSONArray orders,sales ,pays ,combinations,discount_records = new JSONArray(),dis_goods_details = null;
+        JSONObject data = new JSONObject(),send_data = new JSONObject(),retJson,tmp_jsonObject,order_info,discount_record = null,dis_goods;
         HttpRequest httpRequest = new HttpRequest();
 
         if (null != (orders = SQLiteHelper.getListToJson(sql_orders,err))){
@@ -287,17 +287,15 @@ public final class SyncHandler extends Handler {
                 for (int i = 0,size = orders.size();i < size;i++){
                     order_gp_ids.delete(0,order_gp_ids.length());
 
-                    JSONArray order_arr = new JSONArray();
-                    tmp_jsonObject = orders.getJSONObject(i);
-                    order_arr.add(tmp_jsonObject);
+                    order_info = orders.getJSONObject(i);
 
-                    order_code = tmp_jsonObject.getString("order_code");
+                    order_code = order_info.getString("order_code");
 
                     sales = SQLiteHelper.getListToJson(sql_goods_detail.replace("%1",order_code),err);
                     pays = SQLiteHelper.getListToJson(sql_pays_detail.replace("%1",order_code),err);
                     if (null != sales && null != pays){
-
-                        for (int j = 0,j_size = sales.size();j < j_size;j++){
+                        int dis_type = 0;
+                        for (int j = 0,j_size = sales.size();j < j_size;j++){//销售明细
                             tmp_jsonObject = sales.getJSONObject(j);
                             gp_id = tmp_jsonObject.getIntValue("gp_id");
                             if (-1 != gp_id){
@@ -310,22 +308,71 @@ public final class SyncHandler extends Handler {
                                     order_gp_ids.append(",").append("'").append(gp_id).append("'");
                                 }
                             }
+
+                            Logger.d_json(tmp_jsonObject.toJSONString());
+
+                            dis_type = Utils.getNotKeyAsDefault(tmp_jsonObject,"dis_type",0);
+                            if (dis_type != 0){
+                                double dis_money = Utils.formatDouble(tmp_jsonObject.getDoubleValue("dis_money"),2);
+                                dis_goods = new JSONObject();
+
+                                if (discount_record == null){
+                                    if (dis_goods_details == null){
+                                        dis_goods_details = new JSONArray();
+                                    }
+                                    dis_goods.put("barcode_id",tmp_jsonObject.getIntValue("barcode_id"));
+                                    dis_goods.put("price",dis_money);
+                                    dis_goods_details.add(dis_goods);
+
+                                    discount_record = new JSONObject();
+                                    discount_record.put("discount_type",dis_type);
+                                    discount_record.put("discount_money","");
+                                    discount_record.put("type",order_info.getIntValue("type"));
+                                    discount_record.put("relevant_id","");
+                                    discount_record.put("details",dis_goods_details);
+
+                                    discount_records.add(discount_record);
+                                }else  if (dis_type != discount_record.getIntValue("discount_type")){//如果与已存在的折扣类型不一致则重新生成记录
+                                    dis_goods_details = new JSONArray();
+                                    dis_goods.put("barcode_id",tmp_jsonObject.getIntValue("barcode_id"));
+                                    dis_goods.put("price",dis_money);
+                                    dis_goods_details.add(dis_goods);
+
+                                    discount_record = new JSONObject();
+                                    discount_record.put("discount_type",dis_type);
+                                    discount_record.put("type",order_info.getIntValue("type"));
+                                    discount_record.put("discount_money","");
+                                    discount_record.put("relevant_id","");
+                                    discount_record.put("details",dis_goods_details);
+
+                                    discount_records.add(discount_record);
+                                }else {
+                                    dis_goods_details = new JSONArray();
+                                    dis_goods.put("barcode_id",tmp_jsonObject.getIntValue("barcode_id"));
+                                    dis_goods.put("price",dis_money);
+                                    dis_goods_details.add(dis_goods);
+
+                                    discount_record.put("details",dis_goods_details);
+                                }
+
+                            }
                         }
 
                         Logger.d(sql_combination_goods.replace("%1",order_gp_ids).replace("%2",order_code));
 
                         if ((combinations = SQLiteHelper.getListToJson(sql_combination_goods.replace("%1",order_gp_ids).replace("%2",order_code),err)) != null){
-                            data.put("order_arr",order_arr);
-                            data.put("order_goods",sales);
-                            data.put("order_pay",pays);
-                            data.put("order_group",combinations);
+                            data.put("order_info",Utils.JsondeepCopy(order_info));
+                            data.put("goods_list",sales);
+                            data.put("pay_list",pays);
+                            data.put("group_list",combinations);
+                            data.put("discount_record",discount_records);
 
                             Logger.d_json(data.toString());
 
                             send_data.put("appid",mAppId);
                             send_data.put("data",data);
 
-                            retJson = httpRequest.sendPost(mUrl + "/api/retail/order_upload",HttpRequest.generate_request_parm(send_data,mAppScret),true);
+                            retJson = httpRequest.sendPost(mUrl + "/api_v2/retail_upload/order_upload",HttpRequest.generate_request_parm(send_data,mAppScret),true);
                             switch (retJson.getIntValue("flag")){
                                 case 0:
                                     code = false;
@@ -479,7 +526,7 @@ public final class SyncHandler extends Handler {
         if (!hasMessages(MessageID.SYNC_GOODS_ID))obtainMessage(MessageID.SYNC_GOODS_ID,0).sendToTarget();//商品信息obj代表当前下载页数
     }
     void stopSync(){
-        removeMessages(MessageID.MARK_GOODS_STATUS_id);
+        removeMessages(MessageID.MARK_GOODS_STATUS_ID);
         removeMessages(MessageID.SYNC_CASHIER_ID);
         removeMessages(MessageID.SYNC_GOODS_CATEGORY_ID);
         removeMessages(MessageID.SYNC_STORES_ID);
@@ -508,6 +555,6 @@ public final class SyncHandler extends Handler {
         }
     }
     void sign_downloaded(){//标记已下载
-        if (!hasMessages(MessageID.MARK_GOODS_STATUS_id))obtainMessage(MessageID.MARK_GOODS_STATUS_id).sendToTarget();
+        if (!hasMessages(MessageID.MARK_GOODS_STATUS_ID))obtainMessage(MessageID.MARK_GOODS_STATUS_ID).sendToTarget();
     }
 }

@@ -7,8 +7,5 @@ import android_serialport_api.SerialPort;
 public interface ISerialScale {
     void startRead();
     void stopRead();
-    interface OnReadStatus {
-        void onFinish(double num);
-        void onError(final String err);
-    }
+    void close();
 }

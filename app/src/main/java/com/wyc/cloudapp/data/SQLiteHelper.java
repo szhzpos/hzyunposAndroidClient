@@ -1120,6 +1120,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    card_code       CHAR,\n" +
                 "    name            CHAR,\n" +
                 "    mobile          CHAR,\n" +
+                "    type           INT     DEFAULT (2),\n" +//订单类型 1线下 2线上
                 "    is_rk           INT     DEFAULT (2),\n" +
                 "    transfer_time   INT,\n" +
                 "    transfer_status INT     DEFAULT (1),\n" +
@@ -1142,6 +1143,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    barcode       VARCHAR,\n" +
                 "    "+ GoodsInfoViewAdapter.W_G_MARK +"       VARCHAR,\n" +
                 "    conversion    INT     DEFAULT (1),\n" +
+                "    dis_type    INT     DEFAULT (1),\n" +//优惠类型 1满减 2赠送 3促销 4手动改价 5会员折扣 6整单折扣
                 "    total_money   REAL,\n" +
                 "    zk_cashier_id INT,\n" +
                 "    gp_id         INT,\n" +

@@ -3,7 +3,8 @@
 /local.properties
 /.idea/workspace.xml
 /.idea/libraries
-/.idea/caches/
+/.idea/caches
+/.idea/inspectionProfiles
 .DS_Store
 /app/build
 /app/release/

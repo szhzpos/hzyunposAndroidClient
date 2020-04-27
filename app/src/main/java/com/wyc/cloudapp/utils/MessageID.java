@@ -28,7 +28,7 @@ public final  class MessageID {
             SYNC_GP_INFO_ID = 25,
             UPLOAD_ORDER_ID = 26,
             MODFIY_REPORT_PROGRESS_ID = 28,
-            MARK_GOODS_STATUS_id = 29,
+            MARK_GOODS_STATUS_ID = 29,
             SYNC_PAUSE_ID = 30,
             SYNC_THREAD_QUIT_ID= 31,
             CANCEL_LOGIN_ID = 32;

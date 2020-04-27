@@ -208,7 +208,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                 "gp_price retail_price,gp_price price,0 tc_rate,0 tc_mode,0 tax_rate,0 ps_price,0 cost_price,0 trade_price,gp_price buying_price,0 yh_mode,0 yh_price,1 metering_id,1 conversion from goods_group \n" +
                 "where status = '1' and gp_id = " + id;
 
-        Logger.d("full_sql:%s",full_sql);
+        //Logger.d("full_sql:%s",full_sql);
 
        return SQLiteHelper.execSql(object,full_sql);
     }
@@ -259,19 +259,6 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener){
         this.mOnItemClickListener = onItemClickListener;
-    }
-
-    public String generateOrderCode(final String pos_num){
-        String prefix = "P" + pos_num + "-" + new SimpleDateFormat("yyMMddHHmmss").format(new Date()) + "-",order_code ;
-        JSONObject orders= new JSONObject();
-        if (SQLiteHelper.execSql(orders,"SELECT count(order_id) + 1 order_id from retail_order where date(addtime,'unixepoch' ) = date('now')")){
-            order_code =orders.getString("order_id");
-            order_code = prefix + "0000".substring(order_code.length()) + order_code;
-        }else{
-            order_code = prefix + "0001";;
-            MyDialog.ToastMessage("生成订单号错误：" + orders.getString("info"),mContext,null);
-        }
-        return order_code;
     }
 
     public int getId(final JSONObject jsonObject){
