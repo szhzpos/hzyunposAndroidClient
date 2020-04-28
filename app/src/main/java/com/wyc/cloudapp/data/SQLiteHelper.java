@@ -516,7 +516,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             } catch (JSONException | SQLiteException e) {
                 isTrue = false;
                 try {
-                    json.put("info","查询错误：" + e.getMessage());
+                    json.put("info",e.getMessage());
                 } catch (JSONException ex) {
                     ex.printStackTrace();
                 }
@@ -538,7 +538,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         }
         return true;
     }
-    public static boolean execInsertSql(@NonNull final String table,final String nullColumnHack,final ContentValues values,StringBuilder err){
+    private static boolean execInsertSql(@NonNull final String table,final String nullColumnHack,final ContentValues values,StringBuilder err){
         //执行updata语句    sql要执行的数据库修改语句 如果出错error包含错误信息
         boolean code = true;
         try {
@@ -1252,19 +1252,18 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    g_c_name    VARCHAR NOT NULL,\n" +
                 "    remark      VARCHAR\n" +
                 ");",sql_discount_record = "CREATE TABLE IF NOT EXISTS discount_record (\n" +
-                "    Create_date    DATETIME,\n" +
-                "    id             INTEGER  PRIMARY KEY AUTOINCREMENT\n" +
-                "                            NOT NULL\n" +
-                "                            UNIQUE,\n" +
-                "    upload_time    DATETIME,\n" +
-                "    upload_status  INTEGER  DEFAULT (1),\n" +
-                "    type           INTEGER,\n" +
-                "    stores_id      INTEGER,\n" +
-                "    details        VARCHAR,\n" +
-                "    discount_money REAL,\n" +
                 "    order_code     VARCHAR,\n" +
+                "    discount_type  INTEGER  DEFAULT (0),\n" +
+                "    type           INTEGER  DEFAULT (1),\n" +
+                "    stores_id      INTEGER,\n" +
                 "    relevant_id    INTEGER,\n" +
-                "    discount_type  INTEGER\n" +
+                "    discount_money REAL     DEFAULT (0.0),\n" +
+                "    details        VARCHAR,\n" +
+                "    oper_date      DATETIME DEFAULT ( (datetime('now', 'localtime') ) ),\n" +
+                "    PRIMARY KEY (\n" +
+                "        order_code,\n" +
+                "        discount_type\n" +
+                "    )\n" +
                 ");";
 
         list.add(sql_shop_stores);

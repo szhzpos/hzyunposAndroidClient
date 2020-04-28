@@ -27,11 +27,8 @@ import java.util.Date;
 import java.util.Locale;
 
 public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdapter.MyViewHolder> {
-
     private Context mContext;
-    private JSONArray mDatas;
-    private OnItemClickListener mOnItemClickListener;
-    private OnItemDoubleClickListener mOnItemDoubleClickListener;
+    private JSONArray mDatas,mDiscountRecords;
     private View mCurrentItemView;
     private int mCurrentItemIndex;
     private int mOrderType = 1;//订单类型 1线下 2线上
@@ -89,14 +86,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 myViewHolder.mCurrentLayoutItemView.setOnTouchListener(new ClickListener(v -> {
                     setCurrentItemIndexAndItemView(v);
                     deleteSaleGoods(mCurrentItemIndex,0);
-                    if (mOnItemDoubleClickListener != null){
-                        mOnItemDoubleClickListener.onClick(v,i);
-                    }
-                }, v -> {
-                    setSelectStatus(v);
-                    if (mOnItemClickListener != null){
-                    mOnItemClickListener.onClick(v,i); }
-                }));
+                }, this::setSelectStatus));
 
                 if (mCurrentItemIndex == i){
                     setSelectStatus(myViewHolder.mCurrentLayoutItemView);
@@ -111,19 +101,6 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         return mDatas == null ? 0 : mDatas.size();
     }
 
-    public interface OnItemClickListener{
-        void onClick(View v,int pos);
-    }
-    public interface OnItemDoubleClickListener{
-        void onClick(View v,int pos);
-    }
-
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener){
-        this.mOnItemClickListener = onItemClickListener;
-    }
-    public void setOnItemDoubleClickListener(OnItemDoubleClickListener onItemDoubleClickListener){
-        this.mOnItemDoubleClickListener = onItemDoubleClickListener;
-    }
 
     public void addSaleGoods(final JSONObject goods,final JSONObject vip){
         if (null != goods){
