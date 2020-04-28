@@ -105,13 +105,11 @@ public class AddBarCodeScaleDialog extends Dialog {
             if (mScaleInfos != null){
                 mPopupWindow.initContent(null, mProductType, mScaleInfos, new String[]{"s_type"}, 2, true, json -> {
                     if (json != null){
-                        String class_id = json.getString("s_id");
+                        final String class_name = json.getString("s_id");
                         try {
-                            Class<?> scale_class = Class.forName("com.wyc.cloudapp.dialog.barcodeScales." + class_id);
-                            Constructor<?> constructor = scale_class.getConstructor();
-                            IBarCodeScale iBarCodeScale = (IBarCodeScale)constructor.newInstance();
+                            IBarCodeScale iBarCodeScale = AbstractBarcodeScaleImp.newInstance(class_name);
                             mPort.setText(iBarCodeScale.getPort());
-                            mProductType.setTag(class_id);
+                            mProductType.setTag(class_name);
                         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
                             e.printStackTrace();
                             MyDialog.ToastMessage("设置默认端口错误：" + e.getMessage(),mContext,getWindow());
@@ -173,7 +171,7 @@ public class AddBarCodeScaleDialog extends Dialog {
 
     private void initScalseInfo(){
         mManufacturerInfos = new JSONArray();
-        mManufacturerInfos.add(AbstractBarcodeScale.getDHManufacturer());
+        mManufacturerInfos.add(AbstractBarcodeScaleImp.getDHManufacturer());
     }
 
     private void initIP(){
@@ -273,7 +271,7 @@ public class AddBarCodeScaleDialog extends Dialog {
                 object12 = mCategoryInfo.getJSONObject(i);
                 if ( null != object12){
                     if (names.length() != 0){
-                        names.append(AbstractBarcodeScale.CATEGORY_SEPARATE);
+                        names.append(AbstractBarcodeScaleImp.CATEGORY_SEPARATE);
                     }
                     names.append(object12.getString("name"));
                 }
@@ -354,8 +352,8 @@ public class AddBarCodeScaleDialog extends Dialog {
     }
 
     private void setCategoryInfo(final String id,final String name){
-        final String[] ids = id.split(AbstractBarcodeScale.CATEGORY_SEPARATE);
-        final String[] names = name.split(AbstractBarcodeScale.CATEGORY_SEPARATE);
+        final String[] ids = id.split(AbstractBarcodeScaleImp.CATEGORY_SEPARATE);
+        final String[] names = name.split(AbstractBarcodeScaleImp.CATEGORY_SEPARATE);
         JSONObject object;
         StringBuilder sb_name = new StringBuilder();
         String sz_name;
@@ -367,7 +365,7 @@ public class AddBarCodeScaleDialog extends Dialog {
                 object.put("name",sz_name);
                 mCategoryInfo.add(object);
                 if (sb_name.length() != 0){
-                    sb_name.append(AbstractBarcodeScale.CATEGORY_SEPARATE);
+                    sb_name.append(AbstractBarcodeScaleImp.CATEGORY_SEPARATE);
                 }
                 sb_name.append(sz_name);
             }
@@ -404,10 +402,10 @@ public class AddBarCodeScaleDialog extends Dialog {
                 tmp = mCategoryInfo.getJSONObject(i);
                 if ( null != tmp){
                     if (names.length() != 0){
-                        names.append(AbstractBarcodeScale.CATEGORY_SEPARATE);
+                        names.append(AbstractBarcodeScaleImp.CATEGORY_SEPARATE);
                     }
                     if (ids.length() != 0){
-                        ids.append(AbstractBarcodeScale.CATEGORY_SEPARATE);
+                        ids.append(AbstractBarcodeScaleImp.CATEGORY_SEPARATE);
                     }
                     names.append(tmp.getString("name"));
                     ids.append(tmp.getString("category_id"));

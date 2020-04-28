@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
         //初始化adapter
         initGoodsInfoAdapter();
-        initGoodsTypeAdapter();
+        initGoodsCategoryAdapter();
         initSaleGoodsAdapter();
 
         //初始化收银员、仓库信息
@@ -237,6 +237,7 @@ public class MainActivity extends AppCompatActivity {
 
         //初始化数据管理对象
         mSyncManagement = new SyncManagement(mHandler,mUrl,mAppId,mAppScret,mStoreInfo.getString("stores_id"),mCashierInfo.getString("pos_num"),mCashierInfo.getString("cas_id"));
+        mSyncManagement.sync_order();
         mSyncManagement.start_sync(false);
 
         //重置订单信息
@@ -388,7 +389,7 @@ public class MainActivity extends AppCompatActivity {
         goods_info_view.setAdapter(mGoodsInfoViewAdapter);
     }
 
-    private void initGoodsTypeAdapter(){
+    private void initGoodsCategoryAdapter(){
         RecyclerView goods_type_view = findViewById(R.id.goods_type_list);
         mGoodsCategoryViewAdapter = new GoodsCategoryViewAdapter(this, mGoodsInfoViewAdapter,findViewById(R.id.goods_sec_l_type_list));
         goods_type_view.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false));
@@ -441,7 +442,7 @@ public class MainActivity extends AppCompatActivity {
                         mGoodsCategoryViewAdapter.trigger_preView();
                     }else{
                         mGoodsInfoViewAdapter.fuzzy_search_goods(mSearch_content);
-                        mSearch_content.getText().clear();
+                        //mSearch_content.getText().clear();
                     }
                 }
             }
@@ -639,12 +640,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public JSONArray discount(double discount,final String zk_cashier_id){
+    public JSONArray discount(double discount,final String zk_cashier_id,int type){
         if (null == zk_cashier_id || "".equals(zk_cashier_id)){
             setDisCashierId(mCashierInfo.getString("cas_id"));
         }else
             setDisCashierId(zk_cashier_id);
-        return mSaleGoodsViewAdapter.discount(discount);
+        return mSaleGoodsViewAdapter.discount(discount,type);
     }
     public void sync(boolean b){
         if (mSyncManagement != null){

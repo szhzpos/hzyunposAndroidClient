@@ -1120,7 +1120,6 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    card_code       CHAR,\n" +
                 "    name            CHAR,\n" +
                 "    mobile          CHAR,\n" +
-                "    type           INT     DEFAULT (2),\n" +//订单类型 1线下 2线上
                 "    is_rk           INT     DEFAULT (2),\n" +
                 "    transfer_time   INT,\n" +
                 "    transfer_status INT     DEFAULT (1),\n" +
@@ -1143,7 +1142,6 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    barcode       VARCHAR,\n" +
                 "    "+ GoodsInfoViewAdapter.W_G_MARK +"       VARCHAR,\n" +
                 "    conversion    INT     DEFAULT (1),\n" +
-                "    dis_type    INT     DEFAULT (1),\n" +//优惠类型 1满减 2赠送 3促销 4手动改价 5会员折扣 6整单折扣
                 "    total_money   REAL,\n" +
                 "    zk_cashier_id INT,\n" +
                 "    gp_id         INT,\n" +
@@ -1253,7 +1251,22 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    g_c_id      VARCHAR NOT NULL,\n" +
                 "    g_c_name    VARCHAR NOT NULL,\n" +
                 "    remark      VARCHAR\n" +
+                ");",sql_discount_record = "CREATE TABLE IF NOT EXISTS discount_record (\n" +
+                "    Create_date    DATETIME,\n" +
+                "    id             INTEGER  PRIMARY KEY AUTOINCREMENT\n" +
+                "                            NOT NULL\n" +
+                "                            UNIQUE,\n" +
+                "    upload_time    DATETIME,\n" +
+                "    upload_status  INTEGER  DEFAULT (1),\n" +
+                "    type           INTEGER,\n" +
+                "    stores_id      INTEGER,\n" +
+                "    details        VARCHAR,\n" +
+                "    discount_money REAL,\n" +
+                "    order_code     VARCHAR,\n" +
+                "    relevant_id    INTEGER,\n" +
+                "    discount_type  INTEGER\n" +
                 ");";
+
         list.add(sql_shop_stores);
         list.add(sql_shop_category);
         list.add(sql_barcode_info);
@@ -1272,6 +1285,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         list.add(sql_hangbill);
         list.add(sql_hangbill_detail);
         list.add(sql_barcode_scale_info);
+        list.add(sql_discount_record);
         try {
             db.beginTransaction();
             for (String sql : list) {

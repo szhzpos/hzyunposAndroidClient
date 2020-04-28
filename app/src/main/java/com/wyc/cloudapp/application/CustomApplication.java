@@ -11,6 +11,7 @@ import com.wyc.cloudapp.logger.AndroidLogAdapter;
 import com.wyc.cloudapp.logger.DiskLogAdapter;
 import com.wyc.cloudapp.logger.Logger;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -72,6 +73,11 @@ public class CustomApplication extends Application {
     public static Future<?> submit(Runnable task){
         return THREAD_POOL_EXECUTOR.submit(task);
     }
+
+    public static <T> Future<T> submit(Callable<T> task){
+        return THREAD_POOL_EXECUTOR.submit(task);
+    }
+
     public static boolean removeTask(Runnable task){
         return THREAD_POOL_EXECUTOR.remove(task);
     }

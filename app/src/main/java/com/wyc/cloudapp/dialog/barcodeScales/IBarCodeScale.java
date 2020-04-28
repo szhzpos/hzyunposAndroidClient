@@ -5,10 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 public interface IBarCodeScale {
     String getPort();
     boolean down(final JSONObject scales_info);
-    void setUpdateStatus(UpdateStatusCallback o);
-    boolean parse();
-
-    interface UpdateStatusCallback{
-        void updata(final String s);
+    void setShowStatus(OnShowStatusCallback o);
+    interface OnShowStatusCallback {
+        void OnShow(final String s);
     }
 }

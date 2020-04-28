@@ -146,6 +146,10 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         return mCurrentItemIndexMap.get(id);
     }
 
+    public Map<String,TextView> getCurrentItemIndexMap(){
+        return mCurrentItemIndexMap;
+    }
+
     public @NonNull JSONArray getDatas(){
         return mDatas;
     }

@@ -1,7 +1,6 @@
 package com.wyc.cloudapp.dialog.serialScales;
 
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.io.File;
@@ -14,7 +13,7 @@ import java.util.concurrent.TimeoutException;
 
 import android_serialport_api.SerialPort;
 
-public class DhSerialScale extends AbstractSerialScale {
+public class DhSerialScale extends AbstractSerialScaleImp {
     private Future<?> mTask;
     public DhSerialScale(final String port){
         mPort = port;
@@ -76,14 +75,6 @@ public class DhSerialScale extends AbstractSerialScale {
             if (e instanceof TimeoutException){
                 close();
             }
-        }
-    }
-
-    @Override
-    public synchronized void close(){
-        if (mSerialPort != null){
-            mSerialPort.close();
-            mSerialPort = null;
         }
     }
 }

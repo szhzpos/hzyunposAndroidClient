@@ -272,19 +272,21 @@ public final class SyncHandler extends Handler {
                 "discount_price,order_code,stores_id,spare_param1,spare_param2,remark FROM retail_order where order_status = 2 and pay_status = 2 and upload_status = 1 limit 50",
                 sql_goods_detail = "select conversion,zk_cashier_id,dis_type,gp_id,tc_rate,tc_mode,tax_rate,ps_price,cost_price,trade_price,retail_price,buying_price,(total_money - xnum * retail_price) dis_money,price,xnum,barcode_id from retail_order_goods where order_code = '%1'",
                 sql_pays_detail = "select print_info,return_code,card_no,xnote,discount_money,give_change_money,pre_sale_money,zk_money,is_check,remark,pay_code,pay_serial_no,pay_status,pay_time,pay_money,pay_method,order_code from retail_order_pays where order_code = '%1'",
-                sql_combination_goods = "SELECT b . retail_price, a . xnum , c.gp_price,c.gp_id,d.zk_cashier_id,d.order_code FROM  goods_group_info a LEFT JOIN  barcode_info b on a . barcode_id = b . barcode_id\n" +
+                sql_combination_goods = "SELECT b . retail_price, a . xnum , c.gp_price,c.gp_id,d.zk_cashier_id,d.order_code FROM  goods_group_info a LEFT JOIN  barcode_info b on a.barcode_id = b.barcode_id\n" +
                         " LEFT JOIN goods_group c on c . gp_id = a . gp_id  AND c . status = 1 left join retail_order_goods d on c.gp_id = d.gp_id and d.barcode_id = b.barcode_id " +
                         "WHERE d.order_code = '%2' and d.gp_id in (%1)";
         int gp_id;
         String order_code;
 
-        JSONArray orders,sales ,pays ,combinations,discount_records = new JSONArray(),dis_goods_details = null;
+        JSONArray orders,sales ,pays ,combinations,discount_records,dis_goods_details = null;
         JSONObject data = new JSONObject(),send_data = new JSONObject(),retJson,tmp_jsonObject,order_info,discount_record = null,dis_goods;
         HttpRequest httpRequest = new HttpRequest();
 
         if (null != (orders = SQLiteHelper.getListToJson(sql_orders,err))){
             try {
                 for (int i = 0,size = orders.size();i < size;i++){
+                    discount_records = new JSONArray();
+
                     order_gp_ids.delete(0,order_gp_ids.length());
 
                     order_info = orders.getJSONObject(i);
@@ -294,7 +296,6 @@ public final class SyncHandler extends Handler {
                     sales = SQLiteHelper.getListToJson(sql_goods_detail.replace("%1",order_code),err);
                     pays = SQLiteHelper.getListToJson(sql_pays_detail.replace("%1",order_code),err);
                     if (null != sales && null != pays){
-                        int dis_type = 0;
                         for (int j = 0,j_size = sales.size();j < j_size;j++){//销售明细
                             tmp_jsonObject = sales.getJSONObject(j);
                             gp_id = tmp_jsonObject.getIntValue("gp_id");
@@ -308,57 +309,7 @@ public final class SyncHandler extends Handler {
                                     order_gp_ids.append(",").append("'").append(gp_id).append("'");
                                 }
                             }
-
-                            Logger.d_json(tmp_jsonObject.toJSONString());
-
-                            dis_type = Utils.getNotKeyAsDefault(tmp_jsonObject,"dis_type",0);
-                            if (dis_type != 0){
-                                double dis_money = Utils.formatDouble(tmp_jsonObject.getDoubleValue("dis_money"),2);
-                                dis_goods = new JSONObject();
-
-                                if (discount_record == null){
-                                    if (dis_goods_details == null){
-                                        dis_goods_details = new JSONArray();
-                                    }
-                                    dis_goods.put("barcode_id",tmp_jsonObject.getIntValue("barcode_id"));
-                                    dis_goods.put("price",dis_money);
-                                    dis_goods_details.add(dis_goods);
-
-                                    discount_record = new JSONObject();
-                                    discount_record.put("discount_type",dis_type);
-                                    discount_record.put("discount_money","");
-                                    discount_record.put("type",order_info.getIntValue("type"));
-                                    discount_record.put("relevant_id","");
-                                    discount_record.put("details",dis_goods_details);
-
-                                    discount_records.add(discount_record);
-                                }else  if (dis_type != discount_record.getIntValue("discount_type")){//如果与已存在的折扣类型不一致则重新生成记录
-                                    dis_goods_details = new JSONArray();
-                                    dis_goods.put("barcode_id",tmp_jsonObject.getIntValue("barcode_id"));
-                                    dis_goods.put("price",dis_money);
-                                    dis_goods_details.add(dis_goods);
-
-                                    discount_record = new JSONObject();
-                                    discount_record.put("discount_type",dis_type);
-                                    discount_record.put("type",order_info.getIntValue("type"));
-                                    discount_record.put("discount_money","");
-                                    discount_record.put("relevant_id","");
-                                    discount_record.put("details",dis_goods_details);
-
-                                    discount_records.add(discount_record);
-                                }else {
-                                    dis_goods_details = new JSONArray();
-                                    dis_goods.put("barcode_id",tmp_jsonObject.getIntValue("barcode_id"));
-                                    dis_goods.put("price",dis_money);
-                                    dis_goods_details.add(dis_goods);
-
-                                    discount_record.put("details",dis_goods_details);
-                                }
-
-                            }
                         }
-
-                        Logger.d(sql_combination_goods.replace("%1",order_gp_ids).replace("%2",order_code));
 
                         if ((combinations = SQLiteHelper.getListToJson(sql_combination_goods.replace("%1",order_gp_ids).replace("%2",order_code),err)) != null){
                             data.put("order_info",Utils.JsondeepCopy(order_info));

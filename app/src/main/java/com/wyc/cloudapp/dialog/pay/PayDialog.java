@@ -97,7 +97,7 @@ public class PayDialog extends Dialog {
             ChangeNumOrPriceDialog changeNumOrPriceDialog = new ChangeNumOrPriceDialog(getContext(),mainActivity.getString(R.string.mo_l_sz),String.format(Locale.CHINA,"%.2f",mActual_amt - ((int)mActual_amt)));
             changeNumOrPriceDialog.setYesOnclickListener(myDialog -> {
                 double value = myDialog.getContentToDouble();
-                if (initPayContent(mainActivity.discount((mActual_amt - value) / mOrder_amt * 100,null))){
+                if (initPayContent(mainActivity.discount((mActual_amt - value) / mOrder_amt * 100,null,7))){
                     refreshContent();
                     myDialog.dismiss();
                 }
@@ -116,7 +116,7 @@ public class PayDialog extends Dialog {
         findViewById(R.id.all_discount).setOnClickListener(view -> {
             ChangeNumOrPriceDialog dialog = new ChangeNumOrPriceDialog(mainActivity,mainActivity.getString(R.string.discount_sz),String.format(Locale.CHINA,"%d",100));
             dialog.setYesOnclickListener(myDialog -> {
-                if (initPayContent(mainActivity.discount(myDialog.getContentToDouble(),""))){
+                if (initPayContent(mainActivity.discount(myDialog.getContentToDouble(),"",6))){
                     refreshContent();
                     myDialog.dismiss();
                 }
@@ -383,7 +383,7 @@ public class PayDialog extends Dialog {
                         break;
                 }
                 if (!Utils.equalDouble(old_amt,0.0))
-                    mainActivity.discount((sum - value) / old_amt * 100,null);
+                    mainActivity.discount((sum - value) / old_amt * 100,null,7);
             }
         }else{
             MyDialog.ToastMessage("自动抹零错误：" + object.getString("info"),mainActivity,null);
@@ -556,7 +556,6 @@ public class PayDialog extends Dialog {
         order_info.put("transfer_status",1);//交班状态（1未交班，2已交班）
         order_info.put("transfer_time",0);
         order_info.put("is_rk",2);//是否已经扣减库存（1是，2否）
-        order_info.put("type",mainActivity.getOrderType());
         if (mVip != null){
             order_info.put("member_id",mVip.getString("member_id"));
             order_info.put("mobile",mVip.getString("mobile"));
@@ -582,9 +581,9 @@ public class PayDialog extends Dialog {
         JSONObject count_json = new JSONObject(),data;
         List<String>  tables = Arrays.asList("retail_order","retail_order_goods","retail_order_pays"),
                 retail_order_cols = Arrays.asList("stores_id","order_code","discount","discount_price","total","cashier_id","addtime","pos_code","order_status","pay_status","pay_time","upload_status",
-                        "upload_time","transfer_status","transfer_time","is_rk","mobile","name","card_code","sc_ids","sc_tc_money","member_id","type","discount_money","zl_money","ss_money","remark","zk_cashier_id"),
+                        "upload_time","transfer_status","transfer_time","is_rk","mobile","name","card_code","sc_ids","sc_tc_money","member_id","discount_money","zl_money","ss_money","remark","zk_cashier_id"),
                 retail_order_goods_cols = Arrays.asList("order_code","barcode_id","xnum","price","buying_price","retail_price","trade_price","cost_price","ps_price","tax_rate","tc_mode","tc_rate","gp_id",
-                        "zk_cashier_id","total_money","dis_type",GoodsInfoViewAdapter.W_G_MARK,"conversion","barcode","y_price"),
+                        "zk_cashier_id","total_money",GoodsInfoViewAdapter.W_G_MARK,"conversion","barcode","y_price"),
                 retail_order_pays_cols = Arrays.asList("order_code","pay_method","pay_money","pay_time","pay_status","pay_serial_no","pay_code","remark","is_check","zk_money","pre_sale_money","give_change_money",
                         "discount_money","xnote","card_no","return_code","v_num","print_info");
 

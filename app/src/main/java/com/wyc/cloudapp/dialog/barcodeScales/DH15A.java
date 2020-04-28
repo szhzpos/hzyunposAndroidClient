@@ -19,103 +19,111 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Locale;
 
-public class DH15A extends AbstractBarcodeScale {
-    private static final String  CHARACTER_SET = "GB2312";
-    private UpdateStatusCallback mCallback;
-    public DH15A(){
-
-    }
+public class DH15A extends AbstractBarcodeScaleImp {
     @Override
     public String getPort() {
         return "4001";
     }
-
     @Override
-    public boolean down(JSONObject scales_info){
+    public boolean down(final JSONObject scale_info){
         boolean code = false;
-        String ip = scales_info.getString("scale_ip"),goods_c_id = scales_info.getString("g_c_id");
-        int port = scales_info.getIntValue("scale_port");
-        JSONArray records = new JSONArray();
-        final JSONObject object = new JSONObject();
-        if (code = SQLiteHelper.getLocalParameter("scale_setting",object)){
-            final String prefix = object.getString("prefix");
-            if (goods_c_id.contains(AbstractBarcodeScale.CATEGORY_SEPARATE)){
-                String[] ids = goods_c_id.split("\\" + AbstractBarcodeScale.CATEGORY_SEPARATE);
-                for (String id : ids) {
-                    code = generate_data_record(records,id, prefix);
+        if (null != scale_info){
+            String ip = scale_info.getString("scale_ip"),goods_c_id = scale_info.getString("g_c_id");
+            int port = scale_info.getIntValue("scale_port");
+            JSONArray records = new JSONArray();
+            final JSONObject object = new JSONObject();
+            if (code = SQLiteHelper.getLocalParameter("scale_setting",object)){
+                final String prefix = object.getString("prefix");
+                if (goods_c_id.contains(AbstractBarcodeScaleImp.CATEGORY_SEPARATE)){
+                    String[] ids = goods_c_id.split("\\" + AbstractBarcodeScaleImp.CATEGORY_SEPARATE);
+                    for (String id : ids) {
+                        code = generate_data_record(records,id, prefix);
+                    }
+                }else{
+                    code = generate_data_record(records,goods_c_id, prefix);
+                }
+                if (code){
+                    code = down_tcp(ip,port,records);
                 }
             }else{
-                code = generate_data_record(records,goods_c_id, prefix);
-            }
-            if (code){
-                down_tcp(ip,port,records);
-            }
-        }else{
-            if (mCallback != null){
-                mCallback.updata(object.getString("info"));
+                if (mCallback != null){
+                    mCallback.OnShow(object.getString("info"));
+                }
             }
         }
         return code;
     }
 
-    @Override
-    public void setUpdateStatus(UpdateStatusCallback o) {
-        mCallback = o;
-    }
-
-    private void down_tcp(final String ip,int port,final JSONArray records){
+    private boolean down_tcp(final String ip,int port,final JSONArray records){
+        boolean code  = true;
         Logger.d("IP:%s,port:%d",ip,port);
         if (mCallback != null){
-            mCallback.updata("正在下发...");
+            mCallback.OnShow("正在下发...");
         }
         synchronized (DH15A.class){
             JSONObject record_obj = null;
-            try (Socket socket = new Socket();){
+            String ret_code,parse_code,plu_code;
+            try (Socket socket = new Socket()){
                 socket.connect(new InetSocketAddress(ip,port),10000);
                 socket.setSoTimeout(10000);
                 try (OutputStream outputStream = socket.getOutputStream(); BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream(),CHARACTER_SET)) ){
-
+                    int loop_cnt = 0;
                     outputStream.write(new byte[]{0x21,0x30,0x49,0x41,0x0D,0x0A,0x03});
-                    outputStream.write(new byte[]{0x21,0x30,0x48,0x41,0x0D,0x0A,0x03});
+                    outputStream.flush();
+                    while (!bufferedReader.ready() && loop_cnt <= 30){
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        loop_cnt ++;
+                    }
+                    ret_code = bufferedReader.readLine();
+                    parse_code = ret_code.substring(0,ret_code.lastIndexOf('a'));
+                    if (!parse_code.equals("0ia")){
+                        throw new IOException("清除PLU失败<"+ ret_code +">");
+                    }
+
+                    if (loop_cnt != 0)loop_cnt = 0;
 
                     for (int i = 0,size = records.size();i < size;i++){
                         record_obj = records.getJSONObject(i);
                         if (null != record_obj){
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            outputStream.write(("!0J" + record_obj.getString("plu") +"A"+ new String(new byte[]{0x0D,0x0A,0x03},CHARACTER_SET)).getBytes(CHARACTER_SET));
-                            Logger.d("回收返回：%s",bufferedReader.readLine());
-
-                            outputStream.write(record_obj.getString("r").getBytes(CHARACTER_SET));
-
                             if (mCallback != null){
-                                mCallback.updata(String.format(Locale.CHINA,"正在下发<%d>...",i+1));
+                                mCallback.OnShow(String.format(Locale.CHINA,"正在下发<%d>...",i+1));
                             }
-
-
-
-                            Logger.d("record_obj:%s",record_obj);
-                            Logger.d("下发返回：%s",bufferedReader.readLine());
+                            outputStream.write(record_obj.getString("r").getBytes(CHARACTER_SET));
+                            outputStream.flush();
+                            while (!bufferedReader.ready() && loop_cnt <= 30){
+                                Logger.d("循环等待：%d",loop_cnt);
+                                try {
+                                    Thread.sleep(100);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                loop_cnt ++;
+                            }
+                            ret_code = bufferedReader.readLine();
+                            parse_code = ret_code.substring(ret_code.indexOf("v") + 1,ret_code.indexOf("a"));
+                            plu_code = Utils.getNullStringAsEmpty(record_obj,"plu");
+                            if (!plu_code.equals(parse_code)){
+                                throw new IOException(String.format(Locale.CHINA,"<%s>下发失败，返回<%s>",record_obj.getString("title"),ret_code));
+                            }
                         }
                     }
                     if (mCallback != null){
-                        mCallback.updata("下发完成！");
+                        mCallback.OnShow("下发完成！");
                     }
                 }
             }catch (IOException e){
+                code = false;
                 e.printStackTrace();
                 if (mCallback != null){
-                    if (record_obj != null){
-                        mCallback.updata(record_obj.getString("title") + " 下发失败！");
-                    }else{
-                        mCallback.updata("下发错误：" + e.getMessage());
-                    }
+                    mCallback.OnShow("下发错误：" + e.getMessage());
                 }
             }
         }
+        return code;
     }
 
     private boolean generate_data_record(@NonNull final JSONArray data_records, final String goods_c_id, String prefix){
@@ -165,7 +173,7 @@ public class DH15A extends AbstractBarcodeScale {
             }
         }
         if (!code){
-            if (mCallback != null)mCallback.updata(err.toString());
+            if (mCallback != null)mCallback.OnShow(err.toString());
         }
         return code;
     }

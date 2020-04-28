@@ -20,7 +20,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.dialog.serialScales.AbstractSerialScale;
+import com.wyc.cloudapp.dialog.serialScales.AbstractSerialScaleImp;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
@@ -31,7 +31,7 @@ public class GoodsWeighDialog extends Dialog {
     private OnYesOnclickListener mOnYesClick;
     private EditText mWvalueEt;
     private TextView mPriceTv,mAmtTv;
-    private AbstractSerialScale mSerialScale;
+    private AbstractSerialScaleImp mSerialScale;
     public GoodsWeighDialog(@NonNull Context context,final String barcode_id) {
         super(context);
         mContext = context;
@@ -188,12 +188,12 @@ public class GoodsWeighDialog extends Dialog {
 
     private void read(){
         JSONObject object = new JSONObject();
-        int code = AbstractSerialScale.readWeight(object);
+        int code = AbstractSerialScaleImp.readWeight(object);
         if (code >= 0){
             if (code == 0){
-                mSerialScale = (AbstractSerialScale) object.get("info");
+                mSerialScale = (AbstractSerialScaleImp) object.get("info");
                 if (mSerialScale != null){
-                    mSerialScale.setOnReadListener(new AbstractSerialScale.OnReadStatus() {
+                    mSerialScale.setOnReadListener(new AbstractSerialScaleImp.OnReadStatus() {
                         @Override
                         public void onFinish(double num) {
                             mWvalueEt.post(()->{

@@ -5,21 +5,28 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.utils.Utils;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import android_serialport_api.SerialPort;
 
-public abstract class AbstractSerialScale implements ISerialScale {
-    volatile boolean mReading = true;
-    String mPort;
-    SerialPort mSerialPort = null;
-    OnReadStatus mOnReadStatus;
+public abstract class AbstractSerialScaleImp implements ISerialScale {
+    protected volatile boolean mReading = true;
+    protected String mPort;
+    protected SerialPort mSerialPort = null;
+    protected OnReadStatus mOnReadStatus;
+
+    @Override
+    public synchronized void close(){
+        if (mSerialPort != null){
+            mSerialPort.close();
+            mSerialPort = null;
+        }
+    }
+
     public static int readWeight(final JSONObject object){
         int code = -1;
-        AbstractSerialScale serialScale = null;
+        AbstractSerialScaleImp serialScale = null;
         if (SQLiteHelper.getLocalParameter("serial_port_scale",object)){
             final String cls_id = Utils.getNullStringAsEmpty(object,"cls_id"),
                     ser_port = Utils.getNullOrEmptyStringAsDefault(object,"ser_port","NONE");
@@ -27,7 +34,7 @@ public abstract class AbstractSerialScale implements ISerialScale {
                 try {
                     Class<?> scale_class = Class.forName("com.wyc.cloudapp.dialog.serialScales." + cls_id);
                     Constructor<?> constructor = scale_class.getConstructor(String.class);
-                    serialScale = (AbstractSerialScale)constructor.newInstance(ser_port);
+                    serialScale = (AbstractSerialScaleImp)constructor.newInstance(ser_port);
                     object.fluentClear().put("info",serialScale);
                     code = 0;
                 } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InstantiationException |

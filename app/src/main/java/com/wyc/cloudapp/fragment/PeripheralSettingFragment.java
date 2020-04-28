@@ -35,7 +35,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.serialScales.AbstractSerialScale;
+import com.wyc.cloudapp.dialog.serialScales.AbstractSerialScaleImp;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -447,7 +447,7 @@ public class PeripheralSettingFragment extends BaseFragment {
         proTypeAdaper.setDropDownViewResource(R.layout.drop_down_style);
 
         //协议类型
-        mProTypes = AbstractSerialScale.generateProductType();
+        mProTypes = AbstractSerialScaleImp.generateProductType();
         JSONObject tmp_obj;
         for (int i = 0,size = mProTypes.size();i < size;i++){
             tmp_obj = mProTypes.getJSONObject(i);

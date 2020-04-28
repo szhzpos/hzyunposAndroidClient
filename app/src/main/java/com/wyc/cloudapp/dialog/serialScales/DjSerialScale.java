@@ -1,21 +1,13 @@
 package com.wyc.cloudapp.dialog.serialScales;
 
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Vector;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -24,7 +16,7 @@ import java.util.concurrent.TimeoutException;
 
 import android_serialport_api.SerialPort;
 
-public class DjSerialScale extends AbstractSerialScale {
+public class DjSerialScale extends AbstractSerialScaleImp {
     private Future<?> mTask;
     public DjSerialScale(final String port){
         mPort = port;
@@ -84,11 +76,5 @@ public class DjSerialScale extends AbstractSerialScale {
             }
         }
     }
-    @Override
-    public synchronized void close(){
-        if (mSerialPort != null){
-            mSerialPort.close();
-            mSerialPort = null;
-        }
-    }
+
 }

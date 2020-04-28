@@ -14,6 +14,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.logger.Logger;
 
 public class GoodsCategoryViewAdapter extends RecyclerView.Adapter<GoodsCategoryViewAdapter.MyViewHolder> {
 
@@ -167,6 +168,7 @@ public class GoodsCategoryViewAdapter extends RecyclerView.Adapter<GoodsCategory
     }
 
     public void trigger_preView(){
+        Logger.d("trigger_preView");
         int id = 0;
         if (mCurrentItemView != null){
             if (mChildShow && mChildGoodsCategoryView != null && mChildGoodsCategoryAdpter.mCurrentItemView != null){

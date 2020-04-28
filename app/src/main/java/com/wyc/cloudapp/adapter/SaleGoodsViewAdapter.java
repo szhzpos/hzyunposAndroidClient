@@ -203,7 +203,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
             MyDialog.ToastMessage("请选择需要修改的商品!",mContext,null);
         }
     }
-    public JSONArray discount(double value){//整单折
+    public JSONArray discount(double value,int type){//整单折 6  自动抹零7 手动抹零8
         double  discount_amt = 0.0,old_price = 0.0,new_price = 0.0,xnum = 0.0,discount;
         boolean d_discount = false;//是否折上折
         for(int i = 0,length = mDatas.size();i < length;i++){
@@ -224,7 +224,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
             json.put("discount", discount);
             json.put("discount_amt", discount_amt);
             json.put("price",new_price);
-            json.put("dis_type",6);
+            json.put("dis_type",type);
             json.put("sale_amt",Utils.formatDouble(xnum * new_price,2));
             json.put("old_amt",Utils.formatDouble(old_price * xnum,2));
         }
