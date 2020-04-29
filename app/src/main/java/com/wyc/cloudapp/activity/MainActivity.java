@@ -627,7 +627,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     private void setDisCashierId(final String id){
-        mZkCashierId = id;
+        if (null == id || "".equals(id)){
+            mZkCashierId = mCashierInfo.getString("cas_id");
+        }else
+            mZkCashierId = id;
+
     }
     private void resetOrderCode(){
         mOrderCode.setText(mSaleGoodsViewAdapter.generateOrderCode(mCashierInfo.getString("pos_num"),1));
@@ -640,11 +644,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public JSONArray mol(double mol_amt,final String zk_cashier_id,int type){
+        setDisCashierId(zk_cashier_id);
+       return mSaleGoodsViewAdapter.mol(mol_amt,type);
+    }
     public JSONArray discount(double discount,final String zk_cashier_id,int type){
-        if (null == zk_cashier_id || "".equals(zk_cashier_id)){
-            setDisCashierId(mCashierInfo.getString("cas_id"));
-        }else
-            setDisCashierId(zk_cashier_id);
+        setDisCashierId(zk_cashier_id);
         return mSaleGoodsViewAdapter.discount(discount,type);
     }
     public void sync(boolean b){
@@ -668,7 +673,6 @@ public class MainActivity extends AppCompatActivity {
     public double getSaleSumAmt(){
         return mSaleGoodsViewAdapter.getSaleSumAmt();
     }
-    public int getOrderType(){return mSaleGoodsViewAdapter.getOrderType();}
     public String getPosNum(){if (null == mCashierInfo)return "";return mCashierInfo.getString("pos_num");}
     public JSONObject getCashierInfo(){
         return mCashierInfo;
@@ -676,9 +680,7 @@ public class MainActivity extends AppCompatActivity {
     public JSONObject getStoreInfo(){
         return mStoreInfo;
     }
-    public String getOrderCode(){
-        return mOrderCode.getText().toString();
-    }
+    public String getOrderCode(){ return mOrderCode.getText().toString();}
     public String  getDisCashierId(){
         return mZkCashierId;
     }

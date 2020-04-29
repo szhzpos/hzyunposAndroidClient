@@ -29,9 +29,8 @@ public class DjSerialScale extends AbstractSerialScaleImp {
                     mSerialPort = new SerialPort(new File(mPort), 9600, 0);
                 }
                 final InputStream inputStream = mSerialPort.getInputStream();
-                final OutputStream outputStream = mSerialPort.getOutputStream();
                 final StringBuilder stringBuilder = new StringBuilder();
-                int size = -1;
+                int size = -1,start,end;
                 char b;
                 double value = 0.0,tmp_v = 0.0;
                 while (mReading){
@@ -43,10 +42,14 @@ public class DjSerialScale extends AbstractSerialScaleImp {
                                 stringBuilder.delete(0,stringBuilder.length());
                                 break;
                             case 0x03:
-                                tmp_v  = Double.valueOf(stringBuilder.substring(stringBuilder.indexOf(".") - 1,stringBuilder.indexOf("k")));
-                                if (!Utils.equalDouble(value,tmp_v)){
-                                    value = tmp_v;
-                                    if (mOnReadStatus != null)mOnReadStatus.onFinish(value);
+                                start = stringBuilder.indexOf(" ");
+                                end = stringBuilder.indexOf("k");
+                                if ( -1 < start && start < stringBuilder.length() && start <= end && end < stringBuilder.length()){
+                                    tmp_v  = Double.valueOf(stringBuilder.substring(start,end));
+                                    if (!Utils.equalDouble(value,tmp_v)){
+                                        value = tmp_v;
+                                        if (mOnReadStatus != null)mOnReadStatus.onFinish(value);
+                                    }
                                 }
                                 break;
                             default:

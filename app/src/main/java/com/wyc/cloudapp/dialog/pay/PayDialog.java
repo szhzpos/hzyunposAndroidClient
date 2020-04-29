@@ -97,7 +97,7 @@ public class PayDialog extends Dialog {
             ChangeNumOrPriceDialog changeNumOrPriceDialog = new ChangeNumOrPriceDialog(getContext(),mainActivity.getString(R.string.mo_l_sz),String.format(Locale.CHINA,"%.2f",mActual_amt - ((int)mActual_amt)));
             changeNumOrPriceDialog.setYesOnclickListener(myDialog -> {
                 double value = myDialog.getContentToDouble();
-                if (initPayContent(mainActivity.discount((mActual_amt - value) / mOrder_amt * 100,null,7))){
+                if (initPayContent(mainActivity.mol(value,null,8))){
                     refreshContent();
                     myDialog.dismiss();
                 }
@@ -116,7 +116,7 @@ public class PayDialog extends Dialog {
         findViewById(R.id.all_discount).setOnClickListener(view -> {
             ChangeNumOrPriceDialog dialog = new ChangeNumOrPriceDialog(mainActivity,mainActivity.getString(R.string.discount_sz),String.format(Locale.CHINA,"%d",100));
             dialog.setYesOnclickListener(myDialog -> {
-                if (initPayContent(mainActivity.discount(myDialog.getContentToDouble(),"",6))){
+                if (initPayContent(mainActivity.discount(myDialog.getContentToDouble(),"",6))){//手动抹零
                     refreshContent();
                     myDialog.dismiss();
                 }
@@ -135,9 +135,53 @@ public class PayDialog extends Dialog {
         });
 
         //初始化数字键盘
+        initKeyboard();
+
+        //根据金额设置按钮数字
+         autoShowValueFromPayAmt();
+    }
+
+    @Override
+    public void dismiss(){
+        super.dismiss();
+    }
+    @Override
+    public void show(){
+        super.show();
+        refreshContent();
+    }
+    @Override
+    public void onAttachedToWindow(){
+        super.onAttachedToWindow();
+        mWindow = getWindow();
+    }
+    @Override
+    public void onDetachedFromWindow(){
+        super.onDetachedFromWindow();
+        mWindow = getWindow();
+    }
+
+    public PayDialog setPayFinishListener(onPayListener listener) {
+        this.mPayListener = listener;
+        return  this;
+    }
+
+    public JSONArray getContent(){
+        return mPayDetailViewAdapter.getDatas();
+    }
+
+    public interface onPayListener {
+        void onStart(PayDialog myDialog);
+        void onProgress(PayDialog myDialog,final String info);
+        void onSuccess(PayDialog myDialog);
+        void onError(PayDialog myDialog,final String err);
+    }
+
+    private void initKeyboard(){
         ConstraintLayout keyboard_linear_layout;
         keyboard_linear_layout = findViewById(R.id.keyboard);
-        for (int i = 0,child  = keyboard_linear_layout.getChildCount(); i < child;i++){
+        if (null != keyboard_linear_layout)
+            for (int i = 0,child  = keyboard_linear_layout.getChildCount(); i < child;i++){
             View tmp_v = keyboard_linear_layout.getChildAt(i);
             int id = tmp_v.getId();
             if (tmp_v instanceof Button){
@@ -180,53 +224,13 @@ public class PayDialog extends Dialog {
                             v.postDelayed(()->v.setEnabled(true),300);
                         });
                         break;
-                        default:
-                            tmp_v.setOnClickListener(button_click);
-                            break;
+                    default:
+                        tmp_v.setOnClickListener(button_click);
+                        break;
                 }
             }
         }
-
-        //根据金额设置按钮数字
-         autoShowValueFromPayAmt();
     }
-
-    @Override
-    public void dismiss(){
-        super.dismiss();
-    }
-    @Override
-    public void show(){
-        super.show();
-        refreshContent();
-    }
-    @Override
-    public void onAttachedToWindow(){
-        super.onAttachedToWindow();
-        mWindow = getWindow();
-    }
-    @Override
-    public void onDetachedFromWindow(){
-        super.onDetachedFromWindow();
-        mWindow = getWindow();
-    }
-
-    public PayDialog setPayFinishListener(onPayListener listener) {
-        this.mPayListener = listener;
-        return  this;
-    }
-
-    public JSONArray getContent(){
-        return mPayDetailViewAdapter.getDatas();
-    }
-
-    public interface onPayListener {
-        void onStart(PayDialog myDialog);
-        void onProgress(PayDialog myDialog,final String info);
-        void onSuccess(PayDialog myDialog);
-        void onError(PayDialog myDialog,final String err);
-    }
-
     private View.OnClickListener button_click = v -> {
         View view =  getCurrentFocus();
         if (view != null) {
@@ -382,8 +386,8 @@ public class PayDialog extends Dialog {
                         value =sum - Double.valueOf(String.format(Locale.CHINA,"%.1f",sum));
                         break;
                 }
-                if (!Utils.equalDouble(old_amt,0.0))
-                    mainActivity.discount((sum - value) / old_amt * 100,null,7);
+                if (!Utils.equalDouble(value,0.0))
+                    mainActivity.mol(value,null,7);
             }
         }else{
             MyDialog.ToastMessage("自动抹零错误：" + object.getString("info"),mainActivity,null);
@@ -460,10 +464,10 @@ public class PayDialog extends Dialog {
         long time = System.currentTimeMillis() / 1000;
 
         JSONObject order_info = new JSONObject(),data = new JSONObject(),tmp_json;
-        JSONArray orders = new JSONArray(),combination_goods = new JSONArray(),sales_data,pays_data;
+        JSONArray orders = new JSONArray(),combination_goods = new JSONArray(),sales_data,pays_data,discount_records;
         StringBuilder err = new StringBuilder();
 
-        String order_code = mainActivity.getOrderCode(),zk_cashier_id = mainActivity.getDisCashierId();
+        String order_code = mainActivity.getOrderCode(),stores_id = mainActivity.getStoreInfo().getString("stores_id"),zk_cashier_id = mainActivity.getDisCashierId();
 
         //处理销售明细
         SaleGoodsViewAdapter saleGoodsViewAdapter = mainActivity.getSaleGoodsViewAdapter();
@@ -477,7 +481,7 @@ public class PayDialog extends Dialog {
 
             if (-1 != gp_id){
                 tmp_json = (JSONObject) sales_data.remove(i--);
-                if (!saleGoodsViewAdapter.splitCombinationalGoods(combination_goods,gp_id,tmp_json.getDouble("price"),tmp_json.getDouble("xnum"),tmp_json.getIntValue("dis_type"),err)){
+                if (!saleGoodsViewAdapter.splitCombinationalGoods(combination_goods,gp_id,tmp_json.getDouble("price"),tmp_json.getDouble("xnum"),err)){
                     throw new JSONException("拆分组合商品错误，" + err);
                 }
                 Logger.d_json(combination_goods.toString());
@@ -507,6 +511,14 @@ public class PayDialog extends Dialog {
             tmp_json.put("y_price",tmp_json.getDouble("retail_price"));
 
             sales_data.add(tmp_json);
+        }
+
+        //处理优惠记录
+        discount_records = Utils.JsondeepCopy(saleGoodsViewAdapter.getDiscountRecords());
+        for (int i = 0,size = discount_records.size();i < size;i++){
+            tmp_json = discount_records.getJSONObject(i);
+            tmp_json.put("order_code",order_code);
+            tmp_json.put("stores_id",stores_id);
         }
 
         //处理付款明细
@@ -539,7 +551,7 @@ public class PayDialog extends Dialog {
         //处理单据
         total = sale_sum_amt + dis_sum_amt;
 
-        order_info.put("stores_id",mainActivity.getStoreInfo().getString("stores_id"));
+        order_info.put("stores_id",stores_id);
         order_info.put("order_code",order_code);
         order_info.put("total",total);
         order_info.put("discount_price",sale_sum_amt);
@@ -573,26 +585,28 @@ public class PayDialog extends Dialog {
         data.put("retail_order",orders);
         data.put("retail_order_goods",sales_data);
         data.put("retail_order_pays",pays_data);
+        data.put("discount_record",discount_records);
 
         return data;
     }
     public boolean saveOrderInfo(final StringBuilder err){
         boolean code;
         JSONObject count_json = new JSONObject(),data;
-        List<String>  tables = Arrays.asList("retail_order","retail_order_goods","retail_order_pays"),
+        List<String>  tables = Arrays.asList("retail_order","retail_order_goods","retail_order_pays","discount_record"),
                 retail_order_cols = Arrays.asList("stores_id","order_code","discount","discount_price","total","cashier_id","addtime","pos_code","order_status","pay_status","pay_time","upload_status",
                         "upload_time","transfer_status","transfer_time","is_rk","mobile","name","card_code","sc_ids","sc_tc_money","member_id","discount_money","zl_money","ss_money","remark","zk_cashier_id"),
                 retail_order_goods_cols = Arrays.asList("order_code","barcode_id","xnum","price","buying_price","retail_price","trade_price","cost_price","ps_price","tax_rate","tc_mode","tc_rate","gp_id",
                         "zk_cashier_id","total_money",GoodsInfoViewAdapter.W_G_MARK,"conversion","barcode","y_price"),
                 retail_order_pays_cols = Arrays.asList("order_code","pay_method","pay_money","pay_time","pay_status","pay_serial_no","pay_code","remark","is_check","zk_money","pre_sale_money","give_change_money",
-                        "discount_money","xnote","card_no","return_code","v_num","print_info");
+                        "discount_money","xnote","card_no","return_code","v_num","print_info"),
+                discount_record_cols = Arrays.asList("order_code","discount_type","type","stores_id","relevant_id","discount_money","details");
 
         try {
             data = generateOrderInfo();
 
             if ((code = SQLiteHelper.execSql(count_json,"select count(order_code) counts from retail_order where order_code = '" + mainActivity.getOrderCode() +"' and stores_id = '" + mainActivity.getStoreInfo().getString("stores_id") +"'"))){
                 if (0 == count_json.getIntValue("counts")){
-                    if (!(code = SQLiteHelper.execSQLByBatchFromJson(data,tables,Arrays.asList(retail_order_cols,retail_order_goods_cols,retail_order_pays_cols),err,0))){
+                    if (!(code = SQLiteHelper.execSQLByBatchFromJson(data,tables,Arrays.asList(retail_order_cols,retail_order_goods_cols,retail_order_pays_cols,discount_record_cols),err,0))){
                         err.insert(0,"保存订单信息错误：");
                     }
                 }else{

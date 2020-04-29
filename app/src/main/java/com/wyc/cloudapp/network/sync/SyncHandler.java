@@ -274,7 +274,9 @@ public final class SyncHandler extends Handler {
                 sql_pays_detail = "select print_info,return_code,card_no,xnote,discount_money,give_change_money,pre_sale_money,zk_money,is_check,remark,pay_code,pay_serial_no,pay_status,pay_time,pay_money,pay_method,order_code from retail_order_pays where order_code = '%1'",
                 sql_combination_goods = "SELECT b.retail_price,a.xnum,c.gp_price,c.gp_id,d.zk_cashier_id,d.order_code FROM  goods_group_info a LEFT JOIN  barcode_info b on a.barcode_id = b.barcode_id\n" +
                         " LEFT JOIN goods_group c on c.gp_id = a.gp_id AND c.status = 1 left join retail_order_goods d on c.gp_id = d.gp_id and d.barcode_id = b.barcode_id " +
-                        "WHERE d.order_code = '%2' and d.gp_id in (%1)";
+                        "WHERE d.order_code = '%2' and d.gp_id in (%1)",
+                sql_discount_record = "SELECT order_code,discount_type,type,stores_id,relevant_id,discount_money,details FROM discount_record where order_code = '%1'";
+
         int gp_id;
         String order_code;
 
@@ -282,11 +284,10 @@ public final class SyncHandler extends Handler {
         JSONObject data = new JSONObject(),send_data = new JSONObject(),retJson,tmp_jsonObject,order_info;
         HttpRequest httpRequest = new HttpRequest();
 
+        //商品明细、支付明细
         if (null != (orders = SQLiteHelper.getListToJson(sql_orders,err))){
             try {
                 for (int i = 0,size = orders.size();i < size;i++){
-                    discount_records = new JSONArray();
-
                     order_gp_ids.delete(0,order_gp_ids.length());
 
                     order_info = orders.getJSONObject(i);
@@ -311,42 +312,48 @@ public final class SyncHandler extends Handler {
                             }
                         }
 
+                        //组合商品
                         if ((combinations = SQLiteHelper.getListToJson(sql_combination_goods.replace("%1",order_gp_ids).replace("%2",order_code),err)) != null){
-                            data.put("order_info",Utils.JsondeepCopy(order_info));
-                            data.put("goods_list",sales);
-                            data.put("pay_list",pays);
-                            data.put("group_list",combinations);
-                            data.put("discount_record",discount_records);
 
-                            Logger.d_json(data.toString());
+                            if ((discount_records = SQLiteHelper.getListToJson(sql_discount_record.replace("%1",order_code),err)) != null){
+                                data.put("order_info",Utils.JsondeepCopy(order_info));
+                                data.put("goods_list",sales);
+                                data.put("pay_list",pays);
+                                data.put("group_list",combinations);
+                                data.put("discount_record",discount_records);
 
-                            send_data.put("appid",mAppId);
-                            send_data.put("data",data);
+                                Logger.d_json(data.toString());
 
-                            retJson = httpRequest.sendPost(mUrl + "/api_v2/retail_upload/order_upload",HttpRequest.generate_request_parm(send_data,mAppScret),true);
-                            switch (retJson.getIntValue("flag")){
-                                case 0:
-                                    code = false;
-                                    err.append(retJson.getString("info"));
-                                    break;
-                                case 1:
-                                    retJson = JSON.parseObject(retJson.getString("info"));
-                                    switch (retJson.getString("status")){
-                                        case "n":
-                                            code = false;
-                                            err.append(retJson.getString("info"));
-                                            break;
-                                        case "y":
-                                            Logger.d("old_order_code:%s,order_code:%s",order_code,retJson.getString("order_code"));
-                                            ContentValues values = new ContentValues();
-                                            values.put("upload_status",2);
-                                            values.put("upload_time",System.currentTimeMillis() / 1000);
-                                            if (!SQLiteHelper.execUpdateSql("retail_order",values,"order_code = ?",new String[]{order_code},err)){
+                                send_data.put("appid",mAppId);
+                                send_data.put("data",data);
+
+                                retJson = httpRequest.sendPost(mUrl + "/api_v2/retail_upload/order_upload",HttpRequest.generate_request_parm(send_data,mAppScret),true);
+                                switch (retJson.getIntValue("flag")){
+                                    case 0:
+                                        code = false;
+                                        err.append(retJson.getString("info"));
+                                        break;
+                                    case 1:
+                                        retJson = JSON.parseObject(retJson.getString("info"));
+                                        switch (retJson.getString("status")){
+                                            case "n":
                                                 code = false;
-                                            }
-                                            break;
-                                    }
-                                    break;
+                                                err.append(retJson.getString("info"));
+                                                break;
+                                            case "y":
+                                                Logger.d("old_order_code:%s,order_code:%s",order_code,retJson.getString("order_code"));
+                                                ContentValues values = new ContentValues();
+                                                values.put("upload_status",2);
+                                                values.put("upload_time",System.currentTimeMillis() / 1000);
+                                                if (!SQLiteHelper.execUpdateSql("retail_order",values,"order_code = ?",new String[]{order_code},err)){
+                                                    code = false;
+                                                }
+                                                break;
+                                        }
+                                        break;
+                                }
+                            }else{
+                                code = false;
                             }
                         }else{
                             code = false;
