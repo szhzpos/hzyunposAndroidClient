@@ -1229,7 +1229,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "only_coding  INT     NOT NULL,\n" +
                 "    "+ GoodsInfoViewAdapter.W_G_MARK +"       VARCHAR,\n" +
                 "goods_title  VARCHAR      ,\n" +
-                "old_price   NUMERIC (18, 4) NOT NULL,\n" +
+                "original_price   NUMERIC (18, 4) NOT NULL,\n" +
                 "sale_price     NUMERIC (18, 4) NOT NULL,\n" +
                 "xnum      NUMERIC (18, 4) NOT NULL,\n" +
                 "unit_name      VARCHAR NOT NULL,\n" +

@@ -652,6 +652,9 @@ public class MainActivity extends AppCompatActivity {
         setDisCashierId(zk_cashier_id);
         return mSaleGoodsViewAdapter.discount(discount,type);
     }
+    public JSONArray getDiscountRecord(){
+        return mSaleGoodsViewAdapter.getDiscountRecords();
+    }
     public void sync(boolean b){
         if (mSyncManagement != null){
             if (mProgressDialog != null && !mProgressDialog.isShowing())mProgressDialog.setMessage("正在同步...").refreshMessage().show();

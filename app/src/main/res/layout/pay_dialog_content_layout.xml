@@ -51,57 +51,6 @@
             android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/vip_info_linearLayout"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/height_40"
-                android:layout_margin="@dimen/margin_2"
-                android:background="@drawable/border_sub_gray"
-                android:orientation="horizontal"
-                android:visibility="gone">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/margin_5"
-                    android:gravity="center"
-                    android:text="@string/vip_info_sz"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16" />
-
-                <TextView
-                    android:id="@+id/vip_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16" />
-
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:text="@string/vip_ph_num_sz"
-                    android:textAlignment="center"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16" />
-
-                <TextView
-                    android:id="@+id/vip_phone_num"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="@dimen/margin_5"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16" />
-            </LinearLayout>
-
-            <LinearLayout
                 android:id="@+id/pay_amount_info"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/height_58"
@@ -183,6 +132,68 @@
                 </LinearLayout>
 
             </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/vip_info_linearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/height_40"
+                android:layout_margin="@dimen/margin_2"
+                android:background="@drawable/border_sub_gray"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="@dimen/margin_5"
+                    android:gravity="center"
+                    android:text="@string/vip_info_sz"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16" />
+
+                <TextView
+                    android:id="@+id/vip_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/vip_ph_num_sz"
+                    android:textAlignment="center"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16" />
+
+                <TextView
+                    android:id="@+id/vip_phone_num"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="@dimen/margin_5"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/discount_description"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/height_30"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:background="@drawable/border_sub_gray"
+                android:gravity="center"
+                android:textColor="@color/orange"
+                android:visibility="gone" />
 
             <LinearLayout
                 android:id="@+id/pay_method_info"

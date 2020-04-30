@@ -373,7 +373,7 @@ public class HangBillDialog extends Dialog {
                         tmp_obj.put("only_coding",data.getIntValue("only_coding"));
                         tmp_obj.put(GoodsInfoViewAdapter.W_G_MARK,data.getString(GoodsInfoViewAdapter.W_G_MARK));
                         tmp_obj.put("goods_title",data.getString("goods_title"));
-                        tmp_obj.put("old_price",data.getDouble("old_price"));
+                        tmp_obj.put("original_price",data.getDouble("original_price"));
                         tmp_obj.put("sale_price",data.getDouble("price"));
                         tmp_obj.put("xnum",data.getDouble("xnum"));
                         tmp_obj.put("unit_name",data.getString("unit_name"));

@@ -47,7 +47,7 @@ public class GoodsWeighDialog extends Dialog {
         mAmtTv = findViewById(R.id.w_amt);
 
         //初始化重量
-        initWeight();
+        initWvalueEt();
 
         //初始化按钮事件
         findViewById(R.id._close).setOnClickListener(v->GoodsWeighDialog.this.dismiss());
@@ -85,7 +85,7 @@ public class GoodsWeighDialog extends Dialog {
         }
     };
 
-    private void initWeight(){
+    private void initWvalueEt(){
         mWvalueEt = findViewById(R.id.w_value);
         mWvalueEt.setSelectAllOnFocus(true);
         mWvalueEt.setOnFocusChangeListener((v, hasFocus) -> Utils.hideKeyBoard((EditText)v));
@@ -105,13 +105,16 @@ public class GoodsWeighDialog extends Dialog {
 
             @Override
             public void afterTextChanged(Editable s) {
+                double v = 0.0,price = 0.0;
                 try {
-                    double v = Double.valueOf(s.toString()),price =Double.valueOf(mPriceTv.getText().toString());
-                    mAmtTv.setText(String.format(Locale.CHINA,"%.2f",v * price));
+                    v = Double.valueOf(s.toString());
+                    price =Double.valueOf(mPriceTv.getText().toString());
                 }catch (NumberFormatException e){
                     e.printStackTrace();
-                    MyDialog.ToastMessage(e.getMessage(),mContext,getWindow());
+                    v = 0.0;
+                    price = 0.0;
                 }
+                mAmtTv.setText(String.format(Locale.CHINA,"%.2f",v * price));
             }
         });
     }
@@ -180,6 +183,7 @@ public class GoodsWeighDialog extends Dialog {
                 }else{
                     imageView.setImageDrawable(mContext.getDrawable(R.drawable.nodish));
                 }
+                mWvalueEt.setText(String.format(Locale.CHINA,"%.2f",1.0));
             }
         }else{
             MyDialog.ToastMessage("初始化商品错误：" + object.getString("info"),mContext,getWindow());

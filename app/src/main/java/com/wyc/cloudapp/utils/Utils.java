@@ -349,6 +349,23 @@ public final class Utils {
         }
     }
 
+    public static void sortJsonArrayFromDoubleCol(@NonNull final JSONArray array,final String col){
+        int size = array.size();
+        JSONObject tmp,pre,next;
+        for (int i = 0;i < size;i++){
+            for (int j = 0;j < size - i -1;j++){
+                pre = array.getJSONObject(j);
+                next = array.getJSONObject(j + 1);
+                if (pre.getDoubleValue(col) > next.getDoubleValue(col)){
+                    pre = (JSONObject) array.remove(j);
+                    next = (JSONObject) array.remove(j);
+                    array.add(j,next);
+                    array.add(j + 1,pre);
+                }
+            }
+        }
+    }
+
     public static void  disableView(final View v,final long mill){
         if (v != null){
             v.setEnabled(false);

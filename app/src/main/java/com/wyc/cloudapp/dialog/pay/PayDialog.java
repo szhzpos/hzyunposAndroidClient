@@ -51,7 +51,7 @@ public class PayDialog extends Dialog {
     private onPayListener mPayListener;
     private PayMethodViewAdapter mPayMethodViewAdapter;
     private PayDetailViewAdapter mPayDetailViewAdapter;
-    private TextView mOrderAmtTv,mDiscountAmtTv,mActualAmtTv,mPayAmtTv,mAmtReceivedTv,mPayBalanceTv;
+    private TextView mOrderAmtTv,mDiscountAmtTv,mActualAmtTv,mPayAmtTv,mAmtReceivedTv,mPayBalanceTv,mDiscountDescription;
     private double mOrder_amt = 0.0,mDiscount_amt = 0.0,mActual_amt = 0.0,mPay_amt = 0.0,mAmt_received = 0.0,mPay_balance = 0.0,mCashAmt = 0.0,mZlAmt = 0.0;
     private Button mOK,mCancel;
     private JSONObject mVip;
@@ -62,6 +62,7 @@ public class PayDialog extends Dialog {
         mainActivity = context;
         //可以show之前访问view
         setContentView(this.getLayoutInflater().inflate(R.layout.pay_dialog_content_layout, null));
+        mDiscountDescription = findViewById(R.id.discount_description);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +78,6 @@ public class PayDialog extends Dialog {
         mPayBalanceTv = findViewById(R.id.pay_balance);//付款余额
         mZlAmtEt = findViewById(R.id.zl_amt);//找零
         mRemarkEt = findViewById(R.id.et_remark);//备注
-
 
         //初始化支付方式
         initPayMethod();
@@ -97,7 +97,7 @@ public class PayDialog extends Dialog {
             ChangeNumOrPriceDialog changeNumOrPriceDialog = new ChangeNumOrPriceDialog(getContext(),mainActivity.getString(R.string.mo_l_sz),String.format(Locale.CHINA,"%.2f",mActual_amt - ((int)mActual_amt)));
             changeNumOrPriceDialog.setYesOnclickListener(myDialog -> {
                 double value = myDialog.getContentToDouble();
-                if (initPayContent(mainActivity.mol(value,null,8))){
+                if (initPayContent(mainActivity.mol(value,null, SaleGoodsViewAdapter.DISCOUNT_TYPE.M_MOL))){
                     refreshContent();
                     myDialog.dismiss();
                 }
@@ -387,7 +387,7 @@ public class PayDialog extends Dialog {
                         break;
                 }
                 if (!Utils.equalDouble(value,0.0))
-                    mainActivity.mol(value,null,7);
+                    mainActivity.mol(value,null, SaleGoodsViewAdapter.DISCOUNT_TYPE.AUTO_MOL);
             }
         }else{
             MyDialog.ToastMessage("自动抹零错误：" + object.getString("info"),mainActivity,null);
@@ -422,6 +422,8 @@ public class PayDialog extends Dialog {
         mPayBalanceTv.setText(String.format(Locale.CHINA,"%.2f",mPay_balance));
         mZlAmtEt.setText(String.format(Locale.CHINA,"%.2f",mZlAmt));
 
+        showDiscountInfoDescription();
+
         mCashMoneyEt.selectAll();
     }
 
@@ -434,7 +436,64 @@ public class PayDialog extends Dialog {
         mPay_balance = 0.0;
         mCashAmt = 0.0;
         mZlAmt = 0.0;
+
+        //隐藏折扣信息TextView
+        clearDiscountDescription();
     }
+
+    private void showDiscountInfoDescription(){
+        JSONArray discount_record = mainActivity.getDiscountRecord();
+        StringBuilder stringBuilder  = new StringBuilder();
+        int discount_type = 0;
+        double discount_amt = 0.0;
+        for (int i = 0,size = discount_record.size();i < size;i++){
+            final JSONObject record = discount_record.getJSONObject(i);
+            discount_type = record.getIntValue("discount_type");
+            discount_amt = record.getDoubleValue("discount_money");
+
+            if (stringBuilder.length() > 0)stringBuilder.append(",");
+            switch (discount_type){
+                case SaleGoodsViewAdapter.DISCOUNT_TYPE.MONEY_OFF:
+                    stringBuilder.append("满减：");
+                    break;
+                case SaleGoodsViewAdapter.DISCOUNT_TYPE.PRESENT:
+                    stringBuilder.append("赠送：");
+                    break;
+                case SaleGoodsViewAdapter.DISCOUNT_TYPE.M_DISCOUNT:
+                    stringBuilder.append("手动折扣：");
+                    break;
+                case SaleGoodsViewAdapter.DISCOUNT_TYPE.PROMOTION:
+                    stringBuilder.append("促销：");
+                    break;
+                case SaleGoodsViewAdapter.DISCOUNT_TYPE.A_DISCOUNT:
+                    stringBuilder.append("整单折扣：");
+                    break;
+                case SaleGoodsViewAdapter.DISCOUNT_TYPE.AUTO_MOL:
+                    stringBuilder.append("自动抹零：");
+                    break;
+                case SaleGoodsViewAdapter.DISCOUNT_TYPE.M_MOL:
+                    stringBuilder.append("手动抹零：");
+                    break;
+            }
+            stringBuilder.append(String.format(Locale.CHINA,"%.2f",discount_amt));
+        }
+        if (stringBuilder.length() > 0){
+            setDiscountDescription(stringBuilder.toString());
+        }
+    }
+    private void clearDiscountDescription(){
+        if (mDiscountDescription.isShown()){
+            mDiscountDescription.setText("");
+            mDiscountDescription.setVisibility(View.GONE);
+        }
+    }
+    private void setDiscountDescription(final String description){
+        if (!mDiscountDescription.isShown()){
+            mDiscountDescription.setVisibility(View.VISIBLE);
+        }
+        mDiscountDescription.setText(description);
+    }
+
     private void cash_pay(){
         JSONObject pay_method_json;
         if (verifyPayBalance()){
@@ -489,7 +548,7 @@ public class PayDialog extends Dialog {
                 tmp_json.put("order_code",order_code);
                 tmp_json.put("zk_cashier_id",zk_cashier_id);//使用折扣的收银员ID,默认当前收银员
                 tmp_json.put("total_money",tmp_json.remove("sale_amt"));
-                tmp_json.put("y_price",tmp_json.remove("old_price"));
+                tmp_json.put("y_price",tmp_json.remove("original_price"));
 
                 ///删除不需要的内容
                 tmp_json.remove("goods_id");
@@ -957,7 +1016,7 @@ public class PayDialog extends Dialog {
                             Printer.printThreeData(16,Utils.getNullStringAsEmpty(info_obj,"price"), type == 2 ? String.valueOf(xnum) : String.valueOf((int) xnum),Utils.getNullStringAsEmpty(info_obj,"sale_amt"))));
 
                     if (!Utils.equalDouble(discount_amt, 0.0)) {
-                        info.append(new_line).append(Printer.printTwoData(1, "原价：".concat(Utils.getNullStringAsEmpty(info_obj,"old_price")), "优惠：".concat(String.valueOf(discount_amt))));
+                        info.append(new_line).append(Printer.printTwoData(1, "原价：".concat(Utils.getNullStringAsEmpty(info_obj,"original_price")), "优惠：".concat(String.valueOf(discount_amt))));
                     }
                     if (i + 1 != size)
                         info.append(new_line_16);
