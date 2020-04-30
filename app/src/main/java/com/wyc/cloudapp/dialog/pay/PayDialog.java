@@ -51,8 +51,9 @@ public class PayDialog extends Dialog {
     private onPayListener mPayListener;
     private PayMethodViewAdapter mPayMethodViewAdapter;
     private PayDetailViewAdapter mPayDetailViewAdapter;
-    private TextView mOrderAmtTv,mDiscountAmtTv,mActualAmtTv,mPayAmtTv,mAmtReceivedTv,mPayBalanceTv,mDiscountDescription;
-    private double mOrder_amt = 0.0,mDiscount_amt = 0.0,mActual_amt = 0.0,mPay_amt = 0.0,mAmt_received = 0.0,mPay_balance = 0.0,mCashAmt = 0.0,mZlAmt = 0.0;
+    private TextView mOrderAmtTv,mDiscountAmtTv,mActualAmtTv,mPayAmtTv,mAmtReceivedTv,mPayBalanceTv, mDiscountDescriptionTv;
+    private double mOrder_amt = 0.0,mDiscount_amt = 0.0,mActual_amt = 0.0,mPay_amt = 0.0,mAmt_received = 0.0,mPay_balance = 0.0,mCashAmt = 0.0,mZlAmt = 0.0,mMolAmt = 0.0;
+    private String mDiscountDesContent = "";
     private Button mOK,mCancel;
     private JSONObject mVip;
     private boolean mPayStatus = true,mOpenCashbox;
@@ -60,14 +61,13 @@ public class PayDialog extends Dialog {
     public PayDialog(MainActivity context){
         super(context);
         mainActivity = context;
-        //可以show之前访问view
-        setContentView(this.getLayoutInflater().inflate(R.layout.pay_dialog_content_layout, null));
-        mDiscountDescription = findViewById(R.id.discount_description);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setCancelable(false);
         setCanceledOnTouchOutside(false);
+        //可以show之前访问view
+        setContentView(this.getLayoutInflater().inflate(R.layout.pay_dialog_content_layout, null));
 
         //初始化TextView
         mOrderAmtTv = findViewById(R.id.order_amt);//单据金额
@@ -78,6 +78,7 @@ public class PayDialog extends Dialog {
         mPayBalanceTv = findViewById(R.id.pay_balance);//付款余额
         mZlAmtEt = findViewById(R.id.zl_amt);//找零
         mRemarkEt = findViewById(R.id.et_remark);//备注
+        mDiscountDescriptionTv = findViewById(R.id.discount_description);//折扣信息
 
         //初始化支付方式
         initPayMethod();
@@ -96,10 +97,12 @@ public class PayDialog extends Dialog {
         findViewById(R.id.mo_l).setOnClickListener(v -> {
             ChangeNumOrPriceDialog changeNumOrPriceDialog = new ChangeNumOrPriceDialog(getContext(),mainActivity.getString(R.string.mo_l_sz),String.format(Locale.CHINA,"%.2f",mActual_amt - ((int)mActual_amt)));
             changeNumOrPriceDialog.setYesOnclickListener(myDialog -> {
-                double value = myDialog.getContentToDouble();
-                if (initPayContent(mainActivity.mol(value,null, SaleGoodsViewAdapter.DISCOUNT_TYPE.M_MOL))){
-                    refreshContent();
-                    myDialog.dismiss();
+                mMolAmt = myDialog.getContentToDouble();
+                if (!Utils.equalDouble(mMolAmt,0.0)){
+                    if (initPayContent(mainActivity.mol(mMolAmt,null, SaleGoodsViewAdapter.DISCOUNT_TYPE.M_MOL))){
+                        refreshContent();
+                        myDialog.dismiss();
+                    }
                 }
                 myDialog.dismiss();
             }).show();
@@ -123,7 +126,7 @@ public class PayDialog extends Dialog {
             }).show();
         });
         findViewById(R.id.remark).setOnClickListener(v -> {
-            if (mRemarkEt.getVisibility() == View.VISIBLE){
+            if (mRemarkEt.isShown()){
                 mRemarkEt.clearFocus();
                 mRemarkEt.getText().clear();
                 mRemarkEt.setVisibility(View.GONE);
@@ -158,7 +161,14 @@ public class PayDialog extends Dialog {
     @Override
     public void onDetachedFromWindow(){
         super.onDetachedFromWindow();
-        mWindow = getWindow();
+        if (!Utils.equalDouble(mMolAmt,0.0)){
+            mDiscount_amt -= mMolAmt;
+            mMolAmt = 0.0;
+            mainActivity.deleteMolDiscountRecord();
+        }
+        if (!Utils.equalDouble(mDiscount_amt,0.0)){
+            mainActivity.deleteAlldiscountRecord();
+        }
     }
 
     public PayDialog setPayFinishListener(onPayListener listener) {
@@ -364,7 +374,7 @@ public class PayDialog extends Dialog {
     }
     public void antoMol(final JSONArray datas){
         JSONObject object = new JSONObject();
-        double value = 0.0,sum = 0.0,old_amt = 0.0,disSumAmt = 0.0,disc = 0.0;
+        double  sum = 0.0,old_amt = 0.0,disSumAmt = 0.0,disc = 0.0;
         if (SQLiteHelper.getLocalParameter("auto_mol",object)){
             int v = 0;
             if (object.getIntValue("s") == 1){
@@ -380,36 +390,38 @@ public class PayDialog extends Dialog {
                 v = object.getIntValue("v");
                 switch (v){
                     case 1://四舍五入到元
-                        value =sum - Double.valueOf(String.format(Locale.CHINA,"%.0f",sum));
+                        mMolAmt =sum - Double.valueOf(String.format(Locale.CHINA,"%.0f",sum));
                         break;
                     case 2://四舍五入到角
-                        value =sum - Double.valueOf(String.format(Locale.CHINA,"%.1f",sum));
+                        mMolAmt =sum - Double.valueOf(String.format(Locale.CHINA,"%.1f",sum));
                         break;
                 }
-                if (!Utils.equalDouble(value,0.0))
-                    mainActivity.mol(value,null, SaleGoodsViewAdapter.DISCOUNT_TYPE.AUTO_MOL);
+                if (!Utils.equalDouble(mMolAmt,0.0))
+                    mainActivity.mol(mMolAmt,null, SaleGoodsViewAdapter.DISCOUNT_TYPE.AUTO_MOL);
             }
         }else{
             MyDialog.ToastMessage("自动抹零错误：" + object.getString("info"),mainActivity,null);
         }
      }
     public boolean initPayContent(JSONArray datas){
-        boolean isTrue = true;
-        if (null == datas)return false;
-        clearContent();
-        antoMol(datas);
-        for (int i = 0,length = datas.size();i < length; i ++){
-            JSONObject jsonObject = datas.getJSONObject(i);
-            mOrder_amt += jsonObject.getDouble("old_amt");
-            mDiscount_amt += jsonObject.getDoubleValue("discount_amt");
-            mActual_amt = mOrder_amt - mDiscount_amt;
+        if (null != datas && !datas.isEmpty()){
+            clearContent();
+            antoMol(datas);
+            for (int i = 0,length = datas.size();i < length; i ++){
+                JSONObject jsonObject = datas.getJSONObject(i);
+                mOrder_amt += jsonObject.getDouble("old_amt");
+                mDiscount_amt += jsonObject.getDoubleValue("discount_amt");
+                mActual_amt = mOrder_amt - mDiscount_amt;
 
-            mPay_amt = mActual_amt;
-            mPay_balance = mActual_amt - mAmt_received;//剩余付款金额等于应收金额已收金额
-            mCashAmt = mPay_balance;
+                mPay_amt = mActual_amt;
+                mPay_balance = mActual_amt - mAmt_received;//剩余付款金额等于应收金额已收金额
+                mCashAmt = mPay_balance;
+            }
+            setDiscountDescription();
+            if (null != mPayDetailViewAdapter)mPayDetailViewAdapter.notifyDataSetChanged();
+            return true;
         }
-        if (null != mPayDetailViewAdapter)mPayDetailViewAdapter.notifyDataSetChanged();
-        return isTrue;
+        return false;
     }
 
     private void refreshContent(){
@@ -422,7 +434,7 @@ public class PayDialog extends Dialog {
         mPayBalanceTv.setText(String.format(Locale.CHINA,"%.2f",mPay_balance));
         mZlAmtEt.setText(String.format(Locale.CHINA,"%.2f",mZlAmt));
 
-        showDiscountInfoDescription();
+        showDiscountDescription();
 
         mCashMoneyEt.selectAll();
     }
@@ -436,62 +448,62 @@ public class PayDialog extends Dialog {
         mPay_balance = 0.0;
         mCashAmt = 0.0;
         mZlAmt = 0.0;
-
-        //隐藏折扣信息TextView
-        clearDiscountDescription();
+        mMolAmt = 0.0;
+        mDiscountDesContent = "";
     }
 
-    private void showDiscountInfoDescription(){
+    private void setDiscountDescription(){
         JSONArray discount_record = mainActivity.getDiscountRecord();
-        StringBuilder stringBuilder  = new StringBuilder();
-        int discount_type = 0;
-        double discount_amt = 0.0;
-        for (int i = 0,size = discount_record.size();i < size;i++){
-            final JSONObject record = discount_record.getJSONObject(i);
-            discount_type = record.getIntValue("discount_type");
-            discount_amt = record.getDoubleValue("discount_money");
-
-            if (stringBuilder.length() > 0)stringBuilder.append(",");
-            switch (discount_type){
-                case SaleGoodsViewAdapter.DISCOUNT_TYPE.MONEY_OFF:
-                    stringBuilder.append("满减：");
-                    break;
-                case SaleGoodsViewAdapter.DISCOUNT_TYPE.PRESENT:
-                    stringBuilder.append("赠送：");
-                    break;
-                case SaleGoodsViewAdapter.DISCOUNT_TYPE.M_DISCOUNT:
-                    stringBuilder.append("手动折扣：");
-                    break;
-                case SaleGoodsViewAdapter.DISCOUNT_TYPE.PROMOTION:
-                    stringBuilder.append("促销：");
-                    break;
-                case SaleGoodsViewAdapter.DISCOUNT_TYPE.A_DISCOUNT:
-                    stringBuilder.append("整单折扣：");
-                    break;
-                case SaleGoodsViewAdapter.DISCOUNT_TYPE.AUTO_MOL:
-                    stringBuilder.append("自动抹零：");
-                    break;
-                case SaleGoodsViewAdapter.DISCOUNT_TYPE.M_MOL:
-                    stringBuilder.append("手动抹零：");
-                    break;
+        if (!discount_record.isEmpty()){
+            StringBuilder stringBuilder  = new StringBuilder();
+            for (int i = 0,size = discount_record.size();i < size;i++){
+                final JSONObject record = discount_record.getJSONObject(i);
+                if (stringBuilder.length() > 0)stringBuilder.append(",");
+                switch (record.getIntValue("discount_type")){
+                    case SaleGoodsViewAdapter.DISCOUNT_TYPE.MONEY_OFF:
+                        stringBuilder.append("满减：");
+                        break;
+                    case SaleGoodsViewAdapter.DISCOUNT_TYPE.PRESENT:
+                        stringBuilder.append("赠送：");
+                        break;
+                    case SaleGoodsViewAdapter.DISCOUNT_TYPE.M_DISCOUNT:
+                        stringBuilder.append("手动折扣：");
+                        break;
+                    case SaleGoodsViewAdapter.DISCOUNT_TYPE.PROMOTION:
+                        stringBuilder.append("促销：");
+                        break;
+                    case SaleGoodsViewAdapter.DISCOUNT_TYPE.V_DISCOUNT:
+                        stringBuilder.append("会员折扣：");
+                        break;
+                    case SaleGoodsViewAdapter.DISCOUNT_TYPE.A_DISCOUNT:
+                        stringBuilder.append("整单折扣：");
+                        break;
+                    case SaleGoodsViewAdapter.DISCOUNT_TYPE.AUTO_MOL:
+                        stringBuilder.append("自动抹零：");
+                        break;
+                    case SaleGoodsViewAdapter.DISCOUNT_TYPE.M_MOL:
+                        stringBuilder.append("手动抹零：");
+                        break;
+                }
+                stringBuilder.append(String.format(Locale.CHINA,"%.2f",record.getDoubleValue("discount_money")));
+                mDiscountDesContent = stringBuilder.toString();
             }
-            stringBuilder.append(String.format(Locale.CHINA,"%.2f",discount_amt));
-        }
-        if (stringBuilder.length() > 0){
-            setDiscountDescription(stringBuilder.toString());
         }
     }
-    private void clearDiscountDescription(){
-        if (mDiscountDescription.isShown()){
-            mDiscountDescription.setText("");
-            mDiscountDescription.setVisibility(View.GONE);
+
+    private void showDiscountDescription(){
+        if (mDiscountDesContent.length() != 0){
+            if (!mDiscountDescriptionTv.isShown()){
+                mDiscountDescriptionTv.setVisibility(View.VISIBLE);
+            }
+            mDiscountDescriptionTv.setText(mDiscountDesContent);
+        }else{
+            if (mDiscountDescriptionTv.isShown()){
+                mDiscountDescriptionTv.setText(mDiscountDesContent);
+                mDiscountDescriptionTv.setVisibility(View.GONE);
+            }
         }
-    }
-    private void setDiscountDescription(final String description){
-        if (!mDiscountDescription.isShown()){
-            mDiscountDescription.setVisibility(View.VISIBLE);
-        }
-        mDiscountDescription.setText(description);
+
     }
 
     private void cash_pay(){

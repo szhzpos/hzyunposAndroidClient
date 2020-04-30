@@ -262,7 +262,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         this.mOnItemClickListener = onItemClickListener;
     }
 
-    public int getId(final JSONObject jsonObject){
+    public int getGoodsId(final JSONObject jsonObject){
         int id = -1;
         if (!"".equals(Utils.getNullStringAsEmpty(jsonObject,W_G_MARK))){//计重、计份并且通过扫条码选择的商品标志
             id = jsonObject.getIntValue("only_coding");

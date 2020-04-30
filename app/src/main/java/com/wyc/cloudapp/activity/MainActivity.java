@@ -120,8 +120,18 @@ public class MainActivity extends AppCompatActivity {
 
         //初始化功能按钮事件
         findViewById(R.id.clear).setOnClickListener(v -> {
-            resetOrderInfo();
-            mSaleGoodsViewAdapter.clearGoods();
+            if (mVipInfo != null){
+                MyDialog.displayAskMessage(mDialog,"是否清除会员折扣？",this,myDialog -> {
+                    clearVipInfo();
+                    myDialog.dismiss();
+                },Dialog::dismiss);
+            }else{
+                if (!mSaleGoodsViewAdapter.getDatas().isEmpty())
+                    MyDialog.displayAskMessage(mDialog,"是否清除销售商品？",this,myDialog -> {
+                        resetOrderInfo();
+                        myDialog.dismiss();
+                    },Dialog::dismiss);
+            }
         });//清空
         findViewById(R.id.minus_num).setOnClickListener(v -> mSaleGoodsViewAdapter.deleteSaleGoods(mSaleGoodsViewAdapter.getCurrentItemIndex(),1));//数量减
         findViewById(R.id.add_num).setOnClickListener(v -> mSaleGoodsViewAdapter.addSaleGoods(mSaleGoodsViewAdapter.getCurrentContent(),mVipInfo));//数量加
@@ -197,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
                                     if (barcode_id_obj != null){
                                         goods_info = new JSONObject();
                                         final String isBarcodeWeighingGoods = barcode_id_obj.getString(GoodsInfoViewAdapter.W_G_MARK);
-                                        id = mGoodsInfoViewAdapter.getId(barcode_id_obj);
+                                        id = mGoodsInfoViewAdapter.getGoodsId(barcode_id_obj);
                                         if (mGoodsInfoViewAdapter.getSingleGoods(goods_info,isBarcodeWeighingGoods,id)){
                                             goods_info.put("xnum",barcode_id_obj.getDoubleValue("xnum"));//挂单取出重量
                                             mSaleGoodsViewAdapter.addSaleGoods(goods_info,mVipInfo);
@@ -363,7 +373,7 @@ public class MainActivity extends AppCompatActivity {
                 final JSONObject jsonObject = mGoodsInfoViewAdapter.getItem(pos),content = new JSONObject();
                 if (jsonObject != null){
                     final String weigh_barcode_info = jsonObject.getString(GoodsInfoViewAdapter.W_G_MARK);
-                    int id = mGoodsInfoViewAdapter.getId(jsonObject);
+                    int id = mGoodsInfoViewAdapter.getGoodsId(jsonObject);
                     if (mGoodsInfoViewAdapter.getSingleGoods(content,weigh_barcode_info,id)){
                         mSaleGoodsViewAdapter.addSaleGoods(content,mVipInfo);
                         mSearch_content.selectAll();
@@ -534,7 +544,6 @@ public class MainActivity extends AppCompatActivity {
         final JSONArray datas = mSaleGoodsViewAdapter.getDatas();
         if (datas.size() != 0){
             final PayDialog dialog = new PayDialog(this);
-            if (mVipInfo != null)dialog.showVipInfo(mVipInfo,true);
             if (dialog.initPayContent(datas)){
                 dialog.setPayFinishListener(new PayDialog.onPayListener() {
                     @Override
@@ -577,6 +586,7 @@ public class MainActivity extends AppCompatActivity {
                         MyDialog.displayErrorMessage(null,"支付错误：" + err,myDialog.getContext());
                     }
                 }).show();
+                if (mVipInfo != null)dialog.showVipInfo(mVipInfo,true);
             }
         }else{
             MyDialog.SnackbarMessage(getWindow(),"已选商品为空！!",getCurrentFocus());
@@ -599,6 +609,9 @@ public class MainActivity extends AppCompatActivity {
             vip_info_linearLayout.setVisibility(View.GONE);
             ((TextView)vip_info_linearLayout.findViewById(R.id.vip_name)).setText(getText(R.string.space_sz));
             ((TextView)vip_info_linearLayout.findViewById(R.id.vip_phone_num)).setText(getText(R.string.space_sz));
+            if (!mSaleGoodsViewAdapter.getDatas().isEmpty()){
+                mSaleGoodsViewAdapter.deleteVipDiscountRecord();
+            }
         }
     }
     private void registerGlobalLayoutToRecyclerView(@NonNull final View view,final float size,@NonNull final SuperItemDecoration superItemDecoration){
@@ -651,6 +664,12 @@ public class MainActivity extends AppCompatActivity {
     public JSONArray discount(double discount,final String zk_cashier_id,int type){
         setDisCashierId(zk_cashier_id);
         return mSaleGoodsViewAdapter.discount(discount,type);
+    }
+    public void deleteMolDiscountRecord(){
+        mSaleGoodsViewAdapter.deleteMolDiscountRecord();
+    }
+    public void deleteAlldiscountRecord(){
+        mSaleGoodsViewAdapter.deleteAlldiscountRecord();
     }
     public JSONArray getDiscountRecord(){
         return mSaleGoodsViewAdapter.getDiscountRecords();

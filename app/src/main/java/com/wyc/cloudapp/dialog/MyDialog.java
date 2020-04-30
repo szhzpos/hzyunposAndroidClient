@@ -116,9 +116,6 @@ public class MyDialog extends Dialog {
         if (mTitleStr != null) {
             mTitle.setText(mTitleStr);
         }
-        if (mMessageStr != null) {
-            mMessage.setText(mMessageStr);
-        }
         //如果设置按钮的文字
         if (mYesStr != null) {
             mYes.setText(mYesStr);
@@ -159,6 +156,16 @@ public class MyDialog extends Dialog {
         showBtn();
         showIcon();
     }
+    @Override
+    public void dismiss(){
+        super.dismiss();
+        if (mMessageStr != null && mMessageStr.length() != 0){
+            mMessageStr = null;
+        }
+        if (mTitleStr != null && mTitleStr.length() != 0){
+            mTitleStr = null;
+        }
+    }
 
     private void showIcon(){
         Drawable drawable = null;
@@ -178,6 +185,9 @@ public class MyDialog extends Dialog {
         }
         drawable.setBounds(0,0,drawable.getIntrinsicWidth(),drawable.getIntrinsicHeight());
         mMessage.setCompoundDrawables(drawable,null,null,null);
+        if (mMessageStr != null) {
+            mMessage.setText(mMessageStr);
+        }
     }
     private void showBtn(){
         if (mIsYes && !mIsNo) {
