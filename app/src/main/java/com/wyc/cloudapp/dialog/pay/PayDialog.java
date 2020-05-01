@@ -66,7 +66,6 @@ public class PayDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         setCancelable(false);
         setCanceledOnTouchOutside(false);
-        //可以show之前访问view
         setContentView(this.getLayoutInflater().inflate(R.layout.pay_dialog_content_layout, null));
 
         //初始化TextView
@@ -94,15 +93,15 @@ public class PayDialog extends Dialog {
         mCancel = findViewById(R.id._cancel);
 
         findViewById(R.id._close).setOnClickListener(view -> mCancel.callOnClick());
-        findViewById(R.id.mo_l).setOnClickListener(v -> {
+        findViewById(R.id.mo_l).setOnClickListener(v -> {//手动抹零
             ChangeNumOrPriceDialog changeNumOrPriceDialog = new ChangeNumOrPriceDialog(getContext(),mainActivity.getString(R.string.mo_l_sz),String.format(Locale.CHINA,"%.2f",mActual_amt - ((int)mActual_amt)));
             changeNumOrPriceDialog.setYesOnclickListener(myDialog -> {
                 mMolAmt = myDialog.getContentToDouble();
                 if (!Utils.equalDouble(mMolAmt,0.0)){
-                    if (initPayContent(mainActivity.mol(mMolAmt,null, SaleGoodsViewAdapter.DISCOUNT_TYPE.M_MOL))){
-                        refreshContent();
-                        myDialog.dismiss();
-                    }
+                    clearContent();
+                    calculatePayContent(mainActivity.mol(mMolAmt,null, SaleGoodsViewAdapter.DISCOUNT_TYPE.M_MOL));
+                    setDiscountDescription();
+                    refreshContent();
                 }
                 myDialog.dismiss();
             }).show();
@@ -119,7 +118,7 @@ public class PayDialog extends Dialog {
         findViewById(R.id.all_discount).setOnClickListener(view -> {
             ChangeNumOrPriceDialog dialog = new ChangeNumOrPriceDialog(mainActivity,mainActivity.getString(R.string.discount_sz),String.format(Locale.CHINA,"%d",100));
             dialog.setYesOnclickListener(myDialog -> {
-                if (initPayContent(mainActivity.discount(myDialog.getContentToDouble(),"",6))){//手动抹零
+                if (initPayContent(mainActivity.discount(myDialog.getContentToDouble(),"",6))){
                     refreshContent();
                     myDialog.dismiss();
                 }
@@ -162,7 +161,6 @@ public class PayDialog extends Dialog {
     public void onDetachedFromWindow(){
         super.onDetachedFromWindow();
         if (!Utils.equalDouble(mMolAmt,0.0)){
-            mDiscount_amt -= mMolAmt;
             mMolAmt = 0.0;
             mainActivity.deleteMolDiscountRecord();
         }
@@ -291,6 +289,7 @@ public class PayDialog extends Dialog {
                                 MyDialog.SnackbarMessage(mWindow, "剩余金额为零！", getCurrentFocus());
                             } else {
                                 PayMethodDialog payMethodDialog = new PayMethodDialog(mainActivity, pay_method);
+                                deleteMolDiscountRecord();//现金之外的付款需要删除抹零金额
                                 payMethodDialog.setPayAmt(mPay_balance);
                                 payMethodDialog.setYesOnclickListener(dialog -> {
                                     JSONObject jsonObject = dialog.getContent();
@@ -300,6 +299,10 @@ public class PayDialog extends Dialog {
                                     }
                                 }).setCancelListener(dialog -> {
                                     mPayMethodViewAdapter.showDefaultPayMethod(null);
+                                    if (PayMethodViewAdapter.CASH_METHOD_ID.equals(mPayMethodViewAdapter.getDefaultPayMethodId())){
+                                        initPayContent(mainActivity.getSaleGoodsViewAdapter().getDatas());
+                                        refreshContent();
+                                    }
                                     dialog.dismiss();
                                 }).show();
                             }
@@ -372,8 +375,8 @@ public class PayDialog extends Dialog {
         recyclerView.addItemDecoration(new DividerItemDecoration(mainActivity,DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(mPayDetailViewAdapter);
     }
-    public void antoMol(final JSONArray datas){
-        JSONObject object = new JSONObject();
+    private void antoMol(final JSONArray datas){//自动抹零
+        final JSONObject object = new JSONObject();
         double  sum = 0.0,old_amt = 0.0,disSumAmt = 0.0,disc = 0.0;
         if (SQLiteHelper.getLocalParameter("auto_mol",object)){
             int v = 0;
@@ -403,27 +406,27 @@ public class PayDialog extends Dialog {
             MyDialog.ToastMessage("自动抹零错误：" + object.getString("info"),mainActivity,null);
         }
      }
-    public boolean initPayContent(JSONArray datas){
-        if (null != datas && !datas.isEmpty()){
-            clearContent();
-            antoMol(datas);
-            for (int i = 0,length = datas.size();i < length; i ++){
-                JSONObject jsonObject = datas.getJSONObject(i);
-                mOrder_amt += jsonObject.getDouble("old_amt");
-                mDiscount_amt += jsonObject.getDoubleValue("discount_amt");
-                mActual_amt = mOrder_amt - mDiscount_amt;
-
-                mPay_amt = mActual_amt;
-                mPay_balance = mActual_amt - mAmt_received;//剩余付款金额等于应收金额已收金额
-                mCashAmt = mPay_balance;
-            }
+    private void deleteMolDiscountRecord(){
+        if (!Utils.equalDouble(mMolAmt,0.0)){
+            mMolAmt = 0.0;
+            calculatePayContent(mainActivity.deleteMolDiscountRecord());
             setDiscountDescription();
-            if (null != mPayDetailViewAdapter)mPayDetailViewAdapter.notifyDataSetChanged();
-            return true;
+            refreshContent();
         }
-        return false;
     }
-
+    private void calculatePayContent(@NonNull final JSONArray datas){
+        JSONObject jsonObject;
+        clearContent();
+        for (int i = 0,length = datas.size();i < length; i ++){
+            jsonObject = datas.getJSONObject(i);
+            mOrder_amt += jsonObject.getDouble("old_amt");
+            mDiscount_amt += jsonObject.getDoubleValue("discount_amt");
+        }
+        mActual_amt = mOrder_amt - mDiscount_amt;
+        mPay_amt = mActual_amt;
+        mPay_balance = mActual_amt - mAmt_received;//剩余付款金额等于应收金额已收金额
+        mCashAmt = mPay_balance;
+    }
     private void refreshContent(){
         mOrderAmtTv.setText(String.format(Locale.CHINA,"%.2f",mOrder_amt));
         mDiscountAmtTv.setText(String.format(Locale.CHINA,"%.2f",mDiscount_amt));
@@ -438,7 +441,6 @@ public class PayDialog extends Dialog {
 
         mCashMoneyEt.selectAll();
     }
-
     private void clearContent(){
         mOrder_amt = 0.0;
         mDiscount_amt = 0.0;
@@ -448,7 +450,7 @@ public class PayDialog extends Dialog {
         mPay_balance = 0.0;
         mCashAmt = 0.0;
         mZlAmt = 0.0;
-        mMolAmt = 0.0;
+        //mMolAmt = 0.0;
         mDiscountDesContent = "";
     }
 
@@ -1096,6 +1098,16 @@ public class PayDialog extends Dialog {
         return info.toString();
     }
 
+    public boolean initPayContent(JSONArray datas){
+        if (null != datas && !datas.isEmpty()){
+            antoMol(datas);
+            calculatePayContent(datas);
+            setDiscountDescription();
+            if (null != mPayDetailViewAdapter)mPayDetailViewAdapter.notifyDataSetChanged();
+            return true;
+        }
+        return false;
+    }
     public boolean showVipInfo(@NonNull JSONObject vip,boolean show){//show为true则只显示不再刷新已销售商品
         mVip = vip;
         LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);

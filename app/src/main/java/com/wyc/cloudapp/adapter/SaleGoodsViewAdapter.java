@@ -232,6 +232,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
 
                 if (!Utils.equalDouble(current_discount_amt,0.0)){
                     discount_json = new JSONObject();
+                    discount_json.put("gp_id",json.getIntValue("gp_id"));
                     discount_json.put("barcode_id",json.getIntValue("barcode_id"));
                     discount_json.put("price",current_discount_amt);
                     discount_details.add(discount_json);
@@ -267,15 +268,15 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     public JSONArray getDiscountRecords(){
         return mDiscountRecords;
     }
-    public void deleteMolDiscountRecord(){
+    public JSONArray deleteMolDiscountRecord(){
         deleteDiscountRecord(DISCOUNT_TYPE.AUTO_MOL);
-        deleteDiscountRecord(DISCOUNT_TYPE.M_MOL);
+        return deleteDiscountRecord(DISCOUNT_TYPE.M_MOL);
     }
     public void deleteVipDiscountRecord(){
-        deleteDiscountRecord(DISCOUNT_TYPE.V_DISCOUNT);
+         deleteDiscountRecord(DISCOUNT_TYPE.V_DISCOUNT);
     }
-    public void deleteAlldiscountRecord(){
-        deleteDiscountRecord(DISCOUNT_TYPE.A_DISCOUNT);
+    public JSONArray deleteAlldiscountRecord(){
+        return deleteDiscountRecord(DISCOUNT_TYPE.A_DISCOUNT);
     }
 
     public JSONArray updateGoodsInfoToVip(final JSONObject vip){
@@ -418,6 +419,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
 
         if (null != discount_details && !Utils.equalDouble(current_discount_amt,0.0)){
             discount_json = new JSONObject();
+            discount_json.put("gp_id",json.getIntValue("gp_id"));
             discount_json.put("barcode_id",json.getIntValue("barcode_id"));
             discount_json.put("price",current_discount_amt);
             discount_details.add(discount_json);
@@ -546,6 +548,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         if (!Utils.equalDouble(current_discount_amt,0.0)){
             JSONArray discount_details = new JSONArray();
             JSONObject discount_json = new JSONObject();
+            discount_json.put("gp_id",goods.getIntValue("gp_id"));
             discount_json.put("barcode_id",goods.getIntValue("barcode_id"));
             discount_json.put("price",current_discount_amt);
             discount_details.add(discount_json);
@@ -572,19 +575,13 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                     int j = 0;
                     for (int i = 0,size = new_details.size();i < size;i++){
                         new_goods = new_details.getJSONObject(i);
-                        new_id = new_goods.getIntValue("barcode_id");
+                        new_id = getGoodsId(new_goods);
                         j = 0;
                         new_discount_amt = new_goods.getDoubleValue("price");
 
-                        if (new_id == -1){
-                            new_id = new_goods.getIntValue("gp_id");
-                        }
                         for (int length = original_details.size();j < length ;j++){
                             original_goods = original_details.getJSONObject(j);
-                            ori_id = original_goods.getIntValue("barcode_id");
-                            if (ori_id == -1){//组合商品
-                                ori_id = original_goods.getIntValue("gp_id");
-                            }
+                            ori_id = getGoodsId(original_goods);
                             if (new_id == ori_id){
                                 new_goods.put("price",original_goods.getDoubleValue("price") + new_discount_amt);
                                 original_details.remove(j);
@@ -614,7 +611,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
             mDiscountRecords.add(record);
         }
     }
-    private void deleteDiscountRecord(int discount_type){
+    private JSONArray deleteDiscountRecord(int discount_type){
         JSONObject record_json,discount_goods,goods;
         for (int i = 0;i < mDiscountRecords.size();i++){
             record_json = mDiscountRecords.getJSONObject(i);
@@ -642,10 +639,13 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
             }
         }
         notifyDataSetChanged();
+
+        return mDatas;
     }
 
-    public int getGoodsId(final JSONObject jsonObject){
-        int id = -1;
+    private int getGoodsId(final JSONObject jsonObject){
+        int id;
+        if (jsonObject == null)return -1;
         id = jsonObject.getIntValue("barcode_id");
         if (-1 == id){//组合商品
             id = jsonObject.getIntValue("gp_id");
@@ -668,18 +668,18 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
     }
 
     public JSONArray mol(double mol_amt,int type){
-
         Logger.d("mol_amt:%f,type:%d",mol_amt,type);
 
-        int sale_record = mDatas.size();
-        double per_record_mol_amt = getPerRecordMolAmt(mol_amt,sale_record),original_sale_amt = 0.0,new_discount = 0.0,original_price = 0.0,new_price = 0.0,
-                discount_amt = 0.0,current_sale_amt = 0.0;
-        JSONArray discount_details = new JSONArray();
         JSONObject object,discount_obj;
+        final JSONArray discount_details = new JSONArray();
+        int sale_record = mDatas.size();
+        double per_record_mol_amt = getPerRecordMolAmt(mol_amt,sale_record),original_sale_amt = 0.0,new_discount = 0.0,xnum = 0.0,new_price = 0.0,
+                discount_amt = 0.0,current_sale_amt = 0.0;
+        boolean isPreform = true;
 
         Utils.sortJsonArrayFromDoubleCol(mDatas,"sale_amt");
 
-        for (int i = 0;i < sale_record && Math.abs(mol_amt) >= 0;i++){
+        for (int i = 0;i < sale_record && isPreform;i++){
             object = mDatas.getJSONObject(i);
             original_sale_amt = object.getDoubleValue("sale_amt");
             current_sale_amt = Utils.formatDouble(original_sale_amt - per_record_mol_amt,2);
@@ -689,13 +689,14 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
 
                 //处理优惠记录
                 discount_obj = new JSONObject();
+                discount_obj.put("gp_id",object.getIntValue("gp_id"));
                 discount_obj.put("barcode_id",object.getIntValue("barcode_id"));
                 discount_obj.put("price",per_record_mol_amt);//单品折扣金额
                 discount_details.add(discount_obj);
 
-                original_price = object.getDoubleValue("price");
+                xnum = Utils.getNotKeyAsDefault(object,"xnum",1.0);
 
-                new_price = Utils.formatDouble(original_price * new_discount,4);
+                new_price = Utils.formatDouble(current_sale_amt / xnum,4);
 
                 discount_amt = Utils.formatDouble(original_sale_amt - current_sale_amt,2);
 
@@ -706,7 +707,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 object.put("sale_amt",current_sale_amt);
 
                 if (mol_amt == 0){
-                    mol_amt = -1;
+                    isPreform = false;
                 }else {
                     mol_amt -= per_record_mol_amt;
                     //计算下一次抹零金额，最后一条记录或者剩余抹零金额小于平均抹零金额；要扣除剩余的抹零

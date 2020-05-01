@@ -22,7 +22,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     private Context mContext;
     private JSONArray mDatas;
     private OnItemClickListener mOnItemClickListener;
-    private View mCurrentItemView,mDefaultPayMethodView;//当前选择的付款方式item
+    private View mCurrentItemView,mDefaultPayMethodView;
     private int mWidth;
     public PayMethodViewAdapter(Context context,int width){
         this.mContext = context;
@@ -142,8 +142,18 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
         return null;
     }
 
-    public void getCurrentPayMethod(){
+    public void setCurrentPayMethod(){
         if (mCurrentItemView != null)mCurrentItemView.callOnClick();
+    }
+
+    public String getDefaultPayMethodId(){
+        if (null != mDefaultPayMethodView){
+           final TextView idTv = mDefaultPayMethodView.findViewById(R.id.pay_method_id);
+           if (null != idTv){
+               return idTv.getText().toString();
+           }
+        }
+        return "";
     }
 
     public void showDefaultPayMethod(View view){

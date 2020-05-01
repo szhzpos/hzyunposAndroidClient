@@ -402,7 +402,7 @@ public class VipChargeDialog extends AbstractPayDialog {
 
     @Override
     public boolean verify(){
-       if (mPayMethod == null)mPayMethodViewAdapter.getCurrentPayMethod();
+       if (mPayMethod == null)mPayMethodViewAdapter.setCurrentPayMethod();
        return MyDialog.ToastMessage(null,"会员信息不能为空！",mContext,mDialogWindow,mVip != null) && super.verify();
     }
 

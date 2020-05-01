@@ -665,11 +665,11 @@ public class MainActivity extends AppCompatActivity {
         setDisCashierId(zk_cashier_id);
         return mSaleGoodsViewAdapter.discount(discount,type);
     }
-    public void deleteMolDiscountRecord(){
-        mSaleGoodsViewAdapter.deleteMolDiscountRecord();
+    public JSONArray deleteMolDiscountRecord(){
+        return mSaleGoodsViewAdapter.deleteMolDiscountRecord();
     }
-    public void deleteAlldiscountRecord(){
-        mSaleGoodsViewAdapter.deleteAlldiscountRecord();
+    public JSONArray deleteAlldiscountRecord(){
+        return mSaleGoodsViewAdapter.deleteAlldiscountRecord();
     }
     public JSONArray getDiscountRecord(){
         return mSaleGoodsViewAdapter.getDiscountRecords();

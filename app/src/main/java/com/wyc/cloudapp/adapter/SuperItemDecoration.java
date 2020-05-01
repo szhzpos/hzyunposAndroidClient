@@ -46,9 +46,4 @@ public class SuperItemDecoration extends RecyclerView.ItemDecoration {
         mSpace = space;
         return this;
     }
-
-    public SuperItemDecoration setPaint(Paint paint){
-        mPaint = paint;
-        return this;
-    }
 }
