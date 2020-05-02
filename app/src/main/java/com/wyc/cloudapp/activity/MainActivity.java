@@ -118,7 +118,19 @@ public class MainActivity extends AppCompatActivity {
         //初始化搜索框
         initSearch();
 
+        //挂单
+        initTmpOrder();
+
         //初始化功能按钮事件
+        mCloseBtn.setOnClickListener((View V)->{
+            MyDialog.displayAskMessage(mDialog,"是否退出收银？",MainActivity.this,(MyDialog myDialog)->{
+                myDialog.dismiss();
+                Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                MainActivity.this.finish();
+            }, Dialog::dismiss);
+        });//退出收银
         findViewById(R.id.clear).setOnClickListener(v -> {
             if (mVipInfo != null){
                 MyDialog.displayAskMessage(mDialog,"是否清除会员折扣？",this,myDialog -> {
@@ -135,26 +147,10 @@ public class MainActivity extends AppCompatActivity {
         });//清空
         findViewById(R.id.minus_num).setOnClickListener(v -> mSaleGoodsViewAdapter.deleteSaleGoods(mSaleGoodsViewAdapter.getCurrentItemIndex(),1));//数量减
         findViewById(R.id.add_num).setOnClickListener(v -> mSaleGoodsViewAdapter.addSaleGoods(mSaleGoodsViewAdapter.getCurrentContent(),mVipInfo));//数量加
-        mCloseBtn.setOnClickListener((View V)->{
-            MyDialog.displayAskMessage(mDialog,"是否退出收银？",MainActivity.this,(MyDialog myDialog)->{
-                myDialog.dismiss();
-                Intent intent = new Intent(MainActivity.this,LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                MainActivity.this.finish();
-            }, Dialog::dismiss);
-        });//退出收银
         findViewById(R.id.num).setOnClickListener(view -> mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 0));//数量
-        findViewById(R.id.discount).setOnClickListener(v-> {
-            setDisCashierId(mCashierInfo.getString("cas_id"));
-            mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 2);});//打折
-        findViewById(R.id.change_price).setOnClickListener(v-> {
-            setDisCashierId(mCashierInfo.getString("cas_id"));
-            mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 1);});//改价
-        findViewById(R.id.check_out).setOnClickListener((View v)->{
-            Utils.disableView(v,500);
-            showPayDialog();
-        });//结账
+        findViewById(R.id.discount).setOnClickListener(v-> {setDisCashierId(mCashierInfo.getString("cas_id"));mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 2);});//打折
+        findViewById(R.id.change_price).setOnClickListener(v-> { setDisCashierId(mCashierInfo.getString("cas_id"));mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 1);});//改价
+        findViewById(R.id.check_out).setOnClickListener((View v)->{Utils.disableView(v,500);showPayDialog();});//结账
         findViewById(R.id.vip).setOnClickListener(v -> {
             VipInfoDialog vipInfoDialog = new VipInfoDialog(this);
             vipInfoDialog.setYesOnclickListener(dialog -> {
@@ -175,59 +171,7 @@ public class MainActivity extends AppCompatActivity {
                 MyDialog.ToastMessage(imageView,"打印功能已开启！",this,getWindow());
             }
         });//打印状态
-        findViewById(R.id.tmp_order).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final HangBillDialog hangBillDialog = new HangBillDialog(MainActivity.this);
-                JSONArray datas = mSaleGoodsViewAdapter.getDatas();
-                if (Utils.JsonIsNotEmpty(datas)){
-                    MyDialog.displayAskMessage(null, "是否挂单？", MainActivity.this, new MyDialog.onYesOnclickListener() {
-                        @Override
-                        public void onYesClick(MyDialog myDialog) {
-                            StringBuilder err = new StringBuilder();
-                            if (hangBillDialog.save(datas,mVipInfo,err)){
-                                resetOrderInfo();
-                                MyDialog.ToastMessage(mSaleGoodsRecyclerView,"挂单成功！",MainActivity.this,null);
-                                myDialog.dismiss();
-                            }else{
-                                MyDialog.ToastMessage(mSaleGoodsRecyclerView,"保存挂单错误：" + err,MainActivity.this,null);
-                            }
-                        }
-                    }, Dialog::dismiss);
-                }else{
-                    if (hangBillDialog.getHangCounts() > 1){
-                        hangBillDialog.setGetBillDetailListener(new HangBillDialog.OnGetBillListener() {
-                            @Override
-                            public void onGet(JSONArray array, final JSONObject vip) {
-                                if (null != vip)showVipInfo(vip);
-                                JSONObject barcode_id_obj,goods_info;
-                                int id = -1;
-                                for (int i = 0,length = array.size();i < length;i ++){
-                                    barcode_id_obj = array.getJSONObject(i);
-                                    if (barcode_id_obj != null){
-                                        goods_info = new JSONObject();
-                                        final String isBarcodeWeighingGoods = barcode_id_obj.getString(GoodsInfoViewAdapter.W_G_MARK);
-                                        id = mGoodsInfoViewAdapter.getGoodsId(barcode_id_obj);
-                                        if (mGoodsInfoViewAdapter.getSingleGoods(goods_info,isBarcodeWeighingGoods,id)){
-                                            goods_info.put("xnum",barcode_id_obj.getDoubleValue("xnum"));//挂单取出重量
-                                            mSaleGoodsViewAdapter.addSaleGoods(goods_info,mVipInfo);
-                                            hangBillDialog.dismiss();
-                                        }else{
-                                            MyDialog.ToastMessage(mSaleGoodsRecyclerView,"查询商品信息错误：" + goods_info.getString("info"),MainActivity.this,getWindow());
-                                            return;
-                                        }
-                                    }
-                                }
-                            }
-                        });
-                        hangBillDialog.show();
-                    }else{
-                        MyDialog.ToastMessage(mSaleGoodsRecyclerView,"无挂单信息！",MainActivity.this,null);
-                    }
-                }
 
-            }
-        });
 
         findViewById(R.id.q_deal_linerLayout).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -241,9 +185,7 @@ public class MainActivity extends AppCompatActivity {
                 MyDialog.displayMessage(null,"交班",v.getContext());
             }
         });
-        findViewById(R.id.other_linearLayout).setOnClickListener(v -> {
-            new MoreFunDialog(MainActivity.this).show();
-        });
+        findViewById(R.id.other_linearLayout).setOnClickListener(v -> new MoreFunDialog(MainActivity.this).show());//更多功能
 
         //初始化数据管理对象
         mSyncManagement = new SyncManagement(mHandler,mUrl,mAppId,mAppScret,mStoreInfo.getString("stores_id"),mCashierInfo.getString("pos_num"),mCashierInfo.getString("cas_id"));
@@ -401,7 +343,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initGoodsCategoryAdapter(){
         RecyclerView goods_type_view = findViewById(R.id.goods_type_list);
-        mGoodsCategoryViewAdapter = new GoodsCategoryViewAdapter(this, mGoodsInfoViewAdapter,findViewById(R.id.goods_sec_l_type_list));
+        mGoodsCategoryViewAdapter = new GoodsCategoryViewAdapter(this,findViewById(R.id.goods_sec_l_type_list));
         goods_type_view.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false));
         mGoodsCategoryViewAdapter.setDatas(0);
         goods_type_view.setAdapter(mGoodsCategoryViewAdapter);
@@ -540,11 +482,65 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void initTmpOrder(){
+        final Button tmp_order = findViewById(R.id.tmp_order);
+        tmp_order.setOnClickListener(v -> {
+            final HangBillDialog hangBillDialog = new HangBillDialog(MainActivity.this);
+            JSONArray datas = mSaleGoodsViewAdapter.getDatas();
+            if (Utils.JsonIsNotEmpty(datas)){
+                MyDialog.displayAskMessage(null, "是否挂单？", MainActivity.this, new MyDialog.onYesOnclickListener() {
+                    @Override
+                    public void onYesClick(MyDialog myDialog) {
+                        StringBuilder err = new StringBuilder();
+                        if (hangBillDialog.save(datas,mVipInfo,err)){
+                            resetOrderInfo();
+                            MyDialog.ToastMessage(mSaleGoodsRecyclerView,"挂单成功！",MainActivity.this,null);
+                            myDialog.dismiss();
+                        }else{
+                            MyDialog.ToastMessage(mSaleGoodsRecyclerView,"保存挂单错误：" + err,MainActivity.this,null);
+                        }
+                    }
+                }, Dialog::dismiss);
+            }else{
+                if (hangBillDialog.getHangCounts() > 1){
+                    hangBillDialog.setGetBillDetailListener(new HangBillDialog.OnGetBillListener() {
+                        @Override
+                        public void onGet(JSONArray array, final JSONObject vip) {
+                            if (null != vip)showVipInfo(vip);
+                            JSONObject barcode_id_obj,goods_info;
+                            int id = -1;
+                            for (int i = 0,length = array.size();i < length;i ++){
+                                barcode_id_obj = array.getJSONObject(i);
+                                if (barcode_id_obj != null){
+                                    goods_info = new JSONObject();
+                                    final String isBarcodeWeighingGoods = barcode_id_obj.getString(GoodsInfoViewAdapter.W_G_MARK);
+                                    id = mGoodsInfoViewAdapter.getGoodsId(barcode_id_obj);
+                                    if (mGoodsInfoViewAdapter.getSingleGoods(goods_info,isBarcodeWeighingGoods,id)){
+                                        goods_info.put("xnum",barcode_id_obj.getDoubleValue("xnum"));//挂单取出重量
+                                        mSaleGoodsViewAdapter.addSaleGoods(goods_info,mVipInfo);
+                                        hangBillDialog.dismiss();
+                                    }else{
+                                        MyDialog.ToastMessage(mSaleGoodsRecyclerView,"查询商品信息错误：" + goods_info.getString("info"),MainActivity.this,getWindow());
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    hangBillDialog.show();
+                }else{
+                    MyDialog.ToastMessage(mSaleGoodsRecyclerView,"无挂单信息！",MainActivity.this,null);
+                }
+            }
+
+        });
+    }
+
     private void showPayDialog(){
-        final JSONArray datas = mSaleGoodsViewAdapter.getDatas();
+        final JSONArray datas = getSaleData();
         if (datas.size() != 0){
             final PayDialog dialog = new PayDialog(this);
-            if (dialog.initPayContent(datas)){
+            if (dialog.initPayContent()){
                 dialog.setPayFinishListener(new PayDialog.onPayListener() {
                     @Override
                     public void onStart(PayDialog myDialog) {
@@ -657,22 +653,27 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public JSONArray mol(double mol_amt,final String zk_cashier_id,int type){
+    public void allDiscount(double v,final String zk_cashier_id){
         setDisCashierId(zk_cashier_id);
-       return mSaleGoodsViewAdapter.mol(mol_amt,type);
+        mSaleGoodsViewAdapter.allDiscount(v);
     }
-    public JSONArray discount(double discount,final String zk_cashier_id,int type){
+
+    public void deleteMolDiscountRecord(){
+        mSaleGoodsViewAdapter.deleteMolDiscountRecord();
+    }
+    public void deleteAlldiscountRecord(){
+        mSaleGoodsViewAdapter.deleteAlldiscountRecord();
+    }
+    public String discountRecordsToString(){
+        return mSaleGoodsViewAdapter.discountRecordsToString();
+    }
+    public void autoMol(double mol_amt,final String zk_cashier_id){
         setDisCashierId(zk_cashier_id);
-        return mSaleGoodsViewAdapter.discount(discount,type);
+        mSaleGoodsViewAdapter.autoMol(mol_amt);
     }
-    public JSONArray deleteMolDiscountRecord(){
-        return mSaleGoodsViewAdapter.deleteMolDiscountRecord();
-    }
-    public JSONArray deleteAlldiscountRecord(){
-        return mSaleGoodsViewAdapter.deleteAlldiscountRecord();
-    }
-    public JSONArray getDiscountRecord(){
-        return mSaleGoodsViewAdapter.getDiscountRecords();
+    public void manualMol(double mol_amt,final String zk_cashier_id){
+        setDisCashierId(zk_cashier_id);
+        mSaleGoodsViewAdapter.manualMol(mol_amt);
     }
     public void sync(boolean b){
         if (mSyncManagement != null){
@@ -680,7 +681,17 @@ public class MainActivity extends AppCompatActivity {
             mSyncManagement.start_sync(b);
         }
     }
-    public JSONArray showVipInfo(@NonNull JSONObject vip){
+    public JSONArray getSaleData(){
+        return mSaleGoodsViewAdapter.getDatas();
+    }
+    public JSONArray getDiscountRecords(){
+        return mSaleGoodsViewAdapter.getDiscountRecords();
+    }
+    public boolean splitCombinationalGoods(final JSONArray combination_goods,int gp_id,double gp_price,double gp_num,StringBuilder err){
+        return mSaleGoodsViewAdapter.splitCombinationalGoods(combination_goods,gp_id,gp_price,gp_num,err);
+    }
+
+    public void showVipInfo(@NonNull JSONObject vip){
         mVipInfo = vip;
 
         registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray__subtransparent)));
@@ -690,7 +701,7 @@ public class MainActivity extends AppCompatActivity {
         ((TextView)vip_info_linearLayout.findViewById(R.id.vip_name)).setText(mVipInfo.getString("name"));
         ((TextView)vip_info_linearLayout.findViewById(R.id.vip_phone_num)).setText(mVipInfo.getString("mobile"));
 
-        return  mSaleGoodsViewAdapter.updateGoodsInfoToVip(mVipInfo);
+        mSaleGoodsViewAdapter.updateGoodsInfoToVip(mVipInfo);
     }
     public double getSaleSumAmt(){
         return mSaleGoodsViewAdapter.getSaleSumAmt();
@@ -706,8 +717,8 @@ public class MainActivity extends AppCompatActivity {
     public String  getDisCashierId(){
         return mZkCashierId;
     }
-    public @NonNull SaleGoodsViewAdapter getSaleGoodsViewAdapter(){
-        return mSaleGoodsViewAdapter;
+    public GoodsInfoViewAdapter getGoodsInfoViewAdapter(){
+        return mGoodsInfoViewAdapter;
     }
 
     private static class Myhandler extends Handler {

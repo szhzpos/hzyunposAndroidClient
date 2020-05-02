@@ -133,19 +133,19 @@ public class ChangeNumOrPriceDialog extends Dialog {
         return  this;
     }
 
-    public double getContentToDouble(){
+    public double getContent(){
         Editable editable = new_price_text.getText();
-        double code = 0.0;
+        double value = 0.0;
         try {
             if (editable.length() == 0){
-                code = Double.valueOf(mInitVal);
+                value = Double.valueOf(mInitVal);
             }else{
-                code = Double.valueOf(editable.toString());
+                value = Double.valueOf(editable.toString());
             }
         }catch (NumberFormatException e){
             e.printStackTrace();
         }
-        return code;
+        return value;
     }
 
     public String getContentToStr(){

@@ -28,7 +28,6 @@ import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.PayDetailViewAdapter;
 import com.wyc.cloudapp.adapter.PayMethodItemDecoration;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
-import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -96,10 +95,10 @@ public class PayDialog extends Dialog {
         findViewById(R.id.mo_l).setOnClickListener(v -> {//手动抹零
             ChangeNumOrPriceDialog changeNumOrPriceDialog = new ChangeNumOrPriceDialog(getContext(),mainActivity.getString(R.string.mo_l_sz),String.format(Locale.CHINA,"%.2f",mActual_amt - ((int)mActual_amt)));
             changeNumOrPriceDialog.setYesOnclickListener(myDialog -> {
-                mMolAmt = myDialog.getContentToDouble();
+                mMolAmt = myDialog.getContent();
                 if (!Utils.equalDouble(mMolAmt,0.0)){
-                    clearContent();
-                    calculatePayContent(mainActivity.mol(mMolAmt,null, SaleGoodsViewAdapter.DISCOUNT_TYPE.M_MOL));
+                    mainActivity.manualMol(mMolAmt,null);
+                    calculatePayContent();
                     setDiscountDescription();
                     refreshContent();
                 }
@@ -109,19 +108,18 @@ public class PayDialog extends Dialog {
         findViewById(R.id.vip).setOnClickListener(view -> {
             VipInfoDialog vipInfoDialog = new VipInfoDialog(mainActivity);
             vipInfoDialog.setYesOnclickListener(dialog -> {
-                if (showVipInfo(dialog.getVip(),false)){
-                    refreshContent();
-                    dialog.dismiss();
-                }
+                deleteMolDiscountRecord();
+                showVipInfo(dialog.getVip(),false);
+                dialog.dismiss();
             }).show();
         });
         findViewById(R.id.all_discount).setOnClickListener(view -> {
             ChangeNumOrPriceDialog dialog = new ChangeNumOrPriceDialog(mainActivity,mainActivity.getString(R.string.discount_sz),String.format(Locale.CHINA,"%d",100));
             dialog.setYesOnclickListener(myDialog -> {
-                if (initPayContent(mainActivity.discount(myDialog.getContentToDouble(),"",6))){
-                    refreshContent();
-                    myDialog.dismiss();
-                }
+                deleteMolDiscountRecord();
+                mainActivity.allDiscount(myDialog.getContent(),"");
+                refreshPayContent();
+                myDialog.dismiss();
             }).show();
         });
         findViewById(R.id.remark).setOnClickListener(v -> {
@@ -300,7 +298,7 @@ public class PayDialog extends Dialog {
                                 }).setCancelListener(dialog -> {
                                     mPayMethodViewAdapter.showDefaultPayMethod(null);
                                     if (PayMethodViewAdapter.CASH_METHOD_ID.equals(mPayMethodViewAdapter.getDefaultPayMethodId())){
-                                        initPayContent(mainActivity.getSaleGoodsViewAdapter().getDatas());
+                                        initPayContent();
                                         refreshContent();
                                     }
                                     dialog.dismiss();
@@ -375,22 +373,22 @@ public class PayDialog extends Dialog {
         recyclerView.addItemDecoration(new DividerItemDecoration(mainActivity,DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(mPayDetailViewAdapter);
     }
-    private void antoMol(final JSONArray datas){//自动抹零
+    private void setMolAmt(){
+        double  sum = 0.0,original_amt = 0.0,disSumAmt = 0.0,disc = 0.0;
+        final JSONArray datas = mainActivity.getSaleData();
         final JSONObject object = new JSONObject();
-        double  sum = 0.0,old_amt = 0.0,disSumAmt = 0.0,disc = 0.0;
         if (SQLiteHelper.getLocalParameter("auto_mol",object)){
-            int v = 0;
             if (object.getIntValue("s") == 1){
                 for (int i = 0,length = datas.size();i < length; i ++){
                     JSONObject jsonObject = datas.getJSONObject(i);
                     if (null != jsonObject){
-                        old_amt += jsonObject.getDoubleValue("old_amt");
+                        original_amt += jsonObject.getDoubleValue("original_amt");
                         disSumAmt += jsonObject.getDoubleValue("discount_amt");
                     }
                 }
-                sum = old_amt - disSumAmt;
+                sum = original_amt - disSumAmt;
 
-                v = object.getIntValue("v");
+                int v = object.getIntValue("v");
                 switch (v){
                     case 1://四舍五入到元
                         mMolAmt =sum - Double.valueOf(String.format(Locale.CHINA,"%.0f",sum));
@@ -399,27 +397,33 @@ public class PayDialog extends Dialog {
                         mMolAmt =sum - Double.valueOf(String.format(Locale.CHINA,"%.1f",sum));
                         break;
                 }
-                if (!Utils.equalDouble(mMolAmt,0.0))
-                    mainActivity.mol(mMolAmt,null, SaleGoodsViewAdapter.DISCOUNT_TYPE.AUTO_MOL);
+                Logger.d("mMolAmt:%f,sum：%f",mMolAmt,sum);
             }
         }else{
             MyDialog.ToastMessage("自动抹零错误：" + object.getString("info"),mainActivity,null);
         }
+    }
+    private void antoMol(){//自动抹零
+        setMolAmt();
+        if (!Utils.equalDouble(mMolAmt,0.0))
+            mainActivity.autoMol(mMolAmt,null);
      }
     private void deleteMolDiscountRecord(){
         if (!Utils.equalDouble(mMolAmt,0.0)){
             mMolAmt = 0.0;
-            calculatePayContent(mainActivity.deleteMolDiscountRecord());
+            mainActivity.deleteMolDiscountRecord();
+            calculatePayContent();
             setDiscountDescription();
             refreshContent();
         }
     }
-    private void calculatePayContent(@NonNull final JSONArray datas){
+    private void calculatePayContent(){
         JSONObject jsonObject;
+        final JSONArray datas = mainActivity.getSaleData();
         clearContent();
         for (int i = 0,length = datas.size();i < length; i ++){
             jsonObject = datas.getJSONObject(i);
-            mOrder_amt += jsonObject.getDouble("old_amt");
+            mOrder_amt += jsonObject.getDouble("original_amt");
             mDiscount_amt += jsonObject.getDoubleValue("discount_amt");
         }
         mActual_amt = mOrder_amt - mDiscount_amt;
@@ -455,42 +459,7 @@ public class PayDialog extends Dialog {
     }
 
     private void setDiscountDescription(){
-        JSONArray discount_record = mainActivity.getDiscountRecord();
-        if (!discount_record.isEmpty()){
-            StringBuilder stringBuilder  = new StringBuilder();
-            for (int i = 0,size = discount_record.size();i < size;i++){
-                final JSONObject record = discount_record.getJSONObject(i);
-                if (stringBuilder.length() > 0)stringBuilder.append(",");
-                switch (record.getIntValue("discount_type")){
-                    case SaleGoodsViewAdapter.DISCOUNT_TYPE.MONEY_OFF:
-                        stringBuilder.append("满减：");
-                        break;
-                    case SaleGoodsViewAdapter.DISCOUNT_TYPE.PRESENT:
-                        stringBuilder.append("赠送：");
-                        break;
-                    case SaleGoodsViewAdapter.DISCOUNT_TYPE.M_DISCOUNT:
-                        stringBuilder.append("手动折扣：");
-                        break;
-                    case SaleGoodsViewAdapter.DISCOUNT_TYPE.PROMOTION:
-                        stringBuilder.append("促销：");
-                        break;
-                    case SaleGoodsViewAdapter.DISCOUNT_TYPE.V_DISCOUNT:
-                        stringBuilder.append("会员折扣：");
-                        break;
-                    case SaleGoodsViewAdapter.DISCOUNT_TYPE.A_DISCOUNT:
-                        stringBuilder.append("整单折扣：");
-                        break;
-                    case SaleGoodsViewAdapter.DISCOUNT_TYPE.AUTO_MOL:
-                        stringBuilder.append("自动抹零：");
-                        break;
-                    case SaleGoodsViewAdapter.DISCOUNT_TYPE.M_MOL:
-                        stringBuilder.append("手动抹零：");
-                        break;
-                }
-                stringBuilder.append(String.format(Locale.CHINA,"%.2f",record.getDoubleValue("discount_money")));
-                mDiscountDesContent = stringBuilder.toString();
-            }
-        }
+        mDiscountDesContent = mainActivity.discountRecordsToString();
     }
 
     private void showDiscountDescription(){
@@ -531,20 +500,18 @@ public class PayDialog extends Dialog {
     }
 
 
-    private JSONObject generateOrderInfo() throws JSONException {
+    private boolean generateOrderInfo(final JSONObject info){
         double sale_sum_amt = 0.0,dis_sum_amt = 0.0,total = 0.0,zl_amt = 0.0;
 
         long time = System.currentTimeMillis() / 1000;
 
-        JSONObject order_info = new JSONObject(),data = new JSONObject(),tmp_json;
+        JSONObject order_info = new JSONObject(),tmp_json;
         JSONArray orders = new JSONArray(),combination_goods = new JSONArray(),sales_data,pays_data,discount_records;
-        StringBuilder err = new StringBuilder();
 
-        String order_code = mainActivity.getOrderCode(),stores_id = mainActivity.getStoreInfo().getString("stores_id"),zk_cashier_id = mainActivity.getDisCashierId();
-
+        final String order_code = mainActivity.getOrderCode(),stores_id = mainActivity.getStoreInfo().getString("stores_id"),zk_cashier_id = mainActivity.getDisCashierId();
+        final StringBuilder err = new StringBuilder();
         //处理销售明细
-        SaleGoodsViewAdapter saleGoodsViewAdapter = mainActivity.getSaleGoodsViewAdapter();
-        sales_data = Utils.JsondeepCopy(saleGoodsViewAdapter.getDatas());//不能直接获取引用，需要重新复制一份否则会修改原始数据；如果业务不能正常完成，之前数据会遭到破坏
+        sales_data = Utils.JsondeepCopy(mainActivity.getSaleData());//不能直接获取引用，需要重新复制一份否则会修改原始数据；如果业务不能正常完成，之前数据会遭到破坏
         for(int i = 0;i < sales_data.size();i ++){
             tmp_json = sales_data.getJSONObject(i);
             int gp_id = tmp_json.getIntValue("gp_id");
@@ -554,8 +521,9 @@ public class PayDialog extends Dialog {
 
             if (-1 != gp_id){
                 tmp_json = (JSONObject) sales_data.remove(i--);
-                if (!saleGoodsViewAdapter.splitCombinationalGoods(combination_goods,gp_id,tmp_json.getDouble("price"),tmp_json.getDouble("xnum"),err)){
-                    throw new JSONException("拆分组合商品错误，" + err);
+                if (!mainActivity.splitCombinationalGoods(combination_goods,gp_id,tmp_json.getDouble("price"),tmp_json.getDouble("xnum"),err)){
+                    info.put("info",err.toString());
+                    return false;
                 }
                 Logger.d_json(combination_goods.toString());
             }else{
@@ -568,7 +536,7 @@ public class PayDialog extends Dialog {
                 tmp_json.remove("goods_id");
                 tmp_json.remove("discount");
                 tmp_json.remove("discount_amt");
-                tmp_json.remove("old_amt");
+                tmp_json.remove("original_amt");
                 tmp_json.remove("goods_title");
                 tmp_json.remove("unit_name");
                 tmp_json.remove("yh_mode");
@@ -587,7 +555,7 @@ public class PayDialog extends Dialog {
         }
 
         //处理优惠记录
-        discount_records = Utils.JsondeepCopy(saleGoodsViewAdapter.getDiscountRecords());
+        discount_records = Utils.JsondeepCopy(mainActivity.getDiscountRecords());
         for (int i = 0,size = discount_records.size();i < size;i++){
             tmp_json = discount_records.getJSONObject(i);
             tmp_json.put("order_code",order_code);
@@ -655,16 +623,16 @@ public class PayDialog extends Dialog {
         order_info.put("zk_cashier_id",zk_cashier_id);//使用折扣的收银员ID,默认当前收银员
         orders.add(order_info);
 
-        data.put("retail_order",orders);
-        data.put("retail_order_goods",sales_data);
-        data.put("retail_order_pays",pays_data);
-        data.put("discount_record",discount_records);
+        info.put("retail_order",orders);
+        info.put("retail_order_goods",sales_data);
+        info.put("retail_order_pays",pays_data);
+        info.put("discount_record",discount_records);
 
-        return data;
+        return true;
     }
     public boolean saveOrderInfo(final StringBuilder err){
         boolean code;
-        JSONObject count_json = new JSONObject(),data;
+        final JSONObject counts = new JSONObject(),data = new JSONObject();
         List<String>  tables = Arrays.asList("retail_order","retail_order_goods","retail_order_pays","discount_record"),
                 retail_order_cols = Arrays.asList("stores_id","order_code","discount","discount_price","total","cashier_id","addtime","pos_code","order_status","pay_status","pay_time","upload_status",
                         "upload_time","transfer_status","transfer_time","is_rk","mobile","name","card_code","sc_ids","sc_tc_money","member_id","discount_money","zl_money","ss_money","remark","zk_cashier_id"),
@@ -674,27 +642,22 @@ public class PayDialog extends Dialog {
                         "discount_money","xnote","card_no","return_code","v_num","print_info"),
                 discount_record_cols = Arrays.asList("order_code","discount_type","type","stores_id","relevant_id","discount_money","details");
 
-        try {
-            data = generateOrderInfo();
 
-            if ((code = SQLiteHelper.execSql(count_json,"select count(order_code) counts from retail_order where order_code = '" + mainActivity.getOrderCode() +"' and stores_id = '" + mainActivity.getStoreInfo().getString("stores_id") +"'"))){
-                if (0 == count_json.getIntValue("counts")){
-                    if (!(code = SQLiteHelper.execSQLByBatchFromJson(data,tables,Arrays.asList(retail_order_cols,retail_order_goods_cols,retail_order_pays_cols,discount_record_cols),err,0))){
-                        err.insert(0,"保存订单信息错误：");
-                    }
-                }else{
-                    code = false;
-                    err.append("本地已存在此订单信息，请重新下单！");
-                }
-            }else{
-                err.append("查询订单信息错误：").append(count_json.getString("info"));
-            }
-        } catch (JSONException e) {
-            code = false;
-            err.append("保存订单信息错误：").append(e.getMessage());
-            e.printStackTrace();
-        }
-
+           if (code = generateOrderInfo(data)){
+               if ((code = SQLiteHelper.execSql(counts,"select count(order_code) counts from retail_order where order_code = '" + mainActivity.getOrderCode() +"' and stores_id = '" + mainActivity.getStoreInfo().getString("stores_id") +"'"))){
+                   if (code = (0 == counts.getIntValue("counts"))){
+                       if (!(code = SQLiteHelper.execSQLByBatchFromJson(data,tables,Arrays.asList(retail_order_cols,retail_order_goods_cols,retail_order_pays_cols,discount_record_cols),err,0))){
+                           err.insert(0,"保存订单信息错误：");
+                       }
+                   }else{
+                       err.append("本地已存在此订单信息，请重新下单！");
+                   }
+               }else{
+                   err.append("查询订单信息错误：").append(counts.getString("info"));
+               }
+           }else {
+               err.append("生成订单错误：").append(data.getString("info"));
+           }
         return code;
     }
     public void requestPay(final String order_code, final String url, final String appId, final String appScret, final String stores_id, final String pos_num){
@@ -1097,18 +1060,24 @@ public class PayDialog extends Dialog {
 
         return info.toString();
     }
-
-    public boolean initPayContent(JSONArray datas){
-        if (null != datas && !datas.isEmpty()){
-            antoMol(datas);
-            calculatePayContent(datas);
-            setDiscountDescription();
+    private void refreshPayContent(){
+        if (initPayContent()){
+            refreshContent();
             if (null != mPayDetailViewAdapter)mPayDetailViewAdapter.notifyDataSetChanged();
+        }
+    }
+
+    public boolean initPayContent(){
+        final JSONArray datas = mainActivity.getSaleData();
+        if (!datas.isEmpty()){
+            antoMol();
+            calculatePayContent();
+            setDiscountDescription();
             return true;
         }
         return false;
     }
-    public boolean showVipInfo(@NonNull JSONObject vip,boolean show){//show为true则只显示不再刷新已销售商品
+    public void showVipInfo(@NonNull JSONObject vip,boolean show){//show为true则只显示不再刷新已销售商品
         mVip = vip;
         LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
         if (vip_info_linearLayout != null){
@@ -1116,7 +1085,10 @@ public class PayDialog extends Dialog {
             ((TextView)vip_info_linearLayout.findViewById(R.id.vip_name)).setText(mVip.getString("name"));
             ((TextView)vip_info_linearLayout.findViewById(R.id.vip_phone_num)).setText(mVip.getString("mobile"));
         }
-        return show ? show : initPayContent(mainActivity.showVipInfo(vip));
+        if (!show){
+            mainActivity.showVipInfo(vip);
+            refreshPayContent();
+        }
     }
 
     public String get_print_content(JSONArray sales){

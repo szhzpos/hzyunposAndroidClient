@@ -12,24 +12,23 @@ import android.widget.TextView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 
 public class GoodsCategoryViewAdapter extends RecyclerView.Adapter<GoodsCategoryViewAdapter.MyViewHolder> {
-
-    private Context mContext;
+    private MainActivity mContext;
     private JSONArray mDatas;
     private View mCurrentItemView;//当前选择的类别item
     private GoodsInfoViewAdapter mGoodsInfoAdapter;
     private GoodsCategoryViewAdapter mChildGoodsCategoryAdpter;
     private RecyclerView mChildGoodsCategoryView;
     private boolean mChildShow = false;
-    public GoodsCategoryViewAdapter(Context context, GoodsInfoViewAdapter adapter, RecyclerView v){
+    public GoodsCategoryViewAdapter(MainActivity context, RecyclerView v){
         this.mContext = context;
-        this.mGoodsInfoAdapter = adapter;
+        this.mGoodsInfoAdapter = context.getGoodsInfoViewAdapter();
         mChildGoodsCategoryView = v;
-
         laodChildShow();
     }
     static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -133,7 +132,7 @@ public class GoodsCategoryViewAdapter extends RecyclerView.Adapter<GoodsCategory
                 TextView tv = mCurrentItemView.findViewById(R.id.category_id);
                 try{
                     if (mChildGoodsCategoryAdpter == null){
-                        mChildGoodsCategoryAdpter = new GoodsCategoryViewAdapter(mContext,mGoodsInfoAdapter,null);
+                        mChildGoodsCategoryAdpter = new GoodsCategoryViewAdapter(mContext,null);
                         mChildGoodsCategoryView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
                         mChildGoodsCategoryView.setAdapter(mChildGoodsCategoryAdpter);
                     }
