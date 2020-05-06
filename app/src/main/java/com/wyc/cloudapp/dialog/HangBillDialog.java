@@ -78,19 +78,7 @@ public class HangBillDialog extends Dialog {
         });
 
         //初始化窗口尺寸
-        WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
-        if (m != null){
-            Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
-            Point point = new Point();
-            d.getSize(point);
-            Window dialogWindow = this.getWindow();
-            if (dialogWindow != null){
-                WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-                dialogWindow.setGravity(Gravity.CENTER);
-                lp.height = (int)(0.8 * point.y); // 宽度
-                dialogWindow.setAttributes(lp);
-            }
-        }
+        initWindowSize();
     }
 
     @Override
@@ -104,6 +92,23 @@ public class HangBillDialog extends Dialog {
         }
     }
 
+    private void initWindowSize(){
+        //初始化窗口尺寸
+        WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
+        if (m != null){
+            Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+            Point point = new Point();
+            d.getSize(point);
+            Window dialogWindow = this.getWindow();
+            if (dialogWindow != null){
+                WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+                dialogWindow.setGravity(Gravity.CENTER);
+                lp.height = (int)(0.8 * point.y);
+                dialogWindow.setAttributes(lp);
+            }
+        }
+    }
+
     private void initHangBillList(){
         //表头
         ListView header = findViewById(R.id.header);
@@ -112,16 +117,6 @@ public class HangBillDialog extends Dialog {
         //表中区
         mHangBillList = findViewById(R.id.hangbill_list);
         mHbCursorAdapter = new SimpleCursorAdapter(mContext,R.layout.hangbill_content_layout,null,new String[]{"_id","hang_id","h_amt","oper_date"},new int[]{R.id.row_id,R.id.hang_id,R.id.h_amt,R.id.h_time},1);
-        mHbCursorAdapter.registerDataSetObserver(new DataSetObserver() {
-            @Override
-            public void onChanged() {
-                super.onChanged();
-            }
-            @Override
-            public void onInvalidated() {
-                super.onInvalidated();
-            }
-        });
         mHbCursorAdapter.setViewBinder(((view, cursor, columnIndex) -> {
             if (view.getId() == R.id.hang_id ){
                 TextView hang_id_v = (TextView)view;

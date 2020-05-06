@@ -396,7 +396,7 @@ public final class SyncHandler extends Handler {
     }
     private void down_laod_goods_img_and_upload_barcode_id(@NonNull final JSONArray datas,final String sys_name) throws JSONException {
         String img_url_info,img_file_name;
-        JSONArray goods_ids = new JSONArray();
+        final JSONArray goods_ids = new JSONArray();
         JSONObject object;
         for (int k = 0,length = datas.size();k < length;k++){
             object = datas.getJSONObject(k);
@@ -418,10 +418,10 @@ public final class SyncHandler extends Handler {
         }
     }
     private boolean deal_good_group(@NonNull JSONArray data,StringBuilder err) throws JSONException {
-        JSONArray goods_list = new JSONArray();
-        JSONObject tmp_goods = new JSONObject();
+        final JSONArray goods_list = new JSONArray();
+        final JSONObject tmp_goods = new JSONObject();
         for (int k = 0, size = data.size(); k < size; k++) {
-            JSONArray tmp = (JSONArray) data.getJSONObject(k).remove("goods_list");
+            final JSONArray tmp = (JSONArray) data.getJSONObject(k).remove("goods_list");
             if (tmp != null)
                 for (int j = 0, length = tmp.size(); j < length; j++) {
                     goods_list.add(tmp.get(j));
@@ -436,7 +436,7 @@ public final class SyncHandler extends Handler {
     }
     private boolean upload_barcode_id(JSONArray datas) throws JSONException {
         JSONObject object;
-        StringBuilder err = new StringBuilder();
+        final StringBuilder err = new StringBuilder();
         String url;
         if(datas == null){
             datas = SQLiteHelper.getListToValue("select barcode_id from barcode_info",err);

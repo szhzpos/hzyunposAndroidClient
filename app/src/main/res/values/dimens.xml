@@ -85,4 +85,6 @@
     <dimen name="hang_bill_detail_g_title_w">@dimen/width_208</dimen>
     <dimen name="hang_bill_dialog_w">@dimen/width_888</dimen>
     <dimen name="b_scalse_dialog_w">@dimen/width_888</dimen>
+    <dimen name="table_header_h">@dimen/height_50</dimen>
+    <dimen name="table_footer_h">@dimen/height_50</dimen>
 </resources>

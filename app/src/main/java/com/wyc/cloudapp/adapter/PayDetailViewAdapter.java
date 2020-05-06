@@ -11,7 +11,6 @@ import android.widget.TextView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.callback.ClickListener;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
@@ -47,15 +46,8 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     static class HeaderHolder extends RecyclerView.ViewHolder {
-        private TextView row_id,pay_method_id,pay_method_name,pay_detail_amt,pay_detail_zl,pay_detail_v_num;
         HeaderHolder(View itemView) {
             super(itemView);
-            row_id = itemView.findViewById(R.id.row_id);
-            pay_method_id =  itemView.findViewById(R.id.pay_method_id);
-            pay_method_name =  itemView.findViewById(R.id.pay_method_name);
-            pay_detail_amt =  itemView.findViewById(R.id.pay_detail_amt);
-            pay_detail_zl =  itemView.findViewById(R.id.pay_detail_zl);
-            pay_detail_v_num =  itemView.findViewById(R.id.pay_detail_v_num);
         }
     }
 
@@ -75,16 +67,7 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder myViewHolder, int i) {
-        if (myViewHolder instanceof HeaderHolder){
-            HeaderHolder headerHolder = (HeaderHolder)myViewHolder;
-            headerHolder.row_id.setTextColor(mContext.getResources().getColor(R.color.white,null));
-            headerHolder.pay_method_id.setTextColor(mContext.getResources().getColor(R.color.white,null));
-            headerHolder.pay_method_name.setTextColor(mContext.getResources().getColor(R.color.white,null));
-            headerHolder.pay_detail_amt.setTextColor(mContext.getResources().getColor(R.color.white,null));
-            headerHolder.pay_detail_zl.setTextColor(mContext.getResources().getColor(R.color.white,null));
-            headerHolder.pay_detail_v_num.setTextColor(mContext.getResources().getColor(R.color.white,null));
-            ((View)headerHolder.pay_detail_v_num.getParent()).setBackgroundColor(mContext.getResources().getColor(R.color.pay_detail_header,null));
-        }else{
+        if (myViewHolder instanceof ContentHolder){
             JSONObject pay_detail = mDatas.getJSONObject(i - 1);
             if (pay_detail != null){
                 ContentHolder contentHolder = (ContentHolder)myViewHolder;

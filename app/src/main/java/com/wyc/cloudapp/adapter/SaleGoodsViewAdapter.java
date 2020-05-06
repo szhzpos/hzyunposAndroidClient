@@ -425,6 +425,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 discount_type = 4;
                 discount_details = new JSONArray();
 
+                old_sale_amt = json.getDoubleValue("sale_amt");
                 xnum = json.getDoubleValue("xnum");
                 new_price = value;
 /*                if(d_discount){

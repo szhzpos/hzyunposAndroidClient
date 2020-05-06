@@ -190,4 +190,14 @@
     <string name="g_price_sz">价格：</string>
     <string name="name_sz">名称：</string>
     <string name="weigh_sz">重量：</string>
+    <string name="query_time_sz">查询时间</string>
+    <string name="to_sz">至</string>
+    <string name="query_sz">查询</string>
+    <string name="pay_s_sz">支付状态</string>
+    <string name="s_e_status_sz">交班状态</string>
+    <string name="upload_s_sz">上传状态</string>
+    <string name="order_s_sz">订单状态</string>
+    <string name="order_not_colon_sz">单号</string>
+    <string name="reality_amt_sz">实收金额</string>
+    <string name="cashier_not_colon_sz">收银员</string>
 </resources>

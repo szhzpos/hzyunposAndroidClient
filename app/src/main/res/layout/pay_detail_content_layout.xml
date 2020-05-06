@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/pay_detail_height"
+    android:background="@color/pay_detail_header"
     android:orientation="horizontal">
 
     <TextView
@@ -12,7 +13,7 @@
         android:gravity="center"
         android:text="@string/pay_detail_row_id_sz"
         android:textAllCaps="false"
-        android:textColor="@color/text_color"
+        android:textColor="@color/white"
         android:textSize="@dimen/font_size_14" />
 
     <TextView
@@ -20,6 +21,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:textColor="@color/white"
         android:visibility="gone" />
 
     <TextView
@@ -29,7 +31,7 @@
         android:layout_weight="1"
         android:gravity="center"
         android:text="@string/pay_detail_name_sz"
-        android:textColor="@color/text_color"
+        android:textColor="@color/white"
         android:textSize="@dimen/font_size_14" />
 
     <TextView
@@ -39,7 +41,7 @@
         android:layout_weight="1"
         android:gravity="center"
         android:text="@string/pay_detail_amt_sz"
-        android:textColor="@color/text_color"
+        android:textColor="@color/white"
         android:textSize="@dimen/font_size_14" />
 
     <TextView
@@ -49,7 +51,7 @@
         android:layout_weight="1"
         android:gravity="center"
         android:text="@string/pay_detail_zl_sz"
-        android:textColor="@color/text_color"
+        android:textColor="@color/white"
         android:textSize="@dimen/font_size_14" />
 
     <TextView
@@ -59,6 +61,6 @@
         android:layout_weight="1"
         android:gravity="center"
         android:text="@string/pay_detail_v_num_sz"
-        android:textColor="@color/text_color"
+        android:textColor="@color/white"
         android:textSize="@dimen/font_size_14" />
 </LinearLayout>

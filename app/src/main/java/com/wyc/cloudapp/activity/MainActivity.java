@@ -44,6 +44,7 @@ import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.HangBillDialog;
 import com.wyc.cloudapp.dialog.MoreFunDialog;
+import com.wyc.cloudapp.dialog.QuerySaleDetailsDialog;
 import com.wyc.cloudapp.dialog.pay.PayDialog;
 import com.wyc.cloudapp.dialog.SecondDisplay;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
@@ -121,6 +122,9 @@ public class MainActivity extends AppCompatActivity {
         //挂单
         initTmpOrder();
 
+        //打印状态
+        initPrintStatus();
+
         //初始化功能按钮事件
         mCloseBtn.setOnClickListener((View V)->{
             MyDialog.displayAskMessage(mDialog,"是否退出收银？",MainActivity.this,(MyDialog myDialog)->{
@@ -158,27 +162,11 @@ public class MainActivity extends AppCompatActivity {
                 dialog.dismiss();
             }).show();
         });//会员
-        findViewById(R.id.printer_status).setOnClickListener(v -> {
-            ImageView imageView = (ImageView)v;
-            Bitmap printer = BitmapFactory.decodeResource(getResources(),R.drawable.printer);
-            if (mPrintStatus.get()){
-                mPrintStatus.set(false);
-                imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(printer,15,15));
-                MyDialog.ToastMessage(imageView,"打印功能已关闭！",this,getWindow());
-            }else{
-                mPrintStatus.set(true);
-                imageView.setImageBitmap(printer);
-                MyDialog.ToastMessage(imageView,"打印功能已开启！",this,getWindow());
-            }
-        });//打印状态
+        findViewById(R.id.q_deal_linerLayout).setOnClickListener(v -> {
+            QuerySaleDetailsDialog querySaleDetailsDialog = new QuerySaleDetailsDialog(MainActivity.this);
+            querySaleDetailsDialog.show();;
+        });//查交易
 
-
-        findViewById(R.id.q_deal_linerLayout).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MyDialog.displayMessage(null,"查交易",v.getContext());
-            }
-        });
         findViewById(R.id.shift_exchange_linearLayout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -533,6 +521,22 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
+        });
+    }
+
+    private void initPrintStatus(){//打印状态
+        findViewById(R.id.printer_status).setOnClickListener(v -> {
+            ImageView imageView = (ImageView)v;
+            Bitmap printer = BitmapFactory.decodeResource(getResources(),R.drawable.printer);
+            if (mPrintStatus.get()){
+                mPrintStatus.set(false);
+                imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(printer,15,15));
+                MyDialog.ToastMessage(imageView,"打印功能已关闭！",this,getWindow());
+            }else{
+                mPrintStatus.set(true);
+                imageView.setImageBitmap(printer);
+                MyDialog.ToastMessage(imageView,"打印功能已开启！",this,getWindow());
+            }
         });
     }
 
