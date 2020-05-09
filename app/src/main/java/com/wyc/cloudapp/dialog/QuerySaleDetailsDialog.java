@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
-import android.content.DialogInterface;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
@@ -16,7 +15,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -44,7 +42,7 @@ import static android.content.Context.WINDOW_SERVICE;
 public class QuerySaleDetailsDialog extends Dialog {
     private MainActivity mContext;
     private int mCurrentStatusIndex = 0;
-    private String[] mCashierItems;
+    private String[] mCashierNames,mCashierIDs;
     private final String[] mPayStatusItems = new String[]{"所有","未支付","已支付","支付中"},mS_ex_statusItems = new String[]{"所有","未交班","已交班"},
             mUploadStatusItems = new String[]{"所有","未上传","已上传"},mOrderStatusItems = new String[]{"所有","未付款","已付款","已取消","已退货"};
     private EditText mStartDateEt,mStartTimeEt,mEndDateEt,mEndTimeEt,mPayStatusEt,mCashierEt,mS_ex_statusEt,mUploadStatusEt,mOrderStatusEt;
@@ -152,7 +150,18 @@ public class QuerySaleDetailsDialog extends Dialog {
             final StringBuilder err = new StringBuilder();
             final String sz_cas_info = SQLiteHelper.getString("SELECT cas_id,cas_name FROM cashier_info where cas_status = 1  union select -1 cas_id,'所有' cas_name ",err);
             if (sz_cas_info != null){
-                mCashierItems = sz_cas_info.split("\r\n");
+                final String[] cas_items_tmp = sz_cas_info.split("\r\n");
+                int size = cas_items_tmp.length;
+                mCashierNames = new String[size];
+                mCashierIDs = new String[size];
+                for(int i = 0;i < size;i++){
+                    final String sz_item = cas_items_tmp[i];
+                    final String[] cas_infos = sz_item.split("\t");
+                    if (cas_infos.length >= 2){
+                        mCashierIDs[i] = cas_infos[0];
+                        mCashierNames[i] = cas_infos[1];
+                    }
+                }
                 cashier_et.setOnClickListener(etClickListener);
                 setCashier(cashier_et);
             }else{
@@ -161,18 +170,15 @@ public class QuerySaleDetailsDialog extends Dialog {
         }
     }
     private void setCashier(final @NonNull EditText cashier_et){
-        final String info = mCashierItems[mCurrentStatusIndex];
-        final String[] cas_infos = info.split("\t");
-        cashier_et.setTag(cas_infos[0]);
-        cashier_et.setText(cas_infos[1]);
+        cashier_et.setTag(mCashierIDs[mCurrentStatusIndex]);
+        cashier_et.setText(mCashierNames[mCurrentStatusIndex]);
     }
     private int getCashierIdIndex(final  String cas_id){
-        int index = 0;
-        for (String info:mCashierItems){
+        int index = -1;
+        for (String info: mCashierIDs){
             index++;
-            final String[] cas_infos = info.split("\t");
-            if (null != cas_id && cas_infos.length == 2){
-                if (cas_id.equals(cas_infos[0])){
+            if (null != cas_id){
+                if (cas_id.equals(info)){
                     break;
                 }
             }
@@ -219,8 +225,8 @@ public class QuerySaleDetailsDialog extends Dialog {
                     title = mContext.getString(R.string.pay_s_sz);
                     break;
                 case R.id.cashier_et:
-                    items = mCashierItems;
-                    title = mContext.getString(R.string.cashier_sz);
+                    items = mCashierNames;
+                    title = mContext.getString(R.string.cashier_not_colon_sz);
                     break;
                 case R.id.s_ex_status_et:
                     items = mS_ex_statusItems;
@@ -237,13 +243,14 @@ public class QuerySaleDetailsDialog extends Dialog {
             }
             final String [] currentStatusItems = items;
 
-            if (currentStatusItems == mCashierItems){
+            if (currentStatusItems == mCashierNames){
                 if (et_tag instanceof String)
                     index = getCashierIdIndex((String) et.getTag());
             }else {
                 if (et_tag instanceof Integer)
                     index = (int)et.getTag();
             }
+            Logger.d("index:%d",index);
             chooseDialog((EditText) et,currentStatusItems,index,title);
         }
     }
@@ -252,7 +259,7 @@ public class QuerySaleDetailsDialog extends Dialog {
         builder.setSingleChoiceItems(currentStatusItems, index, (dialog, which) -> mCurrentStatusIndex = which);
         builder.setPositiveButton(mContext.getString(R.string.OK), (dialog, which) -> {
             if (mCurrentStatusIndex < currentStatusItems.length && mCurrentStatusIndex >= 0){
-                if (currentStatusItems == mCashierItems){
+                if (currentStatusItems == mCashierNames){
                     setCashier(et);
                 }else {
                     et.setTag(mCurrentStatusIndex);

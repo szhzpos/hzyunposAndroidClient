@@ -202,4 +202,5 @@
     <string name="cashier_not_colon_sz">收银员</string>
     <string name="start_time_sz">00:00:00</string>
     <string name="end_time_sz">23:59:59</string>
+    <string name="category_hint_sz">请选择商品类别</string>
 </resources>

@@ -50,6 +50,7 @@ import androidx.annotation.NonNull;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.logger.Logger;
 
 /**
  * Created by Administrator on 2018-03-06.
@@ -343,7 +344,7 @@ public final class Utils {
     public static void moveJsonArray(final JSONArray from,final JSONArray to){
         if (from != null && to != null){
             Object o;
-            while (null != (o = from.remove(0))){
+            while (!from.isEmpty() && null != (o = from.remove(0))){
                 to.add(o);
             }
         }

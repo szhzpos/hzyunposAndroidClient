@@ -8,6 +8,7 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -38,48 +39,69 @@ public class BarCodeScaleDownDialog extends Dialog {
         setCancelable(false);
         setCanceledOnTouchOutside(false);
 
-        //
-        initView();
-
-        //初始化按钮事件
-        findViewById(R.id._close).setOnClickListener(v -> {
-            if (isDownloadFinished()){
-                BarCodeScaleDownDialog.this.dismiss();
-            }
-        });
-        findViewById(R.id.add_scale).setOnClickListener(v -> {
-            AddBarCodeScaleDialog addBarCodeScaleDialog = new AddBarCodeScaleDialog(mContext);
-            addBarCodeScaleDialog.setGetContent(object -> {
-                mBarCodeScaleAdapter.addScale(object);
+        initRecyclerView();
+        initCloseDialog();
+        initAddScaleBtn();
+        initDelBtn();
+        initDownloadToScaleBtn();
+        initModifyBtn();
+        initWindowSize();
+    }
+    private void initCloseDialog(){
+        final Button close_btn = findViewById(R.id._close);
+        if (null != close_btn)
+            close_btn.setOnClickListener(v -> {
+                if (isDownloadFinished()){
+                    BarCodeScaleDownDialog.this.dismiss();
+                }
             });
-            addBarCodeScaleDialog.show();
-        });
-        findViewById(R.id.del_scale).setOnClickListener(v -> {
-            MyDialog.displayAskMessage(null, "是否删除条码秤信息？", mContext, myDialog -> {
+    }
+    private void initAddScaleBtn(){
+        final Button add_scale_btn = findViewById(R.id.add_scale);
+        if (null != add_scale_btn)
+            add_scale_btn.setOnClickListener(v -> {
+                AddBarCodeScaleDialog addBarCodeScaleDialog = new AddBarCodeScaleDialog(mContext);
+                addBarCodeScaleDialog.setGetContent(object -> {
+                    mBarCodeScaleAdapter.addScale(object);
+                });
+                addBarCodeScaleDialog.show();
+            });
+    }
+    private void initDelBtn(){
+        final Button del_scale_btn = findViewById(R.id.del_scale);
+        if (null != del_scale_btn && !mBarCodeScaleAdapter.getCurrentScalseInfos().isEmpty())
+            del_scale_btn.setOnClickListener(v -> MyDialog.displayAskMessage(null, "是否删除条码秤信息？", mContext, myDialog -> {
                 if (isDownloadFinished()){
                     mBarCodeScaleAdapter.deleteScale();
                     myDialog.dismiss();
                 }
-            },Dialog::dismiss);
-        });
-        findViewById(R.id.download_to_scale).setOnClickListener(v -> {
-            if (isDownloadFinished()){
-                mFutureList = AbstractBarcodeScaleImp.scaleDownLoad(mBarCodeScaleAdapter.getCurrentScalseInfos(),mBarCodeScaleAdapter.getCurrentItemIndexMap());
-            }
-         });
-        findViewById(R.id.modfy_scale).setOnClickListener(v -> {
-            if (isDownloadFinished()){
-                JSONArray array = mBarCodeScaleAdapter.getCurrentScalseInfos();
-                if (array != null && array.size() != 0){
-                    AddBarCodeScaleDialog addBarCodeScaleDialog = new AddBarCodeScaleDialog(mContext,array.getJSONObject(0));
-                    addBarCodeScaleDialog.setGetContent(object -> mBarCodeScaleAdapter.addScale(object));
-                    addBarCodeScaleDialog.show();
+            },Dialog::dismiss));
+    }
+    private void initDownloadToScaleBtn(){
+        final Button download_to_scale_btn = findViewById(R.id.download_to_scale);
+        if (null != download_to_scale_btn)
+            download_to_scale_btn.setOnClickListener(v -> {
+                if (isDownloadFinished()){
+                    mFutureList = AbstractBarcodeScaleImp.scaleDownLoad(mBarCodeScaleAdapter.getCurrentScalseInfos(),mBarCodeScaleAdapter.getCurrentItemIndexMap());
                 }
-            }
-        });
-
-        //初始化窗口尺寸
-        WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
+            });
+    }
+    private void initModifyBtn(){
+        final Button modify_btn = findViewById(R.id.modfy_scale);
+        if (null != modify_btn)
+            modify_btn.setOnClickListener(v -> {
+                if (isDownloadFinished()){
+                    JSONArray array = mBarCodeScaleAdapter.getCurrentScalseInfos();
+                    if (array != null && array.size() != 0){
+                        AddBarCodeScaleDialog addBarCodeScaleDialog = new AddBarCodeScaleDialog(mContext,array.getJSONObject(0));
+                        addBarCodeScaleDialog.setGetContent(object -> mBarCodeScaleAdapter.addScale(object));
+                        addBarCodeScaleDialog.show();
+                    }
+                }
+            });
+    }
+    private void initWindowSize(){
+        final WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
         if (m != null){
             Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
             Point point = new Point();
@@ -94,13 +116,12 @@ public class BarCodeScaleDownDialog extends Dialog {
         }
     }
 
-    private void initView(){
+    private void initRecyclerView(){
         mBarCodeScaleAdapter = new BarCodeScaleAdapter(mContext);
-        RecyclerView recyclerView = findViewById(R.id.b_scalse_r_v);
+        final RecyclerView recyclerView = findViewById(R.id.b_scalse_r_v);
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
         recyclerView.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(mBarCodeScaleAdapter);
-        //加载信息
         mBarCodeScaleAdapter.setDatas();
     }
 

@@ -127,7 +127,7 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private View.OnClickListener itemClick = this::setSelectStatus;
 
     public JSONArray getCurrentScalseInfos() {
-        JSONArray scalses = new JSONArray();
+        final JSONArray scalses = new JSONArray();
         JSONObject object;
         for (String t_id : mCurrentItemIndexMap.keySet()){
             for (int j = 0,length = mDatas.size();j < length;j++){

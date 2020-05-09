@@ -17,10 +17,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.adapter.TreeListAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomePopupWindow;
@@ -211,7 +213,7 @@ public class AddBarCodeScaleDialog extends Dialog {
 
     private void chooseDialog(){
         final StringBuilder err = new StringBuilder();
-        final JSONArray tmps = SQLiteHelper.getListToJson("SELECT category_id, name FROM shop_category where parent_id = 0",err),category_info_copy = Utils.JsondeepCopy(mCategoryInfo);
+        final JSONArray tmps = SQLiteHelper.getListToJson("SELECT category_id, name FROM shop_category ",err),category_info_copy = Utils.JsondeepCopy(mCategoryInfo);
         if (tmps == null){
             MyDialog.ToastMessage(err.toString(),mContext,getWindow());
             return;
@@ -219,14 +221,12 @@ public class AddBarCodeScaleDialog extends Dialog {
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         int tmps_len = tmps.size();
-        //final String[] items = new String[tmps_len];
         final boolean[] isCheckeds  = new boolean[tmps_len];
 
         JSONObject object;
         int c_id = -1;
 
         final List<String> list = new ArrayList<>();
-
 
         for (int i = 0,size = tmps.size();i < size;i++){
             object = tmps.getJSONObject(i);

@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.Gravity;
 import android.view.View;
@@ -16,16 +18,13 @@ import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.adapter.TreeListAdapter;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.R;
 
-/**
- * Created by Administrator on 2018-04-23.
- */
-
 public class CustomePopupWindow extends PopupWindow {
-    public static  final String SEPARATE = "\t";
+    private static final String SEPARATE = "\t";
     private ListView mListView;
     private ArrayAdapter mArrayAdapter, mTmpAdapter;
     private boolean isSelect = false,isAutoSetContent;
@@ -47,6 +46,7 @@ public class CustomePopupWindow extends PopupWindow {
         mTmpAdapter = new ArrayAdapter(context,R.layout.drop_down_style);
 
         this.setContentView(mListView);
+
         mListView.setOnItemClickListener((adapterView, view1, i, l) -> {
             String szTmp,szView = ((TextView)view1).getText().toString();
             String[] sz_arr;

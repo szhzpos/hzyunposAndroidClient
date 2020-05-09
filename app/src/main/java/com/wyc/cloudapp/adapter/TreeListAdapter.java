@@ -14,6 +14,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 
@@ -63,18 +64,19 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
         return mDatas.size();
     }
 
-    public void setDatas(JSONArray datas){
+    public void setDatas(final JSONArray datas){
         mDatas = datas;
         notifyDataSetChanged();
     }
 
     private View.OnClickListener itemListener = (view)->{
-        ImageView imageView = view.findViewById(R.id.item_ico);
+        final ImageView imageView = view.findViewById(R.id.item_ico);
         if (imageView != null){
             imageView.setImageDrawable(mContext.getDrawable(R.drawable.minus));
-            TextView id = view.findViewById(R.id.item_id);
-            StringBuilder err = new StringBuilder();
-            JSONArray array = SQLiteHelper.getListToJson("select category_id item_id,name item_name from shop_category where parent_id=" + id.getText(),err);
+            final TextView id = view.findViewById(R.id.item_id);
+            final StringBuilder err = new StringBuilder();
+            final JSONArray array = SQLiteHelper.getListToJson("select category_id item_id,name item_name from shop_category where parent_id=" + id.getText(),err);
+
             Utils.moveJsonArray(array,mDatas);
             notifyDataSetChanged();
         }

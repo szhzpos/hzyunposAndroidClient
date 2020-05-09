@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="@dimen/height_50"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/margin_5"
+    android:paddingEnd="@dimen/size_0">
 
     <ImageView
         android:id="@+id/item_ico"
@@ -29,6 +31,6 @@
         android:id="@+id/item_name"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:textSize="@dimen/font_size_16" />
+        android:gravity="center_vertical"
+        android:textSize="@dimen/font_size_18" />
 </LinearLayout>
