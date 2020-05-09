@@ -12,6 +12,7 @@
     <dimen name="font_size_14">14sp</dimen>
     <dimen name="font_size_16">16sp</dimen>
     <dimen name="font_size_18">18sp</dimen>
+    <dimen name="font_size_22">22sp</dimen>
     <dimen name="font_size_24">24sp</dimen>
     <dimen name="fun_button_font_size_18">@dimen/font_size_18</dimen>
     <dimen name="fun_button_font_size_24">@dimen/font_size_24</dimen>
@@ -81,10 +82,11 @@
     <dimen name="format_setting_item_height">@dimen/height_35</dimen>
     <dimen name="sec_sale_header_font_size">@dimen/font_size_12</dimen>
     <dimen name="table_row_height">@dimen/height_50</dimen>
-    <dimen name="hang_bill_detail_bacode_w">@dimen/width_128</dimen>
-    <dimen name="hang_bill_detail_g_title_w">@dimen/width_208</dimen>
-    <dimen name="hang_bill_dialog_w">@dimen/width_888</dimen>
-    <dimen name="b_scalse_dialog_w">@dimen/width_888</dimen>
-    <dimen name="table_header_h">@dimen/height_50</dimen>
-    <dimen name="table_footer_h">@dimen/height_50</dimen>
+    <dimen name="hang_bill_detail_bacode_width">@dimen/width_128</dimen>
+    <dimen name="hang_bill_detail_g_title_width">@dimen/width_208</dimen>
+    <dimen name="hang_bill_dialog_width">@dimen/width_888</dimen>
+    <dimen name="b_scalse_dialog_width">@dimen/width_888</dimen>
+    <dimen name="table_header_height">@dimen/height_50</dimen>
+    <dimen name="table_footer_height">@dimen/height_50</dimen>
+    <dimen name="status_et_width">@dimen/width_85</dimen>
 </resources>

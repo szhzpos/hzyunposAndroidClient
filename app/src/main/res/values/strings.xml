@@ -200,4 +200,6 @@
     <string name="order_not_colon_sz">单号</string>
     <string name="reality_amt_sz">实收金额</string>
     <string name="cashier_not_colon_sz">收银员</string>
+    <string name="start_time_sz">00:00:00</string>
+    <string name="end_time_sz">23:59:59</string>
 </resources>

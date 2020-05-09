@@ -202,7 +202,7 @@
                     android:layout_height="@dimen/height_45"
                     android:background="@drawable/button_blue"
                     android:text="@string/add_sz"
-                    android:textColor="@color/white_blue"
+                    android:textColor="@color/blue_white"
                     android:textSize="@dimen/font_size_16" />
 
                 <Space
@@ -217,7 +217,7 @@
                     android:layout_height="@dimen/height_45"
                     android:background="@drawable/button_blue"
                     android:text="@string/modify_sz"
-                    android:textColor="@color/white_blue"
+                    android:textColor="@color/blue_white"
                     android:textSize="@dimen/font_size_16"
                     android:visibility="visible" />
 
@@ -233,7 +233,7 @@
                     android:layout_height="@dimen/height_45"
                     android:background="@drawable/button_blue"
                     android:text="@string/charge_sz"
-                    android:textColor="@color/white_blue"
+                    android:textColor="@color/blue_white"
                     android:textSize="@dimen/font_size_16"
                     android:visibility="visible" />
             </LinearLayout>

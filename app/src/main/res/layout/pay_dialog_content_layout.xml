@@ -350,7 +350,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/button_blue"
                         android:text="@string/vip_button_sz"
-                        android:textColor="@color/white_blue"
+                        android:textColor="@color/blue_white"
                         android:textSize="@dimen/font_size_16" />
 
                     <Button
@@ -362,7 +362,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/button_blue"
                         android:text="@string/all_discount_sz"
-                        android:textColor="@color/white_blue"
+                        android:textColor="@color/blue_white"
                         android:textSize="@dimen/font_size_16" />
 
                     <Button
@@ -374,7 +374,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/button_blue"
                         android:text="@string/mo_l_sz"
-                        android:textColor="@color/white_blue"
+                        android:textColor="@color/blue_white"
                         android:textSize="@dimen/font_size_16" />
 
                     <Button
@@ -386,7 +386,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/button_blue"
                         android:text="@string/remark_sz"
-                        android:textColor="@color/white_blue"
+                        android:textColor="@color/blue_white"
                         android:textSize="@dimen/font_size_16" />
                 </LinearLayout>
 

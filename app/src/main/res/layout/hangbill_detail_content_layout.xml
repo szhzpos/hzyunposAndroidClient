@@ -6,7 +6,7 @@
 
     <TextView
         android:id="@+id/barcode"
-        android:layout_width="@dimen/hang_bill_detail_bacode_w"
+        android:layout_width="@dimen/hang_bill_detail_bacode_width"
         android:layout_height="match_parent"
         android:background="@drawable/left_blue_separator"
         android:gravity="center"

@@ -99,7 +99,6 @@ public class MainActivity extends AppCompatActivity {
         mDialog = new MyDialog(this);
         mSearch_content = findViewById(R.id.search_content);
         mCurrentTimeView = findViewById(R.id.current_time);
-        mCloseBtn = findViewById(R.id.close);
         mSaleSumNum = findViewById(R.id.sale_sum_num);
         mSaleSumAmount = findViewById(R.id.sale_sum_amt);
         mKeyboard = findViewById(R.id.keyboard_layout);
@@ -115,65 +114,18 @@ public class MainActivity extends AppCompatActivity {
         initCashierInfoAndStoreInfo();
         //更新当前时间
         startSyncCurrentTime();
-
         //初始化搜索框
         initSearch();
-
         //挂单
         initTmpOrder();
-
         //打印状态
         initPrintStatus();
-
-        //初始化功能按钮事件
-        mCloseBtn.setOnClickListener((View V)->{
-            MyDialog.displayAskMessage(mDialog,"是否退出收银？",MainActivity.this,(MyDialog myDialog)->{
-                myDialog.dismiss();
-                Intent intent = new Intent(MainActivity.this,LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                MainActivity.this.finish();
-            }, Dialog::dismiss);
-        });//退出收银
-        findViewById(R.id.clear).setOnClickListener(v -> {
-            if (mVipInfo != null){
-                MyDialog.displayAskMessage(mDialog,"是否清除会员折扣？",this,myDialog -> {
-                    clearVipInfo();
-                    myDialog.dismiss();
-                },Dialog::dismiss);
-            }else{
-                if (!mSaleGoodsViewAdapter.getDatas().isEmpty())
-                    MyDialog.displayAskMessage(mDialog,"是否清除销售商品？",this,myDialog -> {
-                        resetOrderInfo();
-                        myDialog.dismiss();
-                    },Dialog::dismiss);
-            }
-        });//清空
-        findViewById(R.id.minus_num).setOnClickListener(v -> mSaleGoodsViewAdapter.deleteSaleGoods(mSaleGoodsViewAdapter.getCurrentItemIndex(),1));//数量减
-        findViewById(R.id.add_num).setOnClickListener(v -> mSaleGoodsViewAdapter.addSaleGoods(mSaleGoodsViewAdapter.getCurrentContent(),mVipInfo));//数量加
-        findViewById(R.id.num).setOnClickListener(view -> mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 0));//数量
-        findViewById(R.id.discount).setOnClickListener(v-> {setDisCashierId(mCashierInfo.getString("cas_id"));mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 2);});//打折
-        findViewById(R.id.change_price).setOnClickListener(v-> { setDisCashierId(mCashierInfo.getString("cas_id"));mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 1);});//改价
-        findViewById(R.id.check_out).setOnClickListener((View v)->{Utils.disableView(v,500);showPayDialog();});//结账
-        findViewById(R.id.vip).setOnClickListener(v -> {
-            VipInfoDialog vipInfoDialog = new VipInfoDialog(this);
-            vipInfoDialog.setYesOnclickListener(dialog -> {
-                showVipInfo(dialog.getVip());
-                dialog.dismiss();
-            }).show();
-        });//会员
-        findViewById(R.id.q_deal_linerLayout).setOnClickListener(v -> {
-            QuerySaleDetailsDialog querySaleDetailsDialog = new QuerySaleDetailsDialog(MainActivity.this);
-            querySaleDetailsDialog.show();;
-        });//查交易
-
-        findViewById(R.id.shift_exchange_linearLayout).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MyDialog.displayMessage(null,"交班",v.getContext());
-            }
-        });
-        findViewById(R.id.other_linearLayout).setOnClickListener(v -> new MoreFunDialog(MainActivity.this).show());//更多功能
+        //关闭收银主窗口
+        initCloseMainWindow();
+        //清除按钮
+        initClearBtn();
+        //初始化功能按钮
+        initFunctionBtn();
 
         //初始化数据管理对象
         mSyncManagement = new SyncManagement(mHandler,mUrl,mAppId,mAppScret,mStoreInfo.getString("stores_id"),mCashierInfo.getString("pos_num"),mCashierInfo.getString("cas_id"));
@@ -197,6 +149,82 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy(){
         super.onDestroy();
+        //清除资源
+        clearResource();
+    }
+
+    @Override
+    public void onBackPressed(){
+        if (null != mCloseBtn)
+            mCloseBtn.callOnClick();
+    }
+
+    private void initFunctionBtn(){
+        final Button minus_num_btn = findViewById(R.id.minus_num),add_num_btn = findViewById(R.id.add_num),num_btn = findViewById(R.id.num),
+                discount_btn = findViewById(R.id.discount),change_price_btn = findViewById(R.id.change_price),check_out_btn = findViewById(R.id.check_out),
+                vip_btn = findViewById(R.id.vip);
+
+        if (minus_num_btn != null)minus_num_btn.setOnClickListener(v -> mSaleGoodsViewAdapter.deleteSaleGoods(mSaleGoodsViewAdapter.getCurrentItemIndex(),1));//数量减
+        if (add_num_btn != null)add_num_btn.setOnClickListener(v -> mSaleGoodsViewAdapter.addSaleGoods(mSaleGoodsViewAdapter.getCurrentContent(),mVipInfo));//数量加
+        if (num_btn != null)num_btn.setOnClickListener(view -> mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 0));//数量
+        if (discount_btn != null)discount_btn.setOnClickListener(v-> {setDisCashierId(mCashierInfo.getString("cas_id"));mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 2);});//打折
+        if (change_price_btn != null)change_price_btn.setOnClickListener(v-> { setDisCashierId(mCashierInfo.getString("cas_id"));mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 1);});//改价
+        if (check_out_btn != null)check_out_btn.setOnClickListener((View v)->{Utils.disableView(v,500);showPayDialog();});//结账
+        if (vip_btn != null)vip_btn.setOnClickListener(v -> {VipInfoDialog vipInfoDialog = new VipInfoDialog(this);
+            vipInfoDialog.setYesOnclickListener(dialog -> {showVipInfo(dialog.getVip());dialog.dismiss(); }).show();
+        });//会员
+
+        final LinearLayout q_deal_linerLayout = findViewById(R.id.q_deal_linerLayout),other_linearLayout = findViewById(R.id.other_linearLayout),
+                shift_exchange_linearLayout = findViewById(R.id.shift_exchange_linearLayout);
+
+        if (q_deal_linerLayout != null)
+            q_deal_linerLayout.setOnClickListener(v -> {
+                QuerySaleDetailsDialog querySaleDetailsDialog = new QuerySaleDetailsDialog(MainActivity.this);
+                querySaleDetailsDialog.show();;
+            });//查交易
+
+        if (other_linearLayout != null)
+            other_linearLayout.setOnClickListener(v -> new MoreFunDialog(MainActivity.this).show());//更多功能
+        if (shift_exchange_linearLayout != null)
+            shift_exchange_linearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MyDialog.displayMessage(null,"交班",v.getContext());
+            }
+        });
+    }
+    private void initClearBtn(){
+        final Button clearBtn = findViewById(R.id.clear);
+        if (null != clearBtn){
+            clearBtn.setOnClickListener(v -> {
+                if (mVipInfo != null){
+                    MyDialog.displayAskMessage(mDialog,"是否清除会员折扣？",this,myDialog -> {
+                        clearVipInfo();
+                        myDialog.dismiss();
+                    },Dialog::dismiss);
+                }else{
+                    if (!mSaleGoodsViewAdapter.getDatas().isEmpty())
+                        MyDialog.displayAskMessage(mDialog,"是否清除销售商品？",this,myDialog -> {
+                            resetOrderInfo();
+                            myDialog.dismiss();
+                        },Dialog::dismiss);
+                }
+            });
+        }
+    }
+    private void initCloseMainWindow(){
+        mCloseBtn = findViewById(R.id.close);
+        mCloseBtn.setOnClickListener((View V)->{
+            MyDialog.displayAskMessage(mDialog,"是否退出收银？",MainActivity.this,(MyDialog myDialog)->{
+                myDialog.dismiss();
+                Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                MainActivity.this.finish();
+            }, Dialog::dismiss);
+        });
+    }
+    private void clearResource(){
         if (mHandler != null)mHandler.removeCallbacksAndMessages(null);
         if (mSyncManagement != null) {
             mSyncManagement.quit();
@@ -204,14 +232,7 @@ public class MainActivity extends AppCompatActivity {
         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
         if (mDialog.isShowing())mDialog.dismiss();
         if (mSecondDisplay != null)mSecondDisplay.dismiss();
-
     }
-
-    @Override
-    public void onBackPressed(){
-        mCloseBtn.callOnClick();
-    }
-
     private void startSyncCurrentTime(){
         if (mCurrentTimestamp == 0){
             if (mNetworkStatus.get()){
@@ -256,7 +277,6 @@ public class MainActivity extends AppCompatActivity {
         }
         mCurrentTimeView.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(mCurrentTimestamp));
     }
-
     private void initCashierInfoAndStoreInfo(){
         mCashierInfo = new JSONObject();
         mStoreInfo = new JSONObject();
@@ -545,22 +565,19 @@ public class MainActivity extends AppCompatActivity {
         if (datas.size() != 0){
             final PayDialog dialog = new PayDialog(this);
             if (dialog.initPayContent()){
-                dialog.setPayFinishListener(new PayDialog.onPayListener() {
+                dialog.setPayListener(new PayDialog.onPayListener() {
                     @Override
                     public void onStart(PayDialog myDialog) {
                         mProgressDialog.setCancel(false).setMessage("正在保存单据...").refreshMessage().show();
-                        StringBuilder err = new StringBuilder();
+                        final StringBuilder err = new StringBuilder();
                         if (myDialog.saveOrderInfo(err)){
                             CustomApplication.execute(()->{
                                 myDialog.requestPay(mOrderCode.getText().toString(),mUrl,mAppId,mAppScret,mStoreInfo.getString("stores_id"),mCashierInfo.getString("pos_num"));
                             });
-
                         }else{
                             mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,err.toString()).sendToTarget();
                         }
-
                     }
-
                     @Override
                     public void onProgress(PayDialog myDialog,final String info) {
                         mProgressDialog.setMessage(info).refreshMessage();

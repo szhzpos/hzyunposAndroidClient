@@ -288,7 +288,7 @@
                 android:layout_alignParentBottom="true"
                 android:background="@drawable/button_blue"
                 android:text="@string/login"
-                android:textColor="@color/white_blue"
+                android:textColor="@color/blue_white"
                 android:textSize="@dimen/font_size_18" />
 
             <Button
@@ -301,7 +301,7 @@
                 android:layout_alignParentBottom="true"
                 android:background="@drawable/button_pink"
                 android:text="@string/cancel"
-                android:textColor="@color/white_pink"
+                android:textColor="@color/pink_white"
                 android:textSize="@dimen/font_size_18" />
 
             <EditText

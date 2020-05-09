@@ -210,14 +210,14 @@ public class AddBarCodeScaleDialog extends Dialog {
     };
 
     private void chooseDialog(){
-        StringBuilder err = new StringBuilder();
+        final StringBuilder err = new StringBuilder();
         final JSONArray tmps = SQLiteHelper.getListToJson("SELECT category_id, name FROM shop_category where parent_id = 0",err),category_info_copy = Utils.JsondeepCopy(mCategoryInfo);
         if (tmps == null){
             MyDialog.ToastMessage(err.toString(),mContext,getWindow());
             return;
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         int tmps_len = tmps.size();
         //final String[] items = new String[tmps_len];
         final boolean[] isCheckeds  = new boolean[tmps_len];
@@ -283,11 +283,11 @@ public class AddBarCodeScaleDialog extends Dialog {
             dialog.dismiss();
         });
 
-        AlertDialog alertDialog = builder.create();
+        final AlertDialog alertDialog = builder.create();
 
         int blue = mContext.getColor(R.color.blue);
 
-        TextView title = new TextView(mContext);
+        final TextView title = new TextView(mContext);
         title.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         title.setPadding(5,5,5,5);
         title.setTextSize(mContext.getResources().getDimension(R.dimen.font_size_24));
@@ -298,18 +298,18 @@ public class AddBarCodeScaleDialog extends Dialog {
         alertDialog.show();
 
 
-        ListView listView = alertDialog.getListView();
+        final ListView listView = alertDialog.getListView();
         listView.setDivider(mContext.getDrawable(R.color.gray__subtransparent));
         listView.setDividerHeight(1);
         listView.setBackground(mContext.getDrawable(R.drawable.border_sub_gray));
 
-        Button cancel = alertDialog.getButton(BUTTON_NEGATIVE), ok = alertDialog.getButton(BUTTON_POSITIVE);
+        final Button cancel = alertDialog.getButton(BUTTON_NEGATIVE), ok = alertDialog.getButton(BUTTON_POSITIVE);
         cancel.setTextColor(blue);
         ok.setTextColor(blue);
         cancel.setTextSize(mContext.getResources().getDimension(R.dimen.font_size_16));
         ok.setTextSize(mContext.getResources().getDimension(R.dimen.font_size_16));
 
-        WindowManager.LayoutParams  lp= alertDialog.getWindow().getAttributes();
+        final WindowManager.LayoutParams  lp= alertDialog.getWindow().getAttributes();
         lp.width=588;//定义宽度
         lp.height=442;//定义高度
         alertDialog.getWindow().setAttributes(lp);

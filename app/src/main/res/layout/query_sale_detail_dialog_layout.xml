@@ -36,9 +36,9 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/time_layout"
+        android:id="@+id/date_time_layout"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/height_45"
+        android:layout_height="@dimen/height_50"
         android:layout_marginStart="@dimen/margin_1"
         android:layout_marginEnd="@dimen/margin_1"
         android:background="@drawable/bottom_separator"
@@ -52,24 +52,45 @@
             android:text="@string/query_time_sz"
             android:textSize="@dimen/font_size_18" />
 
-        <EditText
-            android:id="@+id/start_time"
+        <LinearLayout
+            android:id="@+id/start_date_time_layout"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginBottom="@dimen/margin_1"
             android:background="@drawable/left_right_separator"
-            android:drawableEnd="@drawable/date"
-            android:ems="10"
-            android:focusable="auto"
-            android:focusableInTouchMode="true"
-            android:importantForAutofill="no"
-            android:inputType="textPersonName"
-            android:paddingStart="@dimen/margin_5"
-            android:paddingEnd="@dimen/margin_5"
-            android:textColor="@color/text_color" />
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/start_date"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/edit_text_style"
+                android:focusable="auto"
+                android:focusableInTouchMode="true"
+                android:importantForAutofill="no"
+                android:inputType="date"
+                android:minWidth="@dimen/width_80"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/margin_2"
+                android:textColor="@color/text_color" />
+
+            <EditText
+                android:id="@+id/start_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_1"
+                android:background="@drawable/left_separator"
+                android:focusable="auto"
+                android:focusableInTouchMode="true"
+                android:importantForAutofill="no"
+                android:inputType="time"
+                android:paddingStart="@dimen/margin_2"
+                android:paddingEnd="@dimen/margin_5"
+                android:text="@string/start_time_sz"
+                android:textColor="@color/text_color" />
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/textView21"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginStart="@dimen/margin_2"
@@ -78,25 +99,45 @@
             android:text="@string/to_sz"
             android:textSize="@dimen/font_size_18" />
 
-        <EditText
-            android:id="@+id/end_time"
+        <LinearLayout
+            android:id="@+id/end_date_time_layout"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginBottom="@dimen/margin_1"
             android:background="@drawable/left_right_separator"
-            android:drawableEnd="@drawable/date"
-            android:ems="10"
-            android:focusable="auto"
-            android:focusableInTouchMode="true"
-            android:importantForAutofill="no"
-            android:inputType="textPersonName"
-            android:paddingStart="@dimen/margin_5"
-            android:paddingEnd="@dimen/margin_5"
-            android:textColor="@color/text_color" />
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/end_date"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/edit_text_style"
+                android:inputType="date"
+                android:minWidth="@dimen/width_80"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/margin_2"
+                android:textColor="@color/text_color" />
+
+            <EditText
+                android:id="@+id/end_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_1"
+                android:background="@drawable/left_separator"
+                android:focusable="auto"
+                android:focusableInTouchMode="true"
+                android:importantForAutofill="no"
+                android:inputType="time"
+                android:paddingStart="@dimen/margin_2"
+                android:paddingEnd="@dimen/margin_5"
+                android:text="@string/end_time_sz"
+                android:textColor="@color/text_color" />
+        </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/margin_12"
             android:gravity="center"
             android:padding="@dimen/margin_5"
             android:text="@string/order_not_colon_sz"
@@ -116,10 +157,11 @@
             android:inputType="textPersonName"
             android:paddingStart="@dimen/margin_5"
             android:paddingEnd="@dimen/margin_5"
+            android:selectAllOnFocus="true"
             android:textColor="@color/text_color" />
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/query_btn"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/width_88"
             android:layout_height="match_parent"
@@ -128,14 +170,14 @@
             android:layout_marginBottom="@dimen/margin_2"
             android:background="@color/appColor"
             android:text="@string/query_sz"
-            android:textColor="@color/white"
+            android:textColor="@color/white_orange"
             android:textSize="@dimen/font_size_18" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/condition_layout"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/height_40"
+        android:layout_height="@dimen/height_50"
         android:layout_marginStart="@dimen/margin_1"
         android:layout_marginEnd="@dimen/margin_1"
         android:background="@drawable/bottom_separator"
@@ -152,18 +194,19 @@
 
         <EditText
             android:id="@+id/pay_status_et"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/status_et_width"
             android:layout_height="match_parent"
             android:layout_marginBottom="@dimen/margin_1"
             android:background="@drawable/left_right_separator"
             android:drawableEnd="@drawable/content"
-            android:ems="4"
             android:focusable="auto"
             android:focusableInTouchMode="true"
             android:importantForAutofill="no"
             android:inputType="textPersonName"
             android:padding="@dimen/margin_5"
-            android:textColor="@color/text_color" />
+            android:textAlignment="center"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -181,13 +224,15 @@
             android:layout_marginBottom="@dimen/margin_1"
             android:background="@drawable/left_right_separator"
             android:drawableEnd="@drawable/content"
-            android:ems="4"
             android:focusable="auto"
             android:focusableInTouchMode="true"
             android:importantForAutofill="no"
             android:inputType="textPersonName"
+            android:minWidth="@dimen/status_et_width"
             android:padding="@dimen/margin_5"
-            android:textColor="@color/text_color" />
+            android:textAlignment="center"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -200,18 +245,19 @@
 
         <EditText
             android:id="@+id/s_ex_status_et"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/status_et_width"
             android:layout_height="match_parent"
             android:layout_marginBottom="@dimen/margin_1"
             android:background="@drawable/left_right_separator"
             android:drawableEnd="@drawable/content"
-            android:ems="4"
             android:focusable="auto"
             android:focusableInTouchMode="true"
             android:importantForAutofill="no"
             android:inputType="textPersonName"
             android:padding="@dimen/margin_5"
-            android:textColor="@color/text_color" />
+            android:textAlignment="center"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -224,18 +270,19 @@
 
         <EditText
             android:id="@+id/upload_status_et"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/status_et_width"
             android:layout_height="match_parent"
             android:layout_marginBottom="@dimen/margin_1"
             android:background="@drawable/left_right_separator"
             android:drawableEnd="@drawable/content"
-            android:ems="4"
             android:focusable="auto"
             android:focusableInTouchMode="true"
             android:importantForAutofill="no"
             android:inputType="textPersonName"
             android:padding="@dimen/margin_5"
-            android:textColor="@color/text_color" />
+            android:textAlignment="center"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -248,36 +295,39 @@
 
         <EditText
             android:id="@+id/order_status_et"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/status_et_width"
             android:layout_height="match_parent"
             android:layout_marginBottom="@dimen/margin_1"
             android:background="@drawable/left_right_separator"
             android:drawableEnd="@drawable/content"
-            android:ems="4"
             android:focusable="auto"
             android:focusableInTouchMode="true"
             android:importantForAutofill="no"
             android:inputType="textPersonName"
             android:padding="@dimen/margin_5"
-            android:textColor="@color/text_color" />
+            android:textAlignment="center"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/margin_2"
         android:orientation="vertical">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/detail_header"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/table_header_h"
-            android:focusable="auto" />
+            android:layout_height="@dimen/table_header_height"
+            android:focusable="auto">
+
+        </androidx.recyclerview.widget.RecyclerView>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/detail_body"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1" />
-
     </LinearLayout>
 </LinearLayout>

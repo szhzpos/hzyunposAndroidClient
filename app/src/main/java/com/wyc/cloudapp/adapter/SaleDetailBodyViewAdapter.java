@@ -135,24 +135,26 @@ public final class SaleDetailBodyViewAdapter extends RecyclerView.Adapter<SaleDe
         }
     }
 
-    public void setDatas(int stores_id){
+    public void setDatas(final String where_sql){
         final StringBuilder err = new StringBuilder();
         final String sql = "SELECT \n" +
                 "       transfer_status s_e_status,\n" +
-                "       case transfer_status when 1 then '未交班' when 2 then '已交班' end s_e_status_name,\n" +
+                "       case transfer_status when 1 then '未交班' when 2 then '已交班' else '其他' end s_e_status_name,\n" +
                 "       upload_status,\n" +
-                "       case upload_status when 1 then '未上传' when 2 then '已上传' end upload_status_name,\n" +
+                "       case upload_status when 1 then '未上传' when 2 then '已上传' else '其他' end upload_status_name,\n" +
                 "       pay_status,\n" +
                 "       case pay_status when 1 then '未支付' when 2 then '已支付' else '支付中' end pay_status_name,\n" +
                 "       order_status,\n" +
-                "       case order_status when 1 then '未付款' when 2 then '已付款' when 3 then '已取消' when 4 then '已退货' end order_status_name,\n" +
+                "       case order_status when 1 then '未付款' when 2 then '已付款' when 3 then '已取消' when 4 then '已退货' else '其他'  end order_status_name,\n" +
                 "       datetime(addtime, 'unixepoch', 'localtime') oper_time,\n" +
                 "       cashier_id,\n" +
                 "       b.cas_name,\n" +
                 "       discount_price reality_amt,\n" +
                 "       total order_amt,\n" +
                 "       order_code\n" +
-                "  FROM retail_order a left join cashier_info b on a.cashier_id = b.cas_id where a.stores_id = " + stores_id;
+                "  FROM retail_order a left join cashier_info b on a.cashier_id = b.cas_id " + where_sql;
+
+        Logger.d("sql:%s",sql);
         mDatas = SQLiteHelper.getListToJson(sql,err);
         if (mDatas != null){
             notifyDataSetChanged();

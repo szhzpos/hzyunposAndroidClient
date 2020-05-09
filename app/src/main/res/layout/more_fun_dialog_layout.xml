@@ -46,7 +46,7 @@
             android:layout_marginTop="@dimen/margin_5"
             android:background="@drawable/button_blue"
             android:text="@string/sync_sz"
-            android:textColor="@color/white_blue"
+            android:textColor="@color/blue_white"
             android:textSize="@dimen/font_size_14"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -60,7 +60,7 @@
             android:layout_marginTop="@dimen/margin_5"
             android:background="@drawable/button_blue"
             android:text="@string/setup_sz"
-            android:textColor="@color/white_blue"
+            android:textColor="@color/blue_white"
             android:textSize="@dimen/font_size_14"
             app:layout_constraintStart_toEndOf="@id/o_cashbox"
             app:layout_constraintTop_toTopOf="parent" />
@@ -73,7 +73,7 @@
             android:layout_marginStart="@dimen/margin_5"
             android:background="@drawable/button_blue"
             android:text="@string/o_cashbox_sz"
-            android:textColor="@color/white_blue"
+            android:textColor="@color/blue_white"
             app:layout_constraintStart_toEndOf="@id/barcode_scale"
             app:layout_constraintTop_toTopOf="@id/setup_btn" />
 
@@ -86,7 +86,7 @@
             android:layout_marginTop="@dimen/margin_5"
             android:background="@drawable/button_blue"
             android:text="@string/b_code_s_d_sz"
-            android:textColor="@color/white_blue"
+            android:textColor="@color/blue_white"
             android:textSize="@dimen/font_size_14"
             app:layout_constraintStart_toEndOf="@id/sync_btn"
             app:layout_constraintTop_toTopOf="parent" />

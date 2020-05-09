@@ -37,7 +37,6 @@ import com.wyc.cloudapp.dialog.ConnSettingDialog;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.keyboard.SoftKeyBoardListener;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.network.sync.SyncManagement;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -50,8 +49,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 public class LoginActivity extends AppCompatActivity {
     public static final String IMG_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/goods_img/";
+
     private static final int REQUEST_STORAGE_PERMISSIONS  = 800;
-    private RelativeLayout mMain;
     private EditText mUser_id,mPassword;
     private Handler myHandler;
     private LoginActivity mSelf;
@@ -67,91 +66,31 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        mMain = findViewById(R.id.main);
-        mUser_id = findViewById(R.id.user_id);
-        mPassword = findViewById(R.id.password);
-        mCancel = findViewById(R.id.cancel);
-
+        //初始化成员变量
         myHandler = new Myhandler(this);
         mSelf = this;
         mProgressDialog = new CustomProgressDialog(this);
         myDialog = new MyDialog(this);
 
-        SoftKeyBoardListener.setListener(this, new SoftKeyBoardListener.OnSoftKeyBoardChangeListener() {
-            ViewGroup.LayoutParams mLayoutParams = mMain.getLayoutParams();
-            @Override
-            public void keyBoardShow(int height) {
-                WindowManager m = (WindowManager) mSelf.getSystemService(WINDOW_SERVICE);
-                if (m != null){
-                    Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
-                    Point point = new Point();
-                    d.getSize(point);
-                    mLayoutParams.height = point.y - height;
-                   mMain.setLayoutParams(mLayoutParams);
-                }
-            }
-
-            @Override
-            public void keyBoardHide(int height) {
-                mLayoutParams.height = mLayoutParams.height + height;
-                mMain.setLayoutParams(mLayoutParams);
-            }
-        });
-
-        mUser_id.setOnFocusChangeListener((v, hasFocus) -> Utils.hideKeyBoard((EditText)v));
-        mUser_id.postDelayed(()->mUser_id.requestFocus(),300);
-        mUser_id.setSelectAllOnFocus(true);
-
-        mPassword.setTransformationMethod(new EditTextReplacement());
-        mPassword.setOnFocusChangeListener((v, hasFocus) -> Utils.hideKeyBoard((EditText)v));
-        mPassword.setSelectAllOnFocus(true);
-
-        findViewById(R.id.b_login).setOnClickListener((View v)->{
-            login();
-        });
-
-        mCancel.setOnClickListener((View V)->{
-            MyDialog.displayAskMessage(myDialog,"是否退出？", mSelf, myDialog -> {
-                mSelf.finish();
-                myDialog.dismiss();
-            }, Dialog::dismiss);
-
-        });
-
-        findViewById(R.id.setup_ico).setOnClickListener((View v)->{
-            ConnSettingDialog connSettingDialog = new ConnSettingDialog(v.getContext());
-            connSettingDialog.setOnDismissListener(dialog -> {
-                EditText et_url = findViewById(R.id._url_text);
-                String url = connSettingDialog.getUrl();
-                if (url.length() != 0){
-                    et_url.setText(url.substring(url.lastIndexOf('/') + 1));
-                }
-            });
-            connSettingDialog.show();
-        });
+        initUserId();
+        initPassword();
+        initSetup();
+        initCloseMainWindow();
+        initLogBtn();
 
         //初始化数字键盘
-        ConstraintLayout keyboard_linear_layout;
-        keyboard_linear_layout = findViewById(R.id.keyboard);
-        for (int i = 0,child  = keyboard_linear_layout.getChildCount(); i < child;i++){
-            View tmp_v = keyboard_linear_layout.getChildAt(i);
-            tmp_v.setOnClickListener(mKeyboardListener);
-        }
+        initKeyboard();
     }
 
     @Override
     public void onStart(){
         super.onStart();
-
     }
 
     @Override
     public void onDestroy(){
         super.onDestroy();
-        if (mSyncManagement != null) mSyncManagement.quit();
-        if (myHandler != null)myHandler.removeCallbacksAndMessages(null);
-        if (mProgressDialog.isShowing())mProgressDialog.dismiss();
-        if (myDialog.isShowing())myDialog.dismiss();
+        clearResource();
     }
 
     @Override
@@ -162,24 +101,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            if ((ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))){
-                myDialog.setTitle("提示信息").setMessage("APP不能存储数据,请设置允许APP读写手机存储权限").setNoOnclickListener("退出", myDialog -> {
-                    myDialog.dismiss();
-                    LoginActivity.this.finish();
-                }).setYesOnclickListener("重新获取",(MyDialog myDialog)->{
-                    myDialog.dismiss();
-                    ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},REQUEST_STORAGE_PERMISSIONS );
-                }).show();
-            }else {
-                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},REQUEST_STORAGE_PERMISSIONS );
-            }
-        }else{
-            SQLiteHelper.initDb(this);
-            initGoodsImgDirectory();
-            //显示商户域名
-            show_url();
-        }
+        checkSelfPermissionAndInitDb();
     }
 
     @Override
@@ -202,6 +124,112 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    private void initLogBtn(){
+        final Button log_btn = findViewById(R.id.b_login);
+        if (null != log_btn)
+            log_btn.setOnClickListener((View v)->{
+                login();
+            });
+    }
+    private void initCloseMainWindow(){
+        mCancel = findViewById(R.id.cancel);
+        if (null != mCancel)
+            mCancel.setOnClickListener((View V)->{
+                MyDialog.displayAskMessage(myDialog,"是否退出？", mSelf, myDialog -> {
+                    mSelf.finish();
+                    myDialog.dismiss();
+                }, Dialog::dismiss);
+
+            });
+    }
+    private void initSetup(){
+        View setup = findViewById(R.id.setup_ico);
+        if (null != setup)
+            setup.setOnClickListener((View v)->{
+                ConnSettingDialog connSettingDialog = new ConnSettingDialog(v.getContext());
+                connSettingDialog.setOnDismissListener(dialog -> {
+                    EditText et_url = findViewById(R.id._url_text);
+                    String url = connSettingDialog.getUrl();
+                    if (url.length() != 0){
+                        et_url.setText(url.substring(url.lastIndexOf('/') + 1));
+                    }
+                });
+                connSettingDialog.show();
+            });
+    }
+    private void initPassword(){
+        mPassword = findViewById(R.id.password);
+        mPassword.setTransformationMethod(new EditTextReplacement());
+        mPassword.setOnFocusChangeListener((v, hasFocus) -> Utils.hideKeyBoard((EditText)v));
+        mPassword.setSelectAllOnFocus(true);
+    }
+    private void initUserId(){
+        mUser_id = findViewById(R.id.user_id);
+        mUser_id.setOnFocusChangeListener((v, hasFocus) -> Utils.hideKeyBoard((EditText)v));
+        mUser_id.postDelayed(()->mUser_id.requestFocus(),300);
+        mUser_id.setSelectAllOnFocus(true);
+    }
+    @SuppressWarnings("unused")
+    private void initSoftKeyBoardListener(){
+        final RelativeLayout main_window = findViewById(R.id.main);;
+        SoftKeyBoardListener.setListener(this, new SoftKeyBoardListener.OnSoftKeyBoardChangeListener() {
+            ViewGroup.LayoutParams mLayoutParams = main_window.getLayoutParams();
+            @Override
+            public void keyBoardShow(int height) {
+                WindowManager m = (WindowManager) mSelf.getSystemService(WINDOW_SERVICE);
+                if (m != null){
+                    Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+                    Point point = new Point();
+                    d.getSize(point);
+                    mLayoutParams.height = point.y - height;
+                    main_window.setLayoutParams(mLayoutParams);
+                }
+            }
+
+            @Override
+            public void keyBoardHide(int height) {
+                mLayoutParams.height = mLayoutParams.height + height;
+                main_window.setLayoutParams(mLayoutParams);
+            }
+        });
+    }
+    private void clearResource(){
+        if (mSyncManagement != null) mSyncManagement.quit();
+        if (myHandler != null)myHandler.removeCallbacksAndMessages(null);
+        if (mProgressDialog.isShowing())mProgressDialog.dismiss();
+        if (myDialog.isShowing())myDialog.dismiss();
+    }
+    private void checkSelfPermissionAndInitDb(){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if ((ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))){
+                myDialog.setTitle("提示信息").setMessage("APP不能存储数据,请设置允许APP读写手机存储权限").setNoOnclickListener("退出", myDialog -> {
+                    myDialog.dismiss();
+                    LoginActivity.this.finish();
+                }).setYesOnclickListener("重新获取",(MyDialog myDialog)->{
+                    myDialog.dismiss();
+                    ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},REQUEST_STORAGE_PERMISSIONS );
+                }).show();
+            }else {
+                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},REQUEST_STORAGE_PERMISSIONS );
+            }
+        }else{
+            initDbAndImgDirectory();
+            //显示商户域名
+            show_url();
+        }
+    }
+    private void initDbAndImgDirectory(){
+        SQLiteHelper.initDb(this);
+        initGoodsImgDirectory();
+    }
+    private void initKeyboard(){
+        final ConstraintLayout keyboard_linear_layout = findViewById(R.id.keyboard);
+        if (null != keyboard_linear_layout)
+            for (int i = 0,child  = keyboard_linear_layout.getChildCount(); i < child;i++){
+                View tmp_v = keyboard_linear_layout.getChildAt(i);
+                tmp_v.setOnClickListener(mKeyboardListener);
+            }
+    }
     private View.OnClickListener mKeyboardListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -452,12 +480,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void initGoodsImgDirectory(){
-        File file = new File(IMG_PATH);
+        final File file = new File(IMG_PATH);
         if (!file.exists()){
             if (!file.mkdir()){
                 MyDialog.ToastMessage("初始化商品图片目录错误！",this,null);
             }
         }
     }
-
 }
