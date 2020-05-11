@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -37,42 +38,26 @@ import java.util.Locale;
 
 import static android.content.Context.WINDOW_SERVICE;
 
-public class HangBillDialog extends Dialog {
-    private MainActivity mContext;
+public class HangBillDialog extends BaseDialog {
     private SimpleCursorAdapter mHbCursorAdapter,mHbDetailCursorAdapter;
     private View mVipInfoView;
     private String mCurrentHangId;
     private OnGetBillListener mGetListener;
-    private ListView mHangBillList;
-    public HangBillDialog(@NonNull MainActivity context) {
-        super(context);
-        mContext = context;
+
+    public HangBillDialog(@NonNull MainActivity context,final String title) {
+        super(context,title);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.hangbill_dialog_layout);
-        setCancelable(false);
-        setCanceledOnTouchOutside(false);
+        super.onCreate(savedInstanceState);
+        setContentLayout(R.layout.hangbill_dialog_layout);
 
         //初始化表格
         initHangBillDetail();
         initHangBillList();
 
         //初始化按钮事件
-        findViewById(R.id._close).setOnClickListener(v->HangBillDialog.this.dismiss());
-        findViewById(R.id.del_hang_b).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null != mCurrentHangId) {
-                    StringBuilder err = new StringBuilder();
-                    if (!deleteBill(mCurrentHangId,err)){
-                        MyDialog.ToastMessage("删除挂单信息错误：" + err, mContext, getWindow());
-                    }
-                } else {
-                    MyDialog.ToastMessage("请选择需要删除的记录！", mContext, getWindow());
-                }
-            }
-        });
+        initDelHangBill();
         findViewById(R.id.to_checkout).setOnClickListener(v -> {
             to_checkout();
         });
@@ -92,6 +77,20 @@ public class HangBillDialog extends Dialog {
         }
     }
 
+    private void initDelHangBill(){
+        final Button del_hang_b = findViewById(R.id.del_hang_b);
+        if (null != del_hang_b)
+            del_hang_b.setOnClickListener(v -> {
+                if (null != mCurrentHangId) {
+                    StringBuilder err = new StringBuilder();
+                    if (!deleteBill(mCurrentHangId,err)){
+                        MyDialog.ToastMessage("删除挂单信息错误：" + err, mContext, getWindow());
+                    }
+                } else {
+                    MyDialog.ToastMessage("请选择需要删除的记录！", mContext, getWindow());
+                }
+            });
+    }
     private void initWindowSize(){
         //初始化窗口尺寸
         WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
@@ -110,12 +109,7 @@ public class HangBillDialog extends Dialog {
     }
 
     private void initHangBillList(){
-        //表头
-        ListView header = findViewById(R.id.header);
-        header.addHeaderView(LayoutInflater.from(mContext).inflate(R.layout.hangbill_header_layout,null));
-        header.setAdapter(new SimpleCursorAdapter(mContext,R.layout.hangbill_header_layout,null,null,null,1));
         //表中区
-        mHangBillList = findViewById(R.id.hangbill_list);
         mHbCursorAdapter = new SimpleCursorAdapter(mContext,R.layout.hangbill_content_layout,null,new String[]{"_id","hang_id","h_amt","oper_date"},new int[]{R.id.row_id,R.id.hang_id,R.id.h_amt,R.id.h_time},1);
         mHbCursorAdapter.setViewBinder(((view, cursor, columnIndex) -> {
             if (view.getId() == R.id.hang_id ){
@@ -142,20 +136,24 @@ public class HangBillDialog extends Dialog {
             }
             return false;
         }));
-        mHangBillList.setOnItemClickListener((parent, view, position, id) -> {
-            if (view == null)return;
-            TextView hang_id_v = view.findViewById(R.id.hang_id);
-            if (hang_id_v != null){
-                mCurrentHangId = hang_id_v.getText().toString();
-                showVipInfo();
-                loadHangBillDetail(mCurrentHangId);
-                mHbCursorAdapter.notifyDataSetChanged();
+
+        final ListView hang_bill_list = findViewById(R.id.hangbill_list);
+        if (null != hang_bill_list){
+            hang_bill_list.setOnItemClickListener((parent, view, position, id) -> {
+                if (view == null)return;
+                TextView hang_id_v = view.findViewById(R.id.hang_id);
+                if (hang_id_v != null){
+                    mCurrentHangId = hang_id_v.getText().toString();
+                    showVipInfo();
+                    loadHangBillDetail(mCurrentHangId);
+                    mHbCursorAdapter.notifyDataSetChanged();
+                }
+            });
+            hang_bill_list.setAdapter(mHbCursorAdapter);
+            loadHangBill(null);
+            if (mHbCursorAdapter.getCount() != 0){
+                hang_bill_list.performItemClick(hang_bill_list.getAdapter().getView(0, null, null), 0, hang_bill_list.getItemIdAtPosition(0));
             }
-        });
-        mHangBillList.setAdapter(mHbCursorAdapter);
-        loadHangBill(null);
-        if (mHbCursorAdapter.getCount() != 0){
-            mHangBillList.performItemClick(mHangBillList.getAdapter().getView(0, null, null), 0, mHangBillList.getItemIdAtPosition(0));
         }
     }
 
@@ -193,12 +191,8 @@ public class HangBillDialog extends Dialog {
     }
 
     private void initHangBillDetail(){
-        //表头
-        ListView mDetailHeader = findViewById(R.id.h_detail_header);
-        mDetailHeader.addHeaderView(LayoutInflater.from(mContext).inflate(R.layout.hangbill_detail_header_layout,null));
-        mDetailHeader.setAdapter(new SimpleCursorAdapter(mContext,R.layout.hangbill_detail_header_layout,null,null,null,1));
         //表中区
-        ListView mHangBillDetails = findViewById(R.id.hangbill_details_list);
+        final ListView mHangBillDetails = findViewById(R.id.hangbill_details_list);
         mHbDetailCursorAdapter = new SimpleCursorAdapter(mContext,R.layout.hangbill_detail_content_layout,null,new String[]{"_id","barcode","goods_title","xnum","sale_price","discount","sale_amt"},
                 new int[]{R.id.row_id,R.id.barcode,R.id.goods_title,R.id.xnum,R.id.h_sale_price,R.id.h_discount,R.id.h_sale_amt},1);
         mHbDetailCursorAdapter.setViewBinder((view, cursor, columnIndex) -> {
@@ -211,7 +205,8 @@ public class HangBillDialog extends Dialog {
             }
             return false;
         });
-        mHangBillDetails.setAdapter(mHbDetailCursorAdapter);
+        if (null != mHangBillDetails)
+            mHangBillDetails.setAdapter(mHbDetailCursorAdapter);
     }
 
     private void loadHangBill(final String hang_id){

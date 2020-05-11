@@ -61,7 +61,7 @@ public class ConnSettingDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(this.getLayoutInflater().inflate(R.layout.con_param_setting_dialog_layout, null));
+        setContentView(R.layout.con_param_setting_dialog_layout);
         //按空白处不能取消动画
         setCanceledOnTouchOutside(false);
 

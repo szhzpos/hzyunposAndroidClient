@@ -82,8 +82,8 @@
     <dimen name="format_setting_item_height">@dimen/height_35</dimen>
     <dimen name="sec_sale_header_font_size">@dimen/font_size_12</dimen>
     <dimen name="table_row_height">@dimen/height_50</dimen>
-    <dimen name="hang_bill_detail_bacode_width">@dimen/width_128</dimen>
-    <dimen name="hang_bill_detail_g_title_width">@dimen/width_208</dimen>
+    <dimen name="table_bacode_width">@dimen/width_128</dimen>
+    <dimen name="table_goods_title_width">@dimen/width_208</dimen>
     <dimen name="hang_bill_dialog_width">@dimen/width_888</dimen>
     <dimen name="b_scalse_dialog_width">@dimen/width_888</dimen>
     <dimen name="table_header_height">@dimen/height_50</dimen>

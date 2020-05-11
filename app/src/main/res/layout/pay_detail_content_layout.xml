@@ -30,7 +30,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="@string/pay_detail_name_sz"
+        android:text="@string/pay_method_name_sz"
         android:textColor="@color/white"
         android:textSize="@dimen/font_size_14" />
 

@@ -341,6 +341,16 @@ public final class Utils {
         return array;
     }
 
+    public static int getViewTagValue(final View view,int default_V){
+        Object tag;
+        if (view != null && (tag = view.getTag()) != null){
+            if (tag instanceof Integer){
+                default_V = (int)tag;
+            }
+        }
+        return default_V;
+    }
+
     public static void moveJsonArray(final JSONArray from,final JSONArray to){
         if (from != null && to != null){
             Object o;

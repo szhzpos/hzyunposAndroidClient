@@ -14,6 +14,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.GoodsWeighDialog;
@@ -27,13 +28,13 @@ import java.util.Date;
 import java.util.Locale;
 
 public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdapter.MyViewHolder> {
-    private Context mContext;
+    private MainActivity mContext;
     private JSONArray mDatas,mDiscountRecords;
     private View mCurrentItemView;
     private int mCurrentItemIndex;
     private int mOrderType = 1;//订单类型 1线下 2线上
     private boolean d_discount = true;//是否折上折
-    public SaleGoodsViewAdapter(Context context){
+    public SaleGoodsViewAdapter(MainActivity context){
         this.mContext = context;
         mDatas = new JSONArray();
         mDiscountRecords = new JSONArray();
@@ -122,7 +123,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
             double xnum = goods.getDoubleValue("xnum");//如果不存在xnum,返回0.0；新增的商品不存在xnum字段，以及该字段值不会为0;挂单以及条码秤称重商品已经存在
             boolean isBarcodeWeighingGoods = !Utils.getNullStringAsEmpty(goods,GoodsInfoViewAdapter.W_G_MARK).isEmpty(),isZero = Utils.equalDouble(xnum,0.0);
             if(!isBarcodeWeighingGoods && isZero && goods.getIntValue("type") == 2){//type 1 普通 2散装称重 3鞋帽
-                GoodsWeighDialog goodsWeighDialog = new GoodsWeighDialog(mContext,goods.getString("barcode_id"));
+                GoodsWeighDialog goodsWeighDialog = new GoodsWeighDialog(mContext,mContext.getString(R.string.goods_i_s),goods.getString("barcode_id"));
                 goodsWeighDialog.setOnYesOnclickListener(myDialog -> {
                     double num = myDialog.getContent();
                     if (!Utils.equalDouble(num,0.0))

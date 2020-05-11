@@ -1,9 +1,7 @@
 package com.wyc.cloudapp.adapter;
 
-import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -13,18 +11,20 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.callback.ClickListener;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.OrderDetaislDialog;
 import com.wyc.cloudapp.logger.Logger;
 
 import java.util.Locale;
 
-public final class SaleDetailBodyViewAdapter extends RecyclerView.Adapter<SaleDetailBodyViewAdapter.MyViewHolder>  {
-    private Context mContext;
+public final class SaleOrderBodyViewAdapter extends RecyclerView.Adapter<SaleOrderBodyViewAdapter.MyViewHolder>  {
+    private MainActivity mContext;
     private JSONArray mDatas;
     private View mCurrentItemView;
-    public SaleDetailBodyViewAdapter(Context context){
+    public SaleOrderBodyViewAdapter(MainActivity context){
         mContext = context;
     }
 
@@ -50,7 +50,7 @@ public final class SaleDetailBodyViewAdapter extends RecyclerView.Adapter<SaleDe
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = View.inflate(mContext, R.layout.sale_detail_body_layout, null);
+        View itemView = View.inflate(mContext, R.layout.sale_order_body_layout, null);
         itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int) mContext.getResources().getDimension(R.dimen.table_row_height)));
         return new MyViewHolder(itemView);
     }
@@ -120,38 +120,56 @@ public final class SaleDetailBodyViewAdapter extends RecyclerView.Adapter<SaleDe
     }
 
     private ClickListener mItemClickListener =  new ClickListener(v -> {
-        Logger.d("双击");
         setCurrentItemView(v);
+        OrderDetaislDialog orderDetaislDialog = new OrderDetaislDialog(mContext,mContext.getString(R.string.order_detail_sz),getCurrentOrder());
+        orderDetaislDialog.show();
     }, this::setCurrentItemView);
 
     private void setCurrentItemView(View v){
         if (mCurrentItemView == null){
             mCurrentItemView = v;
-            setViewBackgroundColor(mCurrentItemView,true);
+            setViewBackgroundColor(v,true);
         }else if(mCurrentItemView != v){
             setViewBackgroundColor(mCurrentItemView,false);
             mCurrentItemView = v;
-            setViewBackgroundColor(mCurrentItemView,true);
+            setViewBackgroundColor(v,true);
         }
+    }
+
+    private JSONObject getCurrentOrder(){
+        if (null != mCurrentItemView){
+            final TextView order_code_tv = mCurrentItemView.findViewById(R.id.order_code);
+            if (null != order_code_tv){
+                final String sz_order_code = order_code_tv.getText().toString();
+                for (int i = 0,size = mDatas.size();i < size;i ++){
+                    final JSONObject object = mDatas.getJSONObject(i);
+                    if (object != null && sz_order_code.equals(object.getString("order_code"))){
+                        return object;
+                    }
+                }
+            }
+        }
+        return new JSONObject();
     }
 
     public void setDatas(final String where_sql){
         final StringBuilder err = new StringBuilder();
         final String sql = "SELECT \n" +
-                "       transfer_status s_e_status,\n" +
-                "       case transfer_status when 1 then '未交班' when 2 then '已交班' else '其他' end s_e_status_name,\n" +
-                "       upload_status,\n" +
-                "       case upload_status when 1 then '未上传' when 2 then '已上传' else '其他' end upload_status_name,\n" +
-                "       pay_status,\n" +
-                "       case pay_status when 1 then '未支付' when 2 then '已支付' else '支付中' end pay_status_name,\n" +
-                "       order_status,\n" +
-                "       case order_status when 1 then '未付款' when 2 then '已付款' when 3 then '已取消' when 4 then '已退货' else '其他'  end order_status_name,\n" +
-                "       datetime(addtime, 'unixepoch', 'localtime') oper_time,\n" +
-                "       cashier_id,\n" +
+                "       a.transfer_status s_e_status,\n" +
+                "       case a.transfer_status when 1 then '未交班' when 2 then '已交班' else '其他' end s_e_status_name,\n" +
+                "       a.upload_status,\n" +
+                "       case a.upload_status when 1 then '未上传' when 2 then '已上传' else '其他' end upload_status_name,\n" +
+                "       a.pay_status,\n" +
+                "       case a.pay_status when 1 then '未支付' when 2 then '已支付' else '支付中' end pay_status_name,\n" +
+                "       a.order_status,\n" +
+                "       case a.order_status when 1 then '未付款' when 2 then '已付款' when 3 then '已取消' when 4 then '已退货' else '其他'  end order_status_name,\n" +
+                "       datetime(a.addtime, 'unixepoch', 'localtime') oper_time,\n" +
+                "       a.remark,\n" +
+                "       a.cashier_id,\n" +
                 "       b.cas_name,\n" +
-                "       discount_price reality_amt,\n" +
-                "       total order_amt,\n" +
-                "       order_code\n" +
+                "       a.discount_price reality_amt,\n" +
+                "       a.total order_amt,\n" +
+                "       a.order_code\n" +
                 "  FROM retail_order a left join cashier_info b on a.cashier_id = b.cas_id " + where_sql;
 
         Logger.d("sql:%s",sql);

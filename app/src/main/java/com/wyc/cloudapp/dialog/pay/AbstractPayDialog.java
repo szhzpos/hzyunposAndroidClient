@@ -62,6 +62,30 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
         findViewById(R.id._close).setOnClickListener(view-> findViewById(R.id._cancel).callOnClick());
 
         //初始化数字键盘
+        initKeyboard();
+
+        //回车监听
+        setOnKeyListener((dialog, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_ENTER){
+                if (mOk != null)mOk.callOnClick();
+                return true;
+            }
+            return false;
+        });
+
+    }
+    @Override
+    public void onAttachedToWindow(){
+        super.onAttachedToWindow();
+        mDialogWindow = getWindow();
+    }
+    @Override
+    public void onDetachedFromWindow(){
+        super.onDetachedFromWindow();
+        mDialogWindow = getWindow();
+    }
+
+    private void initKeyboard(){
         ConstraintLayout keyboard_linear_layout;
         keyboard_linear_layout = findViewById(R.id.keyboard);
         for (int i = 0,child  = keyboard_linear_layout.getChildCount(); i < child;i++){
@@ -106,25 +130,6 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
                 }
             }
         }
-        //回车监听
-        setOnKeyListener((dialog, keyCode, event) -> {
-            if (keyCode == KeyEvent.KEYCODE_ENTER){
-                if (mOk != null)mOk.callOnClick();
-                return true;
-            }
-            return false;
-        });
-
-    }
-    @Override
-    public void onAttachedToWindow(){
-        super.onAttachedToWindow();
-        mDialogWindow = getWindow();
-    }
-    @Override
-    public void onDetachedFromWindow(){
-        super.onDetachedFromWindow();
-        mDialogWindow = getWindow();
     }
 
     private View.OnClickListener button_click = v -> {
@@ -132,10 +137,10 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
         if (view != null) {
             int id = view.getId();
             if (id == R.id.c_amt || id == R.id.pay_code) {
-                EditText tmp_edit = ((EditText)view);
+                final EditText tmp_edit = ((EditText)view);
                 int index = tmp_edit.getSelectionStart();
-                Editable editable = tmp_edit.getText();
-                String sz_button = ((Button) v).getText().toString();
+                final Editable editable = tmp_edit.getText();
+                final String sz_button = ((Button) v).getText().toString();
                 if (index != tmp_edit.getSelectionEnd())editable.clear();
                 editable.insert(index, sz_button);
             }
@@ -175,7 +180,7 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
         mPayAmtEt.setHint(hint);
     }
 
-    protected void refreshContent(){
+    void refreshContent(){
         if (mPayAmtEt != null){
             mPayAmtEt.setText(String.format(Locale.CHINA,"%.2f",mOriginalPayAmt));
             mPayAmtEt.selectAll();
@@ -197,7 +202,7 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
     protected abstract void initPayMethod();
 
     @SuppressLint("SimpleDateFormat")
-    protected String getPayCode() {
+    String getPayCode() {
         String pos_num = "";
         if (mContext instanceof MainActivity){
             pos_num = ((MainActivity)mContext).getPosNum();
@@ -223,7 +228,7 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
         }
         return this;
     }
-    public AbstractPayDialog setCancelListener(onCancelListener listener){
+    AbstractPayDialog setCancelListener(onCancelListener listener){
         mCancelListener = listener;
         return this;
     }

@@ -8,33 +8,6 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dialog_head_heigth"
-        android:background="@drawable/dialog_top_round_shap"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="@string/hangbill_sz"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textSize="@dimen/font_size_24" />
-
-        <Button
-            android:id="@+id/_close"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/size_35"
-            android:layout_height="@dimen/size_35"
-            android:layout_gravity="center_vertical"
-            android:layout_margin="@dimen/margin_2"
-            android:background="@drawable/close" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
         android:layout_height="@dimen/height_50"
         android:layout_marginStart="@dimen/margin_2"
         android:layout_marginTop="@dimen/margin_2"
@@ -139,12 +112,78 @@
             android:paddingEnd="@dimen/margin_1"
             android:paddingBottom="@dimen/margin_1">
 
-            <ListView
-                android:id="@+id/header"
-                android:layout_width="308dp"
-                android:layout_height="wrap_content"
-                android:drawSelectorOnTop="false"
-                android:focusable="auto" />
+            <LinearLayout
+                android:id="@+id/h_header"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/table_header_height"
+                android:background="@color/table_header_color"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/row_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:width="40dp"
+                    android:ellipsize="marquee"
+                    android:ems="10"
+                    android:maxHeight="100dp"
+                    android:maxEms="50"
+                    android:maxLines="50"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:textAlignment="center"
+                    android:textSize="16sp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/hang_id"
+                    android:layout_width="@dimen/width_68"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/hang_id_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+
+                <TextView
+                    android:id="@+id/h_amt"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/h_amt_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+
+                <TextView
+                    android:id="@+id/h_cas_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/oper_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/h_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:minWidth="168dp"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/time_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+            </LinearLayout>
 
             <ListView
                 android:id="@+id/hangbill_list"
@@ -161,13 +200,83 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <ListView
+            <LinearLayout
                 android:id="@+id/h_detail_header"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_2"
-                android:layout_marginEnd="@dimen/margin_2"
-                android:background="@drawable/border_sub_gray" />
+                android:layout_height="@dimen/table_header_height"
+                android:background="@color/table_header_color"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/barcode"
+                    android:layout_width="@dimen/table_bacode_width"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/barcode_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+
+                <TextView
+                    android:id="@+id/goods_title"
+                    android:layout_width="@dimen/table_goods_title_width"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/g_name_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+
+                <TextView
+                    android:id="@+id/xnum"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/sec_num_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+
+                <TextView
+                    android:id="@+id/h_sale_price"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/sec_price_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+
+                <TextView
+                    android:id="@+id/h_discount"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/discount_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+
+                <TextView
+                    android:id="@+id/h_sale_amt"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/sec_sum_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+            </LinearLayout>
 
             <ListView
                 android:id="@+id/hangbill_details_list"

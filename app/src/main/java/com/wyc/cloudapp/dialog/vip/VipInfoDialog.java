@@ -24,8 +24,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.dialog.BaseDialog;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
@@ -36,26 +38,23 @@ import com.wyc.cloudapp.utils.http.HttpRequest;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 
-public class VipInfoDialog extends Dialog {
+public class VipInfoDialog extends BaseDialog {
     private EditText mSearchContent;
     private String mAppId,mAppScret,mUrl;
     private CustomProgressDialog mProgressDialog;
-    private Context mContext;
     private Myhandler mHandler;
     private JSONObject mVip;
     private TextView mVip_name,mVip_sex,mVip_p_num,mVip_card_id,mVip_balance,mVip_integral;
-    private Button mSearchBtn,mModfiyBtn,mChargeBtn,mAddBtn;
+    private Button mSearchBtn;
     private onYesOnclickListener mYesOnclickListener;//确定按钮被点击了的监听器
     private boolean mPrintStatus = true;
-    public VipInfoDialog(@NonNull Context context) {
-        super(context);
-        mContext = context;
+    public VipInfoDialog(@NonNull MainActivity context, final String title) {
+        super(context,title);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState){
-        setContentView(R.layout.vip_info_dialog_layout);
-        setCancelable(false);
-        setCanceledOnTouchOutside(false);
+        super.onCreate(savedInstanceState);
+        setContentLayout(R.layout.vip_info_dialog_layout);
 
         mProgressDialog = new CustomProgressDialog(mContext);
         mHandler = new Myhandler(this);
@@ -70,9 +69,6 @@ public class VipInfoDialog extends Dialog {
 
         //初始化按钮
         mSearchBtn = findViewById(R.id._ok);
-        mModfiyBtn = findViewById(R.id.vip_modify);
-        mChargeBtn = findViewById(R.id.vip_charge);
-        mAddBtn = findViewById(R.id.vip_add);
 
         //初始化连接参数
         if (!initConnParam()){
@@ -81,102 +77,13 @@ public class VipInfoDialog extends Dialog {
 
         //初始化搜索条件输入框
         initSearchCondition();
-
-        //初始化按钮事件
-        findViewById(R.id._close).setOnClickListener( v ->VipInfoDialog.this.dismiss());
-
-        mAddBtn.setOnClickListener(view -> {
-            AddVipInfoDialog dialog = new AddVipInfoDialog(mContext,null,mUrl,mAppId,mAppScret);
-            dialog.setOnShowListener(dialog12 -> mSearchContent.clearFocus());
-            dialog.setOnDismissListener(dialog1 -> mSearchContent.postDelayed(()->{mSearchContent.requestFocus();},300));
-            dialog.setYesOnclickListener(dialog13 -> {
-                JSONObject jsonObject = dialog13.getVipInfo();
-                if (jsonObject != null){
-                    mSearchContent.setText(jsonObject.getString("mobile"));
-                    mSearchBtn.callOnClick();
-                }
-                dialog13.dismiss();
-            }).show();
-        });
-        mModfiyBtn.setOnClickListener(view -> {
-            if (mVip != null){
-                AddVipInfoDialog dialog = new AddVipInfoDialog(mContext,mVip,mUrl,mAppId,mAppScret);
-                dialog.setOnShowListener(dialog12 -> mSearchContent.clearFocus());
-                dialog.setOnDismissListener(dialog1 -> mSearchContent.postDelayed(()->{mSearchContent.requestFocus();},300));
-                dialog.setYesOnclickListener(dialog14 -> {
-                    showVipInfo(dialog14.getVipInfo());
-                    dialog14.dismiss();
-                }).show();
-            }else{
-                serchVip(mSearchContent.getText().toString(),mModfiyBtn.getId());
-            }
-        });
-        mChargeBtn.setOnClickListener(view -> {
-            if (mVip != null){
-                VipChargeDialog vipChargeDialog = new VipChargeDialog(mContext,mVip,mPrintStatus);
-                vipChargeDialog.setYesOnclickListener(dialog -> {
-                    showVipInfo(dialog.getContent());
-                    dialog.dismiss();
-                }).show();
-            }else{
-                serchVip(mSearchContent.getText().toString(),mChargeBtn.getId());
-            }
-        });
-        findViewById(R.id.v_printer_status).setOnClickListener(v -> {
-            ImageView imageView = (ImageView)v;
-            Bitmap printer = BitmapFactory.decodeResource(mContext.getResources(),R.drawable.printer);
-            if (mPrintStatus){
-                mPrintStatus = false;
-                imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(printer,15,15));
-                MyDialog.ToastMessage(imageView,"打印功能已关闭！",mContext,getWindow());
-            }else{
-                mPrintStatus = true;
-                imageView.setImageBitmap(printer);
-                MyDialog.ToastMessage(imageView,"打印功能已开启！",mContext,getWindow());
-            }
-        });//打印状态
+        initAddVipBtn();
+        initModifyBtn();
+        initPrinterStatus();
+        initChargeBtn();
 
         //初始化数字键盘
-        ConstraintLayout keyboard_linear_layout;
-        keyboard_linear_layout = findViewById(R.id.keyboard);
-        for (int i = 0,child  = keyboard_linear_layout.getChildCount(); i < child;i++){
-            View tmp_v = keyboard_linear_layout.getChildAt(i);
-            int id = tmp_v.getId();
-            if (tmp_v instanceof Button){
-                switch (id) {
-                    case R.id._back:
-                        findViewById(R.id._back).setOnClickListener(v -> {
-                            View view = getCurrentFocus();
-                            if (view != null) {
-                                if (view.getId() == R.id.search_content) {
-                                    EditText tmp_edit = ((EditText) view);
-                                    int index = tmp_edit.getSelectionStart(), end = tmp_edit.getSelectionEnd();
-                                    if (index != end && end == tmp_edit.getText().length()) {
-                                        tmp_edit.setText(mContext.getString(R.string.space_sz));
-                                    } else {
-                                        if (index == 0) return;
-                                        tmp_edit.getText().delete(index - 1, index);
-                                    }
-                                }
-                            }
-                        });
-                        break;
-                    case R.id._ok:
-                        mSearchBtn.setOnClickListener(view -> {
-                            if (mVip == null)
-                                serchVip(mSearchContent.getText().toString(), 0);
-                            else {
-                                if (mYesOnclickListener != null)
-                                    mYesOnclickListener.onYesClick(VipInfoDialog.this);
-                            }
-                        });
-                        break;
-                    default:
-                        tmp_v.setOnClickListener(button_click);
-                        break;
-                }
-            }
-        }
+        initKeyboard();
 
     }
 
@@ -188,6 +95,116 @@ public class VipInfoDialog extends Dialog {
     @Override
     public void onDetachedFromWindow(){
 
+    }
+    private void initChargeBtn(){
+        final Button chargeBtn = findViewById(R.id.vip_charge);
+        if (null != chargeBtn)
+            chargeBtn.setOnClickListener(view -> {
+                if (mVip != null){
+                    VipChargeDialog vipChargeDialog = new VipChargeDialog(mContext,mVip,mPrintStatus);
+                    vipChargeDialog.setYesOnclickListener(dialog -> {
+                        showVipInfo(dialog.getContent());
+                        dialog.dismiss();
+                    }).show();
+                }else{
+                    serchVip(mSearchContent.getText().toString(),chargeBtn.getId());
+                }
+            });
+    }
+    private void initPrinterStatus(){
+        final ImageView imageView =  findViewById(R.id.v_printer_status);
+        if (null != imageView){
+            imageView.setOnClickListener(v -> {
+                Bitmap printer = BitmapFactory.decodeResource(mContext.getResources(),R.drawable.printer);
+                if (mPrintStatus){
+                    mPrintStatus = false;
+                    imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(printer,15,15));
+                    MyDialog.ToastMessage(imageView,"打印功能已关闭！",mContext,getWindow());
+                }else{
+                    mPrintStatus = true;
+                    imageView.setImageBitmap(printer);
+                    MyDialog.ToastMessage(imageView,"打印功能已开启！",mContext,getWindow());
+                }
+            });//打印状态
+        }
+    }
+    private void initModifyBtn(){
+        final Button modifiyBtn = findViewById(R.id.vip_modify);
+        if (null != modifiyBtn)
+            modifiyBtn.setOnClickListener(view -> {
+                if (mVip != null){
+                    AddVipInfoDialog dialog = new AddVipInfoDialog(mContext,mVip,mUrl,mAppId,mAppScret);
+                    dialog.setOnShowListener(dialog12 -> mSearchContent.clearFocus());
+                    dialog.setOnDismissListener(dialog1 -> mSearchContent.postDelayed(()->{mSearchContent.requestFocus();},300));
+                    dialog.setYesOnclickListener(dialog14 -> {
+                        showVipInfo(dialog14.getVipInfo());
+                        dialog14.dismiss();
+                    }).show();
+                }else{
+                    serchVip(mSearchContent.getText().toString(),modifiyBtn.getId());
+                }
+            });
+    }
+
+    private void initAddVipBtn(){
+        final Button add_btn = findViewById(R.id.vip_add);
+        if (null != add_btn)
+            add_btn.setOnClickListener(view -> {
+                AddVipInfoDialog dialog = new AddVipInfoDialog(mContext,null,mUrl,mAppId,mAppScret);
+                dialog.setOnShowListener(dialog12 -> mSearchContent.clearFocus());
+                dialog.setOnDismissListener(dialog1 -> mSearchContent.postDelayed(()->{mSearchContent.requestFocus();},300));
+                dialog.setYesOnclickListener(dialog13 -> {
+                    JSONObject jsonObject = dialog13.getVipInfo();
+                    if (jsonObject != null){
+                        mSearchContent.setText(jsonObject.getString("mobile"));
+                        mSearchBtn.callOnClick();
+                    }
+                    dialog13.dismiss();
+                }).show();
+            });
+    }
+
+    private void initKeyboard(){
+        final ConstraintLayout keyboard_linear_layout = findViewById(R.id.keyboard);
+        if (null != keyboard_linear_layout)
+            for (int i = 0,child  = keyboard_linear_layout.getChildCount(); i < child;i++){
+                View tmp_v = keyboard_linear_layout.getChildAt(i);
+                int id = tmp_v.getId();
+                if (tmp_v instanceof Button){
+                    switch (id) {
+                        case R.id._back:
+                            findViewById(R.id._back).setOnClickListener(v -> {
+                                View view = getCurrentFocus();
+                                if (view != null) {
+                                    if (view.getId() == R.id.search_content) {
+                                        EditText tmp_edit = ((EditText) view);
+                                        int index = tmp_edit.getSelectionStart(), end = tmp_edit.getSelectionEnd();
+                                        if (index != end && end == tmp_edit.getText().length()) {
+                                            tmp_edit.setText(mContext.getString(R.string.space_sz));
+                                        } else {
+                                            if (index == 0) return;
+                                            tmp_edit.getText().delete(index - 1, index);
+                                        }
+                                    }
+                                }
+                            });
+                            break;
+                        case R.id._ok:
+                            mSearchBtn.setOnClickListener(view -> {
+                                if (mVip == null)
+                                    serchVip(mSearchContent.getText().toString(), 0);
+                                else {
+                                    if (mYesOnclickListener != null)
+                                        mYesOnclickListener.onYesClick(VipInfoDialog.this);
+                                }
+                            });
+                            break;
+                        default:
+                            tmp_v.setOnClickListener(button_click);
+                            break;
+                    }
+                }
+            }
     }
 
     private void initSearchCondition(){

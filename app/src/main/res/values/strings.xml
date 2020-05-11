@@ -43,7 +43,7 @@
     <string name="store_name_sz">门店：</string>
     <string name="currency_symbol_sz">￥</string>
     <string name="space_sz">""</string>
-    <string name="verify_pay_sz">确认收银</string>
+    <string name="affirm_pay_sz">确认收银</string>
     <string name="order_amt_sz">单据金额</string>
     <string name="discount_amt_sz">优惠金额</string>
     <string name="actual_amt_sz">应收金额</string>
@@ -71,7 +71,7 @@
     <string name="d_zero_point_sz">.00</string>
     <string name="z_p_z_sz">0.00</string>
     <string name="pay_detail_row_id_sz">@string/row_id_sz</string>
-    <string name="pay_detail_name_sz">支付方式</string>
+    <string name="pay_method_name_sz">支付方式</string>
     <string name="pay_detail_amt_sz">金额</string>
     <string name="pay_detail_zl_sz">找零</string>
     <string name="pay_detail_v_num_sz">凭证号</string>
@@ -203,4 +203,12 @@
     <string name="start_time_sz">00:00:00</string>
     <string name="end_time_sz">23:59:59</string>
     <string name="category_hint_sz">请选择商品类别</string>
+    <string name="order_detail_sz">订单详情</string>
+    <string name="vip_ph_num_not_colon_sz">手机</string>
+    <string name="item_no_sz">货号</string>
+    <string name="unit_sz">单位</string>
+    <string name="pay_code_sz">支付单号</string>
+    <string name="reprint_order_sz">补打小票</string>
+    <string name="abnormal_back_order_sz">异常退单</string>
+    <string name="verify_pay_sz">支付验证</string>
 </resources>

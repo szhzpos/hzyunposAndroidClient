@@ -1,23 +1,13 @@
 package com.wyc.cloudapp.dialog;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.MessageID;
-
-import java.lang.ref.WeakReference;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class CustomProgressDialog extends ProgressDialog
 {
@@ -51,7 +41,7 @@ public class CustomProgressDialog extends ProgressDialog
             params.height = WindowManager.LayoutParams.WRAP_CONTENT;
             window.setAttributes(params);
         }
-        findViewById(R.id.dialog_linearLayout).setMinimumWidth(100);
+        findViewById(R.id.progress_linearLayout).setMinimumWidth(100);
 
     }
 

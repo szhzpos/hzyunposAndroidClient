@@ -135,7 +135,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         if (-1 == id){
             sql = "select gp_id,-1 goods_id,ifnull(gp_title,'') goods_title,'' unit_id,ifnull(unit_name,'') unit_name,\n" +
                     " -1  barcode_id,ifnull(gp_code,'') barcode,type,gp_price price,ifnull(img_url,'') img_url from goods_group \n" +
-                    "where status = '1'";
+                    "where status = 1";
         }else{
             category_id = SQLiteHelper.getString("select category_id from shop_category where path like '%" + id +"%'",err);
             if (null == category_id){
@@ -143,7 +143,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                 return;
             }
             category_id = category_id.replace("\r\n",",");
-            sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,type,retail_price price,ifnull(img_url,'') img_url from barcode_info where (goods_status = '1' and barcode_status = '1') and category_id in (" + category_id + ")";
+            sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,type,retail_price price,ifnull(img_url,'') img_url from barcode_info where (goods_status = 1 and barcode_status = 1) and category_id in (" + category_id + ")";
         }
 
         mDatas = SQLiteHelper.getListToJson(sql,0,0,false,err);
@@ -160,7 +160,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         final ContentValues barcodeRuleObj = new ContentValues();
         final String search_content = search.getText().toString(),sql_where,full_sql,
                 sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,only_coding,type,retail_price price\n" +
-                ",ifnull(img_url,'') img_url from barcode_info where (goods_status = '1' and barcode_status = '1') and %1";
+                ",ifnull(img_url,'') img_url from barcode_info where (goods_status = 1 and barcode_status = 1) and %1";
 
         if (isBarcodeWeighingGoods(search_content,barcodeRuleObj)){
             sql_where = "only_coding = " + barcodeRuleObj.getAsString("item_id");
@@ -198,7 +198,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
 
     public boolean getSingleGoods(@NonNull JSONObject object, final String weigh_barcode_info, int id){
         final String full_sql,sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,only_coding,ifnull(type,0) type," +
-                "retail_price,retail_price price,tc_rate,tc_mode,tax_rate,ps_price,cost_price,trade_price,buying_price,yh_mode,yh_price,metering_id,conversion from barcode_info where goods_status = '1' and barcode_status = '1' and ";
+                "retail_price,retail_price price,tc_rate,tc_mode,tax_rate,ps_price,cost_price,trade_price,buying_price,yh_mode,yh_price,metering_id,conversion from barcode_info where goods_status = 1 and barcode_status = 1 and ";
 
         if (weigh_barcode_info != null && weigh_barcode_info.length() != 0){
             full_sql = sql + "only_coding = " + id;
@@ -207,7 +207,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
 
         full_sql = sql + "barcode_id = " + id + " UNION select gp_id ,-1 goods_id,ifnull(gp_title,'') goods_title,ifnull(unit_name,'') unit_name, -1 barcode_id,ifnull(gp_code,'') barcode,-1 only_coding,ifnull(type,0) type," +
                 "gp_price retail_price,gp_price price,0 tc_rate,0 tc_mode,0 tax_rate,0 ps_price,0 cost_price,0 trade_price,gp_price buying_price,0 yh_mode,0 yh_price,1 metering_id,1 conversion from goods_group \n" +
-                "where status = '1' and gp_id = " + id;
+                "where status = 1 and gp_id = " + id;
 
         //Logger.d("full_sql:%s",full_sql);
 

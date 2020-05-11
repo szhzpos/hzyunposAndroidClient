@@ -149,7 +149,7 @@ public class PayDialog extends Dialog {
         final Button vip_btn = findViewById(R.id.vip);
         if (null != vip_btn)
             vip_btn.setOnClickListener(view -> {
-                VipInfoDialog vipInfoDialog = new VipInfoDialog(mainActivity);
+                VipInfoDialog vipInfoDialog = new VipInfoDialog(mainActivity,mainActivity.getString(R.string.vip_info_sz));
                 vipInfoDialog.setYesOnclickListener(dialog -> {
                     deleteMolDiscountRecord();
                     showVipInfo(dialog.getVip(),false);
@@ -176,7 +176,7 @@ public class PayDialog extends Dialog {
         final Button mo_l_btn = findViewById(R.id.mo_l);
         if (mo_l_btn != null)
             mo_l_btn.setOnClickListener(v -> {//手动抹零
-                ChangeNumOrPriceDialog changeNumOrPriceDialog = new ChangeNumOrPriceDialog(getContext(),mainActivity.getString(R.string.mo_l_sz),String.format(Locale.CHINA,"%.2f",mActual_amt - ((int)mActual_amt)));
+                ChangeNumOrPriceDialog changeNumOrPriceDialog = new ChangeNumOrPriceDialog(mainActivity,mainActivity.getString(R.string.mo_l_sz),String.format(Locale.CHINA,"%.2f",mActual_amt - ((int)mActual_amt)));
                 changeNumOrPriceDialog.setYesOnclickListener(myDialog -> {
                     mMolAmt = myDialog.getContent();
                     if (!Utils.equalDouble(mMolAmt,0.0)){

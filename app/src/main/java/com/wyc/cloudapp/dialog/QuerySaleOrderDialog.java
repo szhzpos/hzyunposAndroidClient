@@ -26,8 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.adapter.SaleDetailBodyViewAdapter;
-import com.wyc.cloudapp.adapter.SaleDetailHeaderViewAdapter;
+import com.wyc.cloudapp.adapter.SaleOrderBodyViewAdapter;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
@@ -39,24 +38,20 @@ import java.util.Locale;
 
 import static android.content.Context.WINDOW_SERVICE;
 
-public class QuerySaleDetailsDialog extends Dialog {
-    private MainActivity mContext;
+public class QuerySaleOrderDialog extends BaseDialog {
     private int mCurrentStatusIndex = 0;
     private String[] mCashierNames,mCashierIDs;
-    private final String[] mPayStatusItems = new String[]{"所有","未支付","已支付","支付中"},mS_ex_statusItems = new String[]{"所有","未交班","已交班"},
-            mUploadStatusItems = new String[]{"所有","未上传","已上传"},mOrderStatusItems = new String[]{"所有","未付款","已付款","已取消","已退货"};
     private EditText mStartDateEt,mStartTimeEt,mEndDateEt,mEndTimeEt,mPayStatusEt,mCashierEt,mS_ex_statusEt,mUploadStatusEt,mOrderStatusEt;
-    private SaleDetailBodyViewAdapter mSaleDetailBodyViewAdapter;
-    public QuerySaleDetailsDialog(@NonNull MainActivity context) {
-        super(context);
-        mContext = context;
-        mSaleDetailBodyViewAdapter = new SaleDetailBodyViewAdapter(mContext);
+    private SaleOrderBodyViewAdapter mSaleOrderBodyViewAdapter;
+    public QuerySaleOrderDialog(@NonNull MainActivity context,final String title) {
+        super(context,title);
+        mSaleOrderBodyViewAdapter = new SaleOrderBodyViewAdapter(context);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.query_sale_detail_dialog_layout);
+        setContentLayout(R.layout.query_sale_order_dialog_layout);
         setCancelable(false);
 
         initStartDateAndTime();
@@ -68,7 +63,7 @@ public class QuerySaleDetailsDialog extends Dialog {
         initOrderDetailTable();
 
         //初始化按钮事件
-        findViewById(R.id._close).setOnClickListener(v->QuerySaleDetailsDialog.this.dismiss());
+        findViewById(R.id._close).setOnClickListener(v-> QuerySaleOrderDialog.this.dismiss());
 
         //初始窗口尺寸
         initWindowSize();
@@ -79,65 +74,62 @@ public class QuerySaleDetailsDialog extends Dialog {
     private void initQueryBtn(){
         final Button query_btn = findViewById(R.id.query_btn);
         if (query_btn != null){
-            query_btn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    final EditText order_code_et = findViewById(R.id.order_code);
-                    final String start_date_time = mStartDateEt.getText() + " " + mStartTimeEt.getText(),end_date_time = mEndDateEt.getText() + " " + mEndTimeEt.getText(),
-                            sz_pay_status = mPayStatusEt.getTag().toString(),sz_cashier = mCashierEt.getTag().toString(),sz_s_ex_status = mS_ex_statusEt.getTag().toString(),
-                            sz_upload_status = mUploadStatusEt.getTag().toString(),sz_order_status = mOrderStatusEt.getTag().toString(),sz_order_code = order_code_et.getText().toString();
+            query_btn.setOnClickListener(v -> {
+                final EditText order_code_et = findViewById(R.id.order_code);
+                final String start_date_time = mStartDateEt.getText() + " " + mStartTimeEt.getText(),end_date_time = mEndDateEt.getText() + " " + mEndTimeEt.getText(),
+                        sz_order_code = order_code_et.getText().toString(),sz_cashier = getCasId(mCashierEt);
+                int pay_status = Utils.getViewTagValue(mPayStatusEt,0),s_ex_status = Utils.getViewTagValue(mS_ex_statusEt,0),
+                        upload_status = Utils.getViewTagValue(mUploadStatusEt,0),order_status = Utils.getViewTagValue(mOrderStatusEt,0);
 
-                    final StringBuilder where_sql = new StringBuilder();
+                final StringBuilder where_sql = new StringBuilder();
 
-                    where_sql.append("where a.stores_id = ").append(mContext.getStoreInfo().getIntValue("stores_id"));
+                where_sql.append("where a.stores_id = ").append(mContext.getStoreInfo().getIntValue("stores_id"));
 
-                    if(sz_order_code.length() != 0){
-                        if(where_sql.length() != 0)
-                            where_sql.append(" and ");
-
-                        where_sql.append(" order_code").append(" like ").append("'%").append(sz_order_code).append("'");
-                    }
-                    if(!"-1".equals(sz_cashier)){
-                        if(where_sql.length() != 0)
-                            where_sql.append(" and ");
-
-                        where_sql.append(" a.cashier_id").append("=").append(sz_cashier);
-                    }
-                    if(!"0".equals(sz_pay_status)){
-                        if(where_sql.length() != 0)
-                            where_sql.append(" and ");
-
-                        where_sql.append(" pay_status").append("=").append(sz_pay_status);
-
-                    }
-
-                    if(!"0".equals(sz_order_status)){
-                        if(where_sql.length() != 0)
-                            where_sql.append(" and ");
-
-                        where_sql.append(" order_status").append("=").append(sz_order_status);
-
-                    }
-                    if(!"0".equals(sz_upload_status)){
-                        if(where_sql.length() != 0)
-                            where_sql.append(" and ");
-
-                        where_sql.append(" upload_status").append("=").append(sz_upload_status);
-                    }
-                    if(!"0".equals(sz_s_ex_status)){
-                        if(where_sql.length() != 0)
-                            where_sql.append(" and ");
-
-                        where_sql.append(" transfer_status = ").append(sz_s_ex_status);
-                    }
-
-                    if(where_sql.length() != 0){
+                if(sz_order_code.length() != 0){
+                    if(where_sql.length() != 0)
                         where_sql.append(" and ");
-                    }
-                    where_sql.append("datetime(addtime, 'unixepoch', 'localtime') ").append("between ").append("'").append(start_date_time).append("'").append(" and ").append("'").append(end_date_time).append("'");
 
-                    mSaleDetailBodyViewAdapter.setDatas(where_sql.toString());
+                    where_sql.append(" order_code").append(" like ").append("'%").append(sz_order_code).append("'");
                 }
+                if(!"0".equals(sz_cashier)){
+                    if(where_sql.length() != 0)
+                        where_sql.append(" and ");
+
+                    where_sql.append(" a.cashier_id").append("=").append(sz_cashier);
+                }
+                if(pay_status != 0){
+                    if(where_sql.length() != 0)
+                        where_sql.append(" and ");
+
+                    where_sql.append(" pay_status").append("=").append(pay_status);
+                }
+
+                if(order_status != 0){
+                    if(where_sql.length() != 0)
+                        where_sql.append(" and ");
+
+                    where_sql.append(" order_status").append("=").append(order_status);
+
+                }
+                if(upload_status != 0){
+                    if(where_sql.length() != 0)
+                        where_sql.append(" and ");
+
+                    where_sql.append(" upload_status").append("=").append(upload_status);
+                }
+                if(s_ex_status != 0){
+                    if(where_sql.length() != 0)
+                        where_sql.append(" and ");
+
+                    where_sql.append(" transfer_status = ").append(s_ex_status);
+                }
+
+                if(where_sql.length() != 0){
+                    where_sql.append(" and ");
+                }
+                where_sql.append("datetime(addtime, 'unixepoch', 'localtime') ").append("between ").append("'").append(start_date_time).append("'").append(" and ").append("'").append(end_date_time).append("'");
+
+                mSaleOrderBodyViewAdapter.setDatas(where_sql.toString());
             });
             query_btn.callOnClick();
         }
@@ -148,7 +140,7 @@ public class QuerySaleDetailsDialog extends Dialog {
         if (null != cashier_et){
             cashier_et.setOnFocusChangeListener(etFocusChangeListener);
             final StringBuilder err = new StringBuilder();
-            final String sz_cas_info = SQLiteHelper.getString("SELECT cas_id,cas_name FROM cashier_info where cas_status = 1  union select -1 cas_id,'所有' cas_name ",err);
+            final String sz_cas_info = SQLiteHelper.getString("SELECT cas_id,cas_name FROM cashier_info where cas_status = 1  union select 0 cas_id,'所有' cas_name ",err);
             if (sz_cas_info != null){
                 final String[] cas_items_tmp = sz_cas_info.split("\r\n");
                 int size = cas_items_tmp.length;
@@ -163,13 +155,13 @@ public class QuerySaleDetailsDialog extends Dialog {
                     }
                 }
                 cashier_et.setOnClickListener(etClickListener);
-                setCashier(cashier_et);
+                setCashierEt(cashier_et);
             }else{
                 MyDialog.ToastMessage(cashier_et,"初始化收银员错误：" + err,mContext,getWindow());
             }
         }
     }
-    private void setCashier(final @NonNull EditText cashier_et){
+    private void setCashierEt(final @NonNull EditText cashier_et){
         cashier_et.setTag(mCashierIDs[mCurrentStatusIndex]);
         cashier_et.setText(mCashierNames[mCurrentStatusIndex]);
     }
@@ -185,30 +177,41 @@ public class QuerySaleDetailsDialog extends Dialog {
         }
         return index;
     }
+    private String getCasId(final EditText et){
+        Object tag;
+        String tag_v = "0";
+        if (et != null && (tag = et.getTag()) != null){
+            if (tag instanceof String){
+                tag_v = (String) tag;
+            }
+        }
+        return tag_v;
+    }
 
     private void initStatusEt(){
+        final String sz_all = "所有";
         final EditText pay_status_et = mPayStatusEt = findViewById(R.id.pay_status_et),s_ex_status_et = mS_ex_statusEt = findViewById(R.id.s_ex_status_et),
                 upload_status_et = mUploadStatusEt = findViewById(R.id.upload_status_et),order_status_et = mOrderStatusEt = findViewById(R.id.order_status_et);
 
         pay_status_et.setOnFocusChangeListener(etFocusChangeListener);
-        pay_status_et.setTag(mCurrentStatusIndex);
-        pay_status_et.setText(mPayStatusItems[mCurrentStatusIndex]);
+        pay_status_et.setTag(0);
+        pay_status_et.setText(sz_all);
         pay_status_et.setOnClickListener(etClickListener);
 
         //交班状态
         s_ex_status_et.setOnFocusChangeListener(etFocusChangeListener);
-        s_ex_status_et.setTag(mCurrentStatusIndex);
-        s_ex_status_et.setText(mS_ex_statusItems[mCurrentStatusIndex]);
+        s_ex_status_et.setTag(0);
+        s_ex_status_et.setText(sz_all);
         s_ex_status_et.setOnClickListener(etClickListener);
 
         upload_status_et.setOnFocusChangeListener(etFocusChangeListener);
-        upload_status_et.setTag(mCurrentStatusIndex);
-        upload_status_et.setText(mUploadStatusItems[mCurrentStatusIndex]);
+        upload_status_et.setTag(0);
+        upload_status_et.setText(sz_all);
         upload_status_et.setOnClickListener(etClickListener);
 
         order_status_et.setOnFocusChangeListener(etFocusChangeListener);
-        order_status_et.setTag(mCurrentStatusIndex);
-        order_status_et.setText(mOrderStatusItems[mCurrentStatusIndex]);
+        order_status_et.setTag(0);
+        order_status_et.setText(sz_all);
         order_status_et.setOnClickListener(etClickListener);
 
     }
@@ -221,7 +224,7 @@ public class QuerySaleDetailsDialog extends Dialog {
             String[] items = new String[]{""};
             switch (et.getId()){
                 case R.id.pay_status_et:
-                    items = mPayStatusItems;
+                    items = new String[]{"所有","未支付","已支付","支付中"};
                     title = mContext.getString(R.string.pay_s_sz);
                     break;
                 case R.id.cashier_et:
@@ -229,15 +232,15 @@ public class QuerySaleDetailsDialog extends Dialog {
                     title = mContext.getString(R.string.cashier_not_colon_sz);
                     break;
                 case R.id.s_ex_status_et:
-                    items = mS_ex_statusItems;
+                    items = new String[]{"所有","未交班","已交班"};
                     title = mContext.getString(R.string.s_e_status_sz);
                     break;
                 case R.id.upload_status_et:
-                    items = mUploadStatusItems;
+                    items = new String[]{"所有","未上传","已上传"};
                     title = mContext.getString(R.string.upload_s_sz);
                     break;
                 case R.id.order_status_et:
-                    items = mOrderStatusItems;
+                    items = new String[]{"所有","未付款","已付款","已取消","已退货"};
                     title = mContext.getString(R.string.order_s_sz);
                     break;
             }
@@ -254,13 +257,13 @@ public class QuerySaleDetailsDialog extends Dialog {
             chooseDialog((EditText) et,currentStatusItems,index,title);
         }
     }
-    private void chooseDialog(final EditText et,final String[] currentStatusItems,int index,final String title){
+    private void chooseDialog(final @NonNull EditText et,final String[] currentStatusItems,int index,final String title){
         final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setSingleChoiceItems(currentStatusItems, index, (dialog, which) -> mCurrentStatusIndex = which);
         builder.setPositiveButton(mContext.getString(R.string.OK), (dialog, which) -> {
             if (mCurrentStatusIndex < currentStatusItems.length && mCurrentStatusIndex >= 0){
                 if (currentStatusItems == mCashierNames){
-                    setCashier(et);
+                    setCashierEt(et);
                 }else {
                     et.setTag(mCurrentStatusIndex);
                     et.setText(currentStatusItems[mCurrentStatusIndex]);
@@ -351,13 +354,11 @@ public class QuerySaleDetailsDialog extends Dialog {
         }
     }
     private void initOrderDetailTable(){
-        mSaleDetailBodyViewAdapter = new SaleDetailBodyViewAdapter(mContext);
-        final RecyclerView header = findViewById(R.id.detail_header),body = findViewById(R.id.detail_body);
-        header.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
-        header.setAdapter(new SaleDetailHeaderViewAdapter(mContext));
+        mSaleOrderBodyViewAdapter = new SaleOrderBodyViewAdapter(mContext);
+        final RecyclerView body = findViewById(R.id.order_body);
         body.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
         body.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
-        body.setAdapter(mSaleDetailBodyViewAdapter);
+        body.setAdapter(mSaleOrderBodyViewAdapter);
     }
 
     private static void showTimePickerDialog(final Activity activity, final TextView tv, Calendar calendar) {
@@ -381,7 +382,7 @@ public class QuerySaleDetailsDialog extends Dialog {
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year,int monthOfYear, int dayOfMonth) {
-                        tv.setText(String.format(Locale.CHINA,"%d-%02d-%02d",year,monthOfYear,dayOfMonth));
+                        tv.setText(String.format(Locale.CHINA,"%d-%02d-%02d",year,monthOfYear + 1,dayOfMonth));
                     }
                 }
                 // 设置初始日期

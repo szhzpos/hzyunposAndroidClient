@@ -44,7 +44,7 @@ import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.HangBillDialog;
 import com.wyc.cloudapp.dialog.MoreFunDialog;
-import com.wyc.cloudapp.dialog.QuerySaleDetailsDialog;
+import com.wyc.cloudapp.dialog.QuerySaleOrderDialog;
 import com.wyc.cloudapp.dialog.pay.PayDialog;
 import com.wyc.cloudapp.dialog.SecondDisplay;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
         if (discount_btn != null)discount_btn.setOnClickListener(v-> {setDisCashierId(mCashierInfo.getString("cas_id"));mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 2);});//打折
         if (change_price_btn != null)change_price_btn.setOnClickListener(v-> { setDisCashierId(mCashierInfo.getString("cas_id"));mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 1);});//改价
         if (check_out_btn != null)check_out_btn.setOnClickListener((View v)->{Utils.disableView(v,500);showPayDialog();});//结账
-        if (vip_btn != null)vip_btn.setOnClickListener(v -> {VipInfoDialog vipInfoDialog = new VipInfoDialog(this);
+        if (vip_btn != null)vip_btn.setOnClickListener(v -> {VipInfoDialog vipInfoDialog = new VipInfoDialog(this,getString(R.string.vip_info_sz));
             vipInfoDialog.setYesOnclickListener(dialog -> {showVipInfo(dialog.getVip());dialog.dismiss(); }).show();
         });//会员
 
@@ -179,12 +179,12 @@ public class MainActivity extends AppCompatActivity {
 
         if (q_deal_linerLayout != null)
             q_deal_linerLayout.setOnClickListener(v -> {
-                QuerySaleDetailsDialog querySaleDetailsDialog = new QuerySaleDetailsDialog(MainActivity.this);
-                querySaleDetailsDialog.show();;
+                QuerySaleOrderDialog querySaleOrderDialog = new QuerySaleOrderDialog(MainActivity.this,getString(R.string.deal_sz));
+                querySaleOrderDialog.show();;
             });//查交易
 
         if (other_linearLayout != null)
-            other_linearLayout.setOnClickListener(v -> new MoreFunDialog(MainActivity.this).show());//更多功能
+            other_linearLayout.setOnClickListener(v -> new MoreFunDialog(MainActivity.this,getString(R.string.more_fun_dialog_sz)).show());//更多功能
         if (shift_exchange_linearLayout != null)
             shift_exchange_linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -493,20 +493,18 @@ public class MainActivity extends AppCompatActivity {
     private void initTmpOrder(){
         final Button tmp_order = findViewById(R.id.tmp_order);
         tmp_order.setOnClickListener(v -> {
-            final HangBillDialog hangBillDialog = new HangBillDialog(MainActivity.this);
+            final MainActivity activity = MainActivity.this;
+            final HangBillDialog hangBillDialog = new HangBillDialog(activity,activity.getString(R.string.hangbill_sz));
             JSONArray datas = mSaleGoodsViewAdapter.getDatas();
             if (Utils.JsonIsNotEmpty(datas)){
-                MyDialog.displayAskMessage(null, "是否挂单？", MainActivity.this, new MyDialog.onYesOnclickListener() {
-                    @Override
-                    public void onYesClick(MyDialog myDialog) {
-                        StringBuilder err = new StringBuilder();
-                        if (hangBillDialog.save(datas,mVipInfo,err)){
-                            resetOrderInfo();
-                            MyDialog.ToastMessage(mSaleGoodsRecyclerView,"挂单成功！",MainActivity.this,null);
-                            myDialog.dismiss();
-                        }else{
-                            MyDialog.ToastMessage(mSaleGoodsRecyclerView,"保存挂单错误：" + err,MainActivity.this,null);
-                        }
+                MyDialog.displayAskMessage(null, "是否挂单？", activity, myDialog -> {
+                    StringBuilder err = new StringBuilder();
+                    if (hangBillDialog.save(datas,mVipInfo,err)){
+                        resetOrderInfo();
+                        MyDialog.ToastMessage(mSaleGoodsRecyclerView,"挂单成功！",activity,null);
+                        myDialog.dismiss();
+                    }else{
+                        MyDialog.ToastMessage(mSaleGoodsRecyclerView,"保存挂单错误：" + err,activity,null);
                     }
                 }, Dialog::dismiss);
             }else{
@@ -528,7 +526,7 @@ public class MainActivity extends AppCompatActivity {
                                         mSaleGoodsViewAdapter.addSaleGoods(goods_info,mVipInfo);
                                         hangBillDialog.dismiss();
                                     }else{
-                                        MyDialog.ToastMessage(mSaleGoodsRecyclerView,"查询商品信息错误：" + goods_info.getString("info"),MainActivity.this,getWindow());
+                                        MyDialog.ToastMessage(mSaleGoodsRecyclerView,"查询商品信息错误：" + goods_info.getString("info"),activity,getWindow());
                                         return;
                                     }
                                 }
@@ -537,7 +535,7 @@ public class MainActivity extends AppCompatActivity {
                     });
                     hangBillDialog.show();
                 }else{
-                    MyDialog.ToastMessage(mSaleGoodsRecyclerView,"无挂单信息！",MainActivity.this,null);
+                    MyDialog.ToastMessage(mSaleGoodsRecyclerView,"无挂单信息！",activity,null);
                 }
             }
 

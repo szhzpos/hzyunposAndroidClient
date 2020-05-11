@@ -7,6 +7,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -146,7 +147,7 @@ public class LoginActivity extends AppCompatActivity {
         View setup = findViewById(R.id.setup_ico);
         if (null != setup)
             setup.setOnClickListener((View v)->{
-                ConnSettingDialog connSettingDialog = new ConnSettingDialog(v.getContext());
+                ConnSettingDialog connSettingDialog = new ConnSettingDialog(mSelf);
                 connSettingDialog.setOnDismissListener(dialog -> {
                     EditText et_url = findViewById(R.id._url_text);
                     String url = connSettingDialog.getUrl();

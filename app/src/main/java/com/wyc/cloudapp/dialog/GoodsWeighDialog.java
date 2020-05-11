@@ -19,38 +19,33 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.LoginActivity;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.serialScales.AbstractSerialScaleImp;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
-public class GoodsWeighDialog extends Dialog {
-    private Context mContext;
+public class GoodsWeighDialog extends BaseDialog {
     private String mBarcodeId;
     private OnYesOnclickListener mOnYesClick;
     private EditText mWvalueEt;
     private TextView mPriceTv,mAmtTv;
     private AbstractSerialScaleImp mSerialScale;
-    public GoodsWeighDialog(@NonNull Context context,final String barcode_id) {
-        super(context);
-        mContext = context;
+    public GoodsWeighDialog(@NonNull MainActivity context,final String title,final String barcode_id) {
+        super(context,title);
         mBarcodeId = barcode_id;
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.goods_weigh_dialog_layout);
-        setCancelable(false);
-        setCanceledOnTouchOutside(false);
+        super.onCreate(savedInstanceState);
+        setContentLayout(R.layout.goods_weigh_dialog_layout);
 
         mPriceTv = findViewById(R.id.w_g_price);
         mAmtTv = findViewById(R.id.w_amt);
 
         //初始化重量
         initWvalueEt();
-
-        //初始化按钮事件
-        findViewById(R.id._close).setOnClickListener(v->GoodsWeighDialog.this.dismiss());
 
         //初始化商品信息
         initGoodsInfo();
