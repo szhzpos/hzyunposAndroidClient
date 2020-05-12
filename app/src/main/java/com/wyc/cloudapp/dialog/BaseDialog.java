@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.logger.Logger;
 
 public class BaseDialog extends Dialog {
     protected MainActivity mContext;
@@ -28,7 +29,7 @@ public class BaseDialog extends Dialog {
         setContentView(R.layout.base_dialog_layout);
 
         setTitle();
-        closeWindow();
+        initCloseBtn();
     }
     protected void setContentLayout(int res_id){
         final LinearLayout main_layout = findViewById(R.id.dialog_main_layout);
@@ -44,12 +45,14 @@ public class BaseDialog extends Dialog {
             title_tv.setText(mTitle);
         }
     }
-
-    protected void closeWindow(){
+    private void initCloseBtn(){
         final Button _close = findViewById(R.id._close);
         if (_close != null){
-            _close.setOnClickListener(v -> BaseDialog.this.dismiss());
+            _close.setOnClickListener(v -> closeWindow());
         }
     }
 
+    protected void closeWindow(){
+        this.dismiss();
+    }
 }

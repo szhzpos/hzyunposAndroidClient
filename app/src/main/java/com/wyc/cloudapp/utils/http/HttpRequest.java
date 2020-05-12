@@ -71,9 +71,9 @@ public final class HttpRequest {
     }
     public synchronized JSONObject sendGet(final String url) {
         String line;
-        StringBuilder result = new StringBuilder();
+        final StringBuilder result = new StringBuilder();
         BufferedReader in = null;
-        JSONObject content = new JSONObject();
+        final JSONObject content = new JSONObject();
         try {
             URL url_obj = new URL(url);
             mGetConn = (HttpURLConnection)url_obj.openConnection();
@@ -120,13 +120,13 @@ public final class HttpRequest {
         return content;
     }
 	public synchronized JSONObject getFile( Object store_file,String url){
-        JSONObject content = new JSONObject();
+        final JSONObject content = new JSONObject();
         File download_file = null;
-        byte[] buffer = new byte[1024];
+        final byte[] buffer = new byte[1024];
         int lenght = 0;
 
         try {
-            URL url_obj = new URL(url);
+            final URL url_obj = new URL(url);
             mGetConn =(HttpURLConnection)url_obj.openConnection();
             mGetConn.setRequestProperty("Content-Type", "application/vnd.android.package-archive");
             mGetConn.setUseCaches(false);
@@ -170,10 +170,10 @@ public final class HttpRequest {
         BufferedWriter out = null;
         InputStreamReader reader = null;
         String line;
-        StringBuilder result = new StringBuilder();
-        JSONObject content = new JSONObject();
+        final StringBuilder result = new StringBuilder();
+        final JSONObject content = new JSONObject();
         try {
-            URL url_obj = new URL(url);
+            final URL url_obj = new URL(url);
             mPostConn = (HttpURLConnection)url_obj.openConnection();
             mPostConn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
             mPostConn.setAllowUserInteraction(true);
@@ -249,16 +249,16 @@ public final class HttpRequest {
     }
 
     public  static String generate_request_parm(JSONObject json ,String apiKey) throws JSONException {
-        Map<String,String> map = new HashMap<>(),sortMap;
-        StringBuilder builder = new StringBuilder();
-        String signStr = null;
-        for (String key : json.keySet()) {
+        final Map<String,String> map = new HashMap<>(),sortMap;
+        final StringBuilder builder = new StringBuilder();
+        String signStr = null,k,v;
+        for (final String key : json.keySet()) {
             map.put(key, json.getString(key));
         }
         sortMap = new TreeMap<>(map);
         for (Map.Entry<String, String> s : sortMap.entrySet()) {
-            String k = s.getKey();
-            String v = s.getValue();
+            k = s.getKey();
+            v = s.getValue();
             if (builder.length() != 0){
                 builder.append("&");
             }

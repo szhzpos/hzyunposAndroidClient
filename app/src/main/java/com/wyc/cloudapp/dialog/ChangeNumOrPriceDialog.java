@@ -1,11 +1,8 @@
 package com.wyc.cloudapp.dialog;
 
-import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
-import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,7 +12,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.callback.EditTextReplacement;
+import com.wyc.cloudapp.callback.PasswordEditTextReplacement;
 import com.wyc.cloudapp.utils.Utils;
 
 public class ChangeNumOrPriceDialog extends BaseDialog {
@@ -107,7 +104,7 @@ public class ChangeNumOrPriceDialog extends BaseDialog {
             et.postDelayed(et::requestFocus,300);
             if ("".equals(mInitVal)) {
                 et.setInputType(InputType.TYPE_NUMBER_VARIATION_PASSWORD);
-                et.setTransformationMethod(new EditTextReplacement());
+                et.setTransformationMethod(new PasswordEditTextReplacement());
             }
             et.setText(mInitVal);
         }

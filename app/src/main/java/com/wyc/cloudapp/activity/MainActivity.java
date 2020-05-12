@@ -307,7 +307,6 @@ public class MainActivity extends AppCompatActivity {
             mDialog.setMessage(mStoreInfo.getString("info")).setNoOnclickListener("取消", myDialog -> MainActivity.this.finish()).show();
         }
     }
-
     private void initGoodsInfoAdapter(){
         mGoodsInfoViewAdapter = new GoodsInfoViewAdapter(this);
         final RecyclerView goods_info_view = findViewById(R.id.goods_info_list);
@@ -348,7 +347,6 @@ public class MainActivity extends AppCompatActivity {
         });
         goods_info_view.setAdapter(mGoodsInfoViewAdapter);
     }
-
     private void initGoodsCategoryAdapter(){
         RecyclerView goods_type_view = findViewById(R.id.goods_type_list);
         mGoodsCategoryViewAdapter = new GoodsCategoryViewAdapter(this,findViewById(R.id.goods_sec_l_type_list));
@@ -356,7 +354,6 @@ public class MainActivity extends AppCompatActivity {
         mGoodsCategoryViewAdapter.setDatas(0);
         goods_type_view.setAdapter(mGoodsCategoryViewAdapter);
     }
-
     private void initSaleGoodsAdapter(){
         mSaleGoodsRecyclerView = findViewById(R.id.sale_goods_list);
         mSaleGoodsViewAdapter = new SaleGoodsViewAdapter(this);
@@ -388,7 +385,6 @@ public class MainActivity extends AppCompatActivity {
         mSaleGoodsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
         mSaleGoodsRecyclerView.setAdapter(mSaleGoodsViewAdapter);
     }
-
     private void initSearch(){
         mSearch_content.setOnFocusChangeListener((v,b)->Utils.hideKeyBoard((EditText) v));
         mHandler.postDelayed(()-> mSearch_content.requestFocus(),100);
@@ -489,7 +485,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
     private void initTmpOrder(){
         final Button tmp_order = findViewById(R.id.tmp_order);
         tmp_order.setOnClickListener(v -> {
@@ -541,7 +536,6 @@ public class MainActivity extends AppCompatActivity {
 
         });
     }
-
     private void initPrintStatus(){//打印状态
         findViewById(R.id.printer_status).setOnClickListener(v -> {
             ImageView imageView = (ImageView)v;
@@ -557,21 +551,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
     private void showPayDialog(){
         final JSONArray datas = getSaleData();
         if (datas.size() != 0){
-            final PayDialog dialog = new PayDialog(this);
+            final PayDialog dialog = new PayDialog(this,getString(R.string.affirm_pay_sz));
             if (dialog.initPayContent()){
+                final MainActivity activity = MainActivity.this;
                 dialog.setPayListener(new PayDialog.onPayListener() {
                     @Override
                     public void onStart(PayDialog myDialog) {
                         mProgressDialog.setCancel(false).setMessage("正在保存单据...").refreshMessage().show();
                         final StringBuilder err = new StringBuilder();
                         if (myDialog.saveOrderInfo(err)){
-                            CustomApplication.execute(()->{
-                                myDialog.requestPay(mOrderCode.getText().toString(),mUrl,mAppId,mAppScret,mStoreInfo.getString("stores_id"),mCashierInfo.getString("pos_num"));
-                            });
+                            CustomApplication.execute(myDialog::requestPay);
                         }else{
                             mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,err.toString()).sendToTarget();
                         }
@@ -586,12 +578,12 @@ public class MainActivity extends AppCompatActivity {
                         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
 
                         if (mPrintStatus.get())
-                            Printer.print(MainActivity.this,myDialog.get_print_content(mSaleGoodsViewAdapter.getDatas()));
+                            Printer.print(activity,PayDialog.get_print_content(activity,mSaleGoodsViewAdapter.getDatas(),myDialog.getContent(),myDialog.isOpenCashbox()));
 
                         mSyncManagement.sync_order();
                         resetOrderInfo();
                         myDialog.dismiss();
-                        MyDialog.SnackbarMessage(MainActivity.this.getWindow(),"结账成功！",mOrderCode);
+                        MyDialog.SnackbarMessage(activity.getWindow(),"结账成功！",mOrderCode);
                     }
 
                     @Override
@@ -607,7 +599,6 @@ public class MainActivity extends AppCompatActivity {
             MyDialog.SnackbarMessage(getWindow(),"已选商品为空！!",getCurrentFocus());
         }
     }
-
     private void resetOrderInfo(){
         mZkCashierId = "";
         resetOrderCode();
@@ -676,7 +667,6 @@ public class MainActivity extends AppCompatActivity {
         setDisCashierId(zk_cashier_id);
         mSaleGoodsViewAdapter.allDiscount(v);
     }
-
     public void deleteMolDiscountRecord(){
         mSaleGoodsViewAdapter.deleteMolDiscountRecord();
     }
@@ -709,7 +699,6 @@ public class MainActivity extends AppCompatActivity {
     public boolean splitCombinationalGoods(final JSONArray combination_goods,int gp_id,double gp_price,double gp_num,StringBuilder err){
         return mSaleGoodsViewAdapter.splitCombinationalGoods(combination_goods,gp_id,gp_price,gp_num,err);
     }
-
     public void showVipInfo(@NonNull JSONObject vip){
         mVipInfo = vip;
 
@@ -739,7 +728,15 @@ public class MainActivity extends AppCompatActivity {
     public GoodsInfoViewAdapter getGoodsInfoViewAdapter(){
         return mGoodsInfoViewAdapter;
     }
-
+    public String getAppId(){
+        return mAppId;
+    }
+    public String getAppScret(){
+        return mAppScret;
+    }
+    public String getUrl(){
+        return mUrl;
+    }
     private static class Myhandler extends Handler {
         private WeakReference<MainActivity> weakHandler;
         private Myhandler(MainActivity mainActivity){

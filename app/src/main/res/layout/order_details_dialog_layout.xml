@@ -275,7 +275,7 @@
 
         <LinearLayout
             android:id="@+id/vip_info_layout"
-            android:layout_width="@dimen/width_328"
+            android:layout_width="wrap_content"
             android:layout_height="@dimen/height_40"
             android:orientation="horizontal"
             android:visibility="gone"
@@ -293,7 +293,27 @@
 
             <TextView
                 android:id="@+id/vip_name"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/width_88"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/left_separator"
+                android:paddingStart="@dimen/margin_2"
+                android:paddingEnd="0dp"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:gravity="center"
+                android:text="@string/card_code_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:id="@+id/card_code"
+                android:layout_width="@dimen/width_118"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/left_separator"
@@ -313,7 +333,7 @@
 
             <TextView
                 android:id="@+id/vip_mobile"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/width_118"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/left_separator"
@@ -569,7 +589,8 @@
             android:background="@drawable/button_blue"
             android:text="@string/abnormal_back_order_sz"
             android:textColor="@color/blue_white"
-            android:textSize="@dimen/font_size_18" />
+            android:textSize="@dimen/font_size_18"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/verify_pay_btn"
@@ -580,7 +601,8 @@
             android:background="@drawable/button_blue"
             android:text="@string/verify_pay_sz"
             android:textColor="@color/blue_white"
-            android:textSize="@dimen/font_size_18" />
+            android:textSize="@dimen/font_size_18"
+            android:visibility="gone" />
 
         <Space
             android:layout_width="wrap_content"

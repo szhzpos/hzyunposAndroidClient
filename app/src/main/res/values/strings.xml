@@ -82,7 +82,7 @@
     <string name="vip_name_sz">姓名：</string>
     <string name="vip_six_sz">性别：</string>
     <string name="vip_ph_num_sz">手机：</string>
-    <string name="vip_id_sz">卡号：</string>
+    <string name="vip_card_id_sz">卡号：</string>
     <string name="vip_balance_sz">余额：</string>
     <string name="vip_integral_sz">积分：</string>
     <string name="search_sz">搜索</string>
@@ -152,7 +152,7 @@
     <string name="footer_info_sz">表尾内容：</string>
     <string name="print_c_sz">打印份数：</string>
     <string name="footer_s_sz">票尾留空：</string>
-    <string name="hotline_sz">服务热线：</string>
+    <string name="hotline_sz">门店热线：</string>
     <string name="stores_address_sz">门店地址：</string>
     <string name="sec_num_sz">数量</string>
     <string name="sec_banner_sz">欢迎光临！</string>
@@ -211,4 +211,21 @@
     <string name="reprint_order_sz">补打小票</string>
     <string name="abnormal_back_order_sz">异常退单</string>
     <string name="verify_pay_sz">支付验证</string>
+    <string name="card_code_sz">卡号</string>
+    <!-- 结账单 -->
+    <string name="b_f_store_id_sz">店号：</string>
+    <string name="b_f_jh_sz">@string/jh_sz</string>
+    <string name="b_f_cashier_sz">@string/cashier_sz</string>
+    <string name="b_f_order_sz">@string/order_sz</string>
+    <string name="b_f_header_sz">商品名称------单价---数量---小计</string>
+    <string name="b_f_ori_price_sz">原价：</string>
+    <string name="b_f_disco_sz">优惠：</string>
+    <string name="b_f_amt_sz">总价：</string>
+    <string name="b_f_units_sz">件数：</string>
+    <string name="b_f_rec_sz">应收：</string>
+    <string name="b_f_yus_sz">预收：</string>
+    <string name="b_f_zl_sz">@string/cash_zl_sz</string>
+    <string name="b_f_hotline_sz">@string/hotline_sz</string>
+    <string name="b_f_stores_address_sz">@string/stores_address_sz</string>
+
 </resources>

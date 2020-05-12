@@ -155,6 +155,10 @@ public final class SaleOrderBodyViewAdapter extends RecyclerView.Adapter<SaleOrd
     public void setDatas(final String where_sql){
         final StringBuilder err = new StringBuilder();
         final String sql = "SELECT \n" +
+                "       a.remark," +
+                "       a.card_code," +
+                "       a.name vip_name," +
+                "       a.mobile," +
                 "       a.transfer_status s_e_status,\n" +
                 "       case a.transfer_status when 1 then '未交班' when 2 then '已交班' else '其他' end s_e_status_name,\n" +
                 "       a.upload_status,\n" +

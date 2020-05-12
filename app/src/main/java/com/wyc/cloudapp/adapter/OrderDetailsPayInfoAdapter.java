@@ -23,6 +23,7 @@ public final class OrderDetailsPayInfoAdapter extends RecyclerView.Adapter<Order
     private MainActivity mContext;
     private JSONArray mDatas;
     private View mCurrentItemView;
+    private ItemClickCallBack mItemClickCallback;
     public OrderDetailsPayInfoAdapter(MainActivity context){
         mContext = context;
     }
@@ -56,13 +57,13 @@ public final class OrderDetailsPayInfoAdapter extends RecyclerView.Adapter<Order
             final JSONObject pay_info = mDatas.getJSONObject(position);
             if (pay_info != null){
                 holder.row_id_tv.setText(String.valueOf(position+1));
+                holder.pay_method_name_tv.setTag(pay_info.getIntValue("pay_method"));
                 holder.pay_method_name_tv.setText(pay_info.getString("name"));
-                holder.pay_amt_tv.setText(String.format(Locale.CHINA,"%.2f",pay_info.getDoubleValue("pay_amt")));
+                holder.pay_amt_tv.setText(String.format(Locale.CHINA,"%.2f",pay_info.getDoubleValue("pamt")));
                 holder.pay_status_tv.setText(pay_info.getString("pay_status_name"));
                 holder.pay_time_tv.setText(pay_info.getString("pay_time"));
-                holder.pay_code_tv.setText(Utils.getNullStringAsEmpty(pay_info,"pay_code"));
+                holder.pay_code_tv.setText(Utils.getNullStringAsEmpty(pay_info,"order_code_son"));
             }
-
             holder.mCurrentLayoutItemView.setOnClickListener(mItemClickListener);
         }
     }
@@ -119,18 +120,54 @@ public final class OrderDetailsPayInfoAdapter extends RecyclerView.Adapter<Order
             setViewBackgroundColor(v,false);
             mCurrentItemView = null;
         }
+        if (mItemClickCallback != null){
+            mItemClickCallback.onClick(getCurrentPayRecord());
+        }
+    }
+    private JSONObject getCurrentPayRecord(){
+        if (mCurrentItemView != null){
+            final TextView name = mCurrentItemView.findViewById(R.id.pay_method_name);
+            if (name != null){
+                int pay_method_id = Utils.getViewTagValue(name,-1);
+                if (pay_method_id != -1){
+                    for (int i = 0,size = mDatas.size();i < size; i++){
+                        final JSONObject pay_record = mDatas.getJSONObject(i);
+                        if (null != pay_record && pay_method_id == pay_record.getIntValue("pay_method")){
+                            return pay_record;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public interface ItemClickCallBack{
+        void onClick(final JSONObject pay_record);
+    }
+
+    public void setItemClickListener(final ItemClickCallBack clickCallBack){
+        mItemClickCallback = clickCallBack;
     }
 
     public void setDatas(final String order_code){
         final StringBuilder err = new StringBuilder();
-        final String sql = "SELECT b.name,a.pay_code,a.pay_serial_no,a.pay_status,case a.pay_status when 1 then '未支付' when 2 then '已支付' else '支付中' end pay_status_name,datetime(a.pay_time, 'unixepoch', 'localtime') pay_time,a.pay_money pay_amt,a.pay_method\n" +
-                "FROM retail_order_pays a left join pay_method b on a.pay_method = b.pay_method_id where order_code = '" + order_code + "'";
+        final String sql = "SELECT b.name,a.pay_code order_code_son,a.pay_serial_no pay_code,a.pay_status,case a.pay_status when 1 then '未支付' when 2 then '已支付' else '支付中' end pay_status_name," +
+                "datetime(a.pay_time, 'unixepoch', 'localtime') pay_time,a.is_check,a.pay_money pamt,(a.pre_sale_money - a.pay_money) pzl,ifnull(xnote,'') xnote,a.pay_method," +
+                "b.unified_pay_query FROM retail_order_pays a left join pay_method b on a.pay_method = b.pay_method_id where order_code = '" + order_code + "'";
 
         Logger.d("sql:%s",sql);
         mDatas = SQLiteHelper.getListToJson(sql,err);
         if (mDatas != null){
             notifyDataSetChanged();
-        }else
+        }else{
+            mDatas = new JSONArray();
             MyDialog.ToastMessage("加载付款明细错误：" + err,mContext,null);
+        }
+
+    }
+
+    public JSONArray getPayInfo(){
+        return mDatas ;
     }
 }

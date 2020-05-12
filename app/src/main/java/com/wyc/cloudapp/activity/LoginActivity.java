@@ -7,7 +7,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -32,7 +31,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.callback.EditTextReplacement;
+import com.wyc.cloudapp.callback.PasswordEditTextReplacement;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.ConnSettingDialog;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
@@ -160,7 +159,7 @@ public class LoginActivity extends AppCompatActivity {
     }
     private void initPassword(){
         mPassword = findViewById(R.id.password);
-        mPassword.setTransformationMethod(new EditTextReplacement());
+        mPassword.setTransformationMethod(new PasswordEditTextReplacement());
         mPassword.setOnFocusChangeListener((v, hasFocus) -> Utils.hideKeyBoard((EditText)v));
         mPassword.setSelectAllOnFocus(true);
     }

@@ -125,14 +125,20 @@ public final class OrderDetailsGoodsInfoAdapter extends RecyclerView.Adapter<Ord
 
     public void setDatas(final String order_code){
         final StringBuilder err = new StringBuilder();
-        final String sql = "SELECT a.only_coding item_no,a.barcode,a.goods_title,a.unit_name,b.price,b.xnum,price * xnum sale_amt  FROM retail_order_goods b left join barcode_info a on a.barcode_id = b.barcode_id\n" +
+        final String sql = "SELECT a.only_coding item_no,a.barcode,a.goods_title,a.unit_name,a.type,b.price,b.total_money sale_amt,(b.xnum * y_price - b.total_money) discount_amt,b.xnum * y_price original_amt,b.y_price original_price FROM " +
+                "retail_order_goods b left join barcode_info a on a.barcode_id = b.barcode_id\n" +
                 "where a.goods_status = 1 and a.barcode_status = 1 and b.order_code = '" + order_code + "'";
 
         Logger.d("sql:%s",sql);
         mDatas = SQLiteHelper.getListToJson(sql,err);
         if (mDatas != null){
             notifyDataSetChanged();
-        }else
+        }else{
+            mDatas = new JSONArray();
             MyDialog.ToastMessage("加载商品明细错误：" + err,mContext,null);
+        }
+    }
+    public JSONArray getSaleGoods(){
+        return mDatas;
     }
 }

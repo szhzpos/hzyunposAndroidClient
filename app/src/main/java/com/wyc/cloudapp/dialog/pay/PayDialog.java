@@ -29,6 +29,7 @@ import com.wyc.cloudapp.adapter.PayDetailViewAdapter;
 import com.wyc.cloudapp.adapter.PayMethodItemDecoration;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.dialog.BaseDialog;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
@@ -44,8 +45,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class PayDialog extends Dialog {
-    private MainActivity mainActivity;
+public class PayDialog extends BaseDialog {
     private EditText mCashMoneyEt,mZlAmtEt,mRemarkEt;
     private onPayListener mPayListener;
     private PayMethodViewAdapter mPayMethodViewAdapter;
@@ -53,19 +53,17 @@ public class PayDialog extends Dialog {
     private TextView mOrderAmtTv,mDiscountAmtTv,mActualAmtTv,mPayAmtTv,mAmtReceivedTv,mPayBalanceTv, mDiscountDescriptionTv;
     private double mOrder_amt = 0.0,mDiscount_amt = 0.0,mActual_amt = 0.0,mPay_amt = 0.0,mAmt_received = 0.0,mPay_balance = 0.0,mCashAmt = 0.0,mZlAmt = 0.0,mMolAmt = 0.0;
     private String mDiscountDesContent = "";
-    private Button mOK,mCancel;
+    private Button mOK;
     private JSONObject mVip;
     private boolean mPayStatus = true,mOpenCashbox;
     private Window mWindow;
-    public PayDialog(MainActivity context){
-        super(context);
-        mainActivity = context;
+    public PayDialog(MainActivity context,final String title){
+        super(context,title);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setCancelable(false);
-        setCanceledOnTouchOutside(false);
-        setContentView(this.getLayoutInflater().inflate(R.layout.pay_dialog_content_layout, null));
+        super.onCreate(savedInstanceState);
+        setContentLayout(R.layout.pay_dialog_content_layout);
 
         //初始化成员
         mOrderAmtTv = findViewById(R.id.order_amt);//单据金额
@@ -77,8 +75,6 @@ public class PayDialog extends Dialog {
         mZlAmtEt = findViewById(R.id.zl_amt);//找零
         mRemarkEt = findViewById(R.id.et_remark);//备注
         mDiscountDescriptionTv = findViewById(R.id.discount_description);//折扣信息
-        mOK = findViewById(R.id._ok);
-        mCancel = findViewById(R.id._cancel);
 
         //初始化支付方式
         initPayMethod();
@@ -93,8 +89,7 @@ public class PayDialog extends Dialog {
         initRemarkBtn();
         vipBtn();
         allDiscountBtn();
-        initCloseBtn();
-        //初始化数字键盘
+         //初始化数字键盘
         initKeyboard();
 
         //根据金额设置按钮数字
@@ -120,26 +115,21 @@ public class PayDialog extends Dialog {
         super.onDetachedFromWindow();
         if (!Utils.equalDouble(mMolAmt,0.0)){
             mMolAmt = 0.0;
-            mainActivity.deleteMolDiscountRecord();
+            mContext.deleteMolDiscountRecord();
         }
         if (!Utils.equalDouble(mDiscount_amt,0.0)){
-            mainActivity.deleteAlldiscountRecord();
+            mContext.deleteAlldiscountRecord();
         }
     }
 
-    private void initCloseBtn(){
-        final Button close_btn = findViewById(R.id._close);
-        if (null != close_btn)
-            close_btn.setOnClickListener(view -> mCancel.callOnClick());
-    }
     private void allDiscountBtn(){
         final Button all_discount_btn = findViewById(R.id.all_discount);
         if (null != all_discount_btn)
             all_discount_btn.setOnClickListener(view -> {
-                ChangeNumOrPriceDialog dialog = new ChangeNumOrPriceDialog(mainActivity,mainActivity.getString(R.string.discount_sz),String.format(Locale.CHINA,"%d",100));
+                ChangeNumOrPriceDialog dialog = new ChangeNumOrPriceDialog(mContext, mContext.getString(R.string.discount_sz),String.format(Locale.CHINA,"%d",100));
                 dialog.setYesOnclickListener(myDialog -> {
                     deleteMolDiscountRecord();
-                    mainActivity.allDiscount(myDialog.getContent(),"");
+                    mContext.allDiscount(myDialog.getContent(),"");
                     refreshPayContent();
                     myDialog.dismiss();
                 }).show();
@@ -149,7 +139,7 @@ public class PayDialog extends Dialog {
         final Button vip_btn = findViewById(R.id.vip);
         if (null != vip_btn)
             vip_btn.setOnClickListener(view -> {
-                VipInfoDialog vipInfoDialog = new VipInfoDialog(mainActivity,mainActivity.getString(R.string.vip_info_sz));
+                VipInfoDialog vipInfoDialog = new VipInfoDialog(mContext, mContext.getString(R.string.vip_info_sz));
                 vipInfoDialog.setYesOnclickListener(dialog -> {
                     deleteMolDiscountRecord();
                     showVipInfo(dialog.getVip(),false);
@@ -176,11 +166,11 @@ public class PayDialog extends Dialog {
         final Button mo_l_btn = findViewById(R.id.mo_l);
         if (mo_l_btn != null)
             mo_l_btn.setOnClickListener(v -> {//手动抹零
-                ChangeNumOrPriceDialog changeNumOrPriceDialog = new ChangeNumOrPriceDialog(mainActivity,mainActivity.getString(R.string.mo_l_sz),String.format(Locale.CHINA,"%.2f",mActual_amt - ((int)mActual_amt)));
+                ChangeNumOrPriceDialog changeNumOrPriceDialog = new ChangeNumOrPriceDialog(mContext, mContext.getString(R.string.mo_l_sz),String.format(Locale.CHINA,"%.2f",mActual_amt - ((int)mActual_amt)));
                 changeNumOrPriceDialog.setYesOnclickListener(myDialog -> {
                     mMolAmt = myDialog.getContent();
                     if (!Utils.equalDouble(mMolAmt,0.0)){
-                        mainActivity.manualMol(mMolAmt,null);
+                        mContext.manualMol(mMolAmt,null);
                         calculatePayContent();
                         setDiscountDescription();
                         refreshContent();
@@ -207,7 +197,7 @@ public class PayDialog extends Dialog {
                                     Editable editable = tmp_edit.getText();
                                     int index = tmp_edit.getSelectionStart(),end = tmp_edit.getSelectionEnd();
                                     if (index !=end && end == editable.length()){
-                                        tmp_edit.setText(mainActivity.getString(R.string.d_zero_point_sz));
+                                        tmp_edit.setText(mContext.getString(R.string.d_zero_point_sz));
                                     }else{
                                         if (index == 0)return;
                                         if (index > editable.length())index = editable.length();
@@ -227,10 +217,11 @@ public class PayDialog extends Dialog {
                         });
                         break;
                     case R.id._cancel:
-                        mCancel.setOnClickListener(v -> PayDialog.this.dismiss());
+                        tmp_v.setOnClickListener(v -> closeWindow());
                         break;
                     case R.id._ok:
-                        mOK.setOnClickListener(v -> {
+                        mOK = (Button) tmp_v;
+                        tmp_v.setOnClickListener(v -> {
                             v.setEnabled(false);
                             cash_pay();
                             v.postDelayed(()->v.setEnabled(true),300);
@@ -252,7 +243,7 @@ public class PayDialog extends Dialog {
                 int index = tmp_edit.getSelectionStart(),point_index = editable.toString().indexOf(".");
                 String sz_button = ((Button) v).getText().toString();
                 if (-1 != point_index && tmp_edit.getSelectionEnd() == editable.length()){
-                    editable.replace(0, editable.length(),sz_button.concat(mainActivity.getString(R.string.d_zero_point_sz)));
+                    editable.replace(0, editable.length(),sz_button.concat(mContext.getString(R.string.d_zero_point_sz)));
                     point_index = editable.toString().indexOf(".");
                     tmp_edit.setSelection(point_index);
                 }else{
@@ -277,7 +268,7 @@ public class PayDialog extends Dialog {
     };
 
     private void initPayMethod(){
-        mPayMethodViewAdapter = new PayMethodViewAdapter(mainActivity,(int) mainActivity.getResources().getDimension(R.dimen.pay_method_width));
+        mPayMethodViewAdapter = new PayMethodViewAdapter(mContext,(int) mContext.getResources().getDimension(R.dimen.pay_method_width));
         mPayMethodViewAdapter.setDatas("1");
         mPayMethodViewAdapter.setOnItemClickListener((v, pos) -> {
             JSONObject pay_method = mPayMethodViewAdapter.getItem(pos);
@@ -292,7 +283,7 @@ public class PayDialog extends Dialog {
                             if (Utils.equalDouble(mPay_balance, 0) && mPayDetailViewAdapter.findPayDetailById(pay_method_id) == null) {//剩余金额为零，同时不存在此付款方式的记录。
                                 MyDialog.SnackbarMessage(mWindow, "剩余金额为零！", getCurrentFocus());
                             } else {
-                                PayMethodDialog payMethodDialog = new PayMethodDialog(mainActivity, pay_method);
+                                PayMethodDialog payMethodDialog = new PayMethodDialog(mContext, pay_method);
                                 deleteMolDiscountRecord();//现金之外的付款需要删除抹零金额
                                 payMethodDialog.setPayAmt(mPay_balance);
                                 payMethodDialog.setYesOnclickListener(dialog -> {
@@ -316,18 +307,18 @@ public class PayDialog extends Dialog {
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    MyDialog.ToastMessage("付款错误：" + e.getMessage(),mainActivity,null);
+                    MyDialog.ToastMessage("付款错误：" + e.getMessage(), mContext,null);
                 }
             }
         });
-        RecyclerView recyclerView = findViewById(R.id.pay_method_list);
-        recyclerView.setLayoutManager(new LinearLayoutManager(mainActivity, LinearLayoutManager.HORIZONTAL,false));
+        final RecyclerView recyclerView = findViewById(R.id.pay_method_list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL,false));
         recyclerView.addItemDecoration(new PayMethodItemDecoration(2));
         recyclerView.setAdapter(mPayMethodViewAdapter);
     }
 
     private void initPayDetailViewAdapter() {
-        mPayDetailViewAdapter = new PayDetailViewAdapter(mainActivity);
+        mPayDetailViewAdapter = new PayDetailViewAdapter(mContext);
         mPayDetailViewAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
@@ -355,7 +346,7 @@ public class PayDialog extends Dialog {
 
                     if (verifyPayBalance()){
                         if (Utils.equalDouble(mActual_amt,mAmt_received)){//支付明细数据发送变化后，计算是否已经付款完成，如果完成触发支付完成事件
-                            sale_amt = mainActivity.getSaleSumAmt();
+                            sale_amt = mContext.getSaleSumAmt();
                             pay_amt = mPayDetailViewAdapter.getPaySumAmt();
 
                             if (Utils.equalDouble(sale_amt,pay_amt)){
@@ -363,7 +354,7 @@ public class PayDialog extends Dialog {
                                     mPayListener.onStart(PayDialog.this);
                                 }
                             }else{
-                                MyDialog.displayErrorMessage(null,String.format(Locale.CHINA,"销售金额:%f  不等于 付款金额:%f",sale_amt,pay_amt),mainActivity);
+                                MyDialog.displayErrorMessage(null,String.format(Locale.CHINA,"销售金额:%f  不等于 付款金额:%f",sale_amt,pay_amt), mContext);
                             }
                         }
                     }else{
@@ -371,18 +362,18 @@ public class PayDialog extends Dialog {
                     }
                 }catch (JSONException e){
                     e.printStackTrace();
-                    MyDialog.ToastMessage("付款错误：" + e.getMessage(),mainActivity,null);
+                    MyDialog.ToastMessage("付款错误：" + e.getMessage(), mContext,null);
                 }
             }
         });
         RecyclerView recyclerView = findViewById(R.id.pay_detail_list);
-        recyclerView.setLayoutManager(new LinearLayoutManager(mainActivity, LinearLayoutManager.VERTICAL,false));
-        recyclerView.addItemDecoration(new DividerItemDecoration(mainActivity,DividerItemDecoration.VERTICAL));
+        recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
+        recyclerView.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(mPayDetailViewAdapter);
     }
     private void setMolAmt(){
         double  sum = 0.0,original_amt = 0.0,disSumAmt = 0.0,disc = 0.0;
-        final JSONArray datas = mainActivity.getSaleData();
+        final JSONArray datas = mContext.getSaleData();
         final JSONObject object = new JSONObject();
         if (SQLiteHelper.getLocalParameter("auto_mol",object)){
             if (object.getIntValue("s") == 1){
@@ -407,18 +398,18 @@ public class PayDialog extends Dialog {
                 Logger.d("mMolAmt:%f,sum：%f",mMolAmt,sum);
             }
         }else{
-            MyDialog.ToastMessage("自动抹零错误：" + object.getString("info"),mainActivity,null);
+            MyDialog.ToastMessage("自动抹零错误：" + object.getString("info"), mContext,null);
         }
     }
     private void antoMol(){//自动抹零
         setMolAmt();
         if (!Utils.equalDouble(mMolAmt,0.0))
-            mainActivity.autoMol(mMolAmt,null);
+            mContext.autoMol(mMolAmt,null);
      }
     private void deleteMolDiscountRecord(){
         if (!Utils.equalDouble(mMolAmt,0.0)){
             mMolAmt = 0.0;
-            mainActivity.deleteMolDiscountRecord();
+            mContext.deleteMolDiscountRecord();
             calculatePayContent();
             setDiscountDescription();
             refreshContent();
@@ -426,7 +417,7 @@ public class PayDialog extends Dialog {
     }
     private void calculatePayContent(){
         JSONObject jsonObject;
-        final JSONArray datas = mainActivity.getSaleData();
+        final JSONArray datas = mContext.getSaleData();
         clearContent();
         for (int i = 0,length = datas.size();i < length; i ++){
             jsonObject = datas.getJSONObject(i);
@@ -466,7 +457,7 @@ public class PayDialog extends Dialog {
     }
 
     private void setDiscountDescription(){
-        mDiscountDesContent = mainActivity.discountRecordsToString();
+        mDiscountDesContent = mContext.discountRecordsToString();
     }
 
     private void showDiscountDescription(){
@@ -498,7 +489,7 @@ public class PayDialog extends Dialog {
                     pay_method_json.put("v_num","");
                     mPayDetailViewAdapter.addPayDetail(pay_method_json);
                 }else{
-                    MyDialog.ToastMessage("现金付款方式不存在！",mainActivity,null);
+                    MyDialog.ToastMessage("现金付款方式不存在！", mContext,null);
                 }
             }
         }else{
@@ -515,10 +506,10 @@ public class PayDialog extends Dialog {
         JSONObject order_info = new JSONObject(),tmp_json;
         JSONArray orders = new JSONArray(),combination_goods = new JSONArray(),sales_data,pays_data,discount_records;
 
-        final String order_code = mainActivity.getOrderCode(),stores_id = mainActivity.getStoreInfo().getString("stores_id"),zk_cashier_id = mainActivity.getDisCashierId();
+        final String order_code = mContext.getOrderCode(),stores_id = mContext.getStoreInfo().getString("stores_id"),zk_cashier_id = mContext.getDisCashierId();
         final StringBuilder err = new StringBuilder();
         //处理销售明细
-        sales_data = Utils.JsondeepCopy(mainActivity.getSaleData());//不能直接获取引用，需要重新复制一份否则会修改原始数据；如果业务不能正常完成，之前数据会遭到破坏
+        sales_data = Utils.JsondeepCopy(mContext.getSaleData());//不能直接获取引用，需要重新复制一份否则会修改原始数据；如果业务不能正常完成，之前数据会遭到破坏
         for(int i = 0;i < sales_data.size();i ++){
             tmp_json = sales_data.getJSONObject(i);
             int gp_id = tmp_json.getIntValue("gp_id");
@@ -528,7 +519,7 @@ public class PayDialog extends Dialog {
 
             if (-1 != gp_id){
                 tmp_json = (JSONObject) sales_data.remove(i--);
-                if (!mainActivity.splitCombinationalGoods(combination_goods,gp_id,tmp_json.getDouble("price"),tmp_json.getDouble("xnum"),err)){
+                if (!mContext.splitCombinationalGoods(combination_goods,gp_id,tmp_json.getDouble("price"),tmp_json.getDouble("xnum"),err)){
                     info.put("info",err.toString());
                     return false;
                 }
@@ -562,7 +553,7 @@ public class PayDialog extends Dialog {
         }
 
         //处理优惠记录
-        discount_records = Utils.JsondeepCopy(mainActivity.getDiscountRecords());
+        discount_records = Utils.JsondeepCopy(mContext.getDiscountRecords());
         for (int i = 0,size = discount_records.size();i < size;i++){
             tmp_json = discount_records.getJSONObject(i);
             tmp_json.put("order_code",order_code);
@@ -573,6 +564,7 @@ public class PayDialog extends Dialog {
         pays_data = Utils.JsondeepCopy(getContent());//不能直接获取引用，需要重新复制一份否则会修改原始数据；如果业务不能正常完成，之前数据会遭到破坏
         for (int i= 0,size = pays_data.size();i < size;i++){
             tmp_json = (JSONObject) pays_data.remove(0);
+            Logger.d(tmp_json.toJSONString());
             final JSONObject pay = new JSONObject();
 
             pay.put("order_code",order_code);
@@ -588,7 +580,7 @@ public class PayDialog extends Dialog {
             pay.put("pre_sale_money",tmp_json.getDouble("pamt"));
             pay.put("give_change_money",tmp_json.getDouble("pzl"));
             pay.put("discount_money",0.0);
-            pay.put("xnote","");
+            pay.put("xnote",Utils.getNullStringAsEmpty(tmp_json,"xnote"));
             pay.put("return_code","");
             pay.put("v_num",tmp_json.getString("v_num"));
             pay.put("print_info","");
@@ -605,9 +597,9 @@ public class PayDialog extends Dialog {
         order_info.put("discount_price",sale_sum_amt);
         order_info.put("discount_money",total);
         order_info.put("discount",String.format(Locale.CHINA,"%.4f",sale_sum_amt / total));
-        order_info.put("cashier_id",mainActivity.getCashierInfo().getString("cas_id"));
+        order_info.put("cashier_id", mContext.getCashierInfo().getString("cas_id"));
         order_info.put("addtime",time);
-        order_info.put("pos_code",mainActivity.getPosNum());
+        order_info.put("pos_code", mContext.getPosNum());
         order_info.put("order_status",1);//订单状态（1未付款，2已付款，3已取消，4已退货）
         order_info.put("pay_status",1);//支付状态（1未支付，2已支付，3支付中）
         order_info.put("pay_time",time);
@@ -651,7 +643,7 @@ public class PayDialog extends Dialog {
 
 
            if (code = generateOrderInfo(data)){
-               if ((code = SQLiteHelper.execSql(counts,"select count(order_code) counts from retail_order where order_code = '" + mainActivity.getOrderCode() +"' and stores_id = '" + mainActivity.getStoreInfo().getString("stores_id") +"'"))){
+               if ((code = SQLiteHelper.execSql(counts,"select count(order_code) counts from retail_order where order_code = '" + mContext.getOrderCode() +"' and stores_id = '" + mContext.getStoreInfo().getString("stores_id") +"'"))){
                    if (code = (0 == counts.getIntValue("counts"))){
                        if (!(code = SQLiteHelper.execSQLByBatchFromJson(data,tables,Arrays.asList(retail_order_cols,retail_order_goods_cols,retail_order_pays_cols,discount_record_cols),err,0))){
                            err.insert(0,"保存订单信息错误：");
@@ -667,15 +659,19 @@ public class PayDialog extends Dialog {
            }
         return code;
     }
-    public void requestPay(final String order_code, final String url, final String appId, final String appScret, final String stores_id, final String pos_num){
-        if (mPayListener != null)mainActivity.runOnUiThread(()->mPayListener.onProgress(PayDialog.this,"正在支付..."));
+    public void requestPay(){
+        if (mPayListener != null) mContext.runOnUiThread(()->mPayListener.onProgress(PayDialog.this,"正在支付..."));
         mPayStatus = true;
         int is_check;
         long pay_time = 0;
         double discount_money = 0.0;
-        String pay_method_id,pay_money,pay_code,unified_pay_order,unified_pay_query,sz_param,v_num,third_pay_order_id = "",discount_xnote = "";
+        String pay_method_id = "",pay_money,pay_code,unified_pay_order,unified_pay_query,sz_param,v_num,third_pay_order_id = "",discount_xnote = "";
         JSONObject retJson,pay_detail,pay_method_json,info_json;
         HttpRequest httpRequest = null;
+
+        final String order_code = mContext.getOrderCode(),url = mContext.getUrl(),appId = mContext.getAppId(),appScret = mContext.getAppScret(),
+                stores_id = mContext.getStoreInfo().getString("stores_id"),pos_num = mContext.getCashierInfo().getString("pos_num");
+
         final StringBuilder err = new StringBuilder();
         final ContentValues values = new ContentValues();
         final JSONArray pays = SQLiteHelper.getListToJson("select pay_method,pay_money,pay_code,is_check,v_num from retail_order_pays where order_code = '" + order_code +"'",0,0,false,err);
@@ -744,8 +740,15 @@ public class PayDialog extends Dialog {
                                             int res_code = info_json.getIntValue("res_code");
                                             switch (res_code){
                                                 case 1://支付成功
-                                                    third_pay_order_id = "";
-                                                    pay_time = System.currentTimeMillis()/1000;
+                                                    if (info_json.containsKey("xnote")){
+                                                        discount_xnote = info_json.getString("xnote");
+                                                        final JSONObject jsonObject = mPayDetailViewAdapter.findPayDetailById(pay_method_id);
+                                                        if (jsonObject != null)
+                                                            jsonObject.put("xnote",discount_xnote);
+                                                    }
+                                                    third_pay_order_id = info_json.getString("pay_code");
+                                                    discount_money = info_json.getDouble("discount");
+                                                    pay_time = info_json.getLong("pay_time");
                                                     break;
                                                 case 2:
                                                     mPayStatus = false;
@@ -754,7 +757,7 @@ public class PayDialog extends Dialog {
                                                 case 3:
                                                 case 4:
                                                     if (mPayListener != null)
-                                                        mainActivity.runOnUiThread(()->mPayListener.onProgress(PayDialog.this,"正在查询支付状态..."));
+                                                        mContext.runOnUiThread(()->mPayListener.onProgress(PayDialog.this,"正在查询支付状态..."));
 
                                                     while (mPayStatus && (res_code == 3 ||  res_code == 4)){
                                                         final JSONObject object = new JSONObject();
@@ -762,8 +765,8 @@ public class PayDialog extends Dialog {
                                                         object.put("pay_code",info_json.getString("pay_code"));
                                                         object.put("order_code_son",info_json.getString("order_code_son"));
                                                         if (res_code == 4){
-                                                            mainActivity.runOnUiThread(()->{
-                                                                ChangeNumOrPriceDialog password_dialog = new ChangeNumOrPriceDialog(mainActivity,"请输入密码","");
+                                                            mContext.runOnUiThread(()->{
+                                                                ChangeNumOrPriceDialog password_dialog = new ChangeNumOrPriceDialog(mContext,"请输入密码","");
                                                                 password_dialog.setOnDismissListener(dialog -> {
                                                                     synchronized (this){
                                                                         notifyAll();
@@ -815,9 +818,10 @@ public class PayDialog extends Dialog {
                                                                             if (res_code == 1){//支付成功
                                                                                 Logger.d_json(info_json.toString());
                                                                                 if (info_json.containsKey("xnote")){
-                                                                                    JSONObject jsonObject = mPayDetailViewAdapter.findPayDetailById(pay_method_id);
+                                                                                    discount_xnote = info_json.getString("xnote");
+                                                                                    final JSONObject jsonObject = mPayDetailViewAdapter.findPayDetailById(pay_method_id);
                                                                                     if (jsonObject != null)
-                                                                                        jsonObject.put("xnote",info_json.getJSONArray("xnote"));
+                                                                                        jsonObject.put("xnote",discount_xnote);
                                                                                 }
                                                                                 third_pay_order_id = info_json.getString("pay_code");
                                                                                 discount_money = info_json.getDouble("discount");
@@ -864,23 +868,24 @@ public class PayDialog extends Dialog {
                 Logger.d("更新订单状态错误：",err);
             }
             if (mPayListener != null)
-                mainActivity.runOnUiThread(()-> mPayListener.onError(PayDialog.this,err.toString()));
+                mContext.runOnUiThread(()-> mPayListener.onError(PayDialog.this,err.toString()));
         }else{
-            List<String> sqls = new ArrayList<>();
+            final List<String> sqls = new ArrayList<>();
             String sql = "update retail_order set order_status = 2,pay_status = 2,pay_time ='" + pay_time +"' where order_code = '" + order_code + "'";
 
             sqls.add(sql);
 
-            sql = "update retail_order_pays set pay_status = 2,pay_serial_no = '" + third_pay_order_id +"',pay_time = '" + pay_time + "',discount_money = '" + discount_money +"',xnote = '" + discount_xnote +"',return_code = '"+ third_pay_order_id +"' where order_code = '" + order_code + "'";
+            sql = "update retail_order_pays set pay_status = 2,pay_serial_no = '" + third_pay_order_id +"',pay_time = " + pay_time + ",discount_money = " + discount_money +",xnote = '" + discount_xnote +"',return_code = '"+ third_pay_order_id +"' " +
+                    "where order_code = '" + order_code + "' and pay_method = " + pay_method_id;
 
             sqls.add(sql);
 
             if (!SQLiteHelper.execBatchUpdateSql(sqls,err)){
                 if (mPayListener != null)
-                    mainActivity.runOnUiThread(()-> mPayListener.onError(PayDialog.this,err.toString()));
+                    mContext.runOnUiThread(()-> mPayListener.onError(PayDialog.this,err.toString()));
             }else{
                 if (mPayListener != null){
-                    mainActivity.runOnUiThread(()-> mPayListener.onSuccess(PayDialog.this));
+                    mContext.runOnUiThread(()-> mPayListener.onSuccess(PayDialog.this));
                 }
             }
         }
@@ -915,18 +920,18 @@ public class PayDialog extends Dialog {
                     else{
                         mCashMoneyEt.setText(mPayBalanceTv.getText());
                         mCashMoneyEt.selectAll();
-                        MyDialog.ToastMessage("找零不能大于100",mainActivity,null);
+                        MyDialog.ToastMessage("找零不能大于100", mContext,null);
                     }
                 }else{
                     mZlAmt = 0.00;
-                    mZlAmtEt.setText(mainActivity.getText(R.string.z_p_z_sz));
+                    mZlAmtEt.setText(mContext.getText(R.string.z_p_z_sz));
                 }
             }
         });
         mCashMoneyEt.postDelayed(()-> mCashMoneyEt.requestFocus(),300);
     }
     private String getCashPayCode() {
-        return new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date())+ mainActivity.getPosNum() + Utils.getNonce_str(8);
+        return new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date())+ mContext.getPosNum() + Utils.getNonce_str(8);
     }
     private boolean verifyPayBalance(){
       return (mPay_balance > 0.0 || Utils.equalDouble(mPay_balance,0.0));
@@ -941,27 +946,19 @@ public class PayDialog extends Dialog {
         fourth.setText(String.valueOf( tmp +(50- tmp % 50)));
     }
 
-    private String c_format_58(JSONObject format_info,final JSONArray sales){
+    private static String c_format_58(final MainActivity context,final JSONObject format_info,@NonNull final JSONArray sales,@NonNull final JSONArray pays,boolean is_open_cash_box){
 
-        StringBuilder info = new StringBuilder();
-        String store_name = "",footer_c,new_line ,new_line_16,new_line_2,new_line_d,line,pos_num,cas_name;
-        int print_count = 1,footer_space = 5;
-        JSONObject cas_info = mainActivity.getCashierInfo(),st_info = mainActivity.getStoreInfo();
+        final StringBuilder info = new StringBuilder();
+        int print_count = Utils.getNotKeyAsDefault(format_info,"p_c",1),footer_space = Utils.getNotKeyAsDefault(format_info,"f_s",5);
+        final JSONObject cas_info = context.getCashierInfo(),st_info = context.getStoreInfo();
+        final String store_name = Utils.getNullStringAsEmpty(format_info,"s_n"),pos_num = Utils.getNullOrEmptyStringAsDefault(cas_info,"pos_num",""),
+                cas_name = Utils.getNullOrEmptyStringAsDefault(cas_info,"cas_name",""),footer_c = Utils.getNullStringAsEmpty(format_info,"f_c"),
+                new_line = "\r\n",//Printer.commandToStr(Printer.NEW_LINE);
+                new_line_16 = Printer.commandToStr(Printer.LINE_SPACING_16),
+                new_line_2 = Printer.commandToStr(Printer.LINE_SPACING_2),new_line_d = Printer.commandToStr(Printer.LINE_SPACING_DEFAULT),
+                line = "--------------------------------";
 
-        store_name = Utils.getNullStringAsEmpty(format_info,"s_n");
-        pos_num = Utils.getNullOrEmptyStringAsDefault(cas_info,"pos_num","");
-        cas_name = Utils.getNullOrEmptyStringAsDefault(cas_info,"cas_name","");;
-
-        footer_c = Utils.getNullStringAsEmpty(format_info,"f_c");
-        print_count = Utils.getNotKeyAsDefault(format_info,"p_c",1);
-        footer_space = Utils.getNotKeyAsDefault(format_info,"f_s",5);
-        new_line = "\r\n";//Printer.commandToStr(Printer.NEW_LINE);
-        new_line_16 = Printer.commandToStr(Printer.LINE_SPACING_16);
-        new_line_2 = Printer.commandToStr(Printer.LINE_SPACING_2);
-        new_line_d = Printer.commandToStr(Printer.LINE_SPACING_DEFAULT);
-        line = "--------------------------------";
-
-        if (mOpenCashbox)//开钱箱
+        if (is_open_cash_box)//开钱箱
             info.append(Printer.commandToStr(Printer.OPEN_CASHBOX));
 
         while (print_count-- > 0) {//打印份数
@@ -969,19 +966,20 @@ public class PayDialog extends Dialog {
                     .append(store_name.length() == 0 ? Utils.getNullStringAsEmpty(st_info,"stores_name") : store_name).append(new_line).append(new_line).append(Printer.commandToStr(Printer.NORMAL)).
                     append(Printer.commandToStr(Printer.ALIGN_LEFT));
 
-            info.append(Printer.printTwoData(1, "店号：".concat(Utils.getNullStringAsEmpty(st_info,"stores_id")), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()))).append(new_line);
-            info.append(Printer.printTwoData(1, "机号：".concat(pos_num), "收银员：".concat(cas_name))).append(new_line);
-            info.append("单号：").append(mainActivity.getOrderCode()).append(new_line).append(new_line);
+            info.append(Printer.printTwoData(1, context.getString(R.string.b_f_store_id_sz).concat(Utils.getNullStringAsEmpty(st_info,"stores_id")), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()))).append(new_line);
+            info.append(Printer.printTwoData(1, context.getString(R.string.b_f_jh_sz).concat(pos_num), context.getString(R.string.b_f_cashier_sz).concat(cas_name))).append(new_line);
+            info.append(context.getString(R.string.b_f_order_sz)).append(context.getOrderCode()).append(new_line).append(new_line);
 
-            info.append("商品名称      单价   数量   小计").append(new_line_2).append(new_line).append(line).append(new_line_2).append(new_line).append(new_line_d);
-
+            info.append(context.getString(R.string.b_f_header_sz).replace("-"," ")).append(new_line_2).append(new_line).append(line).append(new_line_2).append(new_line).append(new_line_d);
             //商品明细
             JSONObject info_obj;
-            double discount_amt = 0.0, xnum = 0.0;
+            double discount_amt = 0.0, xnum = 0.0,order_amt = 0.0,actual_amt = 0.0,sum_dis_amt = 0.0;
             int units_num = 0, type = 1;//商品属性 1普通 2称重 3用于服装
             for (int i = 0, size = sales.size(); i < size; i++) {
                 info_obj = sales.getJSONObject(i);
                 if (info_obj != null) {
+                    order_amt += info_obj.getDoubleValue("original_amt");
+
                     type = info_obj.getIntValue("type");
                     if (type == 2) {
                         units_num += 1;
@@ -1000,7 +998,11 @@ public class PayDialog extends Dialog {
                             Printer.printThreeData(16,Utils.getNullStringAsEmpty(info_obj,"price"), type == 2 ? String.valueOf(xnum) : String.valueOf((int) xnum),Utils.getNullStringAsEmpty(info_obj,"sale_amt"))));
 
                     if (!Utils.equalDouble(discount_amt, 0.0)) {
-                        info.append(new_line).append(Printer.printTwoData(1, "原价：".concat(Utils.getNullStringAsEmpty(info_obj,"original_price")), "优惠：".concat(String.valueOf(discount_amt))));
+
+                        sum_dis_amt += discount_amt;
+
+                        info.append(new_line).append(Printer.printTwoData(1, context.getString(R.string.b_f_ori_price_sz).concat(Utils.getNullStringAsEmpty(info_obj,"original_price")),
+                                context.getString(R.string.b_f_disco_sz).concat(String.format(Locale.CHINA, "%.2f", discount_amt))));
                     }
                     if (i + 1 != size)
                         info.append(new_line_16);
@@ -1012,27 +1014,27 @@ public class PayDialog extends Dialog {
             }
             info.append(line).append(new_line_2).append(new_line).append(new_line_d);
 
-            info.append(Printer.printTwoData(1, "总价：".concat(String.format(Locale.CHINA, "%.2f", mOrder_amt))
-                    , "件数：".concat(String.valueOf(units_num)))).append(new_line);
-            ;
-            info.append(Printer.printTwoData(1, "应收：".concat(String.format(Locale.CHINA, "%.2f", mActual_amt)), "优惠：".concat(String.format(Locale.CHINA, "%.2f", mDiscount_amt)))).
+            info.append(Printer.printTwoData(1, context.getString(R.string.b_f_amt_sz).concat(String.format(Locale.CHINA, "%.2f", order_amt))
+                    , context.getString(R.string.b_f_units_sz).concat(String.valueOf(units_num)))).append(new_line);
+
+            info.append(Printer.printTwoData(1, context.getString(R.string.b_f_rec_sz).concat(String.format(Locale.CHINA, "%.2f", order_amt - sum_dis_amt)),
+                    context.getString(R.string.b_f_disco_sz).concat(String.format(Locale.CHINA, "%.2f", sum_dis_amt)))).
                     append(new_line_2).append(new_line).append(line).append(new_line_2).append(new_line).append(new_line_d);
 
             //支付方式
             double zl = 0.0, pamt = 0.0;
-            JSONArray pays = getContent();
             for (int i = 0, size = pays.size(); i < size; i++) {
                 info_obj = pays.getJSONObject(i);
                 zl = info_obj.getDoubleValue("pzl");
                 pamt = info_obj.getDoubleValue("pamt");
                 info.append(Utils.getNullOrEmptyStringAsDefault(info_obj,"name","")).append("：").append(pamt - zl).append("元").append(new_line);
 
-                info.append("预收：").append(pamt);
+                info.append(context.getString(R.string.b_f_yus_sz)).append(pamt);
                 if (!Utils.equalDouble(zl, 0.0)) {
-                    info.append(",").append("找零：").append(zl);
+                    info.append(",").append(context.getString(R.string.b_f_zl_sz)).append(zl);
                 }
                 if (info_obj.containsKey("xnote")) {
-                    JSONArray xnotes = info_obj.getJSONArray("xnote");
+                    final JSONArray xnotes = JSON.parseArray(Utils.getNullOrEmptyStringAsDefault(info_obj,"xnote","[]"));
                     if (xnotes != null) {
                         int length = xnotes.size();
                         if (length > 0) {
@@ -1052,8 +1054,8 @@ public class PayDialog extends Dialog {
                 info.append(new_line).append(new_line_d);
             }
             info.append(line).append(new_line_2).append(new_line).append(new_line_d);
-            info.append("门店热线：").append(Utils.getNullOrEmptyStringAsDefault(st_info,"telphone","")).append(new_line);
-            info.append("门店地址：").append(Utils.getNullOrEmptyStringAsDefault(st_info,"region","")).append(new_line);
+            info.append(context.getString(R.string.b_f_hotline_sz)).append(Utils.getNullOrEmptyStringAsDefault(st_info,"telphone","")).append(new_line);
+            info.append(context.getString(R.string.b_f_stores_address_sz)).append(Utils.getNullOrEmptyStringAsDefault(st_info,"region","")).append(new_line);
 
             info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(footer_c);
             for (int i = 0; i < footer_space; i++) info.append(" ").append(new_line);
@@ -1078,11 +1080,6 @@ public class PayDialog extends Dialog {
         this.mPayListener = listener;
         return  this;
     }
-
-    public JSONArray getContent(){
-        return mPayDetailViewAdapter.getDatas();
-    }
-
     public interface onPayListener {
         void onStart(PayDialog myDialog);
         void onProgress(PayDialog myDialog,final String info);
@@ -1090,7 +1087,7 @@ public class PayDialog extends Dialog {
         void onError(PayDialog myDialog,final String err);
     }
     public boolean initPayContent(){
-        final JSONArray datas = mainActivity.getSaleData();
+        final JSONArray datas = mContext.getSaleData();
         if (!datas.isEmpty()){
             antoMol();
             calculatePayContent();
@@ -1099,28 +1096,34 @@ public class PayDialog extends Dialog {
         }
         return false;
     }
+    public JSONArray getContent(){
+        return mPayDetailViewAdapter.getDatas();
+    }
+    public boolean isOpenCashbox(){
+        return mOpenCashbox;
+    }
     public void showVipInfo(@NonNull JSONObject vip,boolean show){//show为true则只显示不再刷新已销售商品
         mVip = vip;
-        LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
+        final LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
         if (vip_info_linearLayout != null){
             vip_info_linearLayout.setVisibility(View.VISIBLE);
             ((TextView)vip_info_linearLayout.findViewById(R.id.vip_name)).setText(mVip.getString("name"));
             ((TextView)vip_info_linearLayout.findViewById(R.id.vip_phone_num)).setText(mVip.getString("mobile"));
         }
         if (!show){
-            mainActivity.showVipInfo(vip);
+            mContext.showVipInfo(vip);
             refreshPayContent();
         }
     }
 
-    public String get_print_content(JSONArray sales){
-        JSONObject print_format_info = new JSONObject();
+    public static String get_print_content(final MainActivity context,final JSONArray sales,JSONArray pays,boolean isOpenCashbox){
+        final JSONObject print_format_info = new JSONObject();
         String content = "";
         if (SQLiteHelper.getLocalParameter("c_f_info",print_format_info)){
             if (print_format_info.getIntValue("f") == R.id.checkout_format){
                 switch (print_format_info.getIntValue("f_z")){
                     case R.id.f_58:
-                        content = c_format_58(print_format_info,sales);
+                        content = c_format_58(context,print_format_info,sales,pays,isOpenCashbox);
                         break;
                     case R.id.f_76:
                         break;
@@ -1129,7 +1132,7 @@ public class PayDialog extends Dialog {
                 }
             }
         }else
-            MyDialog.ToastMessage("加载打印格式错误：" + print_format_info.getString("info"),mainActivity,getWindow());
+            MyDialog.ToastMessage("加载打印格式错误：" + print_format_info.getString("info"), context,context.getWindow());
 
         return content;
     }

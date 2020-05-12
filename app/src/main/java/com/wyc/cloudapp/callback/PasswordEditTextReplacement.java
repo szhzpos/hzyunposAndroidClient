@@ -2,7 +2,7 @@ package com.wyc.cloudapp.callback;
 
 import android.text.method.ReplacementTransformationMethod;
 
-public class EditTextReplacement extends ReplacementTransformationMethod {
+public class PasswordEditTextReplacement extends ReplacementTransformationMethod {
     @Override
     protected char[] getOriginal() {
         StringBuilder strWord = new StringBuilder();

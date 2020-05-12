@@ -104,7 +104,7 @@
                     android:id="@+id/id_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/vip_id_sz"
+                    android:text="@string/vip_card_id_sz"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/font_size_16"
                     app:layout_constraintStart_toStartOf="@id/sex_text"
