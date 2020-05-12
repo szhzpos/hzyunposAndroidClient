@@ -159,15 +159,27 @@ public final class OrderDetailsPayInfoAdapter extends RecyclerView.Adapter<Order
         Logger.d("sql:%s",sql);
         mDatas = SQLiteHelper.getListToJson(sql,err);
         if (mDatas != null){
-            notifyDataSetChanged();
+            mContext.runOnUiThread(this::notifyDataSetChanged);
         }else{
             mDatas = new JSONArray();
-            MyDialog.ToastMessage("加载付款明细错误：" + err,mContext,null);
+            mContext.runOnUiThread(()->MyDialog.ToastMessage("加载付款明细错误：" + err,mContext,null));
         }
 
     }
 
     public JSONArray getPayInfo(){
         return mDatas ;
+    }
+    public boolean isPaySuccess(){
+        boolean success  = true;
+        for (Object o : mDatas){
+            if (o instanceof JSONObject){
+                if(2 != Utils.getNotKeyAsDefault((JSONObject)o,"pay_status",1)){
+                    success = false;
+                    break;
+                }
+            }
+        }
+        return success;
     }
 }

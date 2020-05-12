@@ -602,7 +602,7 @@
             android:text="@string/verify_pay_sz"
             android:textColor="@color/blue_white"
             android:textSize="@dimen/font_size_18"
-            android:visibility="gone" />
+            android:visibility="visible" />
 
         <Space
             android:layout_width="wrap_content"

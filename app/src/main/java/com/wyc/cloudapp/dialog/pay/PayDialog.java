@@ -662,35 +662,36 @@ public class PayDialog extends BaseDialog {
     public void requestPay(){
         if (mPayListener != null) mContext.runOnUiThread(()->mPayListener.onProgress(PayDialog.this,"正在支付..."));
         mPayStatus = true;
-        int is_check;
+        int is_check,pay_status = 1;
         long pay_time = 0;
         double discount_money = 0.0;
-        String pay_method_id = "",pay_money,pay_code,unified_pay_order,unified_pay_query,sz_param,v_num,third_pay_order_id = "",discount_xnote = "";
+
         JSONObject retJson,pay_detail,pay_method_json,info_json;
         HttpRequest httpRequest = null;
+        String pay_method_id = "",pay_money,pay_code,unified_pay_order,unified_pay_query,sz_param,v_num,third_pay_order_id = "",discount_xnote = "";
 
         final String order_code = mContext.getOrderCode(),url = mContext.getUrl(),appId = mContext.getAppId(),appScret = mContext.getAppScret(),
                 stores_id = mContext.getStoreInfo().getString("stores_id"),pos_num = mContext.getCashierInfo().getString("pos_num");
 
-        final StringBuilder err = new StringBuilder();
-        final ContentValues values = new ContentValues();
+        final List<String> update_sqls_list = new ArrayList<>();
+        final StringBuilder err = new StringBuilder(),sb_update_sql = new StringBuilder();
         final JSONArray pays = SQLiteHelper.getListToJson("select pay_method,pay_money,pay_code,is_check,v_num from retail_order_pays where order_code = '" + order_code +"'",0,0,false,err);
         if (null != pays){
             try{
                 for (int i = 0,size = pays.size();i < size && mPayStatus;i++){
                     pay_detail = pays.getJSONObject(i);
+                    pay_method_id = pay_detail.getString("pay_method");
 
                     is_check = pay_detail.getIntValue("is_check");
-                    pay_code = pay_detail.getString("pay_code");
-                    v_num = pay_detail.getString("v_num");
+                    if (is_check == 2){
+                        pay_status = 2;
+                        pay_time = System.currentTimeMillis()/1000;
+                    }else{
+                        pay_code = pay_detail.getString("pay_code");
+                        v_num = pay_detail.getString("v_num");
 
-                    pay_time = System.currentTimeMillis()/1000;
-                    //发起支付请求
-                    if (is_check != 2){
-                        if (httpRequest == null)
-                            httpRequest = new HttpRequest();
+                        if (httpRequest == null)httpRequest = new HttpRequest();
 
-                        pay_method_id = pay_detail.getString("pay_method");
                         pay_money = pay_detail.getString("pay_money");
 
                         pay_method_json = mPayMethodViewAdapter.get_pay_method(pay_method_id);
@@ -707,7 +708,7 @@ public class PayDialog extends BaseDialog {
                                 unified_pay_query = "/api/pay2_query/query";
                             }
 
-                            JSONObject data_ = new JSONObject();
+                            final JSONObject data_ = new JSONObject();
                             data_.put("appid",appId);
                             data_.put("stores_id",stores_id);
                             data_.put("order_code",order_code);
@@ -749,6 +750,7 @@ public class PayDialog extends BaseDialog {
                                                     third_pay_order_id = info_json.getString("pay_code");
                                                     discount_money = info_json.getDouble("discount");
                                                     pay_time = info_json.getLong("pay_time");
+                                                    pay_status = info_json.getIntValue("pay_status");
                                                     break;
                                                 case 2:
                                                     mPayStatus = false;
@@ -826,6 +828,7 @@ public class PayDialog extends BaseDialog {
                                                                                 third_pay_order_id = info_json.getString("pay_code");
                                                                                 discount_money = info_json.getDouble("discount");
                                                                                 pay_time = info_json.getLong("pay_time");
+                                                                                pay_status = info_json.getIntValue("pay_status");
                                                                                 break;
                                                                             }
                                                                             if (res_code == 2){//支付失败
@@ -851,6 +854,14 @@ public class PayDialog extends BaseDialog {
                             err.append("付款方式不存在:pay_method_id--").append(pay_method_id);
                         }
                     }
+                    if (mPayStatus){
+                        sb_update_sql.append("update retail_order_pays set pay_status = ").append(pay_status).append(",pay_serial_no = ").append("'").append(third_pay_order_id).append("'").append(",pay_time = ").
+                                append(pay_time).append(",discount_money = ").append(discount_money).append(",xnote = ").append("'").append(discount_xnote).append("'").append(",return_code = ").
+                                append("'").append(third_pay_order_id).append("'").append(" where order_code = ").append("'").append(order_code).append("'").append(" and pay_method = ").append(pay_method_id);
+                        update_sqls_list.add(sb_update_sql.toString());
+
+                        sb_update_sql.delete(0,sb_update_sql.length());
+                    }
                 }
             }catch (JSONException e){
                 e.printStackTrace();
@@ -862,25 +873,21 @@ public class PayDialog extends BaseDialog {
         }
 
         if (!mPayStatus){
+            final ContentValues values = new ContentValues();
             values.put("order_status",3);
             values.put("spare_param1",err.toString());
             if (!SQLiteHelper.execUpdateSql("retail_order",values,"order_code = ?",new String[]{order_code},err)){
-                Logger.d("更新订单状态错误：",err);
+                Logger.e("支付更新订单状态错误：%s",err);
             }
             if (mPayListener != null)
                 mContext.runOnUiThread(()-> mPayListener.onError(PayDialog.this,err.toString()));
         }else{
-            final List<String> sqls = new ArrayList<>();
-            String sql = "update retail_order set order_status = 2,pay_status = 2,pay_time ='" + pay_time +"' where order_code = '" + order_code + "'";
 
-            sqls.add(sql);
-
-            sql = "update retail_order_pays set pay_status = 2,pay_serial_no = '" + third_pay_order_id +"',pay_time = " + pay_time + ",discount_money = " + discount_money +",xnote = '" + discount_xnote +"',return_code = '"+ third_pay_order_id +"' " +
-                    "where order_code = '" + order_code + "' and pay_method = " + pay_method_id;
-
-            sqls.add(sql);
-
-            if (!SQLiteHelper.execBatchUpdateSql(sqls,err)){
+            sb_update_sql.append("update retail_order set order_status = 2,pay_status = 2,pay_time = ").append(pay_time).append(" where order_code = '").append(order_code).append("'");
+            update_sqls_list.add(sb_update_sql.toString());
+            Logger.d("update_sqls_list:%s",update_sqls_list);
+            if (!SQLiteHelper.execBatchUpdateSql(update_sqls_list,err)){
+                Logger.e("支付更新订单状态错误：%s",err);
                 if (mPayListener != null)
                     mContext.runOnUiThread(()-> mPayListener.onError(PayDialog.this,err.toString()));
             }else{

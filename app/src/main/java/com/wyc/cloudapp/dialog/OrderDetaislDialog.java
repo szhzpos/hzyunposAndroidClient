@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -27,11 +26,13 @@ import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class OrderDetaislDialog extends BaseDialog {
-    private JSONObject mOrderInfo;
+    private JSONObject mOrderInfo, mPayRecord;
     private OrderDetailsGoodsInfoAdapter mOrderDetailsGoodsInfoAdapter;
     private OrderDetailsPayInfoAdapter mOrderDetailsPayInfoAdapter;
     private TextView mOrderCode;
@@ -48,6 +49,7 @@ public class OrderDetaislDialog extends BaseDialog {
 
         showOrderInfo();
         initReprint();
+        initVerifyPay();
     }
 
     private void showOrderInfo(){
@@ -112,12 +114,7 @@ public class OrderDetaislDialog extends BaseDialog {
             pay_detail.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
             pay_detail.setAdapter(mOrderDetailsPayInfoAdapter);
             mOrderDetailsPayInfoAdapter.setDatas(mOrderInfo.getString("order_code"));
-            mOrderDetailsPayInfoAdapter.setItemClickListener(new OrderDetailsPayInfoAdapter.ItemClickCallBack() {
-                @Override
-                public void onClick(JSONObject pay_record) {
-                    initVerifyPay(pay_record);
-                }
-            });
+            mOrderDetailsPayInfoAdapter.setItemClickListener(pay_record -> mPayRecord = pay_record);
         }
     }
     private void initReprint(){
@@ -126,107 +123,122 @@ public class OrderDetaislDialog extends BaseDialog {
             reprint_btn.setOnClickListener(v -> Printer.print(mContext,PayDialog.get_print_content(mContext,mOrderDetailsGoodsInfoAdapter.getSaleGoods(),mOrderDetailsPayInfoAdapter.getPayInfo(),false)));
         }
     }
-    private void initVerifyPay(final JSONObject pay_record){
+    private void initVerifyPay(){
         final Button verify_pay_btn = findViewById(R.id.verify_pay_btn);
         if (null != verify_pay_btn){
-            if (null != pay_record && 2 != pay_record.getIntValue("is_check")){
-                verify_pay_btn.setVisibility(View.VISIBLE);
-                verify_pay_btn.setOnClickListener(v -> {
-                    mProgressDialog = new CustomProgressDialog(mContext);
-                    mProgressDialog.setCancel(false).setMessage("正在查询支付结果...").refreshMessage().show();
-                    CustomApplication.execute(()->verify_pay(pay_record));
-                });
-            }else{
-                verify_pay_btn.setVisibility(View.GONE);
-                verify_pay_btn.setOnClickListener(null);
-            }
+            verify_pay_btn.setOnClickListener(v -> {
+                mProgressDialog = new CustomProgressDialog(mContext);
+                mProgressDialog.setCancel(false).setMessage("正在查询支付结果...").refreshMessage().show();
+                CustomApplication.execute(this::verify_pay);
+            });
         }
     }
 
-    private void verify_pay(final JSONObject pay_record){
+    private void verify_pay(){
+        if (null != mPayRecord){
+            boolean query_status = false;
+            final JSONObject object = new JSONObject();
+            final HttpRequest httpRequest = new HttpRequest();
+            final StringBuilder err = new StringBuilder();
+            String unified_pay_query,discount_xnote = "",third_pay_order_id = "";
+            double discount_money = 0.0;
+            long pay_time = 0;
+            int pay_status = 1;
+            final String pay_code = Utils.getNullStringAsEmpty(mPayRecord,"pay_code");
+            if (2 == mPayRecord.getIntValue("is_check")){
+                query_status = true;
+                pay_status = 2;
+                pay_time = System.currentTimeMillis()/1000;
+            }else{
+                unified_pay_query = Utils.getNullStringAsEmpty(mPayRecord,"unified_pay_query");
+                if (unified_pay_query.isEmpty()){
+                    unified_pay_query = "/api/pay2_query/query";
+                }
+                object.put("appid",mContext.getAppId());
+                if (!pay_code.isEmpty())
+                    object.put("pay_code",pay_code);
+                object.put("order_code_son", mPayRecord.getString("order_code_son"));
 
-
-        boolean query_status = false;
-        final JSONObject object = new JSONObject();
-        final HttpRequest httpRequest = new HttpRequest();
-        final StringBuilder err = new StringBuilder();
-        String unified_pay_query = Utils.getNullStringAsEmpty(pay_record,"unified_pay_query"),discount_xnote = "",third_pay_order_id = "",pay_code = Utils.getNullStringAsEmpty(pay_record,"pay_code");
-
-        double discount_money = 0.0;
-        long pay_time = 0;
-
-        if (unified_pay_query.isEmpty()){
-            unified_pay_query = "/api/pay2_query/query";
-        }
-        object.put("appid",mContext.getAppId());
-        if (!pay_code.isEmpty())
-            object.put("pay_code",pay_code);
-        object.put("order_code_son",pay_record.getString("order_code_son"));
-
-        final String sz_param = HttpRequest.generate_request_parm(object,mContext.getAppScret());
-        final JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + unified_pay_query,sz_param,true);
-        switch (retJson.getIntValue("flag")){
-            case 0:
-                err.append(retJson.getString("info"));
-                break;
-            case 1:
-                final JSONObject info_json = JSON.parseObject(retJson.getString("info"));
-                Logger.json(info_json.toString());
-                switch (info_json.getString("status")){
-                    case "n":
-                        err.append(info_json.getString("info"));
+                final String sz_param = HttpRequest.generate_request_parm(object,mContext.getAppScret());
+                final JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + unified_pay_query,sz_param,true);
+                switch (retJson.getIntValue("flag")){
+                    case 0:
+                        err.append(retJson.getString("info"));
                         break;
-                    case "y":
-                        int res_code = info_json.getIntValue("res_code");
-                        if (res_code == 1){//支付成功
-                            query_status = true;
-                            Logger.d_json(info_json.toString());
-                            if (info_json.containsKey("xnote")){
-                                discount_xnote = info_json.getString("xnote");
-                            }
-                            third_pay_order_id = info_json.getString("pay_code");
-                            discount_money = info_json.getDoubleValue("discount");
-                            pay_time = info_json.getLong("pay_time");
-                        }
-                        if (res_code == 2){//支付失败
-                            err.append(info_json.getString("info"));
+                    case 1:
+                        final JSONObject info_json = JSON.parseObject(retJson.getString("info"));
+                        Logger.json(info_json.toString());
+                        switch (info_json.getString("status")){
+                            case "n":
+                                err.append(info_json.getString("info"));
+                                break;
+                            case "y":
+                                int res_code = info_json.getIntValue("res_code");
+                                if (res_code == 1){//支付成功
+                                    query_status = true;
+                                    Logger.d_json(info_json.toString());
+                                    if (info_json.containsKey("xnote")){
+                                        discount_xnote = info_json.getString("xnote");
+                                    }
+                                    third_pay_order_id = info_json.getString("pay_code");
+                                    discount_money = info_json.getDoubleValue("discount");
+                                    pay_time = info_json.getLong("pay_time");
+                                    pay_status = info_json.getIntValue("pay_status");
+                                }
+                                if (res_code == 2){//支付失败
+                                    err.append(info_json.getString("info"));
+                                }
+                                break;
                         }
                         break;
                 }
-                break;
-        }
-        final ContentValues values = new ContentValues();
-        final String sz_order_code = mOrderCode.getText().toString();
-        if (!query_status){
-            values.put("order_status",3);
-            values.put("spare_param1",err.toString());
-            if (!SQLiteHelper.execUpdateSql("retail_order",values,"order_code = ?",new String[]{sz_order_code},err)){
-                Logger.d("更新订单状态错误：",err);
             }
-        }else{
-            final List<String> sqls = new ArrayList<>();
-            int pay_method_id = pay_record.getIntValue("pay_method");
-            String sql = "update retail_order set order_status = 2,pay_status = 2,pay_time ='" + pay_time +"' where order_code = '" + sz_order_code + "'";
 
-            sqls.add(sql);
-
-            sql = "update retail_order_pays set pay_status = 2,pay_serial_no = '" + third_pay_order_id +"',pay_time = '" + pay_time + "',discount_money = '" + discount_money +"',xnote = '" + discount_xnote +"',return_code = '"+ third_pay_order_id +"' " +
-                    "where order_code = '" + sz_order_code + "' and pay_method = " + pay_method_id;
-
-            sqls.add(sql);
-
-            if (!SQLiteHelper.execBatchUpdateSql(sqls,err)){
-                Logger.d("更新订单状态错误：",err);
+            final ContentValues values = new ContentValues();
+            final String sz_order_code = mOrderCode.getText().toString();
+            if (!query_status){
+                values.put("order_status",3);
+                values.put("spare_param1",err.toString());
+                if (!SQLiteHelper.execUpdateSql("retail_order",values,"order_code = ?",new String[]{sz_order_code},err)){
+                    Logger.d("更新订单状态错误：",err);
+                }
             }else{
-                mContext.runOnUiThread(()-> MyDialog.ToastMessage("支付成功！",mContext,getWindow()));
+                final List<String> sqls = new ArrayList<>();
+                int pay_method_id = mPayRecord.getIntValue("pay_method");
+                String sql = "update retail_order_pays set pay_status = " + pay_status +",pay_serial_no = '" + third_pay_order_id +"',pay_time = '" + pay_time + "',discount_money = '" + discount_money +"',xnote = '" + discount_xnote +"',return_code = '"+ third_pay_order_id +"' " +
+                        "where order_code = '" + sz_order_code + "' and pay_method = " + pay_method_id;
+                sqls.add(sql);
+
+                //更新当前付款记录
+                mPayRecord.put("pay_status",pay_status);
+                mPayRecord.put("pay_time",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(pay_time * 1000));
+                if (pay_status == 2){
+                    mPayRecord.put("pay_status_name","已支付");
+                }
+
+                if (mOrderDetailsPayInfoAdapter.isPaySuccess()){//所有付款记录成功付款再更新单据
+                    sql = "update retail_order set order_status = 2,pay_status = 2,pay_time ='" + pay_time +"' where order_code = '" + sz_order_code + "'";
+                    sqls.add(sql);
+                }
+
+                if (!SQLiteHelper.execBatchUpdateSql(sqls,err)){
+                    Logger.d("更新订单状态错误：",err);
+                }else{
+                    mContext.runOnUiThread(()-> {
+                        mOrderDetailsPayInfoAdapter.notifyDataSetChanged();
+                        MyDialog.ToastMessage("支付成功！",mContext,getWindow());
+                    });
+                }
             }
+            if (err.length() != 0){
+                mContext.runOnUiThread(()-> MyDialog.ToastMessage(err.toString(),mContext,getWindow()));
+            }
+        }else {
+            mContext.runOnUiThread(()-> MyDialog.ToastMessage("请选择验证记录！",mContext,getWindow()));
         }
+
         if (mProgressDialog != null){
             mContext.runOnUiThread(()->mProgressDialog.dismiss());
         }
-        if (err.length() != 0){
-            mContext.runOnUiThread(()-> MyDialog.ToastMessage(err.toString(),mContext,getWindow()));
-        }
     }
-
 }
