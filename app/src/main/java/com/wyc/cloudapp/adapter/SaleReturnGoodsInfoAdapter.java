@@ -8,13 +8,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.http.HttpRequest;
 
 import java.util.Locale;
 
@@ -73,6 +76,22 @@ public final class SaleReturnGoodsInfoAdapter extends RecyclerView.Adapter<SaleR
     }
 
     public void setDatas(final String order_code){
+
+        CustomApplication.execute(()->{
+
+            final JSONObject object = new JSONObject();
+            object.put("appid",mContext.getAppId());
+            object.put("retail_code",order_code);
+            object.put("stores_id",mContext.getStoreInfo().getString("stores_id"));
+            HttpRequest httpRequest = new HttpRequest();
+            final JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + "/api/refund/getretailrefund",
+                    HttpRequest.generate_request_parm(object,mContext.getAppScret()),true);
+            final JSONObject info = JSON.parseObject(retJson.getString("info"));
+            Logger.d_json(info.toJSONString());
+
+
+        });
+
         final StringBuilder err = new StringBuilder();
         final String sql = "SELECT c.barcode_id,c.barcode,c.goods_title,c.unit_name,a.price,a.xnum,a.xnum returnable_num FROM\n" +
                 "retail_order_goods a  left join barcode_info c on a.barcode_id = c.barcode_id\n" +

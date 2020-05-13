@@ -95,7 +95,7 @@
 
     <EditText
         android:id="@+id/cur_ret_amt"
-        android:layout_width="@dimen/width_128"
+        android:layout_width="@dimen/width_88"
         android:layout_height="match_parent"
         android:layout_marginStart="@dimen/margin_5"
         android:layout_marginTop="@dimen/margin_5"
@@ -108,12 +108,5 @@
         android:text="@string/z_p_z_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16" />
-
-    <TextView
-        android:id="@+id/textView38"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TextView"
-        android:visibility="invisible" />
 
 </LinearLayout>

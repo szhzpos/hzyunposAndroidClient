@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:paddingStart="@dimen/margin_5"
-            android:paddingEnd="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_2"
             android:text="@string/order_not_colon_sz"
             android:textSize="@dimen/font_size_16" />
 
@@ -54,7 +54,7 @@
                 android:paddingBottom="@dimen/margin_8"
                 android:text="@string/barcode_sz"
                 android:textColor="@color/white"
-                android:textSize="@dimen/font_size_16" />
+                android:textSize="@dimen/font_size_18" />
 
             <TextView
                 android:layout_width="@dimen/table_goods_title_width"
@@ -64,7 +64,7 @@
                 android:paddingBottom="@dimen/margin_8"
                 android:text="@string/g_name_sz"
                 android:textColor="@color/white"
-                android:textSize="@dimen/font_size_16" />
+                android:textSize="@dimen/font_size_18" />
 
             <TextView
                 android:layout_width="@dimen/width_88"
@@ -74,7 +74,7 @@
                 android:paddingBottom="@dimen/margin_8"
                 android:text="@string/num_not_colon_sz"
                 android:textColor="@color/white"
-                android:textSize="@dimen/font_size_16" />
+                android:textSize="@dimen/font_size_18" />
 
             <TextView
                 android:layout_width="@dimen/width_88"
@@ -84,7 +84,7 @@
                 android:paddingBottom="@dimen/margin_8"
                 android:text="@string/sec_price_sz"
                 android:textColor="@color/white"
-                android:textSize="@dimen/font_size_16" />
+                android:textSize="@dimen/font_size_18" />
 
             <TextView
                 android:layout_width="@dimen/width_88"
@@ -94,7 +94,7 @@
                 android:paddingBottom="@dimen/margin_8"
                 android:text="@string/unit_sz"
                 android:textColor="@color/white"
-                android:textSize="@dimen/font_size_16" />
+                android:textSize="@dimen/font_size_18" />
 
             <TextView
                 android:layout_width="@dimen/width_118"
@@ -104,7 +104,7 @@
                 android:paddingBottom="@dimen/margin_8"
                 android:text="@string/returnable_num_sz"
                 android:textColor="@color/white"
-                android:textSize="@dimen/font_size_16" />
+                android:textSize="@dimen/font_size_18" />
 
             <TextView
                 android:layout_width="@dimen/width_118"
@@ -114,7 +114,7 @@
                 android:paddingBottom="@dimen/margin_8"
                 android:text="@string/returned_num_sz"
                 android:textColor="@color/white"
-                android:textSize="@dimen/font_size_16" />
+                android:textSize="@dimen/font_size_18" />
 
             <TextView
                 android:layout_width="@dimen/width_128"
@@ -124,7 +124,7 @@
                 android:paddingBottom="@dimen/margin_8"
                 android:text="@string/returned_amt_sz"
                 android:textColor="@color/white"
-                android:textSize="@dimen/font_size_16" />
+                android:textSize="@dimen/font_size_18" />
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
@@ -161,7 +161,7 @@
             android:padding="@dimen/margin_5"
             android:paddingBottom="@dimen/margin_8"
             android:text="@string/z_p_z_sz"
-            android:textColor="@color/white"
+            android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16" />
 
         <TextView
