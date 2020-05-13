@@ -384,13 +384,23 @@
                 android:textSize="@dimen/font_size_18" />
 
             <TextView
+                android:layout_width="188dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingTop="@dimen/margin_8"
+                android:paddingBottom="@dimen/margin_8"
+                android:text="@string/time_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:paddingTop="@dimen/margin_8"
                 android:paddingBottom="@dimen/margin_8"
-                android:text="@string/time_sz"
+                android:text="@string/action_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/font_size_18" />
 

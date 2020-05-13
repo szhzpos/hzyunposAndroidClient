@@ -48,7 +48,7 @@
         android:layout_weight="1"
         android:background="@color/transparent"
         android:gravity="center"
-        android:text="@string/h_amt_sz"
+        android:text="@string/amt_not_colon_sz"
         android:textColor="@color/black_white"
         android:textSize="@dimen/font_size_16" />
 

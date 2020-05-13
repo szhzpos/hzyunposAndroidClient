@@ -16,7 +16,7 @@
     <string name="store_sz">仓库：</string>
     <string name="add">+</string>
     <string name="minus">-</string>
-    <string name="num_button_sz">数量</string>
+    <string name="num_not_colon_sz">数量</string>
     <string name="clear_sz">清空</string>
     <string name="discount_sz">折扣</string>
     <string name="change_price_sz">改价</string>
@@ -72,7 +72,7 @@
     <string name="z_p_z_sz">0.00</string>
     <string name="pay_detail_row_id_sz">@string/row_id_sz</string>
     <string name="pay_method_name_sz">支付方式</string>
-    <string name="pay_detail_amt_sz">金额</string>
+    <string name="pay_detail_amt_sz">@string/amt_not_colon_sz</string>
     <string name="pay_detail_zl_sz">找零</string>
     <string name="pay_detail_v_num_sz">凭证号</string>
     <string name="cash_pay_sz">现金：</string>
@@ -154,7 +154,7 @@
     <string name="footer_s_sz">票尾留空：</string>
     <string name="hotline_sz">门店热线：</string>
     <string name="stores_address_sz">门店地址：</string>
-    <string name="sec_num_sz">数量</string>
+    <string name="sec_num_sz">@string/num_not_colon_sz</string>
     <string name="sec_banner_sz">欢迎光临！</string>
     <string name="sec_sum_sz">小计</string>
     <string name="sec_n_b_sz">名称/条码</string>
@@ -162,7 +162,7 @@
     <string name="sec_r_id_sz">序</string>
     <string name="o_cashbox_sz">开钱箱</string>
     <string name="hang_id_sz">挂单号</string>
-    <string name="h_amt_sz">金额</string>
+    <string name="amt_not_colon_sz">金额</string>
     <string name="oper_sz">操作员</string>
     <string name="time_sz">时间</string>
     <string name="barcode_sz">条码</string>
@@ -227,5 +227,12 @@
     <string name="b_f_zl_sz">@string/cash_zl_sz</string>
     <string name="b_f_hotline_sz">@string/hotline_sz</string>
     <string name="b_f_stores_address_sz">@string/stores_address_sz</string>
+    <string name="action_sz">操作</string>
+    <string name="o_back_sz">退货</string>
+    <string name="returnable_num_sz">可退数量</string>
+    <string name="returned_num_sz">退货数量</string>
+    <string name="returned_amt_sz">退货金额</string>
+    <string name="all_returned_sz">全部退款</string>
+    <string name="next_sz">下一步</string>
 
 </resources>

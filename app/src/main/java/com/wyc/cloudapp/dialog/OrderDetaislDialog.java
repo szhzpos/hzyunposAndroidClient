@@ -26,8 +26,10 @@ import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -146,9 +148,21 @@ public class OrderDetaislDialog extends BaseDialog {
             int pay_status = 1;
             final String pay_code = Utils.getNullStringAsEmpty(mPayRecord,"pay_code");
             if (2 == mPayRecord.getIntValue("is_check")){
+                final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.CANADA);
+                final TextView oper_time_tv = findViewById(R.id.oper_time) ;
+                try {
+                    final Date date = simpleDateFormat.parse(oper_time_tv.getText().toString());
+                    if (date != null)
+                        pay_time = date.getTime() / 1000; ;
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    mContext.runOnUiThread(()-> MyDialog.ToastMessage("格式化时间错误：" + e.getLocalizedMessage(),mContext,getWindow()));
+                }
                 query_status = true;
                 pay_status = 2;
-                pay_time = System.currentTimeMillis()/1000;
+                if (pay_time == 0){
+                    pay_time = System.currentTimeMillis() / 1000;
+                }
             }else{
                 unified_pay_query = Utils.getNullStringAsEmpty(mPayRecord,"unified_pay_query");
                 if (unified_pay_query.isEmpty()){

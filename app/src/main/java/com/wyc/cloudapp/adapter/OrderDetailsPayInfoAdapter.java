@@ -63,8 +63,9 @@ public final class OrderDetailsPayInfoAdapter extends RecyclerView.Adapter<Order
                 holder.pay_status_tv.setText(pay_info.getString("pay_status_name"));
                 holder.pay_time_tv.setText(pay_info.getString("pay_time"));
                 holder.pay_code_tv.setText(Utils.getNullStringAsEmpty(pay_info,"order_code_son"));
+
+                holder.mCurrentLayoutItemView.setOnClickListener(mItemClickListener);
             }
-            holder.mCurrentLayoutItemView.setOnClickListener(mItemClickListener);
         }
     }
 

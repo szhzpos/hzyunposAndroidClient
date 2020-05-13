@@ -1,129 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="@dimen/table_row_height"
+    android:layout_marginEnd="@dimen/margin_5"
     android:orientation="horizontal">
 
     <TextView
-        android:id="@+id/row_id"
-        android:layout_width="@dimen/width_45"
+        android:id="@+id/barcode_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/barcode"
+        android:layout_width="@dimen/table_bacode_width"
         android:layout_height="match_parent"
         android:gravity="center"
         android:paddingTop="@dimen/margin_8"
         android:paddingBottom="@dimen/margin_8"
-        android:text="@string/row_id_sz"
+        android:text="@string/barcode_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16" />
 
     <TextView
-        android:id="@+id/order_code"
-        android:layout_width="@dimen/width_208"
+        android:id="@+id/goods_title"
+        android:layout_width="@dimen/table_goods_title_width"
         android:layout_height="match_parent"
         android:gravity="center"
         android:paddingTop="@dimen/margin_8"
         android:paddingBottom="@dimen/margin_8"
-        android:text="@string/order_not_colon_sz"
-        android:textColor="@color/appColor"
+        android:text="@string/g_name_sz"
+        android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16" />
 
     <TextView
-        android:id="@+id/order_amt"
+        android:id="@+id/xnum"
         android:layout_width="@dimen/width_88"
         android:layout_height="match_parent"
         android:gravity="center"
         android:paddingTop="@dimen/margin_8"
         android:paddingBottom="@dimen/margin_8"
-        android:text="@string/order_amt_sz"
+        android:text="@string/sec_num_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16" />
 
     <TextView
-        android:id="@+id/reality_amt"
+        android:id="@+id/price"
         android:layout_width="@dimen/width_88"
         android:layout_height="match_parent"
         android:gravity="center"
         android:paddingTop="@dimen/margin_8"
         android:paddingBottom="@dimen/margin_8"
-        android:text="@string/reality_amt_sz"
+        android:text="@string/sec_price_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16" />
 
     <TextView
-        android:id="@+id/order_status"
+        android:id="@+id/unit_name"
         android:layout_width="@dimen/width_88"
         android:layout_height="match_parent"
         android:gravity="center"
         android:paddingTop="@dimen/margin_8"
         android:paddingBottom="@dimen/margin_8"
-        android:text="@string/order_s_sz"
+        android:text="@string/unit_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16" />
 
     <TextView
-        android:id="@+id/pay_status"
-        android:layout_width="@dimen/width_88"
+        android:id="@+id/returnable_num"
+        android:layout_width="@dimen/width_118"
         android:layout_height="match_parent"
         android:gravity="center"
         android:paddingTop="@dimen/margin_8"
         android:paddingBottom="@dimen/margin_8"
-        android:text="@string/pay_s_sz"
+        android:text="@string/returnable_num_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
+
+    <EditText
+        android:id="@+id/cur_ret_num"
+        android:layout_width="@dimen/width_118"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/margin_5"
+        android:background="@drawable/border_sub_gray"
+        android:gravity="center"
+        android:inputType="numberDecimal"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:selectAllOnFocus="true"
+        android:text="@string/z_p_z_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
+
+
+    <EditText
+        android:id="@+id/cur_ret_amt"
+        android:layout_width="@dimen/width_128"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/margin_5"
+        android:layout_marginTop="@dimen/margin_5"
+        android:layout_marginBottom="@dimen/margin_5"
+        android:background="@drawable/border_sub_gray"
+        android:gravity="center"
+        android:inputType="numberDecimal"
+        android:padding="@dimen/margin_8"
+        android:selectAllOnFocus="true"
+        android:text="@string/z_p_z_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16" />
 
     <TextView
-        android:id="@+id/s_e_status"
-        android:layout_width="@dimen/width_88"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:paddingTop="@dimen/margin_8"
-        android:paddingBottom="@dimen/margin_8"
-        android:text="@string/s_e_status_sz"
-        android:textColor="@color/text_color"
-        android:textSize="@dimen/font_size_16" />
-
-    <TextView
-        android:id="@+id/cas_name"
-        android:layout_width="@dimen/width_88"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:paddingTop="@dimen/margin_8"
-        android:paddingBottom="@dimen/margin_8"
-        android:text="@string/cashier_not_colon_sz"
-        android:textColor="@color/text_color"
-        android:textSize="@dimen/font_size_16" />
-
-    <TextView
-        android:id="@+id/upload_status"
-        android:layout_width="@dimen/width_88"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:paddingTop="@dimen/margin_8"
-        android:paddingBottom="@dimen/margin_8"
-        android:text="@string/upload_s_sz"
-        android:textColor="@color/text_color"
-        android:textSize="@dimen/font_size_16" />
-
-    <TextView
-        android:id="@+id/oper_time"
-        android:layout_width="188dp"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:paddingTop="@dimen/margin_8"
-        android:paddingBottom="@dimen/margin_8"
-        android:text="@string/time_sz"
-        android:textColor="@color/text_color"
-        android:textSize="@dimen/font_size_16" />
-
-    <TextView
-        android:id="@+id/sale_refund"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:paddingTop="@dimen/margin_8"
-        android:paddingBottom="@dimen/margin_8"
-        android:text="@string/o_back_sz"
-        android:textColor="@color/appColor"
-        android:textSize="@dimen/font_size_16" />
+        android:id="@+id/textView38"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:visibility="invisible" />
 
 </LinearLayout>

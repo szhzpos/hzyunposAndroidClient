@@ -61,11 +61,12 @@ public final class OrderDetailsGoodsInfoAdapter extends RecyclerView.Adapter<Ord
                 holder.barcode_tv.setText(sale_goods_info.getString("barcode"));
                 holder.goods_title_tv.setText(sale_goods_info.getString("goods_title"));
                 holder.xnum_tv.setText(String.format(Locale.CHINA,"%.2f",sale_goods_info.getDoubleValue("xnum")));
-                holder.unit_name_tv.setTag(sale_goods_info.getString("unit_name"));
+                holder.unit_name_tv.setText(sale_goods_info.getString("unit_name"));
                 holder.price_tv.setText(String.format(Locale.CHINA,"%.2f",sale_goods_info.getDoubleValue("price")));
                 holder.sale_amt_tv.setText(String.format(Locale.CHINA,"%.2f",sale_goods_info.getDoubleValue("order_amt")));
+
+                holder.mCurrentLayoutItemView.setOnClickListener(mItemClickListener);
             }
-            holder.mCurrentLayoutItemView.setOnClickListener(mItemClickListener);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.adapter;
 
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -12,10 +13,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.callback.ClickListener;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.OrderDetaislDialog;
+import com.wyc.cloudapp.dialog.SaleReturnDialog;
 import com.wyc.cloudapp.logger.Logger;
 
 import java.util.Locale;
@@ -75,9 +76,9 @@ public final class SaleOrderBodyViewAdapter extends RecyclerView.Adapter<SaleOrd
                 holder.upload_status.setText(order_info.getString("upload_status_name"));
                 holder.upload_status.setTag(order_info.getIntValue("upload_status"));
                 holder.oper_time.setText(order_info.getString("oper_time"));
-            }
 
-            holder.mCurrentLayoutItemView.setOnTouchListener(mItemClickListener);
+                holder.mCurrentLayoutItemView.setOnTouchListener(touchListener);
+            }
         }
     }
 
@@ -88,17 +89,17 @@ public final class SaleOrderBodyViewAdapter extends RecyclerView.Adapter<SaleOrd
 
     private void setViewBackgroundColor(View view,boolean s){
         if(view!= null){
+            View child;
             int white = mContext.getColor(R.color.white);
             if (s){
                 view.setBackgroundColor(mContext.getColor(R.color.listSelected));
                 if (view instanceof LinearLayout){
                     LinearLayout linearLayout = (LinearLayout)view;
                     int count = linearLayout.getChildCount();
-                    View ch;
                     for (int i = 0;i < count;i++){
-                        ch = linearLayout.getChildAt(i);
-                        if (ch instanceof TextView){
-                            ((TextView) ch).setTextColor(white);
+                        child = linearLayout.getChildAt(i);
+                        if (child instanceof TextView){
+                            ((TextView) child).setTextColor(white);
                         }
                     }
                 }
@@ -107,23 +108,25 @@ public final class SaleOrderBodyViewAdapter extends RecyclerView.Adapter<SaleOrd
                 if (view instanceof LinearLayout){
                     LinearLayout linearLayout = (LinearLayout)view;
                     int count = linearLayout.getChildCount();
-                    View ch;
                     for (int i = 0;i < count;i++){
-                        ch = linearLayout.getChildAt(i);
-                        if (ch instanceof TextView){
-                            ((TextView) ch).setTextColor(mContext.getColor(R.color.text_color));
+                        child = linearLayout.getChildAt(i);
+                        if (child instanceof TextView){
+                            final TextView tv = ((TextView) child);
+                            switch (tv.getId()) {
+                                case R.id.order_code:
+                                case R.id.sale_refund:
+                                    tv.setTextColor(mContext.getColor(R.color.appColor));
+                                    break;
+                                default:
+                                    tv.setTextColor(mContext.getColor(R.color.text_color));
+                                    break;
+                            }
                         }
                     }
                 }
             }
         }
     }
-
-    private ClickListener mItemClickListener =  new ClickListener(v -> {
-        setCurrentItemView(v);
-        OrderDetaislDialog orderDetaislDialog = new OrderDetaislDialog(mContext,mContext.getString(R.string.order_detail_sz),getCurrentOrder());
-        orderDetaislDialog.show();
-    }, this::setCurrentItemView);
 
     private void setCurrentItemView(View v){
         if (mCurrentItemView == null){
@@ -134,6 +137,33 @@ public final class SaleOrderBodyViewAdapter extends RecyclerView.Adapter<SaleOrd
             mCurrentItemView = v;
             setViewBackgroundColor(v,true);
         }
+    }
+
+    private View.OnTouchListener touchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            if (event.getAction() == MotionEvent.ACTION_DOWN){
+                setCurrentItemView(v);
+                final TextView order_code_tv = v.findViewById(R.id.order_code),sale_refund_tv = v.findViewById(R.id.sale_refund);
+                if (order_code_tv != null && sale_refund_tv != null){
+                    if (isClickView(order_code_tv,event.getX(),event.getY())){
+                        OrderDetaislDialog orderDetaislDialog = new OrderDetaislDialog(mContext,mContext.getString(R.string.order_detail_sz),getCurrentOrder());
+                        orderDetaislDialog.show();
+                        return true;
+                    }else if (isClickView(sale_refund_tv,event.getX(),event.getY())){
+                        SaleReturnDialog saleReturnDialog = new SaleReturnDialog(mContext,"退货退款",order_code_tv.getText().toString());
+                        saleReturnDialog.show();
+                    }
+                }
+            }
+            v.performClick();
+            return false;
+        }
+    };
+
+    private boolean isClickView(final @NonNull View view,float x,float y){
+        float v_x = view.getX(),v_y = view.getY();
+        return x >= v_x && x <= v_x + view.getWidth() && y >= v_y && y <= v_y + view.getHeight();
     }
 
     private JSONObject getCurrentOrder(){

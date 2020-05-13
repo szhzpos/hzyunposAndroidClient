@@ -62,9 +62,6 @@ public class QuerySaleOrderDialog extends BaseDialog {
         //初始化表格
         initOrderDetailTable();
 
-        //初始化按钮事件
-        findViewById(R.id._close).setOnClickListener(v-> QuerySaleOrderDialog.this.dismiss());
-
         //初始窗口尺寸
         initWindowSize();
         //
