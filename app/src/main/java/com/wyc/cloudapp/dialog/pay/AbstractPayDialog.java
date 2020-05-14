@@ -21,45 +21,39 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialog;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivity;
 import com.wyc.cloudapp.utils.Utils;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public abstract class AbstractPayDialog extends Dialog implements IPay {
+public abstract class AbstractPayDialog extends DialogBaseOnMainActivity implements IPay {
     protected EditText mPayAmtEt,mPayCode;
-    protected Context mContext;
     protected Button mOk;
     protected CustomProgressDialog mProgressDialog;
     protected JSONObject mPayMethod;
     protected onYesOnclickListener mYesOnclickListener;
     protected double mOriginalPayAmt = 0.0;
     protected Window mDialogWindow;
-    private TextView mTitleTv;
     private onCancelListener mCancelListener;
-    public AbstractPayDialog(@NonNull Context context) {
-        super(context);
-        mContext = context;
+    public AbstractPayDialog(@NonNull MainActivity context,final String title) {
+        super(context,title);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.pay_method_dialog_layout);
-        setCancelable(false);
-        setCanceledOnTouchOutside(false);
+        super.onCreate(savedInstanceState);
+        setContentLayout(R.layout.pay_method_dialog_layout);
 
         mProgressDialog = new CustomProgressDialog(mContext);
         mOk = findViewById(R.id._ok);
-        mTitleTv = findViewById(R.id.title);
 
         //初始化付款码
         init_pay_code();
 
         //初始化金额text
         init_c_amount();
-
-        //初始化按钮事件
-        findViewById(R.id._close).setOnClickListener(view-> findViewById(R.id._cancel).callOnClick());
 
         //初始化数字键盘
         initKeyboard();
@@ -85,77 +79,13 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
         mDialogWindow = getWindow();
     }
 
-    private void initKeyboard(){
-        ConstraintLayout keyboard_linear_layout;
-        keyboard_linear_layout = findViewById(R.id.keyboard);
-        for (int i = 0,child  = keyboard_linear_layout.getChildCount(); i < child;i++){
-            View tmp_v = keyboard_linear_layout.getChildAt(i);
-            int id = tmp_v.getId();
-            if (tmp_v instanceof Button){
-                switch (id){
-                    case R.id._back:
-                        findViewById(id).setOnClickListener(v -> {
-                            View view =  getCurrentFocus();
-                            if (view != null) {
-                                int tmp_id = view.getId();
-                                if (tmp_id == R.id.c_amt || tmp_id == R.id.pay_code) {
-                                    EditText tmp_edit = ((EditText)view);
-                                    int index = tmp_edit.getSelectionStart(),end = tmp_edit.getSelectionEnd();
-                                    if (index != end && end  == tmp_edit.getText().length()){
-                                        tmp_edit.setText(mContext.getString(R.string.space_sz));
-                                    }else{
-                                        if (index == 0)return;
-                                        tmp_edit.getText().delete(index - 1, index);
-                                    }
-                                }
-                            }
-                        });
-                        break;
-                    case R.id._cancel:
-                        findViewById(id).setOnClickListener(view -> {
-                            if (mCancelListener != null)
-                                mCancelListener.onCancel(AbstractPayDialog.this);
-                            else
-                                AbstractPayDialog.this.dismiss();
-                        });
-                        break;
-                    case R.id._ok:
-                        mOk.setOnClickListener(v -> {
-                            if (verify() && mYesOnclickListener != null)mYesOnclickListener.onYesClick(AbstractPayDialog.this);
-                        });
-                        break;
-                    default:
-                        tmp_v.setOnClickListener(button_click);
-                        break;
-                }
-            }
-        }
+    @Override
+    public void closeWindow(){
+        if (mCancelListener != null)
+            mCancelListener.onCancel(this);
+        else
+            this.dismiss();
     }
-
-    private View.OnClickListener button_click = v -> {
-        View view =  getCurrentFocus();
-        if (view != null) {
-            int id = view.getId();
-            if (id == R.id.c_amt || id == R.id.pay_code) {
-                final EditText tmp_edit = ((EditText)view);
-                int index = tmp_edit.getSelectionStart();
-                final Editable editable = tmp_edit.getText();
-                final String sz_button = ((Button) v).getText().toString();
-                if (index != tmp_edit.getSelectionEnd())editable.clear();
-                editable.insert(index, sz_button);
-            }
-        }
-
-        this.setOnKeyListener(new OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialogInterface, int i, KeyEvent keyEvent) {
-                if (i == KeyEvent.KEYCODE_ENTER){
-                    if (mOk != null)mOk.callOnClick();
-                }
-                return false;
-            }
-        });
-    };
 
     @Override
     public void setPayAmt(double amt) {
@@ -167,13 +97,13 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
         return null;
     }
 
-    protected void setTitle(final String title){
-        if (mTitleTv != null)mTitleTv.setText(title);
+    @Override
+    public MainActivity getPrivateContext() {
+        return mContext;
     }
 
     protected String getTitle(){
-        mTitleTv.getText();
-        return "";
+        return mTitle;
     }
 
     protected void setHint(final String hint){
@@ -203,11 +133,7 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
 
     @SuppressLint("SimpleDateFormat")
     String getPayCode() {
-        String pos_num = "";
-        if (mContext instanceof MainActivity){
-            pos_num = ((MainActivity)mContext).getPosNum();
-        }
-        return new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()) + pos_num + Utils.getNonce_str(8);
+        return new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()) + mContext.getPosNum() + Utils.getNonce_str(8);
     }
 
     protected boolean verify(){
@@ -252,5 +178,62 @@ public abstract class AbstractPayDialog extends Dialog implements IPay {
         mPayCode.setSelectAllOnFocus(true);
         mPayCode.setOnFocusChangeListener((view, b) -> Utils.hideKeyBoard((EditText) view));
     }
+
+    private void initKeyboard(){
+        final ConstraintLayout keyboard_linear_layout = findViewById(R.id.keyboard);
+        if (null != keyboard_linear_layout)
+            for (int i = 0,child  = keyboard_linear_layout.getChildCount(); i < child;i++){
+                final View tmp_v = keyboard_linear_layout.getChildAt(i);
+                int id = tmp_v.getId();
+                if (tmp_v instanceof Button){
+                    switch (id){
+                        case R.id._back:
+                            tmp_v.setOnClickListener(v -> {
+                                View view =  getCurrentFocus();
+                                if (view != null) {
+                                    int tmp_id = view.getId();
+                                    if (tmp_id == R.id.c_amt || tmp_id == R.id.pay_code) {
+                                        EditText tmp_edit = ((EditText)view);
+                                        int index = tmp_edit.getSelectionStart(),end = tmp_edit.getSelectionEnd();
+                                        if (index != end && end  == tmp_edit.getText().length()){
+                                            tmp_edit.setText(mContext.getString(R.string.space_sz));
+                                        }else{
+                                            if (index == 0)return;
+                                            tmp_edit.getText().delete(index - 1, index);
+                                        }
+                                    }
+                                }
+                            });
+                            break;
+                        case R.id._cancel:
+                            tmp_v.setOnClickListener(view -> closeWindow());
+                            break;
+                        case R.id._ok:
+                            tmp_v.setOnClickListener(v -> {
+                                if (verify() && mYesOnclickListener != null)mYesOnclickListener.onYesClick(AbstractPayDialog.this);
+                            });
+                            break;
+                        default:
+                            tmp_v.setOnClickListener(button_click);
+                            break;
+                    }
+                }
+            }
+    }
+
+    private View.OnClickListener button_click = v -> {
+        final View view =  getCurrentFocus();
+        if (view != null) {
+            int id = view.getId();
+            if (id == R.id.c_amt || id == R.id.pay_code) {
+                final EditText tmp_edit = ((EditText)view);
+                int index = tmp_edit.getSelectionStart();
+                final Editable editable = tmp_edit.getText();
+                final String sz_button = ((Button) v).getText().toString();
+                if (index != tmp_edit.getSelectionEnd())editable.clear();
+                editable.insert(index, sz_button);
+            }
+        }
+    };
 
 }

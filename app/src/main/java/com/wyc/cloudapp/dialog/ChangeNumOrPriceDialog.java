@@ -6,16 +6,16 @@ import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.callback.PasswordEditTextReplacement;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivity;
 import com.wyc.cloudapp.utils.Utils;
 
-public class ChangeNumOrPriceDialog extends BaseDialog {
+public class ChangeNumOrPriceDialog extends DialogBaseOnMainActivity {
     private EditText mNew_price_text;
     private String mInitVal;
     private onNoOnclickListener noOnclickListener;//取消按钮被点击了的监听器
@@ -23,7 +23,7 @@ public class ChangeNumOrPriceDialog extends BaseDialog {
     private ChangeNumOrPriceDialog(MainActivity context, final String title){
         super(context,title);
     }
-    public ChangeNumOrPriceDialog(MainActivity context,final String title,final String initVal){
+    public ChangeNumOrPriceDialog(MainActivity context, final String title, final String initVal){
         this(context,title);
         mInitVal = initVal;
     }
@@ -36,9 +36,6 @@ public class ChangeNumOrPriceDialog extends BaseDialog {
 
         //初始化数字键盘
         initKeyboard();
-
-        //处理标题
-        ((TextView)findViewById(R.id.title)).setText(mTitle);
 
     }
     @Override
@@ -59,7 +56,7 @@ public class ChangeNumOrPriceDialog extends BaseDialog {
         super.show();
     }
 
-    public ChangeNumOrPriceDialog  setNoOnclickListener(onNoOnclickListener onNoOnclickListener) {
+    public ChangeNumOrPriceDialog setNoOnclickListener(onNoOnclickListener onNoOnclickListener) {
         this.noOnclickListener = onNoOnclickListener;
         return this;
     }

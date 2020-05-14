@@ -7,18 +7,6 @@
     android:background="@drawable/round_shape_main_color"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@string/conn_dialog_title_sz"
-        android:textAlignment="center"
-        android:textColor="@color/white"
-        android:textSize="@dimen/fun_button_font_size_24"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <LinearLayout
         android:id="@+id/ip_f"
         android:layout_width="match_parent"
@@ -28,7 +16,7 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title">
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/textView7"

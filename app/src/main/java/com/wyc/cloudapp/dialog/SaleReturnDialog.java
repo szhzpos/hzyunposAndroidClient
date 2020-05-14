@@ -1,6 +1,5 @@
 package com.wyc.cloudapp.dialog;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -19,6 +18,7 @@ import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.SaleReturnGoodsInfoAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivity;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class SaleReturnDialog extends BaseDialog {
+public class SaleReturnDialog extends DialogBaseOnMainActivity {
     private SaleReturnGoodsInfoAdapter mSaleReturnGoodsInfoAdapter;
     private String mOrderCode;
     double mRefundSumAmt;
@@ -39,7 +39,7 @@ public class SaleReturnDialog extends BaseDialog {
     private String mRefundOperId,mRefundOperName;
     private String mRefunRemark,mRefundCode;
     private CustomProgressDialog mProgressDialog;
-    public SaleReturnDialog(@NonNull MainActivity context,final String title,final String order_code) {
+    public SaleReturnDialog(@NonNull MainActivity context, final String title, final String order_code) {
         super(context, title);
         mOrderCode = order_code;
     }
@@ -125,7 +125,7 @@ public class SaleReturnDialog extends BaseDialog {
         }
     }
     private String generateRefundOrderCode(final String pos_num){
-        String prefix = "T" + pos_num + "-" + new SimpleDateFormat("yyMMddHHmmss").format(new Date()) + "-",order_code ;
+        String prefix = "T" + pos_num + "-" + new SimpleDateFormat("yyMMddHHmmss",Locale.CHINA).format(new Date()) + "-",order_code ;
         JSONObject orders= new JSONObject();
         if (SQLiteHelper.execSql(orders,"SELECT count(ro_id) + 1 ro_code from refund_order where date(addtime,'unixepoch' ) = date('now')")){
             order_code =orders.getString("ro_code");

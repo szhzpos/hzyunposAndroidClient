@@ -118,7 +118,7 @@ public class PrintFormatFragment extends BaseFragment {
                  content.put("parameter_desc", "打印格式信息");
              }else{
                  if (SQLiteHelper.getLocalParameter(parameter_id,object)){
-                     id = Utils.getNotKeyAsDefault(object,"f",-1);
+                     id = Utils.getNotKeyAsNumberDefault(object,"f",-1);
                      if (id != -1){
                          frg.check(id);
                          fzrg.check(object.getIntValue("f_z"));

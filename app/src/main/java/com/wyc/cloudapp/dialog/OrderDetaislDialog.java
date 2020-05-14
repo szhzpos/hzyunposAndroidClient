@@ -20,6 +20,7 @@ import com.wyc.cloudapp.adapter.OrderDetailsGoodsInfoAdapter;
 import com.wyc.cloudapp.adapter.OrderDetailsPayInfoAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivity;
 import com.wyc.cloudapp.dialog.pay.PayDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
@@ -33,7 +34,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class OrderDetaislDialog extends BaseDialog {
+public class OrderDetaislDialog extends DialogBaseOnMainActivity {
     private JSONObject mOrderInfo, mPayRecord;
     private OrderDetailsGoodsInfoAdapter mOrderDetailsGoodsInfoAdapter;
     private OrderDetailsPayInfoAdapter mOrderDetailsPayInfoAdapter;
@@ -122,7 +123,7 @@ public class OrderDetaislDialog extends BaseDialog {
     private void initReprint(){
         final Button reprint_btn = findViewById(R.id.reprint_btn);
         if (null != reprint_btn){
-            reprint_btn.setOnClickListener(v -> Printer.print(mContext,PayDialog.get_print_content(mContext,mOrderDetailsGoodsInfoAdapter.getSaleGoods(),mOrderDetailsPayInfoAdapter.getPayInfo(),false)));
+            reprint_btn.setOnClickListener(v -> Printer.print(mContext, PayDialog.get_print_content(mContext,mOrderDetailsGoodsInfoAdapter.getSaleGoods(),mOrderDetailsPayInfoAdapter.getPayInfo(),false)));
         }
     }
     private void initVerifyPay(){

@@ -1,6 +1,5 @@
 package com.wyc.cloudapp.dialog;
 
-import android.app.Dialog;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -9,10 +8,11 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.barcodeScales.BarCodeScaleDownDialog;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivity;
 import com.wyc.cloudapp.print.Printer;
 
-public class MoreFunDialog extends BaseDialog {
-    public MoreFunDialog(@NonNull MainActivity context,final String title) {
+public class MoreFunDialog extends DialogBaseOnMainActivity {
+    public MoreFunDialog(@NonNull MainActivity context, final String title) {
         super(context,title);
     }
     @Override

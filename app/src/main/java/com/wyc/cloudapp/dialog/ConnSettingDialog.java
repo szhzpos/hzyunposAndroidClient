@@ -13,6 +13,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnContext;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
@@ -33,17 +34,15 @@ import java.lang.ref.WeakReference;
 
 import static android.content.Context.WINDOW_SERVICE;
 
-public class ConnSettingDialog extends Dialog {
-    private Context mContext;
+public class ConnSettingDialog extends DialogBaseOnContext {
     private EditText mUrl,mAppId,mAppscret,mStore_name;
     private CustomProgressDialog mDialog;
     private CustomePopupWindow mPopupWindow;
     private Myhandler mHandler;
     private JSONObject mStoreInfo;
 
-    public ConnSettingDialog(Context context) {
-        super(context,R.style.MyDialog);
-        this.mContext = context;
+    public ConnSettingDialog(final Context context,final String title) {
+        super(context,title,R.style.MyDialog);
     }
 
     @Override
@@ -60,21 +59,12 @@ public class ConnSettingDialog extends Dialog {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentLayout(R.layout.con_param_setting_dialog_layout);
 
-        setContentView(R.layout.con_param_setting_dialog_layout);
-        //按空白处不能取消动画
-        setCanceledOnTouchOutside(false);
-
-        //初始化界面控件
         initView();
-
     }
-       /**
-     * 初始化界面控件
-     */
+
     private void initView() {
-        Button save = findViewById(R.id.save),
-                cancel = findViewById(R.id.cancel);
 
         mUrl = findViewById(R.id.server_url);
         mAppId = findViewById(R.id.appId);
@@ -89,30 +79,6 @@ public class ConnSettingDialog extends Dialog {
         mAppscret.setSelectAllOnFocus(true);
         mAppId.setSelectAllOnFocus(true);
 
-        save.setOnClickListener((View v)->{
-            JSONObject json = new JSONObject(),param = new JSONObject();
-            verifyUrl();
-            json.put("server_url",mUrl.getText());
-            json.put("appId",mAppId.getText());
-            json.put("appScret",mAppscret.getText());
-            if (Utils.JsonIsNotEmpty(mStoreInfo)){
-                json.put("storeInfo",mStoreInfo.toString());
-                param.put("parameter_id","connParam");
-                param.put("parameter_content",json);
-                param.put("parameter_desc","门店信息、服务器连接参数");
-                StringBuilder err = new StringBuilder();
-                if (SQLiteHelper.saveFormJson(param,"local_parameter",null,"REPLACE",err)){
-                    MyDialog.ToastMessage("保存成功！",mContext,null);
-                    ConnSettingDialog.this.dismiss();
-                }else
-                    MyDialog.displayMessage(null,err.toString(),v.getContext());
-            }else{
-                MyDialog.SnackbarMessage(getWindow(),"门店不能为空！",getCurrentFocus());
-            }
-        });
-        cancel.setOnClickListener((View v)->{
-            ConnSettingDialog.this.dismiss();
-        });
 
         mUrl.setOnFocusChangeListener((v,hasFocus)->{
             if (!hasFocus){
@@ -120,9 +86,7 @@ public class ConnSettingDialog extends Dialog {
             }
         });
 
-        mStore_name.setOnClickListener((View v)->{
-                queryStoreInfo();
-        });
+        mStore_name.setOnClickListener((View v)-> queryStoreInfo());
 
         mStore_name.setOnFocusChangeListener((v, hasFocus) -> {
             Utils.hideKeyBoard((EditText)v);
@@ -131,7 +95,19 @@ public class ConnSettingDialog extends Dialog {
             }
         });
 
-        WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
+        initCancelBtn();
+        initSave();
+        initWindowSize();
+
+    }
+
+    private void initCancelBtn(){
+        final Button cancel = findViewById(R.id.cancel);
+        cancel.setOnClickListener((View v)-> closeWindow());
+    }
+
+    private void initWindowSize(){
+        final WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
         if (m != null){
             Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
             Point point = new Point();
@@ -143,6 +119,33 @@ public class ConnSettingDialog extends Dialog {
                 lp.width = (int)(0.4 * point.x); // 宽度
                 dialogWindow.setAttributes(lp);
             }
+        }
+    }
+
+    private void initSave(){
+        final Button save_btn = findViewById(R.id.save);
+        if (null != save_btn){
+            save_btn.setOnClickListener((View v)->{
+                JSONObject json = new JSONObject(),param = new JSONObject();
+                verifyUrl();
+                json.put("server_url",mUrl.getText());
+                json.put("appId",mAppId.getText());
+                json.put("appScret",mAppscret.getText());
+                if (Utils.JsonIsNotEmpty(mStoreInfo)){
+                    json.put("storeInfo",mStoreInfo.toString());
+                    param.put("parameter_id","connParam");
+                    param.put("parameter_content",json);
+                    param.put("parameter_desc","门店信息、服务器连接参数");
+                    StringBuilder err = new StringBuilder();
+                    if (SQLiteHelper.saveFormJson(param,"local_parameter",null,"REPLACE",err)){
+                        MyDialog.ToastMessage("保存成功！",mContext,null);
+                        ConnSettingDialog.this.dismiss();
+                    }else
+                        MyDialog.displayMessage(null,err.toString(),v.getContext());
+                }else{
+                    MyDialog.SnackbarMessage(getWindow(),"门店不能为空！",getCurrentFocus());
+                }
+            });
         }
     }
 

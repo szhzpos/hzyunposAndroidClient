@@ -3,7 +3,6 @@ package com.wyc.cloudapp.dialog;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -28,6 +27,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.SaleOrderBodyViewAdapter;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivity;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -38,12 +38,12 @@ import java.util.Locale;
 
 import static android.content.Context.WINDOW_SERVICE;
 
-public class QuerySaleOrderDialog extends BaseDialog {
+public class QuerySaleOrderDialog extends DialogBaseOnMainActivity {
     private int mCurrentStatusIndex = 0;
     private String[] mCashierNames,mCashierIDs;
     private EditText mStartDateEt,mStartTimeEt,mEndDateEt,mEndTimeEt,mPayStatusEt,mCashierEt,mS_ex_statusEt,mUploadStatusEt,mOrderStatusEt;
     private SaleOrderBodyViewAdapter mSaleOrderBodyViewAdapter;
-    public QuerySaleOrderDialog(@NonNull MainActivity context,final String title) {
+    public QuerySaleOrderDialog(@NonNull MainActivity context, final String title) {
         super(context,title);
         mSaleOrderBodyViewAdapter = new SaleOrderBodyViewAdapter(context);
     }

@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.adapter;
 
+import android.graphics.Color;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,39 +89,30 @@ public final class SaleOrderBodyViewAdapter extends RecyclerView.Adapter<SaleOrd
     }
 
     private void setViewBackgroundColor(View view,boolean s){
-        if(view!= null){
+        if(view!= null) {
             View child;
-            int white = mContext.getColor(R.color.white);
-            if (s){
-                view.setBackgroundColor(mContext.getColor(R.color.listSelected));
-                if (view instanceof LinearLayout){
-                    LinearLayout linearLayout = (LinearLayout)view;
-                    int count = linearLayout.getChildCount();
-                    for (int i = 0;i < count;i++){
-                        child = linearLayout.getChildAt(i);
-                        if (child instanceof TextView){
-                            ((TextView) child).setTextColor(white);
-                        }
-                    }
-                }
-            }else{
-                view.setBackgroundColor(white);
-                if (view instanceof LinearLayout){
-                    LinearLayout linearLayout = (LinearLayout)view;
-                    int count = linearLayout.getChildCount();
-                    for (int i = 0;i < count;i++){
-                        child = linearLayout.getChildAt(i);
-                        if (child instanceof TextView){
-                            final TextView tv = ((TextView) child);
-                            switch (tv.getId()) {
-                                case R.id.order_code:
-                                case R.id.sale_refund:
-                                    tv.setTextColor(mContext.getColor(R.color.appColor));
-                                    break;
-                                default:
-                                    tv.setTextColor(mContext.getColor(R.color.text_color));
-                                    break;
-                            }
+            int selected_color = mContext.getColor(R.color.white), item_color = mContext.getColor(R.color.appColor),text_color = mContext.getColor(R.color.text_color);
+            if (s) {
+                selected_color = mContext.getColor(R.color.listSelected);
+                item_color = Color.YELLOW;
+                text_color = mContext.getColor(R.color.white);
+            }
+            view.setBackgroundColor(selected_color);
+            if (view instanceof LinearLayout){
+                LinearLayout linearLayout = (LinearLayout)view;
+                int count = linearLayout.getChildCount();
+                for (int i = 0;i < count;i++){
+                    child = linearLayout.getChildAt(i);
+                    if (child instanceof TextView){
+                        final TextView tv = ((TextView) child);
+                        switch (tv.getId()) {
+                            case R.id.order_code:
+                            case R.id.sale_refund:
+                                tv.setTextColor(item_color);
+                                break;
+                            default:
+                                tv.setTextColor(text_color);
+                                break;
                         }
                     }
                 }

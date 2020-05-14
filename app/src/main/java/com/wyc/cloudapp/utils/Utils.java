@@ -308,13 +308,13 @@ public final class Utils {
     public static JSONArray JsondeepCopy(final JSONArray jsons){
         return JSON.parseArray(jsons.toJSONString());
     }
-    public static double getNotKeyAsDefault(final JSONObject object, final String key, double default_v){
+    public static double getNotKeyAsNumberDefault(final JSONObject object, final String key, double default_v){
         if (object.containsKey(key)){
             return object.getDoubleValue(key);
         }
         return default_v;
     }
-    public static int getNotKeyAsDefault(final JSONObject object, final String key, int default_v){
+    public static int getNotKeyAsNumberDefault(final JSONObject object, final String key, int default_v){
         if (object.containsKey(key)){
             return object.getIntValue(key);
         }

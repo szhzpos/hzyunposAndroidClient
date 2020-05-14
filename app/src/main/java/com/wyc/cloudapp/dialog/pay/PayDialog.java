@@ -1,6 +1,5 @@
 package com.wyc.cloudapp.dialog.pay;
 
-import android.app.Dialog;
 import android.content.ContentValues;
 import android.os.Bundle;
 import android.text.Editable;
@@ -29,7 +28,7 @@ import com.wyc.cloudapp.adapter.PayDetailViewAdapter;
 import com.wyc.cloudapp.adapter.PayMethodItemDecoration;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.dialog.BaseDialog;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivity;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
@@ -45,7 +44,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class PayDialog extends BaseDialog {
+public class PayDialog extends DialogBaseOnMainActivity {
     private EditText mCashMoneyEt,mZlAmtEt,mRemarkEt;
     private onPayListener mPayListener;
     private PayMethodViewAdapter mPayMethodViewAdapter;
@@ -57,7 +56,7 @@ public class PayDialog extends BaseDialog {
     private JSONObject mVip;
     private boolean mPayStatus = true,mOpenCashbox;
     private Window mWindow;
-    public PayDialog(MainActivity context,final String title){
+    public PayDialog(MainActivity context, final String title){
         super(context,title);
     }
     @Override
@@ -139,7 +138,7 @@ public class PayDialog extends BaseDialog {
         final Button vip_btn = findViewById(R.id.vip);
         if (null != vip_btn)
             vip_btn.setOnClickListener(view -> {
-                VipInfoDialog vipInfoDialog = new VipInfoDialog(mContext, mContext.getString(R.string.vip_info_sz));
+                final VipInfoDialog vipInfoDialog = new VipInfoDialog(mContext);
                 vipInfoDialog.setYesOnclickListener(dialog -> {
                     deleteMolDiscountRecord();
                     showVipInfo(dialog.getVip(),false);
@@ -956,7 +955,7 @@ public class PayDialog extends BaseDialog {
     private static String c_format_58(final MainActivity context,final JSONObject format_info,@NonNull final JSONArray sales,@NonNull final JSONArray pays,boolean is_open_cash_box){
 
         final StringBuilder info = new StringBuilder();
-        int print_count = Utils.getNotKeyAsDefault(format_info,"p_c",1),footer_space = Utils.getNotKeyAsDefault(format_info,"f_s",5);
+        int print_count = Utils.getNotKeyAsNumberDefault(format_info,"p_c",1),footer_space = Utils.getNotKeyAsNumberDefault(format_info,"f_s",5);
         final JSONObject cas_info = context.getCashierInfo(),st_info = context.getStoreInfo();
         final String store_name = Utils.getNullStringAsEmpty(format_info,"s_n"),pos_num = Utils.getNullOrEmptyStringAsDefault(cas_info,"pos_num",""),
                 cas_name = Utils.getNullOrEmptyStringAsDefault(cas_info,"cas_name",""),footer_c = Utils.getNullStringAsEmpty(format_info,"f_c"),
@@ -1089,9 +1088,9 @@ public class PayDialog extends BaseDialog {
     }
     public interface onPayListener {
         void onStart(PayDialog myDialog);
-        void onProgress(PayDialog myDialog,final String info);
+        void onProgress(PayDialog myDialog, final String info);
         void onSuccess(PayDialog myDialog);
-        void onError(PayDialog myDialog,final String err);
+        void onError(PayDialog myDialog, final String err);
     }
     public boolean initPayContent(){
         final JSONArray datas = mContext.getSaleData();

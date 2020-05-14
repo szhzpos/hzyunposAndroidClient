@@ -146,7 +146,7 @@ public class LoginActivity extends AppCompatActivity {
         View setup = findViewById(R.id.setup_ico);
         if (null != setup)
             setup.setOnClickListener((View v)->{
-                ConnSettingDialog connSettingDialog = new ConnSettingDialog(mSelf);
+                ConnSettingDialog connSettingDialog = new ConnSettingDialog(mSelf,mSelf.getString(R.string.conn_dialog_title_sz));
                 connSettingDialog.setOnDismissListener(dialog -> {
                     EditText et_url = findViewById(R.id._url_text);
                     String url = connSettingDialog.getUrl();

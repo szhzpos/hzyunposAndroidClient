@@ -174,7 +174,7 @@ public class BaseParameterFragment extends BaseFragment {
             }
         }else{
             if (SQLiteHelper.getLocalParameter("d_s_period",value_obj)){
-                group.check(Utils.getNotKeyAsDefault(value_obj,"id",R.id._a_month));//触发click事件,不需要单独保存value
+                group.check(Utils.getNotKeyAsNumberDefault(value_obj,"id",R.id._a_month));//触发click事件,不需要单独保存value
             }else{
                 MyDialog.ToastMessage("加载数据保存周期参数错误：" + value_obj.getString("info"),mContext,null);
             }
@@ -229,7 +229,7 @@ public class BaseParameterFragment extends BaseFragment {
             value_obj.put("s",status);
         }else{
             if (SQLiteHelper.getLocalParameter("g_i_show",value_obj)){
-                sh.setChecked(Utils.getNotKeyAsDefault(value_obj,"s",1) == 1);
+                sh.setChecked(Utils.getNotKeyAsNumberDefault(value_obj,"s",1) == 1);
             }else{
                 MyDialog.ToastMessage("加载商品显示图片参数错误：" + value_obj.getString("info"),mContext,null);
             }
@@ -280,9 +280,9 @@ public class BaseParameterFragment extends BaseFragment {
         }else{
             if (SQLiteHelper.getLocalParameter("auto_mol",value_obj)){
                 RadioGroup rg = mRootView.findViewById(R.id._auto_mol_group);
-                status = Utils.getNotKeyAsDefault(value_obj,"s",1);
+                status = Utils.getNotKeyAsNumberDefault(value_obj,"s",1);
                 if (status == 1){
-                    id =Utils.getNotKeyAsDefault(value_obj,"id",R.id.mol_j);
+                    id =Utils.getNotKeyAsNumberDefault(value_obj,"id",R.id.mol_j);
                     if (id == -1)id = R.id.mol_j;
                     rg.check(id);
                 }

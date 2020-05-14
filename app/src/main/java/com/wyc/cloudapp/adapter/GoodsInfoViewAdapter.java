@@ -23,8 +23,6 @@ import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 
 public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdapter.MyViewHolder> {
@@ -38,7 +36,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         this.mContext = context;
         JSONObject jsonObject = new JSONObject();
         if (SQLiteHelper.getLocalParameter("g_i_show",jsonObject)){
-            mShowPic = (Utils.getNotKeyAsDefault(jsonObject,"s",1) == 1);
+            mShowPic = (Utils.getNotKeyAsNumberDefault(jsonObject,"s",1) == 1);
         }else{
             MyDialog.ToastMessage("加载是否显示商品图片参数错误：" + jsonObject.getString("info"),mContext,null);
         }

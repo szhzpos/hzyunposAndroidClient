@@ -1,7 +1,5 @@
 package com.wyc.cloudapp.dialog.vip;
 
-import android.app.Dialog;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -27,7 +25,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.dialog.BaseDialog;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivity;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
@@ -38,7 +36,7 @@ import com.wyc.cloudapp.utils.http.HttpRequest;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 
-public class VipInfoDialog extends BaseDialog {
+public class VipInfoDialog extends DialogBaseOnMainActivity {
     private EditText mSearchContent;
     private String mAppId,mAppScret,mUrl;
     private CustomProgressDialog mProgressDialog;
@@ -48,8 +46,8 @@ public class VipInfoDialog extends BaseDialog {
     private Button mSearchBtn;
     private onYesOnclickListener mYesOnclickListener;//确定按钮被点击了的监听器
     private boolean mPrintStatus = true;
-    public VipInfoDialog(@NonNull MainActivity context, final String title) {
-        super(context,title);
+    public VipInfoDialog(@NonNull MainActivity context) {
+        super(context,context.getString(R.string.vip_dialog_title_sz));
     }
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -133,7 +131,7 @@ public class VipInfoDialog extends BaseDialog {
         if (null != modifiyBtn)
             modifiyBtn.setOnClickListener(view -> {
                 if (mVip != null){
-                    AddVipInfoDialog dialog = new AddVipInfoDialog(mContext,mVip,mUrl,mAppId,mAppScret);
+                    AddVipInfoDialog dialog = new AddVipInfoDialog(mContext,mContext.getString(R.string.modify_vip_sz),mVip);
                     dialog.setOnShowListener(dialog12 -> mSearchContent.clearFocus());
                     dialog.setOnDismissListener(dialog1 -> mSearchContent.postDelayed(()->{mSearchContent.requestFocus();},300));
                     dialog.setYesOnclickListener(dialog14 -> {
@@ -150,7 +148,7 @@ public class VipInfoDialog extends BaseDialog {
         final Button add_btn = findViewById(R.id.vip_add);
         if (null != add_btn)
             add_btn.setOnClickListener(view -> {
-                AddVipInfoDialog dialog = new AddVipInfoDialog(mContext,null,mUrl,mAppId,mAppScret);
+                AddVipInfoDialog dialog = new AddVipInfoDialog(mContext,mContext.getString(R.string.add_vip_sz),null);
                 dialog.setOnShowListener(dialog12 -> mSearchContent.clearFocus());
                 dialog.setOnDismissListener(dialog1 -> mSearchContent.postDelayed(()->{mSearchContent.requestFocus();},300));
                 dialog.setYesOnclickListener(dialog13 -> {

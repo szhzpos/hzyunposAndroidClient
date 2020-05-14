@@ -175,7 +175,7 @@ public final class OrderDetailsPayInfoAdapter extends RecyclerView.Adapter<Order
         boolean success  = true;
         for (Object o : mDatas){
             if (o instanceof JSONObject){
-                if(2 != Utils.getNotKeyAsDefault((JSONObject)o,"pay_status",1)){
+                if(2 != Utils.getNotKeyAsNumberDefault((JSONObject)o,"pay_status",1)){
                     success = false;
                     break;
                 }

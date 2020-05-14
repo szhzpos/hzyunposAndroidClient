@@ -1,7 +1,7 @@
 package com.wyc.cloudapp.adapter;
 
 import android.app.Dialog;
-import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -182,10 +182,10 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                     dialog = new ChangeNumOrPriceDialog(mContext,"新价格",cur_json.getString("price"));
                     break;
                 case 2:
-                    dialog = new ChangeNumOrPriceDialog(mContext,mContext.getString(R.string.discount_sz),String.format(Locale.CHINA,"%.0f",Utils.getNotKeyAsDefault(cur_json,"discount",1.0)*100));
+                    dialog = new ChangeNumOrPriceDialog(mContext,mContext.getString(R.string.discount_sz),String.format(Locale.CHINA,"%.0f",Utils.getNotKeyAsNumberDefault(cur_json,"discount",1.0)*100));
                     break;
                     default:
-                        dialog = new ChangeNumOrPriceDialog(mContext,"新数量",String.format(Locale.CHINA,"%.2f",Utils.getNotKeyAsDefault(cur_json,"xnum",1.0)));
+                        dialog = new ChangeNumOrPriceDialog(mContext,"新数量",String.format(Locale.CHINA,"%.2f",Utils.getNotKeyAsNumberDefault(cur_json,"xnum",1.0)));
                         break;
             }
             dialog.setYesOnclickListener(myDialog -> {
@@ -209,7 +209,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 json  = mDatas.getJSONObject(i);
                 original_amt = json.getDoubleValue("original_amt");
                 discount = Utils.formatDouble(value / 100,4);
-                xnum = Utils.getNotKeyAsDefault(json,"xnum",1.0);
+                xnum = Utils.getNotKeyAsNumberDefault(json,"xnum",1.0);
                 old_sale_amt = json.getDoubleValue("sale_amt");
 
                 if (d_discount){
@@ -326,7 +326,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
             JSONArray discount_details = new JSONArray();
             for (int i = 0,length = mDatas.size();i < length;i++){
                 jsonObject = mDatas.getJSONObject(i);
-                xnum = Utils.getNotKeyAsDefault(jsonObject,"xnum",1.0);
+                xnum = Utils.getNotKeyAsNumberDefault(jsonObject,"xnum",1.0);
                 original_price = jsonObject.getDoubleValue("original_price");
                 original_amt = Utils.formatDouble(xnum * original_price,2);
                 old_sale_amt = jsonObject.getDoubleValue("sale_amt");
@@ -340,7 +340,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                     case 1://会员价
                         new_price = Utils.formatDouble(jsonObject.getDoubleValue("yh_price"),4);
                         if (d_discount){
-                            discount  = Utils.getNotKeyAsDefault(jsonObject,"discount",1.0);
+                            discount  = Utils.getNotKeyAsNumberDefault(jsonObject,"discount",1.0);
                             new_price = Utils.formatDouble(new_price * discount,2);
                         }
 
@@ -350,7 +350,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                             discount  = Utils.formatDouble(current_sale_amt / original_amt,4);
                         break;
                     case 2://会员折扣
-                        discount  = Utils.formatDouble(Utils.getNotKeyAsDefault(vip,"discount",1.0) / 10,2);
+                        discount  = Utils.formatDouble(Utils.getNotKeyAsNumberDefault(vip,"discount",1.0) / 10,2);
                         if (d_discount){
                             current_sale_amt = Utils.formatDouble(old_sale_amt * discount,2);
                         }else
@@ -401,7 +401,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         double discount = 1.0,discount_amt = 0.0,original_price = 0.0,original_amt = 0.0,new_price = 0.0,xnum = 0.0,current_discount_amt = 0.0,old_sale_amt = 0.0,current_sale_amt = 0.0;
         int discount_type = 0;
 
-        original_price = Utils.getNotKeyAsDefault(json,"original_price",1.0);
+        original_price = Utils.getNotKeyAsNumberDefault(json,"original_price",1.0);
         original_amt = json.getDoubleValue("original_amt");
 
         JSONArray discount_details = null;
@@ -430,7 +430,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 xnum = json.getDoubleValue("xnum");
                 new_price = value;
 /*                if(d_discount){
-                    original_price = Utils.getNotKeyAsDefault(json,"price",1.0);//改价都是从原始价开始算，不管有没有启用折上折
+                    original_price = Utils.getNotKeyAsNumberDefault(json,"price",1.0);//改价都是从原始价开始算，不管有没有启用折上折
                 }*/
                 current_sale_amt = Utils.formatDouble(xnum * new_price,2);
 
@@ -448,7 +448,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 }
 
                 discount = Utils.formatDouble(value / 100,4);
-                xnum = Utils.getNotKeyAsDefault(json,"xnum",1.0);
+                xnum = Utils.getNotKeyAsNumberDefault(json,"xnum",1.0);
                 old_sale_amt = json.getDoubleValue("sale_amt");
 
                 discount_type = 4;
@@ -523,7 +523,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         double  add_amount,add_goods_price,discount = 1.0,discount_amt = 0.0,new_price = 0.0,current_sale_amt = 0.0,
                 saled_amount = 0.0,current_discount_amt = 0.0,original_price = 0.0,original_amt = 0.0;
         JSONObject tmp_obj;
-        add_goods_price = Utils.getNotKeyAsDefault(goods,"price",1.0);
+        add_goods_price = Utils.getNotKeyAsNumberDefault(goods,"price",1.0);
         for (int i = 0,length = mDatas.size();i < length;i++){
             tmp_obj = mDatas.getJSONObject(i);
             if (barcode_id == tmp_obj.getIntValue("barcode_id") && gp_id == tmp_obj.getIntValue("gp_id")){
@@ -531,7 +531,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 original_price = tmp_obj.getDoubleValue("original_price");
 
                 saled_amount = tmp_obj.getDoubleValue("sale_amt");
-                discount  = Utils.getNotKeyAsDefault(tmp_obj,"discount",1.0);
+                discount  = Utils.getNotKeyAsNumberDefault(tmp_obj,"discount",1.0);
                 new_price = Utils.formatDouble(add_goods_price * discount,4);
 
                 num += tmp_obj.getDoubleValue("xnum");
@@ -582,7 +582,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                         }
                         break;
                     case 2://会员折扣
-                        discount  = Utils.formatDouble(Utils.getNotKeyAsDefault(vip,"discount",10.0) / 10,2);
+                        discount  = Utils.formatDouble(Utils.getNotKeyAsNumberDefault(vip,"discount",10.0) / 10,2);
                         current_sale_amt = Utils.formatDouble(original_amt * discount,2);
                         if (!Utils.equalDouble(num,0)){
                             new_price = Utils.formatDouble(current_sale_amt / num,4);
@@ -692,11 +692,11 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                         if (getGoodsId(discount_goods) == getGoodsId(goods)){
                             double discount_money = discount_goods.getDoubleValue("price");
                             double sale_amt = goods.getDoubleValue("sale_amt") + discount_money;
-                            double xnum =Utils.getNotKeyAsDefault(goods,"xnum",1.0);
+                            double xnum =Utils.getNotKeyAsNumberDefault(goods,"xnum",1.0);
                             double price = sale_amt / xnum;
                             goods.put("price",price);
                             goods.put("sale_amt",Utils.formatDouble(sale_amt,2));
-                            goods.put("discount",price / Utils.getNotKeyAsDefault(goods,"original_price",1.0));
+                            goods.put("discount",price / Utils.getNotKeyAsNumberDefault(goods,"original_price",1.0));
                             goods.put("discount_amt",Utils.formatDouble(goods.getDoubleValue("discount_amt") - discount_money,2));
                         }
                     }
@@ -757,7 +757,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 discount_obj.put("price",per_record_mol_amt);//单品折扣金额
                 discount_details.add(discount_obj);
 
-                xnum = Utils.getNotKeyAsDefault(object,"xnum",1.0);
+                xnum = Utils.getNotKeyAsNumberDefault(object,"xnum",1.0);
 
                 new_price = Utils.formatDouble(current_sale_amt / xnum,4);
 

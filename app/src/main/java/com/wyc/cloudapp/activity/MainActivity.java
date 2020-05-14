@@ -170,7 +170,8 @@ public class MainActivity extends AppCompatActivity {
         if (discount_btn != null)discount_btn.setOnClickListener(v-> {setDisCashierId(mCashierInfo.getString("cas_id"));mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 2);});//打折
         if (change_price_btn != null)change_price_btn.setOnClickListener(v-> { setDisCashierId(mCashierInfo.getString("cas_id"));mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 1);});//改价
         if (check_out_btn != null)check_out_btn.setOnClickListener((View v)->{Utils.disableView(v,500);showPayDialog();});//结账
-        if (vip_btn != null)vip_btn.setOnClickListener(v -> {VipInfoDialog vipInfoDialog = new VipInfoDialog(this,getString(R.string.vip_info_sz));
+        if (vip_btn != null)vip_btn.setOnClickListener(v -> {
+            final VipInfoDialog vipInfoDialog = new VipInfoDialog(this);
             vipInfoDialog.setYesOnclickListener(dialog -> {showVipInfo(dialog.getVip());dialog.dismiss(); }).show();
         });//会员
 
@@ -569,7 +570,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                     @Override
-                    public void onProgress(PayDialog myDialog,final String info) {
+                    public void onProgress(PayDialog myDialog, final String info) {
                         mProgressDialog.setMessage(info).refreshMessage();
                     }
 
@@ -578,7 +579,7 @@ public class MainActivity extends AppCompatActivity {
                         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
 
                         if (mPrintStatus.get())
-                            Printer.print(activity,PayDialog.get_print_content(activity,mSaleGoodsViewAdapter.getDatas(),myDialog.getContent(),myDialog.isOpenCashbox()));
+                            Printer.print(activity, PayDialog.get_print_content(activity,mSaleGoodsViewAdapter.getDatas(),myDialog.getContent(),myDialog.isOpenCashbox()));
 
                         mSyncManagement.sync_order();
                         resetOrderInfo();

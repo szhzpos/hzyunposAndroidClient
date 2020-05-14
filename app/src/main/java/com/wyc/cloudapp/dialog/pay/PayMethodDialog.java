@@ -10,13 +10,14 @@ import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 public class PayMethodDialog extends AbstractPayDialog {
-    public PayMethodDialog(@NonNull Context context,@NonNull JSONObject pay_method) {//show_check_code 是否显示校验码输入框
-        super(context);
+    public PayMethodDialog(@NonNull MainActivity context, @NonNull final JSONObject pay_method) {
+        super(context,Utils.getNullStringAsEmpty(pay_method,"name"));
         mPayMethod = pay_method;
     }
 
@@ -25,8 +26,6 @@ public class PayMethodDialog extends AbstractPayDialog {
         super.onCreate(savedInstanceState);
 
         mOk.setText(R.string.OK);
-
-        setTitle(mPayMethod.getString("name"));
 
         //初始化支付方式
         initPayMethod();

@@ -17,22 +17,21 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.dialog.BaseDialog;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivity;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
 import java.util.Locale;
 
 public final class SaleReturnGoodsInfoAdapter extends RecyclerView.Adapter<SaleReturnGoodsInfoAdapter.MyViewHolder>  {
-    private BaseDialog mDialog;
+    private DialogBaseOnMainActivity mDialog;
     private MainActivity mContext;
     private JSONArray mDatas;
     private onRefundDataChange mRefundDataChange;
-    public SaleReturnGoodsInfoAdapter(BaseDialog dialog){
+    public SaleReturnGoodsInfoAdapter(DialogBaseOnMainActivity dialog){
         mDialog = dialog;
-        mContext = dialog.getActivityContext();
+        mContext = dialog.getPrivateContext();
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
