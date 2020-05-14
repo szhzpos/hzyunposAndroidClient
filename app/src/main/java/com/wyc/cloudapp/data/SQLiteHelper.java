@@ -362,7 +362,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             try(Cursor cursor = mDb.rawQuery(sql,null);){
                 array = rs2Json(cursor,0,0,false);
             } catch (JSONException | SQLiteException e) {
-                if (err != null)err.append("查询错误：").append(e.getMessage());
+                if (err != null)err.append(e.getMessage());
                 e.printStackTrace();
                 array = null;
             }
@@ -603,6 +603,11 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 for (int k = 0,size = tables.size();k < size;k++) {
                     table = tables.get(k);
                     arrays = json.getJSONArray(table);
+
+                    if (arrays == null){
+                        err.append(table).append("不能为null");
+                        return false;
+                    }
 
                     if (stringBuilderHead.length() != 0)
                         stringBuilderHead.delete(0, stringBuilderHead.length());

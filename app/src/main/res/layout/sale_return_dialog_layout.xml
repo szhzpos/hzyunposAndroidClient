@@ -174,7 +174,7 @@
             android:textSize="@dimen/font_size_16" />
 
         <TextView
-            android:id="@+id/r_amt"
+            android:id="@+id/r_sum_amt"
             android:layout_width="@dimen/width_88"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"

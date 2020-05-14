@@ -6,6 +6,12 @@
     android:orientation="horizontal">
 
     <TextView
+        android:id="@+id/rog_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
+    <TextView
         android:id="@+id/barcode_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -83,6 +89,7 @@
         android:layout_height="match_parent"
         android:layout_margin="@dimen/margin_5"
         android:background="@drawable/border_sub_gray"
+        android:enabled="true"
         android:gravity="center"
         android:inputType="numberDecimal"
         android:paddingTop="@dimen/margin_8"
@@ -90,7 +97,8 @@
         android:selectAllOnFocus="true"
         android:text="@string/z_p_z_sz"
         android:textColor="@color/text_color"
-        android:textSize="@dimen/font_size_16" />
+        android:textSize="@dimen/font_size_16"
+        android:autofillHints="" />
 
 
     <EditText
@@ -101,12 +109,14 @@
         android:layout_marginTop="@dimen/margin_5"
         android:layout_marginBottom="@dimen/margin_5"
         android:background="@drawable/border_sub_gray"
+        android:enabled="false"
         android:gravity="center"
-        android:inputType="numberDecimal"
+        android:inputType="none"
         android:padding="@dimen/margin_8"
         android:selectAllOnFocus="true"
         android:text="@string/z_p_z_sz"
         android:textColor="@color/text_color"
-        android:textSize="@dimen/font_size_16" />
+        android:textSize="@dimen/font_size_16"
+        android:autofillHints="" />
 
 </LinearLayout>

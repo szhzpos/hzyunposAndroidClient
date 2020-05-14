@@ -310,7 +310,7 @@ public class MainActivity extends AppCompatActivity {
     private void initGoodsInfoAdapter(){
         mGoodsInfoViewAdapter = new GoodsInfoViewAdapter(this);
         final RecyclerView goods_info_view = findViewById(R.id.goods_info_list);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(MainActivity.this,5);
+        final GridLayoutManager gridLayoutManager = new GridLayoutManager(MainActivity.this,5);
         goods_info_view.setLayoutManager(gridLayoutManager);
         registerGlobalLayoutToRecyclerView(goods_info_view,getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration());
         mGoodsInfoViewAdapter.setOnItemClickListener(new GoodsInfoViewAdapter.OnItemClickListener() {
@@ -348,7 +348,7 @@ public class MainActivity extends AppCompatActivity {
         goods_info_view.setAdapter(mGoodsInfoViewAdapter);
     }
     private void initGoodsCategoryAdapter(){
-        RecyclerView goods_type_view = findViewById(R.id.goods_type_list);
+        final RecyclerView goods_type_view = findViewById(R.id.goods_type_list);
         mGoodsCategoryViewAdapter = new GoodsCategoryViewAdapter(this,findViewById(R.id.goods_sec_l_type_list));
         goods_type_view.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false));
         mGoodsCategoryViewAdapter.setDatas(0);
@@ -360,7 +360,7 @@ public class MainActivity extends AppCompatActivity {
         mSaleGoodsViewAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged(){
-                JSONArray datas = mSaleGoodsViewAdapter.getDatas();
+                final JSONArray datas = mSaleGoodsViewAdapter.getDatas();
                 double sale_sum_num = 0.0,sale_sum_amount = 0.0,dis_sum_amt = 0.0;
                 try {
                     for (int i = 0,length = datas.size();i < length;i ++){
@@ -538,8 +538,8 @@ public class MainActivity extends AppCompatActivity {
     }
     private void initPrintStatus(){//打印状态
         findViewById(R.id.printer_status).setOnClickListener(v -> {
-            ImageView imageView = (ImageView)v;
-            Bitmap printer = BitmapFactory.decodeResource(getResources(),R.drawable.printer);
+            final ImageView imageView = (ImageView)v;
+            final Bitmap printer = BitmapFactory.decodeResource(getResources(),R.drawable.printer);
             if (mPrintStatus.get()){
                 mPrintStatus.set(false);
                 imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(printer,15,15));
@@ -653,7 +653,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
     private void resetOrderCode(){
-        mOrderCode.setText(mSaleGoodsViewAdapter.generateOrderCode(mCashierInfo.getString("pos_num"),1));
+        mOrderCode.setText(mSaleGoodsViewAdapter.generateSaleOrderCode(mCashierInfo.getString("pos_num"),1));
     }
     private void initSecondDisplay(){
         mSecondDisplay = SecondDisplay.getInstantiate(this);
@@ -704,7 +704,7 @@ public class MainActivity extends AppCompatActivity {
 
         registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray__subtransparent)));
 
-        LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
+        final LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
         vip_info_linearLayout.setVisibility(View.VISIBLE);
         ((TextView)vip_info_linearLayout.findViewById(R.id.vip_name)).setText(mVipInfo.getString("name"));
         ((TextView)vip_info_linearLayout.findViewById(R.id.vip_phone_num)).setText(mVipInfo.getString("mobile"));

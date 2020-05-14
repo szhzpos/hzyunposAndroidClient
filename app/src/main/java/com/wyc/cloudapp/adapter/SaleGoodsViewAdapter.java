@@ -382,7 +382,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
             notifyDataSetChanged();
         }
     }
-    public String generateOrderCode(final String pos_num,int order_type){
+    public String generateSaleOrderCode(final String pos_num, int order_type){
         String prefix = "N" + pos_num + "-" + new SimpleDateFormat("yyMMddHHmmss").format(new Date()) + "-",order_code ;
         JSONObject orders= new JSONObject();
         if (SQLiteHelper.execSql(orders,"SELECT count(order_id) + 1 order_id from retail_order where date(addtime,'unixepoch' ) = date('now')")){

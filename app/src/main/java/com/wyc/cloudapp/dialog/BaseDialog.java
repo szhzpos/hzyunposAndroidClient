@@ -31,6 +31,7 @@ public class BaseDialog extends Dialog {
         setTitle();
         initCloseBtn();
     }
+
     protected void setContentLayout(int res_id){
         final LinearLayout main_layout = findViewById(R.id.dialog_main_layout);
         if (null != main_layout){
@@ -54,5 +55,9 @@ public class BaseDialog extends Dialog {
 
     protected void closeWindow(){
         this.dismiss();
+    }
+
+    public MainActivity getActivityContext(){
+        return mContext;
     }
 }

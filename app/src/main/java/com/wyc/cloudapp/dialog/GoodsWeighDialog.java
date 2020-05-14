@@ -102,7 +102,9 @@ public class GoodsWeighDialog extends BaseDialog {
             public void afterTextChanged(Editable s) {
                 double v = 0.0,price = 0.0;
                 try {
-                    v = Double.valueOf(s.toString());
+                    if (s.length() != 0)
+                        v = Double.valueOf(s.toString());
+
                     price =Double.valueOf(mPriceTv.getText().toString());
                 }catch (NumberFormatException e){
                     e.printStackTrace();
