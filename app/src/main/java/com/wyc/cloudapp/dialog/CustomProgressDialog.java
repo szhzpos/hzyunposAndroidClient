@@ -48,13 +48,13 @@ public class CustomProgressDialog extends ProgressDialog
     @Override
     public void show()
     {
-
         super.show();
     }
 
     @Override
     public void dismiss(){
         super.dismiss();
+        szMessage = "";
     }
 
     @Override

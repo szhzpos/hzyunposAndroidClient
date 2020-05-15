@@ -139,11 +139,11 @@ public final class SaleOrderBodyViewAdapter extends RecyclerView.Adapter<SaleOrd
                 final TextView order_code_tv = v.findViewById(R.id.order_code),sale_refund_tv = v.findViewById(R.id.sale_refund);
                 if (order_code_tv != null && sale_refund_tv != null){
                     if (isClickView(order_code_tv,event.getX(),event.getY())){
-                        OrderDetaislDialog orderDetaislDialog = new OrderDetaislDialog(mContext,mContext.getString(R.string.order_detail_sz),getCurrentOrder());
+                        OrderDetaislDialog orderDetaislDialog = new OrderDetaislDialog(mContext,getCurrentOrder());
                         orderDetaislDialog.show();
                         return true;
                     }else if (isClickView(sale_refund_tv,event.getX(),event.getY())){
-                        SaleReturnDialog saleReturnDialog = new SaleReturnDialog(mContext,"退货退款",order_code_tv.getText().toString());
+                        SaleReturnDialog saleReturnDialog = new SaleReturnDialog(mContext,order_code_tv.getText().toString());
                         saleReturnDialog.show();
                     }
                 }

@@ -74,8 +74,13 @@ public class PayMethodDialog extends AbstractPayDialog {
             if (mPayMethod.getIntValue("is_check") != 2){ //显示付款码输入框
                 mPayCode.postDelayed(()->mPayCode.requestFocus(),350);
                 mPayCode.setVisibility(View.VISIBLE);
-                mPayCode.setHint(mPayMethod.getString("xtype"));
-                mPayAmtEt.setEnabled(false);
+
+                if (mPayMethod.containsKey("card_code"))
+                    mPayCode.setText(mPayMethod.getString("card_code"));
+                else
+                    mPayCode.setHint(mPayMethod.getString("xtype"));
+
+                //mPayAmtEt.setEnabled(false);
                 if (Utils.equalDouble(mOriginalPayAmt,0.0)){
                     mPayAmtEt.setVisibility(View.GONE);
                 }

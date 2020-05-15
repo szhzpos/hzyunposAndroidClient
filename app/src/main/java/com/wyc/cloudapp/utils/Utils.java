@@ -302,32 +302,32 @@ public final class Utils {
     public static boolean JsonIsNotEmpty(final JSONArray jsons){
         return jsons != null && !jsons.isEmpty();
     }
-    public static JSONObject JsondeepCopy(final JSONObject jsonObject){
+    public static JSONObject JsondeepCopy(@NonNull final JSONObject jsonObject){
         return JSON.parseObject(jsonObject.toJSONString());
     }
-    public static JSONArray JsondeepCopy(final JSONArray jsons){
+    public static JSONArray JsondeepCopy(@NonNull final JSONArray jsons){
         return JSON.parseArray(jsons.toJSONString());
     }
-    public static double getNotKeyAsNumberDefault(final JSONObject object, final String key, double default_v){
+    public static double getNotKeyAsNumberDefault(@NonNull final JSONObject object, final String key, double default_v){
         if (object.containsKey(key)){
             return object.getDoubleValue(key);
         }
         return default_v;
     }
-    public static int getNotKeyAsNumberDefault(final JSONObject object, final String key, int default_v){
+    public static int getNotKeyAsNumberDefault(@NonNull final JSONObject object, final String key, int default_v){
         if (object.containsKey(key)){
             return object.getIntValue(key);
         }
         return default_v;
     }
-    public static String getNullOrEmptyStringAsDefault(final JSONObject object,final String key, final String default_v){
+    public static String getNullOrEmptyStringAsDefault(@NonNull final JSONObject object,final String key, final String default_v){
         final String value = object.getString(key);
         if (value != null && !"".equals(value)){
             return object.getString(key);
         }
         return default_v;
     }
-    public static String getNullStringAsEmpty(final JSONObject object,final String key){
+    public static String getNullStringAsEmpty(@NonNull final JSONObject object,final String key){
         final String value = object.getString(key);
         return value == null ? "" :value;
     }

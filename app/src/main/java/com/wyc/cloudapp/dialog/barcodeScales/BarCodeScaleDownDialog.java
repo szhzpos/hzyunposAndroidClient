@@ -18,6 +18,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.BarCodeScaleAdapter;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnContext;
+import com.wyc.cloudapp.logger.Logger;
 
 
 import java.util.List;
@@ -25,42 +27,37 @@ import java.util.concurrent.Future;
 
 import static android.content.Context.WINDOW_SERVICE;
 
-public class BarCodeScaleDownDialog extends Dialog {
-    private Context mContext;
+public class BarCodeScaleDownDialog extends DialogBaseOnContext {
     private BarCodeScaleAdapter mBarCodeScaleAdapter;
     private List<Future<Boolean>> mFutureList;
     public BarCodeScaleDownDialog(@NonNull Context context) {
-        super(context);
-        mContext = context;
+        super(context,context.getString(R.string.b_code_s_d_sz));
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.barcode_scale_dialog_layout);
-        setCancelable(false);
-        setCanceledOnTouchOutside(false);
+        super.onCreate(savedInstanceState);
+        setContentLayout(R.layout.barcode_scale_dialog_layout);
 
         initRecyclerView();
-        initCloseDialog();
         initAddScaleBtn();
         initDelBtn();
         initDownloadToScaleBtn();
         initModifyBtn();
         initWindowSize();
     }
-    private void initCloseDialog(){
-        final Button close_btn = findViewById(R.id._close);
-        if (null != close_btn)
-            close_btn.setOnClickListener(v -> {
-                if (isDownloadFinished()){
-                    BarCodeScaleDownDialog.this.dismiss();
-                }
-            });
+
+    @Override
+    protected void closeWindow(){
+        if (isDownloadFinished()){
+            this.dismiss();
+        }
     }
+
     private void initAddScaleBtn(){
         final Button add_scale_btn = findViewById(R.id.add_scale);
         if (null != add_scale_btn)
             add_scale_btn.setOnClickListener(v -> {
-                AddBarCodeScaleDialog addBarCodeScaleDialog = new AddBarCodeScaleDialog(mContext);
+                AddBarCodeScaleDialog addBarCodeScaleDialog = new AddBarCodeScaleDialog(mContext,mContext.getString(R.string.add_scale_sz));
                 addBarCodeScaleDialog.setGetContent(object -> {
                     mBarCodeScaleAdapter.addScale(object);
                 });
@@ -69,13 +66,16 @@ public class BarCodeScaleDownDialog extends Dialog {
     }
     private void initDelBtn(){
         final Button del_scale_btn = findViewById(R.id.del_scale);
-        if (null != del_scale_btn && !mBarCodeScaleAdapter.getCurrentScalseInfos().isEmpty())
-            del_scale_btn.setOnClickListener(v -> MyDialog.displayAskMessage(null, "是否删除条码秤信息？", mContext, myDialog -> {
-                if (isDownloadFinished()){
-                    mBarCodeScaleAdapter.deleteScale();
-                    myDialog.dismiss();
-                }
-            },Dialog::dismiss));
+        if (null != del_scale_btn)
+            del_scale_btn.setOnClickListener(v -> {
+                if (!mBarCodeScaleAdapter.getCurrentScalseInfos().isEmpty())
+                    if (isDownloadFinished()){
+                        MyDialog.displayAskMessage(null, "是否删除条码秤信息？", mContext, myDialog -> {
+                            mBarCodeScaleAdapter.deleteScale();
+                            myDialog.dismiss();
+                        },Dialog::dismiss);
+                    }
+            });
     }
     private void initDownloadToScaleBtn(){
         final Button download_to_scale_btn = findViewById(R.id.download_to_scale);
@@ -91,8 +91,8 @@ public class BarCodeScaleDownDialog extends Dialog {
         if (null != modify_btn)
             modify_btn.setOnClickListener(v -> {
                 if (isDownloadFinished()){
-                    JSONArray array = mBarCodeScaleAdapter.getCurrentScalseInfos();
-                    if (array != null && array.size() != 0){
+                    final JSONArray array = mBarCodeScaleAdapter.getCurrentScalseInfos();
+                    if (array != null && !array.isEmpty()){
                         AddBarCodeScaleDialog addBarCodeScaleDialog = new AddBarCodeScaleDialog(mContext,array.getJSONObject(0));
                         addBarCodeScaleDialog.setGetContent(object -> mBarCodeScaleAdapter.addScale(object));
                         addBarCodeScaleDialog.show();
@@ -110,7 +110,7 @@ public class BarCodeScaleDownDialog extends Dialog {
             if (dialogWindow != null){
                 WindowManager.LayoutParams lp = dialogWindow.getAttributes();
                 dialogWindow.setGravity(Gravity.CENTER);
-                lp.height = (int)(0.8 * point.y); // 宽度
+                lp.height = (int)(0.8 * point.y);
                 dialogWindow.setAttributes(lp);
             }
         }

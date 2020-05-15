@@ -234,5 +234,5 @@
     <string name="returned_amt_sz">退货金额</string>
     <string name="all_returned_sz">全部退款</string>
     <string name="next_sz">下一步</string>
-
+    <string name="refund_dialog_title_sz">"退货退款"</string>
 </resources>

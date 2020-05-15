@@ -27,6 +27,7 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomePopupWindow;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnContext;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.lang.reflect.Constructor;
@@ -34,28 +35,24 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddBarCodeScaleDialog extends Dialog {
-
-    private Context mContext;
+public class AddBarCodeScaleDialog extends DialogBaseOnContext {
     private EditText mManufacturerEt,mProductType, mScaleName,mPort,mGCategoryEt;
     private LinearLayout mIP;
     private CustomePopupWindow mPopupWindow;
     private JSONArray mCategoryInfo,mManufacturerInfos, mScaleInfos;
     private OnGetContentCallBack mGetContent;
     private JSONObject mModifyScale;
-    AddBarCodeScaleDialog(@NonNull Context context) {
-        super(context);
-        mContext = context;
+    AddBarCodeScaleDialog(@NonNull Context context,final String title) {
+        super(context,title);
     }
     AddBarCodeScaleDialog(@NonNull Context context,JSONObject object) {
-        this(context);
+        this(context,context.getString(R.string.modify_scale_sz));
         mModifyScale = object;
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setContentView(R.layout.add_b_scalse_dialog_layout);
-        setCancelable(false);
-        setCanceledOnTouchOutside(false);
+        super.onCreate(savedInstanceState);
+        setContentLayout(R.layout.add_b_scalse_dialog_layout);
 
         mScaleName = findViewById(R.id.remark);
         mPort = findViewById(R.id.ser_port);
@@ -76,7 +73,6 @@ public class AddBarCodeScaleDialog extends Dialog {
         initIP();
 
         //初始化按钮事件
-        findViewById(R.id._close).setOnClickListener(v -> this.dismiss());
         findViewById(R.id.save).setOnClickListener(v -> {
             if (getScalseConfig()){
                 AddBarCodeScaleDialog.this.dismiss();
@@ -151,7 +147,7 @@ public class AddBarCodeScaleDialog extends Dialog {
             mPopupWindow.show(getWindow().getDecorView(),3);
         });
         //默认第一个
-        JSONObject object = mManufacturerInfos.getJSONObject(0);
+        final JSONObject object = mManufacturerInfos.getJSONObject(0);
         if (object != null){
             mManufacturerEt.setText(object.getString("name"));
             mScaleInfos = object.getJSONArray("products");

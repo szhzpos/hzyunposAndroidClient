@@ -222,14 +222,15 @@ public final class SyncHandler extends Handler {
     }
 
     private void testNetworkStatus() throws JSONException {
-        JSONObject data = new JSONObject(),retJson,info_json;
+        final JSONObject data = new JSONObject();
         final String test_url = mUrl + "/api/heartbeat/index";
         int err_code;
         data.put("appid",mAppId);
         data.put("pos_num",mPosNum);
         data.put("randstr", Utils.getNonce_str(8));
         data.put("cas_id",mOperId);
-        retJson = mHttp.sendPost(test_url,HttpRequest.generate_request_parm(data,mAppScret),true);
+
+        final JSONObject retJson = mHttp.sendPost(test_url,HttpRequest.generate_request_parm(data,mAppScret),true);
         err_code = retJson.getIntValue("rsCode");
         switch (retJson.getIntValue("flag")) {
             case 0:
@@ -243,7 +244,7 @@ public final class SyncHandler extends Handler {
                 if (mCurrentNeworkStatusCode != HttpURLConnection.HTTP_OK){//如果之前网络响应状态不为OK,则重连成功
                     Logger.i("重新连接服务器成功！");
                 }
-                info_json = JSON.parseObject(retJson.getString("info"));
+                final JSONObject  info_json = JSON.parseObject(retJson.getString("info"));
                 switch (info_json.getString("status")){
                     case "n":
                         syncActivityHandler.obtainMessage(MessageID.NETWORKSTATUS_ID,false).sendToTarget();
@@ -266,7 +267,6 @@ public final class SyncHandler extends Handler {
         mCurrentNeworkStatusCode = err_code;
     }
     private void uploadOrderInfo() {
-        boolean code = true;
         final StringBuilder err = new StringBuilder(),order_gp_ids = new StringBuilder();
         final String sql_orders = "SELECT discount_money,card_code,name,mobile,transfer_time,transfer_status,pay_time,pay_status,order_status,pos_code,addtime,cashier_id,total,\n" +
                 "discount_price,order_code,stores_id,spare_param1,spare_param2,replace(remark,'&','') remark FROM retail_order where order_status = 2 and pay_status = 2 and upload_status = 1 limit 50",
@@ -277,15 +277,16 @@ public final class SyncHandler extends Handler {
                         "WHERE d.order_code = '%2' and d.gp_id in (%1)",
                 sql_discount_record = "SELECT order_code,discount_type,type,stores_id,relevant_id,discount_money,details FROM discount_record where order_code = '%1'";
 
-        int gp_id;
-        String order_code;
 
         JSONArray orders,sales ,pays ,combinations,discount_records;
         JSONObject data = new JSONObject(),send_data = new JSONObject(),retJson,tmp_jsonObject,order_info;
-        HttpRequest httpRequest = new HttpRequest();
+        final HttpRequest httpRequest = new HttpRequest();
 
         //商品明细、支付明细
-        if (null != (orders = SQLiteHelper.getListToJson(sql_orders,err))){
+        boolean code;
+        int gp_id;
+        String order_code;
+        if (code = null != (orders = SQLiteHelper.getListToJson(sql_orders,err))){
             try {
                 for (int i = 0,size = orders.size();i < size;i++){
                     order_gp_ids.delete(0,order_gp_ids.length());
@@ -296,7 +297,7 @@ public final class SyncHandler extends Handler {
 
                     sales = SQLiteHelper.getListToJson(sql_goods_detail.replace("%1",order_code),err);
                     pays = SQLiteHelper.getListToJson(sql_pays_detail.replace("%1",order_code),err);
-                    if (null != sales && null != pays){
+                    if (code = (null != sales && null != pays)){
                         for (int j = 0,j_size = sales.size();j < j_size;j++){//销售明细
                             tmp_jsonObject = sales.getJSONObject(j);
                             gp_id = tmp_jsonObject.getIntValue("gp_id");
@@ -313,7 +314,7 @@ public final class SyncHandler extends Handler {
                         }
 
                         //组合商品
-                        if ((combinations = SQLiteHelper.getListToJson(sql_combination_goods.replace("%1",order_gp_ids).replace("%2",order_code),err)) != null){
+                        if (code = ((combinations = SQLiteHelper.getListToJson(sql_combination_goods.replace("%1",order_gp_ids).replace("%2",order_code),err)) != null)){
 
                             if ((discount_records = SQLiteHelper.getListToJson(sql_discount_record.replace("%1",order_code),err)) != null){
                                 data.put("order_info",Utils.JsondeepCopy(order_info));
@@ -342,24 +343,16 @@ public final class SyncHandler extends Handler {
                                                 break;
                                             case "y":
                                                 Logger.d("old_order_code:%s,order_code:%s",order_code,retJson.getString("order_code"));
-                                                ContentValues values = new ContentValues();
+                                                final ContentValues values = new ContentValues();
                                                 values.put("upload_status",2);
                                                 values.put("upload_time",System.currentTimeMillis() / 1000);
-                                                if (!SQLiteHelper.execUpdateSql("retail_order",values,"order_code = ?",new String[]{order_code},err)){
-                                                    code = false;
-                                                }
+                                                code = SQLiteHelper.execUpdateSql("retail_order",values,"order_code = ?",new String[]{order_code},err);
                                                 break;
                                         }
                                         break;
                                 }
-                            }else{
-                                code = false;
                             }
-                        }else{
-                            code = false;
                         }
-                    }else{
-                        code = false;
                     }
                 }
             }catch (JSONException e){
@@ -367,10 +360,7 @@ public final class SyncHandler extends Handler {
                 err.append(e.getMessage());
                 e.printStackTrace();
             }
-        }else{
-            code = false;
         }
-
         if (!code){
             Logger.e("上传单据错误：%s",err);
             syncActivityHandler.obtainMessage(MessageID.TRANSFERSTATUS_ID,false).sendToTarget();
@@ -502,7 +492,7 @@ public final class SyncHandler extends Handler {
         }
     }
     void startUploadOrder(){
-        obtainMessage(MessageID.UPLOAD_ORDER_ID).sendToTarget();
+        sendMessageAtFrontOfQueue(obtainMessage(MessageID.UPLOAD_ORDER_ID));
     }
     void pause(){
         sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_PAUSE_ID));

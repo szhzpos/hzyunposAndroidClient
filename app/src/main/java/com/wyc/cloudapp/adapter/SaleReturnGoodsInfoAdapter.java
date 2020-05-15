@@ -17,11 +17,15 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivity;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 public final class SaleReturnGoodsInfoAdapter extends RecyclerView.Adapter<SaleReturnGoodsInfoAdapter.MyViewHolder>  {
@@ -29,6 +33,7 @@ public final class SaleReturnGoodsInfoAdapter extends RecyclerView.Adapter<SaleR
     private MainActivity mContext;
     private JSONArray mDatas;
     private onRefundDataChange mRefundDataChange;
+    private JSONObject mVipInfo;
     public SaleReturnGoodsInfoAdapter(DialogBaseOnMainActivity dialog){
         mDialog = dialog;
         mContext = dialog.getPrivateContext();
@@ -148,67 +153,105 @@ public final class SaleReturnGoodsInfoAdapter extends RecyclerView.Adapter<SaleR
     public void setRefundDataChange(onRefundDataChange dataChange){
         mRefundDataChange = dataChange;
     }
-    public void setDatas(final String order_code){
 
-        CustomApplication.execute(()->{
+    private JSONObject mergeRefundOrderInfo(final JSONArray refunds){
+        final JSONArray refund_orders = new JSONArray(),refund_order_goods = new JSONArray(),refund_order_pays = new JSONArray();
 
-            final JSONObject object = new JSONObject();
-            object.put("appid",mContext.getAppId());
-            object.put("retail_code",order_code);
-            object.put("stores_id",mContext.getStoreInfo().getString("stores_id"));
-            HttpRequest httpRequest = new HttpRequest();
-            final JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + "/api/refund/getretailrefund",
-                    HttpRequest.generate_request_parm(object,mContext.getAppScret()),true);
-            final JSONObject info = JSON.parseObject(retJson.getString("info"));
+        JSONObject data = new JSONObject(),refund_order;
 
-        });
+        for (int i = 0,size = refunds.size();i < size;i++) {
+            refund_order = refunds.getJSONObject(i);
+            if (refund_order != null){
+                Object list = refund_order.remove("pays_list");
+                if (list != null){
+                    refund_order_pays.addAll(JSON.parseArray(list.toString()));
+                }
+                list = refund_order.remove("goods_list");
+                if (list != null){
+                    refund_order_goods.addAll(JSON.parseArray(list.toString()));
+                }
+                refund_orders.add(Utils.JsondeepCopy(refund_order));
+            }
+        }
 
-        final StringBuilder err = new StringBuilder();
-        final String sql = "SELECT a.rog_id,a.barcode_id,a.barcode,c.goods_title,c.unit_name,c.conversion,1 is_rk,0 produce_date,a.price,a.xnum,total_money sale_amt,a.xnum returnable_num " +
-                "FROM retail_order_goods a  left join barcode_info c on a.barcode_id = c.barcode_id\n" +
-                "where c.goods_status = 1 and c.barcode_status = 1 and a.order_code = '" + order_code + "'",
-                refund_sql = "select ifnull(a.rog_id,0) rog_id,a.is_rk,a.refund_price,a.xnum,a.barcode_id from refund_order_goods a inner join refund_order b on a.ro_code = b.ro_code where b.order_status = 2 and b.order_code = '" + order_code +"'";
+        data.put("refund_order",refund_orders);
+        data.put("refund_order_goods",refund_order_goods);
+        data.put("refund_order_pays",refund_order_pays);
 
-        Logger.d("sql:%s",sql);
-        boolean isSuccess = false;
-        JSONObject sale_record,refunded_record;
-        int sale_barcode_id,sale_rog_id,refund_barcode_id,refund_rog_id;
-        if ((mDatas = SQLiteHelper.getListToJson(sql,err)) != null){
-            final JSONArray refund_datas = SQLiteHelper.getListToJson(refund_sql,err);
-            if (refund_datas != null){
+        return data;
+    }
+
+    public void setDatas(final String order_code,final StringBuilder err){
+        final JSONObject object = new JSONObject();
+        final HttpRequest httpRequest = new HttpRequest();
+
+        object.put("appid",mContext.getAppId());
+        object.put("retail_code",order_code);
+        object.put("stores_id",mContext.getStoreInfo().getString("stores_id"));
+
+
+        final JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + "/api/refund/getretailrefund",
+                HttpRequest.generate_request_parm(object,mContext.getAppScret()),true);
+
+        if (retJson.getIntValue("flag") == 1){
+            JSONObject data = JSON.parseObject(retJson.getString("info"));
+            if (Utils.getNullStringAsEmpty(data,"status").equals("y")){
+                data = JSON.parseObject(Utils.getNullOrEmptyStringAsDefault(data,"data","{}"));
+                Logger.d_json(data.toJSONString());
+
+                final JSONArray refund_order_array = JSONArray.parseArray(Utils.getNullOrEmptyStringAsDefault(data,"refund_order","[]"));
+                final JSONObject retail_order = JSONArray.parseObject(Utils.getNullOrEmptyStringAsDefault(data,"retail_order","{}"));
+
+                if (!"".equals(Utils.getNullStringAsEmpty(retail_order,"card_code"))){
+                    if (mVipInfo == null)mVipInfo = new JSONObject();
+                    mVipInfo.put("member_id",Utils.getNullStringAsEmpty(retail_order,"member_id"));
+                    mVipInfo.put("mobile",retail_order.getString("mobile"));
+                    mVipInfo.put("name",retail_order.getString("name"));
+                    mVipInfo.put("card_code",retail_order.getString("card_code"));
+                }
+
+                final JSONObject refunded_info = mergeRefundOrderInfo(refund_order_array);
+                final JSONArray refunded_goods = refunded_info.getJSONArray("refund_order_goods");
+                JSONObject sale_goods_record,refunded_goods_record;
+                int sale_barcode_id,sale_rog_id,refund_barcode_id,refund_rog_id;
+                mDatas = JSONArray.parseArray(Utils.getNullOrEmptyStringAsDefault(retail_order,"goods_list","[]"));
                 for (int i = 0,size = mDatas.size();i < size;i ++){
-                    sale_record = mDatas.getJSONObject(i);
+                    sale_goods_record = mDatas.getJSONObject(i);
 
-                    sale_record.put("refund_price",sale_record.getDoubleValue("price"));
-                    sale_record.put("refund_num",sale_record.getDoubleValue("returnable_num"));
+                    sale_goods_record.put("refund_price",sale_goods_record.getDoubleValue("price"));
+                    sale_goods_record.put("returnable_num",sale_goods_record.getDoubleValue("xnum"));
 
-                    for (int j = 0,length = refund_datas.size();j < length;j ++){
-                        refunded_record = refund_datas.getJSONObject(j);
+                    for (int j = 0,length = refunded_goods.size();j < length;j ++){
+                        refunded_goods_record = refunded_goods.getJSONObject(j);
 
-                        sale_barcode_id = sale_record.getIntValue("barcode_id");
-                        sale_rog_id = sale_record.getIntValue("rog_id");
-                        refund_barcode_id = refunded_record.getIntValue("barcode_id");
-                        refund_rog_id = refunded_record.getIntValue("rog_id");
+                        sale_barcode_id = sale_goods_record.getIntValue("barcode_id");
+                        sale_rog_id = sale_goods_record.getIntValue("rog_id");
+                        refund_barcode_id = refunded_goods_record.getIntValue("barcode_id");
+                        refund_rog_id = refunded_goods_record.getIntValue("rog_id");
 
                         if (sale_barcode_id == refund_barcode_id && sale_rog_id == refund_rog_id){
-                            double sale_num = sale_record.getDoubleValue("xnum"),refund_num = refunded_record.getDoubleValue("xnum"),
+                            double sale_num = sale_goods_record.getDoubleValue("xnum"),refund_num = refunded_goods_record.getDoubleValue("xnum"),
                                     returnable_num = sale_num - refund_num;
-                            sale_record.put("returnable_num",returnable_num);
-                            sale_record.put("refund_num",returnable_num);
-                            break;
+                            sale_goods_record.put("returnable_num",returnable_num);
+                            sale_goods_record.put("refund_num",returnable_num);
+                            //可能存在多次退款记录不能跳出循环
                         }
                     }
                 }
-                isSuccess = true;
-                mContext.runOnUiThread(this::notifyDataSetChanged);;
+            }else {
+                err.append(retJson.getString("info"));
             }
+        }else {
+            err.append(retJson.getString("info"));
         }
-        if (!isSuccess){
+        if (err.length() != 0){
             mDatas = new JSONArray();
-            mContext.runOnUiThread(()->MyDialog.ToastMessage("加载商品明细错误：" + err,mContext,null));
         }
     }
     public JSONArray getRefundGoods(){
         return mDatas;
+    }
+    public JSONObject getVipInfo(){
+        return mVipInfo;
     }
 }

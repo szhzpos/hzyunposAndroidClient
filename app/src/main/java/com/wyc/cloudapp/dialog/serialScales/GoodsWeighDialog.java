@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.dialog;
+package com.wyc.cloudapp.dialog.serialScales;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,8 +19,8 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivity;
-import com.wyc.cloudapp.dialog.serialScales.AbstractSerialScaleImp;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
@@ -66,13 +66,13 @@ public class GoodsWeighDialog extends DialogBaseOnMainActivity {
         if (mSerialScale != null)mSerialScale.stopRead();
     }
     private View.OnClickListener button_click = v -> {
-        View view =  getCurrentFocus();
+        final View view =  getCurrentFocus();
         if (view != null) {
             if (view.getId() == R.id.w_value) {
-                EditText tmp_edit = ((EditText)view);
+                final EditText tmp_edit = ((EditText)view);
                 int index = tmp_edit.getSelectionStart();
-                Editable editable = tmp_edit.getText();
-                String sz_button = ((Button) v).getText().toString();
+                final Editable editable = tmp_edit.getText();
+                final String sz_button = ((Button) v).getText().toString();
                 if (index != tmp_edit.getSelectionEnd())editable.clear();
                 editable.insert(index, sz_button);
             }
@@ -115,8 +115,7 @@ public class GoodsWeighDialog extends DialogBaseOnMainActivity {
         });
     }
     private void initKeyboard(){
-        ConstraintLayout keyboard_layout;
-        keyboard_layout = findViewById(R.id.keyboard);
+        final ConstraintLayout keyboard_layout = findViewById(R.id.keyboard);
         for (int i = 0,child  = keyboard_layout.getChildCount(); i < child;i++){
             View tmp_v = keyboard_layout.getChildAt(i);
             int id = tmp_v.getId();
@@ -160,7 +159,7 @@ public class GoodsWeighDialog extends DialogBaseOnMainActivity {
     }
 
     private void initGoodsInfo(){
-        JSONObject object = new JSONObject();
+        final JSONObject object = new JSONObject();
         boolean code = SQLiteHelper.execSql(object,"select ifnull(goods_title,'') goods_title,ifnull(unit_name,'') unit_name,retail_price price,ifnull(img_url,'') img_url from barcode_info where goods_status = '1' and barcode_status = '1' and barcode_id = '" + mBarcodeId +"'" +
                 " UNION select ifnull(gp_title,'') goods_title,ifnull(unit_name,'') unit_name,gp_price price,ifnull(img_url,'') img_url from goods_group where status = '1' and gp_id = '" + mBarcodeId +"'");
         if (code){
@@ -187,7 +186,7 @@ public class GoodsWeighDialog extends DialogBaseOnMainActivity {
     }
 
     private void read(){
-        JSONObject object = new JSONObject();
+        final JSONObject object = new JSONObject();
         int code = AbstractSerialScaleImp.readWeight(object);
         if (code >= 0){
             if (code == 0){
@@ -212,7 +211,7 @@ public class GoodsWeighDialog extends DialogBaseOnMainActivity {
         }
     }
 
-    public double getContent(){
+    public final double getContent(){
         double v = 0.0;
         try {
             v = Double.valueOf(mWvalueEt.getText().toString());
@@ -225,7 +224,7 @@ public class GoodsWeighDialog extends DialogBaseOnMainActivity {
     public interface OnYesOnclickListener {
         void onYesClick(GoodsWeighDialog myDialog);
     }
-    public void setOnYesOnclickListener(OnYesOnclickListener listener){
+    public final void setOnYesOnclickListener(OnYesOnclickListener listener){
         mOnYesClick = listener;
     }
 

@@ -274,7 +274,7 @@ public class PayDialog extends DialogBaseOnMainActivity {
             if (pay_method != null){
                 try {
                     pay_method = Utils.JsondeepCopy(pay_method);
-                    String pay_method_id = pay_method.getString("pay_method_id");
+                    final String pay_method_id = pay_method.getString("pay_method_id");
                     if (PayMethodViewAdapter.CASH_METHOD_ID.equals(pay_method_id)) {
                         mOK.callOnClick();
                     } else {
@@ -282,11 +282,14 @@ public class PayDialog extends DialogBaseOnMainActivity {
                             if (Utils.equalDouble(mPay_balance, 0) && mPayDetailViewAdapter.findPayDetailById(pay_method_id) == null) {//剩余金额为零，同时不存在此付款方式的记录。
                                 MyDialog.SnackbarMessage(mWindow, "剩余金额为零！", getCurrentFocus());
                             } else {
-                                PayMethodDialog payMethodDialog = new PayMethodDialog(mContext, pay_method);
+                                if (mVip != null){
+                                    pay_method.put("card_code",mVip.getString("card_code"));
+                                }
+                                final PayMethodDialog payMethodDialog = new PayMethodDialog(mContext, pay_method);
                                 deleteMolDiscountRecord();//现金之外的付款需要删除抹零金额
                                 payMethodDialog.setPayAmt(mPay_balance);
                                 payMethodDialog.setYesOnclickListener(dialog -> {
-                                    JSONObject jsonObject = dialog.getContent();
+                                    final JSONObject jsonObject = dialog.getContent();
                                     if (jsonObject != null) {
                                         mPayDetailViewAdapter.addPayDetail(jsonObject);
                                         dialog.dismiss();

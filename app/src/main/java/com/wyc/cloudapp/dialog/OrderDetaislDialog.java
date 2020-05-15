@@ -40,8 +40,8 @@ public class OrderDetaislDialog extends DialogBaseOnMainActivity {
     private OrderDetailsPayInfoAdapter mOrderDetailsPayInfoAdapter;
     private TextView mOrderCode;
     private CustomProgressDialog mProgressDialog;
-    public OrderDetaislDialog(@NonNull MainActivity context, final String title, final JSONObject info) {
-        super(context,title);
+    public OrderDetaislDialog(@NonNull MainActivity context,final JSONObject info) {
+        super(context,context.getString(R.string.order_detail_sz));
         mOrderInfo = info;
     }
 

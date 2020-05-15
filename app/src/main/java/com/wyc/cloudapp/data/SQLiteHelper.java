@@ -698,9 +698,9 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
 
     private static List<Map<String,Object>> rs2List(Cursor cursor) {
 
-        List<Map<String,Object>> list = new ArrayList<>();
-        ArrayList<String> colNames=new ArrayList<String>();
-        ArrayList<Integer> coltypes=new ArrayList<Integer>();
+        final List<Map<String,Object>> list = new ArrayList<>();
+        final ArrayList<String> colNames=new ArrayList<String>();
+        final ArrayList<Integer> coltypes=new ArrayList<Integer>();
         Map<String,Object> map;
         // 获取列数
         int columnCount = cursor.getColumnCount();
@@ -736,9 +736,9 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
     }
     private static JSONArray rs2Json(Cursor cursor, Integer minRow, Integer maxRow, boolean row) throws JSONException {
         // json数组
-        JSONArray array = new JSONArray();
-        ArrayList<String> colNames=new ArrayList<String>();
-        ArrayList<Integer> coltypes=new ArrayList<Integer>();
+        final JSONArray array = new JSONArray();
+        final ArrayList<String> colNames=new ArrayList<String>();
+        final ArrayList<Integer> coltypes=new ArrayList<Integer>();
         JSONObject jsonObj;
         int row_count = 0;
         // 获取列数

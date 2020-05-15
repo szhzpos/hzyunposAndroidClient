@@ -279,7 +279,8 @@ public class VipChargeDialog extends AbstractPayDialog {
                                                         final JSONArray members = JSON.parseArray(info_json.getString("member")),money_orders = JSON.parseArray(info_json.getString("money_order"));
                                                         final JSONObject member = members.getJSONObject(0);
 
-                                                        Printer.print(mContext,get_print_content(money_orders.getJSONObject(0),member,info_json.getJSONArray("welfare")));
+                                                        if (mPrintStatus)
+                                                            Printer.print(mContext,get_print_content(money_orders.getJSONObject(0),member,info_json.getJSONArray("welfare")));
 
                                                         mHandler.obtainMessage(MessageID.VIP_C_SUCCESS_ID,member).sendToTarget();
                                                         break;
