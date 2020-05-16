@@ -18,7 +18,7 @@
             android:layout_gravity="center_vertical"
             android:paddingStart="@dimen/margin_5"
             android:paddingEnd="@dimen/margin_2"
-            android:text="@string/order_not_colon_sz"
+            android:text="@string/sale_order_code_sz"
             android:textSize="@dimen/font_size_16" />
 
         <EditText
@@ -31,9 +31,9 @@
             android:inputType="textPersonName"
             android:paddingStart="@dimen/margin_5"
             android:paddingEnd="@dimen/margin_5"
+            android:selectAllOnFocus="true"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_18"
-            android:textStyle="bold"
             android:visibility="visible" />
 
         <Button
@@ -279,7 +279,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginEnd="@dimen/margin_2"
-            android:text="@string/amt_not_colon_sz"
+            android:text="@string/refund_amt_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16" />
 
@@ -318,7 +318,7 @@
             android:layout_height="match_parent"
             android:layout_margin="@dimen/margin_5"
             android:background="@drawable/button_blue"
-            android:text="@string/all_returned_sz"
+            android:text="@string/all_refund_sz"
             android:textColor="@color/blue_white"
             android:textSize="@dimen/font_size_16" />
 

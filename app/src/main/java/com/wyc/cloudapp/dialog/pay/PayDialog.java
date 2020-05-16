@@ -940,7 +940,7 @@ public class PayDialog extends DialogBaseOnMainActivity {
         mCashMoneyEt.postDelayed(()-> mCashMoneyEt.requestFocus(),300);
     }
     private String getCashPayCode() {
-        return new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date())+ mContext.getPosNum() + Utils.getNonce_str(8);
+        return new SimpleDateFormat("yyyyMMddHHmmssSSS",Locale.CHINA).format(new Date())+ mContext.getPosNum() + Utils.getNonce_str(8);
     }
     private boolean verifyPayBalance(){
       return (mPay_balance > 0.0 || Utils.equalDouble(mPay_balance,0.0));
@@ -955,7 +955,7 @@ public class PayDialog extends DialogBaseOnMainActivity {
         fourth.setText(String.valueOf( tmp +(50- tmp % 50)));
     }
 
-    private static String c_format_58(final MainActivity context,final JSONObject format_info,@NonNull final JSONArray sales,@NonNull final JSONArray pays,boolean is_open_cash_box){
+    private static String c_format_58(final MainActivity context,final String order_code,final JSONObject format_info,@NonNull final JSONArray sales,@NonNull final JSONArray pays,boolean is_open_cash_box){
 
         final StringBuilder info = new StringBuilder();
         int print_count = Utils.getNotKeyAsNumberDefault(format_info,"p_c",1),footer_space = Utils.getNotKeyAsNumberDefault(format_info,"f_s",5);
@@ -977,7 +977,7 @@ public class PayDialog extends DialogBaseOnMainActivity {
 
             info.append(Printer.printTwoData(1, context.getString(R.string.b_f_store_id_sz).concat(Utils.getNullStringAsEmpty(st_info,"stores_id")), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()))).append(new_line);
             info.append(Printer.printTwoData(1, context.getString(R.string.b_f_jh_sz).concat(pos_num), context.getString(R.string.b_f_cashier_sz).concat(cas_name))).append(new_line);
-            info.append(context.getString(R.string.b_f_order_sz)).append(context.getOrderCode()).append(new_line).append(new_line);
+            info.append(context.getString(R.string.b_f_order_sz)).append(order_code).append(new_line).append(new_line);
 
             info.append(context.getString(R.string.b_f_header_sz).replace("-"," ")).append(new_line_2).append(new_line).append(line).append(new_line_2).append(new_line).append(new_line_d);
             //商品明细
@@ -1125,14 +1125,14 @@ public class PayDialog extends DialogBaseOnMainActivity {
         }
     }
 
-    public static String get_print_content(final MainActivity context,final JSONArray sales,JSONArray pays,boolean isOpenCashbox){
+    public static String get_print_content(final MainActivity context,final String order_code,final JSONArray sales,JSONArray pays,boolean isOpenCashbox){
         final JSONObject print_format_info = new JSONObject();
         String content = "";
         if (SQLiteHelper.getLocalParameter("c_f_info",print_format_info)){
             if (print_format_info.getIntValue("f") == R.id.checkout_format){
                 switch (print_format_info.getIntValue("f_z")){
                     case R.id.f_58:
-                        content = c_format_58(context,print_format_info,sales,pays,isOpenCashbox);
+                        content = c_format_58(context,order_code,print_format_info,sales,pays,isOpenCashbox);
                         break;
                     case R.id.f_76:
                         break;

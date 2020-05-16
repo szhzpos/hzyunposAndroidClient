@@ -345,7 +345,7 @@ public class QuerySaleOrderDialog extends DialogBaseOnMainActivity {
                 WindowManager.LayoutParams lp = dialogWindow.getAttributes();
                 dialogWindow.setGravity(Gravity.CENTER);
                 lp.height = (int)(0.9 * point.y);
-                lp.width = (int)(0.9 * point.x);
+                lp.width = (int)(0.85 * point.x) - 4;
                 dialogWindow.setAttributes(lp);
             }
         }

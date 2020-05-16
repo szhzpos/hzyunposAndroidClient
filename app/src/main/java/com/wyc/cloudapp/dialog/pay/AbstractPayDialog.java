@@ -132,8 +132,8 @@ public abstract class AbstractPayDialog extends DialogBaseOnMainActivity impleme
     protected abstract void initPayMethod();
 
     @SuppressLint("SimpleDateFormat")
-    String getPayCode() {
-        return new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()) + mContext.getPosNum() + Utils.getNonce_str(8);
+    public static String getPayCode(final String pos_num) {
+        return new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()) + pos_num + Utils.getNonce_str(8);
     }
 
     protected boolean verify(){

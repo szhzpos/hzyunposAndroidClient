@@ -158,31 +158,21 @@ public class HangBillDialog extends DialogBaseOnMainActivity {
 
     private void setViewBackgroundColor(View view,boolean s){
         if(view!= null){
-            int white = mContext.getColor(R.color.white);
+            int color;
             if (s){
-                view.setBackgroundColor(mContext.getColor(R.color.listSelected));
-                if (view instanceof LinearLayout){
-                    LinearLayout linearLayout = (LinearLayout)view;
-                    int count = linearLayout.getChildCount();
-                    View ch;
-                    for (int i = 0;i < count;i++){
-                        ch = linearLayout.getChildAt(i);
-                        if (ch instanceof TextView){
-                            ((TextView) ch).setTextColor(white);
-                        }
-                    }
-                }
+                color = mContext.getColor(R.color.listSelected);
             }else{
-                view.setBackgroundColor(white);
-                if (view instanceof LinearLayout){
-                    LinearLayout linearLayout = (LinearLayout)view;
-                    int count = linearLayout.getChildCount();
-                    View ch;
-                    for (int i = 0;i < count;i++){
-                        ch = linearLayout.getChildAt(i);
-                        if (ch instanceof TextView){
-                            ((TextView) ch).setTextColor(mContext.getColor(R.color.text_color));
-                        }
+                color = mContext.getColor(R.color.white);
+            }
+            view.setBackgroundColor(color);
+            if (view instanceof LinearLayout){
+                LinearLayout linearLayout = (LinearLayout)view;
+                int count = linearLayout.getChildCount();
+                View ch;
+                for (int i = 0;i < count;i++){
+                    ch = linearLayout.getChildAt(i);
+                    if (ch instanceof TextView){
+                        ((TextView) ch).setTextColor(mContext.getColor(R.color.text_color));
                     }
                 }
             }

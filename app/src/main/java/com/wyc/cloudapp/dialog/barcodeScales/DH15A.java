@@ -135,7 +135,7 @@ public class DH15A extends AbstractBarcodeScaleImp {
             JSONArray goods = SQLiteHelper.getListToJson("select only_coding,retail_price,metering_id,goods_title,shelf_life from barcode_info where type = 2 and (goods_status = '1' and barcode_status = '1') and category_id in (" + category_id +")",err);
             if (goods != null){
                 //plu(0001~4000) %1,item_id(7) %2 货号，price(6) %3 价格， shelf_life(3) %4 保质期， title %5 商品名称，prefix(2) %6 前缀 m_id(1) %7 <0 计重,1计分>
-                final String sz_data_record = "!0V%1A%2%3%7000000%4%600000000000000000000000000000000000000000000000B%5CDE";
+                final String sz_data_record = "!0V%1A%2%3%7000000%4%600000000000000000000000000000000000000000000000B%5CDE";//考虑用StringBuilder
                 JSONObject tmp_obj,record_obj;
                 String plu_code,item_id,m_id,title,shelf_life,price,tmp_item_id,tmp_title;
                 try {

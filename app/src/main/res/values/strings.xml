@@ -9,7 +9,7 @@
     <string name="no">否</string>
     <string name="dialog_title">对话框</string>
     <string name="cashier_desk_sz">云店POS收银客户端</string>
-    <string name="deal_sz">查交易</string>
+    <string name="deal_sz">零售单</string>
     <string name="shift_exchange_sz">交 班</string>
     <string name="other_sz">更多</string>
     <string name="cashier_sz">收银员：</string>
@@ -217,7 +217,7 @@
     <string name="b_f_jh_sz">@string/jh_sz</string>
     <string name="b_f_cashier_sz">@string/cashier_sz</string>
     <string name="b_f_order_sz">@string/order_sz</string>
-    <string name="b_f_header_sz">商品名称------单价---数量---小计</string>
+    <string name="b_f_header_sz">名称/条码-----单价---数量---小计</string>
     <string name="b_f_ori_price_sz">原价：</string>
     <string name="b_f_disco_sz">优惠：</string>
     <string name="b_f_amt_sz">总价：</string>
@@ -232,7 +232,10 @@
     <string name="returnable_num_sz">可退数量</string>
     <string name="returned_num_sz">退货数量</string>
     <string name="returned_amt_sz">退货金额</string>
-    <string name="all_returned_sz">全部退款</string>
     <string name="next_sz">下一步</string>
     <string name="refund_dialog_title_sz">"退货退款"</string>
+    <string name="all_refund_sz">整单退货</string>
+    <string name="sale_order_code_sz">零售单号</string>
+    <string name="refund_order_sz">退货单</string>
+    <string name="refund_amt_sz">退货金额</string>
 </resources>

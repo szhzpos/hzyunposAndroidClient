@@ -1093,6 +1093,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    goods_title  VARCHAR,\n" +
                 "    rog_id       INT,\n" +
                 "    refund_price REAL,\n" +
+                "    refund_num  REAL,\n" +
                 "    price        REAL,\n" +
                 "    xnum         REAL,\n" +
                 "    barcode_id   INT,\n" +

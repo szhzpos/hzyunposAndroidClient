@@ -116,9 +116,8 @@
 
     <TextView
         android:id="@+id/sale_refund"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/width_68"
         android:layout_height="match_parent"
-        android:layout_weight="1"
         android:gravity="center"
         android:paddingTop="@dimen/margin_8"
         android:paddingBottom="@dimen/margin_8"

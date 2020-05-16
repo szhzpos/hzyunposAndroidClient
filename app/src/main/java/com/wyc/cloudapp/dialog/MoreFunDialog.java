@@ -1,6 +1,8 @@
 package com.wyc.cloudapp.dialog;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 
@@ -21,23 +23,49 @@ public class MoreFunDialog extends DialogBaseOnMainActivity {
         setContentLayout(R.layout.more_fun_dialog_layout);
 
         //初始化按钮事件
-        findViewById(R.id.sync_btn).setOnClickListener(v->{
+        initSyncBtn();
+        initSetupBtn();
+        initOpenCashboxBtn();
+        initBarcodeScaleBtn();
+        initAllRefundBtn();
+    }
+
+    private void initAllRefundBtn(){
+        final Button btn = findViewById(R.id.all_refund_btn);
+        btn.setOnClickListener(v -> {
+            SaleReturnDialog dialog = new SaleReturnDialog(mContext,null);
+            dialog.show();
+            this.dismiss();
+        });
+    }
+    private void initBarcodeScaleBtn(){
+        final Button btn = findViewById(R.id.barcode_scale);
+        btn.setOnClickListener(v -> {
+            BarCodeScaleDownDialog barCodeScaleDownDialog = new BarCodeScaleDownDialog(mContext);
+            barCodeScaleDownDialog.show();
+            this.dismiss();
+        });
+    }
+    private void initSetupBtn(){
+        final Button btn = findViewById(R.id.setup_btn);
+        btn.setOnClickListener(v -> {
+            ParameterSettingDialog parameterSettingDialog = new ParameterSettingDialog(mContext);
+            parameterSettingDialog.show(mContext.getSupportFragmentManager(),"");
+            this.dismiss();
+        });
+    }
+    private void initOpenCashboxBtn(){
+        final Button btn = findViewById(R.id.o_cashbox);
+        btn.setOnClickListener(v -> Printer.print(mContext, Printer.commandToStr(Printer.OPEN_CASHBOX)));
+    }
+    private void initSyncBtn(){
+        final Button sync_btn = findViewById(R.id.sync_btn);
+        sync_btn.setOnClickListener(v->{
             StringBuilder err = new StringBuilder();
             if (!SQLiteHelper.execDelete("barcode_info",null,null,err)){
                 MyDialog.ToastMessage(err.toString(),mContext,getWindow());
             }
             mContext.sync(true);
-            this.dismiss();
-        });
-        findViewById(R.id.o_cashbox).setOnClickListener(v -> Printer.print(mContext, Printer.commandToStr(Printer.OPEN_CASHBOX)));
-        findViewById(R.id.setup_btn).setOnClickListener(v -> {
-            ParameterSettingDialog parameterSettingDialog = new ParameterSettingDialog(mContext);
-            parameterSettingDialog.show(mContext.getSupportFragmentManager(),"");
-            this.dismiss();
-        });
-        findViewById(R.id.barcode_scale).setOnClickListener(v -> {
-            BarCodeScaleDownDialog barCodeScaleDownDialog = new BarCodeScaleDownDialog(mContext);
-            barCodeScaleDownDialog.show();
             this.dismiss();
         });
     }

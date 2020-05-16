@@ -19,6 +19,7 @@ import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.OrderDetaislDialog;
 import com.wyc.cloudapp.dialog.SaleReturnDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
@@ -66,16 +67,23 @@ public final class SaleOrderBodyViewAdapter extends RecyclerView.Adapter<SaleOrd
                 holder.order_code.setText(order_info.getString("order_code"));
                 holder.order_amt.setText(String.format(Locale.CHINA,"%.2f",order_info.getDoubleValue("order_amt")));
                 holder.reality_amt.setText(String.format(Locale.CHINA,"%.2f",order_info.getDoubleValue("reality_amt")));
+
+                int order_status = order_info.getIntValue("order_status");
+                if (order_status == 4)
+                    holder.order_status.setTextColor(mContext.getColor(R.color.orange_1));
+                else
+                    holder.order_status.setTextColor(mContext.getColor(R.color.text_color));
                 holder.order_status.setText(order_info.getString("order_status_name"));
                 holder.order_status.setTag(order_info.getIntValue("order_status"));
+
                 holder.pay_status.setText(order_info.getString("pay_status_name"));
-                holder.pay_status.setTag(order_info.getIntValue("pay_status"));
+
                 holder.s_e_status.setText(order_info.getString("s_e_status_name"));
-                holder.s_e_status.setTag(order_info.getIntValue("s_e_status"));
+
                 holder.cas_name.setText(order_info.getString("cas_name"));
-                holder.cas_name.setTag(order_info.getIntValue("cas_id"));
+
                 holder.upload_status.setText(order_info.getString("upload_status_name"));
-                holder.upload_status.setTag(order_info.getIntValue("upload_status"));
+
                 holder.oper_time.setText(order_info.getString("oper_time"));
 
                 holder.mCurrentLayoutItemView.setOnTouchListener(touchListener);
@@ -91,11 +99,15 @@ public final class SaleOrderBodyViewAdapter extends RecyclerView.Adapter<SaleOrd
     private void setViewBackgroundColor(View view,boolean s){
         if(view!= null) {
             View child;
-            int selected_color = mContext.getColor(R.color.white), item_color = mContext.getColor(R.color.appColor),text_color = mContext.getColor(R.color.text_color);
+            int selected_color, item_color,text_color;
             if (s) {
                 selected_color = mContext.getColor(R.color.listSelected);
                 item_color = Color.YELLOW;
                 text_color = mContext.getColor(R.color.white);
+            }else {
+                selected_color = mContext.getColor(R.color.white);
+                item_color = mContext.getColor(R.color.appColor);
+                text_color = mContext.getColor(R.color.text_color);
             }
             view.setBackgroundColor(selected_color);
             if (view instanceof LinearLayout){
@@ -109,6 +121,11 @@ public final class SaleOrderBodyViewAdapter extends RecyclerView.Adapter<SaleOrd
                             case R.id.order_code:
                             case R.id.sale_refund:
                                 tv.setTextColor(item_color);
+                                break;
+                            case R.id.order_status:
+                                if (Utils.getViewTagValue(child,2) == 4){
+                                    tv.setTextColor(mContext.getColor(R.color.orange_1));
+                                }
                                 break;
                             default:
                                 tv.setTextColor(text_color);

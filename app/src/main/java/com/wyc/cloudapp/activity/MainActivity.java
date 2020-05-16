@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
     private AtomicBoolean mPrintStatus = new AtomicBoolean(true);//打印状态
     private long mCurrentTimestamp = 0;
     private String mAppId,mAppScret,mUrl;
-    private TextView mCurrentTimeView,mSaleSumNum,mSaleSumAmount,mOrderCode,mDisSumAmt;
+    private TextView mCurrentTimeViewTv, mSaleSumNumTv, mSaleSumAmtTv, mOrderCodeTv, mDisSumAmtTv;
     private SyncManagement mSyncManagement;
     private ImageView mCloseBtn;
     private RecyclerView mSaleGoodsRecyclerView;
@@ -98,12 +98,12 @@ public class MainActivity extends AppCompatActivity {
         mProgressDialog = new CustomProgressDialog(this);
         mDialog = new MyDialog(this);
         mSearch_content = findViewById(R.id.search_content);
-        mCurrentTimeView = findViewById(R.id.current_time);
-        mSaleSumNum = findViewById(R.id.sale_sum_num);
-        mSaleSumAmount = findViewById(R.id.sale_sum_amt);
+        mCurrentTimeViewTv = findViewById(R.id.current_time);
+        mSaleSumNumTv = findViewById(R.id.sale_sum_num);
+        mSaleSumAmtTv = findViewById(R.id.sale_sum_amt);
         mKeyboard = findViewById(R.id.keyboard_layout);
-        mOrderCode = findViewById(R.id.order_code);
-        mDisSumAmt = findViewById(R.id.dis_sum_amt);
+        mOrderCodeTv = findViewById(R.id.order_code);
+        mDisSumAmtTv = findViewById(R.id.dis_sum_amt);
 
         //初始化adapter
         initGoodsInfoAdapter();
@@ -276,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
             mCurrentTimestamp += (1000 + System.currentTimeMillis() - mCurrentTimestamp);
             mHandler.postDelayed(this::startSyncCurrentTime,1000);
         }
-        mCurrentTimeView.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(mCurrentTimestamp));
+        mCurrentTimeViewTv.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(mCurrentTimestamp));
     }
     private void initCashierInfoAndStoreInfo(){
         mCashierInfo = new JSONObject();
@@ -370,9 +370,9 @@ public class MainActivity extends AppCompatActivity {
                         sale_sum_amount += jsonObject.getDouble("sale_amt");
                         dis_sum_amt += jsonObject.getDouble("discount_amt");
                     }
-                    mSaleSumNum.setText(String.format(Locale.CANADA,"%.3f",sale_sum_num));
-                    mSaleSumAmount.setText(String.format(Locale.CANADA,"%.2f",sale_sum_amount));
-                    mDisSumAmt.setText(String.format(Locale.CANADA,"%.2f",dis_sum_amt));
+                    mSaleSumNumTv.setText(String.format(Locale.CANADA,"%.3f",sale_sum_num));
+                    mSaleSumAmtTv.setText(String.format(Locale.CANADA,"%.2f",sale_sum_amount));
+                    mDisSumAmtTv.setText(String.format(Locale.CANADA,"%.2f",dis_sum_amt));
 
                     mSaleGoodsRecyclerView.scrollToPosition(mSaleGoodsViewAdapter.getCurrentItemIndex());
                 } catch (JSONException e) {
@@ -578,13 +578,15 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess(PayDialog myDialog) {
                         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
 
-                        if (mPrintStatus.get())
-                            Printer.print(activity, PayDialog.get_print_content(activity,mSaleGoodsViewAdapter.getDatas(),myDialog.getContent(),myDialog.isOpenCashbox()));
+                        if (mPrintStatus.get()){
+                            Printer.print(activity, PayDialog.get_print_content(activity,getOrderCode(),mSaleGoodsViewAdapter.getDatas(),myDialog.getContent(),myDialog.isOpenCashbox()));
+                        }
+
 
                         mSyncManagement.sync_order();
                         resetOrderInfo();
                         myDialog.dismiss();
-                        MyDialog.SnackbarMessage(activity.getWindow(),"结账成功！",mOrderCode);
+                        MyDialog.SnackbarMessage(activity.getWindow(),"结账成功！", mOrderCodeTv);
                     }
 
                     @Override
@@ -654,7 +656,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
     private void resetOrderCode(){
-        mOrderCode.setText(mSaleGoodsViewAdapter.generateSaleOrderCode(mCashierInfo.getString("pos_num"),1));
+        mOrderCodeTv.setText(mSaleGoodsViewAdapter.generateSaleOrderCode(mCashierInfo.getString("pos_num"),1));
     }
     private void initSecondDisplay(){
         mSecondDisplay = SecondDisplay.getInstantiate(this);
@@ -722,7 +724,7 @@ public class MainActivity extends AppCompatActivity {
     public JSONObject getStoreInfo(){
         return mStoreInfo;
     }
-    public String getOrderCode(){ return mOrderCode.getText().toString();}
+    public String getOrderCode(){ return mOrderCodeTv.getText().toString();}
     public String  getDisCashierId(){
         return mZkCashierId;
     }

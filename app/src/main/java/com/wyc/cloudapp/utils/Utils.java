@@ -332,13 +332,21 @@ public final class Utils {
         return value == null ? "" :value;
     }
 
-    public static JSONObject getNullObjectAsEmpty(final JSONObject object){
+    public static JSONObject getNullObjectAsEmptyJson(final JSONObject object,final String key){
         if (object == null)return new JSONObject();
-        return object;
+        final Object obj = object.get(key);
+        if (obj instanceof JSONObject){
+            return (JSONObject) obj;
+        }
+        return new JSONObject();
     }
-    public static JSONArray getNullObjectAsEmpty(final JSONArray array){
-        if (array == null)return new JSONArray();
-        return array;
+    public static JSONArray getNullObjectAsEmptyJsonArray(final JSONObject object,final String key){
+        if (object == null)return new JSONArray();
+        final Object obj = object.get(key);
+        if (obj instanceof JSONArray){
+            return (JSONArray) obj;
+        }
+        return new JSONArray();
     }
 
     public static int getViewTagValue(final View view,int default_V){

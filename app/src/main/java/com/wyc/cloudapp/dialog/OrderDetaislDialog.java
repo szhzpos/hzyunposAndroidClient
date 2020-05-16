@@ -38,7 +38,7 @@ public class OrderDetaislDialog extends DialogBaseOnMainActivity {
     private JSONObject mOrderInfo, mPayRecord;
     private OrderDetailsGoodsInfoAdapter mOrderDetailsGoodsInfoAdapter;
     private OrderDetailsPayInfoAdapter mOrderDetailsPayInfoAdapter;
-    private TextView mOrderCode;
+    private String mOrderCode;
     private CustomProgressDialog mProgressDialog;
     public OrderDetaislDialog(@NonNull MainActivity context,final JSONObject info) {
         super(context,context.getString(R.string.order_detail_sz));
@@ -58,11 +58,13 @@ public class OrderDetaislDialog extends DialogBaseOnMainActivity {
     private void showOrderInfo(){
         final JSONObject object = mOrderInfo;
         if (null != object){
-            final TextView oper_time_tv = findViewById(R.id.oper_time),order_code_tv = mOrderCode = findViewById(R.id.order_code),order_amt_tv = findViewById(R.id.order_amt),reality_amt_tv = findViewById(R.id.reality_amt),
+            final TextView oper_time_tv = findViewById(R.id.oper_time),order_code_tv = findViewById(R.id.order_code),order_amt_tv = findViewById(R.id.order_amt),reality_amt_tv = findViewById(R.id.reality_amt),
                     order_status_tv = findViewById(R.id.order_status),pay_status_tv = findViewById(R.id.pay_status),s_e_status_tv = findViewById(R.id.s_e_status),upload_status_tv = findViewById(R.id.upload_status),
                     cas_name_tv = findViewById(R.id.cas_name);
             if (oper_time_tv != null)oper_time_tv.setText(Utils.getNullStringAsEmpty(object,"oper_time"));
-            if (order_code_tv != null)order_code_tv.setText(Utils.getNullStringAsEmpty(object,"order_code"));
+
+            if (order_code_tv != null)order_code_tv.setText(mOrderCode = Utils.getNullStringAsEmpty(object,"order_code"));
+
             if (order_amt_tv != null)order_amt_tv.setText(Utils.getNullStringAsEmpty(object,"order_amt"));
             if (reality_amt_tv != null)reality_amt_tv.setText(Utils.getNullStringAsEmpty(object,"reality_amt"));
             if (order_status_tv != null)order_status_tv.setText(Utils.getNullStringAsEmpty(object,"order_status_name"));
@@ -123,7 +125,7 @@ public class OrderDetaislDialog extends DialogBaseOnMainActivity {
     private void initReprint(){
         final Button reprint_btn = findViewById(R.id.reprint_btn);
         if (null != reprint_btn){
-            reprint_btn.setOnClickListener(v -> Printer.print(mContext, PayDialog.get_print_content(mContext,mOrderDetailsGoodsInfoAdapter.getSaleGoods(),mOrderDetailsPayInfoAdapter.getPayInfo(),false)));
+            reprint_btn.setOnClickListener(v -> Printer.print(mContext, PayDialog.get_print_content(mContext,mOrderCode,mOrderDetailsGoodsInfoAdapter.getSaleGoods(),mOrderDetailsPayInfoAdapter.getPayInfo(),false)));
         }
     }
     private void initVerifyPay(){
@@ -210,7 +212,7 @@ public class OrderDetaislDialog extends DialogBaseOnMainActivity {
             }
 
             final ContentValues values = new ContentValues();
-            final String sz_order_code = mOrderCode.getText().toString();
+            final String sz_order_code = mOrderCode;
             if (!query_status){
                 values.put("order_status",3);
                 values.put("spare_param1",err.toString());
