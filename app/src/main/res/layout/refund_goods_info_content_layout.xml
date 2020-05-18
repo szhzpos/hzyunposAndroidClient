@@ -84,13 +84,12 @@
         android:textSize="@dimen/font_size_16" />
 
     <EditText
-        android:id="@+id/cur_ret_num"
+        android:id="@+id/cur_refund_num"
         android:layout_width="@dimen/width_118"
         android:layout_height="match_parent"
         android:layout_margin="@dimen/margin_5"
         android:autofillHints=""
         android:background="@drawable/border_sub_gray"
-        android:enabled="false"
         android:gravity="center"
         android:inputType="numberDecimal"
         android:paddingTop="@dimen/margin_8"
@@ -102,7 +101,7 @@
 
 
     <EditText
-        android:id="@+id/cur_ret_amt"
+        android:id="@+id/cur_refund_amt"
         android:layout_width="@dimen/width_88"
         android:layout_height="match_parent"
         android:layout_marginStart="@dimen/margin_5"

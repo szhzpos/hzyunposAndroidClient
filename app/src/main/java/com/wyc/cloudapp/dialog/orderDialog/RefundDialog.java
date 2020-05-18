@@ -107,7 +107,7 @@ public class RefundDialog extends DialogBaseOnMainActivityImp {
                                 mRefundGoodsInfoAdapter.notifyDataSetChanged();
                             }
                             mProgressDialog.dismiss();
-                            MyDialog.ToastMessage(err.toString(),mContext,null);
+                            MyDialog.ToastMessage(err.toString(),mContext,getWindow());
                         });
                     });
                 }else {

@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/iv_triangle"
+        android:layout_width="@dimen/width_45"
+        android:layout_height="@dimen/height_45"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="-28dp"
+        android:contentDescription="@string/space_sz"
+        android:src="@drawable/blue_triangle_up" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/keyboard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/transparent"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/iv_triangle">
+
+        <Button
+            android:id="@+id/_one"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/keyboard_button_width"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_marginStart="@dimen/margin_2"
+            android:background="#CD5DA7F8"
+            android:text="@string/one_sz"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="@dimen/num_keyboard_font_size_24"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/_two"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/keyboard_button_width"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_marginStart="@dimen/margin_2"
+            android:layout_weight="2.5"
+            android:background="#CD5DA7F8"
+            android:text="@string/two_sz"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="@dimen/num_keyboard_font_size_24"
+            app:layout_constraintStart_toEndOf="@+id/_one"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/_three"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/keyboard_button_width"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_marginStart="@dimen/margin_2"
+            android:background="#CD5DA7F8"
+            android:text="@string/three_sz"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="@dimen/num_keyboard_font_size_24"
+            app:layout_constraintStart_toEndOf="@+id/_two"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/_back"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/keyboard_button_width"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_marginStart="@dimen/margin_2"
+            android:background="#CD5DA7F8"
+            android:text="@string/back"
+            android:textColor="@color/white"
+            android:textSize="@dimen/num_keyboard_font_size_18"
+            app:layout_constraintStart_toEndOf="@id/_three"
+            app:layout_constraintTop_toTopOf="@id/_three" />
+
+        <Button
+            android:id="@+id/_four"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/keyboard_button_width"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_marginStart="@dimen/margin_2"
+            android:layout_marginTop="@dimen/margin_2"
+            android:background="#CD5DA7F8"
+            android:focusable="auto"
+            android:text="@string/four_sz"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="@dimen/num_keyboard_font_size_24"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/_one" />
+
+        <Button
+            android:id="@+id/_five"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/keyboard_button_width"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_marginStart="@dimen/margin_2"
+            android:layout_marginTop="@dimen/margin_2"
+            android:layout_weight="2.5"
+            android:background="#CD5DA7F8"
+            android:text="@string/five_sz"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="@dimen/num_keyboard_font_size_24"
+            app:layout_constraintStart_toEndOf="@+id/_four"
+            app:layout_constraintTop_toBottomOf="@+id/_two" />
+
+        <Button
+            android:id="@+id/_six"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/keyboard_button_width"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_marginStart="@dimen/margin_2"
+            android:layout_marginTop="@dimen/margin_2"
+            android:layout_weight="2.5"
+            android:background="#CD5DA7F8"
+            android:text="@string/six_sz"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="@dimen/num_keyboard_font_size_24"
+            app:layout_constraintStart_toEndOf="@+id/_five"
+            app:layout_constraintTop_toBottomOf="@+id/_three" />
+
+        <Button
+            android:id="@+id/_seven"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/keyboard_button_width"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_marginStart="@dimen/margin_2"
+            android:layout_marginTop="@dimen/margin_2"
+            android:background="#CD5DA7F8"
+            android:text="@string/seven_sz"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="@dimen/num_keyboard_font_size_24"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/_four" />
+
+        <Button
+            android:id="@+id/_eight"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/keyboard_button_width"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_marginStart="@dimen/margin_2"
+            android:layout_marginTop="@dimen/margin_2"
+            android:layout_weight="2.5"
+            android:background="#CD5DA7F8"
+            android:text="@string/eight_sz"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="@dimen/num_keyboard_font_size_24"
+            app:layout_constraintStart_toEndOf="@+id/_seven"
+            app:layout_constraintTop_toBottomOf="@+id/_five" />
+
+        <Button
+            android:id="@+id/_nine"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/keyboard_button_width"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_marginStart="@dimen/margin_2"
+            android:layout_marginTop="@dimen/margin_2"
+            android:layout_weight="2.5"
+            android:background="#CD5DA7F8"
+            android:text="@string/nine_sz"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="@dimen/num_keyboard_font_size_24"
+            app:layout_constraintStart_toEndOf="@+id/_eight"
+            app:layout_constraintTop_toBottomOf="@+id/_six" />
+
+        <Button
+            android:id="@+id/_zero"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/keyboard_button_width"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_marginStart="@dimen/margin_2"
+            android:background="#CD5DA7F8"
+            android:text="@string/zero_sz"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="@dimen/num_keyboard_font_size_24"
+            app:layout_constraintStart_toEndOf="@id/_nine"
+            app:layout_constraintTop_toTopOf="@id/_nine" />
+
+        <Button
+            android:id="@+id/point"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/keyboard_button_width"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_marginStart="@dimen/margin_2"
+            android:background="#CD5DA7F8"
+            android:text="@string/point_sz"
+            android:textColor="@color/white"
+            android:textSize="@dimen/font_size_18"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/_six"
+            app:layout_constraintTop_toTopOf="@id/_six" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>

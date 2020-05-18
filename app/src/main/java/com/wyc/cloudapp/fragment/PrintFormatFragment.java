@@ -23,7 +23,6 @@ public class PrintFormatFragment extends BaseFragment {
     private static final String mTitle = "打印格式";
     private View mRootView;
     private Context mContext;
-    private Button mSaveBtn;
     private int mCurrentFormatId = R.id.checkout_format;
     public PrintFormatFragment() {
     }
@@ -43,8 +42,8 @@ public class PrintFormatFragment extends BaseFragment {
 
     @Override
     public boolean saveContent() {
-        JSONArray array = new JSONArray();
-        StringBuilder err = new StringBuilder();
+        final JSONArray array = new JSONArray();
+        final StringBuilder err = new StringBuilder();
         array.add(get_print_format_content(true));
         if (!SQLiteHelper.execSQLByBatchFromJson(array,"local_parameter",null,err,1)){
             MyDialog.ToastMessage(null,err.toString(),mContext,null);
@@ -66,13 +65,13 @@ public class PrintFormatFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         mRootView = view;
-        mSaveBtn = mRootView.findViewById(R.id.save);
+        final Button save_btn = mRootView.findViewById(R.id.save);
 
         //保存参数
-        mSaveBtn.setOnClickListener(v->saveContent());
+        save_btn.setOnClickListener(v->saveContent());
 
 
-        RadioGroup rg = mRootView.findViewById(R.id.format_rg);
+        final RadioGroup rg = mRootView.findViewById(R.id.format_rg);
         rg.setOnCheckedChangeListener((group, checkedId) -> laodContent());
         rg.check(mCurrentFormatId);
     }
@@ -89,7 +88,7 @@ public class PrintFormatFragment extends BaseFragment {
     }
 
     private JSONObject get_print_format_content(boolean way){
-        JSONObject object = new JSONObject(),content = new JSONObject();
+        final JSONObject object = new JSONObject(),content = new JSONObject();
 
         if (mRootView != null){
             RadioGroup frg = mRootView.findViewById(R.id.format_rg),fzrg = mRootView.findViewById(R.id.format_size_rg);

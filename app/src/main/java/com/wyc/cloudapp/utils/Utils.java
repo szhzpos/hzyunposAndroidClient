@@ -195,7 +195,7 @@ public final class Utils {
         textView.selectAll();
     }
 
-    public static void hideKeyBoard(EditText v){
+    public static void hideKeyBoard(final EditText v){
         InputMethodManager imm = (InputMethodManager)v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null){
             imm.hideSoftInputFromWindow(v.getWindowToken(),0);
@@ -233,7 +233,7 @@ public final class Utils {
         if (sz.length() != 10){
             return false;
         }
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd",Locale.CHINA);
         try {
             format.setLenient(false);
             format.parse(sz);

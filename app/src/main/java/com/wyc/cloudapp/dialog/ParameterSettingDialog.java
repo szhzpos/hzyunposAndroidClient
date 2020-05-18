@@ -58,11 +58,11 @@ public class ParameterSettingDialog extends DialogFragment {
     @Override
     public void onStart() {
         super.onStart();
-        Dialog dialog = getDialog();
+        final Dialog dialog = getDialog();
         if (null != dialog){
-            Window window = dialog.getWindow();
+            final Window window = dialog.getWindow();
             if (null != window){
-                WindowManager.LayoutParams params = window.getAttributes();
+                final WindowManager.LayoutParams params = window.getAttributes();
                 params.width = (int)mContext.getResources().getDimension(R.dimen.param_setting_dialog_width);
                 params.height =(int)mContext.getResources().getDimension(R.dimen.param_setting_dialog_height);
                 window.setAttributes(params);

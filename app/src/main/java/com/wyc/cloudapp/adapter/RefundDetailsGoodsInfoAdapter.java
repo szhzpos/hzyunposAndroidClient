@@ -129,7 +129,5 @@ public final class RefundDetailsGoodsInfoAdapter extends RecyclerView.Adapter<Re
             MyDialog.ToastMessage("加载商品明细错误：" + err,mContext,null);
         }
     }
-    public JSONArray getSaleGoods(){
-        return mDatas;
-    }
+
 }

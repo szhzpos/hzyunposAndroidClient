@@ -206,7 +206,7 @@
                 app:layout_constraintTop_toBottomOf="@id/_nine" />
 
             <Button
-                android:id="@+id/_ok"
+                android:id="@+id/_clear"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="@dimen/login_keybord_button_width"
                 android:layout_height="@dimen/login_keybord_button_height"

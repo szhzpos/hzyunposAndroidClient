@@ -239,12 +239,17 @@ public class LoginActivity extends AppCompatActivity {
                 et_view = mUser_id;
                 mUser_id.requestFocus();
             }
-            Editable editable = et_view.getText();
-            if (v_id == R.id._ok){
+            final Editable editable = et_view.getText();
+            if (v_id == R.id._clear){
                 editable.clear();
             }else if (v_id == R.id._back){
-                if (editable.length() != 0)
-                    editable.delete(editable.length() - 1,editable.length());
+                int index = et_view.getSelectionStart(),end = et_view.getSelectionEnd();
+                if (index !=end && end == editable.length()){
+                    editable.clear();
+                }else{
+                    if (index != 0 && editable.length() != 0)
+                        editable.delete(editable.length() - 1,editable.length());
+                }
             }else{
                 if (et_view.getSelectionStart() != et_view.getSelectionEnd()){
                     editable.replace(0,editable.length(),((Button)view).getText());

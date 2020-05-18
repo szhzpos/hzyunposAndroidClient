@@ -15,6 +15,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.dialog.DigitKeyboardPopup;
 import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.pay.AbstractPayDialog;
@@ -30,14 +31,16 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
     private JSONArray mGoodsDatas,mPayDatas;
     private onRefundDataChange mRefundDataChange;
     private JSONObject mVipInfo;
+    private DigitKeyboardPopup mDigitKeyboardPopup;
     public RefundGoodsInfoAdapter(DialogBaseOnMainActivityImp dialog){
         mDialog = dialog;
         mContext = dialog.getPrivateContext();
+        mDigitKeyboardPopup = new DigitKeyboardPopup(mContext);
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
         TextView rog_id_tv,barcode_id_tv,barcode_tv,goods_title_tv,unit_name_tv,price_tv,num_tv,returnable_num_tv;
-        EditText cur_ret_num_et,cur_ret_amt_et;
+        EditText cur_refund_num_et,cur_refund_amt_et;
         View mCurrentLayoutItemView;
         MyViewHolder(View itemView) {
             super(itemView);
@@ -51,8 +54,8 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
             num_tv = itemView.findViewById(R.id.xnum);
             unit_name_tv = itemView.findViewById(R.id.unit_name);
             returnable_num_tv = itemView.findViewById(R.id.returnable_num);
-            cur_ret_num_et = itemView.findViewById(R.id.cur_ret_num);
-            cur_ret_amt_et = itemView.findViewById(R.id.cur_ret_amt);
+            cur_refund_num_et = itemView.findViewById(R.id.cur_refund_num);
+            cur_refund_amt_et = itemView.findViewById(R.id.cur_refund_amt);
         }
     }
     @NonNull
@@ -80,7 +83,7 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
                 holder.unit_name_tv.setText(sale_goods_info.getString("unit_name"));
                 holder.returnable_num_tv.setText(String.format(Locale.CHINA,"%.2f",returnable_num));
 
-                holder.cur_ret_num_et.addTextChangedListener(new TextWatcher() {
+                holder.cur_refund_num_et.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -99,11 +102,12 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
                                 num = Double.valueOf(s.toString());
 
                             if (num > returnable_num){
-                                MyDialog.ToastMessage(holder.cur_ret_num_et,"退货数量不能大于可退数量！",mContext,mDialog.getWindow());
-                                holder.cur_ret_num_et.setText(String.format(Locale.CHINA,"%.2f",returnable_num));
+                                MyDialog.ToastMessage(holder.cur_refund_num_et,"退货数量不能大于可退数量！",mContext,mDialog.getWindow());
+                                holder.cur_refund_num_et.setText(String.format(Locale.CHINA,"%.2f",returnable_num));
+                                holder.cur_refund_num_et.setSelection(holder.cur_refund_num_et.length() - 1);
                             }else{
-                                updateRefundNum(holder.cur_ret_num_et,num);
-                                holder.cur_ret_amt_et.setText(String.format(Locale.CHINA,"%.2f",sale_goods_info.getDoubleValue("price") * num));
+                                updateRefundNum(holder.cur_refund_num_et,num);
+                                holder.cur_refund_amt_et.setText(String.format(Locale.CHINA,"%.2f",Double.valueOf(holder.price_tv.getText().toString()) * num));
                             }
                         }catch (NumberFormatException e){
                             e.printStackTrace();
@@ -111,7 +115,9 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
                         }
                     }
                 });
-                holder.cur_ret_num_et.setText(String.format(Locale.CHINA,"%.2f",returnable_num));
+                holder.cur_refund_num_et.setOnFocusChangeListener(cur_refund_num_focusChangeListener);
+                holder.cur_refund_num_et.setOnClickListener(cur_refund_num_click);
+                holder.cur_refund_num_et.setText(String.format(Locale.CHINA,"%.2f",returnable_num));
             }
         }
     }
@@ -120,6 +126,17 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
     public int getItemCount() {
         return mGoodsDatas == null ? 0: mGoodsDatas.size();
     }
+
+    private View.OnFocusChangeListener cur_refund_num_focusChangeListener = (v, hasFocus) -> {
+        if (!hasFocus)
+            mDigitKeyboardPopup.dismiss();
+        else
+            v.callOnClick();
+    };
+    private View.OnClickListener cur_refund_num_click = (v)->{
+        Utils.hideKeyBoard((EditText)v);
+        mDigitKeyboardPopup.showAsDropDown(v);
+    };
 
     private void updateRefundNum(final View view,double num){
         final View parent = (View)view.getParent();

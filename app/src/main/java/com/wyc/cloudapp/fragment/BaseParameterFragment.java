@@ -18,6 +18,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.dialog.DigitKeyboardPopup;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -35,7 +36,7 @@ public class BaseParameterFragment extends BaseFragment {
 
     @Override
     public JSONObject laodContent() {
-         get_save_period(false);
+        get_save_period(false);
         get_dual_view(false);
         get_goods_img_show(false);
         get_sec_level_category_show(false);
@@ -47,8 +48,8 @@ public class BaseParameterFragment extends BaseFragment {
     public boolean saveContent() {
         final String p_id_key  = "parameter_id",p_c_key = "parameter_content",p_desc_key = "parameter_desc";
         JSONObject content = new JSONObject();
-        JSONArray array = new JSONArray();
-        StringBuilder err = new StringBuilder();
+        final JSONArray array = new JSONArray();
+        final StringBuilder err = new StringBuilder();
 
         content.put(p_id_key,"d_s_period");
         content.put(p_c_key,get_save_period(true));
@@ -108,7 +109,7 @@ public class BaseParameterFragment extends BaseFragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         mContext = context;
     }
@@ -126,9 +127,9 @@ public class BaseParameterFragment extends BaseFragment {
 
     private void set_save_period(){
         if (mRootView != null){
-            RadioGroup group = mRootView.findViewById(R.id.save_period);
+            final RadioGroup group = mRootView.findViewById(R.id.save_period);
             group.setOnCheckedChangeListener((group1, checkedId) -> {
-                RadioButton rb = group1.findViewById(checkedId);
+                final RadioButton rb = group1.findViewById(checkedId);
                 switch (checkedId){
                     case R.id._a_week:
                         rb.setTag(7);
@@ -145,15 +146,35 @@ public class BaseParameterFragment extends BaseFragment {
     }
     private void _dual_view(){
         if (mRootView != null){
-            Switch sh = mRootView.findViewById(R.id._dual_view_switch);
-            View dual_v = mRootView.findViewById(R.id.dual_v);
-            sh.setOnCheckedChangeListener((buttonView, isChecked) -> dual_v.setVisibility(isChecked?View.VISIBLE:View.GONE));
+            final Switch sh = mRootView.findViewById(R.id._dual_view_switch);
+            final View dual_v = mRootView.findViewById(R.id.dual_v);
+            sh.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                final EditText dualview_img_show_interval_et = dual_v.findViewById(R.id.dualview_img_show_interval);
+                if (null != dualview_img_show_interval_et)
+                    if (isChecked){
+                        dual_v.setVisibility(View.VISIBLE);
+                        dualview_img_show_interval_et.setOnFocusChangeListener((v, hasFocus) -> {
+                            if (hasFocus){
+                                v.callOnClick();
+                            }
+                        });
+                        dualview_img_show_interval_et.setOnClickListener(v -> {
+                            Utils.hideKeyBoard((EditText)v);
+                            DigitKeyboardPopup digitKeyboardPopup = new DigitKeyboardPopup(mContext);
+                            digitKeyboardPopup.showAsDropDown(v);
+                        });
+                    }else {
+                        dual_v.setVisibility(View.GONE);
+                        dualview_img_show_interval_et.setOnFocusChangeListener(null);
+                        dualview_img_show_interval_et.setOnClickListener(null);
+                    }
+            });
         }
     }
     private void auto_mol(){
         if (null != mRootView){
-            Switch sh = mRootView.findViewById(R.id.auto_mol_switch);
-            RadioGroup rg = mRootView.findViewById(R.id._auto_mol_group);
+            final Switch sh = mRootView.findViewById(R.id.auto_mol_switch);
+            final RadioGroup rg = mRootView.findViewById(R.id._auto_mol_group);
 
             sh.setOnCheckedChangeListener((buttonView, isChecked) -> rg.setVisibility(isChecked?View.VISIBLE:View.GONE));
         }
@@ -161,9 +182,9 @@ public class BaseParameterFragment extends BaseFragment {
 
     private JSONObject get_save_period(boolean way){
         //数据保存周期
-        JSONObject value_obj = new JSONObject();
-        RadioGroup group = mRootView.findViewById(R.id.save_period);
-        RadioButton rb_check = group.findViewById(group.getCheckedRadioButtonId());
+        final JSONObject value_obj = new JSONObject();
+        final RadioGroup group = mRootView.findViewById(R.id.save_period);
+        final RadioButton rb_check = group.findViewById(group.getCheckedRadioButtonId());
         if (way){
             if ( null != rb_check){
                 value_obj.put("id",rb_check.getId());
@@ -183,9 +204,9 @@ public class BaseParameterFragment extends BaseFragment {
     }
     private JSONObject get_dual_view(boolean b){
         //双屏
-        JSONObject value_obj = new JSONObject();
-        Switch dual_view_sh = mRootView.findViewById(R.id._dual_view_switch);
-        EditText show_interval = mRootView.findViewById(R.id.dualview_img_show_interval);
+        final JSONObject value_obj = new JSONObject();
+        final Switch dual_view_sh = mRootView.findViewById(R.id._dual_view_switch);
+        final EditText show_interval = mRootView.findViewById(R.id.dualview_img_show_interval);
         int status = 0,interval = 0;
         if (b){
             if (dual_view_sh.isChecked()){
@@ -194,7 +215,7 @@ public class BaseParameterFragment extends BaseFragment {
                     interval = Integer.valueOf(show_interval.getText().toString());
                 }catch (NumberFormatException e){
                     e.printStackTrace();
-                    interval = 3;
+                    interval = 5;
                 }
             }
             value_obj.put("s",status);
