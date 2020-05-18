@@ -13,7 +13,7 @@
     <string name="shift_exchange_sz">交 班</string>
     <string name="other_sz">更多</string>
     <string name="cashier_sz">收银员：</string>
-    <string name="store_sz">仓库：</string>
+    <string name="store_sz">门店：</string>
     <string name="add">+</string>
     <string name="minus">-</string>
     <string name="num_not_colon_sz">数量</string>
@@ -235,7 +235,12 @@
     <string name="next_sz">下一步</string>
     <string name="refund_dialog_title_sz">"退货退款"</string>
     <string name="all_refund_sz">整单退货</string>
-    <string name="sale_order_code_sz">零售单号</string>
-    <string name="refund_order_sz">退货单</string>
+    <string name="retail_order_code_sz">零售单号</string>
+    <string name="refund_order_sz">退货单号</string>
+    <string name="r_b_title_sz">退货单</string>
     <string name="refund_amt_sz">退货金额</string>
+    <string name="refund_status_sz">退货状态</string>
+    <string name="refund_type_sz">退货方式</string>
+    <string name="local_refund_order_sz">本地退货单</string>
+    <string name="refund_details_sz">退单详情</string>
 </resources>

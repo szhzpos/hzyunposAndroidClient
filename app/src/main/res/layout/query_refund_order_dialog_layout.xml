@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/date_time_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_50"
+        android:layout_marginStart="@dimen/margin_1"
+        android:layout_marginEnd="@dimen/margin_1"
+        android:background="@drawable/bottom_separator"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:padding="@dimen/margin_5"
+            android:text="@string/query_time_sz"
+            android:textSize="@dimen/font_size_18" />
+
+        <LinearLayout
+            android:id="@+id/start_date_time_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/margin_1"
+            android:background="@drawable/left_right_separator"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/start_date"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/edit_text_style"
+                android:focusable="auto"
+                android:focusableInTouchMode="true"
+                android:importantForAutofill="no"
+                android:inputType="date"
+                android:minWidth="@dimen/width_80"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/margin_2"
+                android:textColor="@color/text_color" />
+
+            <EditText
+                android:id="@+id/start_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_1"
+                android:background="@drawable/left_separator"
+                android:focusable="auto"
+                android:focusableInTouchMode="true"
+                android:importantForAutofill="no"
+                android:inputType="time"
+                android:paddingStart="@dimen/margin_2"
+                android:paddingEnd="@dimen/margin_5"
+                android:text="@string/start_time_sz"
+                android:textColor="@color/text_color" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/margin_2"
+            android:layout_marginEnd="@dimen/margin_2"
+            android:gravity="center_vertical"
+            android:text="@string/to_sz"
+            android:textSize="@dimen/font_size_18" />
+
+        <LinearLayout
+            android:id="@+id/end_date_time_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/margin_1"
+            android:background="@drawable/left_right_separator"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/end_date"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/edit_text_style"
+                android:inputType="date"
+                android:minWidth="@dimen/width_80"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/margin_2"
+                android:textColor="@color/text_color" />
+
+            <EditText
+                android:id="@+id/end_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_1"
+                android:background="@drawable/left_separator"
+                android:focusable="auto"
+                android:focusableInTouchMode="true"
+                android:importantForAutofill="no"
+                android:inputType="time"
+                android:paddingStart="@dimen/margin_2"
+                android:paddingEnd="@dimen/margin_5"
+                android:text="@string/end_time_sz"
+                android:textColor="@color/text_color" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/margin_12"
+            android:layout_marginEnd="@dimen/margin_2"
+            android:gravity="center_vertical"
+            android:text="@string/cashier_not_colon_sz"
+            android:textSize="@dimen/font_size_16" />
+
+        <EditText
+            android:id="@+id/cashier_et"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/margin_1"
+            android:background="@drawable/left_right_separator"
+            android:drawableEnd="@drawable/content"
+            android:ems="6"
+            android:focusable="auto"
+            android:focusableInTouchMode="true"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            android:minWidth="@dimen/status_et_width"
+            android:padding="@dimen/margin_5"
+            android:textAlignment="center"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <Button
+            android:id="@+id/query_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/width_88"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/margin_2"
+            android:layout_marginTop="@dimen/margin_1"
+            android:layout_marginBottom="@dimen/margin_2"
+            android:background="@color/appColor"
+            android:text="@string/query_sz"
+            android:textColor="@color/white_orange"
+            android:textSize="@dimen/font_size_18" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_50"
+        android:background="@drawable/bottom_separator"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_1"
+            android:text="@string/retail_order_code_sz"
+            android:textSize="@dimen/font_size_18" />
+
+        <EditText
+            android:id="@+id/order_code"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/margin_1"
+            android:background="@drawable/left_right_separator"
+            android:drawableEnd="@drawable/order_ico"
+            android:ems="14"
+            android:focusable="auto"
+            android:focusableInTouchMode="true"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:selectAllOnFocus="true"
+            android:textColor="@color/text_color" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/margin_12"
+            android:gravity="center"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_1"
+            android:text="@string/refund_order_sz"
+            android:textSize="@dimen/font_size_18" />
+
+        <EditText
+            android:id="@+id/refund_order_code"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/margin_1"
+            android:background="@drawable/left_right_separator"
+            android:drawableEnd="@drawable/order_ico"
+            android:ems="14"
+            android:focusable="auto"
+            android:focusableInTouchMode="true"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:selectAllOnFocus="true"
+            android:textColor="@color/text_color" />
+    </LinearLayout>
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:id="@+id/order_header"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/table_header_height"
+                android:background="@color/table_header_color"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="@dimen/width_45"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/row_id_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+
+                <TextView
+                    android:layout_width="@dimen/width_208"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/retail_order_code_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+
+                <TextView
+                    android:layout_width="@dimen/width_208"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/refund_order_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+
+                <TextView
+                    android:layout_width="@dimen/width_88"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/order_amt_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+
+                <TextView
+                    android:layout_width="@dimen/width_88"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/refund_amt_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+
+                <TextView
+                    android:layout_width="@dimen/width_88"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/refund_type_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+
+                <TextView
+                    android:layout_width="@dimen/width_88"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/refund_status_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+
+                <TextView
+                    android:layout_width="@dimen/width_88"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/upload_s_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+
+                <TextView
+                    android:layout_width="@dimen/width_88"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/cashier_not_colon_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+
+                <TextView
+                    android:layout_width="188dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/time_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/refund_order_body"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+</LinearLayout>

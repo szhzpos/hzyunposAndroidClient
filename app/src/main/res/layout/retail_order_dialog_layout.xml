@@ -109,7 +109,8 @@
             android:layout_height="match_parent"
             android:layout_marginStart="@dimen/margin_12"
             android:gravity="center"
-            android:padding="@dimen/margin_5"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_1"
             android:text="@string/order_not_colon_sz"
             android:textSize="@dimen/font_size_18" />
 
@@ -120,7 +121,7 @@
             android:layout_marginBottom="@dimen/margin_1"
             android:background="@drawable/left_right_separator"
             android:drawableEnd="@drawable/order_ico"
-            android:ems="12"
+            android:ems="14"
             android:focusable="auto"
             android:focusableInTouchMode="true"
             android:importantForAutofill="no"

@@ -1,9 +1,6 @@
-package com.wyc.cloudapp.dialog;
+package com.wyc.cloudapp.dialog.orderDialog;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
@@ -12,11 +9,9 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -25,9 +20,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.adapter.SaleOrderBodyViewAdapter;
+import com.wyc.cloudapp.adapter.RetailOrderViewAdapter;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivity;
+import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -38,21 +34,20 @@ import java.util.Locale;
 
 import static android.content.Context.WINDOW_SERVICE;
 
-public class QuerySaleOrderDialog extends DialogBaseOnMainActivity {
+public class QuerySaleOrderDialog extends DialogBaseOnMainActivityImp {
     private int mCurrentStatusIndex = 0;
     private String[] mCashierNames,mCashierIDs;
     private EditText mStartDateEt,mStartTimeEt,mEndDateEt,mEndTimeEt,mPayStatusEt,mCashierEt,mS_ex_statusEt,mUploadStatusEt,mOrderStatusEt;
-    private SaleOrderBodyViewAdapter mSaleOrderBodyViewAdapter;
+    private RetailOrderViewAdapter mRetailOrderViewAdapter;
     public QuerySaleOrderDialog(@NonNull MainActivity context, final String title) {
         super(context,title);
-        mSaleOrderBodyViewAdapter = new SaleOrderBodyViewAdapter(context);
+        mRetailOrderViewAdapter = new RetailOrderViewAdapter(context);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.query_sale_order_dialog_layout);
-        setCancelable(false);
+        setContentLayout(R.layout.retail_order_dialog_layout);
 
         initStartDateAndTime();
         initEndDateAndTime();
@@ -126,7 +121,7 @@ public class QuerySaleOrderDialog extends DialogBaseOnMainActivity {
                 }
                 where_sql.append("datetime(addtime, 'unixepoch', 'localtime') ").append("between ").append("'").append(start_date_time).append("'").append(" and ").append("'").append(end_date_time).append("'");
 
-                mSaleOrderBodyViewAdapter.setDatas(where_sql.toString());
+                mRetailOrderViewAdapter.setDatas(where_sql.toString());
             });
             query_btn.callOnClick();
         }
@@ -311,10 +306,10 @@ public class QuerySaleOrderDialog extends DialogBaseOnMainActivity {
         if (null != end_date && null != end_time){
             end_date.setOnFocusChangeListener(etFocusChangeListener);
             end_date.setText(new SimpleDateFormat("yyyy-MM-dd",Locale.CHINA).format(new Date()));
-            end_date.setOnClickListener(v -> showDatePickerDialog(mContext,(TextView) v,Calendar.getInstance()));
+            end_date.setOnClickListener(v -> Utils.showDatePickerDialog(mContext,(TextView) v,Calendar.getInstance()));
 
             end_time.setOnFocusChangeListener(etFocusChangeListener);
-            end_time.setOnClickListener(v -> showTimePickerDialog(mContext,(TextView) v,Calendar.getInstance()));
+            end_time.setOnClickListener(v -> Utils.showTimePickerDialog(mContext,(TextView) v,Calendar.getInstance()));
         }
     }
     private void initStartDateAndTime(){
@@ -322,10 +317,10 @@ public class QuerySaleOrderDialog extends DialogBaseOnMainActivity {
         if (null != start_date && null != start_time) {
             start_date.setOnFocusChangeListener(etFocusChangeListener);
             start_date.setText(new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).format(new Date()));
-            start_date.setOnClickListener(v -> showDatePickerDialog(mContext, (TextView) v, Calendar.getInstance()));
+            start_date.setOnClickListener(v -> Utils.showDatePickerDialog(mContext, (TextView) v, Calendar.getInstance()));
 
             start_time.setOnFocusChangeListener(etFocusChangeListener);
-            start_time.setOnClickListener(v -> showTimePickerDialog(mContext, (TextView) v, Calendar.getInstance()));
+            start_time.setOnClickListener(v -> Utils.showTimePickerDialog(mContext, (TextView) v, Calendar.getInstance()));
         }
     }
 
@@ -351,41 +346,11 @@ public class QuerySaleOrderDialog extends DialogBaseOnMainActivity {
         }
     }
     private void initOrderDetailTable(){
-        mSaleOrderBodyViewAdapter = new SaleOrderBodyViewAdapter(mContext);
+        mRetailOrderViewAdapter = new RetailOrderViewAdapter(mContext);
         final RecyclerView body = findViewById(R.id.order_body);
         body.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
         body.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
-        body.setAdapter(mSaleOrderBodyViewAdapter);
-    }
-
-    private static void showTimePickerDialog(final Activity activity, final TextView tv, Calendar calendar) {
-        new TimePickerDialog( activity,3,
-                // 绑定监听器
-                new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker view,int hourOfDay, int minute) {
-                        tv.setText(String.format(Locale.CHINA,"%02d:%02d:%02d",hourOfDay,minute,0));
-                    }
-                }
-                // 设置初始时间
-                , calendar.get(Calendar.HOUR_OF_DAY)
-                , calendar.get(Calendar.MINUTE)
-                // true表示采用24小时制
-                ,true).show();
-    }
-
-    private static void showDatePickerDialog(final Activity activity, final TextView tv, Calendar calendar) {
-        new DatePickerDialog(activity,
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year,int monthOfYear, int dayOfMonth) {
-                        tv.setText(String.format(Locale.CHINA,"%d-%02d-%02d",year,monthOfYear + 1,dayOfMonth));
-                    }
-                }
-                // 设置初始日期
-                , calendar.get(Calendar.YEAR)
-                ,calendar.get(Calendar.MONTH)
-                ,calendar.get(Calendar.DAY_OF_MONTH)).show();
+        body.setAdapter(mRetailOrderViewAdapter);
     }
 
 }

@@ -18,8 +18,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.BarCodeScaleAdapter;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnContext;
-import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnContextImp;
 
 
 import java.util.List;
@@ -27,7 +26,7 @@ import java.util.concurrent.Future;
 
 import static android.content.Context.WINDOW_SERVICE;
 
-public class BarCodeScaleDownDialog extends DialogBaseOnContext {
+public class BarCodeScaleDownDialog extends DialogBaseOnContextImp {
     private BarCodeScaleAdapter mBarCodeScaleAdapter;
     private List<Future<Boolean>> mFutureList;
     public BarCodeScaleDownDialog(@NonNull Context context) {

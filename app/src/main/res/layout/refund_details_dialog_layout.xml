@@ -1,0 +1,601 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_2"
+        android:background="@drawable/bottom_separator">
+
+        <LinearLayout
+            android:id="@+id/time_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_40"
+            android:layout_marginStart="@dimen/margin_5"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:gravity="center"
+                android:text="@string/time_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:id="@+id/oper_time"
+                android:layout_width="@dimen/width_208"
+                android:layout_height="wrap_content"
+                android:background="@drawable/left_separator"
+                android:paddingStart="@dimen/margin_2"
+                android:paddingEnd="@dimen/size_0"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/order_code_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_40"
+            android:layout_marginTop="@dimen/margin_5"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="@id/time_layout"
+            app:layout_constraintTop_toBottomOf="@+id/time_layout">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:gravity="center"
+                android:text="@string/order_not_colon_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:id="@+id/refund_order_code"
+                android:layout_width="@dimen/width_208"
+                android:layout_height="wrap_content"
+                android:background="@drawable/left_separator"
+                android:paddingStart="@dimen/margin_2"
+                android:paddingEnd="@dimen/size_0"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/order_amt_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_40"
+            android:layout_marginStart="@dimen/margin_12"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toEndOf="@id/time_layout"
+            app:layout_constraintTop_toTopOf="@id/time_layout">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:gravity="center"
+                android:text="@string/order_amt_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:id="@+id/refund_order_amt"
+                android:layout_width="@dimen/width_88"
+                android:layout_height="wrap_content"
+                android:background="@drawable/left_separator"
+                android:paddingStart="@dimen/margin_2"
+                android:paddingEnd="0dp"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/reality_amt_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_40"
+            android:layout_marginTop="@dimen/margin_5"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="@id/order_amt_layout"
+            app:layout_constraintTop_toBottomOf="@+id/order_amt_layout">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:gravity="center"
+                android:text="@string/refund_amt_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:id="@+id/refund_amt"
+                android:layout_width="@dimen/width_88"
+                android:layout_height="wrap_content"
+                android:background="@drawable/left_separator"
+                android:paddingStart="@dimen/margin_2"
+                android:paddingEnd="0dp"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/order_status_layout"
+            android:layout_width="@dimen/width_128"
+            android:layout_height="@dimen/height_40"
+            android:layout_marginStart="@dimen/margin_18"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toEndOf="@id/order_amt_layout"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:gravity="center"
+                android:text="@string/order_s_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:id="@+id/refund_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/left_separator"
+                android:paddingStart="@dimen/margin_2"
+                android:paddingEnd="0dp"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/pay_status_layout"
+            android:layout_width="@dimen/width_128"
+            android:layout_height="@dimen/height_40"
+            android:layout_marginTop="@dimen/margin_5"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="@id/order_status_layout"
+            app:layout_constraintTop_toBottomOf="@id/order_status_layout">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:gravity="center"
+                android:text="@string/refund_type_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:id="@+id/refund_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/left_separator"
+                android:paddingStart="@dimen/margin_2"
+                android:paddingEnd="@dimen/size_0"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_14" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/s_e_status_layout"
+            android:layout_width="@dimen/width_128"
+            android:layout_height="@dimen/height_40"
+            android:layout_marginStart="@dimen/margin_18"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toEndOf="@id/order_status_layout"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:gravity="center"
+                android:text="@string/s_e_status_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:id="@+id/s_e_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/left_separator"
+                android:paddingStart="@dimen/margin_2"
+                android:paddingEnd="@dimen/size_0"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/upload_status_layout"
+            android:layout_width="@dimen/width_128"
+            android:layout_height="@dimen/height_40"
+            android:layout_marginTop="@dimen/margin_5"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="@id/s_e_status_layout"
+            app:layout_constraintTop_toBottomOf="@id/s_e_status_layout">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:gravity="center"
+                android:text="@string/upload_s_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:id="@+id/upload_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/left_separator"
+                android:paddingStart="@dimen/margin_2"
+                android:paddingEnd="@dimen/size_0"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/cas_name_layout"
+            android:layout_width="@dimen/width_128"
+            android:layout_height="@dimen/height_40"
+            android:layout_marginStart="@dimen/margin_18"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toEndOf="@id/upload_status_layout"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:gravity="center"
+                android:text="@string/cashier_not_colon_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:id="@+id/cas_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/left_separator"
+                android:paddingStart="@dimen/margin_2"
+                android:paddingEnd="@dimen/size_0"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/vip_info_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_40"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="@id/order_code_layout"
+            app:layout_constraintTop_toBottomOf="@id/order_code_layout">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:gravity="center"
+                android:text="@string/vip_button_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:id="@+id/vip_name"
+                android:layout_width="@dimen/width_88"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/left_separator"
+                android:paddingStart="@dimen/margin_2"
+                android:paddingEnd="0dp"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:gravity="center"
+                android:text="@string/card_code_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:id="@+id/card_code"
+                android:layout_width="@dimen/width_118"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/left_separator"
+                android:paddingStart="@dimen/margin_2"
+                android:paddingEnd="0dp"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:gravity="center"
+                android:text="@string/vip_ph_num_not_colon_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:id="@+id/vip_mobile"
+                android:layout_width="@dimen/width_118"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/left_separator"
+                android:paddingStart="@dimen/margin_2"
+                android:paddingEnd="0dp"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/remark_layout"
+            android:layout_width="@dimen/width_328"
+            android:layout_height="@dimen/height_40"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintStart_toEndOf="@id/vip_info_layout"
+            app:layout_constraintTop_toTopOf="@id/vip_info_layout">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:gravity="center"
+                android:text="@string/remark_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:id="@+id/remark"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/left_separator"
+                android:paddingStart="@dimen/margin_2"
+                android:paddingEnd="0dp"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/goods_detail_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/goods_detail_hearder"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/table_header_height"
+            android:background="@color/table_header_color"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="@dimen/width_45"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingTop="@dimen/margin_8"
+                android:paddingBottom="@dimen/margin_8"
+                android:text="@string/row_id_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:layout_width="@dimen/width_128"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingTop="@dimen/margin_8"
+                android:paddingBottom="@dimen/margin_8"
+                android:text="@string/item_no_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:layout_width="@dimen/table_bacode_width"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingTop="@dimen/margin_8"
+                android:paddingBottom="@dimen/margin_8"
+                android:text="@string/barcode_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:layout_width="@dimen/table_goods_title_width"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingTop="@dimen/margin_8"
+                android:paddingBottom="@dimen/margin_8"
+                android:text="@string/g_name_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:layout_width="@dimen/width_88"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingTop="@dimen/margin_8"
+                android:paddingBottom="@dimen/margin_8"
+                android:text="@string/sec_num_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:layout_width="@dimen/width_45"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingTop="@dimen/margin_8"
+                android:paddingBottom="@dimen/margin_8"
+                android:text="@string/unit_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:layout_width="@dimen/width_88"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingTop="@dimen/margin_8"
+                android:paddingBottom="@dimen/margin_8"
+                android:text="@string/sec_price_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:layout_width="@dimen/width_88"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingTop="@dimen/margin_8"
+                android:paddingBottom="@dimen/margin_8"
+                android:text="@string/sec_sum_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/goods_details"
+            android:layout_width="match_parent"
+            android:layout_height="200dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/pay_detail_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/pay_detail_header"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/table_header_height"
+            android:background="@color/table_header_color"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="@dimen/width_45"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingTop="@dimen/margin_8"
+                android:paddingBottom="@dimen/margin_8"
+                android:text="@string/row_id_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:layout_width="@dimen/width_118"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingTop="@dimen/margin_8"
+                android:paddingBottom="@dimen/margin_8"
+                android:text="@string/pay_method_name_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:layout_width="@dimen/width_128"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingTop="@dimen/margin_8"
+                android:paddingBottom="@dimen/margin_8"
+                android:text="@string/pay_detail_amt_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:layout_width="@dimen/width_88"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingTop="@dimen/margin_8"
+                android:paddingBottom="@dimen/margin_8"
+                android:text="@string/pay_s_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:layout_width="@dimen/width_208"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingTop="@dimen/margin_8"
+                android:paddingBottom="@dimen/margin_8"
+                android:text="@string/time_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingTop="@dimen/margin_8"
+                android:paddingBottom="@dimen/margin_8"
+                android:text="@string/pay_code_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/pay_details"
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_58"
+        android:layout_marginTop="@dimen/margin_2"
+        android:background="@drawable/top_separator"
+        android:orientation="horizontal">
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/reprint_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/width_128"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/margin_5"
+            android:background="@drawable/button_blue"
+            android:text="@string/reprint_order_sz"
+            android:textColor="@color/blue_white"
+            android:textSize="@dimen/font_size_18" />
+
+        <Button
+            android:id="@+id/abnormal_back_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/width_128"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/margin_5"
+            android:background="@drawable/button_blue"
+            android:text="@string/abnormal_back_order_sz"
+            android:textColor="@color/blue_white"
+            android:textSize="@dimen/font_size_18"
+            android:visibility="gone" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+</LinearLayout>

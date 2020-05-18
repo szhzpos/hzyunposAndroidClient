@@ -15,8 +15,8 @@ import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
-public class PayMethodDialog extends AbstractPayDialog {
-    public PayMethodDialog(@NonNull MainActivity context, @NonNull final JSONObject pay_method) {
+public class PayMethodDialogImp extends AbstractPayDialog {
+    public PayMethodDialogImp(@NonNull MainActivity context, @NonNull final JSONObject pay_method) {
         super(context,Utils.getNullStringAsEmpty(pay_method,"name"));
         mPayMethod = pay_method;
     }

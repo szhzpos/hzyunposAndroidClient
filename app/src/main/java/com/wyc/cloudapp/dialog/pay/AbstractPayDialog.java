@@ -1,9 +1,6 @@
 package com.wyc.cloudapp.dialog.pay;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.view.KeyEvent;
@@ -11,7 +8,6 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -21,14 +17,13 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialog;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivity;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.utils.Utils;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public abstract class AbstractPayDialog extends DialogBaseOnMainActivity implements IPay {
+public abstract class AbstractPayDialog extends DialogBaseOnMainActivityImp implements IPay {
     protected EditText mPayAmtEt,mPayCode;
     protected Button mOk;
     protected CustomProgressDialog mProgressDialog;

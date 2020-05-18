@@ -1,6 +1,7 @@
-package com.wyc.cloudapp.dialog;
+package com.wyc.cloudapp.dialog.orderDialog;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -20,10 +21,12 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.adapter.SaleReturnGoodsInfoAdapter;
+import com.wyc.cloudapp.adapter.RefundGoodsInfoAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivity;
+import com.wyc.cloudapp.dialog.CustomProgressDialog;
+import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.Utils;
@@ -37,8 +40,8 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class SaleReturnDialog extends DialogBaseOnMainActivity {
-    private SaleReturnGoodsInfoAdapter mSaleReturnGoodsInfoAdapter;
+public class RefundDialog extends DialogBaseOnMainActivityImp {
+    private RefundGoodsInfoAdapter mRefundGoodsInfoAdapter;
     private double mRefundSumAmt;
     private int mRefundType = 1;//退货类型（1全部退货，2部分退货）
     private String mRefundOperId,mRefundOperName;
@@ -48,14 +51,14 @@ public class SaleReturnDialog extends DialogBaseOnMainActivity {
     private JSONObject mVipInfo;
     private Button mQueryBtn;
     private boolean isRefundCheck;
-    public SaleReturnDialog(@NonNull MainActivity context,final String order_code) {
+    public RefundDialog(@NonNull MainActivity context, final String order_code) {
         super(context, context.getString(R.string.refund_dialog_title_sz));
         mOrderCode = order_code;
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.sale_return_dialog_layout);
+        setContentLayout(R.layout.refund_dialog_layout);
 
         mProgressDialog = new CustomProgressDialog(mContext);
 
@@ -96,12 +99,12 @@ public class SaleReturnDialog extends DialogBaseOnMainActivity {
                     mProgressDialog.setCancel(false).setMessage("正在查询订单信息...").refreshMessage().show();
                     CustomApplication.execute(()->{
                         final StringBuilder err = new StringBuilder();
-                        mSaleReturnGoodsInfoAdapter.setDatas(mOrderCode,err);
+                        mRefundGoodsInfoAdapter.setDatas(mOrderCode,err);
                         mContext.runOnUiThread(()->{
                             if (err.length() == 0){
                                 err.append("操作成功！");
                                 initVipInfoLayout();
-                                mSaleReturnGoodsInfoAdapter.notifyDataSetChanged();
+                                mRefundGoodsInfoAdapter.notifyDataSetChanged();
                             }
                             mProgressDialog.dismiss();
                             MyDialog.ToastMessage(err.toString(),mContext,null);
@@ -109,7 +112,7 @@ public class SaleReturnDialog extends DialogBaseOnMainActivity {
                     });
                 }else {
                     mOrderCodeEt.requestFocus();
-                    MyDialog.ToastMessage(mOrderCodeEt,mContext.getString(R.string.sale_order_code_sz).concat(mContext.getString(R.string.not_empty_hint_sz)),mContext,getWindow());
+                    MyDialog.ToastMessage(mOrderCodeEt,mContext.getString(R.string.retail_order_code_sz).concat(mContext.getString(R.string.not_empty_hint_sz)),mContext,getWindow());
                 }
             });
         }
@@ -119,8 +122,8 @@ public class SaleReturnDialog extends DialogBaseOnMainActivity {
         final RecyclerView goods_detail = findViewById(R.id.goods_details);
         final TextView refund_sum_num_tv = findViewById(R.id.r_num),refund_sum_amt_tv = findViewById(R.id.r_sum_amt);
         if (null != goods_detail && null != refund_sum_num_tv && null != refund_sum_amt_tv){
-            mSaleReturnGoodsInfoAdapter = new SaleReturnGoodsInfoAdapter(this);
-            mSaleReturnGoodsInfoAdapter.setRefundDataChange(datas -> {
+            mRefundGoodsInfoAdapter = new RefundGoodsInfoAdapter(this);
+            mRefundGoodsInfoAdapter.setRefundDataChange(datas -> {
                 if (datas != null){
                     double refund_num = 0.0,refund_sum_num = 0.0,refund_sum_amt = 0.0,refund_price = 0.0;
                     JSONObject record;
@@ -139,7 +142,7 @@ public class SaleReturnDialog extends DialogBaseOnMainActivity {
             });
             goods_detail.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
             goods_detail.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
-            goods_detail.setAdapter(mSaleReturnGoodsInfoAdapter);
+            goods_detail.setAdapter(mRefundGoodsInfoAdapter);
 
             initQueryBtn();
         }
@@ -162,7 +165,7 @@ public class SaleReturnDialog extends DialogBaseOnMainActivity {
                 @Override
                 public void afterTextChanged(Editable s) {
                     mOrderCode = s.toString();
-                    mSaleReturnGoodsInfoAdapter.clearOrderInfo();
+                    mRefundGoodsInfoAdapter.clearOrderInfo();
                 }
             });
         }
@@ -177,7 +180,7 @@ public class SaleReturnDialog extends DialogBaseOnMainActivity {
     private void requestRefund(){
         if (!Utils.equalDouble(mRefundSumAmt,0.0)){
             MyDialog myDialog = new MyDialog(mContext);
-            myDialog.setTitle("退款信息").setMessage(mSaleReturnGoodsInfoAdapter.PayDatasToString()).setYesOnclickListener(mContext.getString(R.string.OK), myDialog1 -> {
+            myDialog.setTitle("退款信息").setMessage(mRefundGoodsInfoAdapter.PayDatasToString()).setYesOnclickListener(mContext.getString(R.string.OK), myDialog1 -> {
                 setRefundOpertor(null,null);
                 final StringBuilder err = new StringBuilder();
                 final JSONObject data = new JSONObject();
@@ -198,7 +201,7 @@ public class SaleReturnDialog extends DialogBaseOnMainActivity {
                                     MyDialog.ToastMessage(err.toString(),mContext,getWindow());
                                 });
                             }else {
-                                Printer.print(mContext,get_print_content(mContext,mRefundCode,mSaleReturnGoodsInfoAdapter.getRefundGoods(),mSaleReturnGoodsInfoAdapter.getPayDatas(),!isRefundCheck));
+                                Printer.print(mContext,get_print_content(mContext,mRefundCode,!isRefundCheck));
                             }
                             isRefundCheck = false;//重置
                         });
@@ -218,7 +221,7 @@ public class SaleReturnDialog extends DialogBaseOnMainActivity {
     private void initVipInfoLayout(){
         final LinearLayout vip_info_layout = findViewById(R.id.vip_info_layout);
         if (null != vip_info_layout){
-            final JSONObject vip_info = mVipInfo = mSaleReturnGoodsInfoAdapter.getVipInfo();
+            final JSONObject vip_info = mVipInfo = mRefundGoodsInfoAdapter.getVipInfo();
             if (vip_info != null && !vip_info.isEmpty()){
                 vip_info_layout.setVisibility(View.VISIBLE);
                 final TextView vip_name = vip_info_layout.findViewById(R.id.vip_name),card_code = vip_info_layout.findViewById(R.id.card_code),
@@ -267,7 +270,7 @@ public class SaleReturnDialog extends DialogBaseOnMainActivity {
         mRefundCode = generateRefundOrderCode(pos_num);
 
         //处理退货商品
-        final JSONArray goods_datas = Utils.JsondeepCopy(mSaleReturnGoodsInfoAdapter.getRefundGoods());
+        final JSONArray goods_datas = Utils.JsondeepCopy(mRefundGoodsInfoAdapter.getRefundGoods());
         double refund_num = 0.0;
         for (int i = 0;i < goods_datas.size();i++){
             tmp_record = goods_datas.getJSONObject(i);
@@ -283,7 +286,7 @@ public class SaleReturnDialog extends DialogBaseOnMainActivity {
         }
 
         //处理支付信息
-        final JSONArray refund_pay_records = mSaleReturnGoodsInfoAdapter.getPayDatas();
+        final JSONArray refund_pay_records = mRefundGoodsInfoAdapter.getPayDatas();
         if (refund_pay_records == null){
             refund_info.put("info","支付记录不能为空！");
             return false;
@@ -482,13 +485,12 @@ public class SaleReturnDialog extends DialogBaseOnMainActivity {
         return SQLiteHelper.execBatchUpdateSql(update_sqls_list,err);
     }
 
-    private String c_format_58(final MainActivity context,final String refund_code,final JSONObject format_info,@NonNull final JSONArray sales,@NonNull final JSONArray pays,boolean is_open_cash_box){
+    private static String c_format_58(final Context context, final JSONObject format_info, final JSONObject order_info, boolean is_open_cash_box){
 
         final StringBuilder info = new StringBuilder();
         int print_count = Utils.getNotKeyAsNumberDefault(format_info,"p_c",1),footer_space = Utils.getNotKeyAsNumberDefault(format_info,"f_s",5);
-        final JSONObject cas_info = context.getCashierInfo(),st_info = context.getStoreInfo();
-        final String store_name = Utils.getNullStringAsEmpty(format_info,"s_n"),pos_num = Utils.getNullOrEmptyStringAsDefault(cas_info,"pos_num",""),
-                cas_name = Utils.getNullOrEmptyStringAsDefault(cas_info,"cas_name",""),footer_c = Utils.getNullStringAsEmpty(format_info,"f_c"),
+        final String store_name = Utils.getNullStringAsEmpty(format_info,"s_n"),pos_num = Utils.getNullOrEmptyStringAsDefault(order_info,"pos_num",""),
+                cas_name = Utils.getNullOrEmptyStringAsDefault(order_info,"cas_name",""),footer_c = Utils.getNullStringAsEmpty(format_info,"f_c"),
                 new_line = "\r\n",//Printer.commandToStr(Printer.NEW_LINE);
                 new_line_16 = Printer.commandToStr(Printer.LINE_SPACING_16),
                 new_line_2 = Printer.commandToStr(Printer.LINE_SPACING_2),new_line_d = Printer.commandToStr(Printer.LINE_SPACING_DEFAULT),
@@ -499,18 +501,18 @@ public class SaleReturnDialog extends DialogBaseOnMainActivity {
 
         while (print_count-- > 0) {//打印份数
             info.append(Printer.commandToStr(Printer.DOUBLE_HEIGHT)).append(Printer.commandToStr(Printer.ALIGN_CENTER))
-                    .append(context.getString(R.string.refund_order_sz)).append(new_line).append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(store_name.length() == 0 ? Utils.getNullStringAsEmpty(st_info,"stores_name") : store_name).append(new_line).append(new_line).append(Printer.commandToStr(Printer.NORMAL)).
-                    append(Printer.commandToStr(Printer.ALIGN_LEFT));
-
-            info.append(Printer.printTwoData(1, context.getString(R.string.b_f_store_id_sz).concat(Utils.getNullStringAsEmpty(st_info,"stores_id")), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.CHINA).format(new Date()))).append(new_line);
+                    .append(context.getString(R.string.r_b_title_sz)).append(new_line).append(store_name.length() == 0 ? Utils.getNullStringAsEmpty(order_info,"stores_name") : store_name).append(Printer.commandToStr(Printer.NORMAL))
+                    .append(new_line).append(new_line).append(Printer.commandToStr(Printer.ALIGN_LEFT));
+            info.append(Printer.printTwoData(1, context.getString(R.string.b_f_store_id_sz).concat(Utils.getNullStringAsEmpty(order_info,"stores_id")),Utils.getNullStringAsEmpty(order_info,"oper_time"))).append(new_line);
             info.append(Printer.printTwoData(1, context.getString(R.string.b_f_jh_sz).concat(pos_num), context.getString(R.string.b_f_cashier_sz).concat(cas_name))).append(new_line);
-            info.append(context.getString(R.string.b_f_order_sz)).append(refund_code).append(new_line).append(new_line);
+            info.append(context.getString(R.string.b_f_order_sz)).append(Utils.getNullStringAsEmpty(order_info,"ro_code")).append(new_line).append(new_line);
 
             info.append(context.getString(R.string.b_f_header_sz).replace("-"," ")).append(new_line_2).append(new_line).append(line).append(new_line_2).append(new_line).append(new_line_d);
             //商品明细
             JSONObject info_obj;
             double refund_num = 0.0,refund_amt = 0.0,refund_sum_amt = 0.0,refund_price;
             int units_num = 0, type = 1;//商品属性 1普通 2称重 3用于服装
+            final JSONArray sales = Utils.getNullObjectAsEmptyJsonArray(order_info,"sales");
             for (int i = 0, size = sales.size(); i < size; i++) {
                 info_obj = sales.getJSONObject(i);
                 if (info_obj != null) {
@@ -549,25 +551,13 @@ public class SaleReturnDialog extends DialogBaseOnMainActivity {
 
             //支付方式
             double pamt = 0.0;
+            final JSONArray pays = Utils.getNullObjectAsEmptyJsonArray(order_info,"pays");
             for (int i = 0, size = pays.size(); i < size; i++) {
                 info_obj = pays.getJSONObject(i);
 
                 pamt = info_obj.getDoubleValue("pay_money");
                 info.append(Utils.getNullOrEmptyStringAsDefault(info_obj,"pay_method_name","")).append("：").append(pamt).append("元");
 
-                if (info_obj.containsKey("xnote")) {
-                    final JSONArray xnotes = JSON.parseArray(Utils.getNullOrEmptyStringAsDefault(info_obj,"xnote","[]"));
-                    if (xnotes != null) {
-                        int length = xnotes.size();
-                        if (length > 0) {
-                            info.append(new_line);
-                            for (int j = 0; j < length; j++) {
-                                if (j + 1 != length)
-                                    info.append(xnotes.getString(j)).append(new_line);
-                            }
-                        }
-                    }
-                }
                 if (i + 1 != size)
                     info.append(new_line_16);
                 else
@@ -576,8 +566,8 @@ public class SaleReturnDialog extends DialogBaseOnMainActivity {
                 info.append(new_line).append(new_line_d);
             }
             info.append(line).append(new_line_2).append(new_line).append(new_line_d);
-            info.append(context.getString(R.string.b_f_hotline_sz)).append(Utils.getNullOrEmptyStringAsDefault(st_info,"telphone","")).append(new_line);
-            info.append(context.getString(R.string.b_f_stores_address_sz)).append(Utils.getNullOrEmptyStringAsDefault(st_info,"region","")).append(new_line);
+            info.append(context.getString(R.string.b_f_hotline_sz)).append(Utils.getNullOrEmptyStringAsDefault(order_info,"telphone","")).append(new_line);
+            info.append(context.getString(R.string.b_f_stores_address_sz)).append(Utils.getNullOrEmptyStringAsDefault(order_info,"region","")).append(new_line);
 
             info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(footer_c);
             for (int i = 0; i < footer_space; i++) info.append(" ").append(new_line);
@@ -585,29 +575,48 @@ public class SaleReturnDialog extends DialogBaseOnMainActivity {
             if (print_count > 0){
                 info.append(new_line).append(new_line).append(new_line);
             }
+            info.append(Printer.commandToStr(Printer.RESET));
         }
 
         Logger.d(info);
 
         return info.toString();
     }
-    private String get_print_content(final MainActivity context,final String refund_code, final JSONArray sales, JSONArray pays, boolean isOpenCashbox){
-        final JSONObject print_format_info = new JSONObject();
+    public static String get_print_content(final MainActivity context,final String refund_code,boolean is_open_cash_box){
+        final JSONObject print_format_info = new JSONObject(),order_info = new JSONObject();
         String content = "";
         if (SQLiteHelper.getLocalParameter("c_f_info",print_format_info)){
             if (print_format_info.getIntValue("f") == R.id.checkout_format){
-                switch (print_format_info.getIntValue("f_z")){
-                    case R.id.f_58:
-                        content = c_format_58(context,refund_code,print_format_info,sales,pays,isOpenCashbox);
-                        break;
-                    case R.id.f_76:
-                        break;
-                    case R.id.f_80:
-                        break;
+
+                if (SQLiteHelper.execSql(order_info,"SELECT a.ro_code,b.cas_name,a.pos_code pos_num,a.stores_id,c.stores_name,datetime(a.addtime, 'unixepoch', 'localtime') oper_time,c.telphone,c.region" +
+                        " FROM refund_order a  left join cashier_info b on a.cashier_id = b.cas_id\n" +
+                        "left join shop_stores c on a.stores_id = c.stores_id where a.ro_code = '" +refund_code +"'")){
+
+                    final StringBuilder err = new StringBuilder();
+                    final String goods_info_sql = "SELECT b.barcode,b.goods_title,b.type,a.refund_num,a.refund_price FROM refund_order_goods a left join barcode_info b on a.barcode_id = b.barcode_id where ro_code = '"+ refund_code +"'"
+                            ,pays_info_sql = "SELECT pay_method_name,pay_money FROM refund_order_pays where ro_code = '"+ refund_code +"'";
+                    final JSONArray sales = SQLiteHelper.getListToJson(goods_info_sql,err),pays = SQLiteHelper.getListToJson(pays_info_sql,err);
+                    if (sales != null && pays != null){
+                        order_info.put("sales",sales);
+                        order_info.put("pays",pays);
+                        switch (print_format_info.getIntValue("f_z")){
+                            case R.id.f_58:
+                                content = c_format_58(context,print_format_info,order_info,is_open_cash_box);
+                                break;
+                            case R.id.f_76:
+                                break;
+                            case R.id.f_80:
+                                break;
+                        }
+                    }else {
+                        context.runOnUiThread(()->MyDialog.ToastMessage("加载单据明细错误：" + err, context,null));
+                    }
+                }else {
+                    context.runOnUiThread(()->MyDialog.ToastMessage("加载单据错误：" + order_info.getString("info"), context,null));
                 }
             }
         }else
-            MyDialog.ToastMessage("加载打印格式错误：" + print_format_info.getString("info"), context,context.getWindow());
+            context.runOnUiThread(()->MyDialog.ToastMessage("加载打印格式错误：" + print_format_info.getString("info"), context,context.getWindow()));
 
         return content;
     }

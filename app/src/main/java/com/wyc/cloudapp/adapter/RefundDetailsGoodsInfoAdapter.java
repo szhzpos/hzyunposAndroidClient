@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.adapter;
 
+import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -11,23 +12,22 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 
 import java.util.Locale;
 
-public final class OrderDetailsGoodsInfoAdapter extends RecyclerView.Adapter<OrderDetailsGoodsInfoAdapter.MyViewHolder>  {
-    private MainActivity mContext;
+public final class RefundDetailsGoodsInfoAdapter extends RecyclerView.Adapter<RefundDetailsGoodsInfoAdapter.MyViewHolder>  {
+    private Context mContext;
     private JSONArray mDatas;
     private View mCurrentItemView;
-    public OrderDetailsGoodsInfoAdapter(MainActivity context){
+    public RefundDetailsGoodsInfoAdapter(Context context){
         mContext = context;
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView row_id_tv,item_no_tv,barcode_tv,goods_title_tv,xnum_tv,unit_name_tv,price_tv,sale_amt_tv;
+        TextView row_id_tv,item_no_tv,barcode_tv,goods_title_tv,refund_num_tv,unit_name_tv,refund_price_tv,refund_amt_tv;
         View mCurrentLayoutItemView;
         MyViewHolder(View itemView) {
             super(itemView);
@@ -37,16 +37,16 @@ public final class OrderDetailsGoodsInfoAdapter extends RecyclerView.Adapter<Ord
             item_no_tv = itemView.findViewById(R.id.item_no);
             barcode_tv = itemView.findViewById(R.id.barcode);
             goods_title_tv = itemView.findViewById(R.id.goods_title);
-            xnum_tv = itemView.findViewById(R.id.xnum);
+            refund_num_tv = itemView.findViewById(R.id.refund_num);
             unit_name_tv = itemView.findViewById(R.id.unit_name);
-            price_tv = itemView.findViewById(R.id.price);
-            sale_amt_tv = itemView.findViewById(R.id.sale_amt);
+            refund_price_tv = itemView.findViewById(R.id.refund_price);
+            refund_amt_tv = itemView.findViewById(R.id.refund_amt);
         }
     }
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = View.inflate(mContext, R.layout.order_details_goods_info_content_layout, null);
+        View itemView = View.inflate(mContext, R.layout.refund_details_goods_info_content_layout, null);
         itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int) mContext.getResources().getDimension(R.dimen.table_row_height)));
         return new MyViewHolder(itemView);
     }
@@ -60,10 +60,10 @@ public final class OrderDetailsGoodsInfoAdapter extends RecyclerView.Adapter<Ord
                 holder.item_no_tv.setText(sale_goods_info.getString("item_no"));
                 holder.barcode_tv.setText(sale_goods_info.getString("barcode"));
                 holder.goods_title_tv.setText(sale_goods_info.getString("goods_title"));
-                holder.xnum_tv.setText(String.format(Locale.CHINA,"%.2f",sale_goods_info.getDoubleValue("xnum")));
+                holder.refund_num_tv.setText(String.format(Locale.CHINA,"%.2f",sale_goods_info.getDoubleValue("refund_num")));
                 holder.unit_name_tv.setText(sale_goods_info.getString("unit_name"));
-                holder.price_tv.setText(String.format(Locale.CHINA,"%.2f",sale_goods_info.getDoubleValue("price")));
-                holder.sale_amt_tv.setText(String.format(Locale.CHINA,"%.2f",sale_goods_info.getDoubleValue("order_amt")));
+                holder.refund_price_tv.setText(String.format(Locale.CHINA,"%.2f",sale_goods_info.getDoubleValue("refund_price")));
+                holder.refund_amt_tv.setText(String.format(Locale.CHINA,"%.2f",sale_goods_info.getDoubleValue("refund_amt")));
 
                 holder.mCurrentLayoutItemView.setOnClickListener(mItemClickListener);
             }
@@ -114,11 +114,11 @@ public final class OrderDetailsGoodsInfoAdapter extends RecyclerView.Adapter<Ord
         }
     }
 
-    public void setDatas(final String order_code){
+    public void setDatas(final String ro_code){
         final StringBuilder err = new StringBuilder();
-        final String sql = "SELECT a.only_coding item_no,a.barcode,a.goods_title,a.unit_name,a.type,b.price,b.total_money sale_amt,(b.xnum * y_price - b.total_money) discount_amt,b.xnum * y_price original_amt,b.y_price original_price FROM " +
-                "retail_order_goods b left join barcode_info a on a.barcode_id = b.barcode_id\n" +
-                "where a.goods_status = 1 and a.barcode_status = 1 and b.order_code = '" + order_code + "'";
+        final String sql = "SELECT a.only_coding item_no,a.barcode,a.goods_title,a.type,a.unit_name,b.refund_num,b.refund_price,b.refund_num * b.refund_price refund_amt FROM " +
+                "refund_order_goods b left join barcode_info a on a.barcode_id = b.barcode_id\n" +
+                "where a.goods_status = 1 and a.barcode_status = 1 and b.ro_code = '" + ro_code + "'";
 
         Logger.d("sql:%s",sql);
         mDatas = SQLiteHelper.getListToJson(sql,err);

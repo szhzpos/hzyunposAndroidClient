@@ -1,7 +1,6 @@
 package com.wyc.cloudapp.dialog;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
@@ -10,10 +9,12 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.barcodeScales.BarCodeScaleDownDialog;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivity;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
+import com.wyc.cloudapp.dialog.orderDialog.QueryRefundOrderDialog;
+import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.print.Printer;
 
-public class MoreFunDialog extends DialogBaseOnMainActivity {
+public class MoreFunDialog extends DialogBaseOnMainActivityImp {
     public MoreFunDialog(@NonNull MainActivity context, final String title) {
         super(context,title);
     }
@@ -28,12 +29,13 @@ public class MoreFunDialog extends DialogBaseOnMainActivity {
         initOpenCashboxBtn();
         initBarcodeScaleBtn();
         initAllRefundBtn();
+        initQueryRefundOrderBtn();
     }
 
     private void initAllRefundBtn(){
         final Button btn = findViewById(R.id.all_refund_btn);
         btn.setOnClickListener(v -> {
-            SaleReturnDialog dialog = new SaleReturnDialog(mContext,null);
+            RefundDialog dialog = new RefundDialog(mContext,null);
             dialog.show();
             this.dismiss();
         });
@@ -69,5 +71,12 @@ public class MoreFunDialog extends DialogBaseOnMainActivity {
             this.dismiss();
         });
     }
-
+    private void initQueryRefundOrderBtn(){
+        final Button btn = findViewById(R.id.query_local_refund_btn);
+        btn.setOnClickListener(v -> {
+            QueryRefundOrderDialog queryRefundOrderDialog = new QueryRefundOrderDialog(mContext);
+            queryRefundOrderDialog.show();
+            this.dismiss();
+        });
+    }
 }

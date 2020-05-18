@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.dialog;
+package com.wyc.cloudapp.dialog.orderDialog;
 
 import android.content.ContentValues;
 import android.os.Bundle;
@@ -16,11 +16,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.adapter.OrderDetailsGoodsInfoAdapter;
-import com.wyc.cloudapp.adapter.OrderDetailsPayInfoAdapter;
+import com.wyc.cloudapp.adapter.RetailDetailsGoodsInfoAdapter;
+import com.wyc.cloudapp.adapter.RetailDetailsPayInfoAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivity;
+import com.wyc.cloudapp.dialog.CustomProgressDialog;
+import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.dialog.pay.PayDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
@@ -34,13 +36,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class OrderDetaislDialog extends DialogBaseOnMainActivity {
+public class RetailOrderDetailsDialog extends DialogBaseOnMainActivityImp {
     private JSONObject mOrderInfo, mPayRecord;
-    private OrderDetailsGoodsInfoAdapter mOrderDetailsGoodsInfoAdapter;
-    private OrderDetailsPayInfoAdapter mOrderDetailsPayInfoAdapter;
-    private String mOrderCode;
+    private RetailDetailsPayInfoAdapter mRetailDetailsPayInfoAdapter;
+    private String mRetailOrderCode;
     private CustomProgressDialog mProgressDialog;
-    public OrderDetaislDialog(@NonNull MainActivity context,final JSONObject info) {
+    public RetailOrderDetailsDialog(@NonNull MainActivity context, final JSONObject info) {
         super(context,context.getString(R.string.order_detail_sz));
         mOrderInfo = info;
     }
@@ -48,7 +49,7 @@ public class OrderDetaislDialog extends DialogBaseOnMainActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.order_details_dialog_layout);
+        setContentLayout(R.layout.retail_details_dialog_layout);
 
         showOrderInfo();
         initReprint();
@@ -63,7 +64,7 @@ public class OrderDetaislDialog extends DialogBaseOnMainActivity {
                     cas_name_tv = findViewById(R.id.cas_name);
             if (oper_time_tv != null)oper_time_tv.setText(Utils.getNullStringAsEmpty(object,"oper_time"));
 
-            if (order_code_tv != null)order_code_tv.setText(mOrderCode = Utils.getNullStringAsEmpty(object,"order_code"));
+            if (order_code_tv != null)order_code_tv.setText(mRetailOrderCode = Utils.getNullStringAsEmpty(object,"order_code"));
 
             if (order_amt_tv != null)order_amt_tv.setText(Utils.getNullStringAsEmpty(object,"order_amt"));
             if (reality_amt_tv != null)reality_amt_tv.setText(Utils.getNullStringAsEmpty(object,"reality_amt"));
@@ -104,28 +105,28 @@ public class OrderDetaislDialog extends DialogBaseOnMainActivity {
     private void initGoodsDetail(){
             final RecyclerView goods_detail = findViewById(R.id.goods_details);
             if (null != goods_detail){
-                mOrderDetailsGoodsInfoAdapter = new OrderDetailsGoodsInfoAdapter(mContext);
+                final RetailDetailsGoodsInfoAdapter retailDetailsGoodsInfoAdapter = new RetailDetailsGoodsInfoAdapter(mContext);
                 goods_detail.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
                 goods_detail.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
-                goods_detail.setAdapter(mOrderDetailsGoodsInfoAdapter);
-                mOrderDetailsGoodsInfoAdapter.setDatas(mOrderInfo.getString("order_code"));
+                goods_detail.setAdapter(retailDetailsGoodsInfoAdapter);
+                retailDetailsGoodsInfoAdapter.setDatas(mOrderInfo.getString("order_code"));
             }
     }
     private void initPayDetail(){
         final RecyclerView pay_detail = findViewById(R.id.pay_details);
         if (null != pay_detail){
-            mOrderDetailsPayInfoAdapter = new OrderDetailsPayInfoAdapter(mContext);
+            mRetailDetailsPayInfoAdapter = new RetailDetailsPayInfoAdapter(mContext);
             pay_detail.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
             pay_detail.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
-            pay_detail.setAdapter(mOrderDetailsPayInfoAdapter);
-            mOrderDetailsPayInfoAdapter.setDatas(mOrderInfo.getString("order_code"));
-            mOrderDetailsPayInfoAdapter.setItemClickListener(pay_record -> mPayRecord = pay_record);
+            pay_detail.setAdapter(mRetailDetailsPayInfoAdapter);
+            mRetailDetailsPayInfoAdapter.setDatas(mOrderInfo.getString("order_code"));
+            mRetailDetailsPayInfoAdapter.setItemClickListener(pay_record -> mPayRecord = pay_record);
         }
     }
     private void initReprint(){
         final Button reprint_btn = findViewById(R.id.reprint_btn);
         if (null != reprint_btn){
-            reprint_btn.setOnClickListener(v -> Printer.print(mContext, PayDialog.get_print_content(mContext,mOrderCode,mOrderDetailsGoodsInfoAdapter.getSaleGoods(),mOrderDetailsPayInfoAdapter.getPayInfo(),false)));
+            reprint_btn.setOnClickListener(v -> Printer.print(mContext, PayDialog.get_print_content(mContext, mRetailOrderCode,false)));
         }
     }
     private void initVerifyPay(){
@@ -141,6 +142,7 @@ public class OrderDetaislDialog extends DialogBaseOnMainActivity {
 
     private void verify_pay(){
         if (null != mPayRecord){
+            final JSONObject pay_record = mPayRecord;
             boolean query_status = false;
             final JSONObject object = new JSONObject();
             final HttpRequest httpRequest = new HttpRequest();
@@ -149,8 +151,8 @@ public class OrderDetaislDialog extends DialogBaseOnMainActivity {
             double discount_money = 0.0;
             long pay_time = 0;
             int pay_status = 1;
-            final String pay_code = Utils.getNullStringAsEmpty(mPayRecord,"pay_code");
-            if (2 == mPayRecord.getIntValue("is_check")){
+            final String pay_code = Utils.getNullStringAsEmpty(pay_record,"pay_code");
+            if (2 == pay_record.getIntValue("is_check")){
                 final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.CANADA);
                 final TextView oper_time_tv = findViewById(R.id.oper_time) ;
                 try {
@@ -167,14 +169,14 @@ public class OrderDetaislDialog extends DialogBaseOnMainActivity {
                     pay_time = System.currentTimeMillis() / 1000;
                 }
             }else{
-                unified_pay_query = Utils.getNullStringAsEmpty(mPayRecord,"unified_pay_query");
+                unified_pay_query = Utils.getNullStringAsEmpty(pay_record,"unified_pay_query");
                 if (unified_pay_query.isEmpty()){
                     unified_pay_query = "/api/pay2_query/query";
                 }
                 object.put("appid",mContext.getAppId());
                 if (!pay_code.isEmpty())
                     object.put("pay_code",pay_code);
-                object.put("order_code_son", mPayRecord.getString("order_code_son"));
+                object.put("order_code_son", pay_record.getString("order_code_son"));
 
                 final String sz_param = HttpRequest.generate_request_parm(object,mContext.getAppScret());
                 final JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + unified_pay_query,sz_param,true);
@@ -212,7 +214,7 @@ public class OrderDetaislDialog extends DialogBaseOnMainActivity {
             }
 
             final ContentValues values = new ContentValues();
-            final String sz_order_code = mOrderCode;
+            final String sz_order_code = mRetailOrderCode;
             if (!query_status){
                 values.put("order_status",3);
                 values.put("spare_param1",err.toString());
@@ -221,19 +223,19 @@ public class OrderDetaislDialog extends DialogBaseOnMainActivity {
                 }
             }else{
                 final List<String> sqls = new ArrayList<>();
-                int pay_method_id = mPayRecord.getIntValue("pay_method");
+                int pay_method_id = pay_record.getIntValue("pay_method");
                 String sql = "update retail_order_pays set pay_status = " + pay_status +",pay_serial_no = '" + third_pay_order_id +"',pay_time = '" + pay_time + "',discount_money = '" + discount_money +"',xnote = '" + discount_xnote +"',return_code = '"+ third_pay_order_id +"' " +
                         "where order_code = '" + sz_order_code + "' and pay_method = " + pay_method_id;
                 sqls.add(sql);
 
                 //更新当前付款记录
-                mPayRecord.put("pay_status",pay_status);
-                mPayRecord.put("pay_time",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(pay_time * 1000));
+                pay_record.put("pay_status",pay_status);
+                pay_record.put("pay_time",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(pay_time * 1000));
                 if (pay_status == 2){
-                    mPayRecord.put("pay_status_name","已支付");
+                    pay_record.put("pay_status_name","已支付");
                 }
 
-                if (mOrderDetailsPayInfoAdapter.isPaySuccess()){//所有付款记录成功付款再更新单据
+                if (mRetailDetailsPayInfoAdapter.isPaySuccess()){//所有付款记录成功付款再更新单据
                     sql = "update retail_order set order_status = 2,pay_status = 2,pay_time ='" + pay_time +"' where order_code = '" + sz_order_code + "'";
                     sqls.add(sql);
                 }
@@ -242,7 +244,7 @@ public class OrderDetaislDialog extends DialogBaseOnMainActivity {
                     Logger.d("更新订单状态错误：",err);
                 }else{
                     mContext.runOnUiThread(()-> {
-                        mOrderDetailsPayInfoAdapter.notifyDataSetChanged();
+                        mRetailDetailsPayInfoAdapter.notifyDataSetChanged();
                         MyDialog.ToastMessage("支付成功！",mContext,getWindow());
                     });
                 }

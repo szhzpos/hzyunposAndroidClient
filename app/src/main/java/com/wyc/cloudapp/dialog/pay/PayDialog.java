@@ -1,6 +1,7 @@
 package com.wyc.cloudapp.dialog.pay;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -28,7 +29,7 @@ import com.wyc.cloudapp.adapter.PayDetailViewAdapter;
 import com.wyc.cloudapp.adapter.PayMethodItemDecoration;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivity;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
@@ -44,7 +45,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class PayDialog extends DialogBaseOnMainActivity {
+public class PayDialog extends DialogBaseOnMainActivityImp {
     private EditText mCashMoneyEt,mZlAmtEt,mRemarkEt;
     private onPayListener mPayListener;
     private PayMethodViewAdapter mPayMethodViewAdapter;
@@ -285,10 +286,10 @@ public class PayDialog extends DialogBaseOnMainActivity {
                                 if (mVip != null){
                                     pay_method.put("card_code",mVip.getString("card_code"));
                                 }
-                                final PayMethodDialog payMethodDialog = new PayMethodDialog(mContext, pay_method);
+                                final PayMethodDialogImp payMethodDialogImp = new PayMethodDialogImp(mContext, pay_method);
                                 deleteMolDiscountRecord();//现金之外的付款需要删除抹零金额
-                                payMethodDialog.setPayAmt(mPay_balance);
-                                payMethodDialog.setYesOnclickListener(dialog -> {
+                                payMethodDialogImp.setPayAmt(mPay_balance);
+                                payMethodDialogImp.setYesOnclickListener(dialog -> {
                                     final JSONObject jsonObject = dialog.getContent();
                                     if (jsonObject != null) {
                                         mPayDetailViewAdapter.addPayDetail(jsonObject);
@@ -955,13 +956,13 @@ public class PayDialog extends DialogBaseOnMainActivity {
         fourth.setText(String.valueOf( tmp +(50- tmp % 50)));
     }
 
-    private static String c_format_58(final MainActivity context,final String order_code,final JSONObject format_info,@NonNull final JSONArray sales,@NonNull final JSONArray pays,boolean is_open_cash_box){
+    private static String c_format_58(final Context context, final JSONObject format_info, final JSONObject order_info, boolean is_open_cash_box){
 
         final StringBuilder info = new StringBuilder();
         int print_count = Utils.getNotKeyAsNumberDefault(format_info,"p_c",1),footer_space = Utils.getNotKeyAsNumberDefault(format_info,"f_s",5);
-        final JSONObject cas_info = context.getCashierInfo(),st_info = context.getStoreInfo();
-        final String store_name = Utils.getNullStringAsEmpty(format_info,"s_n"),pos_num = Utils.getNullOrEmptyStringAsDefault(cas_info,"pos_num",""),
-                cas_name = Utils.getNullOrEmptyStringAsDefault(cas_info,"cas_name",""),footer_c = Utils.getNullStringAsEmpty(format_info,"f_c"),
+
+        final String store_name = Utils.getNullStringAsEmpty(format_info,"s_n"),pos_num = Utils.getNullOrEmptyStringAsDefault(order_info,"pos_num",""),
+                cas_name = Utils.getNullOrEmptyStringAsDefault(order_info,"cas_name",""),footer_c = Utils.getNullStringAsEmpty(format_info,"f_c"),
                 new_line = "\r\n",//Printer.commandToStr(Printer.NEW_LINE);
                 new_line_16 = Printer.commandToStr(Printer.LINE_SPACING_16),
                 new_line_2 = Printer.commandToStr(Printer.LINE_SPACING_2),new_line_d = Printer.commandToStr(Printer.LINE_SPACING_DEFAULT),
@@ -972,18 +973,19 @@ public class PayDialog extends DialogBaseOnMainActivity {
 
         while (print_count-- > 0) {//打印份数
             info.append(Printer.commandToStr(Printer.DOUBLE_HEIGHT)).append(Printer.commandToStr(Printer.ALIGN_CENTER))
-                    .append(store_name.length() == 0 ? Utils.getNullStringAsEmpty(st_info,"stores_name") : store_name).append(new_line).append(new_line).append(Printer.commandToStr(Printer.NORMAL)).
+                    .append(store_name.length() == 0 ? Utils.getNullStringAsEmpty(order_info,"stores_name") : store_name).append(Printer.commandToStr(Printer.NORMAL)).append(new_line).append(new_line).
                     append(Printer.commandToStr(Printer.ALIGN_LEFT));
 
-            info.append(Printer.printTwoData(1, context.getString(R.string.b_f_store_id_sz).concat(Utils.getNullStringAsEmpty(st_info,"stores_id")), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()))).append(new_line);
+            info.append(Printer.printTwoData(1, context.getString(R.string.b_f_store_id_sz).concat(Utils.getNullStringAsEmpty(order_info,"stores_id")),Utils.getNullStringAsEmpty(order_info,"oper_time"))).append(new_line);
             info.append(Printer.printTwoData(1, context.getString(R.string.b_f_jh_sz).concat(pos_num), context.getString(R.string.b_f_cashier_sz).concat(cas_name))).append(new_line);
-            info.append(context.getString(R.string.b_f_order_sz)).append(order_code).append(new_line).append(new_line);
+            info.append(context.getString(R.string.b_f_order_sz)).append(Utils.getNullStringAsEmpty(order_info,"order_code")).append(new_line).append(new_line);
 
             info.append(context.getString(R.string.b_f_header_sz).replace("-"," ")).append(new_line_2).append(new_line).append(line).append(new_line_2).append(new_line).append(new_line_d);
             //商品明细
             JSONObject info_obj;
             double discount_amt = 0.0, xnum = 0.0,order_amt = 0.0,actual_amt = 0.0,sum_dis_amt = 0.0;
             int units_num = 0, type = 1;//商品属性 1普通 2称重 3用于服装
+            final JSONArray sales = Utils.getNullObjectAsEmptyJsonArray(order_info,"sales");
             for (int i = 0, size = sales.size(); i < size; i++) {
                 info_obj = sales.getJSONObject(i);
                 if (info_obj != null) {
@@ -1032,6 +1034,7 @@ public class PayDialog extends DialogBaseOnMainActivity {
 
             //支付方式
             double zl = 0.0, pamt = 0.0;
+            final JSONArray pays = Utils.getNullObjectAsEmptyJsonArray(order_info,"pays");
             for (int i = 0, size = pays.size(); i < size; i++) {
                 info_obj = pays.getJSONObject(i);
                 zl = info_obj.getDoubleValue("pzl");
@@ -1063,8 +1066,8 @@ public class PayDialog extends DialogBaseOnMainActivity {
                 info.append(new_line).append(new_line_d);
             }
             info.append(line).append(new_line_2).append(new_line).append(new_line_d);
-            info.append(context.getString(R.string.b_f_hotline_sz)).append(Utils.getNullOrEmptyStringAsDefault(st_info,"telphone","")).append(new_line);
-            info.append(context.getString(R.string.b_f_stores_address_sz)).append(Utils.getNullOrEmptyStringAsDefault(st_info,"region","")).append(new_line);
+            info.append(context.getString(R.string.b_f_hotline_sz)).append(Utils.getNullOrEmptyStringAsDefault(order_info,"telphone","")).append(new_line);
+            info.append(context.getString(R.string.b_f_stores_address_sz)).append(Utils.getNullOrEmptyStringAsDefault(order_info,"region","")).append(new_line);
 
             info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(footer_c);
             for (int i = 0; i < footer_space; i++) info.append(" ").append(new_line);
@@ -1125,23 +1128,44 @@ public class PayDialog extends DialogBaseOnMainActivity {
         }
     }
 
-    public static String get_print_content(final MainActivity context,final String order_code,final JSONArray sales,JSONArray pays,boolean isOpenCashbox){
-        final JSONObject print_format_info = new JSONObject();
+    public static String get_print_content(final MainActivity context,final String order_code,boolean is_open_cash_box){
+        final JSONObject print_format_info = new JSONObject(),order_info = new JSONObject();
         String content = "";
         if (SQLiteHelper.getLocalParameter("c_f_info",print_format_info)){
             if (print_format_info.getIntValue("f") == R.id.checkout_format){
-                switch (print_format_info.getIntValue("f_z")){
-                    case R.id.f_58:
-                        content = c_format_58(context,order_code,print_format_info,sales,pays,isOpenCashbox);
-                        break;
-                    case R.id.f_76:
-                        break;
-                    case R.id.f_80:
-                        break;
+
+                if (SQLiteHelper.execSql(order_info,"SELECT a.order_code,b.cas_name,a.pos_code pos_num,a.stores_id,c.stores_name,datetime(a.addtime, 'unixepoch', 'localtime') oper_time,c.telphone,c.region" +
+                        " FROM retail_order a  left join cashier_info b on a.cashier_id = b.cas_id\n" +
+                        "left join shop_stores c on a.stores_id = c.stores_id where a.order_code = '" +order_code +"'")){
+                    final StringBuilder err = new StringBuilder();
+                    final String goods_info_sql = "SELECT a.barcode,b.goods_title,a.price,a.retail_price original_price,a.retail_price * a.xnum original_amt,\n" +
+                            "a.total_money sale_amt,a.retail_price * a.xnum - a.total_money discount_amt FROM retail_order_goods a \n" +
+                            "left join barcode_info b on a.barcode_id = b.barcode_id where order_code = '"+ order_code +"'"
+                            ,pays_info_sql = "SELECT  b.name,pre_sale_money pamt,give_change_money pzl,xnote FROM retail_order_pays a \n" +
+                            "left join pay_method b on a.pay_method = b.pay_method_id where order_code = '"+ order_code +"'";
+
+                    final JSONArray sales = SQLiteHelper.getListToJson(goods_info_sql,err),pays = SQLiteHelper.getListToJson(pays_info_sql,err);
+                    if (sales != null && pays != null){
+                        order_info.put("sales",sales);
+                        order_info.put("pays",pays);
+                        switch (print_format_info.getIntValue("f_z")){
+                            case R.id.f_58:
+                                content = c_format_58(context,print_format_info,order_info,is_open_cash_box);
+                                break;
+                            case R.id.f_76:
+                                break;
+                            case R.id.f_80:
+                                break;
+                        }
+                    }else {
+                        context.runOnUiThread(()->MyDialog.ToastMessage("加载单据明细错误：" + err, context,null));
+                    }
+                }else {
+                    context.runOnUiThread(()->MyDialog.ToastMessage("加载单据错误：" + order_info.getString("info"), context,null));
                 }
             }
         }else
-            MyDialog.ToastMessage("加载打印格式错误：" + print_format_info.getString("info"), context,context.getWindow());
+            context.runOnUiThread(()->MyDialog.ToastMessage("加载打印格式错误：" + print_format_info.getString("info"), context,null));
 
         return content;
     }

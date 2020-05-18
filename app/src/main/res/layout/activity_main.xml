@@ -11,7 +11,7 @@
     <LinearLayout
         android:id="@+id/main_top"
         android:layout_width="0dp"
-        android:layout_height="70dp"
+        android:layout_height="@dimen/height_68"
         android:gravity="start"
         android:orientation="horizontal"
         android:paddingTop="5dp"
@@ -45,7 +45,6 @@
             android:paddingBottom="2dp">
 
             <ImageView
-                android:id="@+id/imageView3"
                 android:layout_width="@dimen/main_top_fun_btn_width"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -73,7 +72,6 @@
             android:paddingBottom="2dp">
 
             <ImageView
-                android:id="@+id/imageView"
                 android:layout_width="@dimen/main_top_fun_btn_width"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -109,7 +107,6 @@
                 app:srcCompat="@drawable/other" />
 
             <TextView
-                android:id="@+id/textView3"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1.5"
@@ -162,7 +159,7 @@
                 <Space
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="3" />
+                    android:layout_weight="1" />
 
                 <ImageView
                     android:id="@+id/close"
@@ -171,60 +168,6 @@
                     android:layout_weight="0.5"
                     android:contentDescription="@string/space_sz"
                     app:srcCompat="@drawable/close" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/main_top_right_bottom"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <TextView
-                    android:id="@+id/textView4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/cashier_sz"
-                    android:textColor="@color/white"
-                    android:textSize="18sp" />
-
-                <TextView
-                    android:id="@+id/cashier_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="收银01"
-                    android:textColor="@color/white"
-                    android:textSize="18sp" />
-
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <TextView
-                    android:id="@+id/textView6"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/store_sz"
-                    android:textColor="@color/white"
-                    android:textSize="18sp" />
-
-                <TextView
-                    android:id="@+id/sec_store_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="默认仓库[0000]"
-                    android:textColor="@color/white"
-                    android:textSize="18sp" />
-
-                <Space
-                    android:layout_width="8dp"
-                    android:layout_height="wrap_content" />
 
             </LinearLayout>
 
@@ -246,6 +189,77 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/main_top"
         app:layout_constraintVertical_bias="0">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_5"
+            android:layout_marginBottom="@dimen/margin_5"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_5"
+                android:text="@string/store_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_14" />
+
+            <TextView
+                android:id="@+id/sec_store_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="默认仓库[0000]"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_14" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_2"
+            android:background="@drawable/bottom_separator"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/margin_5">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_5"
+                android:text="@string/cashier_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_14" />
+
+            <TextView
+                android:id="@+id/cashier_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="收银01"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_14" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/jh_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_14" />
+
+            <TextView
+                android:id="@+id/pos_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_14" />
+
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/sale_goods_list"
@@ -274,7 +288,6 @@
                 android:visibility="gone">
 
                 <TextView
-                    android:id="@+id/textView5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -295,7 +308,6 @@
                     android:layout_weight="1" />
 
                 <TextView
-                    android:id="@+id/textView8"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/vip_ph_num_sz"
@@ -318,40 +330,20 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/textView10"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_5"
                     android:text="@string/order_sz"
                     android:textColor="@color/text_color"
-                    android:textSize="@dimen/fun_button_font_size_16" />
+                    android:textSize="@dimen/font_size_14" />
 
                 <TextView
                     android:id="@+id/order_code"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/text_color"
-                    android:textSize="@dimen/fun_button_font_size_16" />
+                    android:textSize="@dimen/font_size_14" />
 
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <TextView
-                    android:id="@+id/textView12"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/jh_sz"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/fun_button_font_size_16" />
-
-                <TextView
-                    android:id="@+id/pos_num"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/margin_2"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/fun_button_font_size_16" />
             </LinearLayout>
 
             <LinearLayout
@@ -363,16 +355,17 @@
                     android:id="@+id/textView14"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_5"
                     android:text="@string/order_time_sz"
                     android:textColor="@color/text_color"
-                    android:textSize="@dimen/fun_button_font_size_16" />
+                    android:textSize="@dimen/font_size_14" />
 
                 <TextView
                     android:id="@+id/current_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/text_color"
-                    android:textSize="@dimen/fun_button_font_size_16" />
+                    android:textSize="@dimen/font_size_14" />
             </LinearLayout>
 
             <LinearLayout
@@ -383,12 +376,12 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/textView16"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_5"
                     android:text="@string/num_sz"
                     android:textColor="@color/text_color"
-                    android:textSize="@dimen/fun_button_font_size_18" />
+                    android:textSize="@dimen/font_size_18" />
 
                 <TextView
                     android:id="@+id/dis_sum_amt"
@@ -404,7 +397,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/z_p_z_sz"
                     android:textColor="@color/text_color"
-                    android:textSize="@dimen/fun_button_font_size_18" />
+                    android:textSize="@dimen/font_size_18" />
 
                 <Space
                     android:layout_width="0dp"
@@ -412,19 +405,18 @@
                     android:layout_weight="1" />
 
                 <TextView
-                    android:id="@+id/textView18"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/amt_sz"
                     android:textColor="@color/text_color"
-                    android:textSize="@dimen/fun_button_font_size_18" />
+                    android:textSize="@dimen/font_size_18" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/currency_symbol_sz"
                     android:textColor="@color/orange_1"
-                    android:textSize="@dimen/fun_button_font_size_24" />
+                    android:textSize="@dimen/font_size_18" />
 
                 <TextView
                     android:id="@+id/sale_sum_amt"
@@ -433,7 +425,7 @@
                     android:layout_marginEnd="@dimen/margin_2"
                     android:text="@string/z_p_z_sz"
                     android:textColor="@color/orange_1"
-                    android:textSize="@dimen/fun_button_font_size_24" />
+                    android:textSize="@dimen/font_size_18" />
             </LinearLayout>
 
         </LinearLayout>

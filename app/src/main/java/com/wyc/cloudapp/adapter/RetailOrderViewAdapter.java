@@ -16,18 +16,18 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.OrderDetaislDialog;
-import com.wyc.cloudapp.dialog.SaleReturnDialog;
+import com.wyc.cloudapp.dialog.orderDialog.RetailOrderDetailsDialog;
+import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
-public final class SaleOrderBodyViewAdapter extends RecyclerView.Adapter<SaleOrderBodyViewAdapter.MyViewHolder>  {
+public final class RetailOrderViewAdapter extends RecyclerView.Adapter<RetailOrderViewAdapter.MyViewHolder>  {
     private MainActivity mContext;
     private JSONArray mDatas;
     private View mCurrentItemView;
-    public SaleOrderBodyViewAdapter(MainActivity context){
+    public RetailOrderViewAdapter(MainActivity context){
         mContext = context;
     }
 
@@ -53,7 +53,7 @@ public final class SaleOrderBodyViewAdapter extends RecyclerView.Adapter<SaleOrd
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = View.inflate(mContext, R.layout.sale_order_body_layout, null);
+        View itemView = View.inflate(mContext, R.layout.retail_order_layout, null);
         itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int) mContext.getResources().getDimension(R.dimen.table_row_height)));
         return new MyViewHolder(itemView);
     }
@@ -125,6 +125,8 @@ public final class SaleOrderBodyViewAdapter extends RecyclerView.Adapter<SaleOrd
                             case R.id.order_status:
                                 if (Utils.getViewTagValue(child,2) == 4){
                                     tv.setTextColor(mContext.getColor(R.color.orange_1));
+                                }else{
+                                    tv.setTextColor(text_color);
                                 }
                                 break;
                             default:
@@ -154,23 +156,23 @@ public final class SaleOrderBodyViewAdapter extends RecyclerView.Adapter<SaleOrd
             if (event.getAction() == MotionEvent.ACTION_DOWN){
                 setCurrentItemView(v);
                 final TextView order_code_tv = v.findViewById(R.id.order_code),sale_refund_tv = v.findViewById(R.id.sale_refund);
-                if (order_code_tv != null && sale_refund_tv != null){
-                    if (isClickView(order_code_tv,event.getX(),event.getY())){
-                        OrderDetaislDialog orderDetaislDialog = new OrderDetaislDialog(mContext,getCurrentOrder());
-                        orderDetaislDialog.show();
-                        return true;
-                    }else if (isClickView(sale_refund_tv,event.getX(),event.getY())){
-                        SaleReturnDialog saleReturnDialog = new SaleReturnDialog(mContext,order_code_tv.getText().toString());
-                        saleReturnDialog.show();
-                    }
+
+                if (isClickView(order_code_tv,event.getX(),event.getY())){
+                    RetailOrderDetailsDialog retailOrderDetailsDialog = new RetailOrderDetailsDialog(mContext,getCurrentOrder());
+                    retailOrderDetailsDialog.show();
+                }else if (isClickView(sale_refund_tv,event.getX(),event.getY())){
+                    RefundDialog refundDialog = new RefundDialog(mContext,order_code_tv.getText().toString());
+                    refundDialog.show();
                 }
+
             }
             v.performClick();
             return false;
         }
     };
 
-    private boolean isClickView(final @NonNull View view,float x,float y){
+    private boolean isClickView(final View view,float x,float y){
+        if (view == null)return false;
         float v_x = view.getX(),v_y = view.getY();
         return x >= v_x && x <= v_x + view.getWidth() && y >= v_y && y <= v_y + view.getHeight();
     }

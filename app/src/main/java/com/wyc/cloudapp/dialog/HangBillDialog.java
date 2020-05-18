@@ -27,7 +27,7 @@ import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivity;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ import java.util.Locale;
 
 import static android.content.Context.WINDOW_SERVICE;
 
-public class HangBillDialog extends DialogBaseOnMainActivity {
+public class HangBillDialog extends DialogBaseOnMainActivityImp {
     private SimpleCursorAdapter mHbCursorAdapter,mHbDetailCursorAdapter;
     private View mVipInfoView;
     private String mCurrentHangId;

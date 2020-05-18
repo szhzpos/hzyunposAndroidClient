@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/table_header_height"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/row_id"
+        android:layout_width="@dimen/width_45"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:text="@string/row_id_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
+
+    <TextView
+        android:id="@+id/retail_order_code"
+        android:layout_width="@dimen/width_208"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:text="@string/retail_order_code_sz"
+        android:textColor="@color/appColor"
+        android:textSize="@dimen/font_size_16" />
+
+    <TextView
+        android:id="@+id/refund_order_code"
+        android:layout_width="@dimen/width_208"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:text="@string/refund_order_sz"
+        android:textColor="@color/appColor"
+        android:textSize="@dimen/font_size_16" />
+
+    <TextView
+        android:id="@+id/refund_order_amt"
+        android:layout_width="@dimen/width_88"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:text="@string/order_amt_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
+
+    <TextView
+        android:id="@+id/refund_amt"
+        android:layout_width="@dimen/width_88"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:text="@string/refund_amt_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
+
+    <TextView
+        android:id="@+id/refund_type"
+        android:layout_width="@dimen/width_88"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:text="@string/refund_type_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
+
+    <TextView
+        android:id="@+id/refund_status"
+        android:layout_width="@dimen/width_88"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:text="@string/refund_status_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
+
+    <TextView
+        android:id="@+id/upload_status"
+        android:layout_width="@dimen/width_88"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:text="@string/upload_s_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
+
+    <TextView
+        android:id="@+id/cas_name"
+        android:layout_width="@dimen/width_88"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:text="@string/cashier_not_colon_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
+
+    <TextView
+        android:id="@+id/oper_time"
+        android:layout_width="188dp"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:text="@string/time_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
+
+</LinearLayout>

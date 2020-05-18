@@ -1,5 +1,7 @@
 package com.wyc.cloudapp.utils;
 import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 
 import android.icu.text.SimpleDateFormat;
@@ -13,7 +15,10 @@ import android.util.Base64;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.TimePicker;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -29,8 +34,10 @@ import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 
 import java.util.Random;
@@ -358,7 +365,15 @@ public final class Utils {
         }
         return default_V;
     }
-
+    public static String getViewTagValue(final View view,String default_V){
+        Object tag;
+        if (view != null && (tag = view.getTag()) != null){
+            if (tag instanceof String){
+                default_V = (String) tag;
+            }
+        }
+        return default_V;
+    }
     public static void moveJsonArray(final JSONArray from,final JSONArray to){
         if (from != null && to != null){
             Object o;
@@ -394,6 +409,37 @@ public final class Utils {
 
     public static boolean equalDouble(double a,double b){
         return Math.abs(a - b) < 0.00001;
+    }
+
+
+    public static void showTimePickerDialog(final Context context, final TextView tv, Calendar calendar) {
+        new TimePickerDialog( context,3,
+                // 绑定监听器
+                new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        tv.setText(String.format(Locale.CHINA,"%02d:%02d:%02d",hourOfDay,minute,0));
+                    }
+                }
+                // 设置初始时间
+                , calendar.get(Calendar.HOUR_OF_DAY)
+                , calendar.get(Calendar.MINUTE)
+                // true表示采用24小时制
+                ,true).show();
+    }
+
+    public static void showDatePickerDialog(final Context context, final TextView tv, Calendar calendar) {
+        new DatePickerDialog(context,
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                        tv.setText(String.format(Locale.CHINA,"%d-%02d-%02d",year,monthOfYear + 1,dayOfMonth));
+                    }
+                }
+                // 设置初始日期
+                , calendar.get(Calendar.YEAR)
+                ,calendar.get(Calendar.MONTH)
+                ,calendar.get(Calendar.DAY_OF_MONTH)).show();
     }
 
 

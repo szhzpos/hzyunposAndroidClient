@@ -34,13 +34,13 @@ import java.lang.ref.WeakReference;
 import java.util.Date;
 import java.util.Locale;
 
-public class VipChargeDialog extends AbstractPayDialog {
+public class VipChargeDialogImp extends AbstractPayDialog {
     private JSONObject mVip;
     private Myhandler mHandler;
     private boolean mOpenCashbox = false;
     private PayMethodViewAdapter mPayMethodViewAdapter;
     private boolean mPrintStatus = true;
-    VipChargeDialog(@NonNull MainActivity context, final JSONObject vip, boolean s) {
+    VipChargeDialogImp(@NonNull MainActivity context, final JSONObject vip, boolean s) {
         super(context,context.getString(R.string.vip_charge_sz));
         mVip = vip;
         mPrintStatus = s;
@@ -394,12 +394,12 @@ public class VipChargeDialog extends AbstractPayDialog {
         return "MPAY" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Utils.getNonce_str(8);
     }
     private static class Myhandler extends Handler {
-        private WeakReference<VipChargeDialog> weakHandler;
-        private Myhandler(VipChargeDialog dialog){
+        private WeakReference<VipChargeDialogImp> weakHandler;
+        private Myhandler(VipChargeDialogImp dialog){
             this.weakHandler = new WeakReference<>(dialog);
         }
         public void handleMessage(@NonNull Message msg){
-            VipChargeDialog dialog = weakHandler.get();
+            VipChargeDialogImp dialog = weakHandler.get();
             if (null == dialog)return;
             if (dialog.mProgressDialog != null && dialog.mProgressDialog.isShowing())dialog.mProgressDialog.dismiss();
             switch (msg.what){

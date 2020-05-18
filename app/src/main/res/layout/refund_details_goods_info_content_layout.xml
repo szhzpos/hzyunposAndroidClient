@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/table_row_height"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/row_id"
+        android:layout_width="@dimen/width_45"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:text="@string/row_id_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
+
+    <TextView
+        android:id="@+id/item_no"
+        android:layout_width="@dimen/width_128"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:text="@string/item_no_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
+
+    <TextView
+        android:id="@+id/barcode"
+        android:layout_width="@dimen/table_bacode_width"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:text="@string/barcode_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
+
+    <TextView
+        android:id="@+id/goods_title"
+        android:layout_width="@dimen/table_goods_title_width"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:text="@string/g_name_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
+
+    <TextView
+        android:id="@+id/refund_num"
+        android:layout_width="@dimen/width_88"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:text="@string/sec_num_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
+
+    <TextView
+        android:id="@+id/unit_name"
+        android:layout_width="@dimen/width_45"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:text="@string/unit_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
+
+    <TextView
+        android:id="@+id/refund_price"
+        android:layout_width="@dimen/width_88"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:text="@string/sec_price_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
+
+    <TextView
+        android:id="@+id/refund_amt"
+        android:layout_width="@dimen/width_88"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:text="@string/sec_sum_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
+</LinearLayout>

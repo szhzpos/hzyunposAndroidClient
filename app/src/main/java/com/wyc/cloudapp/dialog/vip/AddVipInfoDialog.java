@@ -1,8 +1,6 @@
 package com.wyc.cloudapp.dialog.vip;
 
 import android.app.DatePickerDialog;
-import android.app.Dialog;
-import android.content.Context;
 import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,9 +25,7 @@ import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialog;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnContext;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivity;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -37,7 +33,7 @@ import com.wyc.cloudapp.utils.http.HttpRequest;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 
-public class AddVipInfoDialog extends DialogBaseOnMainActivity {
+public class AddVipInfoDialog extends DialogBaseOnMainActivityImp {
     private EditText m_vip_p_num_et, m_card_id_et, m_vip_name_et, m_vip_birthday_et;
     private onYesOnclickListener mYesOnclickListener;//确定按钮被点击了的监听器
     private String mVipGradeId,mMemberId;

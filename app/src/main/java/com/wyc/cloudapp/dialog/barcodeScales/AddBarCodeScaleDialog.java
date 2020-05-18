@@ -1,7 +1,6 @@
 package com.wyc.cloudapp.dialog.barcodeScales;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.os.Bundle;
@@ -17,25 +16,22 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.adapter.TreeListAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomePopupWindow;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnContext;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnContextImp;
 import com.wyc.cloudapp.utils.Utils;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddBarCodeScaleDialog extends DialogBaseOnContext {
+public class AddBarCodeScaleDialog extends DialogBaseOnContextImp {
     private EditText mManufacturerEt,mProductType, mScaleName,mPort,mGCategoryEt;
     private LinearLayout mIP;
     private CustomePopupWindow mPopupWindow;

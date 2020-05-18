@@ -19,12 +19,12 @@ import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
-public final class OrderDetailsPayInfoAdapter extends RecyclerView.Adapter<OrderDetailsPayInfoAdapter.MyViewHolder>  {
+public final class RetailDetailsPayInfoAdapter extends RecyclerView.Adapter<RetailDetailsPayInfoAdapter.MyViewHolder>  {
     private MainActivity mContext;
     private JSONArray mDatas;
     private View mCurrentItemView;
     private ItemClickCallBack mItemClickCallback;
-    public OrderDetailsPayInfoAdapter(MainActivity context){
+    public RetailDetailsPayInfoAdapter(MainActivity context){
         mContext = context;
     }
 
@@ -46,7 +46,7 @@ public final class OrderDetailsPayInfoAdapter extends RecyclerView.Adapter<Order
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = View.inflate(mContext, R.layout.order_details_pay_info_content_layout, null);
+        View itemView = View.inflate(mContext, R.layout.retail_details_pay_info_content_layout, null);
         itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int) mContext.getResources().getDimension(R.dimen.table_row_height)));
         return new MyViewHolder(itemView);
     }

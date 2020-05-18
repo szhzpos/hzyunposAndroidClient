@@ -25,7 +25,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivity;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
@@ -36,9 +36,8 @@ import com.wyc.cloudapp.utils.http.HttpRequest;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 
-public class VipInfoDialog extends DialogBaseOnMainActivity {
+public class VipInfoDialog extends DialogBaseOnMainActivityImp {
     private EditText mSearchContent;
-    private String mAppId,mAppScret,mUrl;
     private CustomProgressDialog mProgressDialog;
     private Myhandler mHandler;
     private JSONObject mVip;
@@ -68,11 +67,6 @@ public class VipInfoDialog extends DialogBaseOnMainActivity {
         //初始化按钮
         mSearchBtn = findViewById(R.id._ok);
 
-        //初始化连接参数
-        if (!initConnParam()){
-            return;
-        }
-
         //初始化搜索条件输入框
         initSearchCondition();
         initAddVipBtn();
@@ -99,8 +93,8 @@ public class VipInfoDialog extends DialogBaseOnMainActivity {
         if (null != chargeBtn)
             chargeBtn.setOnClickListener(view -> {
                 if (mVip != null){
-                    VipChargeDialog vipChargeDialog = new VipChargeDialog(mContext,mVip,mPrintStatus);
-                    vipChargeDialog.setYesOnclickListener(dialog -> {
+                    VipChargeDialogImp vipChargeDialogImp = new VipChargeDialogImp(mContext,mVip,mPrintStatus);
+                    vipChargeDialogImp.setYesOnclickListener(dialog -> {
                         showVipInfo(dialog.getContent());
                         dialog.dismiss();
                     }).show();
@@ -298,20 +292,6 @@ public class VipInfoDialog extends DialogBaseOnMainActivity {
         }else{
             MyDialog.ToastMessage(mSearchContent,mSearchContent.getHint().toString(),mContext,getWindow());
         }
-    }
-
-    private boolean initConnParam(){
-        JSONObject conn = new JSONObject();
-        boolean code = true;
-        if (SQLiteHelper.getLocalParameter("connParam",conn)){
-            mUrl = conn.getString("server_url");
-            mAppId = conn.getString("appId");
-            mAppScret = conn.getString("appScret");
-        }else{
-            code = false;
-            MyDialog.ToastMessage("查询连接参数错误：" + conn.getString("info"),mContext,getWindow());
-        }
-        return code;
     }
 
     private void showVipInfo(JSONObject object){

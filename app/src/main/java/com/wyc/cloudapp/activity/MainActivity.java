@@ -44,7 +44,7 @@ import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.HangBillDialog;
 import com.wyc.cloudapp.dialog.MoreFunDialog;
-import com.wyc.cloudapp.dialog.QuerySaleOrderDialog;
+import com.wyc.cloudapp.dialog.orderDialog.QuerySaleOrderDialog;
 import com.wyc.cloudapp.dialog.pay.PayDialog;
 import com.wyc.cloudapp.dialog.SecondDisplay;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
@@ -365,7 +365,7 @@ public class MainActivity extends AppCompatActivity {
                 double sale_sum_num = 0.0,sale_sum_amount = 0.0,dis_sum_amt = 0.0;
                 try {
                     for (int i = 0,length = datas.size();i < length;i ++){
-                        JSONObject jsonObject = datas.getJSONObject(i);
+                        final JSONObject jsonObject = datas.getJSONObject(i);
                         sale_sum_num += jsonObject.getDouble("xnum");
                         sale_sum_amount += jsonObject.getDouble("sale_amt");
                         dis_sum_amt += jsonObject.getDouble("discount_amt");
@@ -579,7 +579,7 @@ public class MainActivity extends AppCompatActivity {
                         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
 
                         if (mPrintStatus.get()){
-                            Printer.print(activity, PayDialog.get_print_content(activity,getOrderCode(),mSaleGoodsViewAdapter.getDatas(),myDialog.getContent(),myDialog.isOpenCashbox()));
+                            Printer.print(activity, PayDialog.get_print_content(activity,getOrderCode(),myDialog.isOpenCashbox()));
                         }
 
 

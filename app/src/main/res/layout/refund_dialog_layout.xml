@@ -18,7 +18,7 @@
             android:layout_gravity="center_vertical"
             android:paddingStart="@dimen/margin_5"
             android:paddingEnd="@dimen/margin_2"
-            android:text="@string/sale_order_code_sz"
+            android:text="@string/retail_order_code_sz"
             android:textSize="@dimen/font_size_16" />
 
         <EditText

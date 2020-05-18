@@ -15,29 +15,22 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.dialog.CustomProgressDialog;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivity;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.pay.AbstractPayDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
-public final class SaleReturnGoodsInfoAdapter extends RecyclerView.Adapter<SaleReturnGoodsInfoAdapter.MyViewHolder>  {
-    private DialogBaseOnMainActivity mDialog;
+public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoodsInfoAdapter.MyViewHolder>  {
+    private DialogBaseOnMainActivityImp mDialog;
     private MainActivity mContext;
     private JSONArray mGoodsDatas,mPayDatas;
     private onRefundDataChange mRefundDataChange;
     private JSONObject mVipInfo;
-    public SaleReturnGoodsInfoAdapter(DialogBaseOnMainActivity dialog){
+    public RefundGoodsInfoAdapter(DialogBaseOnMainActivityImp dialog){
         mDialog = dialog;
         mContext = dialog.getPrivateContext();
     }
@@ -65,7 +58,7 @@ public final class SaleReturnGoodsInfoAdapter extends RecyclerView.Adapter<SaleR
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = View.inflate(mContext, R.layout.sale_return_goods_info_content_layout, null);
+        View itemView = View.inflate(mContext, R.layout.refund_goods_info_content_layout, null);
         itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int) mContext.getResources().getDimension(R.dimen.table_row_height)));
         return new MyViewHolder(itemView);
     }

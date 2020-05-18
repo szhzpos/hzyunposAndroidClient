@@ -123,7 +123,7 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
             double xnum = goods.getDoubleValue("xnum");//如果不存在xnum,返回0.0；新增的商品不存在xnum字段，以及该字段值不会为0;挂单以及条码秤称重商品已经存在
             boolean isBarcodeWeighingGoods = !Utils.getNullStringAsEmpty(goods,GoodsInfoViewAdapter.W_G_MARK).isEmpty(),isZero = Utils.equalDouble(xnum,0.0);
             if(!isBarcodeWeighingGoods && isZero && goods.getIntValue("type") == 2){//type 1 普通 2散装称重 3鞋帽
-                GoodsWeighDialog goodsWeighDialog = new GoodsWeighDialog(mContext,mContext.getString(R.string.goods_i_s),goods.getString("barcode_id"));
+                final GoodsWeighDialog goodsWeighDialog = new GoodsWeighDialog(mContext,mContext.getString(R.string.goods_i_s),goods.getString("barcode_id"));
                 goodsWeighDialog.setOnYesOnclickListener(myDialog -> {
                     double num = myDialog.getContent();
                     if (!Utils.equalDouble(num,0.0))
@@ -534,11 +534,12 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 discount  = Utils.getNotKeyAsNumberDefault(tmp_obj,"discount",1.0);
                 new_price = Utils.formatDouble(add_goods_price * discount,4);
 
-                num += tmp_obj.getDoubleValue("xnum");
                 if (isBarcodeWeighingGoods){
                     add_amount = goods.getDoubleValue("sale_amt");
                 }else
                     add_amount = Utils.formatDouble(num * new_price,2);
+
+                num += tmp_obj.getDoubleValue("xnum");
 
                 current_sale_amt = Utils.formatDouble(saled_amount + add_amount,2);
                 original_amt = Utils.formatDouble(original_price * num,2);

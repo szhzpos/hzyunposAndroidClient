@@ -1,6 +1,5 @@
 package com.wyc.cloudapp.dialog;
 
-import android.app.Dialog;
 import android.content.Context;
 
 import android.graphics.Point;
@@ -13,7 +12,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnContext;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnContextImp;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
@@ -34,7 +33,7 @@ import java.lang.ref.WeakReference;
 
 import static android.content.Context.WINDOW_SERVICE;
 
-public class ConnSettingDialog extends DialogBaseOnContext {
+public class ConnSettingDialog extends DialogBaseOnContextImp {
     private EditText mUrl,mAppId,mAppscret,mStore_name;
     private CustomProgressDialog mDialog;
     private CustomePopupWindow mPopupWindow;

@@ -20,12 +20,12 @@ import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivity;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
-public class GoodsWeighDialog extends DialogBaseOnMainActivity {
+public class GoodsWeighDialog extends DialogBaseOnMainActivityImp {
     private String mBarcodeId;
     private OnYesOnclickListener mOnYesClick;
     private EditText mWvalueEt;

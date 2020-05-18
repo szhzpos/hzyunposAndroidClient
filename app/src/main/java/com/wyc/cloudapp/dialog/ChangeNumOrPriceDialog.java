@@ -12,10 +12,10 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.callback.PasswordEditTextReplacement;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivity;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.utils.Utils;
 
-public class ChangeNumOrPriceDialog extends DialogBaseOnMainActivity {
+public class ChangeNumOrPriceDialog extends DialogBaseOnMainActivityImp {
     private EditText mNew_price_text;
     private String mInitVal;
     private onNoOnclickListener noOnclickListener;//取消按钮被点击了的监听器
