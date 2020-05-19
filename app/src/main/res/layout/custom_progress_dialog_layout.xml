@@ -11,8 +11,8 @@
 
     <ProgressBar
         android:id="@+id/pb_load"
-        android:layout_width="78dp"
-        android:layout_height="78dp"
+        android:layout_width="@dimen/width_78"
+        android:layout_height="@dimen/width_78"
         android:layout_centerInParent="true"
         android:layout_gravity="center"
         app:layout_constraintStart_toStartOf="parent"

@@ -165,7 +165,7 @@
     <string name="amt_not_colon_sz">金额</string>
     <string name="oper_sz">操作员</string>
     <string name="time_sz">时间</string>
-    <string name="barcode_sz">条码</string>
+    <string name="barcode_sz">商品条码</string>
     <string name="g_name_sz">商品名称</string>
     <string name="hangbill_sz">挂单</string>
     <string name="to_checkout_sz">去结账</string>
@@ -232,7 +232,7 @@
     <string name="returnable_num_sz">可退数量</string>
     <string name="returned_num_sz">退货数量</string>
     <string name="returned_amt_sz">退货金额</string>
-    <string name="next_sz">下一步</string>
+    <string name="next_sz">部分退货</string>
     <string name="refund_dialog_title_sz">"退货退款"</string>
     <string name="all_refund_sz">整单退货</string>
     <string name="retail_order_code_sz">零售单号</string>
@@ -241,6 +241,6 @@
     <string name="refund_amt_sz">退货金额</string>
     <string name="refund_status_sz">退货状态</string>
     <string name="refund_type_sz">退货方式</string>
-    <string name="local_refund_order_sz">本地退货单</string>
+    <string name="local_refund_order_sz">退货单查询</string>
     <string name="refund_details_sz">退单详情</string>
 </resources>

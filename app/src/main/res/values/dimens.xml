@@ -89,4 +89,5 @@
     <dimen name="table_header_height">@dimen/height_50</dimen>
     <dimen name="table_footer_height">@dimen/height_50</dimen>
     <dimen name="status_et_width">@dimen/width_85</dimen>
+    <dimen name="width_35">@dimen/size_35</dimen>
 </resources>

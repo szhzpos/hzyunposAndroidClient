@@ -154,6 +154,17 @@
             android:orientation="horizontal">
 
             <TextView
+                android:layout_width="@dimen/width_45"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/size_35"
+                android:gravity="center"
+                android:paddingTop="@dimen/margin_8"
+                android:paddingBottom="@dimen/margin_8"
+                android:text="@string/row_id_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
                 android:layout_width="@dimen/table_bacode_width"
                 android:layout_height="match_parent"
                 android:gravity="center"
@@ -332,7 +343,7 @@
             android:text="@string/next_sz"
             android:textColor="@color/blue_white"
             android:textSize="@dimen/font_size_16"
-            android:visibility="gone" />
+            android:visibility="visible" />
     </LinearLayout>
 
 </LinearLayout>

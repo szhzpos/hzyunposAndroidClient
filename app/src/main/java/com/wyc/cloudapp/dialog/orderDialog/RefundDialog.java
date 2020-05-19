@@ -42,8 +42,6 @@ import java.util.Locale;
 
 public class RefundDialog extends DialogBaseOnMainActivityImp {
     private RefundGoodsInfoAdapter mRefundGoodsInfoAdapter;
-    private double mRefundSumAmt;
-    private int mRefundType = 1;//退货类型（1全部退货，2部分退货）
     private String mRefundOperId,mRefundOperName;
     private String mOrderCode,mRefundCode;
     private CustomProgressDialog mProgressDialog;
@@ -64,7 +62,8 @@ public class RefundDialog extends DialogBaseOnMainActivityImp {
 
         initOrderCodeTv();
         initGoodsDetails();
-        initRefundBtn();
+        initAllRefundBtn();
+        initPartRefundBtn();
         initRemarkBtn();
     }
 
@@ -136,7 +135,6 @@ public class RefundDialog extends DialogBaseOnMainActivityImp {
                         refund_sum_amt += refund_num * refund_price;
                     }
                     refund_sum_num_tv.setText(String.format(Locale.CHINA,"%.2f",refund_sum_num));
-                    mRefundSumAmt = refund_sum_amt;
                     refund_sum_amt_tv.setText(String.format(Locale.CHINA,"%.2f",refund_sum_amt));
                 }
             });
@@ -170,15 +168,27 @@ public class RefundDialog extends DialogBaseOnMainActivityImp {
             });
         }
     }
-    private void initRefundBtn(){
+    private void initAllRefundBtn(){
         final Button all_return_btn = findViewById(R.id.all_return_btn);
         if (null != all_return_btn){
-            all_return_btn.setOnClickListener(v -> requestRefund());
+            all_return_btn.setOnClickListener(v -> {
+                mRefundGoodsInfoAdapter.generateRefundInfo(1);
+                requestRefund();
+            });
+        }
+    }
+    private void initPartRefundBtn(){
+        final Button btn = findViewById(R.id.next_btn);
+        if (btn != null){
+            btn.setOnClickListener(v -> {
+                mRefundGoodsInfoAdapter.generateRefundInfo(2);
+                requestRefund();
+            });
         }
     }
 
     private void requestRefund(){
-        if (!Utils.equalDouble(mRefundSumAmt,0.0)){
+        if (!Utils.equalDouble(mRefundGoodsInfoAdapter.getRefundAmt(),0.0)){
             MyDialog myDialog = new MyDialog(mContext);
             myDialog.setTitle("退款信息").setMessage(mRefundGoodsInfoAdapter.PayDatasToString()).setYesOnclickListener(mContext.getString(R.string.OK), myDialog1 -> {
                 setRefundOpertor(null,null);
@@ -187,7 +197,6 @@ public class RefundDialog extends DialogBaseOnMainActivityImp {
                 if (generateRefundData(data)){
                     if (saveRefundOrderInfo(data,err)){
                         myDialog1.dismiss();
-
                         mProgressDialog.setCancel(false).setMessage("正在退款...").refreshMessage().show();
                         CustomApplication.execute(()->{
                             if (isRefundCheck){
@@ -201,6 +210,12 @@ public class RefundDialog extends DialogBaseOnMainActivityImp {
                                     MyDialog.ToastMessage(err.toString(),mContext,getWindow());
                                 });
                             }else {
+                                mContext.runOnUiThread(()->{
+                                    if (null != mRemarkEt){
+                                        mRemarkEt.setVisibility(View.GONE);
+                                        mRemarkEt.getText().clear();
+                                    }
+                                });
                                 Printer.print(mContext,get_print_content(mContext,mRefundCode,!isRefundCheck));
                             }
                             isRefundCheck = false;//重置
@@ -320,7 +335,7 @@ public class RefundDialog extends DialogBaseOnMainActivityImp {
         order_info.put("ro_code",mRefundCode);
         order_info.put("order_code",mOrderCode);
         order_info.put("total",order_sum_amt);
-        order_info.put("type",mRefundType);
+        order_info.put("type",mRefundGoodsInfoAdapter.getRefundType());
 
         order_info.put("cashier_id",cashier_id);
         order_info.put("cashier_name",cashier_name);
@@ -338,7 +353,7 @@ public class RefundDialog extends DialogBaseOnMainActivityImp {
         order_info.put("transfer_time",0);
         order_info.put("ok_cashier_id",mRefundOperId);
         order_info.put("ok_cashier_name",mRefundOperName);
-        order_info.put("refund_total",mRefundSumAmt);
+        order_info.put("refund_total",mRefundGoodsInfoAdapter.getRefundAmt());
 
 
         refund_info.put("refund_order",new JSONArray(){{add(order_info);}});
@@ -396,7 +411,7 @@ public class RefundDialog extends DialogBaseOnMainActivityImp {
                                     if (mQueryBtn != null)mQueryBtn.callOnClick();
                                 }
                             }
-                        } else {
+                        }else {
                             err.append(info.getString("info"));
                         }
                         break;
@@ -405,7 +420,7 @@ public class RefundDialog extends DialogBaseOnMainActivityImp {
         }
     }
 
-    private boolean uploadRefundOrder(final String order_code,final String ro_code,final StringBuilder err){
+    private boolean uploadRefundOrder(final String order_code,final String ro_code,@NonNull final StringBuilder err){
         final String refund_order_sql = "SELECT refund_total total,member_id,remark,card_code,name,mobile,\n" +
                 "       pos_code,addtime,cashier_id,type,total order_money,order_code,ro_code,stores_id FROM refund_order where order_status = 2 and upload_status = 1 and ro_code = '" + ro_code +"' and order_code = '" + order_code +"'",
                 refund_goods_sql = "SELECT produce_date,conversion,is_rk,rog_id,refund_price,refund_num xnum,price,barcode_id,ro_code FROM refund_order_goods where ro_code = '"+ ro_code +"';",
@@ -418,43 +433,47 @@ public class RefundDialog extends DialogBaseOnMainActivityImp {
             final JSONArray refund_goods = SQLiteHelper.getListToJson(refund_goods_sql,err);
             final JSONArray refund_pays = SQLiteHelper.getListToJson(refund_pay_sql,err);
             if (code = (refund_goods != null && refund_pays != null)){
-                final JSONObject data = new JSONObject(),send_data = new JSONObject();
-                final HttpRequest httpRequest = new HttpRequest();
+                if (code = (!refund_goods.isEmpty() && !refund_pays.isEmpty())){
+                    final JSONObject data = new JSONObject(),send_data = new JSONObject();
+                    final HttpRequest httpRequest = new HttpRequest();
 
-                data.put("order_arr",refund_orders);
-                data.put("order_goods",refund_goods);
-                data.put("order_pay",refund_pays);
+                    data.put("order_arr",refund_orders);
+                    data.put("order_goods",refund_goods);
+                    data.put("order_pay",refund_pays);
 
-                send_data.put("appid",mContext.getAppId());
-                send_data.put("data",data);
+                    send_data.put("appid",mContext.getAppId());
+                    send_data.put("data",data);
 
-                JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + "/api/refund/order_upload",HttpRequest.generate_request_parm(send_data,mContext.getAppScret()),true);
-                switch (retJson.getIntValue("flag")){
-                    case 0:
-                        code = false;
-                        err.append(retJson.getString("info"));
-                        break;
-                    case 1:
-                        retJson = JSON.parseObject(retJson.getString("info"));
-                        switch (retJson.getString("status")){
-                            case "n":
-                                code = false;
-                                err.append(retJson.getString("info"));
-                                break;
-                            case "y":
-                                Logger.d_json(retJson.toJSONString());
-                                final String ret_order_code = Utils.getNullStringAsEmpty(retJson,"order_code"),ret_ro_code = Utils.getNullStringAsEmpty(retJson,"ro_code");
-                                if (code = (ret_order_code.equals(order_code) && ret_ro_code.equals(ro_code))){
-                                    final ContentValues values = new ContentValues();
-                                    values.put("upload_status",2);
-                                    values.put("upload_time",System.currentTimeMillis() / 1000);
-                                    code = SQLiteHelper.execUpdateSql("refund_order",values,"order_code = ? and ro_code = ?",new String[]{order_code,ro_code},err);
-                                }else {
-                                    err.append("上传成功，但返回订单号与上传的订单号不一致！");
-                                }
-                                break;
-                        }
-                        break;
+                    JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + "/api/refund/order_upload",HttpRequest.generate_request_parm(send_data,mContext.getAppScret()),true);
+                    switch (retJson.getIntValue("flag")){
+                        case 0:
+                            code = false;
+                            err.append(retJson.getString("info"));
+                            break;
+                        case 1:
+                            retJson = JSON.parseObject(retJson.getString("info"));
+                            switch (retJson.getString("status")){
+                                case "n":
+                                    code = false;
+                                    err.append(retJson.getString("info"));
+                                    break;
+                                case "y":
+                                    Logger.d_json(retJson.toJSONString());
+                                    final String ret_order_code = Utils.getNullStringAsEmpty(retJson,"order_code"),ret_ro_code = Utils.getNullStringAsEmpty(retJson,"ro_code");
+                                    if (code = (ret_order_code.equals(order_code) && ret_ro_code.equals(ro_code))){
+                                        final ContentValues values = new ContentValues();
+                                        values.put("upload_status",2);
+                                        values.put("upload_time",System.currentTimeMillis() / 1000);
+                                        code = SQLiteHelper.execUpdateSql("refund_order",values,"order_code = ? and ro_code = ?",new String[]{order_code,ro_code},err);
+                                    }else {
+                                        err.append("上传成功，但返回订单号与上传的订单号不一致！");
+                                    }
+                                    break;
+                            }
+                            break;
+                    }
+                } else {
+                    err.append("上传明细为空！");
                 }
             }
         }

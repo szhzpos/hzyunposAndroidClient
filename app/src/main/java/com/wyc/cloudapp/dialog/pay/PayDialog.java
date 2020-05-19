@@ -297,10 +297,6 @@ public class PayDialog extends DialogBaseOnMainActivityImp {
                                     }
                                 }).setCancelListener(dialog -> {
                                     mPayMethodViewAdapter.showDefaultPayMethod(null);
-                                    if (PayMethodViewAdapter.CASH_METHOD_ID.equals(mPayMethodViewAdapter.getDefaultPayMethodId())){
-                                        initPayContent();
-                                        refreshContent();
-                                    }
                                     dialog.dismiss();
                                 }).show();
                             }
@@ -326,7 +322,7 @@ public class PayDialog extends DialogBaseOnMainActivityImp {
             @Override
             public void onChanged() {
                 super.onChanged();
-                JSONArray jsonArray = getContent();
+                final JSONArray jsonArray = getContent();
                 double pay_amt = 0.0,zl_amt = 0.0,sale_amt;
                 mOpenCashbox = false;
                 try {
@@ -671,7 +667,7 @@ public class PayDialog extends DialogBaseOnMainActivityImp {
 
         JSONObject retJson,pay_detail,pay_method_json,info_json;
         HttpRequest httpRequest = null;
-        String pay_method_id = "",pay_money,pay_code,unified_pay_order,unified_pay_query,sz_param,v_num,third_pay_order_id = "",discount_xnote = "";
+        String pay_method_id = "",pay_money,pay_code,unified_pay_order,unified_pay_query,sz_param,v_num,order_code_son = "",third_pay_order_id = "",discount_xnote = "";
 
         final String order_code = mContext.getOrderCode(),url = mContext.getUrl(),appId = mContext.getAppId(),appScret = mContext.getAppScret(),
                 stores_id = mContext.getStoreInfo().getString("stores_id"),pos_num = mContext.getCashierInfo().getString("pos_num");
@@ -684,6 +680,7 @@ public class PayDialog extends DialogBaseOnMainActivityImp {
                 for (int i = 0,size = pays.size();i < size && mPayStatus;i++){
                     pay_detail = pays.getJSONObject(i);
                     pay_method_id = pay_detail.getString("pay_method");
+                    order_code_son = pay_detail.getString("pay_code");
 
                     is_check = pay_detail.getIntValue("is_check");
                     if (is_check == 2){
@@ -860,7 +857,8 @@ public class PayDialog extends DialogBaseOnMainActivityImp {
                     if (mPayStatus){
                         sb_update_sql.append("update retail_order_pays set pay_status = ").append(pay_status).append(",pay_serial_no = ").append("'").append(third_pay_order_id).append("'").append(",pay_time = ").
                                 append(pay_time).append(",discount_money = ").append(discount_money).append(",xnote = ").append("'").append(discount_xnote).append("'").append(",return_code = ").
-                                append("'").append(third_pay_order_id).append("'").append(" where order_code = ").append("'").append(order_code).append("'").append(" and pay_method = ").append(pay_method_id);
+                                append("'").append(third_pay_order_id).append("'").append(" where order_code = ").append("'").append(order_code).append("'").append(" and pay_code = ").append("'").append(order_code_son).append("'")
+                                .append(" and pay_method = ").append(pay_method_id);
                         update_sqls_list.add(sb_update_sql.toString());
 
                         sb_update_sql.delete(0,sb_update_sql.length());

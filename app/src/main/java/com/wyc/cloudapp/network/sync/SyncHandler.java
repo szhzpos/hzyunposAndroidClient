@@ -298,60 +298,65 @@ public final class SyncHandler extends Handler {
                     sales = SQLiteHelper.getListToJson(sql_goods_detail.replace("%1",order_code),err);
                     pays = SQLiteHelper.getListToJson(sql_pays_detail.replace("%1",order_code),err);
                     if (code = (null != sales && null != pays)){
-                        for (int j = 0,j_size = sales.size();j < j_size;j++){//销售明细
-                            tmp_jsonObject = sales.getJSONObject(j);
-                            gp_id = tmp_jsonObject.getIntValue("gp_id");
-                            if (-1 != gp_id){
-                                if (j > 0){
-                                    if (gp_id == sales.getJSONObject(j -1).getIntValue("gp_id"))continue;
-                                }
-                                if (order_gp_ids.length() == 0){
-                                    order_gp_ids.append("'").append(gp_id).append("'");
-                                }else{
-                                    order_gp_ids.append(",").append("'").append(gp_id).append("'");
-                                }
-                            }
-                        }
 
-                        //组合商品
-                        if (code = ((combinations = SQLiteHelper.getListToJson(sql_combination_goods.replace("%1",order_gp_ids).replace("%2",order_code),err)) != null)){
-
-                            if ((discount_records = SQLiteHelper.getListToJson(sql_discount_record.replace("%1",order_code),err)) != null){
-                                data.put("order_info",Utils.JsondeepCopy(order_info));
-                                data.put("goods_list",sales);
-                                data.put("pay_list",pays);
-                                data.put("group_list",combinations);
-                                data.put("discount_record",discount_records);
-
-                                Logger.d_json(data.toString());
-
-                                send_data.put("appid",mAppId);
-                                send_data.put("data",data);
-
-                                retJson = httpRequest.sendPost(mUrl + "/api_v2/retail_upload/order_upload",HttpRequest.generate_request_parm(send_data,mAppScret),true);
-                                switch (retJson.getIntValue("flag")){
-                                    case 0:
-                                        code = false;
-                                        err.append(retJson.getString("info"));
-                                        break;
-                                    case 1:
-                                        retJson = JSON.parseObject(retJson.getString("info"));
-                                        switch (retJson.getString("status")){
-                                            case "n":
-                                                code = false;
-                                                err.append(retJson.getString("info"));
-                                                break;
-                                            case "y":
-                                                Logger.d("old_order_code:%s,order_code:%s",order_code,retJson.getString("order_code"));
-                                                final ContentValues values = new ContentValues();
-                                                values.put("upload_status",2);
-                                                values.put("upload_time",System.currentTimeMillis() / 1000);
-                                                code = SQLiteHelper.execUpdateSql("retail_order",values,"order_code = ?",new String[]{order_code},err);
-                                                break;
-                                        }
-                                        break;
+                        if (code = (!sales.isEmpty() && !pays.isEmpty())){
+                            for (int j = 0,j_size = sales.size();j < j_size;j++){//销售明细
+                                tmp_jsonObject = sales.getJSONObject(j);
+                                gp_id = tmp_jsonObject.getIntValue("gp_id");
+                                if (-1 != gp_id){
+                                    if (j > 0){
+                                        if (gp_id == sales.getJSONObject(j -1).getIntValue("gp_id"))continue;
+                                    }
+                                    if (order_gp_ids.length() == 0){
+                                        order_gp_ids.append("'").append(gp_id).append("'");
+                                    }else{
+                                        order_gp_ids.append(",").append("'").append(gp_id).append("'");
+                                    }
                                 }
                             }
+
+                            //组合商品
+                            if (code = ((combinations = SQLiteHelper.getListToJson(sql_combination_goods.replace("%1",order_gp_ids).replace("%2",order_code),err)) != null)){
+
+                                if ((discount_records = SQLiteHelper.getListToJson(sql_discount_record.replace("%1",order_code),err)) != null){
+                                    data.put("order_info",Utils.JsondeepCopy(order_info));
+                                    data.put("goods_list",sales);
+                                    data.put("pay_list",pays);
+                                    data.put("group_list",combinations);
+                                    data.put("discount_record",discount_records);
+
+                                    Logger.d_json(data.toString());
+
+                                    send_data.put("appid",mAppId);
+                                    send_data.put("data",data);
+
+                                    retJson = httpRequest.sendPost(mUrl + "/api_v2/retail_upload/order_upload",HttpRequest.generate_request_parm(send_data,mAppScret),true);
+                                    switch (retJson.getIntValue("flag")){
+                                        case 0:
+                                            code = false;
+                                            err.append(retJson.getString("info"));
+                                            break;
+                                        case 1:
+                                            retJson = JSON.parseObject(retJson.getString("info"));
+                                            switch (retJson.getString("status")){
+                                                case "n":
+                                                    code = false;
+                                                    err.append(retJson.getString("info"));
+                                                    break;
+                                                case "y":
+                                                    Logger.d("old_order_code:%s,order_code:%s",order_code,retJson.getString("order_code"));
+                                                    final ContentValues values = new ContentValues();
+                                                    values.put("upload_status",2);
+                                                    values.put("upload_time",System.currentTimeMillis() / 1000);
+                                                    code = SQLiteHelper.execUpdateSql("retail_order",values,"order_code = ?",new String[]{order_code},err);
+                                                    break;
+                                            }
+                                            break;
+                                    }
+                                }
+                            }
+                        }else {
+                            err.append("上传明细为空！");
                         }
                     }
                 }

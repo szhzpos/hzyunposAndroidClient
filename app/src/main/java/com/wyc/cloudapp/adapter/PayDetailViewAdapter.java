@@ -54,14 +54,16 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View itemView = View.inflate(mContext, R.layout.pay_detail_content_layout, null);
-        itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.pay_detail_height)));
+        View itemView;
         RecyclerView.ViewHolder holder;
         if (i == HEADER){
+            itemView = View.inflate(mContext, R.layout.pay_details_header_layout, null);
             holder = new HeaderHolder(itemView);
         }else{
+            itemView = View.inflate(mContext, R.layout.pay_detail_content_layout, null);
             holder = new ContentHolder(itemView);
         }
+        itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.pay_detail_height)));
         return holder;
     }
 

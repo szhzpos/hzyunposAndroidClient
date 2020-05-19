@@ -193,7 +193,7 @@ public class RetailOrderDetailsDialog extends DialogBaseOnMainActivityImp {
                                 break;
                             case "y":
                                 int res_code = info_json.getIntValue("res_code");
-                                if (res_code == 1){//支付成功
+                                if (res_code == 1 || res_code == 2){//支付成功
                                     query_status = true;
                                     Logger.d_json(info_json.toString());
                                     if (info_json.containsKey("xnote")){
@@ -219,13 +219,14 @@ public class RetailOrderDetailsDialog extends DialogBaseOnMainActivityImp {
                 values.put("order_status",3);
                 values.put("spare_param1",err.toString());
                 if (!SQLiteHelper.execUpdateSql("retail_order",values,"order_code = ?",new String[]{sz_order_code},err)){
-                    Logger.d("更新订单状态错误：",err);
+                    Logger.d("更新订单状态错误：%s",err);
                 }
             }else{
                 final List<String> sqls = new ArrayList<>();
                 int pay_method_id = pay_record.getIntValue("pay_method");
+                final String order_code_son = pay_record.getString("order_code_son");
                 String sql = "update retail_order_pays set pay_status = " + pay_status +",pay_serial_no = '" + third_pay_order_id +"',pay_time = '" + pay_time + "',discount_money = '" + discount_money +"',xnote = '" + discount_xnote +"',return_code = '"+ third_pay_order_id +"' " +
-                        "where order_code = '" + sz_order_code + "' and pay_method = " + pay_method_id;
+                        "where order_code = '" + sz_order_code + "' and pay_code = '" + order_code_son +"' and pay_method = " + pay_method_id;
                 sqls.add(sql);
 
                 //更新当前付款记录
@@ -240,8 +241,10 @@ public class RetailOrderDetailsDialog extends DialogBaseOnMainActivityImp {
                     sqls.add(sql);
                 }
 
+                Logger.d(sqls);
+
                 if (!SQLiteHelper.execBatchUpdateSql(sqls,err)){
-                    Logger.d("更新订单状态错误：",err);
+                    Logger.d("更新订单状态错误：%s",err);
                 }else{
                     mContext.runOnUiThread(()-> {
                         mRetailDetailsPayInfoAdapter.notifyDataSetChanged();

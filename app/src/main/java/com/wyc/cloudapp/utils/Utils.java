@@ -53,6 +53,7 @@ import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
 import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
 import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -309,10 +310,12 @@ public final class Utils {
     public static boolean JsonIsNotEmpty(final JSONArray jsons){
         return jsons != null && !jsons.isEmpty();
     }
-    public static JSONObject JsondeepCopy(@NonNull final JSONObject jsonObject){
+    public static JSONObject JsondeepCopy(@Nullable final JSONObject jsonObject){
+        if (jsonObject == null)return new JSONObject();
         return JSON.parseObject(jsonObject.toJSONString());
     }
-    public static JSONArray JsondeepCopy(@NonNull final JSONArray jsons){
+    public static JSONArray JsondeepCopy(@Nullable final JSONArray jsons){
+        if (jsons == null)return new JSONArray();
         return JSON.parseArray(jsons.toJSONString());
     }
     public static double getNotKeyAsNumberDefault(@NonNull final JSONObject object, final String key, double default_v){
