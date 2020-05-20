@@ -123,13 +123,24 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
 
     public void setDatas(final String support_code){
         StringBuilder err = new StringBuilder();
-        mDatas = SQLiteHelper.getListToJson("select *  from pay_method where status = '1' and support like '%" + support_code +"%' order by sort",0,0,false,err);
+        mDatas = SQLiteHelper.getListToJson("select *  from pay_method where status = '1' and support like '%" + support_code +"%' order by sort",err);
         if (mDatas != null){
             this.notifyDataSetChanged();
         }else{
             MyDialog.ToastMessage("加载支付方式错误：" + err,mContext,null);
         }
     }
+
+    public void loadRefundPayMeothd(){
+        StringBuilder err = new StringBuilder();
+        mDatas = SQLiteHelper.getListToJson("select *  from pay_method where status = '1' and is_check = 2 order by sort",err);
+        if (mDatas != null){
+            this.notifyDataSetChanged();
+        }else{
+            MyDialog.ToastMessage("加载支付方式错误：" + err,mContext,null);
+        }
+    }
+
     public JSONObject get_pay_method(final String pay_method_id){
         if (mDatas != null && pay_method_id != null){
             for (int i = 0,lengh = mDatas.size();i < lengh;i++){

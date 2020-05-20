@@ -25,39 +25,8 @@ public class PayMethodDialogImp extends AbstractPayDialog {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
-        mOk.setText(R.string.OK);
-
-        //初始化支付方式
         initPayMethod();
-
-        //付款方式不能找零
-        mPayAmtEt.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (editable.length()> 0){
-                    int index = editable.toString().indexOf('.');
-                    if (index > -1 && editable.length() >= (index += 3)){
-                        Logger.d("index:%d",index);
-                        editable.delete(index,editable.length());
-                    }
-                    if (Double.valueOf(editable.toString()) - mOriginalPayAmt> 0){
-                        refreshContent();
-                        MyDialog.SnackbarMessage(mDialogWindow,getTitle().concat(mContext.getString(R.string.not_zl_hint_sz)),null);
-                    }
-                }
-            }
-        });
-
+        setWatcherToPayAmt();
     }
 
     @Override
@@ -91,5 +60,35 @@ public class PayMethodDialogImp extends AbstractPayDialog {
                 mPayAmtEt.postDelayed(()-> mPayAmtEt.requestFocus(),300);
             }
         }
+    }
+
+    private void setWatcherToPayAmt(){
+        //付款方式不能找零
+        mPayAmtEt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (editable.length()> 0){
+                    int index = editable.toString().indexOf('.');
+                    if (index > -1 && editable.length() >= (index += 3)){
+                        Logger.d("index:%d",index);
+                        editable.delete(index,editable.length());
+                    }
+                    if (Double.valueOf(editable.toString()) - mOriginalPayAmt> 0){
+                        refreshContent();
+                        MyDialog.SnackbarMessage(mDialogWindow,getTitle().concat(mContext.getString(R.string.not_zl_hint_sz)),null);
+                    }
+                }
+            }
+        });
     }
 }

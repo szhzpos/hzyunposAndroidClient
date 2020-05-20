@@ -393,7 +393,7 @@ public class MainActivity extends AppCompatActivity {
         mSearch_content.setOnKeyListener((view, i, keyEvent) -> {
             if (mKeyboard.getVisibility() == View.GONE){
                 int keyCode = keyEvent.getKeyCode();
-                if (keyCode == KeyEvent.KEYCODE_ENTER){
+                if (keyCode == KeyEvent.KEYCODE_ENTER && keyEvent.getAction() == KeyEvent.ACTION_UP){
                     String content = mSearch_content.getText().toString();
                     if (content.length() == 0){
                         mGoodsCategoryViewAdapter.trigger_preView();
@@ -401,6 +401,7 @@ public class MainActivity extends AppCompatActivity {
                         mGoodsInfoViewAdapter.fuzzy_search_goods(mSearch_content);
                         //mSearch_content.getText().clear();
                     }
+                    return true;
                 }
             }
             return false;
@@ -423,7 +424,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     int v_id = view.getId();
-                    Editable editable = mSearch_content.getText();
+                    final Editable editable = mSearch_content.getText();
                     if (v_id == R.id.DEL){
                         editable.clear();
                     }else if (v_id == R.id.back){
@@ -459,7 +460,7 @@ public class MainActivity extends AppCompatActivity {
                             for(int i = 0,childCounts = mKeyboard.getChildCount();i < childCounts;i ++){
                                 View vObj = mKeyboard.getChildAt(i);
                                 if ( vObj instanceof TableRow){
-                                    TableRow tableRow = (TableRow)vObj ;
+                                    final TableRow tableRow = (TableRow)vObj ;
                                     int buttons = tableRow.getChildCount();
                                     for (int j = 0;j < buttons;j ++){
                                         vObj = tableRow.getChildAt(j);

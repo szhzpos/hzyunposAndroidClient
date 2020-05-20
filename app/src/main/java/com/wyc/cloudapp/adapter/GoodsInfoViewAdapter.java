@@ -141,7 +141,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                 return;
             }
             category_id = category_id.replace("\r\n",",");
-            sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,type,retail_price price,ifnull(img_url,'') img_url from barcode_info where (goods_status = 1 and barcode_status = 1) and category_id in (" + category_id + ")";
+            sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(case type when 2 then only_coding else barcode end,'') barcode,type,retail_price price,ifnull(img_url,'') img_url from barcode_info where (goods_status = 1 and barcode_status = 1) and category_id in (" + category_id + ")";
         }
 
         mDatas = SQLiteHelper.getListToJson(sql,0,0,false,err);
@@ -157,7 +157,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         final StringBuilder err = new StringBuilder();
         final ContentValues barcodeRuleObj = new ContentValues();
         final String search_content = search.getText().toString(),sql_where,full_sql,
-                sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,only_coding,type,retail_price price\n" +
+                sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(case type when 2 then only_coding else barcode end,'') barcode,only_coding,type,retail_price price\n" +
                 ",ifnull(img_url,'') img_url from barcode_info where (goods_status = 1 and barcode_status = 1) and %1";
 
         if (isBarcodeWeighingGoods(search_content,barcodeRuleObj)){
@@ -173,13 +173,16 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                 err.append(Utils.getNullStringAsEmpty(object,"info"));
             }
         }else {
-            sql_where = "(barcode like '" + search_content + "%' or mnemonic_code like '" + search_content +"%')";
+            sql_where = "(barcode like '" + search_content + "%' or only_coding like '" + search_content +"%' or mnemonic_code like '" + search_content +"%')";
             full_sql = sql.replace("%1",sql_where) + " UNION select gp_id,-1 goods_id,ifnull(gp_title,'') goods_title,'' unit_id,ifnull(unit_name,'') unit_name,\n" +
                     "-1 barcode_id,ifnull(gp_code,'') barcode,-1 only_coding,type,gp_price price,ifnull(img_url,'') img_url from goods_group \n" +
                     "where status = '1' and " + sql_where;
 
             mDatas = SQLiteHelper.getListToJson(full_sql,0,0,false,err);
         }
+
+        Logger.d("full_sql:%s",full_sql);
+
         if (mDatas != null){
             if(mDatas.size() != 0){
                 if (!mSearchLoad)mSearchLoad = true;

@@ -42,7 +42,6 @@ public abstract class AbstractPayDialog extends DialogBaseOnMainActivityImp impl
         setContentLayout(R.layout.pay_method_dialog_layout);
 
         mProgressDialog = new CustomProgressDialog(mContext);
-        mOk = findViewById(R.id._ok);
 
         //初始化付款码
         init_pay_code();
@@ -52,15 +51,6 @@ public abstract class AbstractPayDialog extends DialogBaseOnMainActivityImp impl
 
         //初始化数字键盘
         initKeyboard();
-
-        //回车监听
-        setOnKeyListener((dialog, keyCode, event) -> {
-            if (keyCode == KeyEvent.KEYCODE_ENTER){
-                if (mOk != null)mOk.callOnClick();
-                return true;
-            }
-            return false;
-        });
 
     }
     @Override
@@ -95,6 +85,11 @@ public abstract class AbstractPayDialog extends DialogBaseOnMainActivityImp impl
     @Override
     public MainActivity getPrivateContext() {
         return mContext;
+    }
+
+    @Override
+    protected void keyListenerCallBack(){
+        if (mOk != null)mOk.callOnClick();
     }
 
     protected String getTitle(){
@@ -166,12 +161,26 @@ public abstract class AbstractPayDialog extends DialogBaseOnMainActivityImp impl
         mPayAmtEt.setText(String.format(Locale.CHINA,"%.2f",mOriginalPayAmt));
         mPayAmtEt.setSelectAllOnFocus(true);
         mPayAmtEt.setOnFocusChangeListener((view, b) -> Utils.hideKeyBoard((EditText) view));
+        mPayAmtEt.setOnKeyListener((dialog, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_UP){
+                keyListenerCallBack();
+                return true;
+            }
+            return false;
+        });
     }
 
     private void init_pay_code(){
         mPayCode = findViewById(R.id.pay_code);
         mPayCode.setSelectAllOnFocus(true);
         mPayCode.setOnFocusChangeListener((view, b) -> Utils.hideKeyBoard((EditText) view));
+        mPayCode.setOnKeyListener((dialog, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_UP){
+                keyListenerCallBack();
+                return true;
+            }
+            return false;
+        });
     }
 
     private void initKeyboard(){
@@ -204,6 +213,7 @@ public abstract class AbstractPayDialog extends DialogBaseOnMainActivityImp impl
                             tmp_v.setOnClickListener(view -> closeWindow());
                             break;
                         case R.id._ok:
+                            mOk = (Button) tmp_v;
                             tmp_v.setOnClickListener(v -> {
                                 if (verify() && mYesOnclickListener != null)mYesOnclickListener.onYesClick(AbstractPayDialog.this);
                             });

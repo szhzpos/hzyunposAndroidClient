@@ -1,6 +1,5 @@
 package com.wyc.cloudapp.dialog.vip;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -51,39 +50,14 @@ public class VipChargeDialogImp extends AbstractPayDialog {
 
         mHandler = new Myhandler(this);
 
-        //保留两位小数
-        mPayAmtEt.postDelayed(()-> mPayAmtEt.requestFocus(),300);
-        mPayAmtEt.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        setWatcherToPayAmt();
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (editable.length()> 0){
-                    int index = editable.toString().indexOf('.');
-                    if (index > -1 && editable.length() >= (index += 3)){
-                        Logger.d("index:%d",index);
-                        editable.delete(index,editable.length());
-                    }
-                }
-            }
-        });
-
-        //初始化支付方式
         initPayMethod();
 
-        //初始化按钮事件
+        mOk.setText(R.string.charge_sz);
         mOk.setOnClickListener(view -> vip_charge());//父类默认会调用mYesOnclickListener接口，如果覆盖了记得单独调用mYesOnclickListener
 
         setHint(mContext.getString(R.string.c_amt_hint_sz));
-
     }
 
     @Override
@@ -117,6 +91,31 @@ public class VipChargeDialogImp extends AbstractPayDialog {
         recyclerView.setAdapter(mPayMethodViewAdapter);
     }
 
+    private void setWatcherToPayAmt(){
+        mPayAmtEt.postDelayed(()-> mPayAmtEt.requestFocus(),300);
+        mPayAmtEt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (editable.length()> 0){//保留两位小数
+                    int index = editable.toString().indexOf('.');
+                    if (index > -1 && editable.length() >= (index += 3)){
+                        Logger.d("index:%d",index);
+                        editable.delete(index,editable.length());
+                    }
+                }
+            }
+        });
+    }
     private void vip_charge(){
         if (verify()){
             mProgressDialog.setCancel(false).setMessage("正在生成充值订单...").show();
@@ -124,7 +123,7 @@ public class VipChargeDialogImp extends AbstractPayDialog {
                 final HttpRequest httpRequest = new HttpRequest();
 
                 JSONObject cashier_info = mContext.getCashierInfo(),store_info = mContext.getStoreInfo(),data_ = new JSONObject(),retJson,info_json;
-                String url = mContext.getUrl(),appId = mContext.getAppId(),appScret = mContext.getAppScret(),stores_id = store_info.getString("stores_id"),sz_param,order_code;
+                String url = mContext.getUrl(),appId = mContext.getAppId(),appScret = mContext.getAppScret(),stores_id = store_info.getString("stores_id"),pay_method_id,sz_param,order_code;
                     try {
 
                         data_.put("appid",appId);
@@ -153,9 +152,11 @@ public class VipChargeDialogImp extends AbstractPayDialog {
                                         Logger.d_json(info_json.toString());
 
                                         order_code = info_json.getString("order_code");
+                                        pay_method_id = mPayMethod.getString("pay_method_id");
+                                        int is_check = mPayMethod.getIntValue("is_check");
 
                                         //发起支付请求
-                                        if (mPayMethod.getIntValue("is_check") != 2){
+                                        if (is_check != 2){
                                             String unified_pay_order = mPayMethod.getString("unified_pay_order"),
                                                     unified_pay_query = mPayMethod.getString("unified_pay_query");
 
@@ -175,7 +176,7 @@ public class VipChargeDialogImp extends AbstractPayDialog {
                                             data_.put("is_wuren",2);
                                             data_.put("order_code_son",generate_pay_son_order_id());
                                             data_.put("pay_money", mPayAmtEt.getText().toString());
-                                            data_.put("pay_method",mPayMethod.getString("pay_method_id"));
+                                            data_.put("pay_method",pay_method_id);
                                             data_.put("pay_code_str",mPayCode.getText().toString());
 
                                             sz_param = HttpRequest.generate_request_parm(data_,appScret);
@@ -257,8 +258,13 @@ public class VipChargeDialogImp extends AbstractPayDialog {
                                         data_ = new JSONObject();
                                         data_.put("appid",appId);
                                         data_.put("order_code",order_code);
-                                        data_.put("case_pay_money", mPayAmtEt.getText().toString());
-                                        data_.put("pay_method",mPayMethod.getString("pay_method_id"));
+
+                                        if (is_check == 2)
+                                            data_.put("case_pay_money", mPayAmtEt.getText().toString());
+
+                                        data_.put("pay_method",pay_method_id);
+
+                                        Logger.d_json(data_.toJSONString());
 
                                         url = url + "/api/member/cl_money_order";
                                         sz_param = HttpRequest.generate_request_parm(data_,appScret);
@@ -275,12 +281,13 @@ public class VipChargeDialogImp extends AbstractPayDialog {
                                                         mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,info_json.getString("info")).sendToTarget();
                                                         break;
                                                     case "y":
-                                                        Logger.d("充值成功返回：%s",info_json);
+                                                        Logger.d_json(info_json.toJSONString());
                                                         final JSONArray members = JSON.parseArray(info_json.getString("member")),money_orders = JSON.parseArray(info_json.getString("money_order"));
                                                         final JSONObject member = members.getJSONObject(0);
 
                                                         if (mPrintStatus)
                                                             Printer.print(mContext,get_print_content(money_orders.getJSONObject(0),member,info_json.getJSONArray("welfare")));
+
 
                                                         mHandler.obtainMessage(MessageID.VIP_C_SUCCESS_ID,member).sendToTarget();
                                                         break;
@@ -372,7 +379,6 @@ public class VipChargeDialogImp extends AbstractPayDialog {
         }else
             MyDialog.ToastMessage("加载打印格式错误：" + print_format_info.getString("info"),getContext(),getWindow());
 
-        content = c_format_58(print_format_info,money_order,member,welfare);
         return content;
     }
 
@@ -387,11 +393,8 @@ public class VipChargeDialogImp extends AbstractPayDialog {
        return MyDialog.ToastMessage(null,"会员信息不能为空！",mContext,mDialogWindow,mVip != null) && super.verify();
     }
 
-
-
-    @SuppressLint("NewApi")
     private String generate_pay_son_order_id(){
-        return "MPAY" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + Utils.getNonce_str(8);
+        return "MPAY" + new SimpleDateFormat("yyyyMMdd",Locale.CHINA).format(new Date()) + Utils.getNonce_str(8);
     }
     private static class Myhandler extends Handler {
         private WeakReference<VipChargeDialogImp> weakHandler;

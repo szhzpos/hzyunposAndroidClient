@@ -64,9 +64,6 @@ public class VipInfoDialog extends DialogBaseOnMainActivityImp {
         mVip_balance = findViewById(R.id.vip_balance);
         mVip_integral = findViewById(R.id.vip_integral);
 
-        //初始化按钮
-        mSearchBtn = findViewById(R.id._ok);
-
         //初始化搜索条件输入框
         initSearchCondition();
         initAddVipBtn();
@@ -88,6 +85,12 @@ public class VipInfoDialog extends DialogBaseOnMainActivityImp {
     public void onDetachedFromWindow(){
 
     }
+
+    @Override
+    public void keyListenerCallBack(){
+        if (mSearchBtn != null)mSearchBtn.callOnClick();
+    }
+
     private void initChargeBtn(){
         final Button chargeBtn = findViewById(R.id.vip_charge);
         if (null != chargeBtn)
@@ -165,7 +168,7 @@ public class VipInfoDialog extends DialogBaseOnMainActivityImp {
                 if (tmp_v instanceof Button){
                     switch (id) {
                         case R.id._back:
-                            findViewById(R.id._back).setOnClickListener(v -> {
+                            tmp_v.setOnClickListener(v -> {
                                 View view = getCurrentFocus();
                                 if (view != null) {
                                     if (view.getId() == R.id.search_content) {
@@ -182,7 +185,8 @@ public class VipInfoDialog extends DialogBaseOnMainActivityImp {
                             });
                             break;
                         case R.id._ok:
-                            mSearchBtn.setOnClickListener(view -> {
+                            mSearchBtn = (Button) tmp_v;
+                            tmp_v.setOnClickListener(view -> {
                                 if (mVip == null)
                                     serchVip(mSearchContent.getText().toString(), 0);
                                 else {
