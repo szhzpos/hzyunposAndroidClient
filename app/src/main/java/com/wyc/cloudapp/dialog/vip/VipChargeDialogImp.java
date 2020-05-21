@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.dialog.vip;
 
+import android.content.ContentValues;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -121,18 +122,42 @@ public class VipChargeDialogImp extends AbstractPayDialog {
             mProgressDialog.setCancel(false).setMessage("正在生成充值订单...").show();
             CustomApplication.execute(()->{
                 final HttpRequest httpRequest = new HttpRequest();
+                final JSONObject member_order_info = new JSONObject();
+                final StringBuilder err = new StringBuilder();
 
                 JSONObject cashier_info = mContext.getCashierInfo(),store_info = mContext.getStoreInfo(),data_ = new JSONObject(),retJson,info_json;
-                String url = mContext.getUrl(),appId = mContext.getAppId(),appScret = mContext.getAppScret(),stores_id = store_info.getString("stores_id"),pay_method_id,sz_param,order_code;
+                final String url = mContext.getUrl(),appId = mContext.getAppId(),appScret = mContext.getAppScret(),stores_id = store_info.getString("stores_id"),sz_moeny =  mPayAmtEt.getText().toString(),
+                        member_id = mVip.getString("member_id"),third_order_id = generate_pay_son_order_id();
+
+
+                member_order_info.put("stores_id",stores_id);
+                member_order_info.put("member_id",member_id);
+                member_order_info.put("status",1);
+                member_order_info.put("addtime",System.currentTimeMillis() / 1000);
+
+                member_order_info.put("card_code",mVip.getString("card_code"));
+                member_order_info.put("mobile",mVip.getString("mobile"));
+                member_order_info.put("name",mVip.getString("name"));
+
+                member_order_info.put("third_order_id",third_order_id);
+                member_order_info.put("cashier_id",cashier_info.getString("cas_id"));
+                member_order_info.put("order_money",sz_moeny);
+
+                //保存单据
+                if (!SQLiteHelper.saveFormJson(member_order_info,"member_order_info",null,"INSERT",err)){
+                    mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,err.toString()).sendToTarget();
+                    return;
+                }
+
                     try {
 
                         data_.put("appid",appId);
                         data_.put("stores_id",stores_id);
-                        data_.put("member_id",mVip.getString("member_id"));
+                        data_.put("member_id",member_id);
                         data_.put("cashier_id",cashier_info.getString("cas_id"));
-                        data_.put("order_money", mPayAmtEt.getText().toString());
+                        data_.put("order_money",sz_moeny);
 
-                        sz_param = HttpRequest.generate_request_parm(data_,appScret);
+                        String sz_param = HttpRequest.generate_request_parm(data_,appScret);
 
                         Logger.i("生成充值订单参数:url:%s%s,param:%s",url ,"/api/member/mk_money_order" ,sz_param);
                         retJson = httpRequest.sendPost(url + "/api/member/mk_money_order",sz_param,true);
@@ -151,9 +176,20 @@ public class VipChargeDialogImp extends AbstractPayDialog {
                                     case "y":
                                         Logger.d_json(info_json.toString());
 
-                                        order_code = info_json.getString("order_code");
-                                        pay_method_id = mPayMethod.getString("pay_method_id");
                                         int is_check = mPayMethod.getIntValue("is_check");
+
+                                        final String order_code = info_json.getString("order_code"),pay_method_id = mPayMethod.getString("pay_method_id"),
+                                                whereClause = "member_id = ? and third_order_id = ?";
+
+                                        final String[] whereArgs = new String[]{member_id,third_order_id};
+                                        final ContentValues values = new ContentValues();
+
+                                        //保存支付单号
+                                        values.put("order_code",order_code);
+                                        if (!SQLiteHelper.execUpdateSql("member_order_info",values,whereClause,whereArgs,err)){
+                                            mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,err.toString()).sendToTarget();
+                                            return;
+                                        }
 
                                         //发起支付请求
                                         if (is_check != 2){
@@ -174,8 +210,8 @@ public class VipChargeDialogImp extends AbstractPayDialog {
                                             data_.put("order_code",order_code);
                                             data_.put("pos_num",cashier_info.getString("pos_num"));
                                             data_.put("is_wuren",2);
-                                            data_.put("order_code_son",generate_pay_son_order_id());
-                                            data_.put("pay_money", mPayAmtEt.getText().toString());
+                                            data_.put("order_code_son",third_order_id);
+                                            data_.put("pay_money",sz_moeny);
                                             data_.put("pay_method",pay_method_id);
                                             data_.put("pay_code_str",mPayCode.getText().toString());
 
@@ -255,20 +291,27 @@ public class VipChargeDialogImp extends AbstractPayDialog {
 
                                         //处理充值订单
                                         mProgressDialog.setMessage("正在处理充值订单...").refreshMessage();
+
+                                        //保存支付方式,更新状态为已支付完成
+                                        values.clear();
+                                        values.put("pay_method_id",pay_method_id);
+                                        values.put("status",2);
+                                        if (!SQLiteHelper.execUpdateSql("member_order_info",values,whereClause,whereArgs,err)){
+                                            mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,err.toString()).sendToTarget();
+                                            return;
+                                        }
+
                                         data_ = new JSONObject();
                                         data_.put("appid",appId);
                                         data_.put("order_code",order_code);
-
                                         if (is_check == 2)
-                                            data_.put("case_pay_money", mPayAmtEt.getText().toString());
-
+                                            data_.put("case_pay_money",sz_moeny);
                                         data_.put("pay_method",pay_method_id);
 
                                         Logger.d_json(data_.toJSONString());
 
-                                        url = url + "/api/member/cl_money_order";
                                         sz_param = HttpRequest.generate_request_parm(data_,appScret);
-                                        retJson = httpRequest.sendPost(url,sz_param,true);
+                                        retJson = httpRequest.sendPost(url + "/api/member/cl_money_order",sz_param,true);
 
                                         switch (retJson.getIntValue("flag")) {
                                             case 0:
@@ -283,13 +326,26 @@ public class VipChargeDialogImp extends AbstractPayDialog {
                                                     case "y":
                                                         Logger.d_json(info_json.toJSONString());
                                                         final JSONArray members = JSON.parseArray(info_json.getString("member")),money_orders = JSON.parseArray(info_json.getString("money_order"));
-                                                        final JSONObject member = members.getJSONObject(0);
+                                                        final JSONObject member = members.getJSONObject(0),pay_info = money_orders.getJSONObject(0);
 
-                                                        if (mPrintStatus)
-                                                            Printer.print(mContext,get_print_content(money_orders.getJSONObject(0),member,info_json.getJSONArray("welfare")));
+                                                        if (pay_info != null && member != null){
+                                                            if (mPrintStatus)
+                                                                Printer.print(mContext,get_print_content(pay_info,member,info_json.getJSONArray("welfare")));
 
+                                                            values.clear();
+                                                            values.put("status",3);//已完成
+                                                            values.put("xnote",info_json.toJSONString());
+                                                            values.put("give_money",pay_info.getDoubleValue("give_money"));
+                                                            if (!SQLiteHelper.execUpdateSql("member_order_info",values,whereClause,whereArgs,err)){
+                                                                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,err.toString()).sendToTarget();
+                                                                return;
+                                                            }
 
-                                                        mHandler.obtainMessage(MessageID.VIP_C_SUCCESS_ID,member).sendToTarget();
+                                                            mHandler.obtainMessage(MessageID.VIP_C_SUCCESS_ID,member).sendToTarget();
+                                                        }else {
+                                                            Logger.e("服务器返回member：%s,money_order：%s",members,money_orders);
+                                                            mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"服务器返回信息为空！").sendToTarget();
+                                                        }
                                                         break;
                                                 }
                                                 break;

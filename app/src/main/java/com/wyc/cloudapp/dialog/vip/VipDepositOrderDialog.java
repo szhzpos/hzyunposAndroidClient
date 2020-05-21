@@ -1,6 +1,7 @@
-package com.wyc.cloudapp.dialog.orderDialog;
+package com.wyc.cloudapp.dialog.vip;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
@@ -14,16 +15,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.adapter.RefundOrderViewAdapter;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnContextImp;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -34,62 +30,26 @@ import java.util.Locale;
 
 import static android.content.Context.WINDOW_SERVICE;
 
-public class QueryRefundOrderDialog extends DialogBaseOnMainActivityImp {
+public class VipDepositOrderDialog extends DialogBaseOnContextImp {
     private int mCurrentStatusIndex = 0;
-    private EditText mStartDateEt,mStartTimeEt,mEndDateEt,mEndTimeEt,mCashierEt;
     private String[] mCashierNames,mCashierIDs;
-    private RefundOrderViewAdapter mRefundOrderViewAdapter;
-    public QueryRefundOrderDialog(@NonNull MainActivity context) {
-        super(context, context.getString(R.string.local_refund_order_sz));
+    private EditText mStartDateEt,mStartTimeEt,mEndDateEt,mEndTimeEt,mCashierEt,mS_ex_statusEt,mOrderStatusEt;
+    public VipDepositOrderDialog(@NonNull Context context) {
+        super(context, context.getString(R.string.vip_deposit_o_sz));
+
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.refund_order_dialog_layout);
+        setContentLayout(R.layout.vip_deposit_order_dialog_layout);
+
 
         initWindowSize();
-        initStartDateAndTime();
         initEndDateAndTime();
+        initStartDateAndTime();
+        initStatusEt();
         initCashierEt();
-        initOrderDetailTable();
-
-        initQueryBtn();
-    }
-
-    private void initQueryBtn(){
-        final Button query_btn = findViewById(R.id.query_btn);
-        if (query_btn != null){
-            query_btn.setOnClickListener(v -> {
-                final EditText order_code_et = findViewById(R.id.order_code);
-                final String start_date_time = mStartDateEt.getText() + " " + mStartTimeEt.getText(),end_date_time = mEndDateEt.getText() + " " + mEndTimeEt.getText(),
-                        sz_order_code = order_code_et.getText().toString(),sz_cashier = Utils.getViewTagValue(mCashierEt,"");
-
-                final StringBuilder where_sql = new StringBuilder();
-
-                where_sql.append("where a.stores_id = ").append(mContext.getStoreInfo().getIntValue("stores_id"));
-
-                if(sz_order_code.length() != 0){
-                    if(where_sql.length() != 0)
-                        where_sql.append(" and ");
-
-                    where_sql.append(" a.order_code").append(" like ").append("'%").append(sz_order_code).append("'");
-                }
-                if(!"0".equals(sz_cashier)){
-                    if(where_sql.length() != 0)
-                        where_sql.append(" and ");
-
-                    where_sql.append(" a.cashier_id").append("=").append(sz_cashier);
-                }
-                if(where_sql.length() != 0){
-                    where_sql.append(" and ");
-                }
-                where_sql.append("datetime(a.addtime, 'unixepoch', 'localtime') ").append("between ").append("'").append(start_date_time).append("'").append(" and ").append("'").append(end_date_time).append("'");
-
-                mRefundOrderViewAdapter.setDatas(where_sql.toString());
-            });
-            query_btn.callOnClick();
-        }
     }
 
     private void initWindowSize(){//初始化窗口尺寸
@@ -102,22 +62,13 @@ public class QueryRefundOrderDialog extends DialogBaseOnMainActivityImp {
             if (dialogWindow != null){
                 WindowManager.LayoutParams lp = dialogWindow.getAttributes();
                 dialogWindow.setGravity(Gravity.CENTER);
-
-                Logger.d("屏幕尺寸X:%d,Y:%d",point.x,point.y);
-
-                lp.height = (int)(0.95 * point.y);
-                lp.width = (int)(0.9 * point.x) - 20;
+                lp.height = (int)(0.9 * point.y);
+                //lp.width = (int)(0.85 * point.x) - 4;
                 dialogWindow.setAttributes(lp);
             }
         }
     }
-    private void initOrderDetailTable(){
-        mRefundOrderViewAdapter = new RefundOrderViewAdapter(mContext);
-        final RecyclerView body = findViewById(R.id.refund_order_body);
-        body.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
-        body.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
-        body.setAdapter(mRefundOrderViewAdapter);
-    }
+
     private void initEndDateAndTime(){
         final EditText end_date = mEndDateEt = findViewById(R.id.end_date),end_time = mEndTimeEt = findViewById(R.id.end_time);
         if (null != end_date && null != end_time){
@@ -144,6 +95,26 @@ public class QueryRefundOrderDialog extends DialogBaseOnMainActivityImp {
         if (b)v.callOnClick();
         Utils.hideKeyBoard((EditText) v);
     };
+
+    private void initStatusEt(){
+        final String sz_all = "所有";
+        final EditText s_ex_status_et = mS_ex_statusEt = findViewById(R.id.s_ex_status_et),order_status_et = mOrderStatusEt = findViewById(R.id.order_status_et);
+
+        //交班状态
+        s_ex_status_et.setOnFocusChangeListener(etFocusChangeListener);
+        s_ex_status_et.setTag(0);
+        s_ex_status_et.setText(sz_all);
+        s_ex_status_et.setOnClickListener(etClickListener);
+
+        order_status_et.setOnFocusChangeListener(etFocusChangeListener);
+        order_status_et.setTag(0);
+        order_status_et.setText(sz_all);
+        order_status_et.setOnClickListener(etClickListener);
+
+    }
+
+    private View.OnClickListener etClickListener = this::showChooseDialog;
+
     private void initCashierEt(){
         final EditText cashier_et = mCashierEt = findViewById(R.id.cashier_et);
         if (null != cashier_et){
@@ -163,28 +134,46 @@ public class QueryRefundOrderDialog extends DialogBaseOnMainActivityImp {
                         mCashierNames[i] = cas_infos[1];
                     }
                 }
-                cashier_et.setOnClickListener(v -> chooseDialog(mCashierEt,mCashierNames,getCashierIdIndex((String) v.getTag()),mContext.getString(R.string.cashier_not_colon_sz)));
+                cashier_et.setOnClickListener(etClickListener);
                 setCashierEt(cashier_et);
             }else{
                 MyDialog.ToastMessage(cashier_et,"初始化收银员错误：" + err,mContext,getWindow());
             }
         }
     }
-    private int getCashierIdIndex(final  String cas_id){
-        int index = -1;
-        for (String info: mCashierIDs){
-            index++;
-            if (null != cas_id){
-                if (cas_id.equals(info)){
+
+    private void showChooseDialog(final @NonNull View et){
+        if (et instanceof EditText){
+            String title = "";
+            int index = 0;
+            final Object et_tag = et.getTag();
+            String[] items = new String[]{""};
+            switch (et.getId()){
+                case R.id.cashier_et:
+                    items = mCashierNames;
+                    title = mContext.getString(R.string.cashier_not_colon_sz);
                     break;
-                }
+                case R.id.s_ex_status_et:
+                    items = new String[]{"所有","未交班","已交班"};
+                    title = mContext.getString(R.string.s_e_status_sz);
+                    break;
+                case R.id.order_status_et:
+                    items = new String[]{"所有","未付款","已付款","已完成","已关闭"};
+                    title = mContext.getString(R.string.order_s_sz);
+                    break;
             }
+            final String [] currentStatusItems = items;
+
+            if (currentStatusItems == mCashierNames){
+                if (et_tag instanceof String)
+                    index = getCashierIdIndex((String) et.getTag());
+            }else {
+                if (et_tag instanceof Integer)
+                    index = (int)et.getTag();
+            }
+            Logger.d("index:%d",index);
+            chooseDialog((EditText) et,currentStatusItems,index,title);
         }
-        return index;
-    }
-    private void setCashierEt(final @NonNull EditText cashier_et){
-        cashier_et.setTag(mCashierIDs[mCurrentStatusIndex]);
-        cashier_et.setText(mCashierNames[mCurrentStatusIndex]);
     }
     private void chooseDialog(final @NonNull EditText et,final String[] currentStatusItems,int index,final String title){
         final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
@@ -193,6 +182,9 @@ public class QueryRefundOrderDialog extends DialogBaseOnMainActivityImp {
             if (mCurrentStatusIndex < currentStatusItems.length && mCurrentStatusIndex >= 0){
                 if (currentStatusItems == mCashierNames){
                     setCashierEt(et);
+                }else {
+                    et.setTag(mCurrentStatusIndex);
+                    et.setText(currentStatusItems[mCurrentStatusIndex]);
                 }
             }
             dialog.dismiss();
@@ -233,5 +225,32 @@ public class QueryRefundOrderDialog extends DialogBaseOnMainActivityImp {
             lp.height= 288;
         }
         alertDialog.getWindow().setAttributes(lp);
+    }
+
+    private int getCashierIdIndex(final  String cas_id){
+        int index = -1;
+        for (String info: mCashierIDs){
+            index++;
+            if (null != cas_id){
+                if (cas_id.equals(info)){
+                    break;
+                }
+            }
+        }
+        return index;
+    }
+    private String getCasId(final EditText et){
+        Object tag;
+        String tag_v = "0";
+        if (et != null && (tag = et.getTag()) != null){
+            if (tag instanceof String){
+                tag_v = (String) tag;
+            }
+        }
+        return tag_v;
+    }
+    private void setCashierEt(final @NonNull EditText cashier_et){
+        cashier_et.setTag(mCashierIDs[mCurrentStatusIndex]);
+        cashier_et.setText(mCashierNames[mCurrentStatusIndex]);
     }
 }

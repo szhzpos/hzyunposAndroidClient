@@ -1,28 +1,28 @@
 package com.wyc.cloudapp.dialog.orderDialog;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.adapter.RetailOrderViewAdapter;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnContextImp;
 import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
@@ -34,28 +34,22 @@ import java.util.Locale;
 
 import static android.content.Context.WINDOW_SERVICE;
 
-public class QuerySaleOrderDialog extends DialogBaseOnMainActivityImp {
-    private int mCurrentStatusIndex = 0;
-    private String[] mCashierNames,mCashierIDs;
-    private EditText mStartDateEt,mStartTimeEt,mEndDateEt,mEndTimeEt,mPayStatusEt,mCashierEt,mS_ex_statusEt,mUploadStatusEt,mOrderStatusEt;
-    private RetailOrderViewAdapter mRetailOrderViewAdapter;
-    public QuerySaleOrderDialog(@NonNull MainActivity context, final String title) {
-        super(context,title);
-        mRetailOrderViewAdapter = new RetailOrderViewAdapter(context);
+public abstract class QuerySuperDialog extends DialogBaseOnMainActivityImp {
+    protected int mCurrentStatusIndex = 0;
+    protected String[] mCashierNames,mCashierIDs;
+    protected EditText mStartDateEt,mStartTimeEt,mEndDateEt,mEndTimeEt,mPayStatusEt,mCashierEt,mS_ex_statusEt,mUploadStatusEt,mOrderStatusEt;
+    public QuerySuperDialog(@NonNull MainActivity context) {
+        super(context, null);
     }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.retail_order_dialog_layout);
+        setContentLayout(R.layout.query_surper_dialog_layout);
 
         initStartDateAndTime();
         initEndDateAndTime();
-
         initStatusEt();
         initCashierEt();
-        //初始化表格
-        initOrderDetailTable();
 
         //初始窗口尺寸
         initWindowSize();
@@ -63,65 +57,39 @@ public class QuerySaleOrderDialog extends DialogBaseOnMainActivityImp {
         initQueryBtn();
     }
 
+    protected void setTableLayout(int res_id){
+        final LinearLayout main_layout = findViewById(R.id.query_main_layout);
+        if (null != main_layout) {
+            final View dialog_content = View.inflate(mContext, res_id, null);
+            if (dialog_content != null)
+                main_layout.addView(dialog_content, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        }
+    }
+
+    protected abstract void query();
+
+    protected void initWindowSize(){//初始化窗口尺寸
+        WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
+        if (m != null){
+            Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+            Point point = new Point();
+            d.getSize(point);
+            Window dialogWindow = this.getWindow();
+            if (dialogWindow != null){
+                WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+                dialogWindow.setGravity(Gravity.CENTER);
+                lp.height = (int)(0.9 * point.y);
+                lp.width = (int)(0.85 * point.x) - 4;
+                dialogWindow.setAttributes(lp);
+            }
+        }
+    }
+
     private void initQueryBtn(){
         final Button query_btn = findViewById(R.id.query_btn);
         if (query_btn != null){
             query_btn.setOnClickListener(v -> {
-                final EditText order_code_et = findViewById(R.id.order_code);
-                final String start_date_time = mStartDateEt.getText() + " " + mStartTimeEt.getText(),end_date_time = mEndDateEt.getText() + " " + mEndTimeEt.getText(),
-                        sz_order_code = order_code_et.getText().toString(),sz_cashier = getCasId(mCashierEt);
-                int pay_status = Utils.getViewTagValue(mPayStatusEt,0),s_ex_status = Utils.getViewTagValue(mS_ex_statusEt,0),
-                        upload_status = Utils.getViewTagValue(mUploadStatusEt,0),order_status = Utils.getViewTagValue(mOrderStatusEt,0);
-
-                final StringBuilder where_sql = new StringBuilder();
-
-                where_sql.append("where a.stores_id = ").append(mContext.getStoreInfo().getIntValue("stores_id"));
-
-                if(sz_order_code.length() != 0){
-                    if(where_sql.length() != 0)
-                        where_sql.append(" and ");
-
-                    where_sql.append(" order_code").append(" like ").append("'%").append(sz_order_code).append("'");
-                }
-                if(!"0".equals(sz_cashier)){
-                    if(where_sql.length() != 0)
-                        where_sql.append(" and ");
-
-                    where_sql.append(" a.cashier_id").append("=").append(sz_cashier);
-                }
-                if(pay_status != 0){
-                    if(where_sql.length() != 0)
-                        where_sql.append(" and ");
-
-                    where_sql.append(" pay_status").append("=").append(pay_status);
-                }
-
-                if(order_status != 0){
-                    if(where_sql.length() != 0)
-                        where_sql.append(" and ");
-
-                    where_sql.append(" order_status").append("=").append(order_status);
-
-                }
-                if(upload_status != 0){
-                    if(where_sql.length() != 0)
-                        where_sql.append(" and ");
-
-                    where_sql.append(" upload_status").append("=").append(upload_status);
-                }
-                if(s_ex_status != 0){
-                    if(where_sql.length() != 0)
-                        where_sql.append(" and ");
-
-                    where_sql.append(" transfer_status = ").append(s_ex_status);
-                }
-
-                if(where_sql.length() != 0){
-                    where_sql.append(" and ");
-                }
-                where_sql.append("datetime(addtime, 'unixepoch', 'localtime') ").append("between ").append("'").append(start_date_time).append("'").append(" and ").append("'").append(end_date_time).append("'");
-
-                mRetailOrderViewAdapter.setDatas(where_sql.toString());
+                query();
             });
             query_btn.callOnClick();
         }
@@ -306,8 +274,8 @@ public class QuerySaleOrderDialog extends DialogBaseOnMainActivityImp {
         final EditText end_date = mEndDateEt = findViewById(R.id.end_date),end_time = mEndTimeEt = findViewById(R.id.end_time);
         if (null != end_date && null != end_time){
             end_date.setOnFocusChangeListener(etFocusChangeListener);
-            end_date.setText(new SimpleDateFormat("yyyy-MM-dd",Locale.CHINA).format(new Date()));
-            end_date.setOnClickListener(v -> Utils.showDatePickerDialog(mContext,(TextView) v,Calendar.getInstance()));
+            end_date.setText(new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).format(new Date()));
+            end_date.setOnClickListener(v -> Utils.showDatePickerDialog(mContext,(TextView) v, Calendar.getInstance()));
 
             end_time.setOnFocusChangeListener(etFocusChangeListener);
             end_time.setOnClickListener(v -> Utils.showTimePickerDialog(mContext,(TextView) v,Calendar.getInstance()));
@@ -329,29 +297,5 @@ public class QuerySaleOrderDialog extends DialogBaseOnMainActivityImp {
         if (b)v.callOnClick();
         Utils.hideKeyBoard((EditText) v);
     };
-
-    private void initWindowSize(){//初始化窗口尺寸
-        WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
-        if (m != null){
-            Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
-            Point point = new Point();
-            d.getSize(point);
-            Window dialogWindow = this.getWindow();
-            if (dialogWindow != null){
-                WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-                dialogWindow.setGravity(Gravity.CENTER);
-                lp.height = (int)(0.9 * point.y);
-                lp.width = (int)(0.85 * point.x) - 4;
-                dialogWindow.setAttributes(lp);
-            }
-        }
-    }
-    private void initOrderDetailTable(){
-        mRetailOrderViewAdapter = new RetailOrderViewAdapter(mContext);
-        final RecyclerView body = findViewById(R.id.order_body);
-        body.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
-        body.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
-        body.setAdapter(mRetailOrderViewAdapter);
-    }
 
 }

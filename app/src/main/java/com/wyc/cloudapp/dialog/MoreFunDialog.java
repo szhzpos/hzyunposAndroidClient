@@ -12,6 +12,7 @@ import com.wyc.cloudapp.dialog.barcodeScales.BarCodeScaleDownDialog;
 import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.dialog.orderDialog.QueryRefundOrderDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
+import com.wyc.cloudapp.dialog.vip.VipDepositOrderDialog;
 import com.wyc.cloudapp.print.Printer;
 
 public class MoreFunDialog extends DialogBaseOnMainActivityImp {
@@ -30,6 +31,7 @@ public class MoreFunDialog extends DialogBaseOnMainActivityImp {
         initBarcodeScaleBtn();
         initAllRefundBtn();
         initQueryRefundOrderBtn();
+        initVipDepositOrderBtn();
     }
 
     private void initAllRefundBtn(){
@@ -76,6 +78,14 @@ public class MoreFunDialog extends DialogBaseOnMainActivityImp {
         btn.setOnClickListener(v -> {
             QueryRefundOrderDialog queryRefundOrderDialog = new QueryRefundOrderDialog(mContext);
             queryRefundOrderDialog.show();
+            this.dismiss();
+        });
+    }
+    private void initVipDepositOrderBtn(){
+        final Button btn = findViewById(R.id.vip_deposit_order);
+        btn.setOnClickListener(v -> {
+            VipDepositOrderDialog vipDepositOrderDialog = new VipDepositOrderDialog(mContext);
+            vipDepositOrderDialog.show();
             this.dismiss();
         });
     }

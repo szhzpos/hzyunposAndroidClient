@@ -174,14 +174,14 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         }
         return isTrue;
     }
-    private static boolean saveFormJson(@NonNull final JSONObject json, @NonNull final String table_name, final String save_type, StringBuilder err){
+    private static boolean saveFormJson(@NonNull final JSONObject json, @NonNull final String table_name, final String action, StringBuilder err){
         boolean isTrue = true;
         StringBuilder stringBuilderHead = new StringBuilder();
         StringBuilder stringBuilderfoot = new StringBuilder();
         SQLiteStatement statement = null;
         int columnN0 = 0;
 
-        stringBuilderHead.append(save_type).append(" INTO ");
+        stringBuilderHead.append(action).append(" INTO ");
         stringBuilderHead.append(table_name);
         stringBuilderHead.append(" (");
         stringBuilderfoot.append("VALUES (");
@@ -423,7 +423,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
     }
 
 
-    public static boolean saveFormJson(@NonNull final JSONObject json, @NonNull final String table_name, String[] cls, final String save_type, StringBuilder err){
+    public static boolean saveFormJson(@NonNull final JSONObject json, @NonNull final String table_name, String[] cls, final String action, StringBuilder err){
         boolean isTrue = true;
         StringBuilder stringBuilderHead = new StringBuilder();
         StringBuilder stringBuilderfoot = new StringBuilder();
@@ -431,10 +431,10 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         int columnN0 = 0;
 
         if (cls == null || cls.length == 0){
-            return saveFormJson(json,table_name,save_type,err);
+            return saveFormJson(json,table_name,action,err);
         }
 
-        stringBuilderHead.append(save_type).append(" INTO ");
+        stringBuilderHead.append(action).append(" INTO ");
         stringBuilderHead.append(table_name);
         stringBuilderHead.append(" (");
         stringBuilderfoot.append("VALUES (");
@@ -1202,7 +1202,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    barcode_id INT,\n" +
                 "    gp_id      INT,\n" +
                 "    _id        INT UNIQUE\n" +
-                ");",goods_group_view_sql = "CREATE VIEW IF NOT EXISTS vi_goods_group_info AS\n" +//组合商品视图
+                ");",goods_group_view = "CREATE VIEW IF NOT EXISTS vi_goods_group_info AS\n" +//组合商品视图
                 "    SELECT b.*,\n" +
                 "           a.xnum,\n" +
                 "           c.*\n" +
@@ -1270,6 +1270,27 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "        order_code,\n" +
                 "        discount_type\n" +
                 "    )\n" +
+                ");",member_order_info = "CREATE TABLE member_order_info (\n" +
+                "    xnote           VARCHAR,\n" +
+                "    addtime         INTEGER,\n" +
+                "    transfer_status INTEGER DEFAULT (1),\n" +
+                "    status          INTEGER,\n" +
+                "    cashier_id      INTEGER,\n" +
+                "    stores_id       INTEGER,\n" +
+                "    name            VARCHAR,\n" +
+                "    mobile          VARCHAR,\n" +
+                "    card_code       VARCHAR,\n" +
+                "    pay_method_id   INTEGER,\n" +
+                "    order_money     REAL,\n" +
+                "    give_money     REAL DEFAULT (0.0),\n" +
+                "    order_code      VARCHAR,\n" +
+                "    third_order_id  VARCHAR,\n" +
+                "    member_id       INTEGER NOT NULL,\n" +
+                "    _id             INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
+                "    UNIQUE (\n" +
+                "        third_order_id,\n" +
+                "        member_id\n" +
+                "    )\n" +
                 ");";
 
         list.add(sql_shop_stores);
@@ -1286,11 +1307,12 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         list.add(sql_retail_order_pays);
         list.add(sql_goods_group);
         list.add(sql_goods_group_info);
-        list.add(goods_group_view_sql);
+        list.add(goods_group_view);
         list.add(sql_hangbill);
         list.add(sql_hangbill_detail);
         list.add(sql_barcode_scale_info);
         list.add(sql_discount_record);
+        list.add(member_order_info);
         try {
             db.beginTransaction();
             for (String sql : list) {

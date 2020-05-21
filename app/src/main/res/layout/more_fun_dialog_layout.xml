@@ -92,5 +92,18 @@
             android:textSize="@dimen/font_size_14"
             app:layout_constraintStart_toEndOf="@id/all_refund_btn"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/vip_deposit_order"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/more_fun_btn_width"
+            android:layout_height="@dimen/more_fun_btn_height"
+            android:layout_marginTop="@dimen/margin_5"
+            android:background="@drawable/button_blue"
+            android:text="@string/vip_deposit_o_sz"
+            android:textColor="@color/blue_white"
+            android:textSize="@dimen/font_size_14"
+            app:layout_constraintStart_toStartOf="@id/sync_btn"
+            app:layout_constraintTop_toBottomOf="@id/sync_btn" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>
