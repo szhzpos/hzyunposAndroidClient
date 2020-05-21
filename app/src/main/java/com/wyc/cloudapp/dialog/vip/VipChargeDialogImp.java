@@ -388,7 +388,7 @@ public class VipChargeDialogImp extends AbstractPayDialog {
             info.append("会员姓名：".concat(Utils.getNullStringAsEmpty(member,"name"))).append(new_line);
             info.append("支付方式：".concat(Utils.getNullStringAsEmpty(money_order,"pay_method_name"))).append(new_line);
             info.append("充值金额：".concat(Utils.getNullStringAsEmpty(money_order,"order_money"))).append(new_line);
-            info.append("赠送金额：".concat(Utils.getNullStringAsEmpty(money_order,"give_money"))).append(new_line);
+            info.append(mContext.getString(R.string.give_amt).concat("：").concat(Utils.getNullStringAsEmpty(money_order,"give_money"))).append(new_line);
             info.append("会员余额：".concat(Utils.getNullStringAsEmpty(member,"money_sum"))).append(new_line);
             info.append("会员积分：".concat(Utils.getNullStringAsEmpty(member,"points_sum"))).append(new_line);
             info.append("会员电话：".concat(Utils.getNullStringAsEmpty(member,"mobile"))).append(new_line);

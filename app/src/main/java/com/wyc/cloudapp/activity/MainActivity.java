@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (q_deal_linerLayout != null)
             q_deal_linerLayout.setOnClickListener(v -> {
-                QuerySaleOrderDialog querySaleOrderDialog = new QuerySaleOrderDialog(MainActivity.this,getString(R.string.deal_sz));
+                QuerySaleOrderDialog querySaleOrderDialog = new QuerySaleOrderDialog(MainActivity.this);
                 querySaleOrderDialog.show();;
             });//查交易
 

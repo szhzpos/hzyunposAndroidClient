@@ -23,14 +23,10 @@ import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
-public final class RefundOrderViewAdapter extends RecyclerView.Adapter<RefundOrderViewAdapter.MyViewHolder>  {
-    private MainActivity mContext;
-    private JSONArray mDatas;
-    private View mCurrentItemView;
+public final class RefundOrderViewAdapter extends AbstractDataAdapter<RefundOrderViewAdapter.MyViewHolder> {
     public RefundOrderViewAdapter(final MainActivity context){
         mContext = context;
     }
-
     static class MyViewHolder extends RecyclerView.ViewHolder {
         TextView row_id,retail_order_code,refund_order_code,refund_order_amt,refund_amt,refund_type,refund_status,cas_name,upload_status,oper_time;
         View mCurrentLayoutItemView;
@@ -53,7 +49,7 @@ public final class RefundOrderViewAdapter extends RecyclerView.Adapter<RefundOrd
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = View.inflate(mContext, R.layout.refund_order_layout, null);
+        View itemView = View.inflate(mContext, R.layout.refund_order_content_layout, null);
         itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int) mContext.getResources().getDimension(R.dimen.table_row_height)));
         return new MyViewHolder(itemView);
     }
@@ -96,60 +92,6 @@ public final class RefundOrderViewAdapter extends RecyclerView.Adapter<RefundOrd
         return mDatas == null ? 0: mDatas.size();
     }
 
-    private void setViewBackgroundColor(View view,boolean s){
-        if(view!= null) {
-            View child;
-            int selected_color, item_color,text_color;
-            if (s) {
-                selected_color = mContext.getColor(R.color.listSelected);
-                item_color = Color.YELLOW;
-                text_color = mContext.getColor(R.color.white);
-            }else {
-                selected_color = mContext.getColor(R.color.white);
-                item_color = mContext.getColor(R.color.appColor);
-                text_color = mContext.getColor(R.color.text_color);
-            }
-            view.setBackgroundColor(selected_color);
-            if (view instanceof LinearLayout){
-                LinearLayout linearLayout = (LinearLayout)view;
-                int count = linearLayout.getChildCount();
-                for (int i = 0;i < count;i++){
-                    child = linearLayout.getChildAt(i);
-                    if (child instanceof TextView){
-                        final TextView tv = ((TextView) child);
-                        switch (tv.getId()) {
-                            case R.id.retail_order_code:
-                            case R.id.refund_order_code:
-                                tv.setTextColor(item_color);
-                                break;
-                            case R.id.refund_status:
-                                if (Utils.getViewTagValue(child,2) == 1){
-                                    tv.setTextColor(mContext.getColor(R.color.orange_1));
-                                }else{
-                                    tv.setTextColor(text_color);
-                                }
-                                break;
-                            default:
-                                tv.setTextColor(text_color);
-                                break;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private void setCurrentItemView(View v){
-        if (mCurrentItemView == null){
-            mCurrentItemView = v;
-            setViewBackgroundColor(v,true);
-        }else if(mCurrentItemView != v){
-            setViewBackgroundColor(mCurrentItemView,false);
-            mCurrentItemView = v;
-            setViewBackgroundColor(v,true);
-        }
-    }
-
     private View.OnTouchListener touchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
@@ -160,7 +102,7 @@ public final class RefundOrderViewAdapter extends RecyclerView.Adapter<RefundOrd
                     RetailOrderDetailsDialog retailOrderDetailsDialog = new RetailOrderDetailsDialog(mContext,getCurrentRetailOrder());
                     retailOrderDetailsDialog.show();
                 }else if (isClickView(sale_refund_tv,event.getX(),event.getY())){
-                    RefundOrderDetailsDialog refundOrderDetailsDialog = new RefundOrderDetailsDialog(mContext,getCurentRefundOrder());
+                    RefundOrderDetailsDialog refundOrderDetailsDialog = new RefundOrderDetailsDialog(mContext,getCurrentOrder());
                     refundOrderDetailsDialog.show();
                 }
             }
@@ -168,12 +110,6 @@ public final class RefundOrderViewAdapter extends RecyclerView.Adapter<RefundOrd
             return false;
         }
     };
-
-    private boolean isClickView(final View view,float x,float y){
-        if (view == null)return false;
-        float v_x = view.getX(),v_y = view.getY();
-        return x >= v_x && x <= v_x + view.getWidth() && y >= v_y && y <= v_y + view.getHeight();
-    }
 
     private JSONObject getCurrentRetailOrder(){
         final JSONObject retail_order_info = new JSONObject();
@@ -210,7 +146,9 @@ public final class RefundOrderViewAdapter extends RecyclerView.Adapter<RefundOrd
         }
         return retail_order_info;
     }
-    private JSONObject getCurentRefundOrder(){
+
+    @Override
+    protected JSONObject getCurrentOrder(){
         if (null != mCurrentItemView){
             final TextView order_code_tv = mCurrentItemView.findViewById(R.id.refund_order_code);
             if (null != order_code_tv){
@@ -226,6 +164,7 @@ public final class RefundOrderViewAdapter extends RecyclerView.Adapter<RefundOrd
         return null;
     }
 
+    @Override
     public void setDatas(final String where_sql){
         final StringBuilder err = new StringBuilder();
         final String sql = "SELECT  order_code retail_order_code,ro_code refund_order_code,total refund_order_amt,refund_total refund_amt,type refund_type,\n" +

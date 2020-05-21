@@ -1,7 +1,6 @@
 package com.wyc.cloudapp.dialog.orderDialog;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
@@ -17,13 +16,18 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.adapter.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.RetailOrderViewAdapter;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnContextImp;
 import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
+import com.wyc.cloudapp.dialog.vip.VipDepositOrderDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -34,39 +38,33 @@ import java.util.Locale;
 
 import static android.content.Context.WINDOW_SERVICE;
 
-public abstract class QuerySuperDialog extends DialogBaseOnMainActivityImp {
-    protected int mCurrentStatusIndex = 0;
-    protected String[] mCashierNames,mCashierIDs;
+public abstract class AbstractQuerySuperDialog extends DialogBaseOnMainActivityImp {
+    private int mCurrentStatusIndex = 0;
+    private String[] mCashierNames,mCashierIDs;
     protected EditText mStartDateEt,mStartTimeEt,mEndDateEt,mEndTimeEt,mPayStatusEt,mCashierEt,mS_ex_statusEt,mUploadStatusEt,mOrderStatusEt;
-    public QuerySuperDialog(@NonNull MainActivity context) {
-        super(context, null);
+    private AbstractDataAdapter mAdapter;
+    protected AbstractQuerySuperDialog(@NonNull MainActivity context, final String title) {
+        super(context, title);
     }
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentLayout(R.layout.query_surper_dialog_layout);
+        setTableLayout();
 
         initStartDateAndTime();
         initEndDateAndTime();
         initStatusEt();
         initCashierEt();
 
-        //初始窗口尺寸
-        initWindowSize();
-        //
+        initTable();
         initQueryBtn();
+        initWindowSize();
     }
 
-    protected void setTableLayout(int res_id){
-        final LinearLayout main_layout = findViewById(R.id.query_main_layout);
-        if (null != main_layout) {
-            final View dialog_content = View.inflate(mContext, res_id, null);
-            if (dialog_content != null)
-                main_layout.addView(dialog_content, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        }
-    }
-
-    protected abstract void query();
+    protected abstract int getTableLayoutId();
+    protected abstract String query();
+    protected abstract AbstractDataAdapter getAdapter();
 
     protected void initWindowSize(){//初始化窗口尺寸
         WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
@@ -84,17 +82,44 @@ public abstract class QuerySuperDialog extends DialogBaseOnMainActivityImp {
             }
         }
     }
+    protected String getCasId(final EditText et){
+        Object tag;
+        String tag_v = "0";
+        if (et != null && (tag = et.getTag()) != null){
+            if (tag instanceof String){
+                tag_v = (String) tag;
+            }
+        }
+        return tag_v;
+    }
+    protected void hideEt(){}
 
+    private void initTable() {
+        mAdapter = getAdapter();
+        final RecyclerView body = findViewById(R.id.table_body);//子类的布局中id必须为table_body
+        if (body != null && mAdapter != null){
+            body.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
+            body.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
+            body.setAdapter(mAdapter);
+        }
+    }
+    private void setTableLayout(){
+        final LinearLayout main_layout = findViewById(R.id.query_main_layout);
+        if (null != main_layout) {
+            final View dialog_content = View.inflate(mContext, getTableLayoutId(), null);
+            if (dialog_content != null)
+                main_layout.addView(dialog_content, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        }
+    }
     private void initQueryBtn(){
         final Button query_btn = findViewById(R.id.query_btn);
         if (query_btn != null){
             query_btn.setOnClickListener(v -> {
-                query();
+                mAdapter.setDatas(query());
             });
             query_btn.callOnClick();
         }
     }
-
     private void initCashierEt(){
         final EditText cashier_et = mCashierEt = findViewById(R.id.cashier_et);
         if (null != cashier_et){
@@ -137,46 +162,43 @@ public abstract class QuerySuperDialog extends DialogBaseOnMainActivityImp {
         }
         return index;
     }
-    private String getCasId(final EditText et){
-        Object tag;
-        String tag_v = "0";
-        if (et != null && (tag = et.getTag()) != null){
-            if (tag instanceof String){
-                tag_v = (String) tag;
-            }
-        }
-        return tag_v;
-    }
-
     private void initStatusEt(){
         final String sz_all = "所有";
         final EditText pay_status_et = mPayStatusEt = findViewById(R.id.pay_status_et),s_ex_status_et = mS_ex_statusEt = findViewById(R.id.s_ex_status_et),
                 upload_status_et = mUploadStatusEt = findViewById(R.id.upload_status_et),order_status_et = mOrderStatusEt = findViewById(R.id.order_status_et);
 
-        pay_status_et.setOnFocusChangeListener(etFocusChangeListener);
-        pay_status_et.setTag(0);
-        pay_status_et.setText(sz_all);
-        pay_status_et.setOnClickListener(etClickListener);
+        hideEt();
+
+        if (pay_status_et.getVisibility() == View.VISIBLE){
+            pay_status_et.setOnFocusChangeListener(etFocusChangeListener);
+            pay_status_et.setTag(0);
+            pay_status_et.setText(sz_all);
+            pay_status_et.setOnClickListener(etClickListener);
+        }
 
         //交班状态
-        s_ex_status_et.setOnFocusChangeListener(etFocusChangeListener);
-        s_ex_status_et.setTag(0);
-        s_ex_status_et.setText(sz_all);
-        s_ex_status_et.setOnClickListener(etClickListener);
+        if (s_ex_status_et.getVisibility() == View.VISIBLE){
+            s_ex_status_et.setOnFocusChangeListener(etFocusChangeListener);
+            s_ex_status_et.setTag(0);
+            s_ex_status_et.setText(sz_all);
+            s_ex_status_et.setOnClickListener(etClickListener);
+        }
 
-        upload_status_et.setOnFocusChangeListener(etFocusChangeListener);
-        upload_status_et.setTag(0);
-        upload_status_et.setText(sz_all);
-        upload_status_et.setOnClickListener(etClickListener);
+        if (upload_status_et.getVisibility() == View.VISIBLE){
+            upload_status_et.setOnFocusChangeListener(etFocusChangeListener);
+            upload_status_et.setTag(0);
+            upload_status_et.setText(sz_all);
+            upload_status_et.setOnClickListener(etClickListener);
+        }
 
-        order_status_et.setOnFocusChangeListener(etFocusChangeListener);
-        order_status_et.setTag(0);
-        order_status_et.setText(sz_all);
-        order_status_et.setOnClickListener(etClickListener);
-
+        if (order_status_et.getVisibility() == View.VISIBLE){
+            order_status_et.setOnFocusChangeListener(etFocusChangeListener);
+            order_status_et.setTag(0);
+            order_status_et.setText(sz_all);
+            order_status_et.setOnClickListener(etClickListener);
+        }
     }
     private View.OnClickListener etClickListener = this::showChooseDialog;
-
     private void showChooseDialog(final @NonNull View et){
         if (et instanceof EditText){
             String title = "";
@@ -201,7 +223,12 @@ public abstract class QuerySuperDialog extends DialogBaseOnMainActivityImp {
                     title = mContext.getString(R.string.upload_s_sz);
                     break;
                 case R.id.order_status_et:
-                    items = new String[]{"所有","未付款","已付款","已取消","已退货"};
+
+                    if (this instanceof VipDepositOrderDialog)
+                    items = new String[]{"所有","未付款","已付款","已完成","已关闭"};
+                    else
+                        items = new String[]{"所有","未付款","已付款","已取消","已退货"};
+
                     title = mContext.getString(R.string.order_s_sz);
                     break;
             }
@@ -269,7 +296,6 @@ public abstract class QuerySuperDialog extends DialogBaseOnMainActivityImp {
         }
         alertDialog.getWindow().setAttributes(lp);
     }
-
     private void initEndDateAndTime(){
         final EditText end_date = mEndDateEt = findViewById(R.id.end_date),end_time = mEndTimeEt = findViewById(R.id.end_time);
         if (null != end_date && null != end_time){
@@ -292,7 +318,6 @@ public abstract class QuerySuperDialog extends DialogBaseOnMainActivityImp {
             start_time.setOnClickListener(v -> Utils.showTimePickerDialog(mContext, (TextView) v, Calendar.getInstance()));
         }
     }
-
     private View.OnFocusChangeListener etFocusChangeListener = (v, b)->{
         if (b)v.callOnClick();
         Utils.hideKeyBoard((EditText) v);

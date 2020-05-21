@@ -147,40 +147,6 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/refund_order_code_layout"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/height_50"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/margin_12"
-            android:gravity="center"
-            android:paddingStart="@dimen/margin_5"
-            android:paddingEnd="@dimen/margin_1"
-            android:text="@string/refund_order_sz"
-            android:textSize="@dimen/font_size_18" />
-
-        <EditText
-            android:id="@+id/refund_order_code2"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="@dimen/margin_1"
-            android:background="@drawable/left_right_separator"
-            android:drawableEnd="@drawable/order_ico"
-            android:ems="14"
-            android:focusable="auto"
-            android:focusableInTouchMode="true"
-            android:importantForAutofill="no"
-            android:inputType="textPersonName"
-            android:paddingStart="@dimen/margin_5"
-            android:paddingEnd="@dimen/margin_5"
-            android:selectAllOnFocus="true"
-            android:textColor="@color/text_color" />
-    </LinearLayout>
-
-    <LinearLayout
         android:id="@+id/condition_layout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/height_50"
@@ -193,31 +159,6 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginStart="@dimen/margin_5"
-            android:layout_marginEnd="@dimen/margin_2"
-            android:gravity="center_vertical"
-            android:text="@string/pay_s_sz"
-            android:textSize="@dimen/font_size_16" />
-
-        <EditText
-            android:id="@+id/pay_status_et"
-            android:layout_width="@dimen/status_et_width"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="@dimen/margin_1"
-            android:background="@drawable/left_right_separator"
-            android:drawableEnd="@drawable/content"
-            android:focusable="auto"
-            android:focusableInTouchMode="true"
-            android:importantForAutofill="no"
-            android:inputType="textPersonName"
-            android:padding="@dimen/margin_5"
-            android:textAlignment="center"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/margin_8"
             android:layout_marginEnd="@dimen/margin_2"
             android:gravity="center_vertical"
             android:text="@string/cashier_not_colon_sz"
@@ -240,80 +181,150 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16" />
 
-        <TextView
+        <LinearLayout
+            android:id="@+id/refund_order_code_layout"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/margin_8"
-            android:layout_marginEnd="@dimen/margin_2"
-            android:gravity="center_vertical"
-            android:text="@string/s_e_status_sz"
-            android:textSize="@dimen/font_size_16" />
+            android:layout_height="@dimen/height_50"
+            android:orientation="horizontal"
+            android:visibility="gone">
 
-        <EditText
-            android:id="@+id/s_ex_status_et"
-            android:layout_width="@dimen/status_et_width"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="@dimen/margin_1"
-            android:background="@drawable/left_right_separator"
-            android:drawableEnd="@drawable/content"
-            android:focusable="auto"
-            android:focusableInTouchMode="true"
-            android:importantForAutofill="no"
-            android:inputType="textPersonName"
-            android:padding="@dimen/margin_5"
-            android:textAlignment="center"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/margin_5"
+                android:gravity="center"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/margin_1"
+                android:text="@string/refund_order_sz"
+                android:textSize="@dimen/font_size_18" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/margin_8"
-            android:layout_marginEnd="@dimen/margin_2"
-            android:gravity="center_vertical"
-            android:text="@string/upload_s_sz"
-            android:textSize="@dimen/font_size_16" />
+            <EditText
+                android:id="@+id/refund_order_code"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/margin_1"
+                android:background="@drawable/left_right_separator"
+                android:drawableEnd="@drawable/order_ico"
+                android:ems="14"
+                android:focusable="auto"
+                android:focusableInTouchMode="true"
+                android:importantForAutofill="no"
+                android:inputType="textPersonName"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/margin_5"
+                android:selectAllOnFocus="true"
+                android:textColor="@color/text_color" />
+        </LinearLayout>
 
-        <EditText
-            android:id="@+id/upload_status_et"
-            android:layout_width="@dimen/status_et_width"
+        <LinearLayout
+            android:id="@+id/other_status__layout"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="@dimen/margin_1"
-            android:background="@drawable/left_right_separator"
-            android:drawableEnd="@drawable/content"
-            android:focusable="auto"
-            android:focusableInTouchMode="true"
-            android:importantForAutofill="no"
-            android:inputType="textPersonName"
-            android:padding="@dimen/margin_5"
-            android:textAlignment="center"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16" />
+            android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/margin_8"
-            android:layout_marginEnd="@dimen/margin_2"
-            android:gravity="center_vertical"
-            android:text="@string/order_s_sz"
-            android:textSize="@dimen/font_size_16" />
+            <TextView
+                android:id="@+id/pay_s_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/margin_8"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:gravity="center_vertical"
+                android:text="@string/pay_s_sz"
+                android:textSize="@dimen/font_size_16" />
 
-        <EditText
-            android:id="@+id/order_status_et"
-            android:layout_width="@dimen/status_et_width"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="@dimen/margin_1"
-            android:background="@drawable/left_right_separator"
-            android:drawableEnd="@drawable/content"
-            android:focusable="auto"
-            android:focusableInTouchMode="true"
-            android:importantForAutofill="no"
-            android:inputType="textPersonName"
-            android:padding="@dimen/margin_5"
-            android:textAlignment="center"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16" />
+            <EditText
+                android:id="@+id/pay_status_et"
+                android:layout_width="@dimen/status_et_width"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/margin_1"
+                android:background="@drawable/left_right_separator"
+                android:drawableEnd="@drawable/content"
+                android:focusable="auto"
+                android:focusableInTouchMode="true"
+                android:importantForAutofill="no"
+                android:inputType="textPersonName"
+                android:padding="@dimen/margin_5"
+                android:textAlignment="center"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/margin_8"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:gravity="center_vertical"
+                android:text="@string/s_e_status_sz"
+                android:textSize="@dimen/font_size_16" />
+
+            <EditText
+                android:id="@+id/s_ex_status_et"
+                android:layout_width="@dimen/status_et_width"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/margin_1"
+                android:background="@drawable/left_right_separator"
+                android:drawableEnd="@drawable/content"
+                android:focusable="auto"
+                android:focusableInTouchMode="true"
+                android:importantForAutofill="no"
+                android:inputType="textPersonName"
+                android:padding="@dimen/margin_5"
+                android:textAlignment="center"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:id="@+id/upload_s_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/margin_8"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:gravity="center_vertical"
+                android:text="@string/upload_s_sz"
+                android:textSize="@dimen/font_size_16" />
+
+            <EditText
+                android:id="@+id/upload_status_et"
+                android:layout_width="@dimen/status_et_width"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/margin_1"
+                android:background="@drawable/left_right_separator"
+                android:drawableEnd="@drawable/content"
+                android:focusable="auto"
+                android:focusableInTouchMode="true"
+                android:importantForAutofill="no"
+                android:inputType="textPersonName"
+                android:padding="@dimen/margin_5"
+                android:textAlignment="center"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/margin_8"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:gravity="center_vertical"
+                android:text="@string/order_s_sz"
+                android:textSize="@dimen/font_size_16" />
+
+            <EditText
+                android:id="@+id/order_status_et"
+                android:layout_width="@dimen/status_et_width"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/margin_1"
+                android:background="@drawable/left_right_separator"
+                android:drawableEnd="@drawable/content"
+                android:focusable="auto"
+                android:focusableInTouchMode="true"
+                android:importantForAutofill="no"
+                android:inputType="textPersonName"
+                android:padding="@dimen/margin_5"
+                android:textAlignment="center"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+        </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>
