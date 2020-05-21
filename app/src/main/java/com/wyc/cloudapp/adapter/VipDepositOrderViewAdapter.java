@@ -1,6 +1,5 @@
 package com.wyc.cloudapp.adapter;
 
-import android.graphics.Color;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,11 +17,10 @@ import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.dialog.orderDialog.RetailOrderDetailsDialog;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
-public class VipDepositOrderViewAdapter extends AbstractDataAdapter<VipDepositOrderViewAdapter.MyViewHolder> {
+public class VipDepositOrderViewAdapter extends AbstractQueryDataAdapter<VipDepositOrderViewAdapter.MyViewHolder> {
 
     public VipDepositOrderViewAdapter(MainActivity context){
         mContext = context;
@@ -77,8 +75,7 @@ public class VipDepositOrderViewAdapter extends AbstractDataAdapter<VipDepositOr
                 int order_status = order_info.getIntValue("status");
                 if (order_status == 1)
                     holder.order_status.setTextColor(mContext.getColor(R.color.orange_1));
-                else
-                    holder.order_status.setTextColor(mContext.getColor(R.color.text_color));
+
                 holder.order_status.setText(order_info.getString("status_name"));
                 holder.order_status.setTag(order_info.getIntValue("status"));
 

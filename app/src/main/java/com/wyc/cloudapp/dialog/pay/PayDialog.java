@@ -63,7 +63,6 @@ public class PayDialog extends DialogBaseOnMainActivityImp {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.pay_dialog_content_layout);
 
         //初始化成员
         mOrderAmtTv = findViewById(R.id.order_amt);//单据金额
@@ -94,6 +93,10 @@ public class PayDialog extends DialogBaseOnMainActivityImp {
 
         //根据金额设置按钮数字
          autoShowValueFromPayAmt();
+    }
+    @Override
+    protected int getContentLayoutId(){
+        return R.layout.pay_dialog_content_layout;
     }
 
     @Override

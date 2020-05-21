@@ -22,7 +22,6 @@ public class MoreFunDialog extends DialogBaseOnMainActivityImp {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.more_fun_dialog_layout);
 
         //初始化按钮事件
         initSyncBtn();
@@ -32,6 +31,10 @@ public class MoreFunDialog extends DialogBaseOnMainActivityImp {
         initAllRefundBtn();
         initQueryRefundOrderBtn();
         initVipDepositOrderBtn();
+    }
+    @Override
+    protected int getContentLayoutId(){
+        return R.layout.more_fun_dialog_layout;
     }
 
     private void initAllRefundBtn(){

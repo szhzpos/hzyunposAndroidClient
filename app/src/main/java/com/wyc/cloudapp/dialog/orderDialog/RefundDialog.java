@@ -56,7 +56,6 @@ public class RefundDialog extends DialogBaseOnMainActivityImp {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.refund_dialog_layout);
 
         mProgressDialog = new CustomProgressDialog(mContext);
 
@@ -66,7 +65,10 @@ public class RefundDialog extends DialogBaseOnMainActivityImp {
         initRebatesBtn();
         initRemarkBtn();
     }
-
+    @Override
+    protected int getContentLayoutId(){
+        return R.layout.refund_dialog_layout;
+    }
     @Override
     public void show(){
         super.show();

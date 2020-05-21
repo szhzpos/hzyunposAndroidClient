@@ -30,13 +30,16 @@ public class ChangeNumOrPriceDialog extends DialogBaseOnMainActivityImp {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.change_price_dialog_layout);
 
         initNewPrice();
 
         //初始化数字键盘
         initKeyboard();
 
+    }
+    @Override
+    protected int getContentLayoutId(){
+        return R.layout.change_price_dialog_layout;
     }
     @Override
     protected void closeWindow(){

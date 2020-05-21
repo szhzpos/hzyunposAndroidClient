@@ -12,17 +12,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 
 import java.util.Locale;
 
-public final class RefundDetailsGoodsInfoAdapter extends RecyclerView.Adapter<RefundDetailsGoodsInfoAdapter.MyViewHolder>  {
-    private Context mContext;
-    private JSONArray mDatas;
-    private View mCurrentItemView;
-    public RefundDetailsGoodsInfoAdapter(Context context){
+public final class RefundDetailsGoodsInfoAdapter extends AbstractDetailsDataAdapter<RefundDetailsGoodsInfoAdapter.MyViewHolder>  {
+
+    public RefundDetailsGoodsInfoAdapter(MainActivity context){
         mContext = context;
     }
 
@@ -75,44 +74,7 @@ public final class RefundDetailsGoodsInfoAdapter extends RecyclerView.Adapter<Re
         return mDatas == null ? 0: mDatas.size();
     }
 
-    private void setViewBackgroundColor(View view,boolean s){
-        if(view!= null){
-            int item_color;
-            if (s){
-                item_color = mContext.getColor(R.color.listSelected);
-            } else {
-                item_color = mContext.getColor(R.color.white);
-            }
-            view.setBackgroundColor(item_color);
-            if (view instanceof LinearLayout){
-                LinearLayout linearLayout = (LinearLayout)view;
-                int count = linearLayout.getChildCount();
-                View ch;
-                for (int i = 0;i < count;i++){
-                    ch = linearLayout.getChildAt(i);
-                    if (ch instanceof TextView){
-                        ((TextView) ch).setTextColor(mContext.getColor(R.color.text_color));
-                    }
-                }
-            }
-        }
-    }
-
     private View.OnClickListener mItemClickListener = this::setCurrentItemView;
-
-    private void setCurrentItemView(View v){
-        if (mCurrentItemView == null){
-            mCurrentItemView = v;
-            setViewBackgroundColor(v,true);
-        }else if(mCurrentItemView != v){
-            setViewBackgroundColor(mCurrentItemView,false);
-            mCurrentItemView = v;
-            setViewBackgroundColor(v,true);
-        }else {
-            setViewBackgroundColor(v,false);
-            mCurrentItemView = null;
-        }
-    }
 
     public void setDatas(final String ro_code){
         final StringBuilder err = new StringBuilder();

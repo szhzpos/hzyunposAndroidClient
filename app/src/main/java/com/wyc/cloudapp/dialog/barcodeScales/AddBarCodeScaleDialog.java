@@ -48,7 +48,6 @@ public class AddBarCodeScaleDialog extends DialogBaseOnContextImp {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.add_b_scalse_dialog_layout);
 
         mScaleName = findViewById(R.id.remark);
         mPort = findViewById(R.id.ser_port);
@@ -75,6 +74,11 @@ public class AddBarCodeScaleDialog extends DialogBaseOnContextImp {
             }
         });
 
+    }
+
+    @Override
+    protected int getContentLayoutId(){
+        return R.layout.add_b_scalse_dialog_layout;
     }
 
     @Override

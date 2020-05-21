@@ -49,11 +49,15 @@ public class RetailOrderDetailsDialog extends DialogBaseOnMainActivityImp {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.retail_details_dialog_layout);
 
         showOrderInfo();
         initReprint();
         initVerifyPay();
+    }
+
+    @Override
+    protected int getContentLayoutId(){
+        return R.layout.retail_details_dialog_layout;
     }
 
     private void showOrderInfo(){

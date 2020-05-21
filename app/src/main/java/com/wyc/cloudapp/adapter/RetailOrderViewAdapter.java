@@ -21,7 +21,7 @@ import com.wyc.cloudapp.logger.Logger;
 
 import java.util.Locale;
 
-public final class RetailOrderViewAdapter extends AbstractDataAdapter<RetailOrderViewAdapter.MyViewHolder> {
+public final class RetailOrderViewAdapter extends AbstractQueryDataAdapter<RetailOrderViewAdapter.MyViewHolder> {
 
     public RetailOrderViewAdapter(MainActivity context){
         mContext = context;
@@ -67,8 +67,7 @@ public final class RetailOrderViewAdapter extends AbstractDataAdapter<RetailOrde
                 int order_status = order_info.getIntValue("order_status");
                 if (order_status == 4)
                     holder.order_status.setTextColor(mContext.getColor(R.color.orange_1));
-                else
-                    holder.order_status.setTextColor(mContext.getColor(R.color.text_color));
+
                 holder.order_status.setText(order_info.getString("order_status_name"));
                 holder.order_status.setTag(order_info.getIntValue("order_status"));
 
@@ -92,25 +91,22 @@ public final class RetailOrderViewAdapter extends AbstractDataAdapter<RetailOrde
         return mDatas == null ? 0: mDatas.size();
     }
 
-    private View.OnTouchListener touchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            if (event.getAction() == MotionEvent.ACTION_DOWN){
-                setCurrentItemView(v);
-                final TextView order_code_tv = v.findViewById(R.id.order_code),sale_refund_tv = v.findViewById(R.id.sale_refund);
+    private View.OnTouchListener touchListener = (v, event) -> {
+        if (event.getAction() == MotionEvent.ACTION_DOWN){
+            setCurrentItemView(v);
+            final TextView order_code_tv = v.findViewById(R.id.order_code),sale_refund_tv = v.findViewById(R.id.sale_refund);
 
-                if (isClickView(order_code_tv,event.getX(),event.getY())){
-                    RetailOrderDetailsDialog retailOrderDetailsDialog = new RetailOrderDetailsDialog(mContext,getCurrentOrder());
-                    retailOrderDetailsDialog.show();
-                }else if (isClickView(sale_refund_tv,event.getX(),event.getY())){
-                    RefundDialog refundDialog = new RefundDialog(mContext,order_code_tv.getText().toString());
-                    refundDialog.show();
-                }
-
+            if (isClickView(order_code_tv,event.getX(),event.getY())){
+                RetailOrderDetailsDialog retailOrderDetailsDialog = new RetailOrderDetailsDialog(mContext,getCurrentOrder());
+                retailOrderDetailsDialog.show();
+            }else if (isClickView(sale_refund_tv,event.getX(),event.getY())){
+                RefundDialog refundDialog = new RefundDialog(mContext,order_code_tv.getText().toString());
+                refundDialog.show();
             }
-            v.performClick();
-            return false;
+
         }
+        v.performClick();
+        return false;
     };
 
     @Override

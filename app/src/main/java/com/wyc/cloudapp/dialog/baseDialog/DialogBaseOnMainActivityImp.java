@@ -2,14 +2,17 @@ package com.wyc.cloudapp.dialog.baseDialog;
 
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
+
+import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.logger.Logger;
 
-public class DialogBaseOnMainActivityImp extends AbstractDialog {
+public abstract class DialogBaseOnMainActivityImp extends AbstractDialog {
     protected MainActivity mContext;
-
     public DialogBaseOnMainActivityImp(@NonNull MainActivity context, String title) {
         super(context, title);
         mContext = context;

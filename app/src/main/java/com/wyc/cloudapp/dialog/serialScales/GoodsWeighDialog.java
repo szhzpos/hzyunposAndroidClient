@@ -38,7 +38,6 @@ public class GoodsWeighDialog extends DialogBaseOnMainActivityImp {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.goods_weigh_dialog_layout);
 
         mPriceTv = findViewById(R.id.w_g_price);
         mAmtTv = findViewById(R.id.w_amt);
@@ -53,7 +52,10 @@ public class GoodsWeighDialog extends DialogBaseOnMainActivityImp {
         initKeyboard();
 
     }
-
+    @Override
+    protected int getContentLayoutId(){
+        return R.layout.goods_weigh_dialog_layout;
+    }
     @Override
     public void onAttachedToWindow(){
         super.onAttachedToWindow();

@@ -8,13 +8,10 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.adapter.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
 import com.wyc.cloudapp.adapter.RetailOrderViewAdapter;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -95,7 +92,7 @@ public class QuerySaleOrderDialog extends AbstractQuerySuperDialog {
     }
 
     @Override
-    protected AbstractDataAdapter getAdapter() {
+    protected AbstractQueryDataAdapter getAdapter() {
         return new RetailOrderViewAdapter(mContext);
     }
 

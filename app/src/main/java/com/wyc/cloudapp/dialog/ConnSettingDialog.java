@@ -58,9 +58,12 @@ public class ConnSettingDialog extends DialogBaseOnContextImp {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.con_param_setting_dialog_layout);
 
         initView();
+    }
+    @Override
+    protected int getContentLayoutId(){
+        return R.layout.con_param_setting_dialog_layout;
     }
 
     private void initView() {

@@ -22,8 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.adapter.AbstractDataAdapter;
-import com.wyc.cloudapp.adapter.RetailOrderViewAdapter;
+import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
@@ -42,14 +41,13 @@ public abstract class AbstractQuerySuperDialog extends DialogBaseOnMainActivityI
     private int mCurrentStatusIndex = 0;
     private String[] mCashierNames,mCashierIDs;
     protected EditText mStartDateEt,mStartTimeEt,mEndDateEt,mEndTimeEt,mPayStatusEt,mCashierEt,mS_ex_statusEt,mUploadStatusEt,mOrderStatusEt;
-    private AbstractDataAdapter mAdapter;
+    private AbstractQueryDataAdapter mAdapter;
     protected AbstractQuerySuperDialog(@NonNull MainActivity context, final String title) {
         super(context, title);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.query_surper_dialog_layout);
         setTableLayout();
 
         initStartDateAndTime();
@@ -61,10 +59,14 @@ public abstract class AbstractQuerySuperDialog extends DialogBaseOnMainActivityI
         initQueryBtn();
         initWindowSize();
     }
+    @Override
+    protected int getContentLayoutId(){
+        return R.layout.query_surper_dialog_layout;
+    }
 
     protected abstract int getTableLayoutId();
     protected abstract String query();
-    protected abstract AbstractDataAdapter getAdapter();
+    protected abstract AbstractQueryDataAdapter getAdapter();
 
     protected void initWindowSize(){//初始化窗口尺寸
         WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);

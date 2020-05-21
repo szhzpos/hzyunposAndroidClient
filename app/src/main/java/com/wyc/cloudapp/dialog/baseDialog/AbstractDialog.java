@@ -24,7 +24,7 @@ public abstract class AbstractDialog extends Dialog {
         mContext = context;
         mTitle = title;
     }
-    public AbstractDialog(@NonNull Context context, final String title) {
+    AbstractDialog(@NonNull Context context, final String title) {
         this(context);
         mTitle = title;
     }
@@ -32,17 +32,18 @@ public abstract class AbstractDialog extends Dialog {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentLayout();
         setCancelable(false);
-        setContentView(R.layout.base_dialog_layout);
 
         setTitle();
         initCloseBtn();
     }
 
-    protected void setContentLayout(int res_id) {
+    private void setContentLayout() {
+        setContentView(R.layout.base_dialog_layout);
         final LinearLayout main_layout = findViewById(R.id.dialog_main_layout);
         if (null != main_layout) {
-            final View dialog_content = View.inflate(mContext, res_id, null);
+            final View dialog_content = View.inflate(mContext,getContentLayoutId(), null);
             if (dialog_content != null)
                 main_layout.addView(dialog_content, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         }
@@ -67,4 +68,6 @@ public abstract class AbstractDialog extends Dialog {
     }
 
     public abstract Context getPrivateContext();
+
+    protected abstract int getContentLayoutId();
 }

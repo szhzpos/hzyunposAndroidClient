@@ -13,13 +13,10 @@ import android.widget.LinearLayout;
 
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.adapter.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
 import com.wyc.cloudapp.adapter.RefundOrderViewAdapter;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
@@ -27,7 +24,6 @@ import com.wyc.cloudapp.utils.Utils;
 import static android.content.Context.WINDOW_SERVICE;
 
 public class QueryRefundOrderDialog extends AbstractQuerySuperDialog {
-    private RefundOrderViewAdapter mRefundOrderViewAdapter;
     public QueryRefundOrderDialog(@NonNull MainActivity context) {
         super(context, context.getString(R.string.local_refund_order_sz));
     }
@@ -78,7 +74,7 @@ public class QueryRefundOrderDialog extends AbstractQuerySuperDialog {
     }
 
     @Override
-    protected AbstractDataAdapter getAdapter() {
+    protected AbstractQueryDataAdapter getAdapter() {
         return new RefundOrderViewAdapter(mContext);
     }
 

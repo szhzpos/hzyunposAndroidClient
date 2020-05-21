@@ -16,14 +16,14 @@ import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.dialog.orderDialog.RetailOrderDetailsDialog;
 import com.wyc.cloudapp.utils.Utils;
 
-public abstract class AbstractDataAdapter<T extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<T> {
+public abstract class AbstractQueryDataAdapter<T extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<T> {
     protected MainActivity mContext;
     protected JSONArray mDatas;
     protected View mCurrentItemView;
 
     public abstract void setDatas(final String sql);
 
-    protected void setViewBackgroundColor(View view,boolean s){
+    private void setViewBackgroundColor(View view,boolean s){
         if(view!= null) {
             View child;
             int selected_color, item_color,text_color;
@@ -46,10 +46,15 @@ public abstract class AbstractDataAdapter<T extends RecyclerView.ViewHolder> ext
                         final TextView tv = ((TextView) child);
                         switch (tv.getId()) {
                             case R.id.order_code:
+                            case R.id.sale_refund:
+                            case R.id.retail_order_code:
+                            case R.id.refund_order_code:
                                 tv.setTextColor(item_color);
                                 break;
                             case R.id.order_status:
-                                if (Utils.getViewTagValue(child,2) == 1){
+                            case R.id.refund_status:
+                                int status = Utils.getViewTagValue(child,2);
+                                if (status == 1 || status == 4){
                                     tv.setTextColor(mContext.getColor(R.color.orange_1));
                                 }else{
                                     tv.setTextColor(text_color);

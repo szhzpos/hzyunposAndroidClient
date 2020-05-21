@@ -33,11 +33,15 @@ public class RefundOrderDetailsDialog extends DialogBaseOnMainActivityImp {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.refund_details_dialog_layout);
 
         showOrderInfo();
         initReprint();
     }
+    @Override
+    protected int getContentLayoutId(){
+        return R.layout.refund_details_dialog_layout;
+    }
+
     private void initReprint(){
         final Button reprint_btn = findViewById(R.id.reprint_btn);
         if (null != reprint_btn){

@@ -50,7 +50,6 @@ public class AddVipInfoDialog extends DialogBaseOnMainActivityImp {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.add_vip_dialog_layout);
 
         m_vip_p_num_et = findViewById(R.id.n_vip_p_num);
         m_card_id_et = findViewById(R.id.n_card_id);
@@ -65,6 +64,11 @@ public class AddVipInfoDialog extends DialogBaseOnMainActivityImp {
         initVipBirthdayEt();
         initVipSex();
 
+    }
+
+    @Override
+    protected int getContentLayoutId(){
+        return R.layout.add_vip_dialog_layout;
     }
 
     @Override

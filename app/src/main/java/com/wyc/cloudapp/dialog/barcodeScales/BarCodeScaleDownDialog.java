@@ -35,7 +35,6 @@ public class BarCodeScaleDownDialog extends DialogBaseOnContextImp {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.barcode_scale_dialog_layout);
 
         initRecyclerView();
         initAddScaleBtn();
@@ -43,6 +42,11 @@ public class BarCodeScaleDownDialog extends DialogBaseOnContextImp {
         initDownloadToScaleBtn();
         initModifyBtn();
         initWindowSize();
+    }
+
+    @Override
+    protected int getContentLayoutId(){
+        return R.layout.barcode_scale_dialog_layout;
     }
 
     @Override

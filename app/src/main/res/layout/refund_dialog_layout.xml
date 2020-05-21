@@ -140,119 +140,122 @@
         android:textSize="@dimen/font_size_14"
         android:visibility="gone" />
 
-    <LinearLayout
-        android:id="@+id/goods_table_layout"
+    <HorizontalScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/table_header_height"
-            android:background="@color/table_header_color"
-            android:orientation="horizontal">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <TextView
-                android:layout_width="@dimen/width_45"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="@dimen/size_35"
-                android:gravity="center"
-                android:paddingTop="@dimen/margin_8"
-                android:paddingBottom="@dimen/margin_8"
-                android:text="@string/row_id_sz"
-                android:textColor="@color/white"
-                android:textSize="@dimen/font_size_18" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/table_header_height"
+                android:background="@color/table_header_color"
+                android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="@dimen/table_bacode_width"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:paddingTop="@dimen/margin_8"
-                android:paddingBottom="@dimen/margin_8"
-                android:text="@string/barcode_sz"
-                android:textColor="@color/white"
-                android:textSize="@dimen/font_size_18" />
+                <TextView
+                    android:layout_width="@dimen/width_45"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="@dimen/size_35"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/row_id_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
 
-            <TextView
-                android:layout_width="@dimen/table_goods_title_width"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:paddingTop="@dimen/margin_8"
-                android:paddingBottom="@dimen/margin_8"
-                android:text="@string/g_name_sz"
-                android:textColor="@color/white"
-                android:textSize="@dimen/font_size_18" />
+                <TextView
+                    android:layout_width="@dimen/table_bacode_width"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/barcode_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
 
-            <TextView
-                android:layout_width="@dimen/width_88"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:paddingTop="@dimen/margin_8"
-                android:paddingBottom="@dimen/margin_8"
-                android:text="@string/num_not_colon_sz"
-                android:textColor="@color/white"
-                android:textSize="@dimen/font_size_18" />
+                <TextView
+                    android:layout_width="@dimen/table_goods_title_width"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/g_name_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
 
-            <TextView
-                android:layout_width="@dimen/width_88"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:paddingTop="@dimen/margin_8"
-                android:paddingBottom="@dimen/margin_8"
-                android:text="@string/sec_price_sz"
-                android:textColor="@color/white"
-                android:textSize="@dimen/font_size_18" />
+                <TextView
+                    android:layout_width="@dimen/width_88"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/num_not_colon_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
 
-            <TextView
-                android:layout_width="@dimen/width_88"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:paddingTop="@dimen/margin_8"
-                android:paddingBottom="@dimen/margin_8"
-                android:text="@string/unit_sz"
-                android:textColor="@color/white"
-                android:textSize="@dimen/font_size_18" />
+                <TextView
+                    android:layout_width="@dimen/width_88"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/sec_price_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
 
-            <TextView
-                android:layout_width="@dimen/width_118"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:paddingTop="@dimen/margin_8"
-                android:paddingBottom="@dimen/margin_8"
-                android:text="@string/returnable_num_sz"
-                android:textColor="@color/white"
-                android:textSize="@dimen/font_size_18" />
+                <TextView
+                    android:layout_width="@dimen/width_88"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/unit_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
 
-            <TextView
-                android:layout_width="@dimen/width_118"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:paddingTop="@dimen/margin_8"
-                android:paddingBottom="@dimen/margin_8"
-                android:text="@string/returned_num_sz"
-                android:textColor="@color/white"
-                android:textSize="@dimen/font_size_18" />
+                <TextView
+                    android:layout_width="@dimen/width_118"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/returnable_num_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
 
-            <TextView
-                android:layout_width="@dimen/width_128"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:paddingTop="@dimen/margin_8"
-                android:paddingBottom="@dimen/margin_8"
-                android:text="@string/returned_amt_sz"
-                android:textColor="@color/white"
-                android:textSize="@dimen/font_size_18" />
+                <TextView
+                    android:layout_width="@dimen/width_118"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/returned_num_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+
+                <TextView
+                    android:layout_width="@dimen/width_128"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingTop="@dimen/margin_8"
+                    android:paddingBottom="@dimen/margin_8"
+                    android:text="@string/returned_amt_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/goods_details"
+                android:layout_width="match_parent"
+                android:layout_height="300dp">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
         </LinearLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/goods_details"
-            android:layout_width="match_parent"
-            android:layout_height="300dp">
-
-        </androidx.recyclerview.widget.RecyclerView>
-
-    </LinearLayout>
+    </HorizontalScrollView>
 
     <LinearLayout
         android:layout_width="match_parent"

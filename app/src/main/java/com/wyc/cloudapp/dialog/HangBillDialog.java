@@ -49,7 +49,6 @@ public class HangBillDialog extends DialogBaseOnMainActivityImp {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.hangbill_dialog_layout);
 
         //初始化表格
         initHangBillDetail();
@@ -64,7 +63,10 @@ public class HangBillDialog extends DialogBaseOnMainActivityImp {
         //初始化窗口尺寸
         initWindowSize();
     }
-
+    @Override
+    protected int getContentLayoutId(){
+        return R.layout.hangbill_dialog_layout;
+    }
     @Override
     public void dismiss(){
         super.dismiss();

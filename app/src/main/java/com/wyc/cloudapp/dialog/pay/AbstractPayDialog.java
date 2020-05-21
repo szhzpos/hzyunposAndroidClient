@@ -39,7 +39,6 @@ public abstract class AbstractPayDialog extends DialogBaseOnMainActivityImp impl
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.pay_method_dialog_layout);
 
         mProgressDialog = new CustomProgressDialog(mContext);
 
@@ -52,6 +51,10 @@ public abstract class AbstractPayDialog extends DialogBaseOnMainActivityImp impl
         //初始化数字键盘
         initKeyboard();
 
+    }
+    @Override
+    protected int getContentLayoutId(){
+        return R.layout.pay_method_dialog_layout;
     }
     @Override
     public void onAttachedToWindow(){

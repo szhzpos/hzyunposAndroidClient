@@ -51,7 +51,6 @@ public class VipInfoDialog extends DialogBaseOnMainActivityImp {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentLayout(R.layout.vip_info_dialog_layout);
 
         mProgressDialog = new CustomProgressDialog(mContext);
         mHandler = new Myhandler(this);
@@ -75,7 +74,10 @@ public class VipInfoDialog extends DialogBaseOnMainActivityImp {
         initKeyboard();
 
     }
-
+    @Override
+    protected int getContentLayoutId(){
+        return R.layout.vip_info_dialog_layout;
+    }
     @Override
     public void onAttachedToWindow(){
 

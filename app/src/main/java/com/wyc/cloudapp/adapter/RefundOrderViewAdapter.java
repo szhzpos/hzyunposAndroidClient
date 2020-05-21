@@ -1,16 +1,13 @@
 package com.wyc.cloudapp.adapter;
 
-import android.graphics.Color;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
@@ -19,11 +16,10 @@ import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundOrderDetailsDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RetailOrderDetailsDialog;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
-public final class RefundOrderViewAdapter extends AbstractDataAdapter<RefundOrderViewAdapter.MyViewHolder> {
+public final class RefundOrderViewAdapter extends AbstractQueryDataAdapter<RefundOrderViewAdapter.MyViewHolder> {
     public RefundOrderViewAdapter(final MainActivity context){
         mContext = context;
     }
@@ -68,8 +64,7 @@ public final class RefundOrderViewAdapter extends AbstractDataAdapter<RefundOrde
                 int order_status = order_info.getIntValue("refund_status");
                 if (order_status == 1)
                     holder.refund_status.setTextColor(mContext.getColor(R.color.orange_1));
-                else
-                    holder.refund_status.setTextColor(mContext.getColor(R.color.text_color));
+
                 holder.refund_status.setText(order_info.getString("refund_status_name"));
                 holder.refund_status.setTag(order_info.getIntValue("refund_status"));
 
@@ -92,23 +87,20 @@ public final class RefundOrderViewAdapter extends AbstractDataAdapter<RefundOrde
         return mDatas == null ? 0: mDatas.size();
     }
 
-    private View.OnTouchListener touchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            if (event.getAction() == MotionEvent.ACTION_DOWN){
-                setCurrentItemView(v);
-                final TextView order_code_tv = v.findViewById(R.id.retail_order_code),sale_refund_tv = v.findViewById(R.id.refund_order_code);
-                if (isClickView(order_code_tv,event.getX(),event.getY())){
-                    RetailOrderDetailsDialog retailOrderDetailsDialog = new RetailOrderDetailsDialog(mContext,getCurrentRetailOrder());
-                    retailOrderDetailsDialog.show();
-                }else if (isClickView(sale_refund_tv,event.getX(),event.getY())){
-                    RefundOrderDetailsDialog refundOrderDetailsDialog = new RefundOrderDetailsDialog(mContext,getCurrentOrder());
-                    refundOrderDetailsDialog.show();
-                }
+    private View.OnTouchListener touchListener = (v, event) -> {
+        if (event.getAction() == MotionEvent.ACTION_DOWN){
+            setCurrentItemView(v);
+            final TextView order_code_tv = v.findViewById(R.id.retail_order_code),sale_refund_tv = v.findViewById(R.id.refund_order_code);
+            if (isClickView(order_code_tv,event.getX(),event.getY())){
+                final RetailOrderDetailsDialog retailOrderDetailsDialog = new RetailOrderDetailsDialog(mContext,getCurrentRetailOrder());
+                retailOrderDetailsDialog.show();
+            }else if (isClickView(sale_refund_tv,event.getX(),event.getY())){
+                final RefundOrderDetailsDialog refundOrderDetailsDialog = new RefundOrderDetailsDialog(mContext,getCurrentOrder());
+                refundOrderDetailsDialog.show();
             }
-            v.performClick();
-            return false;
         }
+        v.performClick();
+        return false;
     };
 
     private JSONObject getCurrentRetailOrder(){
