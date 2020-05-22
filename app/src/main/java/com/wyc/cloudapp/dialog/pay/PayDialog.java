@@ -55,7 +55,7 @@ public class PayDialog extends DialogBaseOnMainActivityImp {
     private String mDiscountDesContent = "";
     private Button mOK;
     private JSONObject mVip;
-    private boolean mPayStatus = true,mOpenCashbox;
+    private boolean mPayStatus = true;
     private Window mWindow;
     public PayDialog(MainActivity context, final String title){
         super(context,title);
@@ -327,15 +327,11 @@ public class PayDialog extends DialogBaseOnMainActivityImp {
                 super.onChanged();
                 final JSONArray jsonArray = getContent();
                 double pay_amt = 0.0,zl_amt = 0.0,sale_amt;
-                mOpenCashbox = false;
                 try {
                     for (int i = 0,length = jsonArray.size();i < length;i ++){//第一个为表头
                         JSONObject object = jsonArray.getJSONObject(i);
                         pay_amt += object.getDouble("pamt");
                         zl_amt += object.getDouble("pzl");
-                        if (PayMethodViewAdapter.CASH_METHOD_ID.equals(object.getString("pay_method_id"))){
-                            mOpenCashbox = true;
-                        }
                     }
 
                     Logger.d("amt:%f - zl_amt:%f = %f",pay_amt,zl_amt,pay_amt - zl_amt);
@@ -564,23 +560,28 @@ public class PayDialog extends DialogBaseOnMainActivityImp {
 
         //处理付款明细
         pays_data = Utils.JsondeepCopy(getContent());//不能直接获取引用，需要重新复制一份否则会修改原始数据；如果业务不能正常完成，之前数据会遭到破坏
+        JSONObject pay;
+        double pamt = 0.0,pzl = 0.0;
         for (int i= 0,size = pays_data.size();i < size;i++){
             tmp_json = (JSONObject) pays_data.remove(0);
-            Logger.d(tmp_json.toJSONString());
-            final JSONObject pay = new JSONObject();
+
+            pay = new JSONObject();
+
+            pamt  = tmp_json.getDouble("pamt");
+            pzl = tmp_json.getDouble("pzl");
 
             pay.put("order_code",order_code);
             pay.put("pay_code",tmp_json.getString("pay_code"));
             pay.put("pay_method",tmp_json.getString("pay_method_id"));
-            pay.put("pay_money",tmp_json.getDouble("pamt"));
+            pay.put("pay_money",pamt - pzl);
             pay.put("is_check",tmp_json.getDouble("is_check"));
             pay.put("pay_time",0);
             pay.put("pay_status",1);
             pay.put("pay_serial_no","");//第三方返回的支付流水号
             pay.put("remark","");
             pay.put("zk_money",0.0);
-            pay.put("pre_sale_money",tmp_json.getDouble("pamt"));
-            pay.put("give_change_money",tmp_json.getDouble("pzl"));
+            pay.put("pre_sale_money",pamt);
+            pay.put("give_change_money",pzl);
             pay.put("discount_money",0.0);
             pay.put("xnote",Utils.getNullStringAsEmpty(tmp_json,"xnote"));
             pay.put("return_code","");
@@ -667,6 +668,7 @@ public class PayDialog extends DialogBaseOnMainActivityImp {
         int is_check,pay_status = 1;
         long pay_time = 0;
         double discount_money = 0.0;
+        boolean open_cashbox = false;
 
         JSONObject retJson,pay_detail,pay_method_json,info_json;
         HttpRequest httpRequest = null;
@@ -685,6 +687,9 @@ public class PayDialog extends DialogBaseOnMainActivityImp {
                     pay_method_id = pay_detail.getString("pay_method");
                     order_code_son = pay_detail.getString("pay_code");
 
+                    if (PayMethodViewAdapter.CASH_METHOD_ID.equals(pay_method_id)){
+                        open_cashbox = true;
+                    }
                     is_check = pay_detail.getIntValue("is_check");
                     if (is_check == 2){
                         pay_status = 2;
@@ -895,6 +900,9 @@ public class PayDialog extends DialogBaseOnMainActivityImp {
                 if (mPayListener != null)
                     mContext.runOnUiThread(()-> mPayListener.onError(PayDialog.this,err.toString()));
             }else{
+                if (mContext.getPrintStatus()){
+                    Printer.print(mContext, PayDialog.get_print_content(mContext,order_code,open_cashbox));
+                }
                 if (mPayListener != null){
                     mContext.runOnUiThread(()-> mPayListener.onSuccess(PayDialog.this));
                 }
@@ -1111,9 +1119,6 @@ public class PayDialog extends DialogBaseOnMainActivityImp {
     }
     public JSONArray getContent(){
         return mPayDetailViewAdapter.getDatas();
-    }
-    public boolean isOpenCashbox(){
-        return mOpenCashbox;
     }
     public void showVipInfo(@NonNull JSONObject vip,boolean show){//show为true则只显示不再刷新已销售商品
         mVip = vip;

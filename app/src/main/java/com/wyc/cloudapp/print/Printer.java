@@ -16,19 +16,25 @@ import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.vip.VipChargeDialogImp;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
+
+import android_serialport_api.SerialPort;
 
 public final class Printer {
     private static final String  CHARACTER_SET = "GB2312";
@@ -206,15 +212,12 @@ public final class Printer {
     }
 
     public static String commandToStr(byte[] bytes){
-        try {
-            return new String(bytes, Printer.CHARACTER_SET);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return "";
+        return new String(bytes, StandardCharsets.US_ASCII);
     }
 
     public static void print(@NonNull final Activity context, @NonNull final String content){
+        if (content.isEmpty())return;
+
         try {
             print(context,content.getBytes(CHARACTER_SET));
         } catch (UnsupportedEncodingException e) {
@@ -223,7 +226,9 @@ public final class Printer {
     }
 
     public static void print(@NonNull final Activity context, @NonNull final byte[] inbyte){
-        JSONObject object = new JSONObject();
+        if (inbyte.length == 0)return;
+
+        final JSONObject object = new JSONObject();
         if (SQLiteHelper.getLocalParameter("printer",object)){
             int status_id = object.getIntValue("id");
             String tmp = Utils.getNullStringAsEmpty(object,"v");
@@ -336,18 +341,19 @@ public final class Printer {
                                                 bytes = Arrays.copyOf(bytes,128);
                                                 length = bytes.length;
                                             }
-                                            ret_c = connection.bulkTransfer(usbOutEndpoint,bytes,length, 1000);
+                                            ret_c = connection.bulkTransfer(usbOutEndpoint,bytes,length, 30000);
                                         }else{
                                             if ((mod_length = length % max_length) > 0)count += 1;
-                                            while (tmp_c < count){
-                                                if (tmp_c + 1 == count){
-                                                    tmpBytes = Arrays.copyOfRange(bytes,tmp_c * max_length,tmp_c * max_length + mod_length);
-                                                }else
-                                                    tmpBytes = Arrays.copyOfRange(bytes,tmp_c * max_length,tmp_c * max_length + max_length);
+                                                while (tmp_c < count){
+                                                    if (tmp_c + 1 == count){
+                                                        tmpBytes = Arrays.copyOfRange(bytes,tmp_c * max_length,tmp_c * max_length + mod_length);
+                                                    }else
+                                                        tmpBytes = Arrays.copyOfRange(bytes,tmp_c * max_length,tmp_c * max_length + max_length);
 
-                                                ret_c += connection.bulkTransfer(usbOutEndpoint,tmpBytes,tmpBytes.length, 30000);
-                                                tmp_c++;
-                                            }
+                                                    ret_c += connection.bulkTransfer(usbOutEndpoint,tmpBytes,tmpBytes.length, 30000);
+                                                    tmp_c++;
+                                                }
+
                                         }
                                         Logger.d("ret_c:%d,bytes.length:%d",ret_c,length);
                                     }

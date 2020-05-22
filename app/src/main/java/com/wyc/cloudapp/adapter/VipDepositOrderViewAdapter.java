@@ -16,6 +16,7 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.dialog.orderDialog.RetailOrderDetailsDialog;
+import com.wyc.cloudapp.dialog.vip.VipDepositDetailsDialog;
 import com.wyc.cloudapp.logger.Logger;
 
 import java.util.Locale;
@@ -102,8 +103,8 @@ public class VipDepositOrderViewAdapter extends AbstractQueryDataAdapter<VipDepo
             final TextView order_code_tv = v.findViewById(R.id.order_code);
 
             if (isClickView(order_code_tv,event.getX(),event.getY())){
-                DialogBaseOnMainActivityImp retailOrderDetailsDialog = new RetailOrderDetailsDialog(mContext,getCurrentOrder());
-                retailOrderDetailsDialog.show();
+                final VipDepositDetailsDialog vipDepositDetailsDialog = new VipDepositDetailsDialog(mContext,getCurrentOrder());
+                vipDepositDetailsDialog.show();
             }
         }
         v.performClick();

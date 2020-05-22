@@ -22,7 +22,6 @@ import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -309,7 +308,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             if (!cursor.moveToNext()){
                 return true;
             }
-            JSONObject json = JSON.parseObject(cursor.getString(0));
+            final JSONObject json = JSON.parseObject(cursor.getString(0));
             for (String key : json.keySet()){
                 param.put(key,json.getString(key));
             }
@@ -502,7 +501,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 // 遍历ResultSet中的每条数据
                 for (int i = 0; i < columnCount; i++) {
                     if (coltypes.get(i) == FIELD_TYPE_FLOAT) {
-                        json.put(colNames.get(i),BigDecimal.valueOf(cursor.getDouble(i)));  /////i = 0;rs里面的是从1开始
+                        json.put(colNames.get(i),cursor.getDouble(i));  /////i = 0;rs里面的是从1开始
                     } else if (coltypes.get(i) == FIELD_TYPE_INTEGER) {
                         json.put(colNames.get(i), cursor.getInt(i));
                     } else {
@@ -778,7 +777,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 jsonObj = new JSONObject();
                 for (int i = 0; i < columnCount; i++) {
                     if (coltypes.get(i) == FIELD_TYPE_FLOAT) {
-                        jsonObj.put(colNames.get(i),BigDecimal.valueOf(cursor.getDouble(i)));
+                        jsonObj.put(colNames.get(i),cursor.getDouble(i));
                     } else if (coltypes.get(i) == FIELD_TYPE_INTEGER) {
                         jsonObj.put(colNames.get(i), cursor.getInt(i));
                     } else {

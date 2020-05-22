@@ -1,6 +1,8 @@
 package com.wyc.cloudapp.dialog.vip;
 
 import android.content.ContentValues;
+import android.hardware.usb.UsbDeviceConnection;
+import android.hardware.usb.UsbEndpoint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -29,6 +31,8 @@ import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
+
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.lang.ref.WeakReference;
 import java.util.Date;
@@ -329,8 +333,6 @@ public class VipChargeDialogImp extends AbstractPayDialog {
                                                         final JSONObject member = members.getJSONObject(0),pay_info = money_orders.getJSONObject(0);
 
                                                         if (pay_info != null && member != null){
-                                                            if (mPrintStatus)
-                                                                Printer.print(mContext,get_print_content(pay_info,member,info_json.getJSONArray("welfare")));
 
                                                             values.clear();
                                                             values.put("status",3);//已完成
@@ -338,10 +340,12 @@ public class VipChargeDialogImp extends AbstractPayDialog {
                                                             values.put("give_money",pay_info.getDoubleValue("give_money"));
                                                             if (!SQLiteHelper.execUpdateSql("member_order_info",values,whereClause,whereArgs,err)){
                                                                 mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,err.toString()).sendToTarget();
-                                                                return;
+                                                            }else {
+                                                                mHandler.obtainMessage(MessageID.VIP_C_SUCCESS_ID,member).sendToTarget();
+                                                                if (mPrintStatus){
+                                                                    Printer.print(mContext,get_print_content(mContext,order_code));
+                                                                }
                                                             }
-
-                                                            mHandler.obtainMessage(MessageID.VIP_C_SUCCESS_ID,member).sendToTarget();
                                                         }else {
                                                             Logger.e("服务器返回member：%s,money_order：%s",members,money_orders);
                                                             mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"服务器返回信息为空！").sendToTarget();
@@ -361,49 +365,51 @@ public class VipChargeDialogImp extends AbstractPayDialog {
                 });
             }
     }
-    private String c_format_58(final JSONObject format_info,final JSONObject money_order,final JSONObject member,final JSONArray welfare){
+    private static String c_format_58(final MainActivity context,final JSONObject format_info,final JSONObject order_info){
         final StringBuilder info = new StringBuilder();
 
         final String store_name = Utils.getNullStringAsEmpty(format_info,"s_n");
-        final String new_line = "\r\n";//Printer.commandToStr(Printer.NEW_LINE);
+        final String new_line =  Printer.commandToStr(Printer.NEW_LINE);
         final String footer_c = Utils.getNullStringAsEmpty(format_info,"f_c");
 
         int print_count = Utils.getNotKeyAsNumberDefault(format_info,"p_c",1);
         int footer_space = Utils.getNotKeyAsNumberDefault(format_info,"f_s",5);
 
-        final JSONObject stores_info = mContext.getStoreInfo();
+        final JSONArray welfare = Utils.getNullObjectAsEmptyJsonArray(order_info,"welfare"),money_orders = Utils.getNullObjectAsEmptyJsonArray(order_info,"money_order"),
+                members = Utils.getNullObjectAsEmptyJsonArray(order_info,"member");
 
-        if (mOpenCashbox)//开钱箱
-            info.append(Printer.commandToStr(Printer.OPEN_CASHBOX));
+        if (money_orders.isEmpty() || members.isEmpty())return "";//打印内容为空直接返回空
+
+        final JSONObject stores_info = context.getStoreInfo(),money_order = money_orders.getJSONObject(0),member = members.getJSONObject(0);
 
         while (print_count-- > 0) {//打印份数
             info.append(Printer.commandToStr(Printer.DOUBLE_HEIGHT)).append(Printer.commandToStr(Printer.ALIGN_CENTER))
                     .append(store_name.length() == 0 ? stores_info.getString("stores_name") : store_name).append(new_line).append(new_line).append(Printer.commandToStr(Printer.NORMAL)).
                     append(Printer.commandToStr(Printer.ALIGN_LEFT));
 
-            info.append(mContext.getString(R.string.store_name_sz).concat(Utils.getNullStringAsEmpty(stores_info,"stores_name"))).append(new_line);
-            info.append(mContext.getString(R.string.order_sz).concat(Utils.getNullStringAsEmpty(money_order,"order_code"))).append(new_line);
-            info.append(mContext.getString(R.string.oper_sz).concat("：").concat(Utils.getNullStringAsEmpty(mContext.getCashierInfo(),"cas_name"))).append(new_line);
-            info.append(mContext.getString(R.string.vip_card_id_sz).concat(Utils.getNullStringAsEmpty(member,"card_code"))).append(new_line);
+            info.append(context.getString(R.string.store_name_sz).concat(Utils.getNullStringAsEmpty(stores_info,"stores_name"))).append(new_line);
+            info.append(context.getString(R.string.order_sz).concat(Utils.getNullStringAsEmpty(money_order,"order_code"))).append(new_line);
+            info.append(context.getString(R.string.oper_sz).concat("：").concat(Utils.getNullStringAsEmpty(context.getCashierInfo(),"cas_name"))).append(new_line);
+            info.append(context.getString(R.string.vip_card_id_sz).concat(Utils.getNullStringAsEmpty(member,"card_code"))).append(new_line);
             info.append("会员姓名：".concat(Utils.getNullStringAsEmpty(member,"name"))).append(new_line);
             info.append("支付方式：".concat(Utils.getNullStringAsEmpty(money_order,"pay_method_name"))).append(new_line);
             info.append("充值金额：".concat(Utils.getNullStringAsEmpty(money_order,"order_money"))).append(new_line);
-            info.append(mContext.getString(R.string.give_amt).concat("：").concat(Utils.getNullStringAsEmpty(money_order,"give_money"))).append(new_line);
+            info.append(context.getString(R.string.give_amt).concat("：").concat(Utils.getNullStringAsEmpty(money_order,"give_money"))).append(new_line);
             info.append("会员余额：".concat(Utils.getNullStringAsEmpty(member,"money_sum"))).append(new_line);
             info.append("会员积分：".concat(Utils.getNullStringAsEmpty(member,"points_sum"))).append(new_line);
             info.append("会员电话：".concat(Utils.getNullStringAsEmpty(member,"mobile"))).append(new_line);
 
             info.append("时    间：".concat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(money_order.getLongValue("addtime") * 1000))).append(new_line);
-            if (welfare != null && welfare.size() != 0){
+            if (welfare.size() != 0){
                 for (int i = 0,size = welfare.size();i < size;i++){
                     if (i == 0)info.append("优惠信息").append(new_line);
                     info.append("  ").append(welfare.getString(i)).append(new_line);
                 }
             }
-            info.append(new_line).append(mContext.getString(R.string.hotline_sz)).append(Utils.getNullOrEmptyStringAsDefault(stores_info,"telphone","")).append(new_line);
-            info.append(mContext.getString(R.string.stores_address_sz)).append(Utils.getNullOrEmptyStringAsDefault(stores_info,"region","")).append(new_line);
+            info.append(new_line).append(context.getString(R.string.hotline_sz)).append(Utils.getNullOrEmptyStringAsDefault(stores_info,"telphone","")).append(new_line);
+            info.append(context.getString(R.string.stores_address_sz)).append(Utils.getNullOrEmptyStringAsDefault(stores_info,"region","")).append(new_line);
 
-            info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(footer_c);
+            info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(footer_c).append(Printer.commandToStr(Printer.ALIGN_LEFT));
             for (int i = 0; i < footer_space; i++) info.append(" ").append(new_line);
 
             if (print_count > 0){
@@ -417,23 +423,33 @@ public class VipChargeDialogImp extends AbstractPayDialog {
         return info.toString();
     }
 
-    private String get_print_content(final JSONObject money_order,final JSONObject member,final JSONArray welfare){
+    static String get_print_content(final MainActivity context,final String order_code){
         final JSONObject print_format_info = new JSONObject();
         String content = "";
         if (SQLiteHelper.getLocalParameter("v_f_info",print_format_info)){
             if (print_format_info.getIntValue("f") == R.id.vip_c_format){
-                switch (print_format_info.getIntValue("f_z")){
-                    case R.id.f_58:
-                        content = c_format_58(print_format_info,money_order,member,welfare);
-                        break;
-                    case R.id.f_76:
-                        break;
-                    case R.id.f_80:
-                        break;
-                }
+                final JSONObject xnote = new JSONObject();
+                if (SQLiteHelper.execSql(xnote,"SELECT xnote FROM member_order_info where order_code = '" + order_code + "'")){
+                    try {
+                        final JSONObject order_info = JSON.parseObject(xnote.getString("xnote"));
+                        switch (print_format_info.getIntValue("f_z")){
+                            case R.id.f_58:
+                                content = c_format_58(context,print_format_info,order_info);
+                                break;
+                            case R.id.f_76:
+                                break;
+                            case R.id.f_80:
+                                break;
+                        }
+                    }catch (JSONException e){
+                        e.printStackTrace();
+                        context.runOnUiThread(()->MyDialog.ToastMessage("加载打印内容错误：" + e.getLocalizedMessage(), context,null));
+                    }
+                }else
+                    context.runOnUiThread(()->MyDialog.ToastMessage("加载打印内容错误：" + xnote.getString("info"), context,null));
             }
         }else
-            MyDialog.ToastMessage("加载打印格式错误：" + print_format_info.getString("info"),getContext(),getWindow());
+            context.runOnUiThread(()->MyDialog.ToastMessage("加载打印格式错误：" + print_format_info.getString("info"), context,null));
 
         return content;
     }

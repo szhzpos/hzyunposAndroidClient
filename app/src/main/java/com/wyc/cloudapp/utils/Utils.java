@@ -34,6 +34,7 @@ import java.math.BigDecimal;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -273,7 +274,7 @@ public final class Utils {
     }
 
     public static String intToIp(int ipInt) {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append(ipInt & 0xFF).append(".")
         .append((ipInt >> 8) & 0xFF).append(".")
         .append((ipInt >> 16) & 0xFF).append(".")
@@ -283,25 +284,25 @@ public final class Utils {
 
     // IMEI码
     private static String getIMIEStatus(Context context) {
-        TelephonyManager tm = (TelephonyManager) context
-                .getSystemService(Context.TELEPHONY_SERVICE);
-        String deviceId = tm.getDeviceId();
-        return deviceId;
+        final TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        if (null != tm)
+            return tm.getDeviceId();
+        else
+            return "";
     }
 
     // Mac地址
     private static String getLocalMac(Context context) {
-        WifiManager wifi = (WifiManager) context.getApplicationContext()
-                .getSystemService(Context.WIFI_SERVICE);
-        WifiInfo info = wifi.getConnectionInfo();
-        return info.getMacAddress();
+        final WifiManager wifi = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        if (wifi != null)
+            return wifi.getConnectionInfo().getMacAddress();
+        else
+            return "";
     }
 
     // Android Id
     private static String getAndroidId(Context context) {
-        String androidId = Settings.Secure.getString(
-                context.getContentResolver(), Settings.Secure.ANDROID_ID);
-        return androidId;
+        return Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
     public static boolean JsonIsNotEmpty(final JSONObject json){
@@ -318,25 +319,24 @@ public final class Utils {
         if (jsons == null)return new JSONArray();
         return JSON.parseArray(jsons.toJSONString());
     }
-    public static double getNotKeyAsNumberDefault(@NonNull final JSONObject object, final String key, double default_v){
-        if (object.containsKey(key)){
-            return object.getDoubleValue(key);
-        }
-        return default_v;
-    }
-    public static int getNotKeyAsNumberDefault(@NonNull final JSONObject object, final String key, int default_v){
-        if (object.containsKey(key)){
-            return object.getIntValue(key);
-        }
-        return default_v;
-    }
+
     public static String getNullOrEmptyStringAsDefault(@NonNull final JSONObject object,final String key, final String default_v){
         final String value = object.getString(key);
         if (value != null && !"".equals(value)){
-            return object.getString(key);
+            return value;
         }
         return default_v;
     }
+    @SuppressWarnings("unchecked")
+    public static <T extends Number> T getNotKeyAsNumberDefault(@NonNull final JSONObject object,final String key, final T default_v){
+        if (object.containsKey(key)){
+            final Object obj = object.get(key);
+            if (obj instanceof Number)
+                return (T)object.get(key);
+        }
+        return default_v;
+    }
+
     public static String getNullStringAsEmpty(@NonNull final JSONObject object,final String key){
         final String value = object.getString(key);
         return value == null ? "" :value;

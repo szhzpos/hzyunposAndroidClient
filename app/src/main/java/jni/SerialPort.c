@@ -179,7 +179,8 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm,void * r){
 	LOGD("JNI_OnLoad");
     JNIEnv* env = NULL;
     jint result = -1;
-    if ((*vm)->GetEnv(vm,(void**)&env, JNI_VERSION_1_4) != JNI_OK) {
+    if ((*vm)->GetEnv(vm,(void**)&env, JNI_VERSION_1_6) != JNI_OK) {
+		LOGD("JNI_OnLoad failure");
         return result;
     };
     JNINativeMethod methods [] = {

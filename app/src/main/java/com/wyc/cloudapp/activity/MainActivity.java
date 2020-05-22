@@ -77,8 +77,8 @@ public class MainActivity extends AppCompatActivity {
     private MyDialog mDialog;
     private AtomicBoolean mNetworkStatus = new AtomicBoolean(true);//网络状态
     private AtomicBoolean mTransferStatus = new AtomicBoolean(true);//传输状态
-    private AtomicBoolean mPrintStatus = new AtomicBoolean(true);//打印状态
-    private long mCurrentTimestamp = 0;
+    private volatile boolean mPrintStatus = true;//打印状态
+    private volatile long mCurrentTimestamp = 0;
     private String mAppId,mAppScret,mUrl;
     private TextView mCurrentTimeViewTv, mSaleSumNumTv, mSaleSumAmtTv, mOrderCodeTv, mDisSumAmtTv;
     private SyncManagement mSyncManagement;
@@ -539,15 +539,15 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     private void initPrintStatus(){//打印状态
-        findViewById(R.id.printer_status).setOnClickListener(v -> {
-            final ImageView imageView = (ImageView)v;
+        final ImageView imageView = findViewById(R.id.printer_status);
+        imageView.setOnClickListener(v -> {
             final Bitmap printer = BitmapFactory.decodeResource(getResources(),R.drawable.printer);
-            if (mPrintStatus.get()){
-                mPrintStatus.set(false);
+            if (mPrintStatus){
+                mPrintStatus = false;
                 imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(printer,15,15));
                 MyDialog.ToastMessage(imageView,"打印功能已关闭！",this,getWindow());
             }else{
-                mPrintStatus.set(true);
+                mPrintStatus = true;
                 imageView.setImageBitmap(printer);
                 MyDialog.ToastMessage(imageView,"打印功能已开启！",this,getWindow());
             }
@@ -578,12 +578,6 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(PayDialog myDialog) {
                         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
-
-                        if (mPrintStatus.get()){
-                            Printer.print(activity, PayDialog.get_print_content(activity,getOrderCode(),myDialog.isOpenCashbox()));
-                        }
-
-
                         mSyncManagement.sync_order();
                         resetOrderInfo();
                         myDialog.dismiss();
@@ -740,6 +734,9 @@ public class MainActivity extends AppCompatActivity {
     }
     public String getUrl(){
         return mUrl;
+    }
+    public boolean getPrintStatus(){
+        return mPrintStatus;
     }
     private static class Myhandler extends Handler {
         private WeakReference<MainActivity> weakHandler;
