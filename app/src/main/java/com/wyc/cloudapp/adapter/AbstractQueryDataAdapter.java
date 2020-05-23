@@ -36,7 +36,7 @@ public abstract class AbstractQueryDataAdapter<T extends RecyclerView.ViewHolder
                 item_color = mContext.getColor(R.color.appColor);
                 text_color = mContext.getColor(R.color.text_color);
             }
-            view.setBackgroundColor(selected_color);
+            view.setForeground(mContext.getDrawable(selected_color));
             if (view instanceof LinearLayout){
                 LinearLayout linearLayout = (LinearLayout)view;
                 int count = linearLayout.getChildCount();
@@ -49,6 +49,7 @@ public abstract class AbstractQueryDataAdapter<T extends RecyclerView.ViewHolder
                             case R.id.sale_refund:
                             case R.id.retail_order_code:
                             case R.id.refund_order_code:
+                            case R.id.pay_m_name:
                                 tv.setTextColor(item_color);
                                 break;
                             case R.id.order_status:
@@ -70,6 +71,10 @@ public abstract class AbstractQueryDataAdapter<T extends RecyclerView.ViewHolder
         }
     }
 
+    @Override
+    public int getItemCount() {
+        return mDatas == null ? 0: mDatas.size();
+    }
 
     protected void setCurrentItemView(View v){
         if (mCurrentItemView == null){

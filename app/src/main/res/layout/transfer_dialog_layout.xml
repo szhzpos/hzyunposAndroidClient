@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/transfer_info_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_58"
+        android:background="@color/white"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/margin_8"
+            android:paddingEnd="@dimen/margin_2"
+            android:text="@string/cashier_not_colon_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <TextView
+            android:id="@+id/cas_name"
+            android:layout_width="@dimen/width_88"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/margin_8"
+            android:background="@drawable/left_separator"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/margin_2"
+            android:paddingEnd="@dimen/margin_5"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_2"
+            android:text="@string/shift_time_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <EditText
+            android:id="@+id/transfer_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/left_separator"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_2"
+            android:text="@string/payable_cash_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <TextView
+            android:id="@+id/payable_amt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/left_separator"
+            android:gravity="center_vertical|end"
+            android:paddingStart="@dimen/margin_2"
+            android:paddingEnd="@dimen/margin_18"
+            android:text="@string/z_p_z_sz"
+            android:textColor="@color/orange_1"
+            android:textSize="@dimen/font_size_24" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="688dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/details_hearder_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border_sub_gray"
+            android:orientation="horizontal"
+            android:paddingTop="@dimen/margin_1"
+            android:paddingBottom="@dimen/margin_1">
+
+            <TextView
+                android:layout_width="@dimen/width_128"
+                android:layout_height="@dimen/transfer_details_h_height"
+                android:gravity="center"
+                android:text="@string/pay_method_name_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_18" />
+
+            <LinearLayout
+                android:id="@+id/sale_info_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/left_separator"
+                android:orientation="vertical"
+                android:paddingStart="@dimen/margin_1"
+                android:paddingEnd="0dp"
+                android:paddingBottom="@dimen/margin_1">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="25dp"
+                    android:background="@drawable/bottom_separator"
+                    android:gravity="center"
+                    android:text="@string/retail_pay_sz"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="@dimen/transfer_details_col01_width"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="@string/order_num_sz"
+                        android:textColor="@color/text_color"
+                        android:textSize="@dimen/font_size_16" />
+
+                    <TextView
+                        android:layout_width="@dimen/transfer_details_col02_width"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/left_separator"
+                        android:gravity="center"
+                        android:text="@string/amt_not_colon_sz"
+                        android:textColor="@color/text_color"
+                        android:textSize="@dimen/font_size_16" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/refund_info_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/left_separator"
+                android:orientation="vertical"
+                android:paddingStart="@dimen/margin_1"
+                android:paddingEnd="0dp"
+                android:paddingBottom="@dimen/margin_1">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="25dp"
+                    android:background="@drawable/bottom_separator"
+                    android:gravity="center"
+                    android:text="@string/refund_dialog_title_sz"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="@dimen/transfer_details_col01_width"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="@string/order_num_sz"
+                        android:textColor="@color/text_color"
+                        android:textSize="@dimen/font_size_16" />
+
+                    <TextView
+                        android:id="@+id/refund_amt"
+                        android:layout_width="@dimen/transfer_details_col02_width"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/left_separator"
+                        android:gravity="center"
+                        android:text="@string/amt_not_colon_sz"
+                        android:textColor="@color/text_color"
+                        android:textSize="@dimen/font_size_16" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/deposit_info_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/left_separator"
+                android:orientation="vertical"
+                android:paddingStart="@dimen/margin_1"
+                android:paddingEnd="0dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="25dp"
+                    android:background="@drawable/bottom_separator"
+                    android:gravity="center"
+                    android:text="@string/vip_charge_sz"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="@dimen/transfer_details_col01_width"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="@string/order_num_sz"
+                        android:textColor="@color/text_color"
+                        android:textSize="@dimen/font_size_16" />
+
+                    <TextView
+                        android:layout_width="@dimen/transfer_details_col02_width"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/left_separator"
+                        android:gravity="center"
+                        android:text="@string/amt_not_colon_sz"
+                        android:textColor="@color/text_color"
+                        android:textSize="@dimen/font_size_16" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/transfer_info_list"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/transfer_list_height"
+            android:background="@drawable/bottom_separator" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bottom_separator"
+            android:orientation="horizontal"
+            android:padding="@dimen/margin_1">
+
+            <TextView
+                android:layout_width="@dimen/width_128"
+                android:layout_height="@dimen/height_35"
+
+                android:gravity="center_vertical|end"
+                android:padding="@dimen/margin_5"
+                android:text="@string/sec_sum_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:id="@+id/retail_sum_order_num"
+                android:layout_width="@dimen/transfer_details_col01_width"
+                android:layout_height="match_parent"
+                android:background="@drawable/left_separator"
+                android:gravity="center"
+                android:paddingStart="0dp"
+                android:paddingEnd="@dimen/margin_5"
+                android:text="@string/zero_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:id="@+id/retail_sum_amt"
+                android:layout_width="@dimen/transfer_details_col02_width"
+                android:layout_height="match_parent"
+                android:background="@drawable/left_separator"
+                android:gravity="center"
+                android:paddingStart="0dp"
+                android:paddingEnd="@dimen/margin_5"
+                android:text="@string/z_p_z_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:id="@+id/refund_sum_order_num"
+                android:layout_width="@dimen/transfer_details_col01_width"
+                android:layout_height="match_parent"
+                android:background="@drawable/left_separator"
+                android:gravity="center"
+                android:paddingStart="0dp"
+                android:paddingEnd="@dimen/margin_5"
+                android:text="@string/zero_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:id="@+id/refund_sum_amt"
+                android:layout_width="@dimen/transfer_details_col02_width"
+                android:layout_height="match_parent"
+                android:background="@drawable/left_separator"
+                android:gravity="center"
+                android:paddingStart="0dp"
+                android:paddingEnd="@dimen/margin_5"
+                android:text="@string/z_p_z_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:id="@+id/deposit_sum_order_num"
+                android:layout_width="@dimen/transfer_details_col01_width"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/margin_1"
+                android:background="@drawable/left_separator"
+                android:gravity="center"
+                android:paddingStart="0dp"
+                android:paddingEnd="@dimen/margin_5"
+                android:text="@string/zero_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:id="@+id/rdeposit_sum_amt"
+                android:layout_width="@dimen/transfer_details_col02_width"
+                android:layout_height="match_parent"
+                android:background="@drawable/left_separator"
+                android:gravity="center"
+                android:paddingStart="0dp"
+                android:paddingEnd="@dimen/margin_5"
+                android:text="@string/z_p_z_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_18" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/ok_"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="@dimen/width_128"
+        android:layout_height="@dimen/height_58"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/margin_5"
+        android:background="@drawable/button_blue"
+        android:text="@string/s_e_sz"
+        android:textColor="@color/blue_white"
+        android:textSize="@dimen/font_size_24" />
+
+</LinearLayout>

@@ -1269,7 +1269,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "        order_code,\n" +
                 "        discount_type\n" +
                 "    )\n" +
-                ");",member_order_info = "CREATE TABLE member_order_info (\n" +
+                ");",member_order_info = "CREATE TABLE IF NOT EXISTS member_order_info (\n" +
                 "    xnote           VARCHAR,\n" +
                 "    addtime         INTEGER,\n" +
                 "    transfer_status INTEGER DEFAULT (1),\n" +
@@ -1290,7 +1290,63 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "        third_order_id,\n" +
                 "        member_id\n" +
                 "    )\n" +
-                ");";
+                ");",transfer_info = "CREATE TABLE IF NOT EXISTS transfer_info (\n" + //交班总信息
+                "    sj_money       REAL    DEFAULT (0),\n" +
+                "    cards_num      INTEGER,\n" +
+                "    cards_money    REAL,\n" +
+                "    order_money    REAL    DEFAULT (0),\n" +
+                "    order_e_date   INTEGER DEFAULT (0),\n" +
+                "    order_b_date   INTEGER DEFAULT (0),\n" +
+                "    recharge_num   INTEGER DEFAULT (0),\n" +
+                "    recharge_money REAL    DEFAULT (0),\n" +
+                "    refund_num     INTEGER DEFAULT (0),\n" +
+                "    refund_money   REAL    DEFAULT (0),\n" +
+                "    unpaid_money   REAL    DEFAULT (0),\n" +
+                "    sum_money      REAL    DEFAULT (0),\n" +
+                "    ti_code        VARCHAR,\n" +
+                "    upload_time    INTEGER,\n" +
+                "    upload_status  INT     DEFAULT (1),\n" +
+                "    transfer_time  INTEGER,\n" +
+                "    order_num      REAL,\n" +
+                "    cas_id         INTEGER,\n" +
+                "    stores_id      INTEGER,\n" +
+                "    ti_id          INTEGER PRIMARY KEY AUTOINCREMENT\n" +
+                ")",transfer_money_info = "CREATE TABLE IF NOT EXISTS transfer_money_info (\n" +//交班零售信息
+                "    order_num  INTEGER DEFAULT (0),\n" +
+                "    pay_money  REAL,\n" +
+                "    pay_method INTEGER,\n" +
+                "    ti_code    VARCHAR,\n" +
+                "    ti_id      INTEGER PRIMARY KEY AUTOINCREMENT\n" +
+                ");\n",transfer_once_cardsc = "CREATE TABLE IF NOT EXISTS transfer_once_cardsc (\n" +//交班次卡信息
+                "    ti_id      INTEGER PRIMARY KEY AUTOINCREMENT\n" +
+                "                       UNIQUE,\n" +
+                "    ti_code    INTEGER,\n" +
+                "    pay_method INTEGER,\n" +
+                "    pay_money  REAL,\n" +
+                "    order_num  INTEGER\n" +
+                ")",transfer_order = "CREATE TABLE IF NOT EXISTS transfer_order (\n" +//交班各类型单号信息
+                "    cas_id     INTEGER,\n" +
+                "    status     INTEGER DEFAULT (1),\n" +
+                "    order_code VARCHAR,\n" +
+                "    ti_code    VARCHAR,\n" +
+                "    ti_id      INTEGER PRIMARY KEY AUTOINCREMENT\n" +
+                ")",transfer_recharge_money= "CREATE TABLE IF NOT EXISTS transfer_recharge_money (\n" +//交班充值信息
+                "    order_num  INTEGER DEFAULT (0),\n" +
+                "    _id        INTEGER PRIMARY KEY AUTOINCREMENT\n" +
+                "                       NOT NULL\n" +
+                "                       UNIQUE,\n" +
+                "    ti_code    INTEGER,\n" +
+                "    pay_method INTEGER,\n" +
+                "    pay_money  REAL\n" +
+                ");\n",transfer_refund_money = "CREATE TABLE IF NOT EXISTS transfer_refund_money (\n" +
+                "    order_num  INTEGER DEFAULT (0),\n" +
+                "    _id        INTEGER PRIMARY KEY AUTOINCREMENT\n" +
+                "                       NOT NULL\n" +
+                "                       UNIQUE,\n" +
+                "    ti_code    INTEGER,\n" +
+                "    pay_method INTEGER,\n" +
+                "    pay_money  REAL\n" +
+                ");\n";
 
         list.add(sql_shop_stores);
         list.add(sql_shop_category);
@@ -1312,6 +1368,14 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         list.add(sql_barcode_scale_info);
         list.add(sql_discount_record);
         list.add(member_order_info);
+
+        list.add(transfer_info);
+        list.add(transfer_money_info);
+        list.add(transfer_once_cardsc);
+        list.add(transfer_order);
+        list.add(transfer_recharge_money);
+        list.add(transfer_refund_money);
+
         try {
             db.beginTransaction();
             for (String sql : list) {

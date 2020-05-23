@@ -57,6 +57,11 @@ public abstract class AbstractDetailsDataAdapter <T extends RecyclerView.ViewHol
         }
     }
 
+    @Override
+    public int getItemCount() {
+        return mDatas == null ? 0: mDatas.size();
+    }
+
     public interface ItemClickCallBack{
         void onClick(final JSONObject pay_record);
     }

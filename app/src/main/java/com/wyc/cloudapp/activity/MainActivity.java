@@ -45,6 +45,7 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.HangBillDialog;
 import com.wyc.cloudapp.dialog.MoreFunDialog;
 import com.wyc.cloudapp.dialog.orderDialog.QuerySaleOrderDialog;
+import com.wyc.cloudapp.dialog.orderDialog.TransferDialog;
 import com.wyc.cloudapp.dialog.pay.PayDialog;
 import com.wyc.cloudapp.dialog.SecondDisplay;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
@@ -190,7 +191,8 @@ public class MainActivity extends AppCompatActivity {
             shift_exchange_linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MyDialog.displayMessage(null,"交班",v.getContext());
+                TransferDialog transferDialog = new TransferDialog(MainActivity.this);
+                transferDialog.show();
             }
         });
     }

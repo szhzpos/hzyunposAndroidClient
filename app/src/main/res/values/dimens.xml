@@ -90,4 +90,8 @@
     <dimen name="table_footer_height">@dimen/height_50</dimen>
     <dimen name="status_et_width">@dimen/width_85</dimen>
     <dimen name="width_35">@dimen/size_35</dimen>
+    <dimen name="transfer_details_h_height">50dp</dimen>
+    <dimen name="transfer_list_height">200dp</dimen>
+    <dimen name="transfer_details_col01_width">@dimen/width_68</dimen>
+    <dimen name="transfer_details_col02_width">@dimen/width_118</dimen>
 </resources>

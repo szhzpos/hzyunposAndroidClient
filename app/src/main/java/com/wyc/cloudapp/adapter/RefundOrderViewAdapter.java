@@ -82,11 +82,6 @@ public final class RefundOrderViewAdapter extends AbstractQueryDataAdapter<Refun
         }
     }
 
-    @Override
-    public int getItemCount() {
-        return mDatas == null ? 0: mDatas.size();
-    }
-
     private View.OnTouchListener touchListener = (v, event) -> {
         if (event.getAction() == MotionEvent.ACTION_DOWN){
             setCurrentItemView(v);

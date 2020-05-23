@@ -69,11 +69,6 @@ public final class RefundDetailsGoodsInfoAdapter extends AbstractDetailsDataAdap
         }
     }
 
-    @Override
-    public int getItemCount() {
-        return mDatas == null ? 0: mDatas.size();
-    }
-
     private View.OnClickListener mItemClickListener = this::setCurrentItemView;
 
     public void setDatas(final String ro_code){
