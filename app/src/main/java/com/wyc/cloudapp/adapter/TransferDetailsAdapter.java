@@ -64,12 +64,9 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
                 holder.deposit_order_num_tv.setText(String.valueOf(pay_info.getIntValue("deposit_order_num")));
                 holder.deposit_amt_tv.setText(String.format(Locale.CHINA,"%.2f",pay_info.getDoubleValue("deposit_amt")));
 
-                holder.mCurrentLayoutItemView.setOnClickListener(mItemClickListener);
             }
         }
     }
-
-    private View.OnClickListener mItemClickListener = this::setCurrentItemView;
 
     @Override
     public void setDatas(final String cas_id){
@@ -218,7 +215,7 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
 
      private boolean getTransferDetailsInfo(final String cas_id,final String start_time,final StringBuilder err){
          final String retail_sql = "SELECT pay_method ,count(1) order_num,sum(pay_money) pay_money FROM retail_order_pays a inner join \n" +
-                 "retail_order b on a.order_code = b.order_code where b.transfer_status = 1 and cashier_id = "+ cas_id +"  and b.order_status = 2 and a.pay_status = 2 and "+ start_time +" < b.addtime and b.addtime < strftime('%s','now') group by pay_method",
+                 "retail_order b on a.order_code = b.order_code where b.transfer_status = 1 and cashier_id = "+ cas_id +"  and (b.order_status = 2  or b.order_status = 4) and a.pay_status = 2 and "+ start_time +" < b.addtime and b.addtime < strftime('%s','now') group by pay_method",
                  refund_sql = "SELECT pay_method ,count(1) order_num,sum(pay_money) pay_money FROM refund_order_pays a inner join refund_order b \n" +
                          "on a.ro_code = b.ro_code where b.transfer_status = 1 and cashier_id = "+ cas_id +"  and b.order_status = 2 and a.pay_status = 2 and " + start_time +" < b.addtime and b.addtime < strftime('%s','now') group by pay_method",
                  deposit_sql = "SELECT pay_method_id pay_method,count(1) order_num,sum(order_money) pay_money FROM member_order_info where transfer_status = 1 and cashier_id = "+ cas_id +"  and status = 3 and " + start_time +" < addtime and " +
