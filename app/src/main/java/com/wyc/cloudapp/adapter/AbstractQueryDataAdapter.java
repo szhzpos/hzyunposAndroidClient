@@ -36,7 +36,7 @@ public abstract class AbstractQueryDataAdapter<T extends RecyclerView.ViewHolder
                 item_color = mContext.getColor(R.color.appColor);
                 text_color = mContext.getColor(R.color.text_color);
             }
-            view.setForeground(mContext.getDrawable(selected_color));
+            view.setBackgroundColor(selected_color);
             if (view instanceof LinearLayout){
                 LinearLayout linearLayout = (LinearLayout)view;
                 int count = linearLayout.getChildCount();

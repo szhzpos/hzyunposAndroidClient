@@ -122,7 +122,7 @@ public final class RetailOrderViewAdapter extends AbstractQueryDataAdapter<Retai
                 "       a.upload_status,\n" +
                 "       case a.upload_status when 1 then '未上传' when 2 then '已上传' else '其他' end upload_status_name,\n" +
                 "       a.pay_status,\n" +
-                "       case a.pay_status when 1 then '未支付' when 2 then '已支付' else '支付中' end pay_status_name,\n" +
+                "       case a.pay_status when 1 then '未支付' when 2 then '已支付' when 3 then '支付中' else '其他' end pay_status_name,\n" +
                 "       a.order_status,\n" +
                 "       case a.order_status when 1 then '未付款' when 2 then '已付款' when 3 then '已取消' when 4 then '已退货' else '其他'  end order_status_name,\n" +
                 "       datetime(a.addtime, 'unixepoch', 'localtime') oper_time,\n" +

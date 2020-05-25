@@ -148,7 +148,7 @@ public class VipChargeDialogImp extends AbstractPayDialog {
                 member_order_info.put("order_money",sz_moeny);
 
                 //保存单据
-                if (!SQLiteHelper.saveFormJson(member_order_info,"member_order_info",null,"INSERT",err)){
+                if (!SQLiteHelper.saveFormJson(member_order_info,"member_order_info",null,0,err)){
                     mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,err.toString()).sendToTarget();
                     return;
                 }
@@ -190,7 +190,7 @@ public class VipChargeDialogImp extends AbstractPayDialog {
 
                                         //保存支付单号
                                         values.put("order_code",order_code);
-                                        if (!SQLiteHelper.execUpdateSql("member_order_info",values,whereClause,whereArgs,err)){
+                                        if (SQLiteHelper.execUpdateSql("member_order_info",values,whereClause,whereArgs,err) < 0){
                                             mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,err.toString()).sendToTarget();
                                             return;
                                         }
@@ -300,7 +300,7 @@ public class VipChargeDialogImp extends AbstractPayDialog {
                                         values.clear();
                                         values.put("pay_method_id",pay_method_id);
                                         values.put("status",2);
-                                        if (!SQLiteHelper.execUpdateSql("member_order_info",values,whereClause,whereArgs,err)){
+                                        if (SQLiteHelper.execUpdateSql("member_order_info",values,whereClause,whereArgs,err) < 0){
                                             mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,err.toString()).sendToTarget();
                                             return;
                                         }
@@ -338,7 +338,7 @@ public class VipChargeDialogImp extends AbstractPayDialog {
                                                             values.put("status",3);//已完成
                                                             values.put("xnote",info_json.toJSONString());
                                                             values.put("give_money",pay_info.getDoubleValue("give_money"));
-                                                            if (!SQLiteHelper.execUpdateSql("member_order_info",values,whereClause,whereArgs,err)){
+                                                            if (SQLiteHelper.execUpdateSql("member_order_info",values,whereClause,whereArgs,err) < 0){
                                                                 mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,err.toString()).sendToTarget();
                                                             }else {
                                                                 mHandler.obtainMessage(MessageID.VIP_C_SUCCESS_ID,member).sendToTarget();

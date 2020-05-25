@@ -69,7 +69,7 @@ public class MoreFunDialog extends DialogBaseOnMainActivityImp {
         final Button sync_btn = findViewById(R.id.sync_btn);
         sync_btn.setOnClickListener(v->{
             StringBuilder err = new StringBuilder();
-            if (!SQLiteHelper.execDelete("barcode_info",null,null,err)){
+            if (SQLiteHelper.execDelete("barcode_info",null,null,err) < 0){
                 MyDialog.ToastMessage(err.toString(),mContext,getWindow());
             }
             mContext.sync(true);

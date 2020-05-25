@@ -49,39 +49,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/left_separator"
+            android:enabled="false"
             android:gravity="center_vertical"
             android:paddingStart="@dimen/margin_5"
             android:paddingEnd="@dimen/margin_5"
             android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16" />
-
-        <Space
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:paddingStart="@dimen/margin_5"
-            android:paddingEnd="@dimen/margin_2"
-            android:text="@string/payable_cash_sz"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16" />
-
-        <TextView
-            android:id="@+id/payable_amt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:background="@drawable/left_separator"
-            android:gravity="center_vertical|end"
-            android:paddingStart="@dimen/margin_2"
-            android:paddingEnd="@dimen/margin_18"
-            android:text="@string/z_p_z_sz"
-            android:textColor="@color/orange_1"
-            android:textSize="@dimen/font_size_24" />
+            android:textSize="@dimen/font_size_18" />
 
     </LinearLayout>
 
@@ -339,16 +312,49 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/ok_"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="@dimen/width_128"
-        android:layout_height="@dimen/height_58"
-        android:layout_gravity="center"
-        android:layout_margin="@dimen/margin_5"
-        android:background="@drawable/button_blue"
-        android:text="@string/s_e_sz"
-        android:textColor="@color/blue_white"
-        android:textSize="@dimen/font_size_24" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_2"
+            android:text="@string/payable_cash_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_18" />
+
+        <TextView
+            android:id="@+id/payable_amt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/left_separator"
+            android:gravity="center_vertical|end"
+            android:paddingStart="@dimen/margin_2"
+            android:paddingEnd="@dimen/margin_18"
+            android:text="@string/z_p_z_sz"
+            android:textColor="@color/orange_1"
+            android:textSize="@dimen/font_size_24" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/ok_"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/width_128"
+            android:layout_height="@dimen/height_58"
+            android:layout_margin="@dimen/margin_5"
+            android:background="@drawable/button_blue"
+            android:text="@string/s_e_sz"
+            android:textColor="@color/blue_white"
+            android:textSize="@dimen/font_size_24" />
+    </LinearLayout>
 
 </LinearLayout>

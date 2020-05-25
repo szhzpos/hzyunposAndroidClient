@@ -173,7 +173,7 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 if (object != null){
                     if (object.getString("_id").equals(t_id)){
                         StringBuilder err = new StringBuilder();
-                        if (SQLiteHelper.execDelete("barcode_scalse_info","_id=?",new String[]{t_id},err)){
+                        if (SQLiteHelper.execDelete("barcode_scalse_info","_id=?",new String[]{t_id},err) >= 0){
                             mDatas.remove(i);
                             mCurrentItemIndexMap.remove(t_id);
                         }else{
@@ -189,11 +189,11 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     public void addScale(@NonNull JSONObject scale){
         StringBuilder err = new StringBuilder();
-        String svae_type = "INSERT";
+        int svae_type = 0;
         JSONObject object;
 
         if (scale.containsKey("_id")){
-            svae_type = "REPLACE";
+            svae_type = 1;
             for (int i = 0,size = mDatas.size();i < size;i++){
                 object = mDatas.getJSONObject(i);
                 if (object != null){

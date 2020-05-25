@@ -286,6 +286,7 @@ public final class SyncHandler extends Handler {
         boolean code;
         int gp_id;
         String order_code;
+
         if (code = null != (orders = SQLiteHelper.getListToJson(sql_orders,err))){
             try {
                 for (int i = 0,size = orders.size();i < size;i++){
@@ -348,7 +349,9 @@ public final class SyncHandler extends Handler {
                                                     final ContentValues values = new ContentValues();
                                                     values.put("upload_status",2);
                                                     values.put("upload_time",System.currentTimeMillis() / 1000);
-                                                    code = SQLiteHelper.execUpdateSql("retail_order",values,"order_code = ?",new String[]{order_code},err);
+                                                    int rows = SQLiteHelper.execUpdateSql("retail_order",values,"order_code = ?",new String[]{order_code},err);
+                                                    code = rows > 0;
+                                                    if (rows == 0)err.append("未更新任何数据！");
                                                     break;
                                             }
                                             break;

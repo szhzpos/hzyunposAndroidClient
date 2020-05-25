@@ -32,6 +32,7 @@ import com.wyc.cloudapp.utils.http.HttpRequest;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -193,6 +194,7 @@ public class RetailOrderDetailsDialog extends DialogBaseOnMainActivityImp {
                         Logger.json(info_json.toString());
                         switch (info_json.getString("status")){
                             case "n":
+                                pay_status = 1;
                                 err.append(info_json.getString("info"));
                                 break;
                             case "y":
@@ -217,21 +219,44 @@ public class RetailOrderDetailsDialog extends DialogBaseOnMainActivityImp {
                 }
             }
 
-            final ContentValues values = new ContentValues();
             final String sz_order_code = mRetailOrderCode;
             if (!query_status){
+                final ContentValues values = new ContentValues();
+
                 values.put("order_status",3);
+                values.put("pay_status",pay_status);
                 values.put("spare_param1",err.toString());
-                if (!SQLiteHelper.execUpdateSql("retail_order",values,"order_code = ?",new String[]{sz_order_code},err)){
-                    Logger.d("更新订单状态错误：%s",err);
+                final String whereClause = "order_code = ?";
+                final String[] whereArgs = new String[]{sz_order_code};
+                int rows = SQLiteHelper.execUpdateSql("retail_order",values,whereClause,whereArgs,err);
+                if (rows < 0){
+                    Logger.e("更新订单状态错误：%s",err);
+                }else if (rows == 0){
+                    Logger.i("未更新任何数据Table：%s,values:%s,whereClause:%s,whereArgs:%s","retail_order",values,whereClause, Arrays.toString(whereArgs));
                 }
             }else{
-                final List<String> sqls = new ArrayList<>();
-                int pay_method_id = pay_record.getIntValue("pay_method");
+                final List<String> tables = new ArrayList<>();
+                final List<ContentValues> valueList = new ArrayList<>();
+                final List<String> whereClauseList = new ArrayList<>();
+                final List<String[]> whereArgsList = new ArrayList<>();
+
+                final String pay_method_id = pay_record.getString("pay_method");
                 final String order_code_son = pay_record.getString("order_code_son");
-                String sql = "update retail_order_pays set pay_status = " + pay_status +",pay_serial_no = '" + third_pay_order_id +"',pay_time = '" + pay_time + "',discount_money = '" + discount_money +"',xnote = '" + discount_xnote +"',return_code = '"+ third_pay_order_id +"' " +
-                        "where order_code = '" + sz_order_code + "' and pay_code = '" + order_code_son +"' and pay_method = " + pay_method_id;
-                sqls.add(sql);
+
+                tables.add("retail_order_pays");
+
+                final ContentValues values_pays = new ContentValues();
+                values_pays.put("pay_status",pay_status);
+                values_pays.put("pay_serial_no",third_pay_order_id);
+                values_pays.put("pay_time",pay_time);
+                values_pays.put("discount_money",discount_money);
+                values_pays.put("xnote",discount_xnote);
+                values_pays.put("return_code",third_pay_order_id);
+                valueList.add(values_pays);
+
+                whereClauseList.add("order_code = ? and pay_code = ? and pay_method = ?");
+                whereArgsList.add(new String[]{sz_order_code,order_code_son,pay_method_id});
+
 
                 //更新当前付款记录
                 pay_record.put("pay_status",pay_status);
@@ -240,29 +265,40 @@ public class RetailOrderDetailsDialog extends DialogBaseOnMainActivityImp {
                     pay_record.put("pay_status_name","已支付");
                 }
 
-                if (mRetailDetailsPayInfoAdapter.isPaySuccess()){//所有付款记录成功付款再更新单据
-                    sql = "update retail_order set order_status = 2,pay_status = 2,pay_time ='" + pay_time +"' where order_code = '" + sz_order_code + "'";
-                    sqls.add(sql);
+                if (mRetailDetailsPayInfoAdapter.isPaySuccess()){//所有付款记录成功付款再更新单据为已支付
+                    pay_status = 2;
                 }
+                tables.add("retail_order");
 
-                Logger.d(sqls);
+                final ContentValues values_order = new ContentValues();
+                values_order.put("order_status",pay_status == 2 ? 2 : 1);
+                values_order.put("pay_status",pay_status);
+                values_order.put("pay_time",pay_time);
+                valueList.add(values_order);
 
-                if (!SQLiteHelper.execBatchUpdateSql(sqls,err)){
-                    Logger.d("更新订单状态错误：%s",err);
-                }else{
-                    mContext.runOnUiThread(()-> {
+                whereClauseList.add("order_code = ?");
+                whereArgsList.add(new String[]{sz_order_code});
+
+                int[] rows = SQLiteHelper.execBatchUpdateSql(tables,valueList,whereClauseList,whereArgsList,err);
+
+                if (rows == null){
+                    Logger.e("更新订单状态错误：%s",err);
+                }else {
+                    int index = SQLiteHelper.verifyUpdateResult(rows);
+                    mContext.runOnUiThread(()->{
                         mRetailDetailsPayInfoAdapter.notifyDataSetChanged();
-                        MyDialog.ToastMessage("支付成功！",mContext,getWindow());
+                        if (index == -1){
+                            if (err.length() == 0)err.append("支付成功！");
+                        } else{
+                            err.append(String.format(Locale.CHINA,"数据表：%s未更新！",tables.get(index)));
+                        }
                     });
                 }
             }
-            if (err.length() != 0){
-                mContext.runOnUiThread(()-> MyDialog.ToastMessage(err.toString(),mContext,getWindow()));
-            }
+            mContext.runOnUiThread(()-> MyDialog.ToastMessage(err.toString(),mContext,getWindow()));
         }else {
             mContext.runOnUiThread(()-> MyDialog.ToastMessage("请选择验证记录！",mContext,getWindow()));
         }
-
         if (mProgressDialog != null){
             mContext.runOnUiThread(()->mProgressDialog.dismiss());
         }

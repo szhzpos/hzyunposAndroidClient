@@ -344,15 +344,16 @@ public final class Printer {
                                             ret_c = connection.bulkTransfer(usbOutEndpoint,bytes,length, 30000);
                                         }else{
                                             if ((mod_length = length % max_length) > 0)count += 1;
-                                                while (tmp_c < count){
-                                                    if (tmp_c + 1 == count){
-                                                        tmpBytes = Arrays.copyOfRange(bytes,tmp_c * max_length,tmp_c * max_length + mod_length);
-                                                    }else
-                                                        tmpBytes = Arrays.copyOfRange(bytes,tmp_c * max_length,tmp_c * max_length + max_length);
 
-                                                    ret_c += connection.bulkTransfer(usbOutEndpoint,tmpBytes,tmpBytes.length, 30000);
-                                                    tmp_c++;
-                                                }
+                                            while (tmp_c < count){
+                                                if (tmp_c + 1 == count){
+                                                    tmpBytes = Arrays.copyOfRange(bytes,tmp_c * max_length,tmp_c * max_length + mod_length);
+                                                }else
+                                                    tmpBytes = Arrays.copyOfRange(bytes,tmp_c * max_length,tmp_c * max_length + max_length);
+
+                                                ret_c += connection.bulkTransfer(usbOutEndpoint,tmpBytes,tmpBytes.length, 30000);
+                                                tmp_c++;
+                                            }
 
                                         }
                                         Logger.d("ret_c:%d,bytes.length:%d",ret_c,length);

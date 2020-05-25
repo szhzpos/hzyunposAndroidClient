@@ -43,8 +43,8 @@ public class HangBillDialog extends DialogBaseOnMainActivityImp {
     private String mCurrentHangId;
     private OnGetBillListener mGetListener;
 
-    public HangBillDialog(@NonNull MainActivity context, final String title) {
-        super(context,title);
+    public HangBillDialog(@NonNull MainActivity context) {
+        super(context,context.getString(R.string.hangbill_sz));
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -367,6 +367,7 @@ public class HangBillDialog extends DialogBaseOnMainActivityImp {
                         details.add(tmp_obj);
                     }
                     data = new JSONObject();
+                    data.put("stores_id",stores_id);
                     data.put("hang_id",hang_id);
                     data.put("amt",amt);
                     data.put("cas_id",cas_id);

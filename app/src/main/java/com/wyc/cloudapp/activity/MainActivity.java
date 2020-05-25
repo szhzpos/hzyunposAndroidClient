@@ -181,20 +181,18 @@ public class MainActivity extends AppCompatActivity {
 
         if (q_deal_linerLayout != null)
             q_deal_linerLayout.setOnClickListener(v -> {
-                QuerySaleOrderDialog querySaleOrderDialog = new QuerySaleOrderDialog(MainActivity.this);
+                QuerySaleOrderDialog querySaleOrderDialog = new QuerySaleOrderDialog(this);
                 querySaleOrderDialog.show();;
             });//查交易
 
         if (other_linearLayout != null)
-            other_linearLayout.setOnClickListener(v -> new MoreFunDialog(MainActivity.this,getString(R.string.more_fun_dialog_sz)).show());//更多功能
+            other_linearLayout.setOnClickListener(v -> new MoreFunDialog(this,getString(R.string.more_fun_dialog_sz)).show());//更多功能
+
         if (shift_exchange_linearLayout != null)
-            shift_exchange_linearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TransferDialog transferDialog = new TransferDialog(MainActivity.this);
-                transferDialog.show();
-            }
-        });
+            shift_exchange_linearLayout.setOnClickListener(v -> {
+                final TransferDialog transferDialog = new TransferDialog(this);
+                transferDialog.verifyTransfer();
+            });
     }
     private void initClearBtn(){
         final Button clearBtn = findViewById(R.id.clear);
@@ -220,10 +218,10 @@ public class MainActivity extends AppCompatActivity {
         mCloseBtn.setOnClickListener((View V)->{
             MyDialog.displayAskMessage(mDialog,"是否退出收银？",MainActivity.this,(MyDialog myDialog)->{
                 myDialog.dismiss();
-                Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+                Intent intent = new Intent(this,LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
-                MainActivity.this.finish();
+                this.finish();
             }, Dialog::dismiss);
         });
     }
@@ -493,7 +491,7 @@ public class MainActivity extends AppCompatActivity {
         final Button tmp_order = findViewById(R.id.tmp_order);
         tmp_order.setOnClickListener(v -> {
             final MainActivity activity = MainActivity.this;
-            final HangBillDialog hangBillDialog = new HangBillDialog(activity,activity.getString(R.string.hangbill_sz));
+            final HangBillDialog hangBillDialog = new HangBillDialog(activity);
             JSONArray datas = mSaleGoodsViewAdapter.getDatas();
             if (Utils.JsonIsNotEmpty(datas)){
                 MyDialog.displayAskMessage(null, "是否挂单？", activity, myDialog -> {
@@ -740,6 +738,11 @@ public class MainActivity extends AppCompatActivity {
     public boolean getPrintStatus(){
         return mPrintStatus;
     }
+    public void disposeHangBill(){
+        final Button tmp_order = findViewById(R.id.tmp_order);
+        if (tmp_order != null)tmp_order.callOnClick();
+    }
+
     private static class Myhandler extends Handler {
         private WeakReference<MainActivity> weakHandler;
         private Myhandler(MainActivity mainActivity){

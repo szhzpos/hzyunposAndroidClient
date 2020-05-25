@@ -396,8 +396,10 @@ public class RefundDialog extends DialogBaseOnMainActivityImp {
         order_info.put("ok_cashier_name",mRefundOperName);
         order_info.put("refund_total",mRefundGoodsInfoAdapter.getRefundAmt());
 
+        final JSONArray refund_orders = new JSONArray();
+        refund_orders.add(order_info);
 
-        refund_info.put("refund_order",new JSONArray(){{add(order_info);}});
+        refund_info.put("refund_order",refund_orders);
         refund_info.put("refund_order_goods",goods_datas);
         refund_info.put("refund_order_pays",refund_pay_records);
 
@@ -505,7 +507,9 @@ public class RefundDialog extends DialogBaseOnMainActivityImp {
                                         final ContentValues values = new ContentValues();
                                         values.put("upload_status",2);
                                         values.put("upload_time",System.currentTimeMillis() / 1000);
-                                        code = SQLiteHelper.execUpdateSql("refund_order",values,"order_code = ? and ro_code = ?",new String[]{order_code,ro_code},err);
+                                        int rows = SQLiteHelper.execUpdateSql("refund_order",values,"order_code = ? and ro_code = ?",new String[]{order_code,ro_code},err);
+                                        code = rows > 0;
+                                        if (rows == 0)err.append("未更新任何数据！");
                                     }else {
                                         err.append("上传成功，但返回订单号与上传的订单号不一致！");
                                     }

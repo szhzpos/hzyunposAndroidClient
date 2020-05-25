@@ -383,15 +383,15 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         }
     }
     public String generateSaleOrderCode(final String pos_num, int order_type){
-        String prefix = "N" + pos_num + "-" + new SimpleDateFormat("yyMMddHHmmss").format(new Date()) + "-",order_code ;
-        JSONObject orders= new JSONObject();
-        if (SQLiteHelper.execSql(orders,"SELECT count(order_id) + 1 order_id from retail_order where date(addtime,'unixepoch' ) = date('now')")){
+        String prefix = "N" + pos_num + "-" + new SimpleDateFormat("yyMMddHHmmss",Locale.CHINA).format(new Date()) + "-",order_code ;
+        final JSONObject orders= new JSONObject();
+        if (SQLiteHelper.execSql(orders,"SELECT count(order_id) + 1 order_id from retail_order where date(addtime,'unixepoch' ) = date('now') and pos_code = '" + pos_num +"'")){
             order_code =orders.getString("order_id");
             order_code = prefix + "0000".substring(order_code.length()) + order_code;
             mOrderType = order_type;
         }else{
             order_code = prefix + "0001";;
-            MyDialog.ToastMessage("生成订单号错误：" + orders.getString("info"),mContext,null);
+            Logger.e("生成订单号错误：" + orders.getString("info"));
         }
         return order_code;
     }
