@@ -290,7 +290,10 @@ public class RetailOrderDetailsDialog extends DialogBaseOnMainActivityImp {
                         if (index == -1){
                             if (err.length() == 0)err.append("支付成功！");
                         } else{
-                            err.append(String.format(Locale.CHINA,"数据表：%s未更新！",tables.get(index)));
+                            final String sz_err = String.format(Locale.CHINA,"数据表%s未更新，value:%s,whereClause:%s,whereArgs:%s",tables.get(index),valueList.get(index),
+                                    whereClauseList.get(index),Arrays.toString(whereArgsList.get(index)));
+                            Logger.e(sz_err);
+                            err.append(sz_err);
                         }
                     });
                 }

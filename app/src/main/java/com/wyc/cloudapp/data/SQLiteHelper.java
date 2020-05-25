@@ -467,10 +467,10 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
     public static int verifyUpdateResult(@NonNull int[] rows){
         int index = 0;
         for (int row : rows){
-            if (row < 0)return index;
+            if (row == 0)return index;
             index ++;
         }
-        Logger.d("批量更新验证：" + Arrays.toString(rows));
+        Logger.d("批量更新返回值验证：" + Arrays.toString(rows));
         return -1;
     }
 

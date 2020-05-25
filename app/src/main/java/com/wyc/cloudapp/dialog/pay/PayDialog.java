@@ -937,8 +937,12 @@ public class PayDialog extends DialogBaseOnMainActivityImp {
                     if (mPayListener != null){
                         mContext.runOnUiThread(()-> mPayListener.onSuccess(PayDialog.this));
                     }
-                } else
-                    err.append(String.format(Locale.CHINA,"数据表：%s未更新！",tables.get(index)));
+                } else{
+                    final String sz_err = String.format(Locale.CHINA,"数据表,%s未更新，value:%s,whereClause:%s,whereArgs:%s",tables.get(index),valueList.get(index),
+                            whereClauseList.get(index),Arrays.toString(whereArgsList.get(index)));
+                    Logger.e(sz_err);
+                    err.append(sz_err);
+                }
             }
         }
 
