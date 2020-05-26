@@ -31,6 +31,8 @@ public final  class MessageID {
             MARK_GOODS_STATUS_ID = 29,
             SYNC_PAUSE_ID = 30,
             SYNC_THREAD_QUIT_ID= 31,
-            CANCEL_LOGIN_ID = 32;
+            CANCEL_LOGIN_ID = 32,
+            UPLOAD_TRANS_ORDER_ID = 33,//交班单据
+            OFF_LINE_LOGIN_ID = 34;
 
 }

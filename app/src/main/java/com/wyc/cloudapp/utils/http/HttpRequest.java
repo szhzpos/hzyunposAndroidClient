@@ -98,13 +98,9 @@ public final class HttpRequest {
             }
             content.put("rsCode", mGetCode);
         } catch (IOException | JSONException e) {
-            try {
-                content.put("flag", 0);
-                content.put("rsCode", HttpURLConnection.HTTP_BAD_REQUEST);
-                content.put("info", e.toString());
-            }catch (JSONException  je){
-                je.printStackTrace();
-            }
+            content.put("flag", 0);
+            content.put("rsCode", HttpURLConnection.HTTP_BAD_REQUEST);
+            content.put("info", e.toString());
             e.printStackTrace();
         }
         finally {
@@ -153,13 +149,9 @@ public final class HttpRequest {
             content.put("flag",1);
             content.put("rsCode", mGetCode);
         }catch (IOException | JSONException e){
-            try {
-                content.put("flag",0);
-                content.put("rsCode", HttpURLConnection.HTTP_BAD_REQUEST);
-                content.put("info","下载失败！ " + e.getLocalizedMessage());
-            }catch (JSONException je ){
-                je.printStackTrace();
-            }
+            content.put("flag",0);
+            content.put("rsCode", HttpURLConnection.HTTP_BAD_REQUEST);
+            content.put("info","下载失败！ " + e.getLocalizedMessage());
         }finally {
             clearConnection(CLOSEMODE.GET);
         }
@@ -193,6 +185,7 @@ public final class HttpRequest {
 
             if(mPostCode != HttpURLConnection.HTTP_OK){
                 content.put("flag", 0);
+                content.put("rsCode",mPostCode);
                 content.put("info",mPostConn.getResponseMessage());
             }else{
                 reader = new InputStreamReader(mPostConn.getInputStream(),StandardCharsets.UTF_8);
@@ -212,14 +205,11 @@ public final class HttpRequest {
             }
             content.put("rsCode", mPostCode);
         } catch (IOException | XmlPullParserException | JSONException e) {
-            try {
-                content.put("flag", 0);
+            content.put("flag", 0);
+            if (e instanceof IOException)
                 content.put("rsCode", HttpURLConnection.HTTP_BAD_REQUEST);
-                content.put("info", e.toString());
-                e.printStackTrace();
-            }catch ( JSONException je ){
-                e.printStackTrace();
-            }
+            content.put("info", e.toString());
+            e.printStackTrace();
         }
         finally{
             try{

@@ -9,7 +9,9 @@ import com.wyc.cloudapp.utils.MessageID;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SyncManagement extends Thread {
     private CountDownLatch handlerInitLatch;
@@ -31,13 +33,33 @@ public class SyncManagement extends Thread {
 
         start();
     }
-    @SuppressLint("SimpleDateFormat")
+    String getUrl(){
+        return mUrl;
+    }
+
+    String getAppId(){
+        return mAppId;
+    }
+
+    String getAppScret(){
+        return mAppScret;
+    }
+    String getPosNum(){
+        return mPosNum;
+    }
+    String getOperId(){
+        return mOperId;
+    }
+    String getStoresId(){
+        return mStoresId;
+    }
+
     @Override
     public void run(){
-        Logger.i("SyncManagement<%s>启动:%s",getName(),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS").format(new Date()));
+        Logger.i("SyncManagement<%s>启动:%s",getName(),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS",Locale.CHINA).format(new Date()));
         if (mSyncHandler == null) {
             Looper.prepare();
-            mSyncHandler = new SyncHandler(mHandler,mUrl,mAppId,mAppScret,mStoresId,mPosNum,mOperId);
+            mSyncHandler = new SyncHandler(mHandler,this);
             handlerInitLatch.countDown();
         }
         Looper.loop();
@@ -52,7 +74,6 @@ public class SyncManagement extends Thread {
         return this.mSyncHandler;
     }
 
-    @SuppressLint("SimpleDateFormat")
     public void quit(){
         if (mSyncHandler != null){
             mSyncHandler.stop();
@@ -65,11 +86,11 @@ public class SyncManagement extends Thread {
             mHandler = null;
             handlerInitLatch = null;
         }
-        Logger.i("SyncManagement<%s>退出:%s",getName(),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS").format(new Date()));
+        Logger.i("SyncManagement<%s>退出:%s",getName(),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS", Locale.CHINA).format(new Date()));
     }
 
     public void start_sync(boolean b){
-        if (mSyncHandler == null)mSyncHandler = getHandler();
+        acquireHandler();
         if (b){
             mSyncHandler.modifyReportProgressStatus(true);
             mSyncHandler.sign_downloaded();
@@ -84,16 +105,26 @@ public class SyncManagement extends Thread {
         mSyncHandler.stopSync();
     }
 
-    public void sync_order(){
-        if (mSyncHandler == null)mSyncHandler = getHandler();
-        mSyncHandler.startUploadOrder();
+    public void sync_retail_order(){
+        acquireHandler();
+        mSyncHandler.startUploadRetailOrder();
     }
+
+    public void sync_transfer_order(){
+        acquireHandler();
+        mSyncHandler.startUploadTransferOrder();
+    }
+
     public void pauseSync(){
-        if (mSyncHandler == null)mSyncHandler = getHandler();
+        acquireHandler();
         mSyncHandler.pause();
     }
     public void continueSync(){
-        if (mSyncHandler == null)mSyncHandler = getHandler();
+        acquireHandler();
         mSyncHandler._continue();
+    }
+
+    private void acquireHandler(){
+        if (mSyncHandler == null)mSyncHandler = getHandler();
     }
 }

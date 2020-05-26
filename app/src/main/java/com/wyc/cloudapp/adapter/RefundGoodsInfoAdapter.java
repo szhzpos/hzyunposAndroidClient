@@ -418,19 +418,22 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
         }
     }
     public void addPayInfo(final JSONObject object){
-        if (!mPayDatas.isEmpty())mPayDatas.fluentClear();
-        mPayDatas.add(object);
+        if (mPayDatas != null){
+            if (!mPayDatas.isEmpty())mPayDatas.fluentClear();
+            mPayDatas.add(object);
+        }
         notifyPayDataChange();
     }
     public double getRefundAmt(){
         JSONObject record;
         double refund_num = 0.0,refund_sum_amt = 0.0,refund_price = 0.0;
-        for (int i = 0,size = mGoodsDatas.size() ;i < size;i++) {
-            record = mGoodsDatas.getJSONObject(i);
-            refund_price = record.getDoubleValue("refund_price");
-            refund_num = record.getDoubleValue("refund_num");
-            refund_sum_amt += refund_num * refund_price;
-        }
+        if (null != mGoodsDatas)
+            for (int i = 0,size = mGoodsDatas.size() ;i < size;i++) {
+                record = mGoodsDatas.getJSONObject(i);
+                refund_price = record.getDoubleValue("refund_price");
+                refund_num = record.getDoubleValue("refund_num");
+                refund_sum_amt += refund_num * refund_price;
+            }
         return refund_sum_amt;
     }
     public int getRefundType(){

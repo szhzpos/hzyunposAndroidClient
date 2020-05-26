@@ -94,29 +94,37 @@ public class RefundDialog extends DialogBaseOnMainActivityImp {
 
     private void initQueryBtn(){
         final Button query_btn = mQueryBtn = findViewById(R.id.query_btn);
+
         if (query_btn != null){
             query_btn.setOnClickListener(v -> {
                 if (mOrderCode != null && mOrderCode.length() != 0){
-                    mProgressDialog.setCancel(false).setMessage("正在查询订单信息...").refreshMessage().show();
-                    CustomApplication.execute(()->{
-                        final StringBuilder err = new StringBuilder();
-                        mRefundGoodsInfoAdapter.setDatas(mOrderCode,err);
-                        mContext.runOnUiThread(()->{
-                            if (err.length() == 0){
-                                err.append("操作成功！");
-                                initVipInfoLayout();
-                                mRefundGoodsInfoAdapter.notifyDataSetChanged();
-                            }
-                            mProgressDialog.dismiss();
-                            MyDialog.ToastMessage(err.toString(),mContext,getWindow());
+                    if (mContext.isConnection()){
+                        mProgressDialog.setCancel(false).setMessage("正在查询订单信息...").refreshMessage().show();
+                        CustomApplication.execute(()->{
+                            final StringBuilder err = new StringBuilder();
+                            mRefundGoodsInfoAdapter.setDatas(mOrderCode,err);
+                            mContext.runOnUiThread(()->{
+                                if (err.length() == 0){
+                                    err.append("操作成功！");
+                                    initVipInfoLayout();
+                                    mRefundGoodsInfoAdapter.notifyDataSetChanged();
+                                }
+                                mProgressDialog.dismiss();
+                                MyDialog.ToastMessage(err.toString(),mContext,getWindow());
+                            });
                         });
-                    });
+                    }else{
+                        if (mAllRefundBtn != null)mAllRefundBtn.setVisibility(View.GONE);
+                        if (mRebatesBtn != null)mRebatesBtn.setVisibility(View.GONE);
+                        MyDialog.ToastMessage("断网状态不允许退单！",mContext,null);
+                    }
                 }else {
                     mOrderCodeEt.requestFocus();
                     MyDialog.ToastMessage(mOrderCodeEt,mContext.getString(R.string.retail_order_code_sz).concat(mContext.getString(R.string.not_empty_hint_sz)),mContext,getWindow());
                 }
             });
         }
+
     }
 
     private void initGoodsDetails(){
@@ -646,34 +654,20 @@ public class RefundDialog extends DialogBaseOnMainActivityImp {
 
         return info.toString();
     }
-    public static String get_print_content(final MainActivity context,final String refund_code,boolean is_open_cash_box){
+    static String get_print_content(final MainActivity context,final String refund_code,boolean is_open_cash_box){
         final JSONObject print_format_info = new JSONObject(),order_info = new JSONObject();
         String content = "";
         if (SQLiteHelper.getLocalParameter("c_f_info",print_format_info)){
             if (print_format_info.getIntValue("f") == R.id.checkout_format){
-
-                if (SQLiteHelper.execSql(order_info,"SELECT a.ro_code,b.cas_name,a.pos_code pos_num,a.stores_id,c.stores_name,datetime(a.addtime, 'unixepoch', 'localtime') oper_time,c.telphone,c.region" +
-                        " FROM refund_order a  left join cashier_info b on a.cashier_id = b.cas_id\n" +
-                        "left join shop_stores c on a.stores_id = c.stores_id where a.ro_code = '" +refund_code +"'")){
-
-                    final StringBuilder err = new StringBuilder();
-                    final String goods_info_sql = "SELECT b.barcode,b.goods_title,b.type,a.refund_num,a.refund_price FROM refund_order_goods a left join barcode_info b on a.barcode_id = b.barcode_id where ro_code = '"+ refund_code +"'"
-                            ,pays_info_sql = "SELECT pay_method_name,pay_money FROM refund_order_pays where ro_code = '"+ refund_code +"'";
-                    final JSONArray sales = SQLiteHelper.getListToJson(goods_info_sql,err),pays = SQLiteHelper.getListToJson(pays_info_sql,err);
-                    if (sales != null && pays != null){
-                        order_info.put("sales",sales);
-                        order_info.put("pays",pays);
-                        switch (print_format_info.getIntValue("f_z")){
-                            case R.id.f_58:
-                                content = c_format_58(context,print_format_info,order_info,is_open_cash_box);
-                                break;
-                            case R.id.f_76:
-                                break;
-                            case R.id.f_80:
-                                break;
-                        }
-                    }else {
-                        context.runOnUiThread(()->MyDialog.ToastMessage("加载单据明细错误：" + err, context,null));
+                if (getPrintOrderInfo(refund_code,order_info)){
+                    switch (print_format_info.getIntValue("f_z")){
+                        case R.id.f_58:
+                            content = c_format_58(context,print_format_info,order_info,is_open_cash_box);
+                            break;
+                        case R.id.f_76:
+                            break;
+                        case R.id.f_80:
+                            break;
                     }
                 }else {
                     context.runOnUiThread(()->MyDialog.ToastMessage("加载单据错误：" + order_info.getString("info"), context,null));
@@ -683,6 +677,27 @@ public class RefundDialog extends DialogBaseOnMainActivityImp {
             context.runOnUiThread(()->MyDialog.ToastMessage("加载打印格式错误：" + print_format_info.getString("info"), context,context.getWindow()));
 
         return content;
+    }
+
+    private static boolean getPrintOrderInfo(final String refund_code,final JSONObject order_info){
+        boolean code = false;
+        if (SQLiteHelper.execSql(order_info,"SELECT a.ro_code,b.cas_name,a.pos_code pos_num,a.stores_id,c.stores_name,datetime(a.addtime, 'unixepoch', 'localtime') oper_time,c.telphone,c.region" +
+                " FROM refund_order a  left join cashier_info b on a.cashier_id = b.cas_id\n" +
+                "left join shop_stores c on a.stores_id = c.stores_id where a.ro_code = '" +refund_code +"'")) {
+
+            final StringBuilder err = new StringBuilder();
+            final String goods_info_sql = "SELECT b.barcode,b.goods_title,b.type,a.refund_num,a.refund_price FROM refund_order_goods a left join barcode_info b on a.barcode_id = b.barcode_id where ro_code = '" + refund_code + "'", pays_info_sql = "SELECT pay_method_name,pay_money FROM refund_order_pays where ro_code = '" + refund_code + "'";
+            final JSONArray sales = SQLiteHelper.getListToJson(goods_info_sql, err), pays = SQLiteHelper.getListToJson(pays_info_sql, err);
+            if (sales != null && pays != null) {
+                order_info.put("sales", sales);
+                order_info.put("pays", pays);
+
+                code =true;
+            }else {
+                order_info.put("info",err.toString());
+            }
+        }
+        return code;
     }
 
 }

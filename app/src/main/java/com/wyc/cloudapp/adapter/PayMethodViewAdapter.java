@@ -13,18 +13,19 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.LoginActivity;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 
 public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdapter.MyViewHolder> {
     public static final String CASH_METHOD_ID = "1";//现金支付方式id
-    private Context mContext;
+    private MainActivity mContext;
     private JSONArray mDatas;
     private OnItemClickListener mOnItemClickListener;
     private View mCurrentItemView,mDefaultPayMethodView;
     private int mWidth;
-    public PayMethodViewAdapter(Context context,int width){
+    public PayMethodViewAdapter(MainActivity context,int width){
         this.mContext = context;
         mWidth = width;
     }
@@ -122,8 +123,12 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     }
 
     public void setDatas(final String support_code){
-        StringBuilder err = new StringBuilder();
-        mDatas = SQLiteHelper.getListToJson("select *  from pay_method where status = '1' and support like '%" + support_code +"%' order by sort",err);
+        final StringBuilder err = new StringBuilder();
+        if (mContext.isConnection())
+            mDatas = SQLiteHelper.getListToJson("select *  from pay_method where status = '1' and support like '%" + support_code +"%' order by sort",err);
+        else
+            mDatas = SQLiteHelper.getListToJson("select *  from pay_method where is_check = 2 and status = '1' and support like '%" + support_code +"%' order by sort",err);
+
         if (mDatas != null){
             this.notifyDataSetChanged();
         }else{

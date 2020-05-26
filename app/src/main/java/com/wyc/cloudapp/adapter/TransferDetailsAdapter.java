@@ -83,9 +83,10 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
             if (!min_time.isEmpty()){
                 Logger.d("min_time：%s",min_time);
                 mDatas = SQLiteHelper.getListToJson(pay_method_sql,err);
-                if (null != mDatas && getTransferOrderCodes(cas_id,stores_id,min_time,err) && getTransferDetailsInfo(cas_id,stores_id,min_time,err)){
+                final String ti_code = generateTransferIdOrderCode();
+
+                if (null != mDatas && getTransferOrderCodes(ti_code,cas_id,stores_id,min_time,err) && getTransferDetailsInfo(cas_id,stores_id,min_time,err)){
                     double cash_sum_amt = 0.0;
-                    final String ti_code = generateTransferIdOrderCode();
 
                     cash_sum_amt += disposeTransferRetails(ti_code);
                     cash_sum_amt += disposeTransferRefunds(ti_code);
@@ -102,9 +103,11 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
                         }
                     }
                         //
+                    mTransferSumInfo.put("cas_id",cas_id);
                     mTransferSumInfo.put("order_b_date",min_time);
                     mTransferSumInfo.put("order_e_date",System.currentTimeMillis() / 1000);
                     mTransferSumInfo.put("sj_money",cash_sum_amt);
+                    mTransferSumInfo.put("sum_money",cash_sum_amt);
                     mTransferSumInfo.put("transfer_time",min_time);
                     mTransferSumInfo.put("stores_id",mContext.getStoreInfo().getIntValue("stores_id"));
                     mTransferSumInfo.put("ti_code",ti_code);
@@ -267,10 +270,10 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
         return order_code;
     }
 
-     private boolean getTransferOrderCodes(final String cas_id,int stores_id,final String start_time,final StringBuilder err){
-         final String retail_code_sql = "select cashier_id,order_code from retail_order where transfer_status = 1 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +"  and (order_status = 2  or order_status = 4) and "+ start_time +" <= addtime and addtime <= strftime('%s','now') group by order_code,cashier_id",
-                 refund_code_sql = "select cashier_id,ro_code from refund_order where transfer_status = 1 and order_status = 2 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +" and "+ start_time +" <= addtime and addtime <= strftime('%s','now') group by ro_code,cashier_id",
-                 deposit_code_sql = "select cashier_id,order_code from member_order_info where transfer_status = 1 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +" and status = 3 and "+ start_time +" <= addtime and addtime <= strftime('%s','now') group by order_code,cashier_id";
+     private boolean getTransferOrderCodes(final String ti_code,final String cas_id,int stores_id,final String start_time,final StringBuilder err){
+         final String retail_code_sql = "select cashier_id cas_id,order_code from retail_order where transfer_status = 1 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +"  and (order_status = 2  or order_status = 4) and "+ start_time +" <= addtime and addtime <= strftime('%s','now') group by order_code,cashier_id",
+                 refund_code_sql = "select cashier_id cas_id,ro_code order_code from refund_order where transfer_status = 1 and order_status = 2 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +" and "+ start_time +" <= addtime and addtime <= strftime('%s','now') group by ro_code,cashier_id",
+                 deposit_code_sql = "select cashier_id cas_id,order_code from member_order_info where transfer_status = 1 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +" and status = 3 and "+ start_time +" <= addtime and addtime <= strftime('%s','now') group by order_code,cashier_id";
 
          final JSONArray transfer_retail_codes = SQLiteHelper.getListToJson(retail_code_sql,err);
          final JSONArray transfer_refund_codes = SQLiteHelper.getListToJson(refund_code_sql,err);
@@ -286,6 +289,13 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
              mTransferOrderCodes.addAll(transfer_retail_codes);
              mTransferOrderCodes.addAll(transfer_refund_codes);
              mTransferOrderCodes.addAll(transfer_deposit_codes);
+
+             JSONObject obj;
+             for (int i = 0,size = mTransferOrderCodes.size();i < size;i++){
+                 obj = mTransferOrderCodes.getJSONObject(i);
+                 obj.put("status",2);
+                 obj.put("ti_code",ti_code);
+             }
 
              Logger.d_json(mTransferOrderCodes.toJSONString());
              return true;
@@ -338,7 +348,7 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
         final JSONObject data = new JSONObject();
         final List<String> tables = Arrays.asList("transfer_info","transfer_order","transfer_money_info","transfer_once_cardsc","transfer_recharge_money","transfer_refund_money"),
                 transfer_info_cls = Arrays.asList("sj_money","cashbox_money","cards_num","cards_money","order_money","order_e_date","order_b_date","recharge_num","recharge_money","refund_num",
-                        "refund_money","unpaid_money","sum_money","ti_code","upload_time","upload_status","transfer_time","order_num","cas_id","stores_id"),
+                        "refund_money","sum_money","ti_code","transfer_time","order_num","cas_id","stores_id"),
 
                 transfer_order_cls = Arrays.asList("cas_id","status","order_code","ti_code"),
 
@@ -365,6 +375,8 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
         data.put("transfer_recharge_money",mTransferDeposits);
         data.put("transfer_refund_money",mTransferRefunds);
 
+
+        Logger.d_json(data.toJSONString());
 
         if (!(code = SQLiteHelper.execBatchInsertAndUpdate(data,tables,Arrays.asList(transfer_info_cls,transfer_order_cls,details_cls,details_cls,details_cls,details_cls),update_sql,err,0))){
             err.insert(0,"保存订单信息错误：");

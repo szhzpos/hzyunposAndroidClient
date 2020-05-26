@@ -76,10 +76,10 @@ public class MainActivity extends AppCompatActivity {
     private Myhandler mHandler;
     private CustomProgressDialog mProgressDialog;
     private MyDialog mDialog;
-    private AtomicBoolean mNetworkStatus = new AtomicBoolean(true);//网络状态
-    private AtomicBoolean mTransferStatus = new AtomicBoolean(true);//传输状态
+    private AtomicBoolean mNetworkStatus;
+    private AtomicBoolean mTransferStatus;
     private volatile boolean mPrintStatus = true;//打印状态
-    private volatile long mCurrentTimestamp = 0;
+    private long mCurrentTimestamp = 0;
     private String mAppId,mAppScret,mUrl;
     private TextView mCurrentTimeViewTv, mSaleSumNumTv, mSaleSumAmtTv, mOrderCodeTv, mDisSumAmtTv;
     private SyncManagement mSyncManagement;
@@ -93,6 +93,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+        mTransferStatus = new AtomicBoolean(true);//传输状态
+        initNetworkStatus();
 
         //初始化成员变量
         mHandler = new Myhandler(this);
@@ -128,16 +131,18 @@ public class MainActivity extends AppCompatActivity {
         //初始化功能按钮
         initFunctionBtn();
 
+        //初始化交班
+        initTransferBtn();
+
         //初始化数据管理对象
-        mSyncManagement = new SyncManagement(mHandler,mUrl,mAppId,mAppScret,mStoreInfo.getString("stores_id"),mCashierInfo.getString("pos_num"),mCashierInfo.getString("cas_id"));
-        mSyncManagement.sync_order();
-        mSyncManagement.start_sync(false);
+        initSyncManagement();
 
         //重置订单信息
         resetOrderInfo();
 
         //初始化副屏
         initSecondDisplay();
+
     }
     @Override
     public void onResume(){
@@ -160,6 +165,24 @@ public class MainActivity extends AppCompatActivity {
             mCloseBtn.callOnClick();
     }
 
+    private void initNetworkStatus(){
+        final Intent intent = getIntent();
+        boolean code = intent.getBooleanExtra("network",false);
+        mNetworkStatus = new AtomicBoolean(code);
+        final ImageView imageView = findViewById(R.id.network_status);
+        if (imageView != null && !code){
+            imageView.setImageResource(R.drawable.network_err);
+            imageView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake_x));
+        }
+    }
+
+    private void initSyncManagement(){
+        mSyncManagement = new SyncManagement(mHandler,mUrl,mAppId,mAppScret,mStoreInfo.getString("stores_id"),mCashierInfo.getString("pos_num"),mCashierInfo.getString("cas_id"));
+        mSyncManagement.sync_retail_order();
+        mSyncManagement.sync_transfer_order();
+        mSyncManagement.start_sync(false);
+    }
+
     private void initFunctionBtn(){
         final Button minus_num_btn = findViewById(R.id.minus_num),add_num_btn = findViewById(R.id.add_num),num_btn = findViewById(R.id.num),
                 discount_btn = findViewById(R.id.discount),change_price_btn = findViewById(R.id.change_price),check_out_btn = findViewById(R.id.check_out),
@@ -176,8 +199,7 @@ public class MainActivity extends AppCompatActivity {
             vipInfoDialog.setYesOnclickListener(dialog -> {showVipInfo(dialog.getVip());dialog.dismiss(); }).show();
         });//会员
 
-        final LinearLayout q_deal_linerLayout = findViewById(R.id.q_deal_linerLayout),other_linearLayout = findViewById(R.id.other_linearLayout),
-                shift_exchange_linearLayout = findViewById(R.id.shift_exchange_linearLayout);
+        final LinearLayout q_deal_linerLayout = findViewById(R.id.q_deal_linerLayout),other_linearLayout = findViewById(R.id.other_linearLayout);
 
         if (q_deal_linerLayout != null)
             q_deal_linerLayout.setOnClickListener(v -> {
@@ -188,9 +210,28 @@ public class MainActivity extends AppCompatActivity {
         if (other_linearLayout != null)
             other_linearLayout.setOnClickListener(v -> new MoreFunDialog(this,getString(R.string.more_fun_dialog_sz)).show());//更多功能
 
+    }
+    private void initTransferBtn(){
+        final LinearLayout shift_exchange_linearLayout = findViewById(R.id.shift_exchange_linearLayout);
         if (shift_exchange_linearLayout != null)
             shift_exchange_linearLayout.setOnClickListener(v -> {
-                final TransferDialog transferDialog = new TransferDialog(this);
+                final MainActivity activity = MainActivity.this;
+                final TransferDialog transferDialog = new TransferDialog(activity);
+                transferDialog.setFinishListener(() -> {
+                    mSyncManagement.sync_transfer_order();
+                    MyDialog my_dialog = new MyDialog(activity);
+                    my_dialog.setMessage("交班成功！").setYesOnclickListener(activity.getString(R.string.OK), new MyDialog.onYesOnclickListener() {
+                        @Override
+                        public void onYesClick(MyDialog myDialog) {
+                            transferDialog.dismiss();
+                            myDialog.dismiss();
+                            Intent intent = new Intent(activity, LoginActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            activity.startActivity(intent);
+                            activity.finish();
+                        }
+                    }).show();
+                });
                 transferDialog.verifyTransfer();
             });
     }
@@ -387,18 +428,20 @@ public class MainActivity extends AppCompatActivity {
         mSaleGoodsRecyclerView.setAdapter(mSaleGoodsViewAdapter);
     }
     private void initSearch(){
-        mSearch_content.setOnFocusChangeListener((v,b)->Utils.hideKeyBoard((EditText) v));
-        mHandler.postDelayed(()-> mSearch_content.requestFocus(),100);
-        mSearch_content.setSelectAllOnFocus(true);
-        mSearch_content.setOnKeyListener((view, i, keyEvent) -> {
+        final EditText search = mSearch_content;
+
+        search.setOnFocusChangeListener((v,b)->Utils.hideKeyBoard((EditText) v));
+        mHandler.postDelayed(search::requestFocus,100);
+        search.setSelectAllOnFocus(true);
+        search.setOnKeyListener((view, i, keyEvent) -> {
             if (mKeyboard.getVisibility() == View.GONE){
                 int keyCode = keyEvent.getKeyCode();
                 if (keyCode == KeyEvent.KEYCODE_ENTER && keyEvent.getAction() == KeyEvent.ACTION_UP){
-                    String content = mSearch_content.getText().toString();
+                    String content = search.getText().toString();
                     if (content.length() == 0){
                         mGoodsCategoryViewAdapter.trigger_preView();
                     }else{
-                        mGoodsInfoViewAdapter.fuzzy_search_goods(mSearch_content);
+                        mGoodsInfoViewAdapter.fuzzy_search_goods(search);
                         //mSearch_content.getText().clear();
                     }
                     return true;
@@ -406,7 +449,7 @@ public class MainActivity extends AppCompatActivity {
             }
             return false;
         });
-        mSearch_content.setTransformationMethod(new ReplacementTransformationMethod() {
+        search.setTransformationMethod(new ReplacementTransformationMethod() {
             @Override
             protected char[] getOriginal() {
                 return new char[]{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
@@ -419,12 +462,12 @@ public class MainActivity extends AppCompatActivity {
                         'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
             }
         });
-        mSearch_content.setOnTouchListener(new View.OnTouchListener() {
+        search.setOnTouchListener(new View.OnTouchListener() {
             private View.OnClickListener mKeyboardListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     int v_id = view.getId();
-                    final Editable editable = mSearch_content.getText();
+                    final Editable editable = search.getText();
                     if (v_id == R.id.DEL){
                         editable.clear();
                     }else if (v_id == R.id.back){
@@ -434,15 +477,15 @@ public class MainActivity extends AppCompatActivity {
                         if (editable.length() == 0){
                             mGoodsCategoryViewAdapter.trigger_preView();
                         }else{
-                            mGoodsInfoViewAdapter.fuzzy_search_goods(mSearch_content);
+                            mGoodsInfoViewAdapter.fuzzy_search_goods(search);
                         }
-                        mSearch_content.selectAll();
+                        search.selectAll();
                     }else if(v_id == R.id.hide){
                         mKeyboard.setVisibility(View.GONE);
                     }else {
-                        if (mSearch_content.getSelectionStart() != mSearch_content.getSelectionEnd()){
+                        if (search.getSelectionStart() != search.getSelectionEnd()){
                             editable.replace(0,editable.length(),((Button)view).getText());
-                            mSearch_content.setSelection(editable.length());
+                            search.setSelection(editable.length());
                         }else
                             editable.append(((Button)view).getText());
                     }
@@ -452,11 +495,11 @@ public class MainActivity extends AppCompatActivity {
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 switch (motionEvent.getAction()){
                     case MotionEvent.ACTION_DOWN:
-                        if (motionEvent.getX() > (mSearch_content.getWidth() - mSearch_content.getCompoundPaddingRight())){
+                        if (motionEvent.getX() > (search.getWidth() - search.getCompoundPaddingRight())){
 
                             mKeyboard.setVisibility(mKeyboard.getVisibility()== View.VISIBLE ? View.GONE : View.VISIBLE);
                             //registerGlobalLayoutToRecyclerView(findViewById(R.id.goods_info_list),MainActivity.this.getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration());
-                            mSearch_content.selectAll();
+                            search.selectAll();
                             for(int i = 0,childCounts = mKeyboard.getChildCount();i < childCounts;i ++){
                                 View vObj = mKeyboard.getChildAt(i);
                                 if ( vObj instanceof TableRow){
@@ -578,7 +621,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(PayDialog myDialog) {
                         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
-                        mSyncManagement.sync_order();
+                        mSyncManagement.sync_retail_order();
                         resetOrderInfo();
                         myDialog.dismiss();
                         MyDialog.SnackbarMessage(activity.getWindow(),"结账成功！", mOrderCodeTv);
@@ -656,7 +699,7 @@ public class MainActivity extends AppCompatActivity {
     private void initSecondDisplay(){
         mSecondDisplay = SecondDisplay.getInstantiate(this);
         if (null != mSecondDisplay){
-            mSecondDisplay.loadAdImg(mUrl,mAppId,mAppScret);
+            if (isConnection())mSecondDisplay.loadAdImg(mUrl,mAppId,mAppScret);
             mSecondDisplay.setDatas(mSaleGoodsViewAdapter.getDatas()).setNavigationInfo(mStoreInfo).show();
         }
     }
@@ -742,6 +785,9 @@ public class MainActivity extends AppCompatActivity {
         final Button tmp_order = findViewById(R.id.tmp_order);
         if (tmp_order != null)tmp_order.callOnClick();
     }
+    public boolean isConnection(){
+        return mNetworkStatus.get();
+    }
 
     private static class Myhandler extends Handler {
         private WeakReference<MainActivity> weakHandler;
@@ -786,8 +832,8 @@ public class MainActivity extends AppCompatActivity {
                 case MessageID.NETWORKSTATUS_ID://网络状态
                     if (msg.obj instanceof Boolean){
                         boolean code = (boolean)msg.obj;
+                        imageView = activity.findViewById(R.id.network_status);
                         if (activity.mNetworkStatus.getAndSet(code) != code){
-                            imageView = activity.findViewById(R.id.network_status);
                             if (imageView != null){
                                 if (code){
                                     imageView.setImageResource(R.drawable.network);

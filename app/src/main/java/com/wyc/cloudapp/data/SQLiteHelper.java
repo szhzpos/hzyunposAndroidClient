@@ -318,7 +318,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             try(Cursor cursor = mDb.rawQuery(sql,null);){
                 array = rs2Values(cursor,0,0,false);
             } catch (JSONException | SQLiteException e) {
-                if (err !=  null)err.append("查询错误：").append(e.getMessage());
+                if (err !=  null)err.append(e.getMessage());
                 e.printStackTrace();
                 array = null;
             }
@@ -1365,7 +1365,6 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    )\n" +
                 ");",transfer_info = "CREATE TABLE IF NOT EXISTS transfer_info (\n" + //交班总信息
                 "    sj_money       REAL    DEFAULT (0),\n" +
-                "    cashbox_money       REAL    DEFAULT (0),\n" +
                 "    cards_num      INTEGER,\n" +
                 "    cards_money    REAL,\n" +
                 "    order_money    REAL    DEFAULT (0),\n" +
@@ -1375,12 +1374,12 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    recharge_money REAL    DEFAULT (0),\n" +
                 "    refund_num     INTEGER DEFAULT (0),\n" +
                 "    refund_money   REAL    DEFAULT (0),\n" +
-                "    unpaid_money   REAL    DEFAULT (0),\n" +
+                "    cashbox_money       REAL    DEFAULT (0),\n" +
                 "    sum_money      REAL    DEFAULT (0),\n" +
                 "    ti_code        VARCHAR,\n" +
-                "    upload_time    INTEGER,\n" +
+                "    upload_time    INTEGER DEFAULT (0),\n" +
                 "    upload_status  INT     DEFAULT (1),\n" +
-                "    transfer_time  INTEGER,\n" +
+                "    transfer_time  INTEGER DEFAULT (0),\n" +
                 "    order_num      REAL,\n" +
                 "    cas_id         INTEGER,\n" +
                 "    stores_id      INTEGER,\n" +

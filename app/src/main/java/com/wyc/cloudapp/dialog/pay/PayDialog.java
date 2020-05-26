@@ -1015,7 +1015,7 @@ public class PayDialog extends DialogBaseOnMainActivityImp {
                 new_line = "\r\n",//Printer.commandToStr(Printer.NEW_LINE);
                 new_line_16 = Printer.commandToStr(Printer.LINE_SPACING_16),
                 new_line_2 = Printer.commandToStr(Printer.LINE_SPACING_2),new_line_d = Printer.commandToStr(Printer.LINE_SPACING_DEFAULT),
-                line = "--------------------------------";
+                line = context.getString(R.string.line_58);
 
         if (is_open_cash_box)//开钱箱
             info.append(Printer.commandToStr(Printer.OPEN_CASHBOX));
@@ -1175,44 +1175,53 @@ public class PayDialog extends DialogBaseOnMainActivityImp {
     }
 
     public static String get_print_content(final MainActivity context,final String order_code,boolean is_open_cash_box){
-        final JSONObject print_format_info = new JSONObject(),order_info = new JSONObject();
+        final JSONObject print_format_info = new JSONObject();
         String content = "";
         if (SQLiteHelper.getLocalParameter("c_f_info",print_format_info)){
             if (print_format_info.getIntValue("f") == R.id.checkout_format){
-
-                if (SQLiteHelper.execSql(order_info,"SELECT a.order_code,b.cas_name,a.pos_code pos_num,a.stores_id,c.stores_name,datetime(a.addtime, 'unixepoch', 'localtime') oper_time,c.telphone,c.region" +
-                        " FROM retail_order a  left join cashier_info b on a.cashier_id = b.cas_id\n" +
-                        "left join shop_stores c on a.stores_id = c.stores_id where a.order_code = '" +order_code +"'")){
-                    final StringBuilder err = new StringBuilder();
-                    final String goods_info_sql = "SELECT a.barcode,b.goods_title,a.price,a.retail_price original_price,a.retail_price * a.xnum original_amt,\n" +
-                            "a.total_money sale_amt,a.retail_price * a.xnum - a.total_money discount_amt FROM retail_order_goods a \n" +
-                            "left join barcode_info b on a.barcode_id = b.barcode_id where order_code = '"+ order_code +"'"
-                            ,pays_info_sql = "SELECT  b.name,pre_sale_money pamt,give_change_money pzl,xnote FROM retail_order_pays a \n" +
-                            "left join pay_method b on a.pay_method = b.pay_method_id where order_code = '"+ order_code +"'";
-
-                    final JSONArray sales = SQLiteHelper.getListToJson(goods_info_sql,err),pays = SQLiteHelper.getListToJson(pays_info_sql,err);
-                    if (sales != null && pays != null){
-                        order_info.put("sales",sales);
-                        order_info.put("pays",pays);
-                        switch (print_format_info.getIntValue("f_z")){
-                            case R.id.f_58:
-                                content = c_format_58(context,print_format_info,order_info,is_open_cash_box);
-                                break;
-                            case R.id.f_76:
-                                break;
-                            case R.id.f_80:
-                                break;
-                        }
-                    }else {
-                        context.runOnUiThread(()->MyDialog.ToastMessage("加载单据明细错误：" + err, context,null));
+                final JSONObject order_info = new JSONObject();
+                if (getPrintOrderInfo(order_code,order_info)){
+                    switch (print_format_info.getIntValue("f_z")){
+                        case R.id.f_58:
+                            content = c_format_58(context,print_format_info,order_info,is_open_cash_box);
+                            break;
+                        case R.id.f_76:
+                            break;
+                        case R.id.f_80:
+                            break;
                     }
                 }else {
-                    context.runOnUiThread(()->MyDialog.ToastMessage("加载单据错误：" + order_info.getString("info"), context,null));
+                    context.runOnUiThread(()->MyDialog.ToastMessage("加载打印内容错误：" + order_info.getString("info"), context,null));
                 }
             }
         }else
             context.runOnUiThread(()->MyDialog.ToastMessage("加载打印格式错误：" + print_format_info.getString("info"), context,null));
 
         return content;
+    }
+
+    private static boolean getPrintOrderInfo(final String order_code,final JSONObject order_info) {
+        boolean code = false;
+        if (SQLiteHelper.execSql(order_info, "SELECT a.order_code,b.cas_name,a.pos_code pos_num,a.stores_id,c.stores_name,datetime(a.addtime, 'unixepoch', 'localtime') oper_time,c.telphone,c.region" +
+                " FROM retail_order a  left join cashier_info b on a.cashier_id = b.cas_id\n" +
+                "left join shop_stores c on a.stores_id = c.stores_id where a.order_code = '" + order_code + "'")) {
+            final StringBuilder err = new StringBuilder();
+            final String goods_info_sql = "SELECT a.barcode,b.goods_title,a.price,a.retail_price original_price,a.retail_price * a.xnum original_amt,\n" +
+                    "a.total_money sale_amt,a.retail_price * a.xnum - a.total_money discount_amt FROM retail_order_goods a \n" +
+                    "left join barcode_info b on a.barcode_id = b.barcode_id where order_code = '" + order_code + "'", pays_info_sql = "SELECT  b.name,pre_sale_money pamt,give_change_money pzl,xnote FROM retail_order_pays a \n" +
+                    "left join pay_method b on a.pay_method = b.pay_method_id where order_code = '" + order_code + "'";
+
+            final JSONArray sales = SQLiteHelper.getListToJson(goods_info_sql, err), pays = SQLiteHelper.getListToJson(pays_info_sql, err);
+            if (sales != null && pays != null) {
+
+                order_info.put("sales", sales);
+                order_info.put("pays", pays);
+
+                code = true;
+            }else {
+                order_info.put("info",err.toString());
+            }
+        }
+        return code;
     }
 }

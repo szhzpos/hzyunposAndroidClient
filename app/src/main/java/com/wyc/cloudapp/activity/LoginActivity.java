@@ -37,6 +37,7 @@ import com.wyc.cloudapp.dialog.ConnSettingDialog;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.keyboard.SoftKeyBoardListener;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.network.sync.SyncManagement;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -44,6 +45,7 @@ import com.wyc.cloudapp.utils.Utils;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.net.HttpURLConnection;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -299,10 +301,13 @@ public class LoginActivity extends AppCompatActivity {
             if (SQLiteHelper.getLocalParameter("connParam", param_json)) {
                 if (Utils.JsonIsNotEmpty(param_json)) {
                     try {
+                        store_info = JSON.parseObject(param_json.getString("storeInfo"));
+
                         mUrl = param_json.getString("server_url");
                         mAppId = param_json.getString("appId");
                         mAppScret = param_json.getString("appScret");
                         mOperId = mUser_id.getText().toString();
+                        mStoresId = store_info.getString("stores_id");
 
                         object.put("appid", mAppId);
                         object.put("cas_account", mOperId);
@@ -312,11 +317,15 @@ public class LoginActivity extends AppCompatActivity {
 
                         url = mUrl + "/api/cashier/login";
 
-                        retJson = httpRequest.setReadTimeOut(3000).setConnTimeOut(3000).sendPost(url, sz_param, true);
+                        retJson = httpRequest.setConnTimeOut(3000).setReadTimeOut(3000).sendPost(url, sz_param, true);
 
                         switch (retJson.getIntValue("flag")) {
                             case 0:
-                                myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, retJson.getString("info")).sendToTarget();
+                                int rsCode = Utils.getNotKeyAsNumberDefault(retJson,"rsCode",-1);
+                                if (rsCode == 400 || rsCode == HttpURLConnection.HTTP_INTERNAL_ERROR){
+                                    myHandler.obtainMessage(MessageID.OFF_LINE_LOGIN_ID).sendToTarget();
+                                }else
+                                    myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, retJson.getString("info")).sendToTarget();
                                 break;
                             case 1:
                                 info_json = JSON.parseObject(retJson.getString("info"));
@@ -332,8 +341,6 @@ public class LoginActivity extends AppCompatActivity {
                                         break;
                                     case "y":
                                         cashier_json = JSON.parseObject(info_json.getString("cashier"));
-                                        store_info = JSON.parseObject(param_json.getString("storeInfo"));
-                                        mStoresId = store_info.getString("stores_id");
 
                                         url = mUrl + "/api_v2/pos/set_ps";
                                         jsonLogin = new JSONObject();
@@ -355,11 +362,11 @@ public class LoginActivity extends AppCompatActivity {
                                                         break;
                                                     case "y":
                                                         StringBuilder err = new StringBuilder();
-                                                        if (SQLiteHelper.saveLocalParameter("scale_setting",info_json.getJSONObject("scale"),"条码秤信息",err)){
+                                                        if (SQLiteHelper.saveLocalParameter("scale_setting",info_json.getJSONObject("scale"),"条码秤参数信息",err)){
                                                             cashier_json.put("pos_num", (mPosNum = info_json.getString("pos_num")));
                                                             myHandler.obtainMessage(MessageID.LOGIN_OK_ID, cashier_json).sendToTarget();
                                                         }else{
-                                                            myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "保存条码秤信息错误：" + err).sendToTarget();
+                                                            myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "保存条码秤参数错误：" + err).sendToTarget();
                                                         }
                                                         break;
                                                 }
@@ -409,8 +416,17 @@ public class LoginActivity extends AppCompatActivity {
         private Myhandler(LoginActivity loginActivity){
             this.weakHandler = new WeakReference<>(loginActivity);
         }
+
+        private void launchLogin(LoginActivity activity,boolean isConnection){
+            final Intent intent = new Intent(activity,MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.putExtra("network",isConnection);
+            activity.startActivity(intent);
+            activity.finish();
+        }
+
         public void handleMessage(@NonNull Message msg){
-            LoginActivity activity = weakHandler.get();
+            final LoginActivity activity = weakHandler.get();
             if (null == activity)return;
             if (activity.mProgressDialog.isShowing() && msg.what != MessageID.SYNC_DIS_INFO_ID)activity.mProgressDialog.dismiss();
             switch (msg.what){
@@ -425,14 +441,11 @@ public class LoginActivity extends AppCompatActivity {
                     activity.finish();
                     break;
                 case MessageID.SYNC_FINISH_ID://同步成功启动主界面
-                    Intent intent = new Intent(activity,MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    activity.startActivity(intent);
-                    activity.finish();
+                    launchLogin(activity,true);
                     break;
                 case MessageID.LOGIN_OK_ID://登录成功
                     if (msg.obj instanceof  JSONObject){
-                        JSONObject cashier_json = (JSONObject) msg.obj,param_json = new JSONObject();
+                        final JSONObject cashier_json = (JSONObject) msg.obj,param_json = new JSONObject();
                         StringBuilder err = new StringBuilder();
                         try {
                             param_json.put("parameter_id","cashierInfo");
@@ -479,6 +492,29 @@ public class LoginActivity extends AppCompatActivity {
                         MyDialog.SnackbarMessage(activity.getWindow(),msg.obj.toString(),activity.getCurrentFocus());
                         activity.findViewById(R.id.setup_ico).callOnClick();
                     }
+                    break;
+                case MessageID.OFF_LINE_LOGIN_ID:
+                    MyDialog.displayAskMessage(activity.myDialog, "连接服务器失败，是否离线登录？", activity, new MyDialog.onYesOnclickListener() {
+                        @Override
+                        public void onYesClick(MyDialog myDialog) {
+                            myDialog.dismiss();
+
+                            final String user_id = activity.mUser_id.getText().toString(),password = activity.mPassword.getText().toString(),key = "hzyunpos";
+                            final String local_password = Utils.getMD5((user_id + password + key).getBytes());
+                            final StringBuilder err = new StringBuilder();
+                            final String sz_count = SQLiteHelper.getString("SELECT count(cas_id) count FROM cashier_info where " +
+                                    "cas_account = '"+ user_id +"' and stores_id = '" + activity.mStoresId +"' and cas_pwd = '"+ local_password +"'",err);
+
+                            Logger.d("SELECT count(cas_id) count FROM cashier_info where " +
+                                    "cas_account = '"+ user_id +"' and stores_id = '" + activity.mStoresId +"' and cas_pwd = '"+ local_password +"'");
+
+                            if (Integer.valueOf(sz_count) > 0){
+                                launchLogin(activity,false);
+                            }else {
+                                activity.myHandler.obtainMessage(MessageID.LOGIN_ID_ERROR_ID, "不存在此用户！").sendToTarget();
+                            }
+                        }
+                    }, MyDialog::dismiss);
                     break;
             }
         }

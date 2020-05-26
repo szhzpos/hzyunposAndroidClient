@@ -213,6 +213,7 @@
     <string name="verify_pay_sz">支付验证</string>
     <string name="card_code_sz">卡号</string>
     <!-- 结账单 -->
+    <string name="line_58">--------------------------------</string>
     <string name="b_f_store_id_sz">店号：</string>
     <string name="b_f_jh_sz">@string/jh_sz</string>
     <string name="b_f_cashier_sz">@string/cashier_sz</string>
@@ -252,4 +253,29 @@
     <string name="s_e_sz">交班</string>
     <string name="shift_time_sz">班次时间</string>
     <string name="payable_cash_sz">应交现金</string>
+    <!-- 交班单 -->
+    <string name="t_f_detail_h_sz">名称----------金额---------笔数</string>
+    <string name="t_f_store_sz">@string/store_sz</string>
+    <string name="t_f_order_sz">@string/order_sz</string>
+    <string name="t_f_s_time_sz">开始时间：</string>
+    <string name="t_f_e_time_sz">结束时间：</string>
+    <string name="t_f_time_sz">交班时间：</string>
+    <string name="t_f_oper_sz">当班人：</string>
+    <string name="t_f_retail_sz">零售</string>
+    <string name="t_f_refund_sz">@string/o_back_sz</string>
+    <string name="t_f_deposit_sz">@string/charge_sz</string>
+    <string name="t_f_cards_sz">次卡</string>
+    <string name="t_f_retail_s_sz">零售合计：</string>
+    <string name="t_f_deposit_s_sz">充值合计：</string>
+    <string name="t_f_cards_s_sz">次卡合计：</string>
+    <string name="t_f_refund_s_sz">退款合计：</string>
+    <string name="t_f_s_sz">收款合计：</string>
+    <string name="t_f_cash_sz">@string/payable_cash_sz</string>
+    <string name="t_f_cashbox_sz">钱箱现金：</string>
+    <string name="t_f_f_sign_sz">财务签字</string>
+    <string name="t_f_c_sign_sz">接班人签字</string>
+    <string name="t_f_zl_sz">@string/cash_zl_sz</string>
+    <string name="t_f_hotline_sz">@string/hotline_sz</string>
+    <string name="t_f_stores_address_sz">@string/stores_address_sz</string>
+
 </resources>

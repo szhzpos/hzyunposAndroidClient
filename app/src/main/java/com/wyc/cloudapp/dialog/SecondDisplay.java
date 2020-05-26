@@ -216,10 +216,8 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
             JSONObject object = new JSONObject();
             final String err = "获取广告图片错误：";
 
-            Activity activity = null;
-            if (mContext instanceof Activity){
-                activity = (Activity)mContext;
-            }
+            final Activity activity = mContext;
+
             try {
                 object.put("appid",appid);
                 final JSONObject retJson = httpRequest.setConnTimeOut(10000).sendPost(url  + "/api/get_config/get_sc_ad",HttpRequest.generate_request_parm(object,appScret),true);
