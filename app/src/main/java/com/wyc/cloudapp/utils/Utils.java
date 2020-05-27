@@ -320,22 +320,26 @@ public final class Utils {
         return JSON.parseArray(jsons.toJSONString());
     }
 
-    public static String getNullOrEmptyStringAsDefault(@NonNull final JSONObject object,final String key, final String default_v){
-        final String value = object.getString(key);
-        if (value != null && !"".equals(value)){
-            return value;
+    public static String getNullOrEmptyStringAsDefault(@Nullable final JSONObject object,final String key, final String default_v){
+        if (object != null){
+            final String value = object.getString(key);
+            if (value != null && !"".equals(value)){
+                return value;
+            }
         }
         return default_v;
     }
-    public static double getNotKeyAsNumberDefault(@NonNull final JSONObject object,final String key, final double default_v){
-        if (object.containsKey(key)){
-            return object.getDoubleValue(key);
+    public static double getNotKeyAsNumberDefault(@Nullable final JSONObject object,final String key, final double default_v){
+        if (object != null){
+            final Double obj = object.getDouble(key);
+            if (null != obj)return obj;
         }
         return default_v;
     }
-    public static int getNotKeyAsNumberDefault(@NonNull final JSONObject object,final String key, final int default_v){
-        if (object.containsKey(key)){
-            return object.getIntValue(key);
+    public static int getNotKeyAsNumberDefault(@Nullable final JSONObject object,final String key, final int default_v){
+        if (object != null){
+            final Integer obj = object.getInteger(key);
+            if (null != obj)return obj;
         }
         return default_v;
     }
@@ -346,18 +350,20 @@ public final class Utils {
     }
 
     public static JSONObject getNullObjectAsEmptyJson(final JSONObject object,final String key){
-        if (object == null)return new JSONObject();
-        final Object obj = object.get(key);
-        if (obj instanceof JSONObject){
-            return (JSONObject) obj;
+        if (object != null){
+            final Object obj = object.get(key);
+            if (obj instanceof JSONObject){
+                return (JSONObject) obj;
+            }
         }
         return new JSONObject();
     }
     public static JSONArray getNullObjectAsEmptyJsonArray(final JSONObject object,final String key){
-        if (object == null)return new JSONArray();
-        final Object obj = object.get(key);
-        if (obj instanceof JSONArray){
-            return (JSONArray) obj;
+        if (object != null){
+            final Object obj = object.get(key);
+            if (obj instanceof JSONArray){
+                return (JSONArray) obj;
+            }
         }
         return new JSONArray();
     }
