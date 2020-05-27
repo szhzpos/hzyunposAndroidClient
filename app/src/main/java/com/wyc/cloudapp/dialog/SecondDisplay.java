@@ -327,7 +327,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
     }
 
     public static SecondDisplay getInstantiate(final MainActivity context){
-        JSONObject object = new JSONObject();
+        final JSONObject object = new JSONObject();
         SecondDisplay secondDisplay = null;
         if (SQLiteHelper.getLocalParameter("dual_v",object)){
             if (object.getIntValue("s") == 1){

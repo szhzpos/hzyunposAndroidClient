@@ -794,7 +794,7 @@ public class PayDialog extends DialogBaseOnMainActivityImp {
                                                         object.put("order_code_son",info_json.getString("order_code_son"));
                                                         if (res_code == 4){
                                                             mContext.runOnUiThread(()->{
-                                                                ChangeNumOrPriceDialog password_dialog = new ChangeNumOrPriceDialog(mContext,"请输入密码","");
+                                                                final ChangeNumOrPriceDialog password_dialog = new ChangeNumOrPriceDialog(mContext,"请输入密码","");
                                                                 password_dialog.setOnDismissListener(dialog -> {
                                                                     synchronized (this){
                                                                         notifyAll();
@@ -1206,7 +1206,7 @@ public class PayDialog extends DialogBaseOnMainActivityImp {
                 " FROM retail_order a  left join cashier_info b on a.cashier_id = b.cas_id\n" +
                 "left join shop_stores c on a.stores_id = c.stores_id where a.order_code = '" + order_code + "'")) {
             final StringBuilder err = new StringBuilder();
-            final String goods_info_sql = "SELECT a.barcode,b.goods_title,a.price,a.retail_price original_price,a.retail_price * a.xnum original_amt,\n" +
+            final String goods_info_sql = "SELECT a.barcode,b.goods_title,a.price,a.retail_price original_price,a.xnum,a.retail_price * a.xnum original_amt,\n" +
                     "a.total_money sale_amt,a.retail_price * a.xnum - a.total_money discount_amt FROM retail_order_goods a \n" +
                     "left join barcode_info b on a.barcode_id = b.barcode_id where order_code = '" + order_code + "'", pays_info_sql = "SELECT  b.name,pre_sale_money pamt,give_change_money pzl,xnote FROM retail_order_pays a \n" +
                     "left join pay_method b on a.pay_method = b.pay_method_id where order_code = '" + order_code + "'";

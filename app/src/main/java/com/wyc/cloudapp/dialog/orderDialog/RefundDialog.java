@@ -657,7 +657,7 @@ public class RefundDialog extends DialogBaseOnMainActivityImp {
     static String get_print_content(final MainActivity context,final String refund_code,boolean is_open_cash_box){
         final JSONObject print_format_info = new JSONObject(),order_info = new JSONObject();
         String content = "";
-        if (SQLiteHelper.getLocalParameter("c_f_info",print_format_info)){
+        if (SQLiteHelper.getLocalParameter("r_f_info",print_format_info)){
             if (print_format_info.getIntValue("f") == R.id.checkout_format){
                 if (getPrintOrderInfo(refund_code,order_info)){
                     switch (print_format_info.getIntValue("f_z")){

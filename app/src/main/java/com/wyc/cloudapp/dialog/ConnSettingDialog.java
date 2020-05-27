@@ -13,6 +13,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnContextImp;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
@@ -128,7 +129,7 @@ public class ConnSettingDialog extends DialogBaseOnContextImp {
         final Button save_btn = findViewById(R.id.save);
         if (null != save_btn){
             save_btn.setOnClickListener((View v)->{
-                JSONObject json = new JSONObject(),param = new JSONObject();
+                final JSONObject json = new JSONObject(),param = new JSONObject();
                 verifyUrl();
                 json.put("server_url",mUrl.getText());
                 json.put("appId",mAppId.getText());
@@ -138,7 +139,7 @@ public class ConnSettingDialog extends DialogBaseOnContextImp {
                     param.put("parameter_id","connParam");
                     param.put("parameter_content",json);
                     param.put("parameter_desc","门店信息、服务器连接参数");
-                    StringBuilder err = new StringBuilder();
+                    final StringBuilder err = new StringBuilder();
                     if (SQLiteHelper.saveFormJson(param,"local_parameter",null,1,err)){
                         MyDialog.ToastMessage("保存成功！",mContext,null);
                         ConnSettingDialog.this.dismiss();
@@ -220,9 +221,10 @@ public class ConnSettingDialog extends DialogBaseOnContextImp {
     }
 
     private void showConnParam(){
-        JSONObject param = new JSONObject();
+        final JSONObject param = new JSONObject();
         if(SQLiteHelper.getLocalParameter("connParam",param)){
             if (Utils.JsonIsNotEmpty(param)){
+
                 try {
                     mUrl.setText(param.getString("server_url"));
                     mAppId.setText(param.getString("appId"));

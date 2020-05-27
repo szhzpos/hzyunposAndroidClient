@@ -327,12 +327,15 @@ public final class Utils {
         }
         return default_v;
     }
-    @SuppressWarnings("unchecked")
-    public static <T extends Number> T getNotKeyAsNumberDefault(@NonNull final JSONObject object,final String key, final T default_v){
+    public static double getNotKeyAsNumberDefault(@NonNull final JSONObject object,final String key, final double default_v){
         if (object.containsKey(key)){
-            final Object obj = object.get(key);
-            if (obj instanceof Number)
-                return (T)object.get(key);
+            return object.getDoubleValue(key);
+        }
+        return default_v;
+    }
+    public static int getNotKeyAsNumberDefault(@NonNull final JSONObject object,final String key, final int default_v){
+        if (object.containsKey(key)){
+            return object.getIntValue(key);
         }
         return default_v;
     }

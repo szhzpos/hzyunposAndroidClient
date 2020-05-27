@@ -277,5 +277,9 @@
     <string name="t_f_zl_sz">@string/cash_zl_sz</string>
     <string name="t_f_hotline_sz">@string/hotline_sz</string>
     <string name="t_f_stores_address_sz">@string/stores_address_sz</string>
-
+    <string name="refund_format_sz">退货小票</string>
+    <string name="transfer_format_sz">交班小票</string>
+    <string name="per_hint_sz">请输入有权限的工号</string>
+    <string name="per_dialog_sz">授权操作</string>
+    <string name="per_hint_2_sz">您没有【%1$s】权限！</string>
 </resources>

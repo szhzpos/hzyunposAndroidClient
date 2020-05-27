@@ -254,15 +254,11 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             }
             final JSONObject json = JSON.parseObject(cursor.getString(0));
             for (String key : json.keySet()){
-                param.put(key,json.getString(key));
+                param.put(key,json.get(key));
             }
-        } catch (JSONException | SQLiteException e) {
+        } catch (SQLiteException e) {
             isTrue = false;
-            try {
-                param.put("info","查询参数错误：" + e.getMessage());
-            } catch (JSONException ex) {
-                ex.printStackTrace();
-            }
+            param.put("info",e.getMessage());
             e.printStackTrace();
         }
         return isTrue;

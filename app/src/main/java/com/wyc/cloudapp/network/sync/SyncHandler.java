@@ -101,7 +101,7 @@ public final class SyncHandler extends Handler {
                             "min_discount","is_refund","is_give","is_put","pt_user_id","pt_user_cname","remark","authority"};
 
                     sys_name = "正在同步门店收银员";
-                    url = base_url + "/api/cashier_dwn/get_cashier_info";
+                    url = base_url + "/api_v2/scale/get_cashier_info";
 
                     object.put("cas_id",oper_id);
                     object.put("pos_num",pos_num);
@@ -163,7 +163,7 @@ public final class SyncHandler extends Handler {
                             sys_name = sys_name.concat("错误:").concat(info_json.getString("info"));
                             break;
                         case "y":
-                            JSONArray data = info_json.getJSONArray("data");
+                            final JSONArray data = info_json.getJSONArray("data");
                             if(data.size() != 0){
                                 StringBuilder err = new StringBuilder();
                                 switch (msg.what){

@@ -70,7 +70,7 @@ public class ChangeNumOrPriceDialog extends DialogBaseOnMainActivityImp {
     }
 
     public double getContent(){
-        Editable editable = mNew_price_text.getText();
+        final Editable editable = mNew_price_text.getText();
         double value = 0.0;
         try {
             if (editable.length() == 0){

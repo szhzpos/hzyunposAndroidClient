@@ -361,7 +361,7 @@ public class LoginActivity extends AppCompatActivity {
                                                         myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "设置收银终端错误：" + info_json.getString("info")).sendToTarget();
                                                         break;
                                                     case "y":
-                                                        StringBuilder err = new StringBuilder();
+                                                        final StringBuilder err = new StringBuilder();
                                                         if (SQLiteHelper.saveLocalParameter("scale_setting",info_json.getJSONObject("scale"),"条码秤参数信息",err)){
                                                             cashier_json.put("pos_num", (mPosNum = info_json.getString("pos_num")));
                                                             myHandler.obtainMessage(MessageID.LOGIN_OK_ID, cashier_json).sendToTarget();

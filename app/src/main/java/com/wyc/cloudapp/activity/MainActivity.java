@@ -44,6 +44,7 @@ import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.HangBillDialog;
 import com.wyc.cloudapp.dialog.MoreFunDialog;
+import com.wyc.cloudapp.dialog.VerifyPermissionDialog;
 import com.wyc.cloudapp.dialog.orderDialog.QuerySaleOrderDialog;
 import com.wyc.cloudapp.dialog.orderDialog.TransferDialog;
 import com.wyc.cloudapp.dialog.pay.PayDialog;
@@ -215,24 +216,26 @@ public class MainActivity extends AppCompatActivity {
         final LinearLayout shift_exchange_linearLayout = findViewById(R.id.shift_exchange_linearLayout);
         if (shift_exchange_linearLayout != null)
             shift_exchange_linearLayout.setOnClickListener(v -> {
-                final MainActivity activity = MainActivity.this;
-                final TransferDialog transferDialog = new TransferDialog(activity);
-                transferDialog.setFinishListener(() -> {
-                    mSyncManagement.sync_transfer_order();
-                    MyDialog my_dialog = new MyDialog(activity);
-                    my_dialog.setMessage("交班成功！").setYesOnclickListener(activity.getString(R.string.OK), new MyDialog.onYesOnclickListener() {
-                        @Override
-                        public void onYesClick(MyDialog myDialog) {
-                            transferDialog.dismiss();
-                            myDialog.dismiss();
-                            Intent intent = new Intent(activity, LoginActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            activity.startActivity(intent);
-                            activity.finish();
-                        }
-                    }).show();
-                });
-                transferDialog.verifyTransfer();
+                if (verifyPermissions("6",null)){
+                    final MainActivity activity = MainActivity.this;
+                    final TransferDialog transferDialog = new TransferDialog(activity);
+                    transferDialog.setFinishListener(() -> {
+                        mSyncManagement.sync_transfer_order();
+                        MyDialog my_dialog = new MyDialog(activity);
+                        my_dialog.setMessage("交班成功！").setYesOnclickListener(activity.getString(R.string.OK), new MyDialog.onYesOnclickListener() {
+                            @Override
+                            public void onYesClick(MyDialog myDialog) {
+                                transferDialog.dismiss();
+                                myDialog.dismiss();
+                                Intent intent = new Intent(activity, LoginActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                activity.startActivity(intent);
+                                activity.finish();
+                            }
+                        }).show();
+                    });
+                    transferDialog.verifyTransfer();
+                }
             });
     }
     private void initClearBtn(){
@@ -320,33 +323,33 @@ public class MainActivity extends AppCompatActivity {
         mCurrentTimeViewTv.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(mCurrentTimestamp));
     }
     private void initCashierInfoAndStoreInfo(){
-        mCashierInfo = new JSONObject();
-        mStoreInfo = new JSONObject();
+        final JSONObject cas_info = mCashierInfo = new JSONObject();
+        final JSONObject st_info = mStoreInfo = new JSONObject();
 
-        if (SQLiteHelper.getLocalParameter("cashierInfo",mCashierInfo)){
-            TextView cashier_name = findViewById(R.id.cashier_name),
+        if (SQLiteHelper.getLocalParameter("cashierInfo",cas_info)){
+            final TextView cashier_name = findViewById(R.id.cashier_name),
                     store_name = findViewById(R.id.sec_store_name),
                     pos_num = findViewById(R.id.pos_num);
 
-            cashier_name.setText(mCashierInfo.getString("cas_name"));
-            pos_num.setText(mCashierInfo.getString("pos_num"));
-            if (SQLiteHelper.getLocalParameter("connParam",mStoreInfo)){
+            cashier_name.setText(cas_info.getString("cas_name"));
+            pos_num.setText(cas_info.getString("pos_num"));
+            if (SQLiteHelper.getLocalParameter("connParam",st_info)){
                 try {
-                    mUrl = mStoreInfo.getString("server_url");
-                    mAppId = mStoreInfo.getString("appId");
-                    mAppScret = mStoreInfo.getString("appScret");
+                    mUrl = st_info.getString("server_url");
+                    mAppId = st_info.getString("appId");
+                    mAppScret = st_info.getString("appScret");
 
-                    mStoreInfo = JSON.parseObject(mStoreInfo.getString("storeInfo"));
+                    mStoreInfo = JSON.parseObject(st_info.getString("storeInfo"));
                     store_name.setText(String.format("%s%s%s%s",mStoreInfo.getString("stores_name"),"[",mStoreInfo.getString("stores_id"),"]"));
                 } catch (JSONException e) {
                     e.printStackTrace();
                     mDialog.setMessage(e.getMessage()).setNoOnclickListener("取消", myDialog -> MainActivity.this.finish()).show();
                 }
             }else{
-                mDialog.setMessage(mCashierInfo.getString("info")).setNoOnclickListener("取消", myDialog -> MainActivity.this.finish()).show();
+                mDialog.setMessage(cas_info.getString("info")).setNoOnclickListener("取消", myDialog -> MainActivity.this.finish()).show();
             }
         }else{
-            mDialog.setMessage(mStoreInfo.getString("info")).setNoOnclickListener("取消", myDialog -> MainActivity.this.finish()).show();
+            mDialog.setMessage(st_info.getString("info")).setNoOnclickListener("取消", myDialog -> MainActivity.this.finish()).show();
         }
     }
     private void initGoodsInfoAdapter(){
@@ -787,6 +790,48 @@ public class MainActivity extends AppCompatActivity {
     }
     public boolean isConnection(){
         return mNetworkStatus.get();
+    }
+    public boolean verifyPermissions(final String per_id,final String requested_cas_id){
+        if (mCashierInfo != null && mStoreInfo != null){
+            String cashier_id = Utils.getNullStringAsEmpty(mCashierInfo,"cas_code"),stores_id = mStoreInfo.getString("stores_id");
+            final StringBuilder err = new StringBuilder();
+            if (null != requested_cas_id){
+                Logger.i("操作员:%s,向工号:%s请求权限:%s",cashier_id,requested_cas_id,per_id);
+                cashier_id = requested_cas_id;
+            }
+            final String authority = SQLiteHelper.getString("SELECT authority FROM cashier_info where cas_code = '" + cashier_id +"' and stores_id = " + stores_id,err);
+            if (null != authority){
+                try {
+                    final JSONArray permissions = JSON.parseArray(authority);
+                    if (permissions != null){
+                        for (int i = 0,size = permissions.size();i < size;i ++){
+                            final JSONObject obj = permissions.getJSONObject(i);
+                            if (obj != null){
+                                if (Utils.getNullStringAsEmpty(obj,"authority").equals(per_id)){
+                                    if (1 != obj.getIntValue("is_have")){
+                                        final VerifyPermissionDialog verifyPermissionDialog = new VerifyPermissionDialog(this);
+                                        verifyPermissionDialog.setHintPerName(Utils.getNullStringAsEmpty(obj,"authority_name"));
+                                        if (verifyPermissionDialog.exec() == 1){
+                                            return verifyPermissions(per_id,verifyPermissionDialog.getContent());
+                                        }
+                                        return false;
+                                    }
+                                    return true;
+                                }
+                            }
+                        }
+                    }else {
+                        MyDialog.displayErrorMessage(mDialog,"操作员不存在或未设置权限信息！",this);
+                    }
+                }catch (JSONException e){
+                    e.printStackTrace();
+                    MyDialog.displayErrorMessage(mDialog,"权限查询错误：" + e.getMessage(),this);
+                }
+            }else {
+                MyDialog.displayErrorMessage(mDialog,"权限查询错误：" + err,this);
+            }
+        }
+        return false;
     }
 
     private static class Myhandler extends Handler {

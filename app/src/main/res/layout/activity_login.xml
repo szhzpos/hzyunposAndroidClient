@@ -35,7 +35,6 @@
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="@dimen/login_keybord_button_width"
                 android:layout_height="@dimen/login_keybord_button_height"
-                android:layout_marginStart="@dimen/margin_2"
                 android:background="@drawable/button_sub_blue"
                 android:text="@string/one_sz"
                 android:textAlignment="center"
@@ -94,7 +93,6 @@
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="@dimen/login_keybord_button_width"
                 android:layout_height="@dimen/login_keybord_button_height"
-                android:layout_marginStart="@dimen/margin_2"
                 android:layout_marginTop="@dimen/margin_2"
                 android:background="@drawable/button_sub_blue"
                 android:focusable="auto"
@@ -102,7 +100,7 @@
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 android:textSize="@dimen/num_keyboard_font_size_24"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@id/_one"
                 app:layout_constraintTop_toBottomOf="@+id/_one" />
 
             <Button
@@ -144,14 +142,13 @@
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="@dimen/login_keybord_button_width"
                 android:layout_height="@dimen/login_keybord_button_height"
-                android:layout_marginStart="@dimen/margin_2"
                 android:layout_marginTop="@dimen/margin_2"
                 android:background="@drawable/button_sub_blue"
                 android:text="@string/seven_sz"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 android:textSize="@dimen/num_keyboard_font_size_24"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@id/_four"
                 app:layout_constraintTop_toBottomOf="@+id/_four" />
 
             <Button

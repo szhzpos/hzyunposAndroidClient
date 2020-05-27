@@ -17,6 +17,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 public class PrintFormatFragment extends BaseFragment {
@@ -91,17 +92,27 @@ public class PrintFormatFragment extends BaseFragment {
         final JSONObject object = new JSONObject(),content = new JSONObject();
 
         if (mRootView != null){
-            RadioGroup frg = mRootView.findViewById(R.id.format_rg),fzrg = mRootView.findViewById(R.id.format_size_rg);
-            EditText stores_name = mRootView.findViewById(R.id.stores_name),footer_c = mRootView.findViewById(R.id.footer_c),
+            final RadioGroup frg = mRootView.findViewById(R.id.format_rg),fzrg = mRootView.findViewById(R.id.format_size_rg);
+            final EditText stores_name = mRootView.findViewById(R.id.stores_name),footer_c = mRootView.findViewById(R.id.footer_c),
                     p_count = mRootView.findViewById(R.id.p_count),footer_space = mRootView.findViewById(R.id.footer_space);
-            String parameter_id = "";
+            String parameter_id = "",parameter_desc = "";
             int id = -1;
             switch (frg.getCheckedRadioButtonId()){
                 case R.id.checkout_format:
                     parameter_id = "c_f_info";
+                    parameter_desc = "结账小票打印格式信息";
                     break;
                 case R.id.vip_c_format:
                     parameter_id = "v_f_info";
+                    parameter_desc = "充值小票打印格式信息";
+                    break;
+                case R.id.refund_format:
+                    parameter_id = "r_f_info";
+                    parameter_desc = "退货小票打印格式信息";
+                    break;
+                case R.id.transfer_format:
+                    parameter_id = "t_f_info";
+                    parameter_desc = "交班小票打印格式信息";
                     break;
             }
              if (way){
@@ -114,7 +125,7 @@ public class PrintFormatFragment extends BaseFragment {
 
                  content.put("parameter_id", parameter_id);
                  content.put("parameter_content",object);
-                 content.put("parameter_desc", "打印格式信息");
+                 content.put("parameter_desc",parameter_desc);
              }else{
                  if (SQLiteHelper.getLocalParameter(parameter_id,object)){
                      id = Utils.getNotKeyAsNumberDefault(object,"f",-1);
