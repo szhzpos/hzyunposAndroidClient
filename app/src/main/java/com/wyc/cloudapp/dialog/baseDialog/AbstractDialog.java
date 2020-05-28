@@ -49,22 +49,18 @@ public abstract class AbstractDialog extends Dialog {
     @CallSuper
     public void dismiss(){
         super.dismiss();
-        done();
+        if (mEventLoop != null)mEventLoop.done(mCode);
     }
 
-    public void setExitCode(int code ){
+    public void setCodeAndExit(int code ){
         mCode = code;
+        dismiss();
     }
 
     public int exec(){
         show();
         if (mEventLoop == null)mEventLoop = new JEventLoop();
         return mEventLoop.exec();
-    }
-
-    private void done(){
-        if (mEventLoop != null)
-            mEventLoop.done(mCode);
     }
 
     private void setContentLayout() {

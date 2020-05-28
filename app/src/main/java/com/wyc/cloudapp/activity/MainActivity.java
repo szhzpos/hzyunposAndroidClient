@@ -842,10 +842,12 @@ public class MainActivity extends AppCompatActivity {
                                             final VerifyPermissionDialog verifyPermissionDialog = new VerifyPermissionDialog(this);
                                             verifyPermissionDialog.setHintPerName(Utils.getNullStringAsEmpty(obj,"authority_name"));
                                             verifyPermissionDialog.setFinishListener(dialog -> {
-                                                if (!verifyPermissions(per_id,dialog.getContent(),isShow)){
-                                                    dialog.setExitCode(0);
+                                                if (verifyPermissions(per_id,dialog.getContent(),true)){
+                                                    dialog.setCodeAndExit(1);
+                                                }else{
+                                                    dialog.setCodeAndExit(0);
                                                 }
-                                                dialog.dismiss();
+
                                             });
                                             code = verifyPermissionDialog.exec() == 1;
                                         }else {
@@ -884,10 +886,10 @@ public class MainActivity extends AppCompatActivity {
                         final VerifyPermissionDialog verifyPermissionDialog = new VerifyPermissionDialog(this);
                         verifyPermissionDialog.setHintPerName(String.format(Locale.CHINA,"%.1f%s",discount * 10,"折"));
                         verifyPermissionDialog.setFinishListener(dialog -> {
-                            if (!verifyDiscountPermissions(discount,dialog.getContent())){
-                                dialog.setExitCode(0);
-                            }
-                            dialog.dismiss();
+                            if (verifyDiscountPermissions(discount,dialog.getContent())){
+                                dialog.setCodeAndExit(1);
+                            }else
+                                dialog.setCodeAndExit(0);
                         });
                         code = verifyPermissionDialog.exec() == 1;
                     }else {

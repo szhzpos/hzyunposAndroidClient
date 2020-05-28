@@ -344,9 +344,12 @@ public final class Utils {
         return default_v;
     }
 
-    public static String getNullStringAsEmpty(@NonNull final JSONObject object,final String key){
-        final String value = object.getString(key);
-        return value == null ? "" :value;
+    public static String getNullStringAsEmpty(@Nullable final JSONObject object,final String key){
+        if (null != object){
+            final String value = object.getString(key);
+            return value == null ? "" :value;
+        }
+        return "";
     }
 
     public static JSONObject getNullObjectAsEmptyJson(final JSONObject object,final String key){

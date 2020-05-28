@@ -102,7 +102,6 @@ public final class VerifyPermissionDialog extends DialogBaseOnMainActivityImp {
                         break;
                     case R.id.ok:
                         mOkBtn = (Button)view;
-                        setExitCode(1);
                         if (mFinishListener != null)mFinishListener.onFinish(VerifyPermissionDialog.this);
                         break;
                         default:

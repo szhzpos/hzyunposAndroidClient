@@ -152,7 +152,8 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
                         }
                         mCurrentItemView = null;
                     }
-                }
+                }else
+                    return;
             }else{
                 final JSONObject jsonObject = mDatas.getJSONObject(index);
                 double current_num = jsonObject.getDoubleValue("xnum"),
@@ -167,7 +168,8 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
                             mCurrentItemIndex = mDatas.size() - 1;
                         }
                         mCurrentItemView = null;
-                    }
+                    }else
+                        return;
                 }else{
                     jsonObject.put("xnum",current_num);
                     jsonObject.put("sale_amt",Utils.formatDouble(current_num * price,2));
