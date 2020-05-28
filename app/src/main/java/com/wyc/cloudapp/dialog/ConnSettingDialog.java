@@ -27,6 +27,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
@@ -35,12 +36,10 @@ import java.lang.ref.WeakReference;
 import static android.content.Context.WINDOW_SERVICE;
 
 public class ConnSettingDialog extends DialogBaseOnContextImp {
-    private EditText mUrl,mAppId,mAppscret,mStore_name;
+    private TextView mUrl,mAppId,mAppscret,mStore_name;
     private CustomProgressDialog mDialog;
-    private CustomePopupWindow mPopupWindow;
     private Myhandler mHandler;
-    private JSONObject mStoreInfo;
-
+    private EditText mShopId;
     public ConnSettingDialog(final Context context,final String title) {
         super(context,title,R.style.MyDialog);
     }
@@ -69,13 +68,13 @@ public class ConnSettingDialog extends DialogBaseOnContextImp {
 
     private void initView() {
 
+        mShopId = findViewById(R.id.shop_id_et);
         mUrl = findViewById(R.id.server_url);
         mAppId = findViewById(R.id.appId);
         mAppscret = findViewById(R.id.appSecret);
         mStore_name = findViewById(R.id.sec_store_name);
 
         mDialog = new CustomProgressDialog(mContext);
-        mPopupWindow = new CustomePopupWindow(mContext);
         mHandler = new Myhandler(this);
 
         mUrl.setSelectAllOnFocus(true);
@@ -89,14 +88,14 @@ public class ConnSettingDialog extends DialogBaseOnContextImp {
             }
         });
 
-        mStore_name.setOnClickListener((View v)-> queryStoreInfo());
+/*        mStore_name.setOnClickListener((View v)-> queryStoreInfo());
 
         mStore_name.setOnFocusChangeListener((v, hasFocus) -> {
             Utils.hideKeyBoard((EditText)v);
             if (hasFocus){
                 queryStoreInfo();
             }
-        });
+        });*/
 
         initCancelBtn();
         initSave();
@@ -129,13 +128,33 @@ public class ConnSettingDialog extends DialogBaseOnContextImp {
         final Button save_btn = findViewById(R.id.save);
         if (null != save_btn){
             save_btn.setOnClickListener((View v)->{
-                final JSONObject json = new JSONObject(),param = new JSONObject();
-                verifyUrl();
-                json.put("server_url",mUrl.getText());
-                json.put("appId",mAppId.getText());
-                json.put("appScret",mAppscret.getText());
-                if (Utils.JsonIsNotEmpty(mStoreInfo)){
-                    json.put("storeInfo",mStoreInfo.toString());
+                final String shop_id = mShopId.getText().toString();
+                if (!"".equals(shop_id)){
+                    final JSONObject json = new JSONObject(),param = new JSONObject();
+                    if(SQLiteHelper.getLocalParameter("connParam",param)){
+                        if (!param.isEmpty()){
+                            final JSONObject store_info = param.getJSONObject("storeInfo");
+                            if (!store_info.isEmpty()){
+                                final String local_shop_id = Utils.getNullStringAsEmpty(store_info,"stores_id");
+                                if (!local_shop_id.equals(shop_id)){
+
+                                }
+                            }
+
+                        }
+
+                    }else{
+                        MyDialog.ToastMessage(param.getString("info"),mContext,getWindow());
+                    }
+
+                    json.put("server_url",verifyUrl());
+                    json.put("appId",mAppId.getText().toString());
+                    json.put("url",mUrl.getText().toString());
+                    json.put("shop_id",shop_id);
+                    json.put("appScret",mAppscret.getText().toString());
+                    json.put("storeInfo","{}");
+
+
                     param.put("parameter_id","connParam");
                     param.put("parameter_content",json);
                     param.put("parameter_desc","门店信息、服务器连接参数");
@@ -146,8 +165,9 @@ public class ConnSettingDialog extends DialogBaseOnContextImp {
                     }else
                         MyDialog.displayMessage(null,err.toString(),v.getContext());
                 }else{
-                    MyDialog.SnackbarMessage(getWindow(),"门店不能为空！",getCurrentFocus());
+                    MyDialog.SnackbarMessage(getWindow(),mContext.getString(R.string.not_empty_hint_sz,"商户号"),getCurrentFocus());
                 }
+
             });
         }
     }
@@ -167,12 +187,7 @@ public class ConnSettingDialog extends DialogBaseOnContextImp {
                         MyDialog.displayErrorMessage(null,msg.obj.toString(), settingDialog.mContext);
                     break;
                 case MessageID.DIS_STORE_INFO_ID://查询门店信息正确,则要在线请求仓库信息
-                    if (msg.obj instanceof JSONArray){
-                        settingDialog.mPopupWindow.initContent(null,settingDialog.mStore_name,(JSONArray)msg.obj,new String[]{"stores_name"},2,true,(JSONObject json)->{
-                            settingDialog.mStoreInfo = json;
-                        });
-                        settingDialog.mPopupWindow.show(settingDialog.mStore_name,3);
-                    }
+
                     break;
             }
 
@@ -224,13 +239,13 @@ public class ConnSettingDialog extends DialogBaseOnContextImp {
         final JSONObject param = new JSONObject();
         if(SQLiteHelper.getLocalParameter("connParam",param)){
             if (Utils.JsonIsNotEmpty(param)){
-
                 try {
-                    mUrl.setText(param.getString("server_url"));
-                    mAppId.setText(param.getString("appId"));
-                    mAppscret.setText(param.getString("appScret"));
-                    mStoreInfo = JSON.parseObject(param.getString("storeInfo"));
-                    mStore_name.setText(mStoreInfo.getString("stores_name"));
+                    mShopId.setText(param.getString("shop_id"));
+                    mUrl.setText(param.getString("url"));
+                    //mAppId.setText(param.getString("appId"));
+                    //mAppscret.setText(param.getString("appScret"));
+                    final JSONObject storeInfo = JSON.parseObject(param.getString("storeInfo"));
+                    mStore_name.setText(storeInfo.getString("stores_name"));
                 } catch (JSONException e) {
                     e.printStackTrace();
                     MyDialog.ToastMessage("显示门店信息错误：" + e.getMessage(),mContext,null);
@@ -241,16 +256,16 @@ public class ConnSettingDialog extends DialogBaseOnContextImp {
         }
     }
 
-    private void verifyUrl(){
+    private String verifyUrl(){
         String url = mUrl.getText().toString();
         if (!url.isEmpty() && !url.contains("http")){
-            url = "http://" + url;
-            mUrl.setText(url);
+            url = "http://" + mShopId.getText() + url;
         }
+        return url;
     }
 
     public String getUrl(){
-        return mUrl.getText().toString();
+        return mShopId.getText().toString();
     }
 
 }

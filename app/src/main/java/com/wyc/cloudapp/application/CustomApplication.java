@@ -67,9 +67,7 @@ public class CustomApplication extends Application {
     public static ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit){
         return THREAD_POOL_EXECUTOR.scheduleAtFixedRate(command,initialDelay,period,unit);
     }
-    public static ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
-        return THREAD_POOL_EXECUTOR.schedule(command,delay,unit);
-    }
+
     public static Future<?> submit(Runnable task){
         return THREAD_POOL_EXECUTOR.submit(task);
     }

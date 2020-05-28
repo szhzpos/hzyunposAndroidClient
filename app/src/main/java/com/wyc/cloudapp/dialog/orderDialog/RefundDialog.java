@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class RefundDialog extends DialogBaseOnMainActivityImp {
+public final class RefundDialog extends DialogBaseOnMainActivityImp {
     private RefundGoodsInfoAdapter mRefundGoodsInfoAdapter;
     private String mRefundOperId,mRefundOperName;
     private String mOrderCode,mRefundCode;
@@ -61,6 +61,7 @@ public class RefundDialog extends DialogBaseOnMainActivityImp {
 
         initOrderCodeTv();
         initGoodsDetails();
+
         initAllRefundBtn();
         initRebatesBtn();
         initRemarkBtn();
@@ -213,12 +214,17 @@ public class RefundDialog extends DialogBaseOnMainActivityImp {
         }
     }
 
+    private boolean verifyRefundPermission(){
+        return mContext.verifyPermissions("13",null);
+    }
     private void initAllRefundBtn(){
         final Button all_return_btn = mAllRefundBtn = findViewById(R.id.all_return_btn);
         if (null != all_return_btn){
             if (mRefundGoodsInfoAdapter.getRefundType() == 1){
                 all_return_btn.setOnClickListener(v -> {
-                    mRefundGoodsInfoAdapter.generateRefundInfo(1);
+                    if (verifyRefundPermission()){
+                        mRefundGoodsInfoAdapter.generateRefundInfo(1);
+                    }
                 });
             }else
                 all_return_btn.setVisibility(View.GONE);
@@ -229,12 +235,14 @@ public class RefundDialog extends DialogBaseOnMainActivityImp {
         if (btn != null){
             btn.setOnClickListener(v -> {
                 if (!Utils.equalDouble(mRefundGoodsInfoAdapter.getRefundAmt(),0.0)){
-                    final RefundPayDialogImp refundPayDialogImp = new RefundPayDialogImp(mContext);
-                    refundPayDialogImp.setPayAmt(mRefundGoodsInfoAdapter.getRefundAmt());
-                    refundPayDialogImp.setYesOnclickListener(dialog -> {
-                        mRefundGoodsInfoAdapter.addPayInfo(dialog.getContent());
-                        dialog.dismiss();
-                    }).show();
+                    if (verifyRefundPermission()){
+                        final RefundPayDialogImp refundPayDialogImp = new RefundPayDialogImp(mContext);
+                        refundPayDialogImp.setPayAmt(mRefundGoodsInfoAdapter.getRefundAmt());
+                        refundPayDialogImp.setYesOnclickListener(dialog -> {
+                            mRefundGoodsInfoAdapter.addPayInfo(dialog.getContent());
+                            dialog.dismiss();
+                        }).show();
+                    }
                 }else
                     MyDialog.ToastMessage("无可退商品！",mContext,getWindow());
             });
@@ -658,7 +666,7 @@ public class RefundDialog extends DialogBaseOnMainActivityImp {
         final JSONObject print_format_info = new JSONObject(),order_info = new JSONObject();
         String content = "";
         if (SQLiteHelper.getLocalParameter("r_f_info",print_format_info)){
-            if (print_format_info.getIntValue("f") == R.id.checkout_format){
+            if (print_format_info.getIntValue("f") == R.id.refund_format){
                 if (getPrintOrderInfo(refund_code,order_info)){
                     switch (print_format_info.getIntValue("f_z")){
                         case R.id.f_58:

@@ -3,33 +3,30 @@ package com.wyc.cloudapp.dialog.baseDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.wyc.cloudapp.R;
-
-import java.util.Stack;
+import com.wyc.cloudapp.dialog.JEventLoop;
 
 public abstract class AbstractDialog extends Dialog {
     protected Context mContext;
     protected String mTitle;
+    private JEventLoop mEventLoop;
     private int mCode;
-    private Stack mModelMessage;
     private AbstractDialog(@NonNull Context context){
         super(context);
         mContext = context;
-        mModelMessage = new Stack();
     }
     AbstractDialog(@NonNull Context context, final String title, int style){
         super(context,style);
         mContext = context;
-        mModelMessage = new Stack();
         mTitle = title;
     }
     AbstractDialog(@NonNull Context context, final String title) {
@@ -38,6 +35,7 @@ public abstract class AbstractDialog extends Dialog {
     }
 
     @Override
+    @CallSuper
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentLayout();
@@ -48,31 +46,25 @@ public abstract class AbstractDialog extends Dialog {
     }
 
     @Override
+    @CallSuper
     public void dismiss(){
         super.dismiss();
-        exit();
+        done();
     }
 
-    protected void setExitCode(int code ){
+    public void setExitCode(int code ){
         mCode = code;
     }
 
-    @SuppressWarnings("unchecked")
     public int exec(){
-        mModelMessage.push(Thread.currentThread().getId());
         show();
-        try {
-            Looper.loop();
-        }catch (NullPointerException ignored){
-        }
-        return mCode;
+        if (mEventLoop == null)mEventLoop = new JEventLoop();
+        return mEventLoop.exec();
     }
 
-    private void exit(){
-        if (!mModelMessage.empty()){
-            mModelMessage.pop();
-            throw new NullPointerException();
-        }
+    private void done(){
+        if (mEventLoop != null)
+            mEventLoop.done(mCode);
     }
 
     private void setContentLayout() {
@@ -100,6 +92,7 @@ public abstract class AbstractDialog extends Dialog {
     }
 
     protected void closeWindow() {
+        mCode = 0;
         this.dismiss();
     }
 

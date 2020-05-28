@@ -83,9 +83,11 @@ public class HangBillDialog extends DialogBaseOnMainActivityImp {
         if (null != del_hang_b)
             del_hang_b.setOnClickListener(v -> {
                 if (null != mCurrentHangId) {
-                    StringBuilder err = new StringBuilder();
-                    if (!deleteBill(mCurrentHangId,err)){
-                        MyDialog.ToastMessage("删除挂单信息错误：" + err, mContext, getWindow());
+                    if (verifyDeleteBillPermissions()){
+                        final StringBuilder err = new StringBuilder();
+                        if (!deleteBill(mCurrentHangId,err)){
+                            MyDialog.ToastMessage("删除挂单信息错误：" + err, mContext, getWindow());
+                        }
                     }
                 } else {
                     MyDialog.ToastMessage("请选择需要删除的记录！", mContext, getWindow());
@@ -249,6 +251,10 @@ public class HangBillDialog extends DialogBaseOnMainActivityImp {
             mHbDetailCursorAdapter.changeCursor(null);
         }
         return code;
+    }
+
+    private boolean verifyDeleteBillPermissions(){
+        return mContext.verifyPermissions("3",null);
     }
 
     private void showVipInfo(){

@@ -20,8 +20,8 @@
     <dimen name="num_keyboard_font_size_18">@dimen/font_size_18</dimen>
     <dimen name="num_keyboard_font_size_24">@dimen/font_size_24</dimen>
     <dimen name="pay_detail_head_font_size">@dimen/font_size_16</dimen>
-    <dimen name="keyboard_button_width">58dp</dimen>
-    <dimen name="keyboard_button_height">@dimen/height_50</dimen>
+    <dimen name="keyboard_button_width">@dimen/width_68</dimen>
+    <dimen name="keyboard_button_height">@dimen/height_58</dimen>
     <dimen name="plain_text_height_40">@dimen/height_40</dimen>
     <dimen name="dialog_button_width">@dimen/height_80</dimen>
     <dimen name="dialog_button_height">@dimen/height_40</dimen>

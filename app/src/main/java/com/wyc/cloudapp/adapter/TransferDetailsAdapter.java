@@ -2,6 +2,7 @@ package com.wyc.cloudapp.adapter;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -11,6 +12,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.callback.PasswordEditTextReplacement;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
@@ -26,9 +28,15 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
 
     private JSONArray mTransferRetails,mTransferRefunds,mTransferDeposits,mTransferOrderCodes,mTransferCardsc;
     private JSONObject mTransferSumInfo;
+    private boolean mTransferAmtNotVisible;
+    private PasswordEditTextReplacement editTextReplacement;
     public TransferDetailsAdapter(MainActivity context){
         mContext = context;
         mTransferSumInfo = new JSONObject();
+        mTransferAmtNotVisible = !context.verifyPermissions("7",null,false);
+
+        if (mTransferAmtNotVisible)
+            editTextReplacement = new PasswordEditTextReplacement();
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -59,14 +67,23 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
         if (null != mDatas){
             final JSONObject pay_info = mDatas.getJSONObject(position);
             if (pay_info != null){
+                boolean visible = mTransferAmtNotVisible;
                 holder.pay_m_name_tv.setText(pay_info.getString("pay_m_name"));
-                holder.retail_order_num_tv.setText(String.valueOf(pay_info.getIntValue("retail_order_num")));
-                holder.retail_amt_tv.setText(String.format(Locale.CHINA,"%.2f",pay_info.getDoubleValue("retail_amt")));
-                holder.refund_order_num_tv.setText(String.valueOf(pay_info.getIntValue("refund_order_num")));
-                holder.refund_amt_tv.setText(String.format(Locale.CHINA,"%.2f",pay_info.getDoubleValue("refund_amt")));
-                holder.deposit_order_num_tv.setText(String.valueOf(pay_info.getIntValue("deposit_order_num")));
-                holder.deposit_amt_tv.setText(String.format(Locale.CHINA,"%.2f",pay_info.getDoubleValue("deposit_amt")));
 
+                holder.retail_order_num_tv.setText(String.valueOf(pay_info.getIntValue("retail_order_num")));
+
+                holder.retail_amt_tv.setText(String.format(Locale.CHINA,"%.2f",pay_info.getDoubleValue("retail_amt")));
+                if (visible)holder.retail_amt_tv.setTransformationMethod(editTextReplacement);
+
+                holder.refund_order_num_tv.setText(String.valueOf(pay_info.getIntValue("refund_order_num")));
+
+                holder.refund_amt_tv.setText(String.format(Locale.CHINA,"%.2f",pay_info.getDoubleValue("refund_amt")));
+                if (visible)holder.refund_amt_tv.setTransformationMethod(editTextReplacement);
+
+                holder.deposit_order_num_tv.setText(String.valueOf(pay_info.getIntValue("deposit_order_num")));
+
+                holder.deposit_amt_tv.setText(String.format(Locale.CHINA,"%.2f",pay_info.getDoubleValue("deposit_amt")));
+                if (visible)holder.deposit_amt_tv.setTransformationMethod(editTextReplacement);
             }
         }
     }
@@ -126,6 +143,7 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
             mContext.runOnUiThread(()->MyDialog.ToastMessage("加载交班信息错误：" + err,mContext,null));
         }
     }
+
 
     private double disposeTransferRetails(final String ti_code){
         JSONObject object,pay_obj;
@@ -270,7 +288,7 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
         return order_code;
     }
 
-     private boolean getTransferOrderCodes(final String ti_code,final String cas_id,int stores_id,final String start_time,final StringBuilder err){
+    private boolean getTransferOrderCodes(final String ti_code,final String cas_id,int stores_id,final String start_time,final StringBuilder err){
          final String retail_code_sql = "select cashier_id cas_id,order_code from retail_order where transfer_status = 1 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +"  and (order_status = 2  or order_status = 4) and "+ start_time +" <= addtime and addtime <= strftime('%s','now') group by order_code,cashier_id",
                  refund_code_sql = "select cashier_id cas_id,ro_code order_code from refund_order where transfer_status = 1 and order_status = 2 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +" and "+ start_time +" <= addtime and addtime <= strftime('%s','now') group by ro_code,cashier_id",
                  deposit_code_sql = "select cashier_id cas_id,order_code from member_order_info where transfer_status = 1 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +" and status = 3 and "+ start_time +" <= addtime and addtime <= strftime('%s','now') group by order_code,cashier_id";
@@ -383,5 +401,7 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
         }
         return code;
     }
-
+    public boolean isTransferAmtNotVisible(){
+        return mTransferAmtNotVisible;
+    }
 }

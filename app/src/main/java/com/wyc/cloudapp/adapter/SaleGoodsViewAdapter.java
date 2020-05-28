@@ -27,7 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdapter.MyViewHolder> {
+public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdapter.MyViewHolder> {
     private MainActivity mContext;
     private JSONArray mDatas,mDiscountRecords;
     private View mCurrentItemView;
@@ -142,28 +142,32 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         int size = mDatas.size();
         if (0 <= index && index < size){
             if (num == 0){//等于0删除整条记录
-                mDatas.remove(index);
-                if (mCurrentItemIndex == index){//如果删除的是当前选择的item则重置当前index以及View
-                    if (index == size - 1){
-                        mCurrentItemIndex--;
-                    }else{
-                        mCurrentItemIndex =  mDatas.size() - 1;
+                if (verifyDeletePermissions()){
+                    mDatas.remove(index);
+                    if (mCurrentItemIndex == index){//如果删除的是当前选择的item则重置当前index以及View
+                        if (index == size - 1){
+                            mCurrentItemIndex--;
+                        }else{
+                            mCurrentItemIndex =  mDatas.size() - 1;
+                        }
+                        mCurrentItemView = null;
                     }
-                    mCurrentItemView = null;
                 }
             }else{
-                JSONObject jsonObject = mDatas.getJSONObject(index);
+                final JSONObject jsonObject = mDatas.getJSONObject(index);
                 double current_num = jsonObject.getDoubleValue("xnum"),
                         price = jsonObject.getDoubleValue("price");
                 if ((current_num = current_num - num) <= 0){
                     Logger.d("index:%d,mCurrentItemIndex:%d",index,mCurrentItemIndex);
-                    mDatas.remove(index);
-                    if (index == size - 1){
-                        mCurrentItemIndex--;
-                    }else{
-                        mCurrentItemIndex = mDatas.size() - 1;
+                    if (verifyDeletePermissions()){
+                        mDatas.remove(index);
+                        if (index == size - 1){
+                            mCurrentItemIndex--;
+                        }else{
+                            mCurrentItemIndex = mDatas.size() - 1;
+                        }
+                        mCurrentItemView = null;
                     }
-                    mCurrentItemView = null;
                 }else{
                     jsonObject.put("xnum",current_num);
                     jsonObject.put("sale_amt",Utils.formatDouble(current_num * price,2));
@@ -174,9 +178,9 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
         }
     }
     public void updateSaleGoodsDialog(final short type){//type 0 修改数量 1修改价格 2打折
-        JSONObject cur_json = getCurrentContent();
+        final JSONObject cur_json = getCurrentContent();
         if (cur_json != null){
-            ChangeNumOrPriceDialog dialog;
+            ChangeNumOrPriceDialog dialog = null;
             switch (type){
                 case 1:
                     dialog = new ChangeNumOrPriceDialog(mContext,"新价格",cur_json.getString("price"));
@@ -184,22 +188,58 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 case 2:
                     dialog = new ChangeNumOrPriceDialog(mContext,mContext.getString(R.string.discount_sz),String.format(Locale.CHINA,"%.0f",Utils.getNotKeyAsNumberDefault(cur_json,"discount",1.0)*100));
                     break;
-                    default:
+                    case 0:
                         dialog = new ChangeNumOrPriceDialog(mContext,"新数量",String.format(Locale.CHINA,"%.2f",Utils.getNotKeyAsNumberDefault(cur_json,"xnum",1.0)));
                         break;
             }
-            dialog.setYesOnclickListener(myDialog -> {
-                updateSaleGoodsInfo(myDialog.getContent(),type);
-                myDialog.dismiss();
-            }).setNoOnclickListener(Dialog::dismiss).show();
+            if (dialog != null)
+                dialog.setYesOnclickListener(myDialog -> {
+                    double content = myDialog.getContent();
+                    if (!verifyDiscountPermissions(content,type))return;
+
+                    updateSaleGoodsInfo(content,type);
+                    myDialog.dismiss();
+                }).setNoOnclickListener(Dialog::dismiss).show();
         }else{
             MyDialog.ToastMessage("请选择需要修改的商品!",mContext,null);
         }
     }
-    public void allDiscount(double value){//整单折 6
+    private boolean verifyDiscountPermissions(double content,int type){
+        if (2 == type || 1 == type){
+            if (type == 1){
+                if (Utils.equalDouble(content,0.0)){
+                    return verifyPresentPermissions();
+                }else {
+                    final JSONObject sale_goods = getCurrentContent();
+                    double price = Utils.getNotKeyAsNumberDefault(sale_goods,"price",0.0);
+                    if (Utils.equalDouble(price,0.0)){
+                        content = 0.0;
+                    }else
+                        content = content / price * 100;
+                }
+            }
+            return mContext.verifyDiscountPermissions(content / 100,null);
+        }else if (0 == type){
+            if (Utils.equalDouble(content,0.0))
+                return verifyDeletePermissions();
+        }
+
+        return true;
+    }
+
+    private boolean verifyPresentPermissions(){
+        return mContext.verifyPermissions("4",null);
+    }
+
+    private boolean verifyDeletePermissions(){
+        return mContext.verifyPermissions("1",null);
+    }
+
+    public boolean allDiscount(double value){//整单折 6
+        if (!mContext.verifyDiscountPermissions(value /100,null))return false;
+
         double  discount_amt = 0.0,original_amt = 0.0,new_price = 0.0,xnum = 0.0,discount,current_discount_amt = 0.0,old_sale_amt = 0.0,current_sale_amt = 0.0;
         int discount_type = DISCOUNT_TYPE.A_DISCOUNT;
-
         if (Utils.equalDouble(value / 100,1.0)){//discount 1.0 还原价格并清除折扣记录
             deleteDiscountRecord(discount_type);
         }else{
@@ -242,6 +282,8 @@ public class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdap
                 addDiscountRecords(discount_type,discount_details);
         }
         notifyDataSetChanged();
+
+        return true;
     }
     public void clearGoods(){
         if (mOrderType != 1)mOrderType = 1;

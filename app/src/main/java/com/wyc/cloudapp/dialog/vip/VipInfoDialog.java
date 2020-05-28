@@ -36,7 +36,7 @@ import com.wyc.cloudapp.utils.http.HttpRequest;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 
-public class VipInfoDialog extends DialogBaseOnMainActivityImp {
+public final class VipInfoDialog extends DialogBaseOnMainActivityImp {
     private EditText mSearchContent;
     private CustomProgressDialog mProgressDialog;
     private Myhandler mHandler;
@@ -93,18 +93,23 @@ public class VipInfoDialog extends DialogBaseOnMainActivityImp {
         if (mSearchBtn != null)mSearchBtn.callOnClick();
     }
 
+    private boolean verifyVipDepositPermissions(){
+        return mContext.verifyPermissions("23",null);
+    }
     private void initChargeBtn(){
         final Button chargeBtn = findViewById(R.id.vip_charge);
         if (null != chargeBtn)
             chargeBtn.setOnClickListener(view -> {
-                if (mVip != null){
-                    VipChargeDialogImp vipChargeDialogImp = new VipChargeDialogImp(mContext,mVip,mPrintStatus);
-                    vipChargeDialogImp.setYesOnclickListener(dialog -> {
-                        showVipInfo(dialog.getContent());
-                        dialog.dismiss();
-                    }).show();
-                }else{
-                    serchVip(mSearchContent.getText().toString(),chargeBtn.getId());
+                if (verifyVipDepositPermissions()){
+                    if (mVip != null){
+                        final VipChargeDialogImp vipChargeDialogImp = new VipChargeDialogImp(mContext,mVip,mPrintStatus);
+                        vipChargeDialogImp.setYesOnclickListener(dialog -> {
+                            showVipInfo(dialog.getContent());
+                            dialog.dismiss();
+                        }).show();
+                    }else{
+                        serchVip(mSearchContent.getText().toString(),chargeBtn.getId());
+                    }
                 }
             });
     }
@@ -125,20 +130,26 @@ public class VipInfoDialog extends DialogBaseOnMainActivityImp {
             });//打印状态
         }
     }
+
+    private boolean verifyVipModifyOrAddPermissions(){
+        return mContext.verifyPermissions("22",null);
+    }
     private void initModifyBtn(){
         final Button modifiyBtn = findViewById(R.id.vip_modify);
         if (null != modifiyBtn)
             modifiyBtn.setOnClickListener(view -> {
-                if (mVip != null){
-                    AddVipInfoDialog dialog = new AddVipInfoDialog(mContext,mContext.getString(R.string.modify_vip_sz),mVip);
-                    dialog.setOnShowListener(dialog12 -> mSearchContent.clearFocus());
-                    dialog.setOnDismissListener(dialog1 -> mSearchContent.postDelayed(()->{mSearchContent.requestFocus();},300));
-                    dialog.setYesOnclickListener(dialog14 -> {
-                        showVipInfo(dialog14.getVipInfo());
-                        dialog14.dismiss();
-                    }).show();
-                }else{
-                    serchVip(mSearchContent.getText().toString(),modifiyBtn.getId());
+                if (verifyVipModifyOrAddPermissions()){
+                    if (mVip != null){
+                        final AddVipInfoDialog dialog = new AddVipInfoDialog(mContext,mContext.getString(R.string.modify_vip_sz),mVip);
+                        dialog.setOnShowListener(dialog12 -> mSearchContent.clearFocus());
+                        dialog.setOnDismissListener(dialog1 -> mSearchContent.postDelayed(()->{mSearchContent.requestFocus();},300));
+                        dialog.setYesOnclickListener(dialog14 -> {
+                            showVipInfo(dialog14.getVipInfo());
+                            dialog14.dismiss();
+                        }).show();
+                    }else{
+                        serchVip(mSearchContent.getText().toString(),modifiyBtn.getId());
+                    }
                 }
             });
     }
@@ -147,17 +158,19 @@ public class VipInfoDialog extends DialogBaseOnMainActivityImp {
         final Button add_btn = findViewById(R.id.vip_add);
         if (null != add_btn)
             add_btn.setOnClickListener(view -> {
-                AddVipInfoDialog dialog = new AddVipInfoDialog(mContext,mContext.getString(R.string.add_vip_sz),null);
-                dialog.setOnShowListener(dialog12 -> mSearchContent.clearFocus());
-                dialog.setOnDismissListener(dialog1 -> mSearchContent.postDelayed(()->{mSearchContent.requestFocus();},300));
-                dialog.setYesOnclickListener(dialog13 -> {
-                    JSONObject jsonObject = dialog13.getVipInfo();
-                    if (jsonObject != null){
-                        mSearchContent.setText(jsonObject.getString("mobile"));
-                        mSearchBtn.callOnClick();
-                    }
-                    dialog13.dismiss();
-                }).show();
+                if (verifyVipModifyOrAddPermissions()){
+                    final AddVipInfoDialog dialog = new AddVipInfoDialog(mContext,mContext.getString(R.string.add_vip_sz),null);
+                    dialog.setOnShowListener(dialog12 -> mSearchContent.clearFocus());
+                    dialog.setOnDismissListener(dialog1 -> mSearchContent.postDelayed(()->{mSearchContent.requestFocus();},300));
+                    dialog.setYesOnclickListener(dialog13 -> {
+                        JSONObject jsonObject = dialog13.getVipInfo();
+                        if (jsonObject != null){
+                            mSearchContent.setText(jsonObject.getString("mobile"));
+                            mSearchBtn.callOnClick();
+                        }
+                        dialog13.dismiss();
+                    }).show();
+                }
             });
     }
 

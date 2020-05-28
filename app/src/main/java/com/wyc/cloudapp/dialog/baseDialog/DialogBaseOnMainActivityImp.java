@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.dialog.baseDialog;
 
+import android.content.DialogInterface;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ public abstract class DialogBaseOnMainActivityImp extends AbstractDialog {
     public DialogBaseOnMainActivityImp(@NonNull MainActivity context, String title) {
         super(context, title);
         mContext = context;
+
         setOnKeyListener((v, keyCode, event) -> {
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_UP){
                 keyListenerCallBack();

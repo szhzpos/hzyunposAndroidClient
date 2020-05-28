@@ -301,13 +301,10 @@ public class LoginActivity extends AppCompatActivity {
             if (SQLiteHelper.getLocalParameter("connParam", param_json)) {
                 if (Utils.JsonIsNotEmpty(param_json)) {
                     try {
-                        store_info = JSON.parseObject(param_json.getString("storeInfo"));
-
                         mUrl = param_json.getString("server_url");
                         mAppId = param_json.getString("appId");
                         mAppScret = param_json.getString("appScret");
                         mOperId = mUser_id.getText().toString();
-                        mStoresId = store_info.getString("stores_id");
 
                         object.put("appid", mAppId);
                         object.put("cas_account", mOperId);
@@ -340,6 +337,11 @@ public class LoginActivity extends AppCompatActivity {
                                             myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "登录失败：" + err_info).sendToTarget();
                                         break;
                                     case "y":
+                                        Logger.d_json(info_json.toJSONString());
+
+                                        store_info = JSON.parseObject(info_json.getString("shop_info"));
+                                        mStoresId = store_info.getString("stores_id");
+
                                         cashier_json = JSON.parseObject(info_json.getString("cashier"));
 
                                         url = mUrl + "/api_v2/pos/set_ps";
@@ -362,6 +364,11 @@ public class LoginActivity extends AppCompatActivity {
                                                         break;
                                                     case "y":
                                                         final StringBuilder err = new StringBuilder();
+                                                        param_json.put("storeInfo",store_info);
+                                                        if (!SQLiteHelper.saveLocalParameter("connParam",param_json,"门店信息、服务器连接参数",err)){
+                                                            myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "保存门店信息错误：" + err).sendToTarget();
+                                                            return;
+                                                        }
                                                         if (SQLiteHelper.saveLocalParameter("scale_setting",info_json.getJSONObject("scale"),"条码秤参数信息",err)){
                                                             cashier_json.put("pos_num", (mPosNum = info_json.getString("pos_num")));
                                                             myHandler.obtainMessage(MessageID.LOGIN_OK_ID, cashier_json).sendToTarget();
@@ -394,16 +401,7 @@ public class LoginActivity extends AppCompatActivity {
             JSONObject param = new JSONObject();
             if(SQLiteHelper.getLocalParameter("connParam",param)){
                 if (Utils.JsonIsNotEmpty(param)){
-                    try {
-                            String url = param.getString("server_url");
-                            if (url.length() != 0){
-                                url = url.substring(url.lastIndexOf('/') + 1);
-                            }
-                            et_url.setText(url);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        MyDialog.ToastMessage("显示服务器地址：" + e.getMessage(),this,getWindow());
-                    }
+                    et_url.setText(param.getString("shop_id"));
                 }
             }else{
                 MyDialog.ToastMessage(param.getString("info"),this,getWindow());
@@ -499,8 +497,8 @@ public class LoginActivity extends AppCompatActivity {
                         public void onYesClick(MyDialog myDialog) {
                             myDialog.dismiss();
 
-                            final String user_id = activity.mUser_id.getText().toString(),password = activity.mPassword.getText().toString(),key = "hzyunpos";
-                            final String local_password = Utils.getMD5((user_id + password + key).getBytes());
+                            final String user_id = activity.mUser_id.getText().toString(),password = activity.mPassword.getText().toString();
+                            final String local_password = Utils.getUserIdAndPasswordCombinationOfMD5(user_id + password);
                             final StringBuilder err = new StringBuilder();
                             final String sz_count = SQLiteHelper.getString("SELECT count(cas_id) count FROM cashier_info where " +
                                     "cas_account = '"+ user_id +"' and stores_id = '" + activity.mStoresId +"' and cas_pwd = '"+ local_password +"'",err);

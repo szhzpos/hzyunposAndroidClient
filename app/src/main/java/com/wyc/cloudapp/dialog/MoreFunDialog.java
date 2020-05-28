@@ -15,7 +15,7 @@ import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.dialog.vip.VipDepositOrderDialog;
 import com.wyc.cloudapp.print.Printer;
 
-public class MoreFunDialog extends DialogBaseOnMainActivityImp {
+public final class MoreFunDialog extends DialogBaseOnMainActivityImp {
     public MoreFunDialog(@NonNull MainActivity context, final String title) {
         super(context,title);
     }
@@ -27,7 +27,7 @@ public class MoreFunDialog extends DialogBaseOnMainActivityImp {
         initSyncBtn();
         initSetupBtn();
         initOpenCashboxBtn();
-        initBarcodeScaleBtn();
+        initBarcodeScaleDownLoadBtn();
         initAllRefundBtn();
         initQueryRefundOrderBtn();
         initVipDepositOrderBtn();
@@ -45,25 +45,44 @@ public class MoreFunDialog extends DialogBaseOnMainActivityImp {
             this.dismiss();
         });
     }
-    private void initBarcodeScaleBtn(){
+
+    private boolean verifyBSdownloadPermissions(){
+        return mContext.verifyPermissions("15",null);
+    }
+    private void initBarcodeScaleDownLoadBtn(){
         final Button btn = findViewById(R.id.barcode_scale);
         btn.setOnClickListener(v -> {
-            BarCodeScaleDownDialog barCodeScaleDownDialog = new BarCodeScaleDownDialog(mContext);
-            barCodeScaleDownDialog.show();
-            this.dismiss();
+            if (verifyBSdownloadPermissions()){
+                final BarCodeScaleDownDialog barCodeScaleDownDialog = new BarCodeScaleDownDialog(mContext);
+                barCodeScaleDownDialog.show();
+                this.dismiss();
+            }
         });
+    }
+
+    private boolean verifySetupPermissions(){
+        return mContext.verifyPermissions("16",null);
     }
     private void initSetupBtn(){
         final Button btn = findViewById(R.id.setup_btn);
         btn.setOnClickListener(v -> {
-            ParameterSettingDialog parameterSettingDialog = new ParameterSettingDialog(mContext);
-            parameterSettingDialog.show(mContext.getSupportFragmentManager(),"");
-            this.dismiss();
+            if (verifySetupPermissions()){
+                final ParameterSettingDialog parameterSettingDialog = new ParameterSettingDialog(mContext);
+                parameterSettingDialog.show(mContext.getSupportFragmentManager(),"");
+                this.dismiss();
+            }
         });
+    }
+
+    private boolean verifyOpenCashboxPermissions(){
+        return mContext.verifyPermissions("5",null);
     }
     private void initOpenCashboxBtn(){
         final Button btn = findViewById(R.id.o_cashbox);
-        btn.setOnClickListener(v -> Printer.print(mContext, Printer.commandToStr(Printer.OPEN_CASHBOX)));
+        btn.setOnClickListener(v -> {
+            if (verifyOpenCashboxPermissions())
+                Printer.print(mContext, Printer.commandToStr(Printer.OPEN_CASHBOX));
+        });
     }
     private void initSyncBtn(){
         final Button sync_btn = findViewById(R.id.sync_btn);
@@ -79,17 +98,23 @@ public class MoreFunDialog extends DialogBaseOnMainActivityImp {
     private void initQueryRefundOrderBtn(){
         final Button btn = findViewById(R.id.query_local_refund_btn);
         btn.setOnClickListener(v -> {
-            QueryRefundOrderDialog queryRefundOrderDialog = new QueryRefundOrderDialog(mContext);
+            final QueryRefundOrderDialog queryRefundOrderDialog = new QueryRefundOrderDialog(mContext);
             queryRefundOrderDialog.show();
             this.dismiss();
         });
     }
+
+    private boolean verifyVipDepositOrderPermissions(){
+        return mContext.verifyPermissions("24",null);
+    }
     private void initVipDepositOrderBtn(){
         final Button btn = findViewById(R.id.vip_deposit_order);
         btn.setOnClickListener(v -> {
-            VipDepositOrderDialog vipDepositOrderDialog = new VipDepositOrderDialog(mContext);
-            vipDepositOrderDialog.show();
-            this.dismiss();
+            if (verifyVipDepositOrderPermissions()){
+                final VipDepositOrderDialog vipDepositOrderDialog = new VipDepositOrderDialog(mContext);
+                vipDepositOrderDialog.show();
+                this.dismiss();
+            }
         });
     }
 }

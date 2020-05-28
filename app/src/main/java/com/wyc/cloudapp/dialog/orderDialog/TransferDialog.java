@@ -21,6 +21,7 @@ import com.wyc.cloudapp.R;
 
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.TransferDetailsAdapter;
+import com.wyc.cloudapp.callback.PasswordEditTextReplacement;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -74,7 +75,20 @@ public class TransferDialog extends DialogBaseOnMainActivityImp {
                     deposit_sum_order_num_tv = findViewById(R.id.deposit_sum_order_num),rdeposit_sum_amt_tv = findViewById(R.id.rdeposit_sum_amt),
                     transfer_time = findViewById(R.id.transfer_time),payable_amt = findViewById(R.id.payable_amt);
 
+            boolean visible = mTransferDetailsAdapter.isTransferAmtNotVisible();
+            if (visible){
+                final PasswordEditTextReplacement editTextReplacement = new PasswordEditTextReplacement();
+                retail_sum_amt_tv.setTransformationMethod(editTextReplacement);
+
+                refund_sum_amt_tv.setTransformationMethod(editTextReplacement);
+
+                rdeposit_sum_amt_tv.setTransformationMethod(editTextReplacement);
+
+                payable_amt.setTransformationMethod(editTextReplacement);
+            }
+
             retail_sum_order_num_tv.setText(object.getString("order_num"));
+
             retail_sum_amt_tv.setText(String.format(Locale.CHINA,"%.2f",object.getDoubleValue("order_money")));
 
             refund_sum_order_num_tv.setText(object.getString("refund_num"));
@@ -101,7 +115,7 @@ public class TransferDialog extends DialogBaseOnMainActivityImp {
                     dialog.setYesOnclickListener(myDialog -> {
                         final StringBuilder err  = new StringBuilder();
                         if (mTransferDetailsAdapter.saveTransferDetailInfo(dialog.getContent(),err)){
-                            Printer.print(mContext,get_print_content(mContext,mTransferDetailsAdapter.getTransferSumInfo().getString("ti_code"),true));
+                            Printer.print(mContext,get_print_content(mContext,mTransferDetailsAdapter.getTransferSumInfo().getString("ti_code"),mTransferDetailsAdapter.isTransferAmtNotVisible(),true));
                             mContext.runOnUiThread(()-> {
                                 if (mFinishListener != null)mFinishListener.onFinish();
                             });
@@ -151,7 +165,7 @@ public class TransferDialog extends DialogBaseOnMainActivityImp {
         }
     }
 
-    private static String c_format_58(final Context context, final JSONObject format_info, final JSONObject order_info, boolean is_open_cash_box){
+    private static String c_format_58(final Context context, final JSONObject format_info, final JSONObject order_info,boolean no_visible ,boolean is_open_cash_box){
         Logger.d_json(order_info.toJSONString());
 
         final StringBuilder info = new StringBuilder();
@@ -167,6 +181,7 @@ public class TransferDialog extends DialogBaseOnMainActivityImp {
 
         if (is_open_cash_box)//开钱箱
             info.append(Printer.commandToStr(Printer.OPEN_CASHBOX));
+
 
         while (print_count-- > 0) {//打印份数
             info.append(Printer.commandToStr(Printer.DOUBLE_HEIGHT)).append(Printer.commandToStr(Printer.ALIGN_CENTER))
@@ -188,7 +203,7 @@ public class TransferDialog extends DialogBaseOnMainActivityImp {
                 info.append(context.getString(R.string.t_f_detail_h_sz).replace("-"," ")).append(new_line).append(line).append(new_line);
                 for (int i = 0,size = retail_moneys.size();i < size;i++){
                     tmp = retail_moneys.getJSONObject(i);
-                    info.append(Printer.printThreeData(3,Utils.getNullStringAsEmpty(tmp,"name"),String.format(Locale.CHINA,"%.2f",tmp.getDoubleValue("pay_money")),
+                    info.append(Printer.printThreeData(3,Utils.getNullStringAsEmpty(tmp,"name"),no_visible ? asterisk : String.format(Locale.CHINA,"%.2f",tmp.getDoubleValue("pay_money")),
                             String.valueOf(tmp.getIntValue("order_num")))).append(new_line);
                 }
                 info.append(line).append(new_line);
@@ -200,7 +215,7 @@ public class TransferDialog extends DialogBaseOnMainActivityImp {
                 info.append(context.getString(R.string.t_f_detail_h_sz).replace("-"," ")).append(new_line).append(line).append(new_line);
                 for (int i = 0,size = refund_moneys.size();i < size;i++){
                     tmp = refund_moneys.getJSONObject(i);
-                    info.append(Printer.printThreeData(3,Utils.getNullStringAsEmpty(tmp,"name"),String.format(Locale.CHINA,"%.2f",tmp.getDoubleValue("pay_money")),
+                    info.append(Printer.printThreeData(3,Utils.getNullStringAsEmpty(tmp,"name"),no_visible ? asterisk : String.format(Locale.CHINA,"%.2f",tmp.getDoubleValue("pay_money")),
                             String.valueOf(tmp.getIntValue("order_num")))).append(new_line);
                 }
                 info.append(line).append(new_line);
@@ -212,7 +227,7 @@ public class TransferDialog extends DialogBaseOnMainActivityImp {
                 info.append(context.getString(R.string.t_f_detail_h_sz).replace("-"," ")).append(new_line).append(line).append(new_line);
                 for (int i = 0,size = recharge_moneys.size();i < size;i++){
                     tmp = recharge_moneys.getJSONObject(i);
-                    info.append(Printer.printThreeData(3,Utils.getNullStringAsEmpty(tmp,"name"),String.format(Locale.CHINA,"%.2f",tmp.getDoubleValue("pay_money")),
+                    info.append(Printer.printThreeData(3,Utils.getNullStringAsEmpty(tmp,"name"),no_visible ? asterisk : String.format(Locale.CHINA,"%.2f",tmp.getDoubleValue("pay_money")),
                             String.valueOf(tmp.getIntValue("order_num")))).append(new_line);
                 }
                 info.append(line).append(new_line);
@@ -223,7 +238,7 @@ public class TransferDialog extends DialogBaseOnMainActivityImp {
                 info.append(context.getString(R.string.t_f_detail_h_sz).replace("-"," ")).append(new_line).append(line).append(new_line);
                 for (int i = 0,size = oncecard_moneys.size();i < size;i++){
                     tmp = oncecard_moneys.getJSONObject(i);
-                    info.append(Printer.printThreeData(3,Utils.getNullStringAsEmpty(tmp,"name"),String.format(Locale.CHINA,"%.2f",tmp.getDoubleValue("pay_money")),
+                    info.append(Printer.printThreeData(3,Utils.getNullStringAsEmpty(tmp,"name"),no_visible ? asterisk : String.format(Locale.CHINA,"%.2f",tmp.getDoubleValue("pay_money")),
                             String.valueOf(tmp.getIntValue("order_num")))).append(new_line);
                 }
                 info.append(line).append(new_line);
@@ -233,18 +248,18 @@ public class TransferDialog extends DialogBaseOnMainActivityImp {
                     recharge_money = order_info.getDoubleValue("recharge_money"),cards_money = order_info.getDoubleValue("cards_money");
 
             if (!Utils.equalDouble(order_money,0.0))
-                info.append(context.getString(R.string.t_f_retail_s_sz)).append(String.format(Locale.CHINA,"%.2f",order_money)).append(new_line);
+                info.append(context.getString(R.string.t_f_retail_s_sz)).append(no_visible ? asterisk : String.format(Locale.CHINA,"%.2f",order_money)).append(new_line);
             if (!Utils.equalDouble(recharge_money,0.0))
-                info.append(context.getString(R.string.t_f_deposit_s_sz)).append(String.format(Locale.CHINA,"%.2f",recharge_money)).append(new_line);
+                info.append(context.getString(R.string.t_f_deposit_s_sz)).append(no_visible ? asterisk : String.format(Locale.CHINA,"%.2f",recharge_money)).append(new_line);
             if (!Utils.equalDouble(cards_money,0.0))
-                info.append(context.getString(R.string.t_f_cards_s_sz)).append(String.format(Locale.CHINA,"%.2f",cards_money)).append(new_line);
+                info.append(context.getString(R.string.t_f_cards_s_sz)).append(no_visible ? asterisk : String.format(Locale.CHINA,"%.2f",cards_money)).append(new_line);
             if (!Utils.equalDouble(refund_money,0.0))
-                info.append(context.getString(R.string.t_f_refund_s_sz)).append(String.format(Locale.CHINA,"%.2f",refund_money)).append(new_line);
+                info.append(context.getString(R.string.t_f_refund_s_sz)).append(no_visible ? asterisk : String.format(Locale.CHINA,"%.2f",refund_money)).append(new_line);
 
-            info.append(context.getString(R.string.t_f_s_sz)).append(String.format(Locale.CHINA,"%.2f",order_money - refund_money)).append(new_line);
+            info.append(context.getString(R.string.t_f_s_sz)).append(no_visible ? asterisk : String.format(Locale.CHINA,"%.2f",order_money - refund_money)).append(new_line);
             info.append(line).append(new_line);
 
-            info.append(context.getString(R.string.t_f_cash_sz)).append("：").append(order_info.getDoubleValue("sj_money")).append(new_line);
+            info.append(context.getString(R.string.t_f_cash_sz)).append("：").append(no_visible ? asterisk : order_info.getDoubleValue("sj_money")).append(new_line);
             info.append(context.getString(R.string.t_f_cashbox_sz)).append(order_info.getDoubleValue("cashbox_money")).append(new_line);
 
             info.append(line).append(new_line_2).append(new_line).append(new_line_d);
@@ -266,15 +281,15 @@ public class TransferDialog extends DialogBaseOnMainActivityImp {
 
         return info.toString();
     }
-    public static String get_print_content(final MainActivity context,final String ti_code,boolean is_open_cash_box){
+    public static String get_print_content(final MainActivity context,final String ti_code,boolean no_visible,boolean is_open_cash_box){
         final JSONObject print_format_info = new JSONObject(),order_info = new JSONObject();
         String content = "";
         if (SQLiteHelper.getLocalParameter("t_f_info",print_format_info)){
-            if (print_format_info.getIntValue("f") == R.id.checkout_format){
+            if (print_format_info.getIntValue("f") == R.id.transfer_format){
                 if (getPrintOrderInfo(ti_code,order_info)){
                     switch (print_format_info.getIntValue("f_z")){
                         case R.id.f_58:
-                            content = c_format_58(context,print_format_info,order_info,is_open_cash_box);
+                            content = c_format_58(context,print_format_info,order_info,no_visible,is_open_cash_box);
                             break;
                         case R.id.f_76:
                             break;

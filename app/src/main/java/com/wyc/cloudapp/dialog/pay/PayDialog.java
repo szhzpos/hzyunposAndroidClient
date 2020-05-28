@@ -45,7 +45,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class PayDialog extends DialogBaseOnMainActivityImp {
+public final class PayDialog extends DialogBaseOnMainActivityImp {
     private EditText mCashMoneyEt,mZlAmtEt,mRemarkEt;
     private onPayListener mPayListener;
     private PayMethodViewAdapter mPayMethodViewAdapter;
@@ -131,10 +131,11 @@ public class PayDialog extends DialogBaseOnMainActivityImp {
             all_discount_btn.setOnClickListener(view -> {
                 ChangeNumOrPriceDialog dialog = new ChangeNumOrPriceDialog(mContext, mContext.getString(R.string.discount_sz),String.format(Locale.CHINA,"%d",100));
                 dialog.setYesOnclickListener(myDialog -> {
-                    deleteMolDiscountRecord();
-                    mContext.allDiscount(myDialog.getContent(),"");
-                    refreshPayContent();
-                    myDialog.dismiss();
+                    if (mContext.allDiscount(myDialog.getContent())){
+                        deleteMolDiscountRecord();
+                        refreshPayContent();
+                        myDialog.dismiss();
+                    }
                 }).show();
             });
     }
@@ -171,12 +172,13 @@ public class PayDialog extends DialogBaseOnMainActivityImp {
             mo_l_btn.setOnClickListener(v -> {//手动抹零
                 ChangeNumOrPriceDialog changeNumOrPriceDialog = new ChangeNumOrPriceDialog(mContext, mContext.getString(R.string.mo_l_sz),String.format(Locale.CHINA,"%.2f",mActual_amt - ((int)mActual_amt)));
                 changeNumOrPriceDialog.setYesOnclickListener(myDialog -> {
-                    mMolAmt = myDialog.getContent();
-                    if (!Utils.equalDouble(mMolAmt,0.0)){
-                        mContext.manualMol(mMolAmt,null);
-                        calculatePayContent();
-                        setDiscountDescription();
-                        refreshContent();
+                    double mol_amt = mMolAmt = myDialog.getContent();
+                    if (!Utils.equalDouble(mol_amt,0.0)){
+                        if (mContext.verifyDiscountPermissions(mol_amt / mActual_amt,null)){
+                            mContext.manualMol(mol_amt);
+                            calculatePayContent();
+                            refreshContent();
+                        }
                     }
                     myDialog.dismiss();
                 }).show();
@@ -402,14 +404,13 @@ public class PayDialog extends DialogBaseOnMainActivityImp {
     private void antoMol(){//自动抹零
         setMolAmt();
         if (!Utils.equalDouble(mMolAmt,0.0))
-            mContext.autoMol(mMolAmt,null);
+            mContext.autoMol(mMolAmt);
      }
     private void deleteMolDiscountRecord(){
         if (!Utils.equalDouble(mMolAmt,0.0)){
             mMolAmt = 0.0;
             mContext.deleteMolDiscountRecord();
             calculatePayContent();
-            setDiscountDescription();
             refreshContent();
         }
     }
@@ -453,12 +454,8 @@ public class PayDialog extends DialogBaseOnMainActivityImp {
         //mMolAmt = 0.0;
         mDiscountDesContent = "";
     }
-
-    private void setDiscountDescription(){
-        mDiscountDesContent = mContext.discountRecordsToString();
-    }
-
     private void showDiscountDescription(){
+        mDiscountDesContent = mContext.discountRecordsToString();
         if (mDiscountDesContent.length() != 0){
             if (!mDiscountDescriptionTv.isShown()){
                 mDiscountDescriptionTv.setVisibility(View.VISIBLE);
@@ -1152,7 +1149,6 @@ public class PayDialog extends DialogBaseOnMainActivityImp {
         if (!datas.isEmpty()){
             antoMol();
             calculatePayContent();
-            setDiscountDescription();
             return true;
         }
         return false;

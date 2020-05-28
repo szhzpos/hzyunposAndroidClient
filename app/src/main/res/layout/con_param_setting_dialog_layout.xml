@@ -19,23 +19,33 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/textView7"
             android:layout_width="95dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/server_url"
+            android:gravity="end"
+            android:text="@string/shop_id_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/fun_button_font_size_16" />
 
         <EditText
-            android:id="@+id/server_url"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/plain_text_height_40"
+            android:id="@+id/shop_id_et"
+            android:layout_width="@dimen/width_128"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/margin_1"
             android:autofillHints=""
-            android:background="@drawable/round_shape"
+            android:background="@drawable/border_sub_gray"
             android:ems="10"
             android:inputType="textUri|textPersonName"
+            android:padding="@dimen/margin_5"
             android:textColor="@color/text_color" />
+
+        <TextView
+            android:id="@+id/server_url"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@string/server_url_sz"
+            android:textSize="@dimen/font_size_18" />
 
     </LinearLayout>
 
@@ -51,23 +61,25 @@
         app:layout_constraintTop_toBottomOf="@+id/ip_f">
 
         <TextView
-            android:id="@+id/textView13"
             android:layout_width="95dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:text="@string/appId"
             android:textAlignment="viewEnd"
             android:textColor="@color/text_color"
             android:textSize="@dimen/fun_button_font_size_16" />
 
-        <EditText
+        <TextView
             android:id="@+id/appId"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:autofillHints=""
             android:background="@drawable/round_shape"
             android:ems="10"
+            android:gravity="center_vertical"
             android:inputType="textPersonName"
-            android:textColor="@color/text_color" />
+            android:text="@string/app_id_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_18" />
     </LinearLayout>
 
     <LinearLayout
@@ -82,22 +94,23 @@
         app:layout_constraintTop_toBottomOf="@id/second">
 
         <TextView
-            android:id="@+id/textView15"
             android:layout_width="95dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:text="@string/appSecret"
             android:textColor="@color/text_color"
             android:textSize="@dimen/fun_button_font_size_16" />
 
-        <EditText
+        <TextView
             android:id="@+id/appSecret"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:autofillHints=""
             android:background="@drawable/round_shape"
             android:ems="10"
-            android:inputType="textPersonName"
-            android:textColor="@color/text_color" />
+            android:gravity="center_vertical"
+            android:text="@string/appSecret_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_18" />
     </LinearLayout>
 
     <LinearLayout
@@ -112,7 +125,6 @@
         app:layout_constraintTop_toBottomOf="@id/ip_th">
 
         <TextView
-            android:id="@+id/textView9"
             android:layout_width="95dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -121,14 +133,14 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/fun_button_font_size_16" />
 
-        <EditText
+        <TextView
             android:id="@+id/sec_store_name"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/round_shape"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:textColor="@color/text_color" />
+            android:gravity="center_vertical"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_18" />
     </LinearLayout>
 
     <Button

@@ -43,6 +43,7 @@ import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
 import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.HangBillDialog;
+import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.dialog.MoreFunDialog;
 import com.wyc.cloudapp.dialog.VerifyPermissionDialog;
 import com.wyc.cloudapp.dialog.orderDialog.QuerySaleOrderDialog;
@@ -184,6 +185,12 @@ public class MainActivity extends AppCompatActivity {
         mSyncManagement.start_sync(false);
     }
 
+    private boolean verifyNumBtnPermissions(){
+        return verifyPermissions("25",null);
+    }
+    private boolean verifyQueryBtnBtnPermissions(){
+        return verifyPermissions("26",null);
+    }
     private void initFunctionBtn(){
         final Button minus_num_btn = findViewById(R.id.minus_num),add_num_btn = findViewById(R.id.add_num),num_btn = findViewById(R.id.num),
                 discount_btn = findViewById(R.id.discount),change_price_btn = findViewById(R.id.change_price),check_out_btn = findViewById(R.id.check_out),
@@ -191,9 +198,9 @@ public class MainActivity extends AppCompatActivity {
 
         if (minus_num_btn != null)minus_num_btn.setOnClickListener(v -> mSaleGoodsViewAdapter.deleteSaleGoods(mSaleGoodsViewAdapter.getCurrentItemIndex(),1));//数量减
         if (add_num_btn != null)add_num_btn.setOnClickListener(v -> mSaleGoodsViewAdapter.addSaleGoods(mSaleGoodsViewAdapter.getCurrentContent(),mVipInfo));//数量加
-        if (num_btn != null)num_btn.setOnClickListener(view -> mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 0));//数量
-        if (discount_btn != null)discount_btn.setOnClickListener(v-> {setDisCashierId(mCashierInfo.getString("cas_id"));mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 2);});//打折
-        if (change_price_btn != null)change_price_btn.setOnClickListener(v-> { setDisCashierId(mCashierInfo.getString("cas_id"));mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 1);});//改价
+        if (num_btn != null)num_btn.setOnClickListener(view -> {if (verifyNumBtnPermissions())mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 0);});//数量
+        if (discount_btn != null)discount_btn.setOnClickListener(v-> {mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 2);});//打折
+        if (change_price_btn != null)change_price_btn.setOnClickListener(v-> {mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 1);});//改价
         if (check_out_btn != null)check_out_btn.setOnClickListener((View v)->{Utils.disableView(v,500);showPayDialog();});//结账
         if (vip_btn != null)vip_btn.setOnClickListener(v -> {
             final VipInfoDialog vipInfoDialog = new VipInfoDialog(this);
@@ -204,8 +211,10 @@ public class MainActivity extends AppCompatActivity {
 
         if (q_deal_linerLayout != null)
             q_deal_linerLayout.setOnClickListener(v -> {
-                QuerySaleOrderDialog querySaleOrderDialog = new QuerySaleOrderDialog(this);
-                querySaleOrderDialog.show();;
+                if (verifyQueryBtnBtnPermissions()){
+                    final QuerySaleOrderDialog querySaleOrderDialog = new QuerySaleOrderDialog(this);
+                    querySaleOrderDialog.show();
+                }
             });//查交易
 
         if (other_linearLayout != null)
@@ -248,15 +257,22 @@ public class MainActivity extends AppCompatActivity {
                         myDialog.dismiss();
                     },Dialog::dismiss);
                 }else{
-                    if (!mSaleGoodsViewAdapter.getDatas().isEmpty())
-                        MyDialog.displayAskMessage(mDialog,"是否清除销售商品？",this,myDialog -> {
-                            resetOrderInfo();
-                            myDialog.dismiss();
-                        },Dialog::dismiss);
+                    if (verifyClearPermissions()){
+                        if (!mSaleGoodsViewAdapter.getDatas().isEmpty())
+                            MyDialog.displayAskMessage(mDialog,"是否清除销售商品？",this,myDialog -> {
+                                resetOrderInfo();
+                                myDialog.dismiss();
+                            },Dialog::dismiss);
+                    }
                 }
             });
         }
     }
+
+    private boolean verifyClearPermissions(){
+        return verifyPermissions("2",null);
+    }
+
     private void initCloseMainWindow(){
         mCloseBtn = findViewById(R.id.close);
         mCloseBtn.setOnClickListener((View V)->{
@@ -625,6 +641,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess(PayDialog myDialog) {
                         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
                         mSyncManagement.sync_retail_order();
+                        Logger.d("当前mZkCashierId:%s",mZkCashierId);
                         resetOrderInfo();
                         myDialog.dismiss();
                         MyDialog.SnackbarMessage(activity.getWindow(),"结账成功！", mOrderCodeTv);
@@ -689,13 +706,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    private void setDisCashierId(final String id){
+/*    private void setDisCashierId(final String id){
         if (null == id || "".equals(id)){
             mZkCashierId = mCashierInfo.getString("cas_id");
         }else
             mZkCashierId = id;
 
-    }
+    }*/
     private void resetOrderCode(){
         mOrderCodeTv.setText(mSaleGoodsViewAdapter.generateSaleOrderCode(mCashierInfo.getString("pos_num"),1));
     }
@@ -707,9 +724,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void allDiscount(double v,final String zk_cashier_id){
-        setDisCashierId(zk_cashier_id);
-        mSaleGoodsViewAdapter.allDiscount(v);
+    public boolean allDiscount(double v){
+       return mSaleGoodsViewAdapter.allDiscount(v);
     }
     public void deleteMolDiscountRecord(){
         mSaleGoodsViewAdapter.deleteMolDiscountRecord();
@@ -720,12 +736,10 @@ public class MainActivity extends AppCompatActivity {
     public String discountRecordsToString(){
         return mSaleGoodsViewAdapter.discountRecordsToString();
     }
-    public void autoMol(double mol_amt,final String zk_cashier_id){
-        setDisCashierId(zk_cashier_id);
+    public void autoMol(double mol_amt){
         mSaleGoodsViewAdapter.autoMol(mol_amt);
     }
-    public void manualMol(double mol_amt,final String zk_cashier_id){
-        setDisCashierId(zk_cashier_id);
+    public void manualMol(double mol_amt){
         mSaleGoodsViewAdapter.manualMol(mol_amt);
     }
     public void sync(boolean b){
@@ -791,47 +805,103 @@ public class MainActivity extends AppCompatActivity {
     public boolean isConnection(){
         return mNetworkStatus.get();
     }
-    public boolean verifyPermissions(final String per_id,final String requested_cas_id){
-        if (mCashierInfo != null && mStoreInfo != null){
-            String cashier_id = Utils.getNullStringAsEmpty(mCashierInfo,"cas_code"),stores_id = mStoreInfo.getString("stores_id");
+
+    public boolean verifyPermissions(final String per_id,final String requested_cas_code){
+        return verifyPermissions(per_id,requested_cas_code,true);
+    }
+    public boolean verifyPermissions(final String per_id,final String requested_cas_code,boolean isShow){
+        boolean code = false;
+         if (mCashierInfo != null && mStoreInfo != null){
+            String cashier_id = Utils.getNullStringAsEmpty(mCashierInfo,"cas_code"),cas_pwd = Utils.getNullStringAsEmpty(mCashierInfo,"cas_pwd"),stores_id = mStoreInfo.getString("stores_id");
             final StringBuilder err = new StringBuilder();
-            if (null != requested_cas_id){
-                Logger.i("操作员:%s,向工号:%s请求权限:%s",cashier_id,requested_cas_id,per_id);
-                cashier_id = requested_cas_id;
+            if (null != requested_cas_code){
+                cas_pwd = Utils.getUserIdAndPasswordCombinationOfMD5(requested_cas_code);
+                Logger.i("操作员:%s,向:%s请求权限:%s",cashier_id,cas_pwd,per_id);
             }
-            final String authority = SQLiteHelper.getString("SELECT authority FROM cashier_info where cas_code = '" + cashier_id +"' and stores_id = " + stores_id,err);
+            final String authority = SQLiteHelper.getString("SELECT authority FROM cashier_info where cas_pwd = '" + cas_pwd +"' and stores_id = " + stores_id,err);
             if (null != authority){
                 try {
-                    final JSONArray permissions = JSON.parseArray(authority);
+                    JSONArray permissions;
+                    if (authority.startsWith("{")){
+                        final JSONObject jsonObject = JSON.parseObject(authority);
+                        permissions = new JSONArray();
+                        for (String key : jsonObject.keySet()){
+                            permissions.add(jsonObject.get(key));
+                        }
+                    }else {
+                        permissions = JSON.parseArray(authority);
+                    }
                     if (permissions != null){
                         for (int i = 0,size = permissions.size();i < size;i ++){
                             final JSONObject obj = permissions.getJSONObject(i);
                             if (obj != null){
                                 if (Utils.getNullStringAsEmpty(obj,"authority").equals(per_id)){
-                                    if (1 != obj.getIntValue("is_have")){
-                                        final VerifyPermissionDialog verifyPermissionDialog = new VerifyPermissionDialog(this);
-                                        verifyPermissionDialog.setHintPerName(Utils.getNullStringAsEmpty(obj,"authority_name"));
-                                        if (verifyPermissionDialog.exec() == 1){
-                                            return verifyPermissions(per_id,verifyPermissionDialog.getContent());
+                                    code = (1 == obj.getIntValue("is_have"));
+                                    if (isShow){
+                                        if (!code){
+                                            final VerifyPermissionDialog verifyPermissionDialog = new VerifyPermissionDialog(this);
+                                            verifyPermissionDialog.setHintPerName(Utils.getNullStringAsEmpty(obj,"authority_name"));
+                                            verifyPermissionDialog.setFinishListener(dialog -> {
+                                                if (!verifyPermissions(per_id,dialog.getContent(),isShow)){
+                                                    dialog.setExitCode(0);
+                                                }
+                                                dialog.dismiss();
+                                            });
+                                            code = verifyPermissionDialog.exec() == 1;
+                                        }else {
+                                            mZkCashierId = Utils.getNullStringAsEmpty(obj,"cas_id");
                                         }
-                                        return false;
                                     }
-                                    return true;
                                 }
                             }
                         }
                     }else {
-                        MyDialog.displayErrorMessage(mDialog,"操作员不存在或未设置权限信息！",this);
+                        MyDialog.displayErrorMessage(mDialog,"未找到授权工号的权限记录,请确定输入是否正确!",this);
                     }
                 }catch (JSONException e){
                     e.printStackTrace();
-                    MyDialog.displayErrorMessage(mDialog,"权限查询错误：" + e.getMessage(),this);
+                    MyDialog.displayErrorMessage(mDialog,"权限数据解析错误：" + e.getMessage(),this);
                 }
             }else {
                 MyDialog.displayErrorMessage(mDialog,"权限查询错误：" + err,this);
             }
         }
-        return false;
+        return code;
+    }
+    public boolean verifyDiscountPermissions(double discount,final String requested_cas_code){
+        boolean code = false;
+        if (mCashierInfo != null && mStoreInfo != null){
+            String cashier_id = Utils.getNullStringAsEmpty(mCashierInfo,"cas_code"),cas_pwd = Utils.getNullStringAsEmpty(mCashierInfo,"cas_pwd"),stores_id = mStoreInfo.getString("stores_id");
+            if (null != requested_cas_code){
+                cas_pwd = Utils.getUserIdAndPasswordCombinationOfMD5(requested_cas_code);
+                Logger.i("操作员:%s,向:%s请求折扣为%f的权限",cashier_id,cas_pwd,discount);
+            }
+            final JSONObject discount_ojb = new JSONObject();
+            if (SQLiteHelper.execSql(discount_ojb,"SELECT ifnull(min_discount,0.0) min_discount,cas_id FROM cashier_info where cas_pwd = '" + cas_pwd +"' and stores_id = " + stores_id)){
+                if (!discount_ojb.isEmpty()){
+                    double local_dis = discount_ojb.getDoubleValue("min_discount") / 10;
+                    if (local_dis > discount){
+                        final VerifyPermissionDialog verifyPermissionDialog = new VerifyPermissionDialog(this);
+                        verifyPermissionDialog.setHintPerName(String.format(Locale.CHINA,"%.1f%s",discount * 10,"折"));
+                        verifyPermissionDialog.setFinishListener(dialog -> {
+                            if (!verifyDiscountPermissions(discount,dialog.getContent())){
+                                dialog.setExitCode(0);
+                            }
+                            dialog.dismiss();
+                        });
+                        code = verifyPermissionDialog.exec() == 1;
+                    }else {
+                        mZkCashierId = discount_ojb.getString("cas_id");
+                        code = true;
+                    }
+                }else{
+                    MyDialog.displayErrorMessage(mDialog,"未找到授权工号的权限记录,请确定输入是否正确!",this);
+                }
+            } else {
+                MyDialog.displayErrorMessage(mDialog,"权限查询错误：" + discount_ojb.getString("info"),this);
+            }
+        }
+        return code;
     }
 
     private static class Myhandler extends Handler {

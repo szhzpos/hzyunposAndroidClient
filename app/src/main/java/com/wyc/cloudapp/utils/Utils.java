@@ -386,6 +386,9 @@ public final class Utils {
         }
         return default_V;
     }
+    public static String getUserIdAndPasswordCombinationOfMD5(final String content){
+        return Utils.getMD5((content + "hzyunpos").getBytes());
+    }
     public static void moveJsonArray(final JSONArray from,final JSONArray to){
         if (from != null && to != null){
             Object o;

@@ -1,7 +1,6 @@
 package com.wyc.cloudapp.dialog;
 
 import android.os.Bundle;
-import android.os.Looper;
 import android.text.Editable;
 import android.view.View;
 import android.widget.Button;
@@ -11,20 +10,19 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.data.SQLiteHelper;
+
+import com.wyc.cloudapp.callback.PasswordEditTextReplacement;
 import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
-public class VerifyPermissionDialog extends DialogBaseOnMainActivityImp {
-    private EditText mCasId;
+public final class VerifyPermissionDialog extends DialogBaseOnMainActivityImp {
+    private EditText mCasContent;
     private String mPerName;
+    private Button mOkBtn;
+    private OnFinishListener mFinishListener;
     public VerifyPermissionDialog(@NonNull MainActivity context) {
         super(context, context.getString(R.string.per_dialog_sz));
     }
@@ -45,16 +43,20 @@ public class VerifyPermissionDialog extends DialogBaseOnMainActivityImp {
 
     @Override
     public void closeWindow(){
-        Logger.i("操作员:%s,取消授权.",mContext.getCashierInfo().getString("cas_id"));
-        MyDialog.ToastMessage("用户取消授权！",mContext,mContext.getWindow());
+        Logger.i("操作员:%s,取消授权.",mContext.getCashierInfo().getString("cas_code"));
+        MyDialog.ToastMessage("您取消了授权！",mContext,mContext.getWindow());
         super.closeWindow();
+    }
+    @Override
+    public void keyListenerCallBack(){
+        if (mOkBtn != null)mOkBtn.callOnClick();
     }
 
     public void setHintPerName(final String info){
         mPerName = mContext.getString(R.string.per_hint_2_sz,info);
     }
     public String getContent(){
-        return mCasId.getText().toString();
+        return mCasContent.getText().toString();
     }
 
     private void initInfoTv(){
@@ -64,11 +66,12 @@ public class VerifyPermissionDialog extends DialogBaseOnMainActivityImp {
         }
     }
     private void initCasIdEt(){
-        final EditText et = findViewById(R.id.cas_id);
+        final EditText et = findViewById(R.id.cas_content);
         et.setSelectAllOnFocus(true);
+        et.setTransformationMethod(new PasswordEditTextReplacement());
         et.setOnFocusChangeListener((v, hasFocus) -> Utils.hideKeyBoard((EditText)v));
         et.postDelayed(et::requestFocus,300);
-        mCasId = et;
+        mCasContent = et;
     }
 
     private void initKeyboard(){
@@ -84,7 +87,7 @@ public class VerifyPermissionDialog extends DialogBaseOnMainActivityImp {
         @Override
         public void onClick(View view) {
             int v_id = view.getId();
-            final EditText et_view =  mCasId;
+            final EditText et_view = mCasContent;
             if (null != et_view){
                 final Editable editable = et_view.getText();
                 int index = et_view.getSelectionStart(),end = et_view.getSelectionEnd();
@@ -98,8 +101,9 @@ public class VerifyPermissionDialog extends DialogBaseOnMainActivityImp {
                         }
                         break;
                     case R.id.ok:
+                        mOkBtn = (Button)view;
                         setExitCode(1);
-                        dismiss();
+                        if (mFinishListener != null)mFinishListener.onFinish(VerifyPermissionDialog.this);
                         break;
                         default:
                             if (et_view.getSelectionStart() != et_view.getSelectionEnd()){
@@ -112,4 +116,12 @@ public class VerifyPermissionDialog extends DialogBaseOnMainActivityImp {
             }
         }
     };
+
+    public interface OnFinishListener{
+        void onFinish(VerifyPermissionDialog dialog);
+    }
+
+    public void setFinishListener(OnFinishListener listener){
+        mFinishListener = listener;
+    }
 }
