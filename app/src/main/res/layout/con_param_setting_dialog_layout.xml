@@ -134,7 +134,7 @@
             android:textSize="@dimen/fun_button_font_size_16" />
 
         <TextView
-            android:id="@+id/sec_store_name"
+            android:id="@+id/store_name"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/round_shape"

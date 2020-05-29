@@ -30,7 +30,7 @@
                 android:id="@+id/c_amt"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1.5"
+                android:layout_weight="1.55"
                 android:autofillHints=""
                 android:background="@drawable/edit_text_style"
                 android:focusable="auto"
@@ -54,7 +54,7 @@
                 android:paddingEnd="0dp"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_16"
-                android:visibility="gone" />
+                android:visibility="visible" />
 
         </LinearLayout>
 

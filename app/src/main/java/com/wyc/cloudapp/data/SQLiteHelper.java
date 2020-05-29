@@ -23,6 +23,13 @@ import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,6 +37,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static android.database.Cursor.FIELD_TYPE_FLOAT;
 import static android.database.Cursor.FIELD_TYPE_INTEGER;
@@ -73,10 +82,10 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
     public static boolean initDb(Context context){
         boolean code = true;
         if (mDb == null){
-            final SQLiteHelper sqLiteHelper = new SQLiteHelper(context);
             synchronized (SQLiteHelper.class){
                 if (mDb == null)
                     try {
+                        final SQLiteHelper sqLiteHelper = new SQLiteHelper(context);
                         mDb = sqLiteHelper.getWritableDatabase();
                     }catch (SQLiteCantOpenDatabaseException e){
                         MyDialog.displayErrorMessage(null,"打开数据库错误：" + e.getLocalizedMessage(),context,(MyDialog myDialog)->{
@@ -93,6 +102,61 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         }
         return code;
     }
+
+    public static boolean backupDB(final String new_name,final StringBuilder err) {
+        final File db = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/");
+        boolean code = false;
+        try {
+            zipFile(db,Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + new_name + ".zip");
+            deleteFile(db);
+            closeDB();
+            code = true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            if (err != null)err.append(e.getMessage());
+        }
+        return code;
+    }
+    private static void deleteFile(final File file) throws IOException {
+        if (file.isFile()){
+            if (!file.delete())throw new IOException(String.format(Locale.CHINA,"delete file fi:%s failed",file.getName()));
+        }else {
+            final File[] files = file.listFiles();
+            if (files != null){
+                for (File f : files){
+                    deleteFile(f);
+                }
+            }
+        }
+
+    }
+    private static void zipFile(File dbFile, final String backup_name) throws IOException {
+        try (ZipOutputStream out = new ZipOutputStream( new FileOutputStream(backup_name));) {
+            zip(dbFile.listFiles(),"",out);
+        }
+    }
+    private static void zip(File[] files, String baseFolder, ZipOutputStream zos)throws IOException {
+        if (files != null){
+            ZipEntry entry = null;
+            int count = 0;
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    zip(file.listFiles(), file.getName() + File.separator, zos);
+                    continue;
+                }
+                entry = new ZipEntry(baseFolder + file.getName());
+
+                zos.putNextEntry(entry);
+
+                try( FileInputStream fis = new FileInputStream(file);) {
+                    final byte[] buffer = new byte[1024];
+                    while ((count = fis.read(buffer, 0, buffer.length)) != -1)
+                        zos.write(buffer, 0, count);
+                }
+            }
+        }
+    }
+
 
     private static boolean checkColumnExists(String tableName, String columnName) throws SQLiteException {
         boolean result = false ;

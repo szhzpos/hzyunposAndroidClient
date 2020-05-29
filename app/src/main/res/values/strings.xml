@@ -285,4 +285,7 @@
     <string name="server_url_sz">.hzyunpos.com</string>
     <string name="app_id_sz">sy</string>
     <string name="appSecret_sz">1234</string>
+    <string name="l_p_f_err_hint_sz">加载打印格式错误:%1$s</string>
+    <string name="l_p_c_err_hint_sz">加载打印内容错误:%1$s</string>
+    <string name="f_not_sz">未设置打印参数!</string>
 </resources>

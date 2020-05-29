@@ -443,13 +443,15 @@ public class VipChargeDialogImp extends AbstractPayDialog {
                         }
                     }catch (JSONException e){
                         e.printStackTrace();
-                        context.runOnUiThread(()->MyDialog.ToastMessage("加载打印内容错误：" + e.getLocalizedMessage(), context,null));
+                        context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_c_err_hint_sz,e.getLocalizedMessage()), context,context.getWindow()));
                     }
                 }else
-                    context.runOnUiThread(()->MyDialog.ToastMessage("加载打印内容错误：" + xnote.getString("info"), context,null));
+                    context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_c_err_hint_sz,xnote.getString("info")), context,context.getWindow()));
+            }else {
+                context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.f_not_sz), context,context.getWindow()));
             }
         }else
-            context.runOnUiThread(()->MyDialog.ToastMessage("加载打印格式错误：" + print_format_info.getString("info"), context,null));
+            context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_f_err_hint_sz,print_format_info.getString("info")), context,context.getWindow()));
 
         return content;
     }

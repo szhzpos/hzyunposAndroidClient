@@ -43,7 +43,6 @@ import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
 import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.HangBillDialog;
-import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.dialog.MoreFunDialog;
 import com.wyc.cloudapp.dialog.VerifyPermissionDialog;
 import com.wyc.cloudapp.dialog.orderDialog.QuerySaleOrderDialog;
@@ -57,7 +56,6 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
-import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
@@ -344,7 +342,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (SQLiteHelper.getLocalParameter("cashierInfo",cas_info)){
             final TextView cashier_name = findViewById(R.id.cashier_name),
-                    store_name = findViewById(R.id.sec_store_name),
+                    store_name = findViewById(R.id.store_name),
                     pos_num = findViewById(R.id.pos_num);
 
             cashier_name.setText(cas_info.getString("cas_name"));
@@ -600,7 +598,7 @@ public class MainActivity extends AppCompatActivity {
 
         });
     }
-    private void initPrintStatus(){//打印状态
+    private void initPrintStatus(){//打印开关
         final ImageView imageView = findViewById(R.id.printer_status);
         imageView.setOnClickListener(v -> {
             final Bitmap printer = BitmapFactory.decodeResource(getResources(),R.drawable.printer);
@@ -613,8 +611,34 @@ public class MainActivity extends AppCompatActivity {
                 imageView.setImageBitmap(printer);
                 MyDialog.ToastMessage(imageView,"打印功能已开启！",this,getWindow());
             }
+            saveAndShowPrintStatus(imageView,mPrintStatus,true);
         });
+        saveAndShowPrintStatus(imageView,false,false);
     }
+    private void saveAndShowPrintStatus(final ImageView imageView,boolean print_s,boolean type){
+        final JSONObject object = new JSONObject();
+        final StringBuilder err = new StringBuilder();
+        if (type){
+            object.put("v",print_s);
+            if (!SQLiteHelper.saveLocalParameter("print_s",object,"打印开关",err)){
+                MyDialog.ToastMessage(imageView,"保存打印状态错误:" + err,this,getWindow());
+            }
+        }else {
+            if (SQLiteHelper.getLocalParameter("print_s",object)){
+                if (imageView != null && !object.isEmpty()){
+                    boolean status = object.getBooleanValue("v");
+                    final Bitmap printer = BitmapFactory.decodeResource(getResources(),R.drawable.printer);
+                    if (status){
+                        imageView.setImageBitmap(printer);
+                    }else {
+                        imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(printer,15,15));
+                    }
+                    mPrintStatus = status;
+                }
+            }
+        }
+    }
+
     private void showPayDialog(){
         final JSONArray datas = getSaleData();
         if (datas.size() != 0){

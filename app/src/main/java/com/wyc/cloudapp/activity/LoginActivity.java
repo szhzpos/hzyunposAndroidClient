@@ -337,10 +337,8 @@ public class LoginActivity extends AppCompatActivity {
                                             myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "登录失败：" + err_info).sendToTarget();
                                         break;
                                     case "y":
-                                        Logger.d_json(info_json.toJSONString());
-
                                         store_info = JSON.parseObject(info_json.getString("shop_info"));
-                                        mStoresId = store_info.getString("stores_id");
+                                        mStoresId = Utils.getNullStringAsEmpty(store_info,"stores_id");
 
                                         cashier_json = JSON.parseObject(info_json.getString("cashier"));
 
@@ -395,7 +393,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
     private void show_url(){
-        EditText et_url = findViewById(R.id._url_text);
+        final EditText et_url = findViewById(R.id._url_text);
         if (et_url != null){
             if(et_url.getText().length() != 0)return;
             JSONObject param = new JSONObject();

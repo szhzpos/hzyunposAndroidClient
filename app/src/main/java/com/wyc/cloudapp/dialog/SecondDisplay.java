@@ -112,11 +112,12 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
         mSurfaceHolder = mSurface.getHolder();
         mSurfaceHolder.addCallback(this);
 
-        mPaint = new Paint();
-        mPaint.setTextSize(18);
-        mPaint.setAntiAlias(true);
-        mPaint.setFilterBitmap(true);
-        mPaint.setTextAlign(Paint.Align.CENTER);
+        final Paint paint =  new Paint();
+        paint.setTextSize(18);
+        paint.setAntiAlias(true);
+        paint.setFilterBitmap(true);
+        paint.setTextAlign(Paint.Align.CENTER);
+        mPaint = paint;
     }
 
     private void initSaleGoodsView(){
@@ -154,8 +155,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
             if ( 0 != barcode_id && barcode_id != mCurrentBarcodeId){//当前显示的图片和即将要显示的图片不相同时再显示
                 CustomApplication.execute(()->{
                     final String sql = "select ifnull(img_url,'') img_url from barcode_info where goods_status = '1' and barcode_id = " + barcode_id +
-                            " UNION\n" +
-                            "select ifnull(img_url,'') img_url from goods_group where status = '1' and gp_id =" + barcode_id;
+                            " UNION select ifnull(img_url,'') img_url from goods_group where status = '1' and gp_id =" + barcode_id;
                     JSONObject object = new JSONObject();
                     if (SQLiteHelper.execSql(object,sql)){
                         String img_url = object.getString("img_url");
@@ -173,7 +173,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
     }
     private void initNavigationInfo(){
         if (mStoreinfo != null){
-            TextView stores_name = findViewById(R.id.sec_store_name),stores_hotline = findViewById(R.id.sec_stores_hotline),
+            final TextView stores_name = findViewById(R.id.store_name),stores_hotline = findViewById(R.id.sec_stores_hotline),
             stores_addr = findViewById(R.id.sec_stores_addr);
             stores_name.setText(mStoreinfo.getString("stores_name"));
             stores_hotline.setText(mStoreinfo.getString("telphone"));
@@ -281,21 +281,21 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
             if (mBannerBitmap != null){
                 canvas.drawBitmap(mBannerBitmap,new Rect(0,0,mBannerBitmap.getWidth(),mBannerBitmap.getHeight()),rect,null);
             }
-
+            final Paint paint = mPaint;
 
             //图片边框
-            mPaint.setStyle(Paint.Style.STROKE);
-            mPaint.setStrokeWidth(1);
-            mPaint.setColor(mContext.getColor(R.color.blue));
-            canvas.drawRect(rect,mPaint);
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(1);
+            paint.setColor(mContext.getColor(R.color.blue));
+            canvas.drawRect(rect,paint);
             //底部区域
-            mPaint.setStyle(Paint.Style.FILL);
-            mPaint.setColor(mContext.getColor(R.color.white));
-            canvas.drawRect(mBottomRect,mPaint);
+            paint.setStyle(Paint.Style.FILL);
+            paint.setColor(mContext.getColor(R.color.white));
+            canvas.drawRect(mBottomRect,paint);
             //底部文字
-            mPaint.setColor(mContext.getColor(R.color.blue));
-            Paint.FontMetrics fontMetrics = mPaint.getFontMetrics();
-            canvas.drawText("欢迎光临！",mBannerTextX,mBottomRect.top + fontMetrics.bottom - fontMetrics.top,mPaint);
+            paint.setColor(mContext.getColor(R.color.blue));
+            Paint.FontMetrics fontMetrics = paint.getFontMetrics();
+            canvas.drawText("欢迎光临！",mBannerTextX,mBottomRect.top + fontMetrics.bottom - fontMetrics.top,paint);
 
             if ((mBannerTextX +=1) > mSurface.getWidth())mBannerTextX = 0;
 

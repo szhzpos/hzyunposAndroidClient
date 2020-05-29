@@ -7,10 +7,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnContextImp;
 import com.wyc.cloudapp.logger.Logger;
@@ -19,6 +19,7 @@ import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.view.Display;
 import android.view.Gravity;
@@ -32,6 +33,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import java.lang.ref.WeakReference;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import static android.content.Context.WINDOW_SERVICE;
 
@@ -72,7 +76,7 @@ public class ConnSettingDialog extends DialogBaseOnContextImp {
         mUrl = findViewById(R.id.server_url);
         mAppId = findViewById(R.id.appId);
         mAppscret = findViewById(R.id.appSecret);
-        mStore_name = findViewById(R.id.sec_store_name);
+        mStore_name = findViewById(R.id.store_name);
 
         mDialog = new CustomProgressDialog(mContext);
         mHandler = new Myhandler(this);
@@ -98,7 +102,7 @@ public class ConnSettingDialog extends DialogBaseOnContextImp {
         });*/
 
         initCancelBtn();
-        initSave();
+        initSaveBtn();
         initWindowSize();
 
     }
@@ -124,51 +128,88 @@ public class ConnSettingDialog extends DialogBaseOnContextImp {
         }
     }
 
-    private void initSave(){
+    private boolean check_shop_id(final String shop_id,final JSONObject param){
+        boolean code;
+        if(code = SQLiteHelper.getLocalParameter("connParam",param)){
+            if (!param.isEmpty()){
+                return !Utils.getNullStringAsEmpty(param,"shop_id").equals(shop_id);
+            }else {
+                code = false;
+            }
+        }
+        return code;
+    }
+    private boolean back(final String shop_id,final JSONObject param){
+        if (check_shop_id(shop_id,param)){
+            final StringBuilder err = new StringBuilder();
+            return SQLiteHelper.backupDB(String.format(Locale.CHINA,"hzYunPos<%s>%s",Utils.getNullStringAsEmpty(param,"shop_id"), new SimpleDateFormat("yyyyMMddHHmmss", Locale.CHINA).format(new Date())),err);
+        }
+        return false;
+    }
+
+    private void initSaveBtn(){
         final Button save_btn = findViewById(R.id.save);
         if (null != save_btn){
             save_btn.setOnClickListener((View v)->{
                 final String shop_id = mShopId.getText().toString();
                 if (!"".equals(shop_id)){
-                    final JSONObject json = new JSONObject(),param = new JSONObject();
-                    if(SQLiteHelper.getLocalParameter("connParam",param)){
-                        if (!param.isEmpty()){
-                            final JSONObject store_info = param.getJSONObject("storeInfo");
-                            if (!store_info.isEmpty()){
-                                final String local_shop_id = Utils.getNullStringAsEmpty(store_info,"stores_id");
-                                if (!local_shop_id.equals(shop_id)){
 
-                                }
+                    final JSONObject param = new JSONObject();
+
+                    if (check_shop_id(shop_id,param)){
+                        MyDialog.displayAskMessage(null, "当前商户与数据库中的商户不一致，是否需要保存？", mContext, myDialog -> {
+                            myDialog.dismiss();
+
+                            final JEventLoop loop = new JEventLoop();
+                            final StringBuilder err = new StringBuilder();
+                            final CustomProgressDialog customProgressDialog = new CustomProgressDialog(mContext);
+                            customProgressDialog.setCancel(false).setMessage("正在备份数据库...").show();
+                            CustomApplication.execute(()->{
+                                if (SQLiteHelper.backupDB(String.format(Locale.CHINA,"hzYunPos<%s>%s",Utils.getNullStringAsEmpty(param,"shop_id"), new SimpleDateFormat("yyyyMMddHHmmss", Locale.CHINA).format(new Date())),err)){
+                                    loop.done(1);
+                                }else
+                                    loop.done(0);
+                            });
+                            final int code = loop.exec();
+                            customProgressDialog.dismiss();
+
+                            if (code == 1){
+                                save(shop_id);
+                            }else {
+                                MyDialog.displayMessage(null,err.toString(),v.getContext());
                             }
-
-                        }
-
-                    }else{
-                        MyDialog.ToastMessage(param.getString("info"),mContext,getWindow());
+                        }, MyDialog::dismiss);
+                    }else {
+                        save(shop_id);
                     }
-
-                    json.put("server_url",verifyUrl());
-                    json.put("appId",mAppId.getText().toString());
-                    json.put("url",mUrl.getText().toString());
-                    json.put("shop_id",shop_id);
-                    json.put("appScret",mAppscret.getText().toString());
-                    json.put("storeInfo","{}");
-
-
-                    param.put("parameter_id","connParam");
-                    param.put("parameter_content",json);
-                    param.put("parameter_desc","门店信息、服务器连接参数");
-                    final StringBuilder err = new StringBuilder();
-                    if (SQLiteHelper.saveFormJson(param,"local_parameter",null,1,err)){
-                        MyDialog.ToastMessage("保存成功！",mContext,null);
-                        ConnSettingDialog.this.dismiss();
-                    }else
-                        MyDialog.displayMessage(null,err.toString(),v.getContext());
                 }else{
                     MyDialog.SnackbarMessage(getWindow(),mContext.getString(R.string.not_empty_hint_sz,"商户号"),getCurrentFocus());
                 }
-
             });
+        }
+    }
+
+    private void save(final String shop_id){
+        if (SQLiteHelper.initDb(mContext)){
+            final JSONObject json = new JSONObject(),param = new JSONObject();
+            final StringBuilder err = new StringBuilder();
+
+            json.put("server_url",verifyUrl());
+            json.put("appId",mAppId.getText().toString());
+            json.put("url",mUrl.getText().toString());
+            json.put("shop_id",shop_id);
+            json.put("appScret",mAppscret.getText().toString());
+            json.put("storeInfo","{}");
+
+            param.fluentClear();
+            param.put("parameter_id","connParam");
+            param.put("parameter_content",json);
+            param.put("parameter_desc","门店信息、服务器连接参数");
+            if (SQLiteHelper.saveFormJson(param,"local_parameter",null,1,err)){
+                MyDialog.ToastMessage("保存成功！",mContext,null);
+                ConnSettingDialog.this.dismiss();
+            }else
+                MyDialog.displayMessage(null,err.toString(),mContext);
         }
     }
 
@@ -242,14 +283,20 @@ public class ConnSettingDialog extends DialogBaseOnContextImp {
                 try {
                     mShopId.setText(param.getString("shop_id"));
                     mUrl.setText(param.getString("url"));
-                    //mAppId.setText(param.getString("appId"));
-                    //mAppscret.setText(param.getString("appScret"));
                     final JSONObject storeInfo = JSON.parseObject(param.getString("storeInfo"));
-                    mStore_name.setText(storeInfo.getString("stores_name"));
+                    if (storeInfo.containsKey("stores_name")){
+                        mStore_name.setText(storeInfo.getString("stores_name"));
+                    }else {
+                        final View view = findViewById(R.id.ip_fo);
+                        view.setVisibility(View.GONE);
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                     MyDialog.ToastMessage("显示门店信息错误：" + e.getMessage(),mContext,null);
                 }
+            }else {
+                final View view = findViewById(R.id.ip_fo);
+                view.setVisibility(View.GONE);
             }
         }else{
             MyDialog.ToastMessage(param.getString("info"),mContext,getWindow());
