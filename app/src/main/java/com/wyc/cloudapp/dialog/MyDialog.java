@@ -3,6 +3,7 @@ package com.wyc.cloudapp.dialog;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -20,7 +21,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-public class MyDialog extends Dialog {
+public final class MyDialog extends Dialog {
     private Button mYes,mNo;//mYes确定按钮、mNo取消按钮
     private TextView mTitle,mMessage;//mTitle标题文本、mMessage消息提示文本
     private String mTitleStr;//从外界设置的title文本
@@ -129,7 +130,12 @@ public class MyDialog extends Dialog {
      * 初始化界面控件
      */
     private void initView() {
-        findViewById(R.id._close).setOnClickListener(v -> this.dismiss());
+        findViewById(R.id._close).setOnClickListener(v -> {
+            if (noOnclickListener != null){
+                noOnclickListener.onNoClick(MyDialog.this);
+            }else
+                this.dismiss();
+        });
         mYes = findViewById(R.id.yes);
         mNo = findViewById(R.id.no);
         mTitle = findViewById(R.id.title_text);
@@ -240,6 +246,19 @@ public class MyDialog extends Dialog {
             dialog.setContentIconType(IconType.ASK);
 
         dialog.setTitle("提示信息").setMessage(message).setYesOnclickListener("是",yes).setNoOnclickListener("否", no).show();
+    }
+
+    public static int showMessageToModalDialog(final Context context,final String message){
+        final JEventLoop loop = new JEventLoop();
+        final MyDialog dialog = new MyDialog(context, IconType.ASK);
+        dialog.setTitle("提示信息").setMessage(message).setYesOnclickListener("是", myDialog -> {
+            myDialog.dismiss();
+            loop.done(1);
+        }).setNoOnclickListener("否", myDialog -> {
+            myDialog.dismiss();
+            loop.done(0);
+        }).show();
+        return loop.exec();
     }
 
     public static boolean ToastMessage(View anchor,final String message,final Context context,final Window window,boolean b){

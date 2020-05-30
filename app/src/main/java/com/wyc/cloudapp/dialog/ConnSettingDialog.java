@@ -109,7 +109,12 @@ public class ConnSettingDialog extends DialogBaseOnContextImp {
 
     private void initCancelBtn(){
         final Button cancel = findViewById(R.id.cancel);
-        cancel.setOnClickListener((View v)-> closeWindow());
+        cancel.setOnClickListener((View v)-> {
+            if (mShopId != null){
+                mShopId.setText(Utils.getViewTagValue(mShopId,""));
+            }
+            closeWindow();
+        });
     }
 
     private void initWindowSize(){
@@ -138,13 +143,6 @@ public class ConnSettingDialog extends DialogBaseOnContextImp {
             }
         }
         return code;
-    }
-    private boolean back(final String shop_id,final JSONObject param){
-        if (check_shop_id(shop_id,param)){
-            final StringBuilder err = new StringBuilder();
-            return SQLiteHelper.backupDB(String.format(Locale.CHINA,"hzYunPos<%s>%s",Utils.getNullStringAsEmpty(param,"shop_id"), new SimpleDateFormat("yyyyMMddHHmmss", Locale.CHINA).format(new Date())),err);
-        }
-        return false;
     }
 
     private void initSaveBtn(){
@@ -282,6 +280,8 @@ public class ConnSettingDialog extends DialogBaseOnContextImp {
             if (Utils.JsonIsNotEmpty(param)){
                 try {
                     mShopId.setText(param.getString("shop_id"));
+                    mShopId.setTag(mShopId.getText().toString());
+
                     mUrl.setText(param.getString("url"));
                     final JSONObject storeInfo = JSON.parseObject(param.getString("storeInfo"));
                     if (storeInfo.containsKey("stores_name")){
@@ -311,7 +311,7 @@ public class ConnSettingDialog extends DialogBaseOnContextImp {
         return url;
     }
 
-    public String getUrl(){
+    public String getShopid(){
         return mShopId.getText().toString();
     }
 

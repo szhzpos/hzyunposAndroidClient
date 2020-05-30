@@ -7,16 +7,15 @@ import com.wyc.cloudapp.logger.Logger;
 
 import java.util.Objects;
 import java.util.Stack;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class JEventLoop {
     private static final ThreadLocal<Stack<JEventLoop>> sThreadLocal = new ThreadLocal<>();
     private int mCode = 0;
     private Handler mHandler;
-    private AtomicBoolean mDone;
+    private volatile boolean mDone;
     private final Object mLock = new Object();
     public JEventLoop(){
-        mDone = new AtomicBoolean(false);
+        mDone = false;
     }
     private class ExitException extends RuntimeException{
         ExitException(){
@@ -25,9 +24,9 @@ public final class JEventLoop {
     }
 
     public int exec(){
-        if (!mDone.get()){
+        if (!mDone){
             synchronized (mLock){
-                if (mDone.get())return mCode;
+                if (mDone)return mCode;
 
                 Stack<JEventLoop> stack = sThreadLocal.get();
                 if (stack == null){
@@ -37,24 +36,22 @@ public final class JEventLoop {
                 stack.push(this);
                 Logger.d("%s线程exec,JEventLoop:<%s>,数量:%d",Thread.currentThread().getName(),this,stack.size());
                 if (Looper.myLooper() == null)Looper.prepare();
-                mHandler = new Handler(Objects.requireNonNull(Looper.myLooper()));
+                if (mHandler == null || mHandler.getLooper() != Looper.myLooper())mHandler = new Handler(Objects.requireNonNull(Looper.myLooper()));
             }
             try {
                 Looper.loop();
             }catch (ExitException ignored){
             }
         }
+        mDone = false;
         return mCode;
     }
 
     public void done(int code){
         mCode = code;
-        mDone.set(true);
+        mDone = true;
         synchronized (mLock){
-            if (mHandler != null){
-                mHandler.post(this::exit);
-                mHandler = null;
-            }
+            if (mHandler != null){ mHandler.post(this::exit); }
         }
     }
 

@@ -104,10 +104,11 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
     }
 
     public static boolean backupDB(final String new_name,final StringBuilder err) {
-        final File db = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/");
+        final String file_absolute_path = Environment.getExternalStorageDirectory().getAbsolutePath();
+        final File db = new File(file_absolute_path + "/hzYunPos/");
         boolean code = false;
         try {
-            zipFile(db,Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + new_name + ".zip");
+            zipFile(db,file_absolute_path + File.separator + new_name + ".zip");
             deleteFile(db);
             closeDB();
             code = true;

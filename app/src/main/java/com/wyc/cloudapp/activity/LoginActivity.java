@@ -129,9 +129,7 @@ public class LoginActivity extends AppCompatActivity {
     private void initLogBtn(){
         final Button log_btn = findViewById(R.id.b_login);
         if (null != log_btn)
-            log_btn.setOnClickListener((View v)->{
-                login();
-            });
+            log_btn.setOnClickListener((View v)-> login());
     }
     private void initCloseMainWindow(){
         mCancel = findViewById(R.id.cancel);
@@ -150,8 +148,8 @@ public class LoginActivity extends AppCompatActivity {
             setup.setOnClickListener((View v)->{
                 ConnSettingDialog connSettingDialog = new ConnSettingDialog(mSelf,mSelf.getString(R.string.conn_dialog_title_sz));
                 connSettingDialog.setOnDismissListener(dialog -> {
-                    EditText et_url = findViewById(R.id._url_text);
-                    String url = connSettingDialog.getUrl();
+                    final EditText et_url = findViewById(R.id._url_text);
+                    final String url = connSettingDialog.getShopid();
                     if (url.length() != 0){
                         et_url.setText(url.substring(url.lastIndexOf('/') + 1));
                     }
