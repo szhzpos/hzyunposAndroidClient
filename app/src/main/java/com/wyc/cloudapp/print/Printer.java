@@ -261,6 +261,8 @@ public final class Printer {
 
                                 bluetoothSocket.connect();
 
+                                outputStream.write(RESET);
+
                                 byte[] bytes = content,tmpBytes;
                                 int length = bytes.length,max_length = 2048;
                                 int count = length / max_length,tmp_c = 0,mod_length = 0;
@@ -336,6 +338,8 @@ public final class Printer {
                                     int count = length / max_length,tmp_c = 0,ret_c = 0,mod_length = 0;
 
                                     synchronized (Printer.class){
+                                       connection.bulkTransfer(usbOutEndpoint,RESET,RESET.length, 100);
+
                                         if (count == 0){
                                             if (length < 128){
                                                 bytes = Arrays.copyOf(bytes,128);

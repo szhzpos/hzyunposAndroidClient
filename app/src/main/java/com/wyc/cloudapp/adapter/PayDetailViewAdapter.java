@@ -130,14 +130,12 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
         TextView tv_id;
         mCurrentItemView = v;
         if (null != mCurrentItemView && (tv_id = mCurrentItemView.findViewById(R.id.pay_method_id)) != null){
-            String id = tv_id.getText().toString();
-            if (mDatas != null ){
-                for (int i = 0,length = mDatas.size();i < length;i ++){
-                    JSONObject json = mDatas.getJSONObject(i);
-                    if (id.equals(json.getString("pay_method_id"))){
-                        mCurrentItemIndex = i;
-                        return;
-                    }
+            final String id = tv_id.getText().toString();
+            for (int i = 0,length = mDatas.size();i < length;i ++){
+                final JSONObject json = mDatas.getJSONObject(i);
+                if (id.equals(json.getString("pay_method_id"))){
+                    mCurrentItemIndex = i;
+                    return;
                 }
             }
         }

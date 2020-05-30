@@ -301,7 +301,7 @@ public class BaseParameterFragment extends BaseFragment {
         }else{
             if (SQLiteHelper.getLocalParameter("auto_mol",value_obj)){
                 RadioGroup rg = mRootView.findViewById(R.id._auto_mol_group);
-                status = Utils.getNotKeyAsNumberDefault(value_obj,"s",1);
+                status = Utils.getNotKeyAsNumberDefault(value_obj,"s",0);
                 if (status == 1){
                     id =Utils.getNotKeyAsNumberDefault(value_obj,"id",R.id.mol_j);
                     if (id == -1)id = R.id.mol_j;

@@ -302,6 +302,9 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
                                     }
                                 }).setCancelListener(dialog -> {
                                     mPayMethodViewAdapter.showDefaultPayMethod(null);
+                                    antoMol();
+                                    calculatePayContent();
+                                    refreshContent();
                                     dialog.dismiss();
                                 }).show();
                             }
@@ -326,44 +329,41 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
         mPayDetailViewAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
-                super.onChanged();
-                final JSONArray jsonArray = getContent();
-                double pay_amt = 0.0,zl_amt = 0.0,sale_amt;
-                try {
-                    for (int i = 0,length = jsonArray.size();i < length;i ++){//第一个为表头
-                        JSONObject object = jsonArray.getJSONObject(i);
-                        pay_amt += object.getDouble("pamt");
-                        zl_amt += object.getDouble("pzl");
-                    }
-
-                    Logger.d("amt:%f - zl_amt:%f = %f",pay_amt,zl_amt,pay_amt - zl_amt);
-
-                    mAmt_received = pay_amt - zl_amt;
-                    mPay_balance = mPay_amt - mAmt_received;
-                    mCashAmt = mPay_balance;
-
-                    refreshContent();
-
-                    if (verifyPayBalance()){
-                        if (Utils.equalDouble(mActual_amt,mAmt_received)){//支付明细数据发送变化后，计算是否已经付款完成，如果完成触发支付完成事件
-                            sale_amt = mContext.getSaleSumAmt();
-                            pay_amt = mPayDetailViewAdapter.getPaySumAmt();
-
-                            if (Utils.equalDouble(sale_amt,pay_amt)){
-                                if (mPayListener != null){
-                                    mPayListener.onStart(PayDialog.this);
-                                }
-                            }else{
-                                MyDialog.displayErrorMessage(null,String.format(Locale.CHINA,"销售金额:%f  不等于 付款金额:%f",sale_amt,pay_amt), mContext);
-                            }
-                        }
-                    }else{
-                        MyDialog.SnackbarMessage(mWindow,"剩余付款金额不能小于零！",mPayBalanceTv);
-                    }
-                }catch (JSONException e){
-                    e.printStackTrace();
-                    MyDialog.ToastMessage("付款错误：" + e.getMessage(), mContext,null);
+            super.onChanged();
+            final JSONArray jsonArray = getContent();
+            double pay_amt = 0.0,zl_amt = 0.0,sale_amt;
+            if (!jsonArray.isEmpty()){
+                for (int i = 0,length = jsonArray.size();i < length;i ++){//第一个为表头
+                    JSONObject object = jsonArray.getJSONObject(i);
+                    pay_amt += object.getDouble("pamt");
+                    zl_amt += object.getDouble("pzl");
                 }
+
+                Logger.d("amt:%f - zl_amt:%f = %f",pay_amt,zl_amt,pay_amt - zl_amt);
+
+                mAmt_received = pay_amt - zl_amt;
+                mPay_balance = mPay_amt - mAmt_received;
+                mCashAmt = mPay_balance;
+
+                refreshContent();
+
+                if (verifyPayBalance()){
+                    if (Utils.equalDouble(mActual_amt,mAmt_received)){//支付明细数据发送变化后，计算是否已经付款完成，如果完成触发支付完成事件
+                        sale_amt = mContext.getSaleSumAmt();
+                        pay_amt = mPayDetailViewAdapter.getPaySumAmt();
+
+                        if (Utils.equalDouble(sale_amt,pay_amt)){
+                            if (mPayListener != null){
+                                mPayListener.onStart(PayDialog.this);
+                            }
+                        }else{
+                            MyDialog.displayErrorMessage(null,String.format(Locale.CHINA,"销售金额:%f  不等于 付款金额:%f",sale_amt,pay_amt), mContext);
+                        }
+                    }
+                }else{
+                    MyDialog.SnackbarMessage(mWindow,"剩余付款金额不能小于零！",mPayBalanceTv);
+                }
+            }
             }
         });
         RecyclerView recyclerView = findViewById(R.id.pay_detail_list);
@@ -948,11 +948,11 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
     }
 
     private void initCsahText(){
-        mCashMoneyEt = findViewById(R.id.cash_amt);
-        mCashMoneyEt.setText(String.format(Locale.CHINA,"%.2f",mActual_amt));
-        mCashMoneyEt.setSelectAllOnFocus(true);
-        mCashMoneyEt.setOnFocusChangeListener((view, b) -> Utils.hideKeyBoard((EditText) view));
-        mCashMoneyEt.addTextChangedListener(new TextWatcher() {
+        final EditText cm = mCashMoneyEt = findViewById(R.id.cash_amt);
+        cm.setText(String.format(Locale.CHINA,"%.2f",mActual_amt));
+        cm.setSelectAllOnFocus(true);
+        cm.setOnFocusChangeListener((view, b) -> Utils.hideKeyBoard((EditText) view));
+        cm.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -974,8 +974,8 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
                     if (mZlAmt < 100)
                         mZlAmtEt.setText(String.format(Locale.CHINA,"%.2f",mZlAmt));
                     else{
-                        mCashMoneyEt.setText(mPayBalanceTv.getText());
-                        mCashMoneyEt.selectAll();
+                        cm.setText(mPayBalanceTv.getText());
+                        cm.selectAll();
                         MyDialog.ToastMessage("找零不能大于100", mContext,null);
                     }
                 }else{
@@ -984,7 +984,7 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
                 }
             }
         });
-        mCashMoneyEt.postDelayed(()-> mCashMoneyEt.requestFocus(),300);
+        cm.postDelayed(()-> cm.requestFocus(),300);
     }
     private String getCashPayCode() {
         return new SimpleDateFormat("yyyyMMddHHmmssSSS",Locale.CHINA).format(new Date())+ mContext.getPosNum() + Utils.getNonce_str(8);
@@ -1130,7 +1130,7 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
     private void refreshPayContent(){
         if (initPayContent()){
             refreshContent();
-            if (null != mPayDetailViewAdapter)mPayDetailViewAdapter.notifyDataSetChanged();
+            if (null != mPayDetailViewAdapter && !mPayDetailViewAdapter.getDatas().isEmpty())mPayDetailViewAdapter.notifyDataSetChanged();
         }
     }
 

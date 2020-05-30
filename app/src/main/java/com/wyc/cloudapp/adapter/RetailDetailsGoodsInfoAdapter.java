@@ -73,7 +73,7 @@ public final class RetailDetailsGoodsInfoAdapter extends AbstractDetailsDataAdap
 
     public void setDatas(final String order_code){
         final StringBuilder err = new StringBuilder();
-        final String sql = "SELECT a.only_coding item_no,a.barcode,a.goods_title,a.unit_name,a.type,b.price,b.total_money sale_amt,(b.xnum * y_price - b.total_money) discount_amt,b.xnum * y_price original_amt,b.y_price original_price FROM " +
+        final String sql = "SELECT a.only_coding item_no,a.barcode,a.goods_title,a.unit_name,a.type,b.price,b.total_money sale_amt,b.xnum,(b.xnum * y_price - b.total_money) discount_amt,b.xnum * y_price original_amt,b.y_price original_price FROM " +
                 "retail_order_goods b left join barcode_info a on a.barcode_id = b.barcode_id\n" +
                 "where a.goods_status = 1 and a.barcode_status = 1 and b.order_code = '" + order_code + "'";
 

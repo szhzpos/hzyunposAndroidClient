@@ -192,7 +192,7 @@ public final class PrintUtilsToBitbmp {
 
     //在bitmap画错误标志<红圈白×>
     public static Bitmap drawErrorSignToBitmap(final Bitmap in,int w,int h){
-        Bitmap bitmap = in.copy(Bitmap.Config.ARGB_8888, true);
+        final Bitmap bitmap = in.copy(Bitmap.Config.ARGB_8888, true);
         int width = bitmap.getWidth(),height = bitmap.getHeight();
         Canvas canvas = new Canvas(bitmap);
         Paint paint = new Paint();

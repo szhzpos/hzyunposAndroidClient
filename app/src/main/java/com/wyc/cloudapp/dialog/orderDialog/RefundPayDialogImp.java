@@ -2,6 +2,7 @@ package com.wyc.cloudapp.dialog.orderDialog;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -47,21 +48,21 @@ public class RefundPayDialogImp extends AbstractPayDialog {
 
     @Override
     protected void initPayMethod(){
-        mPayMethodViewAdapter = new PayMethodViewAdapter(mContext,94);
-        mPayMethodViewAdapter.loadRefundPayMeothd();
-        mPayMethodViewAdapter.setOnItemClickListener((v, pos) -> {
-            mPayMethod = mPayMethodViewAdapter.getItem(pos);
+        final PayMethodViewAdapter payMethodViewAdapter = mPayMethodViewAdapter = new PayMethodViewAdapter(mContext,94);
+        payMethodViewAdapter.loadRefundPayMeothd();
+        payMethodViewAdapter.setOnItemClickListener((v, pos) -> {
+            mPayMethod = payMethodViewAdapter.getItem(pos);
             if (mPayMethod != null) {
                 Logger.d_json(mPayMethod.toString());
-
+                final EditText pay_code = mPayCode;
                 if (mPayMethod.getIntValue("is_check") != 2){ //显示付款码输入框
-                    mPayCode.setVisibility(View.VISIBLE);
-                    mPayCode.requestFocus();
-                    mPayCode.setHint(mPayMethod.getString("xtype"));
+                    pay_code.setVisibility(View.VISIBLE);
+                    pay_code.requestFocus();
+                    pay_code.setHint(mPayMethod.getString("xtype"));
                 }else{
-                    mPayCode.callOnClick();
-                    mPayCode.getText().clear();
-                    mPayCode.setVisibility(View.GONE);
+                    pay_code.callOnClick();
+                    pay_code.getText().clear();
+                    pay_code.setVisibility(View.GONE);
                     mPayAmtEt.requestFocus();
                 }
             }
@@ -70,7 +71,7 @@ public class RefundPayDialogImp extends AbstractPayDialog {
         recyclerView.setVisibility(View.VISIBLE);
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL,false));
         recyclerView.addItemDecoration(new PayMethodItemDecoration(2));
-        recyclerView.setAdapter(mPayMethodViewAdapter);
+        recyclerView.setAdapter(payMethodViewAdapter);
     }
 
 }

@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.graphics.drawable.Drawable;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -38,6 +39,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
             pay_method_name =  itemView.findViewById(R.id.pay_method_name);
 
             mCurrentLayoutItemView = itemView;
+
         }
     }
 
@@ -96,6 +98,8 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
                         mOnItemClickListener.onClick(view,i);
                     });
                 }
+
+                myViewHolder.mCurrentLayoutItemView.setOnHoverListener(hoverListener);
             }
         }
     }
@@ -109,6 +113,20 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     public int getItemCount() {
         return mDatas == null ? 0 : mDatas.size();
     }
+
+    private View.OnHoverListener hoverListener = new View.OnHoverListener() {
+        @Override
+        public boolean onHover(View v, MotionEvent event) {
+            final TextView view = v.findViewById(R.id.pay_method_name);
+            if (view != null){
+                if (MotionEvent.ACTION_HOVER_MOVE == event.getAction())
+                    view.setTextColor(mContext.getColor(R.color.white));
+                else
+                    view.setTextColor(mContext.getColor(R.color.blue));
+            }
+            return false;
+        }
+    };
 
     public interface OnItemClickListener{
         void onClick(View v,int pos);

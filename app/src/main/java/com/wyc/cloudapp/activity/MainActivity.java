@@ -202,7 +202,13 @@ public class MainActivity extends AppCompatActivity {
         if (check_out_btn != null)check_out_btn.setOnClickListener((View v)->{Utils.disableView(v,500);showPayDialog();});//结账
         if (vip_btn != null)vip_btn.setOnClickListener(v -> {
             final VipInfoDialog vipInfoDialog = new VipInfoDialog(this);
-            vipInfoDialog.setYesOnclickListener(dialog -> {showVipInfo(dialog.getVip());dialog.dismiss(); }).show();
+            if (mVipInfo != null){
+                if (1 == MyDialog.showMessageToModalDialog(this,"已存在会员信息,是否清除？")){
+                    clearVipInfo();
+                    //vipInfoDialog.setYesOnclickListener(dialog -> {showVipInfo(dialog.getVip());dialog.dismiss(); }).show();
+                }
+            }else
+                vipInfoDialog.setYesOnclickListener(dialog -> {showVipInfo(dialog.getVip());dialog.dismiss(); }).show();
         });//会员
 
         final LinearLayout q_deal_linerLayout = findViewById(R.id.q_deal_linerLayout),other_linearLayout = findViewById(R.id.other_linearLayout);
@@ -249,19 +255,12 @@ public class MainActivity extends AppCompatActivity {
         final Button clearBtn = findViewById(R.id.clear);
         if (null != clearBtn){
             clearBtn.setOnClickListener(v -> {
-                if (mVipInfo != null){
-                    MyDialog.displayAskMessage(mDialog,"是否清除会员折扣？",this,myDialog -> {
-                        clearVipInfo();
-                        myDialog.dismiss();
-                    },Dialog::dismiss);
-                }else{
-                    if (verifyClearPermissions()){
-                        if (!mSaleGoodsViewAdapter.getDatas().isEmpty())
-                            MyDialog.displayAskMessage(mDialog,"是否清除销售商品？",this,myDialog -> {
-                                resetOrderInfo();
-                                myDialog.dismiss();
-                            },Dialog::dismiss);
-                    }
+                if (verifyClearPermissions()){
+                    if (!mSaleGoodsViewAdapter.getDatas().isEmpty())
+                        MyDialog.displayAskMessage(mDialog,"是否清除销售商品？",this,myDialog -> {
+                            resetOrderInfo();
+                            myDialog.dismiss();
+                        },Dialog::dismiss);
                 }
             });
         }
