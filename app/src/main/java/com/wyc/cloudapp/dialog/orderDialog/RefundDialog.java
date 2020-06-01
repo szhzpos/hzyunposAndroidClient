@@ -152,7 +152,7 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
                 }
             });
             mRefundGoodsInfoAdapter.setmRefundPayDataChange(datas -> {
-                double pay_sum_amt = 0.0,refund_sum_amt = Utils.formatDouble(mRefundGoodsInfoAdapter.getRefundAmt(),2);
+                double pay_sum_amt = 0.0,refund_sum_amt = mRefundGoodsInfoAdapter.getRefundAmt();
                 for (int i = 0,size = datas.size();i < size;i++){
                     pay_sum_amt += datas.getJSONObject(i).getDoubleValue("pay_money");
                 }

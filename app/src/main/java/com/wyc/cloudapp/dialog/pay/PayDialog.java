@@ -1020,13 +1020,9 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
         void onError(PayDialog myDialog, final String err);
     }
     public boolean initPayContent(){
-        final JSONArray datas = mContext.getSaleData();
-        if (!datas.isEmpty()){
-            antoMol();
-            calculatePayContent();
-            return true;
-        }
-        return false;
+        antoMol();
+        calculatePayContent();
+        return true;
     }
     public JSONArray getContent(){
         return mPayDetailViewAdapter.getDatas();

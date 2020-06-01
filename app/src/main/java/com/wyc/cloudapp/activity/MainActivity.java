@@ -368,7 +368,7 @@ public class MainActivity extends AppCompatActivity {
     private void initGoodsInfoAdapter(){
         mGoodsInfoViewAdapter = new GoodsInfoViewAdapter(this);
         final RecyclerView goods_info_view = findViewById(R.id.goods_info_list);
-        final GridLayoutManager gridLayoutManager = new GridLayoutManager(MainActivity.this,5);
+        final GridLayoutManager gridLayoutManager = new GridLayoutManager(this,5);
         goods_info_view.setLayoutManager(gridLayoutManager);
         registerGlobalLayoutToRecyclerView(goods_info_view,getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration());
         mGoodsInfoViewAdapter.setOnItemClickListener(new GoodsInfoViewAdapter.OnItemClickListener() {
@@ -383,7 +383,6 @@ public class MainActivity extends AppCompatActivity {
                     final String weigh_barcode_info = (String) jsonObject.remove(GoodsInfoViewAdapter.W_G_MARK);//删除称重标志否则重新选择商品时不弹出称重界面
                     if (mGoodsInfoViewAdapter.getSingleGoods(content,weigh_barcode_info,id)){
                         mSaleGoodsViewAdapter.addSaleGoods(content,mVipInfo);
-                        mSearch_content.selectAll();
                     }else{
                         MyDialog.ToastMessage("选择商品错误：" + content.getString("info"),v.getContext(),null);
                     }

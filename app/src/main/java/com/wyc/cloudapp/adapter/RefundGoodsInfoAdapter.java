@@ -329,7 +329,6 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
             returnable_sum_num += returnable_num;
         }
 
-        Logger.d("returnable_sum_num:%f,refund_sum_num:%f",returnable_sum_num,refund_sum_num);
         if (Utils.equalDouble(refund_sum_num,0.0)){
             refund_sum_num = xnum;
         }
@@ -437,7 +436,7 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
                 record = mGoodsDatas.getJSONObject(i);
                 refund_price = record.getDoubleValue("refund_price");
                 refund_num = record.getDoubleValue("refund_num");
-                refund_sum_amt += refund_num * refund_price;
+                refund_sum_amt += Utils.formatDouble(refund_num * refund_price,2);
             }
 
         Logger.d("refund_sum_amt:%f",refund_sum_amt);

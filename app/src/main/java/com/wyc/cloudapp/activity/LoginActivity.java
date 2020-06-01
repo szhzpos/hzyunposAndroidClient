@@ -127,9 +127,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initLogBtn(){
-        final Button log_btn = findViewById(R.id.b_login);
-        if (null != log_btn)
-            log_btn.setOnClickListener((View v)-> login());
+        final Button login_btn = findViewById(R.id.b_login);
+        if (null != login_btn)
+            login_btn.setOnClickListener((View v)-> login());
     }
     private void initCloseMainWindow(){
         mCancel = findViewById(R.id.cancel);

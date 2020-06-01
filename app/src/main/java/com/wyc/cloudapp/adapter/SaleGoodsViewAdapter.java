@@ -591,7 +591,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
     }
     private void addSaleGoods(final JSONObject goods,double num,boolean isBarcodeWeighingGoods,final JSONObject vip){
         boolean exist = false;
-        int barcode_id = goods.getIntValue("barcode_id"),gp_id = goods.getIntValue("gp_id"),discount_type = 0;
+        int barcode_id = goods.getIntValue("barcode_id"),gp_id = goods.getIntValue("gp_id"),discount_type = -1;
         double  add_amount,add_goods_price,discount = 1.0,discount_amt = 0.0,new_price = 0.0,current_sale_amt = 0.0,
                 saled_amount = 0.0,current_discount_amt = 0.0,original_price = 0.0,original_amt = 0.0;
         JSONObject tmp_obj;
@@ -682,7 +682,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
             mCurrentItemIndex = mDatas.size() - 1;
         }
         //处理优惠记录
-        if (!Utils.equalDouble(current_discount_amt,0.0)){
+        if (!Utils.equalDouble(current_discount_amt,0.0) && discount_type != -1){
             final JSONArray discount_details = new JSONArray();
             final JSONObject discount_json = new JSONObject();
             discount_json.put("gp_id",goods.getIntValue("gp_id"));
