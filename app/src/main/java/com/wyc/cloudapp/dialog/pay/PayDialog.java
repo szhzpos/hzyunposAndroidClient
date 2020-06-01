@@ -984,7 +984,7 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
                 }
             }
         });
-        cm.postDelayed(()-> cm.requestFocus(),300);
+        cm.postDelayed(cm::requestFocus,300);
     }
     private String getCashPayCode() {
         return new SimpleDateFormat("yyyyMMddHHmmssSSS",Locale.CHINA).format(new Date())+ mContext.getPosNum() + Utils.getNonce_str(8);
@@ -1000,6 +1000,49 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
         sec.setText(String.valueOf((tmp = tmp +(10- tmp % 10))));
         third.setText(String.valueOf((tmp = tmp +(20- tmp % 20))));
         fourth.setText(String.valueOf( tmp +(50- tmp % 50)));
+    }
+
+    private void refreshPayContent(){
+        if (initPayContent()){
+            refreshContent();
+            if (null != mPayDetailViewAdapter && !mPayDetailViewAdapter.getDatas().isEmpty())mPayDetailViewAdapter.notifyDataSetChanged();
+        }
+    }
+
+    public PayDialog setPayListener(onPayListener listener) {
+        this.mPayListener = listener;
+        return  this;
+    }
+    public interface onPayListener {
+        void onStart(PayDialog myDialog);
+        void onProgress(PayDialog myDialog, final String info);
+        void onSuccess(PayDialog myDialog);
+        void onError(PayDialog myDialog, final String err);
+    }
+    public boolean initPayContent(){
+        final JSONArray datas = mContext.getSaleData();
+        if (!datas.isEmpty()){
+            antoMol();
+            calculatePayContent();
+            return true;
+        }
+        return false;
+    }
+    public JSONArray getContent(){
+        return mPayDetailViewAdapter.getDatas();
+    }
+    public void showVipInfo(@NonNull JSONObject vip,boolean show){//show为true则只显示不再刷新已销售商品
+        mVip = vip;
+        final LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
+        if (vip_info_linearLayout != null){
+            vip_info_linearLayout.setVisibility(View.VISIBLE);
+            ((TextView)vip_info_linearLayout.findViewById(R.id.vip_name)).setText(mVip.getString("name"));
+            ((TextView)vip_info_linearLayout.findViewById(R.id.vip_phone_num)).setText(mVip.getString("mobile"));
+        }
+        if (!show){
+            mContext.showVipInfo(vip);
+            refreshPayContent();
+        }
     }
 
     private static String c_format_58(final Context context, final JSONObject format_info, final JSONObject order_info, boolean is_open_cash_box){
@@ -1044,7 +1087,7 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
                         units_num += info_obj.getIntValue("xnum");
                     }
                     xnum = info_obj.getDoubleValue("xnum");
-                    discount_amt = info_obj.getDoubleValue("discount_amt");
+                    discount_amt = Utils.formatDouble(info_obj.getDoubleValue("discount_amt"),2);
 
                     if (i > 0) {
                         info.append(new_line_d);
@@ -1127,49 +1170,6 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
 
         return info.toString();
     }
-    private void refreshPayContent(){
-        if (initPayContent()){
-            refreshContent();
-            if (null != mPayDetailViewAdapter && !mPayDetailViewAdapter.getDatas().isEmpty())mPayDetailViewAdapter.notifyDataSetChanged();
-        }
-    }
-
-    public PayDialog setPayListener(onPayListener listener) {
-        this.mPayListener = listener;
-        return  this;
-    }
-    public interface onPayListener {
-        void onStart(PayDialog myDialog);
-        void onProgress(PayDialog myDialog, final String info);
-        void onSuccess(PayDialog myDialog);
-        void onError(PayDialog myDialog, final String err);
-    }
-    public boolean initPayContent(){
-        final JSONArray datas = mContext.getSaleData();
-        if (!datas.isEmpty()){
-            antoMol();
-            calculatePayContent();
-            return true;
-        }
-        return false;
-    }
-    public JSONArray getContent(){
-        return mPayDetailViewAdapter.getDatas();
-    }
-    public void showVipInfo(@NonNull JSONObject vip,boolean show){//show为true则只显示不再刷新已销售商品
-        mVip = vip;
-        final LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
-        if (vip_info_linearLayout != null){
-            vip_info_linearLayout.setVisibility(View.VISIBLE);
-            ((TextView)vip_info_linearLayout.findViewById(R.id.vip_name)).setText(mVip.getString("name"));
-            ((TextView)vip_info_linearLayout.findViewById(R.id.vip_phone_num)).setText(mVip.getString("mobile"));
-        }
-        if (!show){
-            mContext.showVipInfo(vip);
-            refreshPayContent();
-        }
-    }
-
     public static String get_print_content(final MainActivity context,final String order_code,boolean is_open_cash_box){
         final JSONObject print_format_info = new JSONObject();
         String content = "";
@@ -1204,7 +1204,7 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
                 " FROM retail_order a  left join cashier_info b on a.cashier_id = b.cas_id\n" +
                 "left join shop_stores c on a.stores_id = c.stores_id where a.order_code = '" + order_code + "'")) {
             final StringBuilder err = new StringBuilder();
-            final String goods_info_sql = "SELECT a.barcode,b.goods_title,a.price,a.retail_price original_price,a.xnum,a.retail_price * a.xnum original_amt,\n" +
+            final String goods_info_sql = "SELECT a.barcode,b.goods_title,b.type,a.price,a.retail_price original_price,a.xnum,a.retail_price * a.xnum original_amt,\n" +
                     "a.total_money sale_amt,a.retail_price * a.xnum - a.total_money discount_amt FROM retail_order_goods a \n" +
                     "left join barcode_info b on a.barcode_id = b.barcode_id where order_code = '" + order_code + "'", pays_info_sql = "SELECT  b.name,pre_sale_money pamt,give_change_money pzl,xnote FROM retail_order_pays a \n" +
                     "left join pay_method b on a.pay_method = b.pay_method_id where order_code = '" + order_code + "'";

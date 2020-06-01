@@ -1,0 +1,4 @@
+D:\CloudApp\app\release\yunhzsoftw.jks
+store password Yunhzsoftkey
+alias key_hzsoft
+key password Yunhzsoftkey

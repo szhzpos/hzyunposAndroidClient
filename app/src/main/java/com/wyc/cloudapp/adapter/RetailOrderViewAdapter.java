@@ -14,6 +14,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.dialog.orderDialog.RetailOrderDetailsDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.logger.Logger;
@@ -22,9 +23,10 @@ import com.wyc.cloudapp.logger.Logger;
 import java.util.Locale;
 
 public final class RetailOrderViewAdapter extends AbstractQueryDataAdapter<RetailOrderViewAdapter.MyViewHolder> {
-
-    public RetailOrderViewAdapter(MainActivity context){
-        mContext = context;
+    private DialogBaseOnMainActivityImp mDialog;
+    public RetailOrderViewAdapter(final DialogBaseOnMainActivityImp dialogBaseOnMainActivityImp){
+        mDialog = dialogBaseOnMainActivityImp;
+        mContext = dialogBaseOnMainActivityImp.getPrivateContext();
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -102,6 +104,7 @@ public final class RetailOrderViewAdapter extends AbstractQueryDataAdapter<Retai
             }else if (isClickView(sale_refund_tv,event.getX(),event.getY())){
                 RefundDialog refundDialog = new RefundDialog(mContext,order_code_tv.getText().toString());
                 refundDialog.show();
+                mDialog.dismiss();
             }
 
         }

@@ -247,7 +247,8 @@ public final class Utils {
 
     public static double formatDouble(double d,int scale) {
         // 新方法，如果不需要四舍五入，可以使用RoundingMode.DOWN
-        BigDecimal bg = new BigDecimal(d).setScale(scale,BigDecimal.ROUND_HALF_UP );
+        BigDecimal bg = new BigDecimal(d).setScale(scale + 1,BigDecimal.ROUND_HALF_UP );
+        bg = bg.setScale(scale,BigDecimal.ROUND_HALF_UP );
         return bg.doubleValue();
     }
 

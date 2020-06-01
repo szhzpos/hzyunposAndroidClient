@@ -99,7 +99,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
                 myViewHolder.barcode_id.setText(goods_info.getString("barcode_id"));
                 myViewHolder.barcode.setText(goods_info.getString("barcode"));
                 myViewHolder.sale_price.setText(String.format(Locale.CHINA,"%.2f",goods_info.getDoubleValue("price")));
-                myViewHolder.sale_num.setText(String.format(Locale.CHINA,"%.2f",goods_info.getDoubleValue("xnum")));
+                myViewHolder.sale_num.setText(String.format(Locale.CHINA,"%.3f",goods_info.getDoubleValue("xnum")));
                 myViewHolder.sale_amt.setText(String.format(Locale.CHINA,"%.2f",goods_info.getDoubleValue("sale_amt")));
 
                 if(myViewHolder.goods_title.getCurrentTextColor() == mContext.getResources().getColor(R.color.blue,null)){
@@ -127,14 +127,15 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
 
     public void addSaleGoods(final JSONObject goods,final JSONObject vip){
         if (null != goods && !goods.isEmpty()){
-            double xnum = goods.getDoubleValue("xnum");//如果不存在xnum,返回0.0；新增的商品不存在xnum字段，以及该字段值不会为0;挂单以及条码秤称重商品已经存在
+            double xnum = goods.getDoubleValue("xnum");//新增的商品不存在xnum字段，xnum等于0.0。挂单以及条码秤称重商品已经存在,以及该字段值不会为0
             boolean isBarcodeWeighingGoods = !Utils.getNullStringAsEmpty(goods,GoodsInfoViewAdapter.W_G_MARK).isEmpty(),isZero = Utils.equalDouble(xnum,0.0);
             if(!isBarcodeWeighingGoods && isZero && goods.getIntValue("type") == 2){//type 1 普通 2散装称重 3鞋帽
                 final GoodsWeighDialog goodsWeighDialog = new GoodsWeighDialog(mContext,mContext.getString(R.string.goods_i_s),goods.getString("barcode_id"));
                 goodsWeighDialog.setOnYesOnclickListener(myDialog -> {
                     double num = myDialog.getContent();
-                    if (!Utils.equalDouble(num,0.0))
+                    if (!Utils.equalDouble(num,0.0)){
                         addSaleGoods(goods,num,false,vip);
+                    }
                     myDialog.dismiss();
                 });
                 goodsWeighDialog.show();

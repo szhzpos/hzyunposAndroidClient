@@ -86,14 +86,14 @@ public class QuerySaleOrderDialog extends AbstractQuerySuperDialog {
         if(where_sql.length() != 0){
             where_sql.append(" and ");
         }
-        where_sql.append("datetime(addtime, 'unixepoch', 'localtime') ").append("between ").append("'").append(start_date_time).append("'").append(" and ").append("'").append(end_date_time).append("'");
+        where_sql.append("datetime(addtime, 'unixepoch', 'localtime') ").append("between ").append("'").append(start_date_time).append("'").append(" and ").append("'").append(end_date_time).append("'").append(" order by addtime desc");
 
         return where_sql.toString();
     }
 
     @Override
     protected AbstractQueryDataAdapter getAdapter() {
-        return new RetailOrderViewAdapter(mContext);
+        return new RetailOrderViewAdapter(this);
     }
 
     @Override

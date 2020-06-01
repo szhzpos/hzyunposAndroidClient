@@ -199,7 +199,7 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/num_keyboard_font_size_24"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/_ok"
+                app:layout_constraintStart_toEndOf="@id/_clear"
                 app:layout_constraintTop_toBottomOf="@id/_nine" />
 
             <Button

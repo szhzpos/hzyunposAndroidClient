@@ -379,8 +379,8 @@ public class MainActivity extends AppCompatActivity {
                 set_selected_status(v);//设置选中状态
                 final JSONObject jsonObject = mGoodsInfoViewAdapter.getItem(pos),content = new JSONObject();
                 if (jsonObject != null){
-                    final String weigh_barcode_info = jsonObject.getString(GoodsInfoViewAdapter.W_G_MARK);
                     int id = mGoodsInfoViewAdapter.getGoodsId(jsonObject);
+                    final String weigh_barcode_info = (String) jsonObject.remove(GoodsInfoViewAdapter.W_G_MARK);//删除称重标志否则重新选择商品时不弹出称重界面
                     if (mGoodsInfoViewAdapter.getSingleGoods(content,weigh_barcode_info,id)){
                         mSaleGoodsViewAdapter.addSaleGoods(content,mVipInfo);
                         mSearch_content.selectAll();
@@ -495,7 +495,6 @@ public class MainActivity extends AppCompatActivity {
                         }else{
                             mGoodsInfoViewAdapter.fuzzy_search_goods(search);
                         }
-                        search.selectAll();
                     }else if(v_id == R.id.hide){
                         mKeyboard.setVisibility(View.GONE);
                     }else {

@@ -186,6 +186,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         if (mDatas != null){
             if(mDatas.size() != 0){
                 if (!mSearchLoad)mSearchLoad = true;
+                search.getText().clear();
             }else{
                 search.selectAll();
                 MyDialog.ToastMessage("无此商品！",mContext,null);

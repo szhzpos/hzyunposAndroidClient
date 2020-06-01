@@ -145,17 +145,18 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
                         refund_sum_num += refund_num;
                         refund_sum_amt += refund_num * refund_price;
                     }
-                    refund_sum_num_tv.setText(String.format(Locale.CHINA,"%.2f",refund_sum_num));
-                    refund_sum_amt_tv.setText(String.format(Locale.CHINA,"%.2f",refund_sum_amt));
+                    refund_sum_num_tv.setText(String.format(Locale.CHINA,"%.3f",refund_sum_num));
+                    refund_sum_amt_tv.setText(String.format(Locale.CHINA,"%.2f",Utils.formatDouble(refund_sum_amt,2)));
 
                     updateRefundBtnStatus();
                 }
             });
             mRefundGoodsInfoAdapter.setmRefundPayDataChange(datas -> {
-                double pay_sum_amt = 0.0,refund_sum_amt = mRefundGoodsInfoAdapter.getRefundAmt();
+                double pay_sum_amt = 0.0,refund_sum_amt = Utils.formatDouble(mRefundGoodsInfoAdapter.getRefundAmt(),2);
                 for (int i = 0,size = datas.size();i < size;i++){
                     pay_sum_amt += datas.getJSONObject(i).getDoubleValue("pay_money");
                 }
+                pay_sum_amt = Utils.formatDouble(pay_sum_amt,2);
                 if (Utils.equalDouble(refund_sum_amt,pay_sum_amt)){
                     requestRefund();
                 }else {
@@ -196,7 +197,15 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
 
     private void updateRefundBtnStatus(){
         if (mAllRefundBtn != null && mRebatesBtn != null){
-            if (mRefundGoodsInfoAdapter.getRefundType() == 2){
+            int code = mRefundGoodsInfoAdapter.getRefundType();
+            if (code == 3){
+                if (mAllRefundBtn.getVisibility() == View.VISIBLE){
+                    mAllRefundBtn.setVisibility(View.GONE);
+                }
+                if (mRebatesBtn.getVisibility() == View.VISIBLE){
+                    mRebatesBtn.setVisibility(View.GONE);
+                }
+            }else  if (code == 2){
                 if (mAllRefundBtn.getVisibility() == View.VISIBLE){
                     mAllRefundBtn.setVisibility(View.GONE);
                 }
@@ -625,7 +634,7 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
             }
             info.append(line).append(new_line_2).append(new_line).append(new_line_d);
 
-            info.append(Printer.printTwoData(1, context.getString(R.string.refund_amt_sz).concat("：").concat(String.format(Locale.CHINA, "%.2f",refund_sum_amt))
+            info.append(Printer.printTwoData(1, context.getString(R.string.refund_amt_sz).concat("：").concat(String.format(Locale.CHINA, "%.2f",Utils.formatDouble(refund_sum_amt,2)))
                     , context.getString(R.string.b_f_units_sz).concat(String.valueOf(units_num)))).append(new_line).
                     append(new_line_2).append(line).append(new_line_2).append(new_line_d);
 
