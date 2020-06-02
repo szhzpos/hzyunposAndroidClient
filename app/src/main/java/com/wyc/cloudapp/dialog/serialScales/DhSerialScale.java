@@ -70,7 +70,7 @@ public class DhSerialScale extends AbstractSerialScaleImp {
     public void stopRead() {
         mReading = false;
         try {
-            mTask.get(300, TimeUnit.MILLISECONDS);
+            mTask.get(100, TimeUnit.MILLISECONDS);
         } catch (ExecutionException | TimeoutException | InterruptedException e) {
             if (e instanceof TimeoutException){
                 close();

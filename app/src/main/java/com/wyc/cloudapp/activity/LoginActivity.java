@@ -45,6 +45,7 @@ import com.wyc.cloudapp.utils.Utils;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -78,7 +79,7 @@ public class LoginActivity extends AppCompatActivity {
         initPassword();
         initSetup();
         initCloseMainWindow();
-        initLogBtn();
+        initLoginBtn();
 
         //初始化数字键盘
         initKeyboard();
@@ -126,10 +127,12 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void initLogBtn(){
+    private void initLoginBtn(){
         final Button login_btn = findViewById(R.id.b_login);
         if (null != login_btn)
-            login_btn.setOnClickListener((View v)-> login());
+            login_btn.setOnClickListener((View v)-> {
+                login();
+            });
     }
     private void initCloseMainWindow(){
         mCancel = findViewById(R.id.cancel);

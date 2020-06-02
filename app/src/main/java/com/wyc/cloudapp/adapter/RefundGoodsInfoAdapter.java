@@ -17,6 +17,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.DigitKeyboardPopup;
 import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -48,6 +49,7 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
         private EditText cur_refund_num_et,cur_refund_amt_et;
         private CheckBox sel_status_cb;
         View mCurrentLayoutItemView;
+        private TextWatcher mTextWatcher;
         MyViewHolder(View itemView) {
             super(itemView);
             mCurrentLayoutItemView = itemView;
@@ -91,31 +93,33 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
                 holder.unit_name_tv.setText(refund_goods_info.getString("unit_name"));
                 holder.returnable_num_tv.setText(String.format(Locale.CHINA,"%.3f",refund_goods_info.getDoubleValue("returnable_num")));
 
-                holder.cur_refund_num_et.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                if (holder.mTextWatcher == null){
+                    holder.mTextWatcher = new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-                    }
+                        }
 
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-                    }
+                        }
 
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                        double num = 0.0;
-                        double returnable_num = 0.0;
-                        try {
+                        @Override
+                        public void afterTextChanged(Editable s) {
+
+                            double num = 0.0;
+                            double returnable_num = 0.0;
                             if (s.length() != 0)
                                 num = Double.valueOf(s.toString());
+
                             returnable_num = Double.valueOf(holder.returnable_num_tv.getText().toString());
                             if (num > returnable_num){
-                                mContext.runOnUiThread(()->MyDialog.ToastMessage("退货数量不能大于可退数量！",mContext,mDialog.getWindow()));
+                                MyDialog.ToastMessage("退货数量不能大于可退数量！",mContext,mDialog.getWindow());
                                 holder.cur_refund_num_et.setText(String.format(Locale.CHINA,"%.3f",returnable_num));
                                 holder.cur_refund_num_et.setSelection(holder.cur_refund_num_et.length() - 1);
                             }else{
-                                updateRefundNum(holder.cur_refund_num_et,num);
+                                updateRefundNum(holder.mCurrentLayoutItemView,num);
                                 if (Utils.equalDouble(num,0.0)){
                                     if (holder.sel_status_cb.isChecked()){
                                         holder.sel_status_cb.setChecked(false);
@@ -125,18 +129,15 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
                                         holder.sel_status_cb.setChecked(true);
                                     }
                                 }
-
                                 holder.cur_refund_amt_et.setText(String.format(Locale.CHINA,"%.2f",Double.valueOf(holder.price_tv.getText().toString()) * num));
                             }
-                        }catch (NumberFormatException e){
-                            e.printStackTrace();
-                            MyDialog.ToastMessage(e.getMessage(),mContext,mDialog.getWindow());
                         }
-                    }
-                });
+                    };
+                    holder.cur_refund_num_et.addTextChangedListener(holder.mTextWatcher);
+                }
+                holder.cur_refund_num_et.setText(String.format(Locale.CHINA,"%.3f",refund_goods_info.getDoubleValue("refund_num")));
                 holder.cur_refund_num_et.setOnFocusChangeListener(cur_refund_num_focusChangeListener);
                 holder.cur_refund_num_et.setOnClickListener(cur_refund_num_click);
-                holder.cur_refund_num_et.setText(String.format(Locale.CHINA,"%.3f",refund_goods_info.getDoubleValue("refund_num")));
 
                 holder.sel_status_cb.setOnCheckedChangeListener(sel_status_CheckedChange);
             }
@@ -156,7 +157,7 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
     };
     private View.OnClickListener cur_refund_num_click = (v)->{
         Utils.hideKeyBoard((EditText)v);
-        mDigitKeyboardPopup.showAsDropDown(v);
+        mDigitKeyboardPopup.showAtLocation(v);
     };
 
     private CompoundButton.OnCheckedChangeListener sel_status_CheckedChange = (buttonView, isChecked) -> {
@@ -177,8 +178,7 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
         }
     };
 
-    private void updateRefundNum(final View view,double num){
-        final View parent = (View)view.getParent();
+    private void updateRefundNum(final View parent,double num){
         if (parent != null && mGoodsDatas != null){
             final TextView rog_id_tv = parent.findViewById(R.id.rog_id),barcode_id_tv = parent.findViewById(R.id.barcode_id);
             if (null != rog_id_tv && null != barcode_id_tv){
@@ -214,7 +214,6 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
             }
         }
         if (isRefresh){
-            Logger.d("重新刷新");
             notifyDataSetChanged();
         }
     }
@@ -438,9 +437,6 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
                 refund_num = record.getDoubleValue("refund_num");
                 refund_sum_amt += Utils.formatDouble(refund_num * refund_price,2);
             }
-
-        Logger.d("refund_sum_amt:%f",refund_sum_amt);
-
         return refund_sum_amt;
     }
     public int getRefundType(){

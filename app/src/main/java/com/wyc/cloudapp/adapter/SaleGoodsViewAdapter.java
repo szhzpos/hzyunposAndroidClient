@@ -149,6 +149,8 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
     public void deleteSaleGoods(int index,double num){
         int size = mDatas.size();
         if (0 <= index && index < size){
+            final JSONObject jsonObject = mDatas.getJSONObject(index);
+            deleteDiscountRecordForGoods(jsonObject);
             if (num == 0){//等于0删除整条记录
                 if (verifyDeletePermissions()){
                     mDatas.remove(index);
@@ -163,7 +165,6 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
                 }else
                     return;
             }else{
-                final JSONObject jsonObject = mDatas.getJSONObject(index);
                 double current_num = jsonObject.getDoubleValue("xnum"),
                         price = jsonObject.getDoubleValue("price");
                 if ((current_num = current_num - num) <= 0){
@@ -283,7 +284,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
                 json.put("discount_type",DISCOUNT_TYPE.A_DISCOUNT);
                 json.put("sale_amt",current_sale_amt);
 
-                current_discount_amt = old_sale_amt - current_sale_amt;
+                current_discount_amt = Utils.formatDouble(old_sale_amt - old_sale_amt * discount,2);
 
                 if (!Utils.equalDouble(current_discount_amt,0.0)){
                     discount_json = new JSONObject();
@@ -428,7 +429,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
                 jsonObject.put("sale_amt",current_sale_amt);
                 jsonObject.put("original_amt",original_amt);
 
-                current_discount_amt = old_sale_amt - current_sale_amt;
+                current_discount_amt = Utils.formatDouble(old_sale_amt - old_sale_amt * discount,2);
                 if (!Utils.equalDouble(current_discount_amt,0.0)){
                     discount_json = new JSONObject();
                     discount_json.put("gp_id",jsonObject.getIntValue("gp_id"));
@@ -542,7 +543,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
         json.put("sale_amt",current_sale_amt);
 
 
-        current_discount_amt = Utils.formatDouble(old_sale_amt - current_sale_amt,2);
+        current_discount_amt = Utils.formatDouble(old_sale_amt - old_sale_amt * discount,2);
 
         if (null != discount_details && !Utils.equalDouble(current_discount_amt,0.0)){
             discount_json = new JSONObject();
@@ -592,8 +593,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
     private void addSaleGoods(final JSONObject goods,double num,boolean isBarcodeWeighingGoods,final JSONObject vip){
         boolean exist = false;
         int barcode_id = goods.getIntValue("barcode_id"),gp_id = goods.getIntValue("gp_id"),discount_type = -1;
-        double  add_amount,add_goods_price,discount = 1.0,discount_amt = 0.0,new_price = 0.0,current_sale_amt = 0.0,
-                saled_amount = 0.0,current_discount_amt = 0.0,original_price = 0.0,original_amt = 0.0;
+        double  add_goods_price,discount = 1.0,discount_amt = 0.0,new_price = 0.0,current_sale_amt = 0.0,current_discount_amt = 0.0,original_price = 0.0,original_amt = 0.0;
         JSONObject tmp_obj;
         add_goods_price = Utils.getNotKeyAsNumberDefault(goods,"price",1.0);
         for (int i = 0,length = mDatas.size();i < length;i++){
@@ -602,20 +602,22 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
                 exist = true;
                 original_price = tmp_obj.getDoubleValue("original_price");
 
-                saled_amount = tmp_obj.getDoubleValue("sale_amt");
                 discount  = Utils.getNotKeyAsNumberDefault(tmp_obj,"discount",1.0);
                 new_price = Utils.formatDouble(add_goods_price * discount,4);
 
-                if (isBarcodeWeighingGoods){
-                    add_amount = goods.getDoubleValue("sale_amt");
-                }else
-                    add_amount = Utils.formatDouble(num * new_price,2);
-
                 num += tmp_obj.getDoubleValue("xnum");
 
-                current_sale_amt = Utils.formatDouble(saled_amount + add_amount,2);
+                if (isBarcodeWeighingGoods){
+                    current_sale_amt = tmp_obj.getDoubleValue("sale_amt") + goods.getDoubleValue("sale_amt");
+                }else{
+                    current_sale_amt = Utils.formatDouble(num * new_price,2);
+                }
+
                 original_amt = Utils.formatDouble(original_price * num,2);
-                discount_amt = current_discount_amt = Utils.formatDouble(original_amt - current_sale_amt,2);
+
+                Logger.d("current_sale_amt:%f,original_amt:%f",current_sale_amt,original_amt);
+
+                discount_amt = current_discount_amt = Utils.formatDouble(original_amt - original_amt * discount,2);
 
                 tmp_obj.put("price", new_price);
                 tmp_obj.put("discount", discount);
@@ -669,7 +671,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
                 current_sale_amt = original_amt;
             }
 
-            discount_amt = current_discount_amt = Utils.formatDouble(original_amt - current_sale_amt,2);
+            discount_amt = current_discount_amt = Utils.formatDouble(original_amt - original_amt * discount,2);
 
             goods.put("original_price", add_goods_price);
             goods.put("price",new_price);

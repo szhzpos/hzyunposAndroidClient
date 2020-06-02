@@ -170,7 +170,7 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
         final Button mo_l_btn = findViewById(R.id.mo_l);
         if (mo_l_btn != null)
             mo_l_btn.setOnClickListener(v -> {//手动抹零
-                ChangeNumOrPriceDialog changeNumOrPriceDialog = new ChangeNumOrPriceDialog(mContext, mContext.getString(R.string.mo_l_sz),String.format(Locale.CHINA,"%.2f",mActual_amt - ((int)mActual_amt)));
+                final ChangeNumOrPriceDialog changeNumOrPriceDialog = new ChangeNumOrPriceDialog(mContext, mContext.getString(R.string.mo_l_sz),String.format(Locale.CHINA,"%.2f",mActual_amt - ((int)mActual_amt)));
                 changeNumOrPriceDialog.setYesOnclickListener(myDialog -> {
                     double mol_amt = mMolAmt = myDialog.getContent();
                     if (!Utils.equalDouble(mol_amt,0.0)){
@@ -420,10 +420,10 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
         clearContent();
         for (int i = 0,length = datas.size();i < length; i ++){
             jsonObject = datas.getJSONObject(i);
-            mOrder_amt += jsonObject.getDouble("original_amt");
             mDiscount_amt += jsonObject.getDoubleValue("discount_amt");
         }
-        mActual_amt = mOrder_amt - mDiscount_amt;
+        mActual_amt = mContext.getSaleSumAmt();
+        mOrder_amt = mActual_amt + mDiscount_amt;
         mPay_amt = mActual_amt;
         mPay_balance = mActual_amt - mAmt_received;//剩余付款金额等于应收金额已收金额
         mCashAmt = mPay_balance;

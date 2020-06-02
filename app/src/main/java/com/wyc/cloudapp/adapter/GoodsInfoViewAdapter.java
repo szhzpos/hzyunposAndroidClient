@@ -234,23 +234,21 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                     }else{//计份
                         xnum = 1;
                     }
-                    price = amt / (weight == 0 ? 1 : weight);
+                    price = (Utils.equalDouble(weight,0.0) ? 0 : amt / weight);
                 }else{
                     price = object.getDoubleValue("price");
                     if (metering_id == 0){//计重
-                        xnum = amt / (price == 0 ? 1 : price);
+                        xnum = (Utils.equalDouble(price,0.0) ? 0.0 : amt / price);
                     }else{//计份
                         xnum = 1;
                     }
                 }
-                Logger.d("price：%f,xnum:%f,sale_amt:%f",price,(amt / (price == 0 ? 1 : price)),amt);
+                Logger.d("price：%f,xnum:%f,sale_amt:%f",price,xnum,amt);
 
                 object.put("price",price);
                 object.put("xnum",String.format(Locale.CHINA,"%.3f",xnum));
                 object.put("sale_amt",amt);
                 object.put(W_G_MARK,weigh_barcode_info);
-
-                Logger.d("计重商品：%s",object.toJSONString());
             }
         }
         return code;

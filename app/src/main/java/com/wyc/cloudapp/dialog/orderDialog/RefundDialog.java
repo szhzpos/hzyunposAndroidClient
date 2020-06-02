@@ -143,10 +143,10 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
                         refund_price = record.getDoubleValue("refund_price");
                         refund_num = record.getDoubleValue("refund_num");
                         refund_sum_num += refund_num;
-                        refund_sum_amt += refund_num * refund_price;
+                        refund_sum_amt += Utils.formatDouble(refund_num * refund_price,2);
                     }
                     refund_sum_num_tv.setText(String.format(Locale.CHINA,"%.3f",refund_sum_num));
-                    refund_sum_amt_tv.setText(String.format(Locale.CHINA,"%.2f",Utils.formatDouble(refund_sum_amt,2)));
+                    refund_sum_amt_tv.setText(String.format(Locale.CHINA,"%.2f",refund_sum_amt));
 
                     updateRefundBtnStatus();
                 }
