@@ -1203,11 +1203,13 @@
         android:id="@+id/last_order_info"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_5"
+        android:layout_marginStart="@dimen/margin_8"
         android:layout_marginTop="58dp"
-        android:layout_marginEnd="@dimen/margin_5"
-        android:background="@drawable/border_sub_gray"
+        android:layout_marginEnd="@dimen/margin_8"
+        android:background="@drawable/round_shape"
+
         android:padding="@dimen/margin_5"
+        android:translationZ="8dp"
         app:layout_constraintEnd_toStartOf="@+id/main_middle_middle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/main_middle_middle">

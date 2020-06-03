@@ -52,6 +52,7 @@ public class RetailOrderDetailsDialog extends DialogBaseOnMainActivityImp {
         super.onCreate(savedInstanceState);
 
         showOrderInfo();
+        showDetails();
         initReprint();
         initVerifyPay();
     }
@@ -103,9 +104,12 @@ public class RetailOrderDetailsDialog extends DialogBaseOnMainActivityImp {
                     }
                 }
             }
-            initGoodsDetail();
-            initPayDetail();
         }
+    }
+
+    private void showDetails(){
+        initGoodsDetail();
+        initPayDetail();
     }
     private void initGoodsDetail(){
             final RecyclerView goods_detail = findViewById(R.id.goods_details);
@@ -114,7 +118,7 @@ public class RetailOrderDetailsDialog extends DialogBaseOnMainActivityImp {
                 goods_detail.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
                 goods_detail.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
                 goods_detail.setAdapter(retailDetailsGoodsInfoAdapter);
-                retailDetailsGoodsInfoAdapter.setDatas(mOrderInfo.getString("order_code"));
+                retailDetailsGoodsInfoAdapter.setDatas(Utils.getNullStringAsEmpty(mOrderInfo,"order_code"));
             }
     }
     private void initPayDetail(){
@@ -124,7 +128,7 @@ public class RetailOrderDetailsDialog extends DialogBaseOnMainActivityImp {
             pay_detail.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
             pay_detail.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
             pay_detail.setAdapter(mRetailDetailsPayInfoAdapter);
-            mRetailDetailsPayInfoAdapter.setDatas(mOrderInfo.getString("order_code"));
+            mRetailDetailsPayInfoAdapter.setDatas(Utils.getNullStringAsEmpty(mOrderInfo,"order_code"));
             mRetailDetailsPayInfoAdapter.setItemClickListener(pay_record -> mPayRecord = pay_record);
         }
     }
