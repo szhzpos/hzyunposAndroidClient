@@ -206,7 +206,7 @@ public class HangBillDialog extends DialogBaseOnMainActivityImp {
         if (mHbCursorAdapter != null){
             String sql = "SELECT _id,hang_id,amt h_amt,oper_date FROM hangbill";
             if (hang_id != null){
-                sql = sql + " where hang_id like '" + hang_id +"%'";
+                sql = sql + " where cas_id = "+ mContext.getCashierInfo().getIntValue("cas_id") +" and hang_id like '" + hang_id +"%'";
             }
             try {
                 Cursor cursor = SQLiteHelper.getCursor(sql,null);
@@ -226,7 +226,7 @@ public class HangBillDialog extends DialogBaseOnMainActivityImp {
     private void loadHangBillDetail(final String hang_id){
         if (mHbDetailCursorAdapter != null){
             try {
-                Cursor cursor = SQLiteHelper.getCursor("SELECT _id,barcode,goods_title,xnum,sale_price,discount,sale_amt,barcode_id FROM hangbill_detail where hang_id = " + hang_id,null);
+                Cursor cursor = SQLiteHelper.getCursor("SELECT _id,barcode,goods_title,xnum,sale_price,discount,sale_amt,barcode_id FROM hangbill_detail where cas_id = " + mContext.getCashierInfo().getIntValue("cas_id") +" and hang_id = " + hang_id,null);
                 cursor.moveToFirst();
                 mHbDetailCursorAdapter.changeCursor(cursor);
                 if (cursor.getCount() != 0){
@@ -405,8 +405,8 @@ public class HangBillDialog extends DialogBaseOnMainActivityImp {
     }
 
     public int getHangCounts(){
-        JSONObject data = new JSONObject();
-        if (!SQLiteHelper.execSql(data,"select ifnull(max(hang_id),0) + 1 hang_id from hangbill")){
+        final JSONObject data = new JSONObject();
+        if (!SQLiteHelper.execSql(data,"select ifnull(max(hang_id),0) + 1 hang_id from hangbill where cas_id = " + mContext.getCashierInfo().getIntValue("cas_id"))){
             mContext.runOnUiThread(()->MyDialog.ToastMessage("查询挂单号错误：" + data.getString("info"),mContext,mContext.getWindow()));
             return 0;
         }

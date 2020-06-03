@@ -121,7 +121,7 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
                     }
                 }else {
                     mOrderCodeEt.requestFocus();
-                    MyDialog.ToastMessage(mOrderCodeEt,mContext.getString(R.string.retail_order_code_sz).concat(mContext.getString(R.string.not_empty_hint_sz)),mContext,getWindow());
+                    MyDialog.ToastMessage(mOrderCodeEt,mContext.getString(R.string.not_empty_hint_sz,mContext.getString(R.string.retail_order_code_sz)),mContext,getWindow());
                 }
             });
         }

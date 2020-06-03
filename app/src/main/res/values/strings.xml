@@ -31,7 +31,7 @@
     <string name="order_time_sz">时间：</string>
     <string name="num_sz">数量：</string>
     <string name="amt_sz">金额：</string>
-    <string name="b_z_sz">条码/助记码：</string>
+    <string name="b_z_sz">条码/助记码/货号</string>
     <string name="back">回退</string>
     <string name="del">清除</string>
     <string name="shop_id_sz">商户号：</string>
@@ -288,4 +288,6 @@
     <string name="l_p_f_err_hint_sz">加载打印格式错误:%1$s</string>
     <string name="l_p_c_err_hint_sz">加载打印内容错误:%1$s</string>
     <string name="f_not_sz">未设置打印参数!</string>
+    <string name="last_order_sz">上单单号</string>
+    <string name="close_sz">关闭</string>
 </resources>

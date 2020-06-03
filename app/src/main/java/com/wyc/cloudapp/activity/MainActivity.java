@@ -218,6 +218,7 @@ public class MainActivity extends AppCompatActivity {
                 if (verifyQueryBtnBtnPermissions()){
                     final QuerySaleOrderDialog querySaleOrderDialog = new QuerySaleOrderDialog(this);
                     querySaleOrderDialog.show();
+                    querySaleOrderDialog.triggerQuery();
                 }
             });//查交易
 
@@ -240,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
                             public void onYesClick(MyDialog myDialog) {
                                 transferDialog.dismiss();
                                 myDialog.dismiss();
-                                Intent intent = new Intent(activity, LoginActivity.class);
+                                final Intent intent = new Intent(activity, LoginActivity.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 activity.startActivity(intent);
                                 activity.finish();
@@ -446,18 +447,17 @@ public class MainActivity extends AppCompatActivity {
         final EditText search = mSearch_content;
 
         search.setOnFocusChangeListener((v,b)->Utils.hideKeyBoard((EditText) v));
-        mHandler.postDelayed(search::requestFocus,100);
+        mHandler.postDelayed(search::requestFocus,300);
         search.setSelectAllOnFocus(true);
         search.setOnKeyListener((view, i, keyEvent) -> {
             if (mKeyboard.getVisibility() == View.GONE){
                 int keyCode = keyEvent.getKeyCode();
-                if (keyCode == KeyEvent.KEYCODE_ENTER && keyEvent.getAction() == KeyEvent.ACTION_UP){
+                if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && keyEvent.getAction() == KeyEvent.ACTION_DOWN){
                     String content = search.getText().toString();
                     if (content.length() == 0){
                         mGoodsCategoryViewAdapter.trigger_preView();
                     }else{
                         mGoodsInfoViewAdapter.fuzzy_search_goods(search);
-                        //mSearch_content.getText().clear();
                     }
                     return true;
                 }
@@ -552,7 +552,7 @@ public class MainActivity extends AppCompatActivity {
             JSONArray datas = mSaleGoodsViewAdapter.getDatas();
             if (Utils.JsonIsNotEmpty(datas)){
                 MyDialog.displayAskMessage(null, "是否挂单？", activity, myDialog -> {
-                    StringBuilder err = new StringBuilder();
+                    final StringBuilder err = new StringBuilder();
                     if (hangBillDialog.save(datas,mVipInfo,err)){
                         resetOrderInfo();
                         MyDialog.ToastMessage(mSaleGoodsRecyclerView,"挂单成功！",activity,null);
@@ -563,26 +563,23 @@ public class MainActivity extends AppCompatActivity {
                 }, Dialog::dismiss);
             }else{
                 if (hangBillDialog.getHangCounts() > 1){
-                    hangBillDialog.setGetBillDetailListener(new HangBillDialog.OnGetBillListener() {
-                        @Override
-                        public void onGet(JSONArray array, final JSONObject vip) {
-                            if (null != vip)showVipInfo(vip);
-                            JSONObject barcode_id_obj,goods_info;
-                            int id = -1;
-                            for (int i = 0,length = array.size();i < length;i ++){
-                                barcode_id_obj = array.getJSONObject(i);
-                                if (barcode_id_obj != null){
-                                    goods_info = new JSONObject();
-                                    final String isBarcodeWeighingGoods = barcode_id_obj.getString(GoodsInfoViewAdapter.W_G_MARK);
-                                    id = mGoodsInfoViewAdapter.getGoodsId(barcode_id_obj);
-                                    if (mGoodsInfoViewAdapter.getSingleGoods(goods_info,isBarcodeWeighingGoods,id)){
-                                        goods_info.put("xnum",barcode_id_obj.getDoubleValue("xnum"));//挂单取出重量
-                                        mSaleGoodsViewAdapter.addSaleGoods(goods_info,mVipInfo);
-                                        hangBillDialog.dismiss();
-                                    }else{
-                                        MyDialog.ToastMessage(mSaleGoodsRecyclerView,"查询商品信息错误：" + goods_info.getString("info"),activity,getWindow());
-                                        return;
-                                    }
+                    hangBillDialog.setGetBillDetailListener((array, vip) -> {
+                        if (null != vip)showVipInfo(vip);
+                        JSONObject barcode_id_obj,goods_info;
+                        int id = -1;
+                        for (int i = 0,length = array.size();i < length;i ++){
+                            barcode_id_obj = array.getJSONObject(i);
+                            if (barcode_id_obj != null){
+                                goods_info = new JSONObject();
+                                final String isBarcodeWeighingGoods = barcode_id_obj.getString(GoodsInfoViewAdapter.W_G_MARK);
+                                id = mGoodsInfoViewAdapter.getGoodsId(barcode_id_obj);
+                                if (mGoodsInfoViewAdapter.getSingleGoods(goods_info,isBarcodeWeighingGoods,id)){
+                                    goods_info.put("xnum",barcode_id_obj.getDoubleValue("xnum"));//挂单取出重量
+                                    mSaleGoodsViewAdapter.addSaleGoods(goods_info,mVipInfo);
+                                    hangBillDialog.dismiss();
+                                }else{
+                                    MyDialog.ToastMessage(mSaleGoodsRecyclerView,"查询商品信息错误：" + goods_info.getString("info"),activity,getWindow());
+                                    return;
                                 }
                             }
                         }
@@ -592,7 +589,6 @@ public class MainActivity extends AppCompatActivity {
                     MyDialog.ToastMessage(mSaleGoodsRecyclerView,"无挂单信息！",activity,null);
                 }
             }
-
         });
     }
     private void initPrintStatus(){//打印开关

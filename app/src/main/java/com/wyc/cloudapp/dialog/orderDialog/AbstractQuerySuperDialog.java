@@ -42,6 +42,7 @@ public abstract class AbstractQuerySuperDialog extends DialogBaseOnMainActivityI
     private String[] mCashierNames,mCashierIDs;
     protected EditText mStartDateEt,mStartTimeEt,mEndDateEt,mEndTimeEt,mPayStatusEt,mCashierEt,mS_ex_statusEt,mUploadStatusEt,mOrderStatusEt;
     private AbstractQueryDataAdapter mAdapter;
+    private Button mQueryBtn;
     protected AbstractQuerySuperDialog(@NonNull MainActivity context, final String title) {
         super(context, title);
     }
@@ -95,6 +96,10 @@ public abstract class AbstractQuerySuperDialog extends DialogBaseOnMainActivityI
         return tag_v;
     }
     protected void hideEt(){}
+    public void triggerQuery(){
+        if (mQueryBtn != null)mQueryBtn.callOnClick();
+    }
+
 
     private void initTable() {
         mAdapter = getAdapter();
@@ -119,7 +124,7 @@ public abstract class AbstractQuerySuperDialog extends DialogBaseOnMainActivityI
             query_btn.setOnClickListener(v -> {
                 mAdapter.setDatas(query());
             });
-            query_btn.callOnClick();
+            mQueryBtn = query_btn;
         }
     }
     private void initCashierEt(){

@@ -115,7 +115,7 @@ public class TransferDialog extends DialogBaseOnMainActivityImp {
                     dialog.setYesOnclickListener(myDialog -> {
                         final StringBuilder err  = new StringBuilder();
                         if (mTransferDetailsAdapter.saveTransferDetailInfo(dialog.getContent(),err)){
-                            Printer.print(mContext,get_print_content(mContext,mTransferDetailsAdapter.getTransferSumInfo().getString("ti_code"),mTransferDetailsAdapter.isTransferAmtNotVisible(),true));
+                            Printer.print(mContext,get_print_content(mContext,mTransferDetailsAdapter.getTransferSumInfo().getString("ti_code"),mTransferDetailsAdapter.isTransferAmtNotVisible()));
                             mContext.runOnUiThread(()-> {
                                 if (mFinishListener != null)mFinishListener.onFinish();
                             });
@@ -137,20 +137,18 @@ public class TransferDialog extends DialogBaseOnMainActivityImp {
     }
 
     public void verifyTransfer(){
-        final StringBuilder err  = new StringBuilder();
-        int code = mTransferDetailsAdapter.verifyTransfer(err);
+        final StringBuilder info  = new StringBuilder();
+        int code = mTransferDetailsAdapter.verifyTransfer(info);
         switch (code){
             case 0:
                 this.show();
                 break;
             case 1://有正在支付的订单
-                MyDialog.displayAskMessage(null, "有正在支付订单，是否现在处理?", mContext, new MyDialog.onYesOnclickListener() {
-                    @Override
-                    public void onYesClick(MyDialog myDialog) {
-                        final QuerySaleOrderDialog querySaleOrderDialog = new QuerySaleOrderDialog(mContext);
-                        querySaleOrderDialog.show();
-                        myDialog.dismiss();
-                    }
+                MyDialog.displayAskMessage(null, "有正在支付订单，是否现在处理?", mContext, myDialog -> {
+                    final QuerySaleOrderDialog querySaleOrderDialog = new QuerySaleOrderDialog(mContext);
+                    querySaleOrderDialog.show();
+                    querySaleOrderDialog.setQueryCondition(info.toString());
+                    myDialog.dismiss();
                 }, MyDialog::dismiss);
                 break;
             case 2://当前收银员有挂单没处理
@@ -160,12 +158,12 @@ public class TransferDialog extends DialogBaseOnMainActivityImp {
                 }, MyDialog::dismiss);
                 break;
             default:
-                MyDialog.displayErrorMessage(null,"确定是否可以交班错误：" + err,mContext);
+                MyDialog.displayErrorMessage(null,"确定是否可以交班错误：" + info,mContext);
                 break;
         }
     }
 
-    private static String c_format_58(final Context context, final JSONObject format_info, final JSONObject order_info,boolean no_visible ,boolean is_open_cash_box){
+    private static String c_format_58(final Context context, final JSONObject format_info, final JSONObject order_info,boolean no_visible){
         Logger.d_json(order_info.toJSONString());
 
         final StringBuilder info = new StringBuilder();
@@ -179,9 +177,7 @@ public class TransferDialog extends DialogBaseOnMainActivityImp {
         String store_name = Utils.getNullStringAsEmpty(format_info,"s_n");
         store_name = store_name.length() == 0 ? Utils.getNullStringAsEmpty(order_info,"stores_name") : store_name;
 
-        if (is_open_cash_box)//开钱箱
-            info.append(Printer.commandToStr(Printer.OPEN_CASHBOX));
-
+        info.append(Printer.commandToStr(Printer.OPEN_CASHBOX));
 
         while (print_count-- > 0) {//打印份数
             info.append(Printer.commandToStr(Printer.DOUBLE_HEIGHT)).append(Printer.commandToStr(Printer.ALIGN_CENTER))
@@ -281,7 +277,7 @@ public class TransferDialog extends DialogBaseOnMainActivityImp {
 
         return info.toString();
     }
-    public static String get_print_content(final MainActivity context,final String ti_code,boolean no_visible,boolean is_open_cash_box){
+    private static String get_print_content(final MainActivity context,final String ti_code,boolean no_visible){
         final JSONObject print_format_info = new JSONObject(),order_info = new JSONObject();
         String content = "";
         if (SQLiteHelper.getLocalParameter("t_f_info",print_format_info)){
@@ -289,7 +285,7 @@ public class TransferDialog extends DialogBaseOnMainActivityImp {
                 if (getPrintOrderInfo(ti_code,order_info)){
                     switch (print_format_info.getIntValue("f_z")){
                         case R.id.f_58:
-                            content = c_format_58(context,print_format_info,order_info,no_visible,is_open_cash_box);
+                            content = c_format_58(context,print_format_info,order_info,no_visible);
                             break;
                         case R.id.f_76:
                             break;

@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -45,7 +46,6 @@ import com.wyc.cloudapp.utils.Utils;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
-import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -60,7 +60,7 @@ public class LoginActivity extends AppCompatActivity {
     private CustomProgressDialog mProgressDialog;
     private MyDialog myDialog;
     private SyncManagement mSyncManagement;
-    private Button mCancel;
+    private Button mCancelBtn,mLoginBtn;
     private String mAppId,mAppScret,mUrl,mPosNum,mOperId,mStoresId;
     private Future<?> mLoginTask;
     @Override
@@ -75,11 +75,11 @@ public class LoginActivity extends AppCompatActivity {
         mProgressDialog = new CustomProgressDialog(this);
         myDialog = new MyDialog(this);
 
+        initCloseMainWindow();
+        initLoginBtn();
         initUserId();
         initPassword();
         initSetup();
-        initCloseMainWindow();
-        initLoginBtn();
 
         //初始化数字键盘
         initKeyboard();
@@ -98,7 +98,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed(){
-        mCancel.callOnClick();
+        mCancelBtn.callOnClick();
     }
 
     @Override
@@ -133,11 +133,12 @@ public class LoginActivity extends AppCompatActivity {
             login_btn.setOnClickListener((View v)-> {
                 login();
             });
+        mLoginBtn = login_btn;
     }
     private void initCloseMainWindow(){
-        mCancel = findViewById(R.id.cancel);
-        if (null != mCancel)
-            mCancel.setOnClickListener((View V)->{
+        mCancelBtn = findViewById(R.id.cancel);
+        if (null != mCancelBtn)
+            mCancelBtn.setOnClickListener((View V)->{
                 MyDialog.displayAskMessage(myDialog,"是否退出？", mSelf, myDialog -> {
                     mSelf.finish();
                     myDialog.dismiss();
@@ -161,16 +162,38 @@ public class LoginActivity extends AppCompatActivity {
             });
     }
     private void initPassword(){
-        mPassword = findViewById(R.id.password);
-        mPassword.setTransformationMethod(new PasswordEditTextReplacement());
-        mPassword.setOnFocusChangeListener((v, hasFocus) -> Utils.hideKeyBoard((EditText)v));
-        mPassword.setSelectAllOnFocus(true);
+        final EditText password  = findViewById(R.id.password);
+        password.setTransformationMethod(new PasswordEditTextReplacement());
+        password.setOnFocusChangeListener((v, hasFocus) -> Utils.hideKeyBoard((EditText)v));
+        password.setSelectAllOnFocus(true);
+        password.setOnKeyListener((view, i, keyEvent) -> {
+            int keyCode = keyEvent.getKeyCode();
+            if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && keyEvent.getAction() == KeyEvent.ACTION_DOWN){
+                if (mLoginBtn != null)mLoginBtn.callOnClick();
+                return true;
+            }
+            return false;
+        });
+        mPassword = password;
     }
     private void initUserId(){
-        mUser_id = findViewById(R.id.user_id);
-        mUser_id.setOnFocusChangeListener((v, hasFocus) -> Utils.hideKeyBoard((EditText)v));
-        mUser_id.postDelayed(()->mUser_id.requestFocus(),300);
-        mUser_id.setSelectAllOnFocus(true);
+        final EditText user_id = findViewById(R.id.user_id);
+        user_id.setOnFocusChangeListener((v, hasFocus) -> Utils.hideKeyBoard((EditText)v));
+        user_id.postDelayed(user_id::requestFocus,300);
+        user_id.setSelectAllOnFocus(true);
+        user_id.setOnKeyListener((view, i, keyEvent) -> {
+            int keyCode = keyEvent.getKeyCode();
+            if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && keyEvent.getAction() == KeyEvent.ACTION_DOWN){
+                if (mLoginBtn != null)mLoginBtn.callOnClick();
+                return false;
+            }
+            if (keyCode == KeyEvent.KEYCODE_TAB){
+                if (mPassword != null)mPassword.requestFocus();
+                return true;
+            }
+            return false;
+        });
+        mUser_id = user_id;
     }
     @SuppressWarnings("unused")
     private void initSoftKeyBoardListener(){

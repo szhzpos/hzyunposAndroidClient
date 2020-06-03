@@ -9,11 +9,17 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import androidx.annotation.NonNull;
 
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
 import com.wyc.cloudapp.adapter.RetailOrderViewAdapter;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import static android.content.Context.WINDOW_SERVICE;
 
@@ -100,10 +106,10 @@ public class QuerySaleOrderDialog extends AbstractQuerySuperDialog {
     protected void initWindowSize(){//初始化窗口尺寸
         WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
         if (m != null){
-            Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
-            Point point = new Point();
+            final Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+            final Point point = new Point();
             d.getSize(point);
-            Window dialogWindow = this.getWindow();
+            final Window dialogWindow = this.getWindow();
             if (dialogWindow != null){
                 WindowManager.LayoutParams lp = dialogWindow.getAttributes();
                 dialogWindow.setGravity(Gravity.CENTER);
@@ -114,4 +120,26 @@ public class QuerySaleOrderDialog extends AbstractQuerySuperDialog {
         }
     }
 
+    void setQueryCondition(final String start_time){
+        long timestamp = Integer.valueOf(start_time) ;
+
+        if (mStartDateEt != null)mStartDateEt.setText(new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).format(timestamp * 1000));
+        if (mStartTimeEt != null)mStartTimeEt.setText(new SimpleDateFormat("HH:mm:ss", Locale.CHINA).format(timestamp * 1000));
+
+        if (mEndDateEt != null)mEndDateEt.setText(new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).format(new Date()));
+        if (mEndTimeEt != null)mEndTimeEt.setText(mContext.getString(R.string.end_time_sz));
+
+        if (mCashierEt != null){
+            final JSONObject cashier = mContext.getCashierInfo();
+            mCashierEt.setText(cashier.getString("cas_name"));
+            mCashierEt.setTag(cashier.getString("cas_id"));
+        }
+
+        if (mPayStatusEt != null){
+            mPayStatusEt.setText("支付中");
+            mPayStatusEt.setTag(3);
+        }
+
+        triggerQuery();
+    }
 }

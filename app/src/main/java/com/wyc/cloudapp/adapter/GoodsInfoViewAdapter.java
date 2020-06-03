@@ -161,13 +161,15 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                 ",ifnull(img_url,'') img_url from barcode_info where (goods_status = 1 and barcode_status = 1) and %1";
 
         if (isBarcodeWeighingGoods(search_content,barcodeRuleObj)){
-            sql_where = "only_coding = " + barcodeRuleObj.getAsString("item_id");
+            sql_where = "only_coding = '" + barcodeRuleObj.getAsString("item_id") + "'";
             full_sql = sql.replace("%1",sql_where);
             final JSONObject object = new JSONObject();
             if (SQLiteHelper.execSql(object,full_sql)){
-                object.put(W_G_MARK,search_content);
                 mDatas.fluentClear();
-                mDatas.add(object);
+                if (!object.isEmpty()){
+                    object.put(W_G_MARK,search_content);
+                    mDatas.add(object);
+                }
             }else {
                 mDatas = null;
                 err.append(Utils.getNullStringAsEmpty(object,"info"));
@@ -249,6 +251,8 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                 object.put("xnum",String.format(Locale.CHINA,"%.3f",xnum));
                 object.put("sale_amt",amt);
                 object.put(W_G_MARK,weigh_barcode_info);
+            }else {
+                object.put("info",barcodeRuleObj.getAsString("info"));
             }
         }
         return code;
@@ -302,7 +306,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         final JSONObject scale_setting = new JSONObject();
         if (code = loadScaleSetting(scale_setting)){
             final String barcodeRule = scale_setting.getString("barcodeRule");
-            if (MyDialog.ToastMessage(null,"输入条码长度与参数设置的不一致",mContext,null,(code = barcode.length() == barcodeRule.length()))){
+            if (code = barcode.length() == barcodeRule.length()){
                 String sub_sz;
                 StringBuilder sb = new StringBuilder();
                 char tmp;
@@ -347,6 +351,8 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                 object.put("weightLen",scale_setting.getIntValue("weightLen"));
 
                 Logger.d("条码解析内容：%s",object.toString());
+            }else {
+                object.put("info","输入条码长度与参数设置的不一致");
             }
         }
         return code;

@@ -257,7 +257,6 @@ public class RetailOrderDetailsDialog extends DialogBaseOnMainActivityImp {
                 whereClauseList.add("order_code = ? and pay_code = ? and pay_method = ?");
                 whereArgsList.add(new String[]{sz_order_code,order_code_son,pay_method_id});
 
-
                 //更新当前付款记录
                 pay_record.put("pay_status",pay_status);
                 pay_record.put("pay_time",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(pay_time * 1000));
@@ -267,7 +266,9 @@ public class RetailOrderDetailsDialog extends DialogBaseOnMainActivityImp {
 
                 if (mRetailDetailsPayInfoAdapter.isPaySuccess()){//所有付款记录成功付款再更新单据为已支付
                     pay_status = 2;
+                    mOrderInfo.put("pay_status_name","已支付");
                 }
+
                 tables.add("retail_order");
 
                 final ContentValues values_order = new ContentValues();
@@ -296,6 +297,7 @@ public class RetailOrderDetailsDialog extends DialogBaseOnMainActivityImp {
                             err.append(sz_err);
                         }
                     });
+                    mContext.runOnUiThread(this::showOrderInfo);
                 }
             }
             mContext.runOnUiThread(()-> MyDialog.ToastMessage(err.toString(),mContext,getWindow()));

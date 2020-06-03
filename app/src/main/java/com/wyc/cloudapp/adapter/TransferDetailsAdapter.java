@@ -30,6 +30,7 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
     private JSONObject mTransferSumInfo;
     private boolean mTransferAmtNotVisible;
     private PasswordEditTextReplacement editTextReplacement;
+    private String mTransferStartTime = "";
     public TransferDetailsAdapter(MainActivity context){
         mContext = context;
         mTransferSumInfo = new JSONObject();
@@ -92,58 +93,53 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
     public void setDatas(final String cas_id){
         final StringBuilder err = new StringBuilder();
         int stores_id = mContext.getStoreInfo().getIntValue("stores_id");
-        final String pay_method_sql = "SELECT pay_method_id,name pay_m_name from pay_method order by sort",min_time_where_sql = " transfer_status = 1 and (order_status = 2  or order_status = 4) and stores_id = "+ stores_id +" and cashier_id =" + cas_id,
-                min_time_sql = "select min(addtime) addtime from (select min(addtime) addtime from member_order_info where  transfer_status = 1 and status = 3 and stores_id = "+ stores_id +" and cashier_id =" + cas_id +
-                " union select min(addtime) addtime from refund_order where "+ min_time_where_sql + " union select min(addtime) addtime from retail_order where "+ min_time_where_sql +") as b";
-        final String min_time = SQLiteHelper.getString(min_time_sql,err);
-        if (null != min_time){
-            if (!min_time.isEmpty()){
-                Logger.d("min_time：%s",min_time);
-                mDatas = SQLiteHelper.getListToJson(pay_method_sql,err);
-                final String ti_code = generateTransferIdOrderCode();
+        final String start_time = mTransferStartTime,ti_code = generateTransferIdOrderCode();
 
-                if (null != mDatas && getTransferOrderCodes(ti_code,cas_id,stores_id,min_time,err) && getTransferDetailsInfo(cas_id,stores_id,min_time,err)){
-                    double cash_sum_amt = 0.0;
+        Logger.d("start_time：%s",start_time);
 
-                    cash_sum_amt += disposeTransferRetails(ti_code);
-                    cash_sum_amt += disposeTransferRefunds(ti_code);
-                    cash_sum_amt += disposeTransferDeposits(ti_code);
-                    cash_sum_amt += disposeTransferCardsc(ti_code);
+        if (getTransferOrderCodes(ti_code,cas_id,stores_id,start_time,err) && getTransferDetailsInfo(cas_id,stores_id,start_time,err)){
+            final String pay_method_sql = "SELECT pay_method_id,name pay_m_name from pay_method order by sort";
+            mDatas = SQLiteHelper.getListToJson(pay_method_sql,err);
+            if (mDatas != null){
 
-                    JSONObject pay_obj;
-                    for (int i = 0;i < mDatas.size();i++){
-                        pay_obj = mDatas.getJSONObject(i);
-                        int retail_order_num = pay_obj.getIntValue("retail_order_num"),refund_order_num = pay_obj.getIntValue("refund_order_num"),
-                                deposit_order_num = pay_obj.getIntValue("deposit_order_num"),cardsc_order_num = pay_obj.getIntValue("cardsc_order_num");
-                        if (retail_order_num == 0 && refund_order_num == 0 && deposit_order_num == 0 && cardsc_order_num == 0){
-                            mDatas.remove(i--);
-                        }
+                double cash_sum_amt = 0.0;
+
+                cash_sum_amt += disposeTransferRetails(ti_code);
+                cash_sum_amt += disposeTransferRefunds(ti_code);
+                cash_sum_amt += disposeTransferDeposits(ti_code);
+                cash_sum_amt += disposeTransferCardsc(ti_code);
+
+                JSONObject pay_obj;
+                for (int i = 0;i < mDatas.size();i++){
+                    pay_obj = mDatas.getJSONObject(i);
+                    int retail_order_num = pay_obj.getIntValue("retail_order_num"),refund_order_num = pay_obj.getIntValue("refund_order_num"),
+                            deposit_order_num = pay_obj.getIntValue("deposit_order_num"),cardsc_order_num = pay_obj.getIntValue("cardsc_order_num");
+                    if (retail_order_num == 0 && refund_order_num == 0 && deposit_order_num == 0 && cardsc_order_num == 0){
+                        mDatas.remove(i--);
                     }
-                        //
-                    mTransferSumInfo.put("cas_id",cas_id);
-                    mTransferSumInfo.put("order_b_date",min_time);
-                    mTransferSumInfo.put("order_e_date",System.currentTimeMillis() / 1000);
-                    mTransferSumInfo.put("sj_money",cash_sum_amt);
-                    mTransferSumInfo.put("sum_money",cash_sum_amt);
-                    mTransferSumInfo.put("transfer_time",min_time);
-                    mTransferSumInfo.put("stores_id",mContext.getStoreInfo().getIntValue("stores_id"));
-                    mTransferSumInfo.put("ti_code",ti_code);
-
-
-                    Logger.d_json(mTransferSumInfo.toJSONString());
-
-                    notifyDataSetChanged();
-                }else {
-                    mContext.runOnUiThread(()->MyDialog.ToastMessage("加载交班信息错误：" + err,mContext,null));
                 }
-            }else {
-                mContext.runOnUiThread(()->MyDialog.ToastMessage("无交班信息" + err,mContext,null));
+                //
+                mTransferSumInfo.put("cas_id",cas_id);
+                mTransferSumInfo.put("order_b_date",start_time);
+                mTransferSumInfo.put("order_e_date",System.currentTimeMillis() / 1000);
+                mTransferSumInfo.put("sj_money",cash_sum_amt);
+                mTransferSumInfo.put("sum_money",cash_sum_amt);
+                mTransferSumInfo.put("transfer_time",start_time);
+                mTransferSumInfo.put("stores_id",mContext.getStoreInfo().getIntValue("stores_id"));
+                mTransferSumInfo.put("ti_code",ti_code);
+
+                Logger.d_json(mTransferSumInfo.toJSONString());
             }
-        }else {
-            mContext.runOnUiThread(()->MyDialog.ToastMessage("加载交班信息错误：" + err,mContext,null));
         }
+        if (err.length() != 0)mContext.runOnUiThread(()->MyDialog.ToastMessage(err.toString(),mContext,null));
     }
 
+    private String getTransferStartTime(final String cas_id,int stores_id,final StringBuilder err){
+        final String start_time_where_sql = " transfer_status = 1 and (order_status = 2  or order_status = 4) and stores_id = "+ stores_id +" and cashier_id =" + cas_id,
+                start_time_sql = "select min(addtime) addtime from (select min(addtime) addtime from member_order_info where  transfer_status = 1 and status = 3 and stores_id = "+ stores_id +" and cashier_id =" + cas_id +
+                        " union select min(addtime) addtime from refund_order where "+ start_time_where_sql + " union select min(addtime) addtime from retail_order where "+ start_time_where_sql +") as b";
+        return SQLiteHelper.getString(start_time_sql,err);
+    }
 
     private double disposeTransferRetails(final String ti_code){
         JSONObject object,pay_obj;
@@ -289,6 +285,7 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
     }
 
     private boolean getTransferOrderCodes(final String ti_code,final String cas_id,int stores_id,final String start_time,final StringBuilder err){
+        boolean code = false;
          final String retail_code_sql = "select cashier_id cas_id,order_code from retail_order where transfer_status = 1 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +"  and (order_status = 2  or order_status = 4) and "+ start_time +" <= addtime and addtime <= strftime('%s','now') group by order_code,cashier_id",
                  refund_code_sql = "select cashier_id cas_id,ro_code order_code from refund_order where transfer_status = 1 and order_status = 2 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +" and "+ start_time +" <= addtime and addtime <= strftime('%s','now') group by ro_code,cashier_id",
                  deposit_code_sql = "select cashier_id cas_id,order_code from member_order_info where transfer_status = 1 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +" and status = 3 and "+ start_time +" <= addtime and addtime <= strftime('%s','now') group by order_code,cashier_id";
@@ -308,17 +305,21 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
              mTransferOrderCodes.addAll(transfer_refund_codes);
              mTransferOrderCodes.addAll(transfer_deposit_codes);
 
-             JSONObject obj;
-             for (int i = 0,size = mTransferOrderCodes.size();i < size;i++){
-                 obj = mTransferOrderCodes.getJSONObject(i);
-                 obj.put("status",2);
-                 obj.put("ti_code",ti_code);
-             }
-
              Logger.d_json(mTransferOrderCodes.toJSONString());
-             return true;
+
+             if (mTransferOrderCodes.isEmpty()){
+                 err.append("无交班信息!");
+             }else {
+                 JSONObject obj;
+                 for (int i = 0,size = mTransferOrderCodes.size();i < size;i++){
+                     obj = mTransferOrderCodes.getJSONObject(i);
+                     obj.put("status",2);
+                     obj.put("ti_code",ti_code);
+                 }
+                 code = true;
+             }
          }
-         return false;
+         return code;
      }
 
      private boolean getTransferDetailsInfo(final String cas_id,int stores_id,final String start_time,final StringBuilder err){
@@ -337,19 +338,28 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
          return null != transfer_retails && null != transfer_refunds && null != transfer_deposits;
      }
 
-    public int verifyTransfer(final StringBuilder err){
-        int code = -1,stores_id= mContext.getStoreInfo().getIntValue("stores_id"),cas_id = mContext.getCashierInfo().getIntValue("cas_id");
-        String sz_counts = SQLiteHelper.getString("SELECT count(order_id) counts FROM retail_order where pay_status = 3 and cashier_id = "+ cas_id +" and stores_id = " + stores_id,err),
-                sz_h_counts = SQLiteHelper.getString("select count(hang_id) from hangbill where cas_id = '"+ cas_id +"' and stores_id = " + stores_id,err);
-        if (sz_counts != null && sz_h_counts != null){
-            if (Integer.valueOf(sz_counts) == 0 ){
-                if (Integer.valueOf(sz_h_counts) == 0){
-                    code = 0;
+    public int verifyTransfer(final StringBuilder info){
+        int code = -1,stores_id= mContext.getStoreInfo().getIntValue("stores_id");
+        String cas_id = mContext.getCashierInfo().getString("cas_id"),start_time = getTransferStartTime(cas_id,stores_id,info);
+
+        if (start_time != null){
+            if (start_time.isEmpty())start_time = String.valueOf(new Date().getTime() / 1000);
+            final String sz_counts = SQLiteHelper.getString("SELECT count(order_id) counts FROM retail_order where pay_status = 3 and cashier_id = "+ cas_id +" and" +
+                    " stores_id = " + stores_id + " and "+ start_time +" <= addtime and addtime <= strftime('%s','now')",info),
+                    sz_h_counts = SQLiteHelper.getString("select count(hang_id) from hangbill where cas_id = '"+ cas_id +"' and stores_id = " + stores_id,info);
+
+            if (sz_counts != null && sz_h_counts != null){
+                if (Integer.valueOf(sz_counts) == 0 ){
+                    if (Integer.valueOf(sz_h_counts) == 0){
+                        code = 0;
+                        mTransferStartTime = start_time;
+                    }else {
+                        code = 2;
+                    }
                 }else {
-                    code = 2;
+                    info.append(start_time);
+                    code = 1;
                 }
-            }else {
-                code = 1;
             }
         }
         return code;

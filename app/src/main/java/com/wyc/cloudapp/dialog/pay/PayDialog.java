@@ -664,6 +664,12 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
         values.put("pay_status",3);
         return SQLiteHelper.execUpdateSql("retail_order",values," order_code = ?",new String[]{order_code},err);
     }
+    private int updateToPayingStatus(final JSONObject pay_detail,final String order_code,final StringBuilder err){
+        final ContentValues values = new ContentValues();
+        values.put("pay_status",3);
+        return SQLiteHelper.execUpdateSql("retail_order_pays",values," order_code = ? and pay_method = ? and pay_code = ?",
+                new String[]{order_code,Utils.getNullOrEmptyStringAsDefault(pay_detail,"pay_method","-1"),Utils.getNullStringAsEmpty(pay_detail,"pay_code")},err);
+    }
     public void requestPay(){
 
         if (mPayListener != null) mContext.runOnUiThread(()->mPayListener.onProgress(PayDialog.this,"正在支付..."));
@@ -675,7 +681,7 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
 
         JSONObject retJson,pay_detail,pay_method_json,info_json;
         HttpRequest httpRequest = null;
-        String pay_method_id = "",pay_money,pay_code,unified_pay_order,unified_pay_query,sz_param,v_num,order_code_son = "",third_pay_order_id = "",discount_xnote = "";
+        String pay_method_id = "",pay_money,unified_pay_order,unified_pay_query,sz_param,v_num,order_code_son = "",third_pay_order_id = "",discount_xnote = "";
 
         final String order_code = mContext.getOrderCode(),url = mContext.getUrl(),appId = mContext.getAppId(),appScret = mContext.getAppScret(),
                 stores_id = mContext.getStoreInfo().getString("stores_id"),pos_num = mContext.getCashierInfo().getString("pos_num");
@@ -710,7 +716,14 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
                         pay_status = 2;
                         pay_time = System.currentTimeMillis()/1000;
                     }else{
-                        pay_code = pay_detail.getString("pay_code");
+                        //更新支付记录到正在支付状态
+                        if (updateToPayingStatus(pay_detail,order_code,err) < 0){
+                            if (mPayListener != null){
+                                mContext.runOnUiThread(()-> mPayListener.onError(PayDialog.this,err.toString()));
+                            }
+                            return;
+                        }
+
                         v_num = pay_detail.getString("v_num");
 
                         if (httpRequest == null)httpRequest = new HttpRequest();
@@ -737,7 +750,7 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
                             data_.put("order_code",order_code);
                             data_.put("pos_num",pos_num);
                             data_.put("is_wuren",2);
-                            data_.put("order_code_son",pay_code);
+                            data_.put("order_code_son",order_code_son);
                             data_.put("pay_money", pay_money);
                             data_.put("pay_method",pay_method_id);
                             data_.put("pay_code_str",v_num);
@@ -840,7 +853,7 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
                                                                             break;
                                                                         case "y":
                                                                             res_code = info_json.getIntValue("res_code");
-                                                                            if (res_code == 1){//支付成功
+                                                                            if (res_code == 1){
                                                                                 Logger.d_json(info_json.toString());
                                                                                 if (info_json.containsKey("xnote")){
                                                                                     discount_xnote = info_json.getString("xnote");
@@ -877,21 +890,21 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
                             err.append("付款方式不存在:pay_method_id--").append(pay_method_id);
                         }
                     }
-                    if (mPayStatus){
-                        tables.add("retail_order_pays");
 
-                        final ContentValues values_pays = new ContentValues();
-                        values_pays.put("pay_status",pay_status);
-                        values_pays.put("pay_serial_no",third_pay_order_id);
-                        values_pays.put("pay_time",pay_time);
-                        values_pays.put("discount_money",discount_money);
-                        values_pays.put("xnote",discount_xnote);
-                        values_pays.put("return_code",third_pay_order_id);
-                        valueList.add(values_pays);
+                    tables.add("retail_order_pays");
 
-                        whereClauseList.add("order_code = ? and pay_code = ? and pay_method = ?");
-                        whereArgsList.add(new String[]{order_code,order_code_son,pay_method_id});
-                    }
+                    final ContentValues values_pays = new ContentValues();
+                    values_pays.put("pay_status",pay_status);
+                    values_pays.put("pay_serial_no",third_pay_order_id);
+                    values_pays.put("pay_time",pay_time);
+                    values_pays.put("discount_money",discount_money);
+                    values_pays.put("xnote",discount_xnote);
+                    values_pays.put("return_code",third_pay_order_id);
+                    valueList.add(values_pays);
+
+                    whereClauseList.add("order_code = ? and pay_code = ? and pay_method = ?");
+                    whereArgsList.add(new String[]{order_code,order_code_son,pay_method_id});
+
                 }
             }catch (JSONException e){
                 e.printStackTrace();
@@ -902,44 +915,41 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
             mPayStatus = false;
         }
 
+        final ContentValues values_order = new ContentValues();
+        tables.add("retail_order");
         if (!mPayStatus){
-            final ContentValues values = new ContentValues();
-            values.put("order_status",3);
-            values.put("spare_param1",err.toString());
-            if (SQLiteHelper.execUpdateSql("retail_order",values,"order_code = ?",new String[]{order_code},err) >= 0){
-                Logger.e("支付更新订单状态错误：%s",err);
-            }
+            values_order.put("order_status",3);
+            values_order.put("pay_status",1);
+            values_order.put("spare_param1",err.toString());
+            valueList.add(values_order);
         }else{
-            tables.add("retail_order");
-
-            final ContentValues values_order = new ContentValues();
             values_order.put("order_status",2);
             values_order.put("pay_status",2);
             values_order.put("pay_time",pay_time);
             valueList.add(values_order);
+        }
+        whereClauseList.add("order_code = ?");
+        whereArgsList.add(new String[]{order_code});
 
-            whereClauseList.add("order_code = ?");
-            whereArgsList.add(new String[]{order_code});
-
-            int[] rows = SQLiteHelper.execBatchUpdateSql(tables,valueList,whereClauseList,whereArgsList,err);
-
-            if (rows == null){
-                Logger.e("支付更新订单状态错误：%s",err);
-            }else{
-                int index = SQLiteHelper.verifyUpdateResult(rows);
-                if (index == -1){
+        int[] rows = SQLiteHelper.execBatchUpdateSql(tables,valueList,whereClauseList,whereArgsList,err);
+        if (rows == null){
+            Logger.e("支付更新订单状态错误：%s",err);
+        }else{
+            int index = SQLiteHelper.verifyUpdateResult(rows);
+            if (index == -1){
+                if (mPayStatus){
                     if (mContext.getPrintStatus()){
                         Printer.print(mContext, PayDialog.get_print_content(mContext,order_code,open_cashbox));
                     }
                     if (mPayListener != null){
                         mContext.runOnUiThread(()-> mPayListener.onSuccess(PayDialog.this));
                     }
-                } else{
-                    final String sz_err = String.format(Locale.CHINA,"数据表,%s未更新，value:%s,whereClause:%s,whereArgs:%s",tables.get(index),valueList.get(index),
-                            whereClauseList.get(index),Arrays.toString(whereArgsList.get(index)));
-                    Logger.e(sz_err);
-                    err.append(sz_err);
                 }
+            } else{
+                final String sz_err = String.format(Locale.CHINA,"数据表,%s未更新，value:%s,whereClause:%s,whereArgs:%s",tables.get(index),valueList.get(index),
+                        whereClauseList.get(index),Arrays.toString(whereArgsList.get(index)));
+                Logger.e(sz_err);
+                err.append(sz_err);
             }
         }
 

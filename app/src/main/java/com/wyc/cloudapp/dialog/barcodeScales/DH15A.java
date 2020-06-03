@@ -136,16 +136,21 @@ public class DH15A extends AbstractBarcodeScaleImp {
             if (goods != null){
                 //plu(0001~4000) %1,item_id(7) %2 货号，price(6) %3 价格， shelf_life(3) %4 保质期， title %5 商品名称，prefix(2) %6 前缀 m_id(1) %7 <0 计重,1计分>
                 final String sz_data_record = "!0V%1A%2%3%7000000%4%600000000000000000000000000000000000000000000000B%5CDE";//考虑用StringBuilder
+                final StringBuilder stringBuilder = new StringBuilder();
+
                 JSONObject tmp_obj,record_obj;
                 String plu_code,item_id,m_id,title,shelf_life,price,tmp_item_id,tmp_title;
                 try {
                     final String end_code = new String(new byte[]{0x0D,0x0A,0x03},CHARACTER_SET);
+                    long start = System.currentTimeMillis();
+                    Logger.d("start:%d",start);
                     for (int i = 0,size = goods.size();i < size;i++){
                         tmp_obj = goods.getJSONObject(i);
                         m_id = tmp_obj.getString("metering_id");
-                        plu_code = Utils.substringFormRight("0000" + (i + 1),4);
+
 
                         tmp_item_id = tmp_obj.getString("only_coding");
+                        plu_code = Utils.substringFormRight("0000" + tmp_item_id,4);
                         item_id = Utils.substringFormRight("0000000" + tmp_item_id,7);
 
                         price = Utils.substringFormRight("000000" + String.format(Locale.CHINA,"%.0f",tmp_obj.getDouble("retail_price") * 100 ),6);
@@ -156,15 +161,38 @@ public class DH15A extends AbstractBarcodeScaleImp {
 
                         prefix = Utils.substringFormRight("00" + prefix,2);
 
+                        stringBuilder.delete(0,stringBuilder.length()).append(sz_data_record);
+                        int index = stringBuilder.indexOf("%1");
+                        stringBuilder.replace(index,index + 2,plu_code);
+
+                        index = stringBuilder.indexOf("%2");
+                        stringBuilder.replace(index,index + 2,item_id);
+
+                        index = stringBuilder.indexOf("%3");
+                        stringBuilder.replace(index,index + 2,price);
+
+                        index = stringBuilder.indexOf("%4");
+                        stringBuilder.replace(index,index + 2,shelf_life);
+
+                        index = stringBuilder.indexOf("%5");
+                        stringBuilder.replace(index,index + 2,title);
+
+                        index = stringBuilder.indexOf("%6");
+                        stringBuilder.replace(index,index + 2,prefix);
+
+                        index = stringBuilder.indexOf("%7");
+                        stringBuilder.replace(index,index + 2,m_id);
+
                         record_obj = new JSONObject();
-                        record_obj.put("r",sz_data_record.replace("%1",plu_code).replace("%2",item_id).replace("%3",price)
-                                .replace("%4",shelf_life).replace("%5",title).replace("%6",prefix).replace("%7",m_id) + end_code);
+                        record_obj.put("r",stringBuilder.append(end_code).toString());
+
                         record_obj.put("plu",plu_code);
                         record_obj.put("item_id",tmp_item_id);
                         record_obj.put("title",tmp_title);
 
                         data_records.add(record_obj);
                     }
+                    Logger.d("end:%d",System.currentTimeMillis() - start);
                     code = true;
                 }catch (UnsupportedEncodingException e){
                     e.printStackTrace();
