@@ -71,9 +71,11 @@ public class PeripheralSettingFragment extends BaseFragment {
     @Override
     public boolean saveContent() {
         final String p_id_key  = "parameter_id",p_c_key = "parameter_content",p_desc_key = "parameter_desc";
+        final JSONArray array = new JSONArray();
+        final StringBuilder err = new StringBuilder();
+
         JSONObject content = new JSONObject();
-        JSONArray array = new JSONArray();
-        StringBuilder err = new StringBuilder();
+
         content.put(p_id_key, "printer");
         content.put(p_c_key, get_printer_setting(true));
         content.put(p_desc_key, "打印机设置");

@@ -118,12 +118,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/main_top_right_corner"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <LinearLayout
                 android:id="@+id/main_top_right_icon"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -170,8 +164,6 @@
                     app:srcCompat="@drawable/close" />
 
             </LinearLayout>
-
-        </LinearLayout>
 
     </LinearLayout>
 
@@ -240,7 +232,7 @@
                 android:textSize="@dimen/font_size_14" />
 
             <Space
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
 
@@ -1181,7 +1173,7 @@
             android:padding="@dimen/margin_5"
             android:singleLine="true"
             android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_22" />
+            android:textSize="@dimen/font_size_18" />
 
     </LinearLayout>
 
@@ -1200,7 +1192,7 @@
         app:layout_constraintTop_toTopOf="@id/goods_info_list" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/last_order_info"
+        android:id="@+id/last_order_info_c_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_8"
@@ -1210,12 +1202,13 @@
 
         android:padding="@dimen/margin_5"
         android:translationZ="8dp"
+        android:visibility="gone"
         app:layout_constraintEnd_toStartOf="@+id/main_middle_middle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/main_middle_middle">
 
         <TextView
-            android:id="@+id/close_tv"
+            android:id="@+id/order_info_close_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/close_sz"
@@ -1250,7 +1243,6 @@
                 android:background="@drawable/left_separator"
                 android:paddingStart="@dimen/margin_2"
                 android:paddingEnd="@dimen/margin_2"
-                android:text="N0035-200603191040-0001"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_16" />
         </LinearLayout>
@@ -1268,12 +1260,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/margin_2"
-                android:text="@string/actual_amt_sz"
+                android:text="@string/reality_amt_sz"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_16" />
 
             <TextView
-                android:id="@+id/last_actual_amt"
+                android:id="@+id/last_reality_amt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -1290,7 +1282,7 @@
             android:layout_height="match_parent"
             android:layout_marginTop="@dimen/margin_12"
             android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="@id/realityl_amt_layout"
+            app:layout_constraintStart_toStartOf="@id/actual_amt_layout"
             app:layout_constraintTop_toBottomOf="@id/realityl_amt_layout">
 
             <TextView
@@ -1299,7 +1291,7 @@
                 android:layout_marginEnd="@dimen/margin_2"
                 android:text="@string/pay_detail_zl_sz"
                 android:textColor="@color/orange_1"
-                android:textSize="@dimen/font_size_16" />
+                android:textSize="@dimen/font_size_18" />
 
             <TextView
                 android:id="@+id/last_zl"
@@ -1311,11 +1303,11 @@
                 android:paddingEnd="@dimen/margin_2"
                 android:text="@string/z_p_z_sz"
                 android:textColor="@color/orange_1"
-                android:textSize="@dimen/font_size_16" />
+                android:textSize="@dimen/font_size_18" />
         </LinearLayout>
 
         <Button
-            android:id="@+id/details_btn"
+            android:id="@+id/last_reprint_btn"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/width_68"
             android:layout_height="@dimen/height_45"
@@ -1338,12 +1330,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/margin_2"
-                android:text="@string/reality_amt_sz"
+                android:text="@string/rec_amt_sz"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_16" />
 
             <TextView
-                android:id="@+id/last_reality_amt"
+                android:id="@+id/last_rec_amt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

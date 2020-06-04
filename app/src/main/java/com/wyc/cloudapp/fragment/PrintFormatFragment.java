@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 
@@ -96,8 +97,8 @@ public class PrintFormatFragment extends BaseFragment {
             final EditText stores_name = mRootView.findViewById(R.id.stores_name),footer_c = mRootView.findViewById(R.id.footer_c),
                     p_count = mRootView.findViewById(R.id.p_count),footer_space = mRootView.findViewById(R.id.footer_space);
             String parameter_id = "",parameter_desc = "";
-            int id = -1;
-            switch (frg.getCheckedRadioButtonId()){
+            int id = frg.getCheckedRadioButtonId();
+            switch (id){
                 case R.id.checkout_format:
                     parameter_id = "c_f_info";
                     parameter_desc = "结账小票打印格式信息";
@@ -116,7 +117,7 @@ public class PrintFormatFragment extends BaseFragment {
                     break;
             }
              if (way){
-                 object.put("f",frg.getCheckedRadioButtonId());
+                 object.put("f",id);
                  object.put("f_z",fzrg.getCheckedRadioButtonId());
                  object.put("s_n",stores_name.getText().toString());
                  object.put("f_c",footer_c.getText().toString());
@@ -128,15 +129,11 @@ public class PrintFormatFragment extends BaseFragment {
                  content.put("parameter_desc",parameter_desc);
              }else{
                  if (SQLiteHelper.getLocalParameter(parameter_id,object)){
-                     id = Utils.getNotKeyAsNumberDefault(object,"f",-1);
-                     if (id != -1){
-                         frg.check(id);
-                         fzrg.check(object.getIntValue("f_z"));
-                         stores_name.setText(object.getString("s_n"));
-                         footer_c.setText(object.getString("f_c"));
-                         p_count.setText(Utils.getNullOrEmptyStringAsDefault(object,"p_c","1"));
-                         footer_space.setText(Utils.getNullOrEmptyStringAsDefault(object,"f_s","5"));
-                     }
+                     fzrg.check(object.getIntValue("f_z"));
+                     stores_name.setText(Utils.getNullStringAsEmpty(object,"s_n"));
+                     footer_c.setText(Utils.getNullStringAsEmpty(object,"f_c"));
+                     p_count.setText(Utils.getNullOrEmptyStringAsDefault(object,"p_c","1"));
+                     footer_space.setText(Utils.getNullOrEmptyStringAsDefault(object,"f_s","5"));
                  }else{
                      MyDialog.ToastMessage("加载打印格式参数错误：" + object.getString("info"),mContext,null);
                  }

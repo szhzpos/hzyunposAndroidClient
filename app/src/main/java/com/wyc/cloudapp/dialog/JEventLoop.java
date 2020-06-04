@@ -12,10 +12,9 @@ public final class JEventLoop {
     private static final ThreadLocal<Stack<JEventLoop>> sThreadLocal = new ThreadLocal<>();
     private int mCode = 0;
     private Handler mHandler;
-    private volatile boolean mDone;
+    private volatile boolean mDone = false;
     private final Object mLock = new Object();
     public JEventLoop(){
-        mDone = false;
     }
     private class ExitException extends RuntimeException{
         ExitException(){

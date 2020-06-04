@@ -2,6 +2,7 @@ package com.wyc.cloudapp.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -56,6 +57,7 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
+import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
@@ -88,14 +90,12 @@ public class MainActivity extends AppCompatActivity {
     private TableLayout mKeyboard;
     private String mZkCashierId = "";
     private SecondDisplay mSecondDisplay;
+    private ConstraintLayout mLastOrderInfo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
-        mTransferStatus = new AtomicBoolean(true);//传输状态
-        initNetworkStatus();
 
         //初始化成员变量
         mHandler = new Myhandler(this);
@@ -108,6 +108,11 @@ public class MainActivity extends AppCompatActivity {
         mKeyboard = findViewById(R.id.keyboard_layout);
         mOrderCodeTv = findViewById(R.id.order_code);
         mDisSumAmtTv = findViewById(R.id.dis_sum_amt);
+        mTransferStatus = new AtomicBoolean(true);//传输状态
+
+
+        initNetworkStatus();
+        initLastOrderInfo();
 
         //初始化adapter
         initGoodsInfoAdapter();
@@ -163,6 +168,49 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed(){
         if (null != mCloseBtn)
             mCloseBtn.callOnClick();
+    }
+
+    private void initLastOrderInfo(){
+       final ConstraintLayout constraintLayout =  findViewById(R.id.last_order_info_c_layout);
+       if (constraintLayout != null){
+           final TextView close_tv = constraintLayout.findViewById(R.id.order_info_close_tv);
+           close_tv.setOnClickListener(v -> constraintLayout.setVisibility(View.GONE));
+           mLastOrderInfo = constraintLayout;
+       }
+    }
+    private void hideLastOrderInfo(){
+        final ConstraintLayout constraintLayout = mLastOrderInfo;
+        if (constraintLayout != null && constraintLayout.getVisibility() == View.VISIBLE){
+            constraintLayout.setVisibility(View.GONE);
+        }
+    }
+    private void showLastOrderInfo(final String order_code){
+        final ConstraintLayout constraintLayout = mLastOrderInfo;
+        if (constraintLayout != null){
+            constraintLayout.setVisibility(View.VISIBLE);
+            final JSONObject order_info = new JSONObject();
+            if (SQLiteHelper.execSql(order_info,"SELECT order_code,sum(pre_sale_money) pre_amt,sum(pay_money) pay_amt,sum(pre_sale_money - pay_money) zl_amt FROM " +
+                    "retail_order_pays where order_code = '" + order_code +"' group by order_code")){
+
+                final TextView last_order_code = constraintLayout.findViewById(R.id.last_order_code),last_reality_amt = constraintLayout.findViewById(R.id.last_reality_amt),
+                        last_rec_amt = constraintLayout.findViewById(R.id.last_rec_amt),last_zl = constraintLayout.findViewById(R.id.last_zl),close_tv = constraintLayout.findViewById(R.id.order_info_close_tv);
+
+                final Button last_reprint_btn = constraintLayout.findViewById(R.id.last_reprint_btn);
+
+                last_order_code.setText(order_info.getString("order_code"));
+                last_rec_amt.setText(order_info.getString("pay_amt"));
+                last_reality_amt.setText(order_info.getString("pre_amt"));
+                last_zl.setText(String.format(Locale.CHINA,"%.2f",order_info.getDoubleValue("zl_amt")));
+                close_tv.setOnClickListener(v -> {
+                    constraintLayout.setVisibility(View.GONE);
+                    close_tv.setOnClickListener(null);
+                    last_reprint_btn.setOnClickListener(null);
+                });
+                last_reprint_btn.setOnClickListener(v -> Printer.print(this,PayDialog.get_print_content(this,last_order_code.getText().toString(),false)));
+            }else {
+                MyDialog.ToastMessage(order_info.getString("info"),this,getWindow());
+            }
+        }
     }
 
     private void initNetworkStatus(){
@@ -373,9 +421,10 @@ public class MainActivity extends AppCompatActivity {
         goods_info_view.setLayoutManager(gridLayoutManager);
         registerGlobalLayoutToRecyclerView(goods_info_view,getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration());
         mGoodsInfoViewAdapter.setOnItemClickListener(new GoodsInfoViewAdapter.OnItemClickListener() {
-            View mCurrentView;
+            private View mCurrentView;
             @Override
             public void onClick(View v, int pos) {
+                hideLastOrderInfo();
                 Utils.disableView(v,300);
                 set_selected_status(v);//设置选中状态
                 final JSONObject jsonObject = mGoodsInfoViewAdapter.getItem(pos),content = new JSONObject();
@@ -420,22 +469,19 @@ public class MainActivity extends AppCompatActivity {
             public void onChanged(){
                 final JSONArray datas = mSaleGoodsViewAdapter.getDatas();
                 double sale_sum_num = 0.0,sale_sum_amount = 0.0,dis_sum_amt = 0.0;
-                try {
-                    for (int i = 0,length = datas.size();i < length;i ++){
-                        final JSONObject jsonObject = datas.getJSONObject(i);
-                        sale_sum_num += jsonObject.getDouble("xnum");
-                        sale_sum_amount += jsonObject.getDouble("sale_amt");
-                        dis_sum_amt += jsonObject.getDouble("discount_amt");
-                    }
-                    mSaleSumNumTv.setText(String.format(Locale.CANADA,"%.3f",sale_sum_num));
-                    mSaleSumAmtTv.setText(String.format(Locale.CANADA,"%.2f",sale_sum_amount));
-                    mDisSumAmtTv.setText(String.format(Locale.CANADA,"%.2f",dis_sum_amt));
 
-                    mSaleGoodsRecyclerView.scrollToPosition(mSaleGoodsViewAdapter.getCurrentItemIndex());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    MyDialog.ToastMessage("更新销售数据错误：" + e.getMessage(),MainActivity.this,null);
+                for (int i = 0,length = datas.size();i < length;i ++){
+                    final JSONObject jsonObject = datas.getJSONObject(i);
+                    sale_sum_num += jsonObject.getDouble("xnum");
+                    sale_sum_amount += jsonObject.getDouble("sale_amt");
+                    dis_sum_amt += jsonObject.getDouble("discount_amt");
                 }
+                mSaleSumNumTv.setText(String.format(Locale.CANADA,"%.3f",sale_sum_num));
+                mSaleSumAmtTv.setText(String.format(Locale.CANADA,"%.2f",sale_sum_amount));
+                mDisSumAmtTv.setText(String.format(Locale.CANADA,"%.2f",dis_sum_amt));
+
+                mSaleGoodsRecyclerView.scrollToPosition(mSaleGoodsViewAdapter.getCurrentItemIndex());
+
                 if (mSecondDisplay != null)mSecondDisplay.notifyChange(mSaleGoodsViewAdapter.getCurrentItemIndex());
             }
         });
@@ -658,7 +704,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess(PayDialog myDialog) {
                         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
                         mSyncManagement.sync_retail_order();
-                        Logger.d("当前mZkCashierId:%s",mZkCashierId);
+                        showLastOrderInfo(mOrderCodeTv.getText().toString());
                         resetOrderInfo();
                         myDialog.dismiss();
                         MyDialog.SnackbarMessage(activity.getWindow(),"结账成功！", mOrderCodeTv);
@@ -723,13 +769,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-/*    private void setDisCashierId(final String id){
-        if (null == id || "".equals(id)){
-            mZkCashierId = mCashierInfo.getString("cas_id");
-        }else
-            mZkCashierId = id;
 
-    }*/
     private void resetOrderCode(){
         mOrderCodeTv.setText(mSaleGoodsViewAdapter.generateSaleOrderCode(mCashierInfo.getString("pos_num"),1));
     }

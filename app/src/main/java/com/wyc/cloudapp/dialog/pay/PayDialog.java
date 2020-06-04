@@ -75,11 +75,13 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
         mRemarkEt = findViewById(R.id.et_remark);//备注
         mDiscountDescriptionTv = findViewById(R.id.discount_description);//折扣信息
 
-        //初始化支付方式
-        initPayMethod();
+
 
         //初始化支付明细
         initPayDetailViewAdapter();
+
+        //初始化支付方式
+        initPayMethod();
 
         //初始化现金EditText
         initCsahText();
@@ -123,6 +125,11 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
         if (!Utils.equalDouble(mDiscount_amt,0.0)){
             mContext.deleteAlldiscountRecord();
         }
+    }
+
+    @Override
+    protected void finalize(){
+        Logger.d("PayDialog finalize");
     }
 
     private void allDiscountBtn(){
@@ -243,10 +250,10 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
         View view =  getCurrentFocus();
         if (view != null) {
             if (view.getId() == R.id.cash_amt) {
-                EditText tmp_edit = ((EditText)view);
-                Editable editable = tmp_edit.getText();
+                final EditText tmp_edit = ((EditText)view);
+                final Editable editable = tmp_edit.getText();
                 int index = tmp_edit.getSelectionStart(),point_index = editable.toString().indexOf(".");
-                String sz_button = ((Button) v).getText().toString();
+                final String sz_button = ((Button) v).getText().toString();
                 if (-1 != point_index && tmp_edit.getSelectionEnd() == editable.length()){
                     editable.replace(0, editable.length(),sz_button.concat(mContext.getString(R.string.d_zero_point_sz)));
                     point_index = editable.toString().indexOf(".");
@@ -331,7 +338,7 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
             public void onChanged() {
             super.onChanged();
             final JSONArray jsonArray = getContent();
-            double pay_amt = 0.0,zl_amt = 0.0,sale_amt;
+            double pay_amt = 0.0,zl_amt = 0.0;
             if (!jsonArray.isEmpty()){
                 for (int i = 0,length = jsonArray.size();i < length;i ++){//第一个为表头
                     JSONObject object = jsonArray.getJSONObject(i);
@@ -349,10 +356,10 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
 
                 if (verifyPayBalance()){
                     if (Utils.equalDouble(mActual_amt,mAmt_received)){//支付明细数据发送变化后，计算是否已经付款完成，如果完成触发支付完成事件
-                        sale_amt = mContext.getSaleSumAmt();
-                        pay_amt = mPayDetailViewAdapter.getPaySumAmt();
+                        double sale_amt = mContext.getSaleSumAmt();
+                        double rec_pay_amt = mPayDetailViewAdapter.getPaySumAmt();
 
-                        if (Utils.equalDouble(sale_amt,pay_amt)){
+                        if (Utils.equalDouble(sale_amt,rec_pay_amt)){//再次验证销售金额以及付款金额是否相等
                             if (mPayListener != null){
                                 mPayListener.onStart(PayDialog.this);
                             }
@@ -422,6 +429,7 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
             jsonObject = datas.getJSONObject(i);
             mDiscount_amt += jsonObject.getDoubleValue("discount_amt");
         }
+        mAmt_received = mPayDetailViewAdapter == null ? 0.0 :mPayDetailViewAdapter.getPaySumAmt();;
         mActual_amt = mContext.getSaleSumAmt();
         mOrder_amt = mActual_amt + mDiscount_amt;
         mPay_amt = mActual_amt;
@@ -578,7 +586,7 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
             pay.put("remark","");
             pay.put("zk_money",0.0);
             pay.put("pre_sale_money",pamt);
-            pay.put("give_change_money",pzl);
+            pay.put("give_change_money",0.0);
             pay.put("discount_money",0.0);
             pay.put("xnote",Utils.getNullStringAsEmpty(tmp_json,"xnote"));
             pay.put("return_code","");
@@ -681,7 +689,7 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
 
         JSONObject retJson,pay_detail,pay_method_json,info_json;
         HttpRequest httpRequest = null;
-        String pay_method_id = "",pay_money,unified_pay_order,unified_pay_query,sz_param,v_num,order_code_son = "",third_pay_order_id = "",discount_xnote = "";
+        String pay_method_id ,pay_money,unified_pay_order,unified_pay_query,sz_param,v_num,order_code_son ,third_pay_order_id,discount_xnote;
 
         final String order_code = mContext.getOrderCode(),url = mContext.getUrl(),appId = mContext.getAppId(),appScret = mContext.getAppScret(),
                 stores_id = mContext.getStoreInfo().getString("stores_id"),pos_num = mContext.getCashierInfo().getString("pos_num");
@@ -704,6 +712,8 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
         if (null != pays){
             try{
                 for (int i = 0,size = pays.size();i < size && mPayStatus;i++){
+                    discount_xnote = "[]";
+                    third_pay_order_id = "";
                     pay_detail = pays.getJSONObject(i);
                     pay_method_id = pay_detail.getString("pay_method");
                     order_code_son = pay_detail.getString("pay_code");
@@ -1212,7 +1222,7 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
             final StringBuilder err = new StringBuilder();
             final String goods_info_sql = "SELECT a.barcode,b.goods_title,b.type,a.price,a.retail_price original_price,a.xnum,a.retail_price * a.xnum original_amt,\n" +
                     "a.total_money sale_amt,a.retail_price * a.xnum - a.total_money discount_amt FROM retail_order_goods a \n" +
-                    "left join barcode_info b on a.barcode_id = b.barcode_id where order_code = '" + order_code + "'", pays_info_sql = "SELECT  b.name,pre_sale_money pamt,give_change_money pzl,xnote FROM retail_order_pays a \n" +
+                    "left join barcode_info b on a.barcode_id = b.barcode_id where order_code = '" + order_code + "'", pays_info_sql = "SELECT  b.name,pre_sale_money pamt,(pre_sale_money - pay_money) pzl,xnote FROM retail_order_pays a \n" +
                     "left join pay_method b on a.pay_method = b.pay_method_id where order_code = '" + order_code + "'";
 
             final JSONArray sales = SQLiteHelper.getListToJson(goods_info_sql, err), pays = SQLiteHelper.getListToJson(pays_info_sql, err);

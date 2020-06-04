@@ -47,8 +47,7 @@
     <string name="affirm_pay_sz">确认收银</string>
     <string name="order_amt_sz">单据金额</string>
     <string name="discount_amt_sz">优惠金额</string>
-    <string name="actual_amt_sz">应收金额</string>
-    <string name="pay_method_sz">-联合支付明细-</string>
+    <string name="rec_amt_sz">应收金额</string>
     <string name="unpay_amt_sz">待收</string>
     <string name="amt_received_sz">已收</string>
     <string name="balance_sz">剩余</string>
@@ -208,7 +207,7 @@
     <string name="item_no_sz">货号</string>
     <string name="unit_sz">单位</string>
     <string name="pay_code_sz">支付单号</string>
-    <string name="reprint_order_sz">补打小票</string>
+    <string name="reprint_order_sz">重打小票</string>
     <string name="abnormal_back_order_sz">异常退单</string>
     <string name="verify_pay_sz">支付验证</string>
     <string name="card_code_sz">卡号</string>
