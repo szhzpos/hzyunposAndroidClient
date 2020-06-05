@@ -102,7 +102,7 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
                 query_condition_layout.setVisibility(View.GONE);
                 mRefundGoodsInfoAdapter.setData(mContext.getSaleData());
             }else {
-                final Button query_btn = mQueryBtn = query_condition_layout.findViewById(R.id.query_btn);
+                final Button query_btn =  query_condition_layout.findViewById(R.id.query_btn);
                 if (query_btn != null){
                     query_btn.setOnClickListener(v -> {
                         if (mOrderCode != null && mOrderCode.length() != 0){
@@ -130,6 +130,7 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
                             MyDialog.ToastMessage(mOrderCodeEt,mContext.getString(R.string.not_empty_hint_sz,mContext.getString(R.string.retail_order_code_sz)),mContext,getWindow());
                         }
                     });
+                    mQueryBtn = query_btn;
                 }
             }
         }
@@ -326,7 +327,7 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
     }
     private void refundWithNotCheck(final StringBuilder err){
         if (updateFromRefundResult(null,mOrderCode,mRefundCode,err)){
-            if (uploadRefundOrder(mContext,mOrderCode, mRefundCode, err)) {
+            if (uploadRefundOrder(mContext.getAppId(),mContext.getUrl(),mContext.getAppSecret(),mOrderCode, mRefundCode, err)) {
                 //重新获取退单信息
                 if (mQueryBtn != null)mQueryBtn.callOnClick();
             }
@@ -336,7 +337,7 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
         final JSONObject object = new JSONObject();
         object.put("appid",mContext.getAppId());
         object.put("order_code",mOrderCode);
-        final String sz_param = HttpRequest.generate_request_parm(object,mContext.getAppScret());
+        final String sz_param = HttpRequest.generate_request_parm(object,mContext.getAppSecret());
         HttpRequest httpRequest = new HttpRequest();
         JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + "/api/pay2_refund/refund",sz_param,true);
         switch (retJson.getIntValue("flag")){
@@ -357,7 +358,7 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
 
                                 mProgressDialog.setMessage("正在上传退单信息...").refreshMessage();
                                 //上传本地订单
-                                if (uploadRefundOrder(mContext,mOrderCode, mRefundCode, err)) {
+                                if (uploadRefundOrder(mContext.getAppId(),mContext.getUrl(),mContext.getAppSecret(),mOrderCode, mRefundCode, err)) {
                                     //重新获取退单信息
                                     if (mQueryBtn != null)mQueryBtn.callOnClick();
                                 }
@@ -507,7 +508,7 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
         return SQLiteHelper.execSQLByBatchFromJson(data,tables,Arrays.asList(refund_order_cols,refund_order_goods_cols,refund_order_pays_cols),err,0);
     }
 
-    private static boolean uploadRefundOrder(final MainActivity context,final String order_code,final String ro_code,@NonNull final StringBuilder err){
+    private static boolean uploadRefundOrder(final String appid,final String url,final String appSecret,final String order_code,final String ro_code,@NonNull final StringBuilder err){
         final String refund_order_sql = "SELECT refund_total total,member_id,remark,card_code,name,mobile,\n" +
                 "       pos_code,addtime,cashier_id,type,total order_money,order_code,ro_code,stores_id FROM refund_order where order_status = 2 and upload_status = 1 and ro_code = '" + ro_code +"' and (ifnull(order_code,'') = '" + order_code +"')",
                 refund_goods_sql = "SELECT produce_date,conversion,is_rk,rog_id,refund_price,refund_num xnum,price,barcode_id,ro_code FROM refund_order_goods where ro_code = '"+ ro_code +"';",
@@ -528,12 +529,12 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
                     data.put("order_goods",refund_goods);
                     data.put("order_pay",refund_pays);
 
-                    send_data.put("appid",context.getAppId());
+                    send_data.put("appid",appid);
                     send_data.put("data",data);
 
                     Logger.d_json(data.toJSONString());
 
-                    JSONObject retJson = httpRequest.sendPost(context.getUrl() + "/api/refund/order_upload",HttpRequest.generate_request_parm(send_data,context.getAppScret()),true);
+                    JSONObject retJson = httpRequest.sendPost(url + "/api/refund/order_upload",HttpRequest.generate_request_parm(send_data,appSecret),true);
                     switch (retJson.getIntValue("flag")){
                         case 0:
                             code = false;

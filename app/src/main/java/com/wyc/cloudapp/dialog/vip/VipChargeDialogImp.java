@@ -1,8 +1,6 @@
 package com.wyc.cloudapp.dialog.vip;
 
 import android.content.ContentValues;
-import android.hardware.usb.UsbDeviceConnection;
-import android.hardware.usb.UsbEndpoint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -32,7 +30,6 @@ import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
-import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.lang.ref.WeakReference;
 import java.util.Date;
@@ -130,7 +127,7 @@ public class VipChargeDialogImp extends AbstractPayDialog {
                 final StringBuilder err = new StringBuilder();
 
                 JSONObject cashier_info = mContext.getCashierInfo(),store_info = mContext.getStoreInfo(),data_ = new JSONObject(),retJson,info_json;
-                final String url = mContext.getUrl(),appId = mContext.getAppId(),appScret = mContext.getAppScret(),stores_id = store_info.getString("stores_id"),sz_moeny =  mPayAmtEt.getText().toString(),
+                final String url = mContext.getUrl(),appId = mContext.getAppId(),appScret = mContext.getAppSecret(),stores_id = store_info.getString("stores_id"),sz_moeny =  mPayAmtEt.getText().toString(),
                         member_id = mVip.getString("member_id"),third_order_id = generate_pay_son_order_id();
 
 

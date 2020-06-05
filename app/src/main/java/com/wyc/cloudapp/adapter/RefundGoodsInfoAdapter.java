@@ -354,7 +354,7 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
         object.put("stores_id",mContext.getStoreInfo().getString("stores_id"));
 
 
-        final JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + "/api/refund/getretailrefund",HttpRequest.generate_request_parm(object,mContext.getAppScret()),true);
+        final JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + "/api/refund/getretailrefund",HttpRequest.generate_request_parm(object,mContext.getAppSecret()),true);
 
         if (retJson.getIntValue("flag") == 1){
             final JSONObject info = JSON.parseObject(retJson.getString("info"));

@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
     private AtomicBoolean mTransferStatus;
     private volatile boolean mPrintStatus = true;//打印状态
     private long mCurrentTimestamp = 0;
-    private String mAppId,mAppScret,mUrl;
+    private String mAppId, mAppSecret,mUrl;
     private TextView mCurrentTimeViewTv, mSaleSumNumTv, mSaleSumAmtTv, mOrderCodeTv, mDisSumAmtTv;
     private SyncManagement mSyncManagement;
     private ImageView mCloseBtn;
@@ -226,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initSyncManagement(){
-        mSyncManagement = new SyncManagement(mHandler,mUrl,mAppId,mAppScret,mStoreInfo.getString("stores_id"),mCashierInfo.getString("pos_num"),mCashierInfo.getString("cas_id"));
+        mSyncManagement = new SyncManagement(mHandler,mUrl,mAppId, mAppSecret,mStoreInfo.getString("stores_id"),mCashierInfo.getString("pos_num"),mCashierInfo.getString("cas_id"));
         mSyncManagement.sync_retail_order();
         mSyncManagement.sync_transfer_order();
         mSyncManagement.start_sync(false);
@@ -350,7 +350,7 @@ public class MainActivity extends AppCompatActivity {
                         HttpRequest httpRequest = new HttpRequest();
                         JSONObject json = new JSONObject(),retJson,info_json;
                         json.put("appid",mAppId);
-                        retJson = httpRequest.setConnTimeOut(3000).setReadTimeOut(3000).sendPost(mUrl + "/api/cashier/get_time",HttpRequest.generate_request_parm(json,mAppScret),true);
+                        retJson = httpRequest.setConnTimeOut(3000).setReadTimeOut(3000).sendPost(mUrl + "/api/cashier/get_time",HttpRequest.generate_request_parm(json, mAppSecret),true);
                         switch (retJson.getIntValue("flag")) {
                             case 0:
                                 mCurrentTimestamp = System.currentTimeMillis();
@@ -400,7 +400,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     mUrl = st_info.getString("server_url");
                     mAppId = st_info.getString("appId");
-                    mAppScret = st_info.getString("appScret");
+                    mAppSecret = st_info.getString("appScret");
 
                     mStoreInfo = JSON.parseObject(st_info.getString("storeInfo"));
                     store_name.setText(String.format("%s%s%s%s",mStoreInfo.getString("stores_name"),"[",mStoreInfo.getString("stores_id"),"]"));
@@ -783,7 +783,7 @@ public class MainActivity extends AppCompatActivity {
     private void initSecondDisplay(){
         mSecondDisplay = SecondDisplay.getInstantiate(this);
         if (null != mSecondDisplay){
-            if (isConnection())mSecondDisplay.loadAdImg(mUrl,mAppId,mAppScret);
+            if (isConnection())mSecondDisplay.loadAdImg(mUrl,mAppId, mAppSecret);
             mSecondDisplay.setDatas(mSaleGoodsViewAdapter.getDatas()).setNavigationInfo(mStoreInfo).show();
         }
     }
@@ -854,8 +854,8 @@ public class MainActivity extends AppCompatActivity {
     public String getAppId(){
         return mAppId;
     }
-    public String getAppScret(){
-        return mAppScret;
+    public String getAppSecret(){
+        return mAppSecret;
     }
     public String getUrl(){
         return mUrl;

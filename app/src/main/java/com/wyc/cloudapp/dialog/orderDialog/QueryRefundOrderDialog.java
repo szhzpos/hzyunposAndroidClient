@@ -52,9 +52,9 @@ public class QueryRefundOrderDialog extends AbstractQuerySuperDialog {
         final StringBuilder where_sql = new StringBuilder();
         if (refund_order_code_layout != null){
             refund_order_code_layout.setVisibility(View.VISIBLE);
-            final EditText order_code_et = findViewById(R.id.order_code),refund_order_code = refund_order_code_layout.findViewById(R.id.refund_order_code);
+            final EditText order_code_et = findViewById(R.id.order_code),refund_order_code_et = refund_order_code_layout.findViewById(R.id.refund_order_code);
             final String start_date_time = mStartDateEt.getText() + " " + mStartTimeEt.getText(),end_date_time = mEndDateEt.getText() + " " + mEndTimeEt.getText(),
-                    sz_order_code = order_code_et.getText().toString(),sz_cashier = Utils.getViewTagValue(mCashierEt,"");
+                    sz_order_code = order_code_et.getText().toString(),sz_cashier = Utils.getViewTagValue(mCashierEt,""),sz_refund_code = refund_order_code_et.getText().toString();
 
             where_sql.append("where a.stores_id = ").append(mContext.getStoreInfo().getIntValue("stores_id"));
 
@@ -63,6 +63,12 @@ public class QueryRefundOrderDialog extends AbstractQuerySuperDialog {
                     where_sql.append(" and ");
 
                 where_sql.append(" a.order_code").append(" like ").append("'%").append(sz_order_code).append("'");
+            }
+            if(sz_refund_code.length() != 0){
+                if(where_sql.length() != 0)
+                    where_sql.append(" and ");
+
+                where_sql.append(" a.ro_code").append(" like ").append("'%").append(sz_refund_code).append("'");
             }
             if(!"0".equals(sz_cashier)){
                 if(where_sql.length() != 0)

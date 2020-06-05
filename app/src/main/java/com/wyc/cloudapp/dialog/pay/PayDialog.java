@@ -336,12 +336,13 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
         mPayDetailViewAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
-            super.onChanged();
-            final JSONArray jsonArray = getContent();
-            double pay_amt = 0.0,zl_amt = 0.0;
-            if (!jsonArray.isEmpty()){
-                for (int i = 0,length = jsonArray.size();i < length;i ++){//第一个为表头
-                    JSONObject object = jsonArray.getJSONObject(i);
+                super.onChanged();
+                final JSONArray jsonArray = getContent();
+                double pay_amt = 0.0,zl_amt = 0.0;
+                JSONObject object;
+
+                for (int i = 0,length = jsonArray.size();i < length;i ++){
+                    object = jsonArray.getJSONObject(i);
                     pay_amt += object.getDouble("pamt");
                     zl_amt += object.getDouble("pzl");
                 }
@@ -370,7 +371,6 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
                 }else{
                     MyDialog.SnackbarMessage(mWindow,"剩余付款金额不能小于零！",mPayBalanceTv);
                 }
-            }
             }
         });
         RecyclerView recyclerView = findViewById(R.id.pay_detail_list);
@@ -691,7 +691,7 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
         HttpRequest httpRequest = null;
         String pay_method_id ,pay_money,unified_pay_order,unified_pay_query,sz_param,v_num,order_code_son ,third_pay_order_id,discount_xnote;
 
-        final String order_code = mContext.getOrderCode(),url = mContext.getUrl(),appId = mContext.getAppId(),appScret = mContext.getAppScret(),
+        final String order_code = mContext.getOrderCode(),url = mContext.getUrl(),appId = mContext.getAppId(),appScret = mContext.getAppSecret(),
                 stores_id = mContext.getStoreInfo().getString("stores_id"),pos_num = mContext.getCashierInfo().getString("pos_num");
 
         final List<ContentValues> valueList = new ArrayList<>();

@@ -187,7 +187,7 @@ public class RetailOrderDetailsDialog extends DialogBaseOnMainActivityImp {
                     object.put("pay_code",pay_code);
                 object.put("order_code_son", pay_record.getString("order_code_son"));
 
-                final String sz_param = HttpRequest.generate_request_parm(object,mContext.getAppScret());
+                final String sz_param = HttpRequest.generate_request_parm(object,mContext.getAppSecret());
                 final JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + unified_pay_query,sz_param,true);
                 switch (retJson.getIntValue("flag")){
                     case 0:
