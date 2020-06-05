@@ -472,7 +472,7 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
 
         order_info.put("addtime",time);
         order_info.put("pos_code",pos_num);
-        order_info.put("order_status",!isRefundCheck ? 2 : 1);//如果不需要请求退款则退单状态为已成功
+        order_info.put("order_status",1);
         order_info.put("upload_status",1);
         order_info.put("upload_time",0);
         order_info.put("is_rk",2);//默认需要入库
@@ -592,7 +592,9 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
             }
         }
         update_sqls_list.add("update refund_order set order_status = 2 where ifnull(order_code,'') = '"+ order_code +"' and ro_code = '"+ ro_code +"'");
-        if (!mRefundGoodsInfoAdapter.isSingleRefundStatus())update_sqls_list.add("update retail_order set order_status = 4 where order_code = '"+ order_code +"'");
+        if (!mRefundGoodsInfoAdapter.isSingleRefundStatus()){
+            update_sqls_list.add("update retail_order set order_status = 4 where order_code = '"+ order_code +"'");
+        }
         return SQLiteHelper.execBatchUpdateSql(update_sqls_list,err);
     }
 

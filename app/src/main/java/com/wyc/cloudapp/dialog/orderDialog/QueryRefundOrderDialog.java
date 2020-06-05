@@ -79,7 +79,7 @@ public class QueryRefundOrderDialog extends AbstractQuerySuperDialog {
             if(where_sql.length() != 0){
                 where_sql.append(" and ");
             }
-            where_sql.append("datetime(a.addtime, 'unixepoch', 'localtime') ").append("between ").append("'").append(start_date_time).append("'").append(" and ").append("'").append(end_date_time).append("'");
+            where_sql.append("datetime(a.addtime, 'unixepoch', 'localtime') ").append("between ").append("'").append(start_date_time).append("'").append(" and ").append("'").append(end_date_time).append("'").append(" order by addtime desc");
         }
 
         return where_sql.toString();
