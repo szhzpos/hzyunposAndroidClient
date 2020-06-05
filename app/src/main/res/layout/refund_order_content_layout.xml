@@ -16,17 +16,6 @@
         android:textSize="@dimen/font_size_16" />
 
     <TextView
-        android:id="@+id/retail_order_code"
-        android:layout_width="@dimen/width_208"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:paddingTop="@dimen/margin_8"
-        android:paddingBottom="@dimen/margin_8"
-        android:text="@string/retail_order_code_sz"
-        android:textColor="@color/appColor"
-        android:textSize="@dimen/font_size_16" />
-
-    <TextView
         android:id="@+id/refund_order_code"
         android:layout_width="@dimen/width_208"
         android:layout_height="match_parent"
@@ -34,6 +23,17 @@
         android:paddingTop="@dimen/margin_8"
         android:paddingBottom="@dimen/margin_8"
         android:text="@string/refund_order_sz"
+        android:textColor="@color/appColor"
+        android:textSize="@dimen/font_size_16" />
+
+    <TextView
+        android:id="@+id/retail_order_code"
+        android:layout_width="@dimen/width_208"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_8"
+        android:text="@string/retail_order_code_sz"
         android:textColor="@color/appColor"
         android:textSize="@dimen/font_size_16" />
 

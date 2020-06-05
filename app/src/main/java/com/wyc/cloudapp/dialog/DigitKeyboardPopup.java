@@ -76,8 +76,10 @@ public class DigitKeyboardPopup extends PopupWindow {
                     if (index !=end && end == editable.length()){
                         editable.clear();
                     }else{
-                        if (index != 0 && editable.length() != 0)
-                            editable.delete(editable.length() - 1,editable.length());
+                        if (index != 0 && editable.length() != 0){
+                            editable.delete(index - 1,index);
+                        }
+
                     }
                 }else{
                     if (et_view.getSelectionStart() != et_view.getSelectionEnd()){

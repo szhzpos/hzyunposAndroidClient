@@ -509,7 +509,7 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
         JSONObject order_info = new JSONObject(),tmp_json;
         JSONArray orders = new JSONArray(),combination_goods = new JSONArray(),sales_data,pays_data,discount_records;
 
-        final String order_code = mContext.getOrderCode(),stores_id = mContext.getStoreInfo().getString("stores_id"),zk_cashier_id = mContext.getDisCashierId();
+        final String order_code = mContext.getOrderCode(),stores_id = mContext.getStoreInfo().getString("stores_id"),zk_cashier_id = mContext.getPermissionCashierId();
         final StringBuilder err = new StringBuilder();
         //处理销售明细
         sales_data = Utils.JsondeepCopy(mContext.getSaleData());//不能直接获取引用，需要重新复制一份否则会修改原始数据；如果业务不能正常完成，之前数据会遭到破坏
@@ -529,7 +529,7 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
                 Logger.d_json(combination_goods.toString());
             }else{
                 tmp_json.put("order_code",order_code);
-                tmp_json.put("zk_cashier_id",zk_cashier_id);//使用折扣的收银员ID,默认当前收银员
+                tmp_json.put("zk_cashier_id",zk_cashier_id);
                 tmp_json.put("total_money",tmp_json.remove("sale_amt"));
                 tmp_json.put("y_price",tmp_json.remove("original_price"));
 

@@ -87,8 +87,11 @@ public final class RefundOrderViewAdapter extends AbstractQueryDataAdapter<Refun
             setCurrentItemView(v);
             final TextView order_code_tv = v.findViewById(R.id.retail_order_code),sale_refund_tv = v.findViewById(R.id.refund_order_code);
             if (isClickView(order_code_tv,event.getX(),event.getY())){
-                final RetailOrderDetailsDialog retailOrderDetailsDialog = new RetailOrderDetailsDialog(mContext,getCurrentRetailOrder());
-                retailOrderDetailsDialog.show();
+                final JSONObject order_info = getCurrentRetailOrder();
+                if (!order_info.isEmpty()){
+                    final RetailOrderDetailsDialog retailOrderDetailsDialog = new RetailOrderDetailsDialog(mContext,order_info);
+                    retailOrderDetailsDialog.show();
+                }
             }else if (isClickView(sale_refund_tv,event.getX(),event.getY())){
                 final RefundOrderDetailsDialog refundOrderDetailsDialog = new RefundOrderDetailsDialog(mContext,getCurrentOrder());
                 refundOrderDetailsDialog.show();

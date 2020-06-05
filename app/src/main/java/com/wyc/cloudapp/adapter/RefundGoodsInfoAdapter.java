@@ -17,12 +17,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.DigitKeyboardPopup;
 import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.orderDialog.RefundPayDialogImp;
-import com.wyc.cloudapp.dialog.pay.AbstractPayDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -37,11 +34,12 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
     private onRefundPayDataChange mRefundPayDataChange;
     private JSONObject mVipInfo;
     private DigitKeyboardPopup mDigitKeyboardPopup;
-    private volatile int mRefundType = 1;//退货类型（1全部退货，2部分退货,3无货可退，用于隐藏按钮）
+    private boolean mSingleRefundStatus;
     public RefundGoodsInfoAdapter(DialogBaseOnMainActivityImp dialog){
         mDialog = dialog;
         mContext = dialog.getPrivateContext();
         mDigitKeyboardPopup = new DigitKeyboardPopup(mContext);
+        mSingleRefundStatus = mContext.getSingle();
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -71,7 +69,7 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = View.inflate(mContext, R.layout.refund_goods_info_content_layout, null);
+        final View itemView = View.inflate(mContext, R.layout.refund_goods_info_content_layout, null);
         itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int) mContext.getResources().getDimension(R.dimen.table_row_height)));
         return new MyViewHolder(itemView);
     }
@@ -92,7 +90,6 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
                 holder.num_tv.setText(String.format(Locale.CHINA,"%.3f",refund_goods_info.getDoubleValue("xnum")));
                 holder.unit_name_tv.setText(refund_goods_info.getString("unit_name"));
                 holder.returnable_num_tv.setText(String.format(Locale.CHINA,"%.3f",refund_goods_info.getDoubleValue("returnable_num")));
-
                 if (holder.mTextWatcher == null){
                     holder.mTextWatcher = new TextWatcher() {
                         @Override
@@ -119,14 +116,16 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
                                 holder.cur_refund_num_et.setText(String.format(Locale.CHINA,"%.3f",returnable_num));
                                 holder.cur_refund_num_et.setSelection(holder.cur_refund_num_et.length() - 1);
                             }else{
-                                updateRefundNum(holder.mCurrentLayoutItemView,num);
-                                if (Utils.equalDouble(num,0.0)){
-                                    if (holder.sel_status_cb.isChecked()){
-                                        holder.sel_status_cb.setChecked(false);
-                                    }
-                                }else if(Utils.equalDouble(num,returnable_num)){
-                                    if (!holder.sel_status_cb.isChecked()){
-                                        holder.sel_status_cb.setChecked(true);
+                                if (!mSingleRefundStatus){
+                                    updateRefundNum(holder.mCurrentLayoutItemView,num);
+                                    if (Utils.equalDouble(num,0.0)){
+                                        if (holder.sel_status_cb.isChecked()){
+                                            holder.sel_status_cb.setChecked(false);
+                                        }
+                                    }else if(Utils.equalDouble(num,returnable_num)){
+                                        if (!holder.sel_status_cb.isChecked()){
+                                            holder.sel_status_cb.setChecked(true);
+                                        }
                                     }
                                 }
                                 holder.cur_refund_amt_et.setText(String.format(Locale.CHINA,"%.2f",Double.valueOf(holder.price_tv.getText().toString()) * num));
@@ -135,11 +134,18 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
                     };
                     holder.cur_refund_num_et.addTextChangedListener(holder.mTextWatcher);
                 }
-                holder.cur_refund_num_et.setText(String.format(Locale.CHINA,"%.3f",refund_goods_info.getDoubleValue("refund_num")));
-                holder.cur_refund_num_et.setOnFocusChangeListener(cur_refund_num_focusChangeListener);
-                holder.cur_refund_num_et.setOnClickListener(cur_refund_num_click);
 
-                holder.sel_status_cb.setOnCheckedChangeListener(sel_status_CheckedChange);
+                if (!mSingleRefundStatus){
+                    holder.cur_refund_num_et.setOnFocusChangeListener(cur_refund_num_focusChangeListener);
+                    holder.cur_refund_num_et.setOnClickListener(cur_refund_num_click);
+                    holder.sel_status_cb.setOnCheckedChangeListener(sel_status_CheckedChange);
+                }else {
+                    holder.cur_refund_num_et.setEnabled(false);
+                    holder.sel_status_cb.setVisibility(View.INVISIBLE);
+                }
+
+                holder.cur_refund_num_et.setText(String.format(Locale.CHINA,"%.3f",refund_goods_info.getDoubleValue("refund_num")));
+
             }
         }
     }
@@ -188,7 +194,6 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
                     if (null != record){
                         if (barcode_id.equals(record.getString("barcode_id")) && rog_id.equals(record.getString("rog_id"))){
                             record.put("refund_num",num);
-                            isPartRefund();
                             if (mRefundGoodsDataChange != null && mGoodsDatas != null){
                                 mRefundGoodsDataChange.onChange(mGoodsDatas);
                             }
@@ -197,24 +202,6 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
                     }
                 }
             }
-        }
-    }
-
-    private void restoreRefundGOodsInfo(){
-        JSONObject goods;
-        boolean isRefresh = false;
-        double refund_num = 0.0,returnable_num = 0.0;
-        for (int i = 0,size = mGoodsDatas.size();i < size;i++){
-            goods = mGoodsDatas.getJSONObject(i);
-            refund_num = goods.getDoubleValue("refund_num");
-            returnable_num = goods.getDoubleValue("returnable_num");
-            if (!Utils.equalDouble(refund_num,returnable_num)){
-                if (!isRefresh)isRefresh = true;
-                goods.put("refund_num",goods.getDoubleValue("returnable_num"));
-            }
-        }
-        if (isRefresh){
-            notifyDataSetChanged();
         }
     }
 
@@ -315,39 +302,48 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
         }
         return vip_info;
     }
-    private void isPartRefund(){
-        int code = 1;
-        JSONObject goods_record;
-        double refund_sum_num = 0,returnable_sum_num = 0.0,returnable_num = 0.0,xnum = 0.0;
-        int size = mGoodsDatas.size();
-        for (int i = 0 ;i < size;i++){
-            goods_record = mGoodsDatas.getJSONObject(i);
-            xnum += goods_record.getDoubleValue("xnum");
-            returnable_num = goods_record.getDoubleValue("returnable_num");
-            refund_sum_num += goods_record.getDoubleValue("refund_num");
-            returnable_sum_num += returnable_num;
-        }
-
-        if (Utils.equalDouble(refund_sum_num,0.0)){
-            refund_sum_num = xnum;
-        }
-
-        if (Utils.equalDouble(returnable_sum_num,0.0)){
-            code = 3;
-        }else if (!Utils.equalDouble(refund_sum_num,0) && !Utils.equalDouble(refund_sum_num,returnable_sum_num)){
-            code = 2;
-        }
-
-        mRefundType = code ;
-
-    }
 
     private void notifyPayDataChange(){
         if (mRefundPayDataChange != null && mPayDatas != null){
             mRefundPayDataChange.onChange(mPayDatas);
         }
     }
+    public void setData(final JSONArray array){
+        final JSONArray sales = Utils.JsondeepCopy(array);
+        if (mGoodsDatas == null)mGoodsDatas = new JSONArray();
+        JSONObject obj,json;
+        double sale_num = 0.0,price = 0.0;
+        int barcode_id = -1;
+        for (int i = 0;i < sales.size();i ++){
+            obj = sales.getJSONObject(i);
+            sale_num = obj.getDoubleValue("xnum");
+            price = obj.getDoubleValue("price");
 
+            json = new JSONObject();
+
+            barcode_id = Utils.getNotKeyAsNumberDefault(obj,"barcode_id",-1);
+            json.put("rog_id",barcode_id);
+            json.put("barcode_id",barcode_id);
+
+            json.put("barcode",obj.getString("barcode"));
+            json.put("goods_title",obj.getString("goods_title"));
+            json.put("is_rk",2);
+            json.put("conversion",1);
+            json.put("price",price);
+            json.put("refund_price",price);
+            json.put("xnum",sale_num);
+            json.put("unit_name",obj.getString("unit_name"));
+            json.put("returnable_num",sale_num);
+            json.put("refund_num",sale_num);
+
+            mGoodsDatas.add(json);
+
+        }
+        if (mRefundGoodsDataChange != null && mGoodsDatas != null){
+            mRefundGoodsDataChange.onChange(mGoodsDatas);
+        }
+        mPayDatas = new JSONArray();
+    }
     public void setDatas(final String order_code,final StringBuilder err){
 
         final JSONObject object = new JSONObject();
@@ -382,7 +378,9 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
             err.append(retJson.getString("info"));
         }
     }
-
+    public boolean isSingleRefundStatus(){
+        return mSingleRefundStatus;
+    }
     public void clearOrderInfo(){
         if (mVipInfo != null){
             mVipInfo = null;
@@ -399,6 +397,9 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
             if (mRefundGoodsDataChange != null) mRefundGoodsDataChange.onChange(mGoodsDatas);
             notifyDataSetChanged();
         }
+        if (isSingleRefundStatus()){
+            mContext.resetOrderInfo();
+        }
     }
     public JSONArray getRefundGoods(){
         return mGoodsDatas;
@@ -409,17 +410,31 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
     public JSONArray getPayDatas(){
         return mPayDatas;
     }
-    public void generateRefundInfo(int type){
-        mRefundType = type;
-        if (type == 1){//整单退货还原商品信息
-            restoreRefundGOodsInfo();
-            if (!Utils.equalDouble(getRefundAmt(),0.0)){
-                mPayDatas = Utils.JsondeepCopy(mOriPayDatas);
-                notifyPayDataChange();
-            }else
-                MyDialog.ToastMessage("无可退商品！",mContext,mDialog.getWindow());
+
+    public void allRefund(){
+        restoreRefundGOodsInfo();
+        mPayDatas = Utils.JsondeepCopy(mOriPayDatas);
+        notifyPayDataChange();
+    }
+    private void restoreRefundGOodsInfo(){
+        JSONObject goods;
+        boolean isRefresh = false;
+        double refund_num = 0.0,returnable_num = 0.0;
+        for (int i = 0,size = mGoodsDatas.size();i < size;i++){
+            goods = mGoodsDatas.getJSONObject(i);
+            refund_num = goods.getDoubleValue("refund_num");
+            returnable_num = goods.getDoubleValue("returnable_num");
+            if (!Utils.equalDouble(refund_num,returnable_num)){
+                if (!isRefresh)isRefresh = true;
+                refund_num = returnable_num;
+                goods.put("refund_num",refund_num);
+            }
+        }
+        if (isRefresh){
+            notifyDataSetChanged();
         }
     }
+
     public void addPayInfo(final JSONObject object){
         if (mPayDatas != null){
             if (!mPayDatas.isEmpty())mPayDatas.fluentClear();
@@ -439,9 +454,7 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
             }
         return refund_sum_amt;
     }
-    public int getRefundType(){
-        return mRefundType;
-    }
+
     public String PayDatasToString(){
         final StringBuilder sz_pay_info = new StringBuilder();
         final JSONArray pay_datas = getPayDatas();

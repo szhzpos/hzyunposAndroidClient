@@ -233,7 +233,7 @@
     <string name="returnable_num_sz">可退数量</string>
     <string name="returned_num_sz">退货数量</string>
     <string name="returned_amt_sz">退货金额</string>
-    <string name="next_sz">部分退货</string>
+    <string name="part_return_sz">部分退货</string>
     <string name="refund_dialog_title_sz">"退货退款"</string>
     <string name="all_refund_sz">整单退货</string>
     <string name="retail_order_code_sz">零售单号</string>
@@ -289,4 +289,5 @@
     <string name="f_not_sz">未设置打印参数!</string>
     <string name="last_order_sz">上单单号</string>
     <string name="close_sz">关闭</string>
+    <string name="single_refund_sz">单品退货</string>
 </resources>

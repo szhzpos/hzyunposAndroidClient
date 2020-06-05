@@ -31,7 +31,7 @@
                     android:gravity="center"
                     android:paddingTop="@dimen/margin_8"
                     android:paddingBottom="@dimen/margin_8"
-                    android:text="@string/retail_order_code_sz"
+                    android:text="@string/refund_order_sz"
                     android:textColor="@color/white"
                     android:textSize="@dimen/font_size_18" />
 
@@ -41,7 +41,7 @@
                     android:gravity="center"
                     android:paddingTop="@dimen/margin_8"
                     android:paddingBottom="@dimen/margin_8"
-                    android:text="@string/refund_order_sz"
+                    android:text="@string/retail_order_code_sz"
                     android:textColor="@color/white"
                     android:textSize="@dimen/font_size_18" />
 

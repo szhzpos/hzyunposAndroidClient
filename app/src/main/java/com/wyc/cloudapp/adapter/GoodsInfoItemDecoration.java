@@ -37,6 +37,9 @@ public class GoodsInfoItemDecoration extends SuperItemDecoration {
     @Override
     public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
         super.getItemOffsets(outRect, view, parent, state);
-        outRect.set(1, mSpace,1, 0);
+        if (parent.getChildAdapterPosition(view) / 5 > 0)
+            outRect.set(1, mSpace,1, 0);
+        else
+            outRect.set(1, mSpace / 2,1, 0);
     }
 }

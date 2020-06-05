@@ -41,6 +41,12 @@ public class QueryRefundOrderDialog extends AbstractQuerySuperDialog {
     }
 
     @Override
+    public void onAttachedToWindow(){
+        triggerQuery();
+        super.onAttachedToWindow();
+    }
+
+    @Override
     protected String query(){
         final LinearLayout refund_order_code_layout = findViewById(R.id.refund_order_code_layout);
         final StringBuilder where_sql = new StringBuilder();

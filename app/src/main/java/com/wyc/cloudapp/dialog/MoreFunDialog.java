@@ -31,10 +31,19 @@ public final class MoreFunDialog extends DialogBaseOnMainActivityImp {
         initAllRefundBtn();
         initQueryRefundOrderBtn();
         initVipDepositOrderBtn();
+        initSingleRefundBtn();
     }
     @Override
     protected int getContentLayoutId(){
         return R.layout.more_fun_dialog_layout;
+    }
+
+    private void initSingleRefundBtn(){
+        final Button btn = findViewById(R.id.single_refund_btn);
+        btn.setOnClickListener(v -> {
+            mContext.setSingle(true);
+            this.dismiss();
+        });
     }
 
     private void initAllRefundBtn(){

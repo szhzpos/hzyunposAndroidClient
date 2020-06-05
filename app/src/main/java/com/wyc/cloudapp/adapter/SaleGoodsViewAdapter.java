@@ -34,6 +34,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
     private int mCurrentItemIndex;
     private int mOrderType = 1;//订单类型 1线下 2线上
     private boolean d_discount = true;//是否折上折
+    private boolean mSingleRefundStatus = false;
     public SaleGoodsViewAdapter(MainActivity context){
         this.mContext = context;
         mDatas = new JSONArray();
@@ -804,8 +805,6 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
             }
         }
     }
-
-
     private void deleteDiscountRecordForType(int discount_type){
         JSONObject record_json,discount_goods,goods;
         for (int i = 0;i < mDiscountRecords.size();i++){
@@ -944,7 +943,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
     public double getSaleSumAmt(){//验证销售金额
         double amt = 0.0;
         for (int i = 0,size = mDatas.size();i < size;i++){
-            JSONObject object = mDatas.getJSONObject(i);
+            final JSONObject object = mDatas.getJSONObject(i);
             if (null != object)
                 amt += object.getDoubleValue("sale_amt");
         }
@@ -952,6 +951,14 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
     }
     public void setDatas(@NonNull final JSONArray array){
         mDatas = array;
+    }
+
+    public void setSingle(final boolean b){
+        mSingleRefundStatus = b;
+        notifyDataSetChanged();
+    }
+    public boolean getSingle(){
+        return mSingleRefundStatus;
     }
 
 }

@@ -38,7 +38,7 @@ public abstract class AbstractQueryDataAdapter<T extends RecyclerView.ViewHolder
             }
             view.setBackgroundColor(selected_color);
             if (view instanceof LinearLayout){
-                LinearLayout linearLayout = (LinearLayout)view;
+                final LinearLayout linearLayout = (LinearLayout)view;
                 int count = linearLayout.getChildCount();
                 for (int i = 0;i < count;i++){
                     child = linearLayout.getChildAt(i);

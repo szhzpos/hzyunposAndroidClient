@@ -47,6 +47,7 @@ import com.wyc.cloudapp.dialog.HangBillDialog;
 import com.wyc.cloudapp.dialog.MoreFunDialog;
 import com.wyc.cloudapp.dialog.VerifyPermissionDialog;
 import com.wyc.cloudapp.dialog.orderDialog.QuerySaleOrderDialog;
+import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.dialog.orderDialog.TransferDialog;
 import com.wyc.cloudapp.dialog.pay.PayDialog;
 import com.wyc.cloudapp.dialog.SecondDisplay;
@@ -88,9 +89,10 @@ public class MainActivity extends AppCompatActivity {
     private ImageView mCloseBtn;
     private RecyclerView mSaleGoodsRecyclerView;
     private TableLayout mKeyboard;
-    private String mZkCashierId = "";
+    private String mPermissionCashierId = "";
     private SecondDisplay mSecondDisplay;
     private ConstraintLayout mLastOrderInfo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,7 +111,6 @@ public class MainActivity extends AppCompatActivity {
         mOrderCodeTv = findViewById(R.id.order_code);
         mDisSumAmtTv = findViewById(R.id.dis_sum_amt);
         mTransferStatus = new AtomicBoolean(true);//传输状态
-
 
         initNetworkStatus();
         initLastOrderInfo();
@@ -485,7 +486,7 @@ public class MainActivity extends AppCompatActivity {
                 if (mSecondDisplay != null)mSecondDisplay.notifyChange(mSaleGoodsViewAdapter.getCurrentItemIndex());
             }
         });
-        registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray__subtransparent)));
+        registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray__subtransparent),mSaleGoodsViewAdapter));
         mSaleGoodsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
         mSaleGoodsRecyclerView.setAdapter(mSaleGoodsViewAdapter);
     }
@@ -681,59 +682,65 @@ public class MainActivity extends AppCompatActivity {
     private void showPayDialog(){
         final JSONArray datas = getSaleData();
         if (datas.size() != 0){
-            final PayDialog dialog = new PayDialog(this,getString(R.string.affirm_pay_sz));
-            if (dialog.initPayContent()){
-                final MainActivity activity = MainActivity.this;
-                dialog.setPayListener(new PayDialog.onPayListener() {
-                    @Override
-                    public void onStart(PayDialog myDialog) {
-                        mProgressDialog.setCancel(false).setMessage("正在保存单据...").refreshMessage().show();
-                        final StringBuilder err = new StringBuilder();
-                        if (myDialog.saveOrderInfo(err)){
-                            CustomApplication.execute(myDialog::requestPay);
-                        }else{
-                            mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,err.toString()).sendToTarget();
+            if (!getSingle()){
+                final PayDialog dialog = new PayDialog(this,getString(R.string.affirm_pay_sz));
+                if (dialog.initPayContent()){
+                    final MainActivity activity = MainActivity.this;
+                    dialog.setPayListener(new PayDialog.onPayListener() {
+                        @Override
+                        public void onStart(PayDialog myDialog) {
+                            mProgressDialog.setCancel(false).setMessage("正在保存单据...").refreshMessage().show();
+                            final StringBuilder err = new StringBuilder();
+                            if (myDialog.saveOrderInfo(err)){
+                                CustomApplication.execute(myDialog::requestPay);
+                            }else{
+                                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,err.toString()).sendToTarget();
+                            }
                         }
-                    }
-                    @Override
-                    public void onProgress(PayDialog myDialog, final String info) {
-                        mProgressDialog.setMessage(info).refreshMessage();
-                    }
+                        @Override
+                        public void onProgress(PayDialog myDialog, final String info) {
+                            mProgressDialog.setMessage(info).refreshMessage();
+                        }
 
-                    @Override
-                    public void onSuccess(PayDialog myDialog) {
-                        if (mProgressDialog.isShowing())mProgressDialog.dismiss();
-                        mSyncManagement.sync_retail_order();
-                        showLastOrderInfo(mOrderCodeTv.getText().toString());
-                        resetOrderInfo();
-                        myDialog.dismiss();
-                        MyDialog.SnackbarMessage(activity.getWindow(),"结账成功！", mOrderCodeTv);
-                    }
+                        @Override
+                        public void onSuccess(PayDialog myDialog) {
+                            if (mProgressDialog.isShowing())mProgressDialog.dismiss();
+                            mSyncManagement.sync_retail_order();
+                            showLastOrderInfo(mOrderCodeTv.getText().toString());
+                            resetOrderInfo();
+                            myDialog.dismiss();
+                            MyDialog.SnackbarMessage(activity.getWindow(),"结账成功！", mOrderCodeTv);
+                        }
 
-                    @Override
-                    public void onError(PayDialog myDialog, String err) {
-                        if (mProgressDialog.isShowing())mProgressDialog.dismiss();
-                        resetOrderCode();//提示错误得重置单号
-                        MyDialog.displayErrorMessage(null,"支付错误：" + err,myDialog.getContext());
-                    }
-                }).show();
-                if (mVipInfo != null)dialog.showVipInfo(mVipInfo,true);
+                        @Override
+                        public void onError(PayDialog myDialog, String err) {
+                            if (mProgressDialog.isShowing())mProgressDialog.dismiss();
+                            resetOrderCode();//提示错误得重置单号
+                            MyDialog.displayErrorMessage(null,"支付错误：" + err,myDialog.getContext());
+                        }
+                    }).show();
+                    if (mVipInfo != null)dialog.showVipInfo(mVipInfo,true);
+                }
+            }else {
+                final RefundDialog refundDialog = new RefundDialog(this,"");
+                refundDialog.show();
             }
         }else{
             MyDialog.SnackbarMessage(getWindow(),"已选商品为空！!",getCurrentFocus());
         }
     }
-    private void resetOrderInfo(){
-        mZkCashierId = "";
+    public void resetOrderInfo(){
+        mPermissionCashierId = "";
         resetOrderCode();
         mSaleGoodsViewAdapter.clearGoods();
         clearVipInfo();
+        setSingle(false);
     }
     private void clearVipInfo(){
         if (mVipInfo != null){
             mVipInfo = null;
 
-            registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray__subtransparent)));
+            registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray__subtransparent),mSaleGoodsViewAdapter));
 
             LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
             vip_info_linearLayout.setVisibility(View.GONE);
@@ -752,14 +759,14 @@ public class MainActivity extends AppCompatActivity {
                 vertical_counts = viewHeight / m_height;
                 per_vertical_space = vertical_space / (vertical_counts != 0 ? vertical_counts:1);
 
-                return (int) Utils.formatDouble(per_vertical_space,0);
+                return (int)per_vertical_space;
             }
             @Override
             public void onGlobalLayout() {
                 view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 int height = view.getMeasuredHeight();
                 if (view instanceof RecyclerView){
-                    RecyclerView recyclerView = ((RecyclerView)view);
+                    final RecyclerView recyclerView = ((RecyclerView)view);
                     if (recyclerView.getItemDecorationCount() > 0){
                         recyclerView.removeItemDecorationAt(0);
                     }
@@ -817,7 +824,7 @@ public class MainActivity extends AppCompatActivity {
     public void showVipInfo(@NonNull JSONObject vip){
         mVipInfo = vip;
 
-        registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray__subtransparent)));
+        registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray__subtransparent),mSaleGoodsViewAdapter));
 
         final LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
         vip_info_linearLayout.setVisibility(View.VISIBLE);
@@ -837,8 +844,9 @@ public class MainActivity extends AppCompatActivity {
         return mStoreInfo;
     }
     public String getOrderCode(){ return mOrderCodeTv.getText().toString();}
-    public String  getDisCashierId(){
-        return mZkCashierId;
+    public String getPermissionCashierId(){
+        if ("".equals(mPermissionCashierId))return mCashierInfo.getString("cas_id");
+        return mPermissionCashierId;
     }
     public GoodsInfoViewAdapter getGoodsInfoViewAdapter(){
         return mGoodsInfoViewAdapter;
@@ -908,7 +916,7 @@ public class MainActivity extends AppCompatActivity {
                                             });
                                             code = verifyPermissionDialog.exec() == 1;
                                         }else {
-                                            mZkCashierId = Utils.getNullStringAsEmpty(obj,"cas_id");
+                                            mPermissionCashierId = Utils.getNullStringAsEmpty(obj,"cas_id");
                                         }
                                     }
                                 }
@@ -950,7 +958,7 @@ public class MainActivity extends AppCompatActivity {
                         });
                         code = verifyPermissionDialog.exec() == 1;
                     }else {
-                        mZkCashierId = discount_ojb.getString("cas_id");
+                        mPermissionCashierId = discount_ojb.getString("cas_id");
                         code = true;
                     }
                 }else{
@@ -961,6 +969,12 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return code;
+    }
+    public void setSingle(boolean b){
+        if (mSaleGoodsViewAdapter != null)mSaleGoodsViewAdapter.setSingle(b);
+    }
+    public boolean getSingle(){
+        return mSaleGoodsViewAdapter != null && mSaleGoodsViewAdapter.getSingle();
     }
 
     private static class Myhandler extends Handler {

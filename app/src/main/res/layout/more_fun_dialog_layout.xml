@@ -105,5 +105,17 @@
             android:textSize="@dimen/font_size_14"
             app:layout_constraintStart_toStartOf="@id/sync_btn"
             app:layout_constraintTop_toBottomOf="@id/sync_btn" />
+
+        <Button
+            android:id="@+id/single_refund_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/more_fun_btn_width"
+            android:layout_height="@dimen/more_fun_btn_height"
+            android:layout_marginStart="@dimen/margin_5"
+            android:background="@drawable/button_blue"
+            android:text="@string/single_refund_sz"
+            android:textColor="@color/blue_white"
+            app:layout_constraintStart_toEndOf="@id/vip_deposit_order"
+            app:layout_constraintTop_toTopOf="@id/vip_deposit_order" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

@@ -42,13 +42,13 @@ import java.util.Locale;
 
 public final class RefundDialog extends DialogBaseOnMainActivityImp {
     private RefundGoodsInfoAdapter mRefundGoodsInfoAdapter;
-    private String mRefundOperId,mRefundOperName;
     private String mOrderCode,mRefundCode;
     private CustomProgressDialog mProgressDialog;
     private EditText mRemarkEt,mOrderCodeEt;
     private JSONObject mVipInfo;
-    private Button mQueryBtn,mAllRefundBtn,mRebatesBtn;
+    private Button mQueryBtn, mRefundBtn;
     private boolean isRefundCheck;
+    private int mRefundType = 1;//退货类型（1全部退货，2部分退货,3 单品退货,4 无货可退，用于隐藏按钮）
     public RefundDialog(@NonNull MainActivity context, final String order_code) {
         super(context, context.getString(R.string.refund_dialog_title_sz));
         mOrderCode = order_code;
@@ -59,11 +59,9 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
 
         mProgressDialog = new CustomProgressDialog(mContext);
 
+        initRefundBtn();
         initOrderCodeTv();
         initGoodsDetails();
-
-        initAllRefundBtn();
-        initRebatesBtn();
         initRemarkBtn();
     }
     @Override
@@ -73,7 +71,11 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
     @Override
     public void show(){
         super.show();
-        if (mQueryBtn != null && mOrderCode != null && mOrderCode.length() != 0)mQueryBtn.callOnClick();
+        if (mRefundGoodsInfoAdapter.isSingleRefundStatus() && mRefundBtn != null){
+            mRefundBtn.callOnClick();
+        }else {
+            if (mQueryBtn != null && mOrderCode != null && mOrderCode.length() != 0)mQueryBtn.callOnClick();
+        }
     }
 
     private void initRemarkBtn(){
@@ -94,38 +96,43 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
     }
 
     private void initQueryBtn(){
-        final Button query_btn = mQueryBtn = findViewById(R.id.query_btn);
-
-        if (query_btn != null){
-            query_btn.setOnClickListener(v -> {
-                if (mOrderCode != null && mOrderCode.length() != 0){
-                    if (mContext.isConnection()){
-                        mProgressDialog.setCancel(false).setMessage("正在查询订单信息...").refreshMessage().show();
-                        CustomApplication.execute(()->{
-                            final StringBuilder err = new StringBuilder();
-                            mRefundGoodsInfoAdapter.setDatas(mOrderCode,err);
-                            mContext.runOnUiThread(()->{
-                                if (err.length() == 0){
-                                    err.append("操作成功！");
-                                    initVipInfoLayout();
-                                    mRefundGoodsInfoAdapter.notifyDataSetChanged();
-                                }
-                                mProgressDialog.dismiss();
-                                MyDialog.ToastMessage(err.toString(),mContext,getWindow());
-                            });
-                        });
-                    }else{
-                        if (mAllRefundBtn != null)mAllRefundBtn.setVisibility(View.GONE);
-                        if (mRebatesBtn != null)mRebatesBtn.setVisibility(View.GONE);
-                        MyDialog.ToastMessage("断网状态不允许退单！",mContext,null);
-                    }
-                }else {
-                    mOrderCodeEt.requestFocus();
-                    MyDialog.ToastMessage(mOrderCodeEt,mContext.getString(R.string.not_empty_hint_sz,mContext.getString(R.string.retail_order_code_sz)),mContext,getWindow());
+        final LinearLayout query_condition_layout = findViewById(R.id.query_condition_layout);
+        if (query_condition_layout != null){
+            if (mRefundGoodsInfoAdapter.isSingleRefundStatus()){
+                query_condition_layout.setVisibility(View.GONE);
+                mRefundGoodsInfoAdapter.setData(mContext.getSaleData());
+            }else {
+                final Button query_btn = mQueryBtn = query_condition_layout.findViewById(R.id.query_btn);
+                if (query_btn != null){
+                    query_btn.setOnClickListener(v -> {
+                        if (mOrderCode != null && mOrderCode.length() != 0){
+                            if (mContext.isConnection()){
+                                mProgressDialog.setCancel(false).setMessage("正在查询订单信息...").refreshMessage().show();
+                                CustomApplication.execute(()->{
+                                    final StringBuilder err = new StringBuilder();
+                                    mRefundGoodsInfoAdapter.setDatas(mOrderCode,err);
+                                    mContext.runOnUiThread(()->{
+                                        if (err.length() == 0){
+                                            err.append("操作成功！");
+                                            initVipInfoLayout();
+                                            mRefundGoodsInfoAdapter.notifyDataSetChanged();
+                                        }
+                                        mProgressDialog.dismiss();
+                                        MyDialog.ToastMessage(err.toString(),mContext,getWindow());
+                                    });
+                                });
+                            }else{
+                                if (mRefundBtn != null) mRefundBtn.setVisibility(View.GONE);
+                                MyDialog.ToastMessage("断网状态不允许退单！",mContext,null);
+                            }
+                        }else {
+                            mOrderCodeEt.requestFocus();
+                            MyDialog.ToastMessage(mOrderCodeEt,mContext.getString(R.string.not_empty_hint_sz,mContext.getString(R.string.retail_order_code_sz)),mContext,getWindow());
+                        }
+                    });
                 }
-            });
+            }
         }
-
     }
 
     private void initGoodsDetails(){
@@ -135,20 +142,44 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
             mRefundGoodsInfoAdapter = new RefundGoodsInfoAdapter(this);
             mRefundGoodsInfoAdapter.setRefundDataChange(datas -> {
                 if (datas != null){
-                    double refund_num = 0.0,refund_sum_num = 0.0,refund_sum_amt = 0.0,refund_price = 0.0;
+                    double refund_num = 0.0,refund_sum_num = 0.0,refund_sum_amt = 0.0,refund_price = 0.0,xnum = 0.0,returnable_sum_num = 0.0,returnable_num = 0.0;
                     JSONObject record;
+                    boolean isPart = false;
+                    int refund_type = 1;
                     for (int i = 0,size = datas.size();i < size;i++){
                         record = datas.getJSONObject(i);
 
+                        xnum += record.getDoubleValue("xnum");
+
                         refund_price = record.getDoubleValue("refund_price");
                         refund_num = record.getDoubleValue("refund_num");
+
+                        returnable_num = record.getDoubleValue("returnable_num");
+                        if (Utils.equalDouble(returnable_num,0.0) && !isPart){
+                            isPart = true;
+                        }
+
                         refund_sum_num += refund_num;
                         refund_sum_amt += Utils.formatDouble(refund_num * refund_price,2);
+                        returnable_sum_num += returnable_num;
                     }
                     refund_sum_num_tv.setText(String.format(Locale.CHINA,"%.3f",refund_sum_num));
                     refund_sum_amt_tv.setText(String.format(Locale.CHINA,"%.2f",refund_sum_amt));
 
-                    updateRefundBtnStatus();
+                    if (!mRefundGoodsInfoAdapter.isSingleRefundStatus()){
+                        if (Utils.equalDouble(refund_sum_num,0.0)){
+                            refund_sum_num = xnum;
+                        }
+                        if (Utils.equalDouble(returnable_sum_num,0.0)){
+                            refund_type = 4;
+                        }else if (isPart || !Utils.equalDouble(refund_sum_num,returnable_sum_num) || !Utils.equalDouble(xnum,refund_sum_num)){
+                            refund_type = 2;
+                        }
+                    }else {
+                        refund_type = 3;
+                    }
+
+                    updateRefundBtnStatusAndSetRefundType(refund_type);
                 }
             });
             mRefundGoodsInfoAdapter.setmRefundPayDataChange(datas -> {
@@ -169,6 +200,7 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
             goods_detail.setAdapter(mRefundGoodsInfoAdapter);
 
             initQueryBtn();
+
         }
     }
     private void initOrderCodeTv(){
@@ -195,30 +227,21 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
         }
     }
 
-    private void updateRefundBtnStatus(){
-        if (mAllRefundBtn != null && mRebatesBtn != null){
-            int code = mRefundGoodsInfoAdapter.getRefundType();
-            if (code == 3){
-                if (mAllRefundBtn.getVisibility() == View.VISIBLE){
-                    mAllRefundBtn.setVisibility(View.GONE);
+    private void updateRefundBtnStatusAndSetRefundType(int type){
+        mRefundType = type;
+        final Button refund_btn = mRefundBtn;
+        if (refund_btn != null){
+            if (type == 4){
+                if (refund_btn.getVisibility() == View.VISIBLE){
+                    refund_btn.setVisibility(View.GONE);
                 }
-                if (mRebatesBtn.getVisibility() == View.VISIBLE){
-                    mRebatesBtn.setVisibility(View.GONE);
-                }
-            }else  if (code == 2){
-                if (mAllRefundBtn.getVisibility() == View.VISIBLE){
-                    mAllRefundBtn.setVisibility(View.GONE);
-                }
-                if (mRebatesBtn.getVisibility() == View.GONE){
-                    mRebatesBtn.setVisibility(View.VISIBLE);
-                }
+            }else  if (type == 2){
+                refund_btn.setText(mContext.getString(R.string.part_return_sz));
+            }else if (type == 3){
+                mRefundType = 2;//显示单据的退货类型没有单品退货的标志，暂时改成部分退货
+                refund_btn.setText(mContext.getString(R.string.single_refund_sz));
             }else {
-                if (mAllRefundBtn.getVisibility() == View.GONE){
-                    mAllRefundBtn.setVisibility(View.VISIBLE);
-                }
-                if (mRebatesBtn.getVisibility() == View.VISIBLE){
-                    mRebatesBtn.setVisibility(View.GONE);
-                }
+                refund_btn.setText(mContext.getString(R.string.all_refund_sz));
             }
         }
     }
@@ -226,60 +249,58 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
     private boolean verifyRefundPermission(){
         return mContext.verifyPermissions("13",null);
     }
-    private void initAllRefundBtn(){
-        final Button all_return_btn = mAllRefundBtn = findViewById(R.id.all_return_btn);
-        if (null != all_return_btn){
-            if (mRefundGoodsInfoAdapter.getRefundType() == 1){
-                all_return_btn.setOnClickListener(v -> {
-                    if (verifyRefundPermission()){
-                        mRefundGoodsInfoAdapter.generateRefundInfo(1);
+    private void initRefundBtn(){
+        final Button return_btn = mRefundBtn = findViewById(R.id.return_btn);
+        if (null != return_btn){
+            return_btn.setOnClickListener(v -> {
+                if (verifyRefundPermission()){
+                    final int type = mRefundType;
+                    if (type == 1){
+                        mRefundGoodsInfoAdapter.allRefund();
+                    }else if(type == 2 || type == 3){
+                        if (!Utils.equalDouble(mRefundGoodsInfoAdapter.getRefundAmt(),0.0)){
+                            final RefundPayDialogImp refundPayDialogImp = new RefundPayDialogImp(mContext);
+                            refundPayDialogImp.setPayAmt(mRefundGoodsInfoAdapter.getRefundAmt());
+                            refundPayDialogImp.setYesOnclickListener(dialog -> {
+                                mRefundGoodsInfoAdapter.addPayInfo(dialog.getContent());
+                                dialog.dismiss();
+                            }).show();
+                        }else
+                            MyDialog.ToastMessage("无可退商品！",mContext,getWindow());
                     }
-                });
-            }else
-                all_return_btn.setVisibility(View.GONE);
-        }
-    }
-    private void initRebatesBtn(){
-        final Button btn = mRebatesBtn = findViewById(R.id.next_btn);
-        if (btn != null){
-            btn.setOnClickListener(v -> {
-                if (!Utils.equalDouble(mRefundGoodsInfoAdapter.getRefundAmt(),0.0)){
-                    if (verifyRefundPermission()){
-                        final RefundPayDialogImp refundPayDialogImp = new RefundPayDialogImp(mContext);
-                        refundPayDialogImp.setPayAmt(mRefundGoodsInfoAdapter.getRefundAmt());
-                        refundPayDialogImp.setYesOnclickListener(dialog -> {
-                            mRefundGoodsInfoAdapter.addPayInfo(dialog.getContent());
-                            dialog.dismiss();
-                        }).show();
-                    }
-                }else
-                    MyDialog.ToastMessage("无可退商品！",mContext,getWindow());
+                }
             });
         }
     }
 
     private void requestRefund(){
-        MyDialog myDialog = new MyDialog(mContext);
+        final MyDialog myDialog = new MyDialog(mContext);
         myDialog.setTitle("退款信息").setMessage(mRefundGoodsInfoAdapter.PayDatasToString()).setYesOnclickListener(mContext.getString(R.string.OK), myDialog1 -> {
             myDialog1.dismiss();
             mProgressDialog.setCancel(false).setMessage("正在保存单据...").refreshMessage().show();
             CustomApplication.execute(()->{
-                setRefundOpertor(null,null);
                 final StringBuilder err = new StringBuilder();
-                final JSONObject data = new JSONObject();
-                if (generateRefundData(data)){
-                    if (saveRefundOrderInfo(data,err)){
-                        mProgressDialog.setCancel(false).setMessage("正在退款...").refreshMessage().show();
+                try {
+
+                    final JSONObject data = new JSONObject();
+                    if (generateRefundData(data)){
+                        if (saveRefundOrderInfo(data,err)){
+                            mProgressDialog.setCancel(false).setMessage("正在退款...").refreshMessage().show();
                             if (isRefundCheck){
                                 refundWithCheck(err);
                             }else{
                                 refundWithNotCheck(err);
                             }
                             isRefundCheck = false;//重置
+                        }
+                    }else {
+                        err.append(data.getString("info"));
                     }
-                }else {
-                    err.append(data.getString("info"));
+
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
+
                 if (err.length() != 0){
                     mContext.runOnUiThread(()->{
                         mProgressDialog.dismiss();
@@ -287,6 +308,11 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
                     });
                 }else {
                     mContext.runOnUiThread(()->{
+                        if (mRefundGoodsInfoAdapter.isSingleRefundStatus()){
+                            mProgressDialog.dismiss();
+                            mRefundGoodsInfoAdapter.clearOrderInfo();
+                            this.dismiss();
+                        }
                         if (null != mRemarkEt){
                             mRemarkEt.setVisibility(View.GONE);
                             mRemarkEt.getText().clear();
@@ -298,152 +324,9 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
 
         }).setNoOnclickListener(mContext.getString(R.string.cancel),MyDialog::dismiss).show();
     }
-
-    private void initVipInfoLayout(){
-        final LinearLayout vip_info_layout = findViewById(R.id.vip_info_layout);
-        if (null != vip_info_layout){
-            final JSONObject vip_info = mVipInfo = mRefundGoodsInfoAdapter.getVipInfo();
-            if (vip_info != null && !vip_info.isEmpty()){
-                vip_info_layout.setVisibility(View.VISIBLE);
-                final TextView vip_name = vip_info_layout.findViewById(R.id.vip_name),card_code = vip_info_layout.findViewById(R.id.card_code),
-                        vip_mobile = vip_info_layout.findViewById(R.id.vip_mobile),member_id = vip_info_layout.findViewById(R.id.member_id);
-                vip_name.setText(vip_info.getString("name"));
-                card_code.setText(vip_info.getString("card_code"));
-                vip_mobile.setText(vip_info.getString("mobile"));
-                member_id.setText(vip_info.getString("member_id"));
-            }
-        }
-    }
-
-    private void setRefundOpertor(final String cashier_id,final String cashier_name){
-        if ((cashier_id == null || "".equals(cashier_id))){
-            mRefundOperId = mContext.getCashierInfo().getString("cas_id");
-        }else
-            mRefundOperId = cashier_id;
-
-        if ((cashier_name == null || "".equals(cashier_name))){
-            mRefundOperName = mContext.getCashierInfo().getString("cas_name");
-        }else {
-            mRefundOperName = cashier_name;
-        }
-    }
-    private String generateRefundOrderCode(final String pos_num){
-        String prefix = "T" + pos_num + "-" + new SimpleDateFormat("yyMMddHHmmss",Locale.CHINA).format(new Date()) + "-",order_code ;
-        JSONObject orders= new JSONObject();
-        if (SQLiteHelper.execSql(orders,"SELECT count(ro_id) + 1 ro_code from refund_order where date(addtime,'unixepoch' ) = date('now')")){
-            order_code =orders.getString("ro_code");
-            order_code = prefix + "0000".substring(order_code.length()) + order_code;
-        }else{
-            order_code = prefix + "0001";;
-            MyDialog.ToastMessage("生成订单号错误：" + orders.getString("info"),mContext,null);
-        }
-        return order_code;
-    }
-
-    private boolean generateRefundData(final @NonNull JSONObject refund_info){
-        final String stores_id = mContext.getStoreInfo().getString("stores_id"),pos_num = mContext.getPosNum(),cashier_id = mContext.getCashierInfo().getString("cas_id"),
-                cashier_name = mContext.getCashierInfo().getString("cas_name"),sz_refund_remark = mRemarkEt == null ? "" : mRemarkEt.getText().toString();
-
-        JSONObject tmp_record;
-        long time = System.currentTimeMillis() / 1000;
-        double order_sum_amt = 0.0;
-
-        mRefundCode = generateRefundOrderCode(pos_num);
-
-        //处理退货商品
-        final JSONArray goods_datas = Utils.JsondeepCopy(mRefundGoodsInfoAdapter.getRefundGoods());
-        double refund_num = 0.0;
-        for (int i = 0;i < goods_datas.size();i++){
-            tmp_record = goods_datas.getJSONObject(i);
-
-            refund_num = tmp_record.getDoubleValue("refund_num");
-            if (Utils.equalDouble(refund_num,0.0)){
-                goods_datas.remove(i--);
-            }else {
-                tmp_record.remove("returnable_num");
-                tmp_record.put("ro_code",mRefundCode);
-                order_sum_amt += tmp_record.getDoubleValue("xnum") * tmp_record.getDoubleValue("price");
-            }
-        }
-
-        //处理支付信息
-        final JSONArray refund_pay_records = mRefundGoodsInfoAdapter.getPayDatas();
-        if (refund_pay_records == null){
-            refund_info.put("info","支付记录不能为空！");
-            return false;
-        }
-        for (int i = 0,size = refund_pay_records.size();i < size;i ++){
-            tmp_record = refund_pay_records.getJSONObject(i);
-            int is_check = tmp_record.getIntValue("is_check");
-            tmp_record.put("ro_code",mRefundCode);
-            tmp_record.put("remark",sz_refund_remark);
-            tmp_record.put("road_pay_status",1);
-            if (is_check == 2){//记账方式支付状态为已支付
-                tmp_record.put("pay_time",System.currentTimeMillis() / 1000);
-                tmp_record.put("pay_status",2);
-            }else{
-                isRefundCheck = true;
-                tmp_record.put("pay_time",0);
-                tmp_record.put("pay_status",1);
-            }
-        }
-
-        //处理订单信息
-        final JSONObject order_info = new JSONObject();
-        if (null != mVipInfo){
-            order_info.put("mobile",mVipInfo.getString("mobile"));
-            order_info.put("name",mVipInfo.getString("name"));
-            order_info.put("card_code",mVipInfo.getString("card_code"));
-            order_info.put("member_id",mVipInfo.getString("member_id"));
-        }
-
-        order_info.put("stores_id",stores_id);
-        order_info.put("ro_code",mRefundCode);
-        order_info.put("order_code",mOrderCode);
-        order_info.put("total",order_sum_amt);
-        order_info.put("type",mRefundGoodsInfoAdapter.getRefundType());
-
-        order_info.put("cashier_id",cashier_id);
-        order_info.put("cashier_name",cashier_name);
-
-        order_info.put("addtime",time);
-        order_info.put("pos_code",pos_num);
-        order_info.put("order_status",!isRefundCheck ? 2 : 1);//如果不需要请求退款则退单状态为已成功
-        order_info.put("upload_status",1);
-        order_info.put("upload_time",0);
-        order_info.put("is_rk",2);//默认需要入库
-        order_info.put("refund_ment",1);
-
-        order_info.put("remark",sz_refund_remark);
-        order_info.put("transfer_status",1);
-        order_info.put("transfer_time",0);
-        order_info.put("ok_cashier_id",mRefundOperId);
-        order_info.put("ok_cashier_name",mRefundOperName);
-        order_info.put("refund_total",mRefundGoodsInfoAdapter.getRefundAmt());
-
-        final JSONArray refund_orders = new JSONArray();
-        refund_orders.add(order_info);
-
-        refund_info.put("refund_order",refund_orders);
-        refund_info.put("refund_order_goods",goods_datas);
-        refund_info.put("refund_order_pays",refund_pay_records);
-
-        return true;
-    }
-    private boolean saveRefundOrderInfo(final JSONObject data,final StringBuilder err){
-
-        List<String> tables = Arrays.asList("refund_order","refund_order_goods","refund_order_pays"),
-                refund_order_cols = Arrays.asList("refund_total","ok_cashier_name","ok_cashier_id","cashier_name","member_id","transfer_time","transfer_status","remark","card_code","name",
-                        "mobile","refund_ment","is_rk","upload_time","upload_status","order_status","pos_code","addtime","cashier_id","member_card","type","total","order_code","ro_code","stores_id"),
-                refund_order_goods_cols = Arrays.asList("produce_date","conversion", "is_rk","unit_name","barcode","goods_title","rog_id","refund_price","refund_num","price", "xnum","barcode_id","ro_code"),
-                refund_order_pays_cols = Arrays.asList("road_pay_status","pay_method_name","is_check","remark","pay_code","pay_serial_no","pay_status","pay_time","pay_money","pay_method","ro_code");
-
-        return SQLiteHelper.execSQLByBatchFromJson(data,tables,Arrays.asList(refund_order_cols,refund_order_goods_cols,refund_order_pays_cols),err,0);
-    }
-
     private void refundWithNotCheck(final StringBuilder err){
         if (updateFromRefundResult(null,mOrderCode,mRefundCode,err)){
-            if (uploadRefundOrder(mOrderCode, mRefundCode, err)) {
+            if (uploadRefundOrder(mContext,mOrderCode, mRefundCode, err)) {
                 //重新获取退单信息
                 if (mQueryBtn != null)mQueryBtn.callOnClick();
             }
@@ -474,7 +357,7 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
 
                                 mProgressDialog.setMessage("正在上传退单信息...").refreshMessage();
                                 //上传本地订单
-                                if (uploadRefundOrder(mOrderCode, mRefundCode, err)) {
+                                if (uploadRefundOrder(mContext,mOrderCode, mRefundCode, err)) {
                                     //重新获取退单信息
                                     if (mQueryBtn != null)mQueryBtn.callOnClick();
                                 }
@@ -488,9 +371,145 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
         }
     }
 
-    private boolean uploadRefundOrder(final String order_code,final String ro_code,@NonNull final StringBuilder err){
+    private void initVipInfoLayout(){
+        final LinearLayout vip_info_layout = findViewById(R.id.vip_info_layout);
+        if (null != vip_info_layout){
+            final JSONObject vip_info = mVipInfo = mRefundGoodsInfoAdapter.getVipInfo();
+            if (vip_info != null && !vip_info.isEmpty()){
+                vip_info_layout.setVisibility(View.VISIBLE);
+                final TextView vip_name = vip_info_layout.findViewById(R.id.vip_name),card_code = vip_info_layout.findViewById(R.id.card_code),
+                        vip_mobile = vip_info_layout.findViewById(R.id.vip_mobile),member_id = vip_info_layout.findViewById(R.id.member_id);
+                vip_name.setText(vip_info.getString("name"));
+                card_code.setText(vip_info.getString("card_code"));
+                vip_mobile.setText(vip_info.getString("mobile"));
+                member_id.setText(vip_info.getString("member_id"));
+            }
+        }
+    }
+
+    private String generateRefundOrderCode(final String pos_num){
+        String prefix = "T" + pos_num + "-" + new SimpleDateFormat("yyMMddHHmmss",Locale.CHINA).format(new Date()) + "-",order_code ;
+        JSONObject orders= new JSONObject();
+        if (SQLiteHelper.execSql(orders,"SELECT count(ro_id) + 1 ro_code from refund_order where date(addtime,'unixepoch' ) = date('now')")){
+            order_code =orders.getString("ro_code");
+            order_code = prefix + "0000".substring(order_code.length()) + order_code;
+        }else{
+            order_code = prefix + "0001";;
+            MyDialog.ToastMessage("生成订单号错误：" + orders.getString("info"),mContext,null);
+        }
+        return order_code;
+    }
+
+    private boolean generateRefundData(final @NonNull JSONObject refund_info){
+        final String stores_id = mContext.getStoreInfo().getString("stores_id"),pos_num = mContext.getPosNum(),cashier_id = mContext.getCashierInfo().getString("cas_id"),
+                cashier_name = mContext.getCashierInfo().getString("cas_name"),sz_refund_remark = mRemarkEt == null ? "" : mRemarkEt.getText().toString();
+
+        JSONObject tmp_record;
+        long time = System.currentTimeMillis() / 1000;
+
+
+        final String refund_code = generateRefundOrderCode(pos_num);
+        mRefundCode = refund_code;
+
+        //处理退货商品
+        final JSONArray goods_datas = Utils.JsondeepCopy(mRefundGoodsInfoAdapter.getRefundGoods());
+        double refund_num = 0.0d,order_sum_amt = 0.0,refund_sum_amt = 0.0;
+        for (int i = 0;i < goods_datas.size();i++){
+            tmp_record = goods_datas.getJSONObject(i);
+            order_sum_amt += Utils.formatDouble(tmp_record.getDoubleValue("xnum") * tmp_record.getDoubleValue("price"),2);
+
+            refund_num = tmp_record.getDoubleValue("refund_num");
+            if (Utils.equalDouble(refund_num,0.0)){
+                goods_datas.remove(i--);
+            }else {
+                tmp_record.remove("returnable_num");
+                tmp_record.put("ro_code",refund_code);
+                refund_sum_amt += Utils.formatDouble(refund_num * tmp_record.getDoubleValue("refund_price"),2);
+            }
+        }
+
+        //处理支付信息
+        final JSONArray refund_pay_records = mRefundGoodsInfoAdapter.getPayDatas();
+        if (refund_pay_records == null){
+            refund_info.put("info","支付记录不能为空！");
+            return false;
+        }
+        for (int i = 0,size = refund_pay_records.size();i < size;i ++){
+            tmp_record = refund_pay_records.getJSONObject(i);
+            int is_check = tmp_record.getIntValue("is_check");
+            tmp_record.put("ro_code",refund_code);
+            tmp_record.put("remark",sz_refund_remark);
+            tmp_record.put("road_pay_status",1);
+            if (is_check == 2){//记账方式支付状态为已支付
+                tmp_record.put("pay_time",System.currentTimeMillis() / 1000);
+                tmp_record.put("pay_status",2);
+            }else{
+                isRefundCheck = true;
+                tmp_record.put("pay_time",0);
+                tmp_record.put("pay_status",1);
+            }
+        }
+
+        //处理订单信息
+        final JSONObject order_info = new JSONObject();
+        final JSONObject vip_info = mVipInfo;
+        if (null != vip_info){
+            order_info.put("mobile",vip_info.getString("mobile"));
+            order_info.put("name",vip_info.getString("name"));
+            order_info.put("card_code",vip_info.getString("card_code"));
+            order_info.put("member_id",vip_info.getString("member_id"));
+        }
+
+        order_info.put("stores_id",stores_id);
+        order_info.put("ro_code",refund_code);
+        order_info.put("order_code",mOrderCode);
+        order_info.put("total",order_sum_amt);
+        order_info.put("type",mRefundType);
+
+        order_info.put("cashier_id",cashier_id);
+        order_info.put("cashier_name",cashier_name);
+
+        order_info.put("addtime",time);
+        order_info.put("pos_code",pos_num);
+        order_info.put("order_status",!isRefundCheck ? 2 : 1);//如果不需要请求退款则退单状态为已成功
+        order_info.put("upload_status",1);
+        order_info.put("upload_time",0);
+        order_info.put("is_rk",2);//默认需要入库
+        order_info.put("refund_ment",1);
+
+        order_info.put("remark",sz_refund_remark);
+        order_info.put("transfer_status",1);
+        order_info.put("transfer_time",0);
+
+        final String per_cashier_id = mContext.getPermissionCashierId();
+        order_info.put("ok_cashier_id",per_cashier_id);
+        order_info.put("ok_cashier_name",SQLiteHelper.getString("SELECT ifnull(cas_name,'') FROM cashier_info where cas_id = "+ per_cashier_id,null));
+
+        order_info.put("refund_total",refund_sum_amt);
+
+        final JSONArray refund_orders = new JSONArray();
+        refund_orders.add(order_info);
+
+        refund_info.put("refund_order",refund_orders);
+        refund_info.put("refund_order_goods",goods_datas);
+        refund_info.put("refund_order_pays",refund_pay_records);
+
+        return true;
+    }
+    private boolean saveRefundOrderInfo(final JSONObject data,final StringBuilder err){
+
+        List<String> tables = Arrays.asList("refund_order","refund_order_goods","refund_order_pays"),
+                refund_order_cols = Arrays.asList("refund_total","ok_cashier_name","ok_cashier_id","cashier_name","member_id","transfer_time","transfer_status","remark","card_code","name",
+                        "mobile","refund_ment","is_rk","upload_time","upload_status","order_status","pos_code","addtime","cashier_id","member_card","type","total","order_code","ro_code","stores_id"),
+                refund_order_goods_cols = Arrays.asList("produce_date","conversion", "is_rk","unit_name","barcode","goods_title","rog_id","refund_price","refund_num","price", "xnum","barcode_id","ro_code"),
+                refund_order_pays_cols = Arrays.asList("road_pay_status","pay_method_name","is_check","remark","pay_code","pay_serial_no","pay_status","pay_time","pay_money","pay_method","ro_code");
+
+        return SQLiteHelper.execSQLByBatchFromJson(data,tables,Arrays.asList(refund_order_cols,refund_order_goods_cols,refund_order_pays_cols),err,0);
+    }
+
+    private static boolean uploadRefundOrder(final MainActivity context,final String order_code,final String ro_code,@NonNull final StringBuilder err){
         final String refund_order_sql = "SELECT refund_total total,member_id,remark,card_code,name,mobile,\n" +
-                "       pos_code,addtime,cashier_id,type,total order_money,order_code,ro_code,stores_id FROM refund_order where order_status = 2 and upload_status = 1 and ro_code = '" + ro_code +"' and order_code = '" + order_code +"'",
+                "       pos_code,addtime,cashier_id,type,total order_money,order_code,ro_code,stores_id FROM refund_order where order_status = 2 and upload_status = 1 and ro_code = '" + ro_code +"' and (ifnull(order_code,'') = '" + order_code +"')",
                 refund_goods_sql = "SELECT produce_date,conversion,is_rk,rog_id,refund_price,refund_num xnum,price,barcode_id,ro_code FROM refund_order_goods where ro_code = '"+ ro_code +"';",
                 refund_pay_sql = "SELECT road_pay_status,remark,pay_code,pay_serial_no, pay_status,pay_time,pay_money,pay_method,ro_code FROM refund_order_pays where ro_code = '"+ ro_code +"';";
 
@@ -509,10 +528,12 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
                     data.put("order_goods",refund_goods);
                     data.put("order_pay",refund_pays);
 
-                    send_data.put("appid",mContext.getAppId());
+                    send_data.put("appid",context.getAppId());
                     send_data.put("data",data);
 
-                    JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + "/api/refund/order_upload",HttpRequest.generate_request_parm(send_data,mContext.getAppScret()),true);
+                    Logger.d_json(data.toJSONString());
+
+                    JSONObject retJson = httpRequest.sendPost(context.getUrl() + "/api/refund/order_upload",HttpRequest.generate_request_parm(send_data,context.getAppScret()),true);
                     switch (retJson.getIntValue("flag")){
                         case 0:
                             code = false;
@@ -532,7 +553,7 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
                                         final ContentValues values = new ContentValues();
                                         values.put("upload_status",2);
                                         values.put("upload_time",System.currentTimeMillis() / 1000);
-                                        int rows = SQLiteHelper.execUpdateSql("refund_order",values,"order_code = ? and ro_code = ?",new String[]{order_code,ro_code},err);
+                                        int rows = SQLiteHelper.execUpdateSql("refund_order",values,"ifnull(order_code,'') = ? and ro_code = ?",new String[]{order_code,ro_code},err);
                                         code = rows > 0;
                                         if (rows == 0)err.append("未更新任何数据！");
                                     }else {
@@ -569,8 +590,8 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
                 update_sqls.delete(0,update_sqls.length());
             }
         }
-        update_sqls_list.add("update refund_order set order_status = 2 where order_code = '"+ order_code +"' and ro_code = '"+ ro_code +"'");
-        update_sqls_list.add("update retail_order set order_status = 4 where order_code = '"+ order_code +"'");
+        update_sqls_list.add("update refund_order set order_status = 2 where ifnull(order_code,'') = '"+ order_code +"' and ro_code = '"+ ro_code +"'");
+        if (!mRefundGoodsInfoAdapter.isSingleRefundStatus())update_sqls_list.add("update retail_order set order_status = 4 where order_code = '"+ order_code +"'");
         return SQLiteHelper.execBatchUpdateSql(update_sqls_list,err);
     }
 

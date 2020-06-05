@@ -16,9 +16,9 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.logger.Logger;
 
 public class SuperItemDecoration extends RecyclerView.ItemDecoration {
-    protected int mSpace;
-    protected Paint mPaint;
-    public SuperItemDecoration(){
+    int mSpace;
+    Paint mPaint;
+    SuperItemDecoration(){
     }
     @Override
     public void onDraw(@NonNull Canvas c,@NonNull RecyclerView parent,@NonNull RecyclerView.State state) {
