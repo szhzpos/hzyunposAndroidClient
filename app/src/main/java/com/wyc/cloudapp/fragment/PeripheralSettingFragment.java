@@ -278,7 +278,7 @@ public class PeripheralSettingFragment extends BaseFragment {
                 }
                 break;
             case R.id.usb_p:
-                startUSBDiscovery(null,null);
+                startUSBDiscoveryAndAuth(null,null);
                 break;
         }
     }
@@ -315,7 +315,7 @@ public class PeripheralSettingFragment extends BaseFragment {
             }
         }
     }
-    private void startUSBDiscovery(final String vid,final String pid){
+    private void startUSBDiscoveryAndAuth(final String vid, final String pid){
         UsbManager manager = (UsbManager)mContext.getSystemService(Context.USB_SERVICE);
         if (null != manager){
             HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
@@ -339,14 +339,9 @@ public class PeripheralSettingFragment extends BaseFragment {
                         }
                         isExist = false;
                     }else{
-                        try {
-                            if (String.valueOf(device.getVendorId()).equals(vid) && pid.equals(String.valueOf(device.getProductId()))){
-                                isExist = true;
-                                break;
-                            }
-                        }catch (NumberFormatException e){
-                            e.printStackTrace();
-                            MyDialog.ToastMessage("请求USB权限错误：" + e.getMessage(),mContext,null);
+                        if (String.valueOf(device.getVendorId()).equals(vid) && pid.equals(String.valueOf(device.getProductId()))){
+                            isExist = true;
+                            break;
                         }
                     }
                 }
@@ -377,7 +372,7 @@ public class PeripheralSettingFragment extends BaseFragment {
                                 stopBlueToothDiscovery();
                                 break;
                             case R.id.usb_p:
-                                startUSBDiscovery(vals[0],vals[1]);
+                                startUSBDiscoveryAndAuth(vals[0],vals[1]);
                                 break;
                         }
                     }
@@ -427,7 +422,7 @@ public class PeripheralSettingFragment extends BaseFragment {
                             bondBlueTooth(vals[1]);
                             break;
                         case R.id.usb_p:
-                            startUSBDiscovery(vals[0],vals[1]);
+                            startUSBDiscoveryAndAuth(vals[0],vals[1]);
                             break;
                     }
                 }
