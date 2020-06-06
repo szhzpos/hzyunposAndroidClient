@@ -30,10 +30,6 @@ public class CustomApplication extends Application {
         super.onCreate();
         Logger.addLogAdapter(new AndroidLogAdapter());
         Logger.addLogAdapter(new DiskLogAdapter());//日志记录磁盘
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-        intentFilter.addAction("confirm_connection");
-        registerReceiver(new GlobalBroadcast(),intentFilter);
     }
 
     static {
