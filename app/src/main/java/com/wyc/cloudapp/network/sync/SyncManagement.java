@@ -1,6 +1,5 @@
 package com.wyc.cloudapp.network.sync;
 
-import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -11,22 +10,21 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SyncManagement extends Thread {
     private CountDownLatch handlerInitLatch;
     private Handler mHandler;
     private SyncHandler mSyncHandler;
-    private String mAppId,mAppScret,mUrl,mPosNum,mOperId,mStoresId;
+    private String mAppId, mAppSecret,mUrl,mPosNum,mOperId,mStoresId;
     private SyncManagement(Handler handler){
         this.mHandler = handler;
         handlerInitLatch = new CountDownLatch(1);
     }
-    public SyncManagement(Handler handler, final String url, final String appid, final String appscret, final String stores_id, final String pos_num, final String operid){
+    public SyncManagement(Handler handler, final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){
         this(handler);
         mUrl = url ;
         mAppId = appid;
-        mAppScret = appscret;
+        mAppSecret = appsecret;
         mPosNum = pos_num;
         mOperId = operid;
         mStoresId = stores_id;
@@ -41,8 +39,8 @@ public class SyncManagement extends Thread {
         return mAppId;
     }
 
-    String getAppScret(){
-        return mAppScret;
+    String getAppSecret(){
+        return mAppSecret;
     }
     String getPosNum(){
         return mPosNum;
@@ -56,7 +54,7 @@ public class SyncManagement extends Thread {
 
     @Override
     public void run(){
-        Logger.i("SyncManagement<%s>启动:%s",getName(),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS",Locale.CHINA).format(new Date()));
+        Logger.i("SyncManagement<%s>启动:%s",getName(),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS",Locale.CHINA).format(new Date()));
         if (mSyncHandler == null) {
             Looper.prepare();
             mSyncHandler = new SyncHandler(mHandler,this);
@@ -86,7 +84,7 @@ public class SyncManagement extends Thread {
             mHandler = null;
             handlerInitLatch = null;
         }
-        Logger.i("SyncManagement<%s>退出:%s",getName(),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS", Locale.CHINA).format(new Date()));
+        Logger.i("SyncManagement<%s>退出:%s",getName(),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.CHINA).format(new Date()));
     }
 
     public void start_sync(boolean b){
@@ -113,6 +111,11 @@ public class SyncManagement extends Thread {
     public void sync_transfer_order(){
         acquireHandler();
         mSyncHandler.startUploadTransferOrder();
+    }
+
+    public void sync_refund_order(){
+        acquireHandler();
+        mSyncHandler.startUploadRefundOrder();
     }
 
     public void pauseSync(){

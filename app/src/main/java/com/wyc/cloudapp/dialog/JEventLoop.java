@@ -22,6 +22,11 @@ public final class JEventLoop {
         }
     }
 
+    @Override
+    protected void finalize(){
+        Logger.d("JEventLoop finalize");
+    }
+
     public int exec(){
         if (!mDone){
             synchronized (mLock){

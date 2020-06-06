@@ -221,7 +221,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         }
         return isTrue;
     }
-    private static boolean saveFormJson(@NonNull final JSONObject json, @NonNull final String table_name,int action, StringBuilder err){
+    private static boolean saveFormJson(@NonNull final JSONObject json, @NonNull final String table_name,int action,final StringBuilder err){
         boolean isTrue = true;
         SQLiteStatement statement = null;
         int columnN0 = 0;
@@ -258,7 +258,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         return isTrue;
     }
 
-    public static boolean execSQLByBatchFromJson(@NonNull JSONArray jsonArray, String table, String[] cls, StringBuilder err,int type) {
+    public static boolean execSQLByBatchFromJson(@NonNull final JSONArray jsonArray,final String table,final String[] cls,final StringBuilder err,int type) {
         //type 0 insert 1 replace
 
         boolean isTrue = true;

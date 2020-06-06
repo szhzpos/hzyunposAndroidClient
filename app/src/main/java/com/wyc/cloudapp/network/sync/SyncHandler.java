@@ -12,6 +12,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
@@ -42,7 +43,7 @@ public final class SyncHandler extends Handler {
     public void handleMessage(Message msg){
         final SyncManagement sync = mSync;
 
-        final String base_url =  sync.getUrl(),app_id = sync.getAppId(),appScret = sync.getAppScret(),pos_num = sync.getPosNum(),oper_id = sync.getOperId(),stores_id = sync.getStoresId();
+        final String base_url =  sync.getUrl(),app_id = sync.getAppId(),appSecret = sync.getAppSecret(),pos_num = sync.getPosNum(),oper_id = sync.getOperId(),stores_id = sync.getStoresId();
         JSONObject object = new JSONObject(),info_json,retJson;
         String table_name = "",sys_name = "",url = "",sz_param = "";
         String[] table_cls = null;
@@ -121,10 +122,13 @@ public final class SyncHandler extends Handler {
                     testNetworkStatus();
                     return;
                 case MessageID.UPLOAD_ORDER_ID:
-                    uploadRetailOrderInfo();
+                    uploadRetailOrderInfo(app_id,base_url,appSecret);
                     return;
                 case MessageID.UPLOAD_TRANS_ORDER_ID:
-                    uploadTransferOrderInfo();
+                    uploadTransferOrderInfo(app_id,base_url,appSecret);
+                    return;
+                case MessageID.UPLOAD_REFUND_ORDER_ID:
+                    uploadRefundOrderInfo(app_id,base_url,appSecret);
                     return;
                 case MessageID.MODFIY_REPORT_PROGRESS_ID:
                     if (msg.obj instanceof  Boolean)
@@ -147,7 +151,7 @@ public final class SyncHandler extends Handler {
                 syncActivityHandler.obtainMessage(SYNC_DIS_INFO_ID,sys_name + "信息....").sendToTarget();
 
             object.put("appid",app_id);
-            sz_param = HttpRequest.generate_request_parm(object,appScret);
+            sz_param = HttpRequest.generate_request_parm(object,appSecret);
 
             retJson = mHttp.sendPost(url,sz_param,true);
             switch (retJson.getIntValue("flag")) {
@@ -223,7 +227,7 @@ public final class SyncHandler extends Handler {
     }
 
     private void testNetworkStatus() throws JSONException {
-        int syncInterval = 3000;
+        int syncInterval = 5000;
         final JSONObject data = new JSONObject();
         final SyncManagement sync = mSync;
         final String test_url = sync.getUrl() + "/api/heartbeat/index";
@@ -233,7 +237,7 @@ public final class SyncHandler extends Handler {
         data.put("randstr", Utils.getNonce_str(8));
         data.put("cas_id",sync.getOperId());
 
-        final JSONObject retJson = mHttp.sendPost(test_url,HttpRequest.generate_request_parm(data,sync.getAppScret()),true);
+        final JSONObject retJson = mHttp.sendPost(test_url,HttpRequest.generate_request_parm(data,sync.getAppSecret()),true);
         err_code = retJson.getIntValue("rsCode");
         switch (retJson.getIntValue("flag")) {
             case 0:
@@ -245,7 +249,11 @@ public final class SyncHandler extends Handler {
             case 1:
                 syncActivityHandler.obtainMessage(MessageID.NETWORKSTATUS_ID,true).sendToTarget();
                 if (mCurrentNeworkStatusCode != HttpURLConnection.HTTP_OK){//如果之前网络响应状态不为OK,则重连成功
+                    mCurrentNeworkStatusCode = HttpURLConnection.HTTP_OK;
                     Logger.i("重新连接服务器成功！");
+                    startUploadRetailOrder();
+                    startUploadRefundOrder();
+                    startUploadTransferOrder();
                 }
                 final JSONObject  info_json = JSON.parseObject(retJson.getString("info"));
                 switch (info_json.getString("status")){
@@ -266,7 +274,7 @@ public final class SyncHandler extends Handler {
         }
         mCurrentNeworkStatusCode = err_code;
     }
-    private void uploadRetailOrderInfo() {
+    private void uploadRetailOrderInfo(final String appid,final String url,final String appSecret) {
         final StringBuilder err = new StringBuilder(),order_gp_ids = new StringBuilder();
         final String sql_orders = "SELECT discount_money,card_code,name,mobile,transfer_time,transfer_status,pay_time,pay_status,order_status,pos_code,addtime,cashier_id,total,\n" +
                 "discount_price,order_code,stores_id,spare_param1,spare_param2,replace(remark,'&','') remark FROM retail_order where order_status = 2 and pay_status = 2 and upload_status = 1 limit 100",
@@ -280,7 +288,6 @@ public final class SyncHandler extends Handler {
 
         JSONArray orders,sales ,pays ,combinations,discount_records;
         JSONObject data = new JSONObject(),send_data = new JSONObject(),retJson,tmp_jsonObject,order_info;
-        final HttpRequest httpRequest = new HttpRequest();
 
         boolean code;
         int gp_id;
@@ -327,10 +334,10 @@ public final class SyncHandler extends Handler {
 
                                     Logger.d_json(data.toString());
 
-                                    send_data.put("appid",mSync.getAppId());
+                                    send_data.put("appid",appid);
                                     send_data.put("data",data);
 
-                                    retJson = httpRequest.sendPost(mSync.getUrl() + "/api_v2/retail_upload/order_upload",HttpRequest.generate_request_parm(send_data,mSync.getAppScret()),true);
+                                    retJson = mHttp.sendPost(url + "/api_v2/retail_upload/order_upload",HttpRequest.generate_request_parm(send_data,appSecret),true);
                                     switch (retJson.getIntValue("flag")){
                                         case 0:
                                             code = false;
@@ -374,7 +381,7 @@ public final class SyncHandler extends Handler {
         }
     }
 
-    private void uploadTransferOrderInfo(){
+    private void uploadTransferOrderInfo(final String appid,final String url,final String appSecret){
         //上传交班单据
         String transfer_sum_sql = "SELECT sj_money,cards_num oncecard_num,cards_money oncecard_money,\n" +
                 "       order_money,order_e_date,order_b_date,recharge_num,recharge_money,refund_num,\n" +
@@ -386,7 +393,6 @@ public final class SyncHandler extends Handler {
         final JSONArray transfer_sum_arr = SQLiteHelper.getListToJson(transfer_sum_sql,err);
         if (null != transfer_sum_arr){
             final StringBuilder sz_ti_code = new StringBuilder(),sql_sb = new StringBuilder();
-            final HttpRequest httpRequest = new HttpRequest();
 
             JSONObject transfer_sum_obj;
             for (int i = 0,size = transfer_sum_arr.size();i < size;i++){
@@ -425,10 +431,10 @@ public final class SyncHandler extends Handler {
 
                         Logger.d_json(data.toJSONString());
 
-                        send_data.put("appid",mSync.getAppId());
+                        send_data.put("appid",appid);
                         send_data.put("data",data);
 
-                        JSONObject retJson = httpRequest.sendPost(mSync.getUrl() + "/api/transfer/transfer_upload",HttpRequest.generate_request_parm(send_data,mSync.getAppScret()),true);
+                        JSONObject retJson = mHttp.sendPost(url + "/api/transfer/transfer_upload",HttpRequest.generate_request_parm(send_data,appSecret),true);
                         switch (retJson.getIntValue("flag")){
                             case 0:
                                 err.append(retJson.getString("info"));
@@ -456,6 +462,22 @@ public final class SyncHandler extends Handler {
         }
         if (err.length() != 0){
             Logger.e("上传交班单据错误：%s",err);
+            syncActivityHandler.obtainMessage(MessageID.TRANSFERSTATUS_ID,false).sendToTarget();
+        }
+    }
+
+    private void uploadRefundOrderInfo(final String appid,final String url,final String appSecret){
+        final StringBuilder err = new StringBuilder();
+        final JSONArray refund_orders = SQLiteHelper.getListToJson("SELECT ifnull(order_code,'') order_code,ro_code FROM refund_order where upload_status = 1 limit 500",err);
+        if (refund_orders != null){
+            JSONObject obj;
+            for (int i = 0,size = refund_orders.size();i < size;i++){
+                obj = refund_orders.getJSONObject(i);
+                RefundDialog.uploadRefundOrder(appid,url,appSecret,Utils.getNullStringAsEmpty(obj,"order_code"),Utils.getNullStringAsEmpty(obj,"ro_code"),err);
+            }
+        }
+        if (err.length() != 0){
+            Logger.e("上传退货单据错误：%s",err);
             syncActivityHandler.obtainMessage(MessageID.TRANSFERSTATUS_ID,false).sendToTarget();
         }
     }
@@ -545,7 +567,7 @@ public final class SyncHandler extends Handler {
             object.put("pos_num",sync.getPosNum());
         }
 
-        object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,sync.getAppScret()),true);
+        object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,sync.getAppSecret()),true);
         if (object.getIntValue("flag") == 1){
             object = JSON.parseObject(object.getString("info"));
             if ("n".equals(object.getString("status"))){
@@ -597,6 +619,12 @@ public final class SyncHandler extends Handler {
             sendMessageAtFrontOfQueue(obtainMessage(MessageID.UPLOAD_TRANS_ORDER_ID));
         }
     }
+    void startUploadRefundOrder(){
+        if (mCurrentNeworkStatusCode == HttpURLConnection.HTTP_OK){
+            sendMessageAtFrontOfQueue(obtainMessage(MessageID.UPLOAD_REFUND_ORDER_ID));
+        }
+    }
+
     void pause(){
         sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_PAUSE_ID));
     }

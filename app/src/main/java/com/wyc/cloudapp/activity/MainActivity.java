@@ -148,7 +148,6 @@ public class MainActivity extends AppCompatActivity {
 
         //初始化副屏
         initSecondDisplay();
-
     }
     @Override
     public void onResume(){
@@ -226,10 +225,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initSyncManagement(){
-        mSyncManagement = new SyncManagement(mHandler,mUrl,mAppId, mAppSecret,mStoreInfo.getString("stores_id"),mCashierInfo.getString("pos_num"),mCashierInfo.getString("cas_id"));
-        mSyncManagement.sync_retail_order();
-        mSyncManagement.sync_transfer_order();
-        mSyncManagement.start_sync(false);
+        final SyncManagement sync = new SyncManagement(mHandler,mUrl,mAppId, mAppSecret,mStoreInfo.getString("stores_id"),mCashierInfo.getString("pos_num"),mCashierInfo.getString("cas_id"));
+        sync.sync_retail_order();
+        sync.sync_transfer_order();
+        sync.sync_refund_order();
+        sync.start_sync(false);
+        mSyncManagement = sync;
     }
 
     private boolean verifyNumBtnPermissions(){
@@ -811,6 +812,9 @@ public class MainActivity extends AppCompatActivity {
             if (mProgressDialog != null && !mProgressDialog.isShowing())mProgressDialog.setMessage("正在同步...").refreshMessage().show();
             mSyncManagement.start_sync(b);
         }
+    }
+    public void sync_refund_order(){
+        if (mSyncManagement != null) mSyncManagement.sync_refund_order();
     }
     public JSONArray getSaleData(){
         return mSaleGoodsViewAdapter.getDatas();

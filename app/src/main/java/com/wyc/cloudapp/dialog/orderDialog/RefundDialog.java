@@ -327,9 +327,13 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
     }
     private void refundWithNotCheck(final StringBuilder err){
         if (updateFromRefundResult(null,mOrderCode,mRefundCode,err)){
-            if (uploadRefundOrder(mContext.getAppId(),mContext.getUrl(),mContext.getAppSecret(),mOrderCode, mRefundCode, err)) {
-                //重新获取退单信息
-                if (mQueryBtn != null)mQueryBtn.callOnClick();
+            if (mRefundGoodsInfoAdapter.isSingleRefundStatus()){//单品退货允许离线操作,保存单据之后再发起上传单据消息启动异步上传
+                mRefundGoodsInfoAdapter.sync_refund_order();
+            }else {
+                if (uploadRefundOrder(mContext.getAppId(),mContext.getUrl(),mContext.getAppSecret(),mOrderCode, mRefundCode, err)) {
+                    //部分在线退货需要获取服务器数据合并之后再显示已退货信息
+                    if (mQueryBtn != null)mQueryBtn.callOnClick();
+                }
             }
         }
     }
@@ -508,7 +512,7 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
         return SQLiteHelper.execSQLByBatchFromJson(data,tables,Arrays.asList(refund_order_cols,refund_order_goods_cols,refund_order_pays_cols),err,0);
     }
 
-    private static boolean uploadRefundOrder(final String appid,final String url,final String appSecret,final String order_code,final String ro_code,@NonNull final StringBuilder err){
+    public static boolean uploadRefundOrder(final String appid,final String url,final String appSecret,final String order_code,final String ro_code,@NonNull final StringBuilder err){
         final String refund_order_sql = "SELECT refund_total total,member_id,remark,card_code,name,mobile,\n" +
                 "       pos_code,addtime,cashier_id,type,total order_money,order_code,ro_code,stores_id FROM refund_order where order_status = 2 and upload_status = 1 and ro_code = '" + ro_code +"' and (ifnull(order_code,'') = '" + order_code +"')",
                 refund_goods_sql = "SELECT produce_date,conversion,is_rk,rog_id,refund_price,refund_num xnum,price,barcode_id,ro_code FROM refund_order_goods where ro_code = '"+ ro_code +"';",

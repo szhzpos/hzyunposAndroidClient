@@ -4,7 +4,7 @@ public final  class MessageID {
     private MessageID(){
 
     }
-    public static final int DIS_ERR_INFO_ID = 30,
+    public static final int DIS_ERR_INFO_ID = 35,
             SYNC_GOODS_BASE_ID = 1,
             SYNC_STORES_ID = 2,
             SYNC_GOODS_ID = 3,
@@ -33,6 +33,6 @@ public final  class MessageID {
             SYNC_THREAD_QUIT_ID= 31,
             CANCEL_LOGIN_ID = 32,
             UPLOAD_TRANS_ORDER_ID = 33,//交班单据
-            OFF_LINE_LOGIN_ID = 34;
-
+            OFF_LINE_LOGIN_ID = 34,
+            UPLOAD_REFUND_ORDER_ID = 36;
 }

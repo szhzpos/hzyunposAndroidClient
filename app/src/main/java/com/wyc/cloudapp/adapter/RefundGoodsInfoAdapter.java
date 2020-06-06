@@ -410,7 +410,9 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
     public JSONArray getPayDatas(){
         return mPayDatas;
     }
-
+    public void sync_refund_order(){
+        mContext.sync_refund_order();
+    }
     public void allRefund(){
         restoreRefundGOodsInfo();
         mPayDatas = Utils.JsondeepCopy(mOriPayDatas);

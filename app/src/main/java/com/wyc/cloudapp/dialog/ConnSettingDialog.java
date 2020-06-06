@@ -170,7 +170,6 @@ public class ConnSettingDialog extends DialogBaseOnContextImp {
                             });
                             final int code = loop.exec();
                             customProgressDialog.dismiss();
-
                             if (code == 1){
                                 save(shop_id);
                             }else {
@@ -189,7 +188,7 @@ public class ConnSettingDialog extends DialogBaseOnContextImp {
 
     private void save(final String shop_id){
         if (SQLiteHelper.initDb(mContext)){
-            final JSONObject json = new JSONObject(),param = new JSONObject();
+            final JSONObject json = new JSONObject();
             final StringBuilder err = new StringBuilder();
 
             json.put("server_url",verifyUrl());
@@ -199,11 +198,7 @@ public class ConnSettingDialog extends DialogBaseOnContextImp {
             json.put("appScret",mAppscret.getText().toString());
             json.put("storeInfo","{}");
 
-            param.fluentClear();
-            param.put("parameter_id","connParam");
-            param.put("parameter_content",json);
-            param.put("parameter_desc","门店信息、服务器连接参数");
-            if (SQLiteHelper.saveFormJson(param,"local_parameter",null,1,err)){
+            if (SQLiteHelper.saveLocalParameter("connParam",json,"门店信息、服务器连接参数",err)){
                 MyDialog.ToastMessage("保存成功！",mContext,null);
                 ConnSettingDialog.this.dismiss();
             }else
