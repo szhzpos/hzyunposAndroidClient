@@ -928,7 +928,6 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
         final ContentValues values_order = new ContentValues();
         tables.add("retail_order");
         if (!mPayStatus){
-            values_order.put("order_status",3);
             values_order.put("pay_status",1);
             values_order.put("spare_param1",err.toString());
             valueList.add(values_order);
@@ -956,8 +955,7 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
                     }
                 }
             } else{
-                final String sz_err = String.format(Locale.CHINA,"数据表,%s未更新，value:%s,whereClause:%s,whereArgs:%s",tables.get(index),valueList.get(index),
-                        whereClauseList.get(index),Arrays.toString(whereArgsList.get(index)));
+                final String sz_err = String.format(Locale.CHINA,"数据表,%s未更新，value:%s,whereClause:%s,whereArgs:%s",tables.get(index),valueList.get(index),whereClauseList.get(index),Arrays.toString(whereArgsList.get(index)));
                 Logger.e(sz_err);
                 err.append(sz_err);
             }

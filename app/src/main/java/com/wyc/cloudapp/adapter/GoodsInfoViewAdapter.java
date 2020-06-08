@@ -200,12 +200,12 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         }
     }
 
-    public boolean getSingleGoods(@NonNull JSONObject object, final String weigh_barcode_info, int id){
+    public boolean getSingleGoods(@NonNull JSONObject object, final String weigh_barcode_info, final String id){
         final String full_sql,sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,only_coding,ifnull(type,0) type," +
                 "retail_price,retail_price price,tc_rate,tc_mode,tax_rate,ps_price,cost_price,trade_price,buying_price,yh_mode,yh_price,metering_id,conversion from barcode_info where goods_status = 1 and barcode_status = 1 and ";
 
         if (weigh_barcode_info != null && weigh_barcode_info.length() != 0){
-            full_sql = sql + "only_coding = " + id;
+            full_sql = sql + "only_coding = '" + id + "'";
             return parseElectronicBarcode(full_sql,object,weigh_barcode_info);
         }
 
@@ -221,6 +221,9 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
     private boolean parseElectronicBarcode(@NonNull String full_sql,@NonNull final JSONObject object,@NonNull final String weigh_barcode_info){
         boolean code = true;
         ContentValues barcodeRuleObj = new ContentValues();
+
+        Logger.d(full_sql);
+
         if (code = SQLiteHelper.execSql(object,full_sql)){
             if (code = parseBarcodeRule(weigh_barcode_info,barcodeRuleObj)){
                 double xnum = 0.0,price = 0.0;
@@ -266,14 +269,14 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         this.mOnItemClickListener = onItemClickListener;
     }
 
-    public int getGoodsId(final JSONObject jsonObject){
-        int id = -1;
+    public String getGoodsId(final JSONObject jsonObject){
+        String id;
         if (!"".equals(Utils.getNullStringAsEmpty(jsonObject,W_G_MARK))){//计重、计份并且通过扫条码选择的商品标志
-            id = jsonObject.getIntValue("only_coding");
+            id = jsonObject.getString("only_coding");
         }else{
-            id = jsonObject.getIntValue("barcode_id");
-            if (-1 == id){//组合商品
-                id = jsonObject.getIntValue("gp_id");
+            id = jsonObject.getString("barcode_id");
+            if ("-1".equals(id)){//组合商品
+                id = jsonObject.getString("gp_id");
             }
         }
         return id;

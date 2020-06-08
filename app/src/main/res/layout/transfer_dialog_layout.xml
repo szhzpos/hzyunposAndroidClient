@@ -232,7 +232,7 @@
 
                 android:gravity="center_vertical|end"
                 android:padding="@dimen/margin_5"
-                android:text="@string/sec_sum_sz"
+                android:text="@string/sum_order_num_sz"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_18" />
 

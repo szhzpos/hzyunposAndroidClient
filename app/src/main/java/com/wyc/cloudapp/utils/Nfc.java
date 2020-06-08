@@ -24,16 +24,16 @@ public class Nfc {
         Properties properties = new Properties();
         int bReadCard = Integer.valueOf(properties.getProperty("bReadCard","0"));
         if(bReadCard == 1){
-            mNfcAdapter = NfcAdapter.getDefaultAdapter(mActivity);
+            mNfcAdapter = NfcAdapter.getDefaultAdapter(activity);
             if (mNfcAdapter == null) {
-                Toast.makeText(mActivity, "NFC is not available", Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, "NFC is not available", Toast.LENGTH_LONG).show();
             }else{
                 if (!mNfcAdapter.isEnabled()){
-                    Toast.makeText(mActivity, "请打开NFC功能！", Toast.LENGTH_LONG).show();
+                    Toast.makeText(activity, "请打开NFC功能！", Toast.LENGTH_LONG).show();
                 }else{
                     passwrod = properties.getProperty("read_card_password","").trim();
                     isEnbleNfc = true;
-                    mPendingIntent = PendingIntent.getActivity(mActivity, 0, new Intent(mActivity, mActivity.getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+                    mPendingIntent = PendingIntent.getActivity(activity, 0, new Intent(activity, activity.getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
                 }
             }
         }

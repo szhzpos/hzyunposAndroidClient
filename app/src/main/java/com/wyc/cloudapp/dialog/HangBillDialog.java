@@ -83,10 +83,12 @@ public class HangBillDialog extends DialogBaseOnMainActivityImp {
         if (null != del_hang_b)
             del_hang_b.setOnClickListener(v -> {
                 if (null != mCurrentHangId) {
-                    if (verifyDeleteBillPermissions()){
-                        final StringBuilder err = new StringBuilder();
-                        if (!deleteBill(mCurrentHangId,err)){
-                            MyDialog.ToastMessage("删除挂单信息错误：" + err, mContext, getWindow());
+                    if (1 == MyDialog.showMessageToModalDialog(mContext,"是否删除挂单?")){
+                        if (verifyDeleteBillPermissions()){
+                            final StringBuilder err = new StringBuilder();
+                            if (!deleteBill(mCurrentHangId,err)){
+                                MyDialog.ToastMessage("删除挂单信息错误：" + err, mContext, getWindow());
+                            }
                         }
                     }
                 } else {

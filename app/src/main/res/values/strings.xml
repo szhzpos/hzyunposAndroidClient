@@ -248,7 +248,7 @@
     <string name="give_amt">赠送金额</string>
     <string name="deposit_amt_sz">充值金额</string>
     <string name="retail_pay_sz">零售收款</string>
-    <string name="order_num_sz">单数</string>
+    <string name="order_num_sz">笔数</string>
     <string name="s_e_sz">交班</string>
     <string name="shift_time_sz">班次时间</string>
     <string name="payable_cash_sz">应交现金</string>
@@ -290,4 +290,5 @@
     <string name="last_order_sz">上单单号</string>
     <string name="close_sz">关闭</string>
     <string name="single_refund_sz">单品退货</string>
+    <string name="sum_order_num_sz">总单数</string>
 </resources>

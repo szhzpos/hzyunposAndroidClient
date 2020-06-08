@@ -431,7 +431,7 @@ public class MainActivity extends AppCompatActivity {
                 set_selected_status(v);//设置选中状态
                 final JSONObject jsonObject = mGoodsInfoViewAdapter.getItem(pos),content = new JSONObject();
                 if (jsonObject != null){
-                    int id = mGoodsInfoViewAdapter.getGoodsId(jsonObject);
+                    final String id = mGoodsInfoViewAdapter.getGoodsId(jsonObject);
                     final String weigh_barcode_info = (String) jsonObject.remove(GoodsInfoViewAdapter.W_G_MARK);//删除称重标志否则重新选择商品时不弹出称重界面
                     if (mGoodsInfoViewAdapter.getSingleGoods(content,weigh_barcode_info,id)){
                         mSaleGoodsViewAdapter.addSaleGoods(content,mVipInfo);
@@ -599,22 +599,22 @@ public class MainActivity extends AppCompatActivity {
             final HangBillDialog hangBillDialog = new HangBillDialog(activity);
             JSONArray datas = mSaleGoodsViewAdapter.getDatas();
             if (Utils.JsonIsNotEmpty(datas)){
-                MyDialog.displayAskMessage(null, "是否挂单？", activity, myDialog -> {
+                //MyDialog.displayAskMessage(null, "是否挂单？", activity, myDialog -> {
                     final StringBuilder err = new StringBuilder();
                     if (hangBillDialog.save(datas,mVipInfo,err)){
                         resetOrderInfo();
                         MyDialog.ToastMessage(mSaleGoodsRecyclerView,"挂单成功！",activity,null);
-                        myDialog.dismiss();
+                        //myDialog.dismiss();
                     }else{
                         MyDialog.ToastMessage(mSaleGoodsRecyclerView,"保存挂单错误：" + err,activity,null);
                     }
-                }, Dialog::dismiss);
+                //}, Dialog::dismiss);
             }else{
                 if (hangBillDialog.getHangCounts() > 1){
                     hangBillDialog.setGetBillDetailListener((array, vip) -> {
                         if (null != vip)showVipInfo(vip);
                         JSONObject barcode_id_obj,goods_info;
-                        int id = -1;
+                        String id;
                         for (int i = 0,length = array.size();i < length;i ++){
                             barcode_id_obj = array.getJSONObject(i);
                             if (barcode_id_obj != null){

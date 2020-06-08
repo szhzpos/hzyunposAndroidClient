@@ -709,7 +709,7 @@
                 android:layout_width="@dimen/pay_dialog_button_width"
                 android:layout_height="@dimen/d_dialog_button_height"
                 android:layout_marginStart="@dimen/margin_2"
-                android:background="@drawable/button_sub_blue"
+                android:background="@drawable/button_orange"
                 android:text="@string/OK"
                 android:textColor="@color/white"
                 android:textSize="@dimen/font_size_18"

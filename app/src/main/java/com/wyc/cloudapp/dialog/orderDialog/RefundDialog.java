@@ -563,6 +563,7 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
                                         if (rows == 0)err.append("未更新任何数据！");
                                     }else {
                                         err.append("上传成功，但返回订单号与上传的订单号不一致！");
+                                        Logger.e("退货单:%s,ret_order_code:%s,order_code:%s,ret_ro_code:%s,ro_code:%s",err,ret_order_code,order_code,ret_ro_code,ro_code);
                                     }
                                     break;
                             }
@@ -570,6 +571,7 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
                     }
                 } else {
                     err.append("上传明细为空！");
+                    Logger.e("退货单:%s,order_code:%s,ro_code:%s",err,order_code,ro_code);
                 }
             }
         }

@@ -250,7 +250,7 @@
             android:layout_height="122dp"
             android:layout_marginStart="@dimen/margin_2"
             android:layout_marginTop="@dimen/margin_2"
-            android:background="@drawable/button_sub_blue"
+            android:background="@drawable/button_orange"
             android:text="@string/OK"
             android:textColor="@color/white"
             android:textSize="@dimen/num_keyboard_font_size_18"

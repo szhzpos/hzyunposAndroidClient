@@ -143,7 +143,7 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
 
     private double disposeTransferRetails(final String ti_code){
         JSONObject object,pay_obj;
-        int pay_method_id,total_num = 0,num = 0;
+        int pay_method_id,num = 0;
         double amt = 0.0,total_amt = 0.0,cash_sum_amt = 0.0;
         //零售
         for (int j = 0,jsize = mTransferRetails.size();j < jsize;j++){
@@ -154,7 +154,6 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
             num = object.getIntValue("order_num");
 
             total_amt += amt;
-            total_num += num;
 
             if (PayMethodViewAdapter.CASH_METHOD_ID.equals(String.valueOf(pay_method_id))){
                 cash_sum_amt += amt;
@@ -167,14 +166,13 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
                 }
             }
         }
-        mTransferSumInfo.put("order_num",total_num);
         mTransferSumInfo.put("order_money",total_amt);
 
         return cash_sum_amt;
     }
     private double disposeTransferRefunds(final String ti_code){
         JSONObject object,pay_obj;
-        int pay_method_id,total_num = 0,num = 0;
+        int pay_method_id,num = 0;
         double amt = 0.0,total_amt = 0.0,cash_sum_amt = 0.0;
         //退单
         for (int j = 0,jsize = mTransferRefunds.size();j < jsize;j++){
@@ -185,7 +183,6 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
             num = object.getIntValue("order_num");
 
             total_amt += amt;
-            total_num += num;
 
             if (PayMethodViewAdapter.CASH_METHOD_ID.equals(String.valueOf(pay_method_id))){//退单现金要减
                 cash_sum_amt -= amt;
@@ -199,14 +196,13 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
                 }
             }
         }
-        mTransferSumInfo.put("refund_num",total_num);
         mTransferSumInfo.put("refund_money",total_amt);
 
         return cash_sum_amt;
     }
     private double disposeTransferDeposits(final String ti_code){
         JSONObject object,pay_obj;
-        int pay_method_id,total_num = 0,num = 0;
+        int pay_method_id,num = 0;
         double amt = 0.0,total_amt = 0.0,cash_sum_amt = 0.0;
         //充值
         for (int j = 0,jsize = mTransferDeposits.size();j < jsize;j++){
@@ -218,7 +214,6 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
             num = object.getIntValue("order_num");
 
             total_amt += amt;
-            total_num += num;
 
             if (PayMethodViewAdapter.CASH_METHOD_ID.equals(String.valueOf(pay_method_id))){
                 cash_sum_amt += amt;
@@ -232,14 +227,13 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
                 }
             }
         }
-        mTransferSumInfo.put("recharge_num",total_num);
         mTransferSumInfo.put("recharge_money",total_amt);
 
         return cash_sum_amt;
     }
     private double disposeTransferCardsc(final String ti_code){
         JSONObject object,pay_obj;
-        int pay_method_id,total_num = 0,num = 0;
+        int pay_method_id,num = 0;
         double amt = 0.0,total_amt = 0.0,cash_sum_amt = 0.0;
         //次卡
         for (int j = 0,jsize = mTransferCardsc.size();j < jsize;j++){
@@ -251,7 +245,6 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
             num = object.getIntValue("order_num");
 
             total_amt += amt;
-            total_num += num;
 
             if (PayMethodViewAdapter.CASH_METHOD_ID.equals(String.valueOf(pay_method_id))){
                 cash_sum_amt += amt;
@@ -265,7 +258,6 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
                 }
             }
         }
-        mTransferSumInfo.put("cards_num",total_num);
         mTransferSumInfo.put("cards_money",total_amt);
 
         return cash_sum_amt;
@@ -290,12 +282,15 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
                  refund_code_sql = "select cashier_id cas_id,ro_code order_code from refund_order where transfer_status = 1 and order_status = 2 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +" and "+ start_time +" <= addtime and addtime <= strftime('%s','now') group by ro_code,cashier_id",
                  deposit_code_sql = "select cashier_id cas_id,order_code from member_order_info where transfer_status = 1 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +" and status = 3 and "+ start_time +" <= addtime and addtime <= strftime('%s','now') group by order_code,cashier_id";
 
+         Logger.d(retail_code_sql);
          final JSONArray transfer_retail_codes = SQLiteHelper.getListToJson(retail_code_sql,err);
          final JSONArray transfer_refund_codes = SQLiteHelper.getListToJson(refund_code_sql,err);
          final JSONArray transfer_deposit_codes = SQLiteHelper.getListToJson(deposit_code_sql,err);
 
          if (null != transfer_retail_codes && null != transfer_refund_codes && null != transfer_deposit_codes ){
              if (mTransferOrderCodes == null)mTransferOrderCodes = new JSONArray();
+
+             Logger.d(transfer_retail_codes.size());
 
              mTransferSumInfo.put("order_num",transfer_retail_codes.size());
              mTransferSumInfo.put("refund_num",transfer_refund_codes.size());

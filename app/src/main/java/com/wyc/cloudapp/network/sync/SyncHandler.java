@@ -357,7 +357,10 @@ public final class SyncHandler extends Handler {
                                                     values.put("upload_time",System.currentTimeMillis() / 1000);
                                                     int rows = SQLiteHelper.execUpdateSql("retail_order",values,"order_code = ?",new String[]{order_code},err);
                                                     code = rows > 0;
-                                                    if (rows == 0)err.append("未更新任何数据！");
+                                                    if (rows == 0){
+                                                        err.append("未更新任何数据！");
+                                                        Logger.e("销售单:%s,order_code:%s",err,order_code);
+                                                    }
                                                     break;
                                             }
                                             break;
@@ -366,6 +369,7 @@ public final class SyncHandler extends Handler {
                             }
                         }else {
                             err.append("上传明细为空！");
+                            Logger.e("销售单:%s,order_code:%s",err,order_code);
                         }
                     }
                 }
@@ -437,13 +441,13 @@ public final class SyncHandler extends Handler {
                         JSONObject retJson = mHttp.sendPost(url + "/api/transfer/transfer_upload",HttpRequest.generate_request_parm(send_data,appSecret),true);
                         switch (retJson.getIntValue("flag")){
                             case 0:
-                                err.append(retJson.getString("info"));
+                                err.append(retJson.getString("info")).append(" sz_ti_code:").append(sz_ti_code);
                                 break;
                             case 1:
                                 retJson = JSON.parseObject(retJson.getString("info"));
                                 switch (retJson.getString("status")){
                                     case "n":
-                                        err.append(retJson.getString("info"));
+                                        err.append(retJson.getString("info")).append(" sz_ti_code:").append(sz_ti_code);
                                         break;
                                     case "y":
                                         final String ti_code = retJson.getString("ti_code");
@@ -461,7 +465,7 @@ public final class SyncHandler extends Handler {
             }
         }
         if (err.length() != 0){
-            Logger.e("上传交班单据错误：%s",err);
+            Logger.e("上传交班单据错误%s,ti_code:%s",err);
             syncActivityHandler.obtainMessage(MessageID.TRANSFERSTATUS_ID,false).sendToTarget();
         }
     }
@@ -477,7 +481,6 @@ public final class SyncHandler extends Handler {
             }
         }
         if (err.length() != 0){
-            Logger.e("上传退货单据错误：%s",err);
             syncActivityHandler.obtainMessage(MessageID.TRANSFERSTATUS_ID,false).sendToTarget();
         }
     }

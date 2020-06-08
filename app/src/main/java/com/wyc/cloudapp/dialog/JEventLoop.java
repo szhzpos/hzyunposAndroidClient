@@ -30,7 +30,11 @@ public final class JEventLoop {
     public int exec(){
         if (!mDone){
             synchronized (mLock){
-                if (mDone)return mCode;
+
+                if (mDone){
+                    mDone = false;
+                    return mCode;
+                }
 
                 Stack<JEventLoop> stack = sThreadLocal.get();
                 if (stack == null){
@@ -39,14 +43,22 @@ public final class JEventLoop {
                 }
                 stack.push(this);
                 Logger.d("%s线程exec,JEventLoop:<%s>,数量:%d",Thread.currentThread().getName(),this,stack.size());
-                if (Looper.myLooper() == null)Looper.prepare();
-                if (mHandler == null || mHandler.getLooper() != Looper.myLooper())mHandler = new Handler(Objects.requireNonNull(Looper.myLooper()));
+                Looper looper = Looper.myLooper();
+                if (looper == null){
+                    Looper.prepare();
+                    looper = Looper.myLooper();
+                }
+                if (mHandler == null || mHandler.getLooper() != looper) {
+                    assert looper != null;
+                    mHandler = new Handler(looper);
+                }
             }
             try {
                 Looper.loop();
             }catch (ExitException ignored){
             }
         }
+
         mDone = false;
         return mCode;
     }

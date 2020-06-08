@@ -199,6 +199,9 @@ public final class VipInfoDialog extends DialogBaseOnMainActivityImp {
                                 }
                             });
                             break;
+                        case R.id._cancel:
+                            tmp_v.setOnClickListener(v -> closeWindow());
+                            break;
                         case R.id._ok:
                             mSearchBtn = (Button) tmp_v;
                             tmp_v.setOnClickListener(view -> {
