@@ -129,11 +129,12 @@
                 android:layout_margin="@dimen/margin_1"
                 android:background="@drawable/left_separator"
                 android:ems="10"
+                android:hint="不填写默认当前门店名称"
                 android:inputType="textPersonName"
                 android:paddingStart="@dimen/margin_5"
                 android:paddingEnd="@dimen/size_0"
                 android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16" />
+                android:textSize="@dimen/font_size_14" />
         </LinearLayout>
 
         <LinearLayout
@@ -160,11 +161,12 @@
                 android:background="@drawable/left_separator"
                 android:ems="10"
                 android:gravity="start|top"
+                android:hint="不填写默认门店地址和电话"
                 android:inputType="textMultiLine"
                 android:paddingStart="@dimen/margin_5"
                 android:paddingEnd="@dimen/size_0"
                 android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16" />
+                android:textSize="@dimen/font_size_14" />
 
         </LinearLayout>
 
@@ -215,7 +217,7 @@
                 android:inputType="number"
                 android:padding="@dimen/margin_2"
                 android:paddingTop="@dimen/size_0"
-                android:text="@string/two_sz"
+                android:text="@string/five_sz"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_14" />
         </LinearLayout>

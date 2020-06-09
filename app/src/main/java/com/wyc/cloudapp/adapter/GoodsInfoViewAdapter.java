@@ -294,7 +294,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                     final String tmp = barcode.substring(0,length);
                     if ((code = prefix.equals(tmp))){
                         int start = barcodeRule.indexOf('W'),end = barcodeRule.lastIndexOf('W');
-                        if (end <= barcode_len){
+                        if (end < barcode_len){
                             object.put("item_id",barcode.substring(start,end + 1));
                         }
                     }

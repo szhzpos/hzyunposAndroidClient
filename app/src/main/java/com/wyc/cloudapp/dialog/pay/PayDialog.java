@@ -1169,10 +1169,14 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
                 info.append(new_line).append(new_line_d);
             }
             info.append(line).append(new_line_2).append(new_line).append(new_line_d);
-            info.append(context.getString(R.string.b_f_hotline_sz)).append(Utils.getNullOrEmptyStringAsDefault(order_info,"telphone","")).append(new_line);
-            info.append(context.getString(R.string.b_f_stores_address_sz)).append(Utils.getNullOrEmptyStringAsDefault(order_info,"region","")).append(new_line);
 
-            info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(footer_c);
+            if (footer_c.isEmpty()){
+                info.append(context.getString(R.string.b_f_hotline_sz)).append(Utils.getNullOrEmptyStringAsDefault(order_info,"telphone","")).append(new_line);
+                info.append(context.getString(R.string.b_f_stores_address_sz)).append(Utils.getNullOrEmptyStringAsDefault(order_info,"region","")).append(new_line);
+            }else {
+                info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(footer_c);
+            }
+
             for (int i = 0; i < footer_space; i++) info.append(" ").append(new_line);
 
             if (print_count > 0){

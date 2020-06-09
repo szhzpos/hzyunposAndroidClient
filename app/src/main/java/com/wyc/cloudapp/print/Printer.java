@@ -211,6 +211,45 @@ public final class Printer {
         return sb.toString();
     }
 
+    public static String printThreeDataAlignRight_58(int space, String leftText, String middleText, final String rightText) {
+        StringBuilder sb = new StringBuilder();
+        final String spacing = " ";
+        final int mid_right_margin = 10 - space,left_margin = 12;
+        int left_byte_size = getBytesLength(leftText);
+        if (left_byte_size > left_margin) {
+            leftText = leftText.substring(0, left_margin / 2) + "..";
+            sb.append(leftText).append(spacing);
+        }else {
+            sb.append(leftText);
+            for (int i = 0,k = left_margin - left_byte_size; i <= k ; i++) {
+                sb.append(spacing);
+            }
+        }
+
+        // 计算左侧文字和中间文字的空格长度
+        int mid_byte_size = getBytesLength(middleText);
+        if (mid_byte_size < mid_right_margin) {
+            for (int i = 0; i <= mid_right_margin - mid_byte_size; i++) {
+                sb.append(spacing);
+            }
+            sb.append(middleText);
+        }else {
+            sb.append(middleText.substring(0,mid_right_margin));
+        }
+
+        int rig_byte_size = getBytesLength(rightText);
+        if (rig_byte_size < mid_right_margin) {
+            for (int i = 0; i <= mid_right_margin - rig_byte_size; i++) {
+                sb.append(spacing);
+            }
+            sb.append(rightText);
+        }else {
+            sb.append(rightText.substring(0,mid_right_margin));
+        }
+
+        return sb.toString();
+    }
+
     public static String commandToStr(byte[] bytes){
         return new String(bytes, StandardCharsets.US_ASCII);
     }

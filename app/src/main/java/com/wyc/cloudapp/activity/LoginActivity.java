@@ -26,6 +26,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -127,7 +128,7 @@ public class LoginActivity extends AppCompatActivity {
                 SQLiteHelper.initDb(this);
                 initGoodsImgDirectory();
                 //显示商户域名
-                show_url();
+                show_shop_info();
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -159,14 +160,17 @@ public class LoginActivity extends AppCompatActivity {
             setup.setOnClickListener((View v)->{
                 ConnSettingDialog connSettingDialog = new ConnSettingDialog(mSelf,mSelf.getString(R.string.conn_dialog_title_sz));
                 connSettingDialog.setOnDismissListener(dialog -> {
-                    final EditText et_url = findViewById(R.id._url_text);
-                    final String url = connSettingDialog.getShopid();
-                    if (url.length() != 0){
-                        et_url.setText(url.substring(url.lastIndexOf('/') + 1));
-                    }
+                    show_shop_info(connSettingDialog.getShopInfo());
                 });
                 connSettingDialog.show();
             });
+    }
+    private void show_shop_info(final JSONObject shop_info){
+        final TextView et_url = findViewById(R.id._url_text),shop_name_tv = findViewById(R.id.shop_name);
+        if (et_url != null && shop_name_tv != null && shop_info != null){
+            et_url.setText(shop_info.getString("shop_id"));
+            shop_name_tv.setText(shop_info.getString("shop_name"));
+        }
     }
     private void initPassword(){
         final EditText password  = findViewById(R.id.password);
@@ -248,7 +252,20 @@ public class LoginActivity extends AppCompatActivity {
         }else{
             initDbAndImgDirectory();
             //显示商户域名
-            show_url();
+            show_shop_info();
+        }
+    }
+    private void show_shop_info(){
+        final JSONObject param = new JSONObject();
+        if(SQLiteHelper.getLocalParameter("connParam",param)){
+            if (Utils.JsonIsNotEmpty(param)){
+                final JSONObject shop_info = param.getJSONObject("storeInfo");
+                shop_info.put("shop_id",param.getString("shop_id"));
+                shop_info.put("shop_name",String.format("%s%s%s%s",shop_info.getString("stores_name"),"[",shop_info.getString("stores_id"),"]"));
+                show_shop_info(shop_info);
+            }
+        }else{
+            MyDialog.ToastMessage(param.getString("info"),this,getWindow());
         }
     }
     private void initDbAndImgDirectory(){
@@ -438,20 +455,6 @@ public class LoginActivity extends AppCompatActivity {
                 myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, conn_param.getString("info")).sendToTarget();
             }
         });
-    }
-    private void show_url(){
-        final EditText et_url = findViewById(R.id._url_text);
-        if (et_url != null){
-            if(et_url.getText().length() != 0)return;
-            JSONObject param = new JSONObject();
-            if(SQLiteHelper.getLocalParameter("connParam",param)){
-                if (Utils.JsonIsNotEmpty(param)){
-                    et_url.setText(param.getString("shop_id"));
-                }
-            }else{
-                MyDialog.ToastMessage(param.getString("info"),this,getWindow());
-            }
-        }
     }
 
     private static class Myhandler extends Handler {

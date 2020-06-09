@@ -1,11 +1,8 @@
 package com.wyc.cloudapp.dialog.orderDialog;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -199,7 +196,7 @@ public class TransferDialog extends DialogBaseOnMainActivityImp {
                 info.append(context.getString(R.string.t_f_detail_h_sz).replace("-"," ")).append(new_line).append(line).append(new_line);
                 for (int i = 0,size = retail_moneys.size();i < size;i++){
                     tmp = retail_moneys.getJSONObject(i);
-                    info.append(Printer.printThreeData(3,Utils.getNullStringAsEmpty(tmp,"name"),no_visible ? asterisk : String.format(Locale.CHINA,"%.2f",tmp.getDoubleValue("pay_money")),
+                    info.append(Printer.printThreeDataAlignRight_58(3,Utils.getNullStringAsEmpty(tmp,"name"),no_visible ? asterisk : String.format(Locale.CHINA,"%.2f",tmp.getDoubleValue("pay_money")),
                             String.valueOf(tmp.getIntValue("order_num")))).append(new_line);
                 }
                 info.append(line).append(new_line);
@@ -211,7 +208,7 @@ public class TransferDialog extends DialogBaseOnMainActivityImp {
                 info.append(context.getString(R.string.t_f_detail_h_sz).replace("-"," ")).append(new_line).append(line).append(new_line);
                 for (int i = 0,size = refund_moneys.size();i < size;i++){
                     tmp = refund_moneys.getJSONObject(i);
-                    info.append(Printer.printThreeData(3,Utils.getNullStringAsEmpty(tmp,"name"),no_visible ? asterisk : String.format(Locale.CHINA,"%.2f",tmp.getDoubleValue("pay_money")),
+                    info.append(Printer.printThreeDataAlignRight_58(3,Utils.getNullStringAsEmpty(tmp,"name"),no_visible ? asterisk : String.format(Locale.CHINA,"%.2f",tmp.getDoubleValue("pay_money")),
                             String.valueOf(tmp.getIntValue("order_num")))).append(new_line);
                 }
                 info.append(line).append(new_line);
@@ -223,7 +220,7 @@ public class TransferDialog extends DialogBaseOnMainActivityImp {
                 info.append(context.getString(R.string.t_f_detail_h_sz).replace("-"," ")).append(new_line).append(line).append(new_line);
                 for (int i = 0,size = recharge_moneys.size();i < size;i++){
                     tmp = recharge_moneys.getJSONObject(i);
-                    info.append(Printer.printThreeData(3,Utils.getNullStringAsEmpty(tmp,"name"),no_visible ? asterisk : String.format(Locale.CHINA,"%.2f",tmp.getDoubleValue("pay_money")),
+                    info.append(Printer.printThreeDataAlignRight_58(3,Utils.getNullStringAsEmpty(tmp,"name"),no_visible ? asterisk : String.format(Locale.CHINA,"%.2f",tmp.getDoubleValue("pay_money")),
                             String.valueOf(tmp.getIntValue("order_num")))).append(new_line);
                 }
                 info.append(line).append(new_line);
@@ -259,12 +256,15 @@ public class TransferDialog extends DialogBaseOnMainActivityImp {
             info.append(context.getString(R.string.t_f_cashbox_sz)).append(order_info.getDoubleValue("cashbox_money")).append(new_line);
 
             info.append(line).append(new_line_2).append(new_line).append(new_line_d);
-            info.append(context.getString(R.string.b_f_hotline_sz)).append(Utils.getNullOrEmptyStringAsDefault(order_info,"telphone","")).append(new_line);
-            info.append(context.getString(R.string.b_f_stores_address_sz)).append(Utils.getNullOrEmptyStringAsDefault(order_info,"region","")).append(new_line);
 
+            if (footer_c.isEmpty()){
+                info.append(context.getString(R.string.b_f_hotline_sz)).append(Utils.getNullOrEmptyStringAsDefault(order_info,"telphone","")).append(new_line);
+                info.append(context.getString(R.string.b_f_stores_address_sz)).append(Utils.getNullOrEmptyStringAsDefault(order_info,"region","")).append(new_line);
+            }else {
+                info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(footer_c);
+            }
             info.append(Printer.printTwoData(1,context.getString(R.string.t_f_f_sign_sz),context.getString(R.string.t_f_c_sign_sz))).append(new_line);
 
-            info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(footer_c);
             for (int i = 0; i < footer_space; i++) info.append(" ").append(new_line);
 
             if (print_count > 0){

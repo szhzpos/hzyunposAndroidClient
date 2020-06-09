@@ -505,7 +505,7 @@
             android:textColor="@color/black_white"
             android:textSize="@dimen/fun_button_font_size_16" />
 
-        <Button
+        <com.wyc.cloudapp.dialog.TmpOrderButton
             android:id="@+id/tmp_order"
             android:layout_width="@dimen/fun_button_width_size"
             android:layout_height="@dimen/fun_button_height_size"

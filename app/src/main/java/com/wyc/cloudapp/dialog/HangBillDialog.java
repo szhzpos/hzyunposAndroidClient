@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.dialog;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.graphics.Point;
@@ -249,6 +250,7 @@ public class HangBillDialog extends DialogBaseOnMainActivityImp {
         sqls.add(sql);
         sqls.add(sql_detail);
         if ((code = SQLiteHelper.execBatchUpdateSql(sqls,err))){
+            mCurrentHangId = null;
             loadHangBill(null);
             mHbDetailCursorAdapter.changeCursor(null);
         }
@@ -345,7 +347,7 @@ public class HangBillDialog extends DialogBaseOnMainActivityImp {
                         cas_id = mContext.getCashierInfo().getString("cas_id"),
                         cas_name = mContext.getCashierInfo().getString("cas_name");
 
-                hang_id = getHangCounts();
+                hang_id = getHangId();
 
                 if (hang_id > 0){
                     for (int i = 0,length = array.size();i < length; i++){
@@ -406,13 +408,22 @@ public class HangBillDialog extends DialogBaseOnMainActivityImp {
         return code;
     }
 
-    public int getHangCounts(){
+    private int getHangId(){
         final JSONObject data = new JSONObject();
         if (!SQLiteHelper.execSql(data,"select ifnull(max(hang_id),0) + 1 hang_id from hangbill where cas_id = " + mContext.getCashierInfo().getIntValue("cas_id"))){
             mContext.runOnUiThread(()->MyDialog.ToastMessage("查询挂单号错误：" + data.getString("info"),mContext,mContext.getWindow()));
             return 0;
         }
         return data.getIntValue("hang_id");
+    }
+
+    public static int getHangCounts(MainActivity context){
+        final JSONObject data = new JSONObject();
+        if (!SQLiteHelper.execSql(data,"select count(1) hang_counts from hangbill where cas_id = " + context.getCashierInfo().getIntValue("cas_id"))){
+            context.runOnUiThread(()->MyDialog.ToastMessage("查询挂单数错误：" + data.getString("info"),context,context.getWindow()));
+            return 0;
+        }
+        return data.getIntValue("hang_counts");
     }
 
     public void setGetBillDetailListener(OnGetBillListener listener){

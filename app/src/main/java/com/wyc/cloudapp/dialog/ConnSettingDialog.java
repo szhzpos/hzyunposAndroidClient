@@ -280,7 +280,7 @@ public class ConnSettingDialog extends DialogBaseOnContextImp {
                     mUrl.setText(param.getString("url"));
                     final JSONObject storeInfo = JSON.parseObject(param.getString("storeInfo"));
                     if (storeInfo.containsKey("stores_name")){
-                        mStore_name.setText(storeInfo.getString("stores_name"));
+                        mStore_name.setText(String.format("%s%s%s%s",storeInfo.getString("stores_name"),"[",storeInfo.getString("stores_id"),"]"));
                     }else {
                         final View view = findViewById(R.id.ip_fo);
                         view.setVisibility(View.GONE);
@@ -306,8 +306,13 @@ public class ConnSettingDialog extends DialogBaseOnContextImp {
         return url;
     }
 
-    public String getShopid(){
-        return mShopId.getText().toString();
+    public JSONObject getShopInfo(){
+        JSONObject object = new JSONObject();
+        if (null != mShopId && mStore_name != null){
+            object.put("shop_id",mShopId.getText().toString());
+            object.put("shop_name",mStore_name.getText().toString());
+        }
+        return object;
     }
 
 }

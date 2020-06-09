@@ -10,7 +10,7 @@
 
     <RelativeLayout
         android:id="@+id/login_info"
-        android:layout_width="518dp"
+        android:layout_width="532dp"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:background="@drawable/round_shape"
@@ -240,8 +240,20 @@
             android:focusable="auto"
             android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/shop_name"
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+                android:layout_below="@id/shop_info_layout"
+                android:layout_marginStart="@dimen/margin_18"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/margin_12"
+                android:paddingEnd="0dp"
+                android:textColor="@color/appColor"
+                android:textSize="@dimen/font_size_16" />
+
             <LinearLayout
-                android:id="@+id/linearLayout"
+                android:id="@+id/shop_info_layout"
                 android:layout_width="@dimen/login_text_width"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
@@ -250,8 +262,10 @@
                 <EditText
                     android:id="@+id/_url_text"
                     android:layout_width="238dp"
-                    android:layout_height="30dp"
-                    android:background="@drawable/edit_text_style"
+                    android:layout_height="@dimen/height_40"
+                    android:background="@drawable/border_sub_gray"
+                    android:drawableStart="@drawable/shop"
+                    android:drawablePadding="@dimen/margin_5"
                     android:ems="10"
                     android:enabled="false"
                     android:focusableInTouchMode="true"
@@ -270,6 +284,7 @@
                     android:id="@+id/setup_ico"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
+                    android:layout_gravity="center"
                     android:layout_marginTop="@dimen/margin_2"
                     android:background="@drawable/setup">
 
@@ -305,7 +320,7 @@
                 android:id="@+id/user_id"
                 android:layout_width="@dimen/login_text_width"
                 android:layout_height="@dimen/login_text_height"
-                android:layout_below="@id/linearLayout"
+                android:layout_below="@id/shop_name"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="@dimen/margin_8"
                 android:background="@drawable/border_sub_gray"

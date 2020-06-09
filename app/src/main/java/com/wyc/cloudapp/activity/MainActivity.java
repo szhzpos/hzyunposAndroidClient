@@ -45,6 +45,7 @@ import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.HangBillDialog;
 import com.wyc.cloudapp.dialog.MoreFunDialog;
+import com.wyc.cloudapp.dialog.TmpOrderButton;
 import com.wyc.cloudapp.dialog.VerifyPermissionDialog;
 import com.wyc.cloudapp.dialog.orderDialog.QuerySaleOrderDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
@@ -500,6 +501,7 @@ public class MainActivity extends AppCompatActivity {
         search.setOnKeyListener((view, i, keyEvent) -> {
             if (mKeyboard.getVisibility() == View.GONE){
                 int keyCode = keyEvent.getKeyCode();
+                Logger.d("keyCode:%d",keyCode);
                 if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && keyEvent.getAction() == KeyEvent.ACTION_DOWN){
                     String content = search.getText().toString();
                     if (content.length() == 0){
@@ -593,15 +595,17 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     private void initTmpOrder(){
-        final Button tmp_order = findViewById(R.id.tmp_order);
+        final TmpOrderButton tmp_order = findViewById(R.id.tmp_order);
+        final MainActivity activity = this;
+        tmp_order.setNum(HangBillDialog.getHangCounts(activity));
         tmp_order.setOnClickListener(v -> {
-            final MainActivity activity = MainActivity.this;
-            final HangBillDialog hangBillDialog = new HangBillDialog(activity);
             JSONArray datas = mSaleGoodsViewAdapter.getDatas();
+            final HangBillDialog hangBillDialog = new HangBillDialog(activity);
             if (Utils.JsonIsNotEmpty(datas)){
                 //MyDialog.displayAskMessage(null, "是否挂单？", activity, myDialog -> {
                     final StringBuilder err = new StringBuilder();
                     if (hangBillDialog.save(datas,mVipInfo,err)){
+                        tmp_order.setNum(HangBillDialog.getHangCounts(activity));
                         resetOrderInfo();
                         MyDialog.ToastMessage(mSaleGoodsRecyclerView,"挂单成功！",activity,null);
                         //myDialog.dismiss();
@@ -610,7 +614,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 //}, Dialog::dismiss);
             }else{
-                if (hangBillDialog.getHangCounts() > 1){
+                if (HangBillDialog.getHangCounts(activity) > 0){
                     hangBillDialog.setGetBillDetailListener((array, vip) -> {
                         if (null != vip)showVipInfo(vip);
                         JSONObject barcode_id_obj,goods_info;
@@ -632,6 +636,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                     });
+                    hangBillDialog.setOnDismissListener(dialog -> tmp_order.setNum(HangBillDialog.getHangCounts(activity)));
                     hangBillDialog.show();
                 }else{
                     MyDialog.ToastMessage(mSaleGoodsRecyclerView,"无挂单信息！",activity,null);
