@@ -302,22 +302,19 @@ public final class Printer {
 
                                 outputStream.write(RESET);
 
-                                byte[] bytes = content,tmpBytes;
-                                int length = bytes.length,max_length = 2048;
+                                byte[] tmpBytes;
+                                int length = content.length,max_length = 2048;
                                 int count = length / max_length,tmp_c = 0,mod_length = 0;
 
                                 if (count == 0){
-                                    if (length < 128){
-                                        bytes = Arrays.copyOf(bytes,128);
-                                     }
-                                    outputStream.write(bytes);
+                                    outputStream.write(content);
                                 }else{
                                     if ((mod_length = length % max_length) > 0)count += 1;
                                     while (tmp_c < count){
                                         if (tmp_c + 1 == count){
-                                            tmpBytes = Arrays.copyOfRange(bytes,tmp_c * max_length,tmp_c * max_length + mod_length);
+                                            tmpBytes = Arrays.copyOfRange(content,tmp_c * max_length,tmp_c * max_length + mod_length);
                                         }else
-                                            tmpBytes = Arrays.copyOfRange(bytes,tmp_c * max_length,tmp_c * max_length + max_length);
+                                            tmpBytes = Arrays.copyOfRange(content,tmp_c * max_length,tmp_c * max_length + max_length);
 
                                         outputStream.write(tmpBytes);
                                         tmp_c++;
@@ -372,27 +369,23 @@ public final class Printer {
                             if (connection.claimInterface(usbInterface, true)){
                                 try {
 
-                                    byte[] bytes = in_bytes,tmpBytes;
-                                    int length = bytes.length,max_length = 4096;
+                                    byte[] tmpBytes;
+                                    int length = in_bytes.length,max_length = 4096;
                                     int count = length / max_length,tmp_c = 0,ret_c = 0,mod_length = 0;
 
                                     synchronized (Printer.class){
                                        connection.bulkTransfer(usbOutEndpoint,RESET,RESET.length, 100);
 
                                         if (count == 0){
-                                            if (length < 128){
-                                                bytes = Arrays.copyOf(bytes,128);
-                                                length = bytes.length;
-                                            }
-                                            ret_c = connection.bulkTransfer(usbOutEndpoint,bytes,length, 30000);
+                                            ret_c = connection.bulkTransfer(usbOutEndpoint,in_bytes,length, 30000);
                                         }else{
                                             if ((mod_length = length % max_length) > 0)count += 1;
 
                                             while (tmp_c < count){
                                                 if (tmp_c + 1 == count){
-                                                    tmpBytes = Arrays.copyOfRange(bytes,tmp_c * max_length,tmp_c * max_length + mod_length);
+                                                    tmpBytes = Arrays.copyOfRange(in_bytes,tmp_c * max_length,tmp_c * max_length + mod_length);
                                                 }else
-                                                    tmpBytes = Arrays.copyOfRange(bytes,tmp_c * max_length,tmp_c * max_length + max_length);
+                                                    tmpBytes = Arrays.copyOfRange(in_bytes,tmp_c * max_length,tmp_c * max_length + max_length);
 
                                                 ret_c += connection.bulkTransfer(usbOutEndpoint,tmpBytes,tmpBytes.length, 30000);
                                                 tmp_c++;

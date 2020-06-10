@@ -74,7 +74,10 @@ public class ChangeNumOrPriceDialog extends DialogBaseOnMainActivityImp {
         double value = 0.0;
         try {
             if (editable.length() == 0){
-                value = Double.valueOf(mInitVal);
+                if (null == mInitVal)
+                    value = 0.0;
+                else
+                    value = Double.valueOf(mInitVal);
             }else{
                 value = Double.valueOf(editable.toString());
             }

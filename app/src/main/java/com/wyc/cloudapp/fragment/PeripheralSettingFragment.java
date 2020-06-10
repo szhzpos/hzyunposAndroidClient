@@ -328,7 +328,6 @@ public class PeripheralSettingFragment extends BaseFragment {
                     if (vid == null && null == pid) {
                         value = "vid:" + device.getVendorId() + "\tpid:" + device.getProductId();
                         for (int i = 0,size = mPrintIdAdapter.getCount();i < size;i++){
-                            Logger.d("value:%s,mPrintIdAdapter.getItem(i):%s",value,mPrintIdAdapter.getItem(i));
                             if (value.equals(mPrintIdAdapter.getItem(i))){
                                 isExist = true;
                                 break;
@@ -361,7 +360,7 @@ public class PeripheralSettingFragment extends BaseFragment {
         printerId.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String tmp = mPrintIdAdapter.getItem(position);
+                final String tmp = mPrintIdAdapter.getItem(position);
                 if (null != tmp){
                     String[] vals = tmp.split("\t");
                     if (vals.length > 1){
@@ -372,7 +371,7 @@ public class PeripheralSettingFragment extends BaseFragment {
                                 stopBlueToothDiscovery();
                                 break;
                             case R.id.usb_p:
-                                startUSBDiscoveryAndAuth(vals[0],vals[1]);
+                                startUSBDiscoveryAndAuth(vals[0].substring(vals[0].indexOf(":") + 1),vals[1].substring(vals[1].indexOf(":") + 1));
                                 break;
                         }
                     }

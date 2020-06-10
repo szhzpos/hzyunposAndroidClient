@@ -502,4 +502,15 @@ public final class Utils {
         return (int) (pxValue / scale + 0.5f);
     }
 
+    public static long factorial(int n){
+        if (n < 0)return 0;
+        long sum = 0;
+        if (n == 0){
+            return 1;
+        }else {
+            sum += n * factorial(n - 1);
+        }
+        return sum;
+    }
+
 }

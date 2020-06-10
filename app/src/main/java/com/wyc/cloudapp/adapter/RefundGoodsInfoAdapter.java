@@ -89,7 +89,15 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
                 holder.price_tv.setText(String.format(Locale.CHINA,"%.2f",refund_goods_info.getDoubleValue("price")));
                 holder.num_tv.setText(String.format(Locale.CHINA,"%.3f",refund_goods_info.getDoubleValue("xnum")));
                 holder.unit_name_tv.setText(refund_goods_info.getString("unit_name"));
-                holder.returnable_num_tv.setText(String.format(Locale.CHINA,"%.3f",refund_goods_info.getDoubleValue("returnable_num")));
+
+                double returnable_num = refund_goods_info.getDoubleValue("returnable_num");
+                if (Utils.equalDouble(returnable_num,0.0)){
+                    holder.goods_title_tv.setTextColor(mContext.getColor(R.color.orange_1));
+                }else {
+                    holder.goods_title_tv.setTextColor(mContext.getColor(R.color.text_color));
+                }
+                holder.returnable_num_tv.setText(String.format(Locale.CHINA,"%.3f",returnable_num));
+
                 if (holder.mTextWatcher == null){
                     holder.mTextWatcher = new TextWatcher() {
                         @Override
