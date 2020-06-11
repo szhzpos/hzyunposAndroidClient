@@ -335,6 +335,8 @@ public final class SyncHandler extends Handler {
                                     send_data.put("appid",appid);
                                     send_data.put("data",data);
 
+                                    Logger.d_json(data.toJSONString());
+
                                     retJson = mHttp.sendPost(url + "/api_v2/retail_upload/order_upload",HttpRequest.generate_request_parm(send_data,appSecret),true);
                                     switch (retJson.getIntValue("flag")){
                                         case 0:
@@ -349,7 +351,6 @@ public final class SyncHandler extends Handler {
                                                     err.append(retJson.getString("info"));
                                                     break;
                                                 case "y":
-                                                    Logger.d("old_order_code:%s,order_code:%s",order_code,retJson.getString("order_code"));
                                                     final ContentValues values = new ContentValues();
                                                     values.put("upload_status",2);
                                                     values.put("upload_time",System.currentTimeMillis() / 1000);

@@ -181,6 +181,10 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
                 changeNumOrPriceDialog.setYesOnclickListener(myDialog -> {
                     double mol_amt = mMolAmt = myDialog.getContent();
                     if (!Utils.equalDouble(mol_amt,0.0)){
+                        if (mActual_amt - mol_amt < 0){
+                            MyDialog.ToastMessage("抹零金额不能大于应收金额!",mContext,changeNumOrPriceDialog.getWindow());
+                            return;
+                        }
                         if (mContext.verifyDiscountPermissions(1 - mol_amt / mActual_amt,null)){
                             mContext.manualMol(mol_amt);
                             calculatePayContent();

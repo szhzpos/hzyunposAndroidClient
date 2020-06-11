@@ -880,7 +880,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
             original_sale_amt = object.getDoubleValue("sale_amt");
             current_sale_amt = Utils.formatDouble(original_sale_amt - per_record_mol_amt,2);
 
-            if (current_sale_amt > 0.0){
+            if (current_sale_amt > 0.0 || Utils.equalDouble(current_sale_amt,0.0)){
                 new_discount = Utils.formatDouble(current_sale_amt / original_sale_amt,3);
 
                 //处理优惠记录
