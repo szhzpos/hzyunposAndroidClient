@@ -130,7 +130,6 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
             final TextView barcode_id_tv = currentItem.findViewById(R.id.barcode_id),gp_id_tv = currentItem.findViewById(R.id.gp_id);
             if (barcode_id_tv != null && gp_id_tv != null){
                 final String barcode_id = barcode_id_tv.getText().toString(),gp_id = gp_id_tv.getText().toString();
-                Logger.d("barcode_id:%s,gp_id:%s",barcode_id,gp_id);
                 for (int i = 0,size = mDatas.size();i < size;i++){
                     object = mDatas.getJSONObject(i);
                     if (object != null && barcode_id.equals(object.getString("barcode_id")) && gp_id.equals(object.getString("gp_id"))){

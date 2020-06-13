@@ -44,7 +44,7 @@ public final class VerifyPermissionDialog extends DialogBaseOnMainActivityImp {
     @Override
     public void closeWindow(){
         Logger.i("操作员:%s,取消授权.",mContext.getCashierInfo().getString("cas_code"));
-        MyDialog.ToastMessage("您取消了授权！",mContext,mContext.getWindow());
+        MyDialog.ToastMessage("您取消了授权！",mContext,getWindow());
         super.closeWindow();
     }
     @Override

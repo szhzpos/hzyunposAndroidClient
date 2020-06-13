@@ -46,7 +46,7 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
     private CustomProgressDialog mProgressDialog;
     private EditText mRemarkEt,mOrderCodeEt;
     private JSONObject mVipInfo;
-    private Button mQueryBtn, mRefundBtn;
+    private Button mQueryBtn, mRefundBtn,mRemarkBtn;
     private boolean isRefundCheck;
     private int mRefundType = 1;//退货类型（1全部退货，2部分退货,3 单品退货,4 无货可退，用于隐藏按钮）
     public RefundDialog(@NonNull MainActivity context, final String order_code) {
@@ -82,7 +82,7 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
         final Button remark_btn = findViewById(R.id.remark_btn);
         if (remark_btn != null){
             remark_btn.setOnClickListener(v -> {
-                final EditText remark_et = mRemarkEt = findViewById(R.id.remark_et);
+                final EditText remark_et = findViewById(R.id.remark_et);
                 if (remark_et != null){
                     if (remark_et.getVisibility() == View.GONE){
                         remark_et.setVisibility(View.VISIBLE);
@@ -90,8 +90,10 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
                         remark_et.clearFocus();
                         remark_et.setVisibility(View.GONE);
                     }
+                    mRemarkEt = remark_et;
                 }
             });
+            mRemarkBtn = remark_btn;
         }
     }
 
@@ -235,6 +237,9 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
             if (type == 4){
                 if (refund_btn.getVisibility() == View.VISIBLE){
                     refund_btn.setVisibility(View.GONE);
+                }
+                if (mRemarkBtn != null && mRemarkBtn.getVisibility() == View.VISIBLE){
+                    mRemarkBtn.setVisibility(View.GONE);
                 }
             }else  if (type == 2){
                 refund_btn.setText(mContext.getString(R.string.part_return_sz));

@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.adapter;
 
+import android.os.Looper;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
@@ -102,13 +104,14 @@ public final class RetailOrderViewAdapter extends AbstractQueryDataAdapter<Retai
                 final RetailOrderDetailsDialog retailOrderDetailsDialog = new RetailOrderDetailsDialog(mContext,getCurrentOrder());
                 retailOrderDetailsDialog.show();
             }else if (isClickView(sale_refund_tv,event.getX(),event.getY())){
-                final RefundDialog refundDialog = new RefundDialog(mContext,order_code_tv.getText().toString());
-                if (RefundDialog.verifyRefundPermission(mContext)){
-                    refundDialog.show();
-                    mDialog.dismiss();
-                }
+                sale_refund_tv.post(()->{
+                    if (RefundDialog.verifyRefundPermission(mContext)){
+                        final RefundDialog refundDialog = new RefundDialog(mContext,order_code_tv.getText().toString());
+                        refundDialog.show();
+                        mDialog.dismiss();
+                    }
+                });
             }
-
         }
         v.performClick();
         return false;
