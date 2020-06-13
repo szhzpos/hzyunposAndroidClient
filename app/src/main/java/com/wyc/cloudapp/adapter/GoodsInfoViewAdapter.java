@@ -30,8 +30,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
     private Context mContext;
     private JSONArray mDatas;
     private OnItemClickListener mOnItemClickListener;
-    private boolean mSearchLoad = false;//是否按搜索框条件加载
-    private boolean mShowPic = true;
+    private boolean mShowPic = true,mAutoSelect;
     public GoodsInfoViewAdapter(Context context){
         this.mContext = context;
         JSONObject jsonObject = new JSONObject();
@@ -96,6 +95,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                 myViewHolder.goods_title.setText(goods_info.getString("goods_title"));
                 myViewHolder.unit_id.setText(goods_info.getString("unit_id"));
                 myViewHolder.unit_name.setText(goods_info.getString("unit_name"));
+
                 myViewHolder.barcode_id.setText(goods_info.getString("barcode_id"));
                 myViewHolder.barcode.setText(goods_info.getString("barcode"));
                 myViewHolder.price.setText(goods_info.getString("price"));
@@ -105,13 +105,11 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                 }
 
                 if (mOnItemClickListener != null){
-                    myViewHolder.mCurrentItemView.setOnClickListener((View v)->{
-                        mOnItemClickListener.onClick(v,i);
-                    });
+                    myViewHolder.mCurrentItemView.setOnClickListener(clickListener);
                 }
-
-                if (mSearchLoad && mDatas.size() == 1 && null != myViewHolder.mCurrentItemView){//搜索只有一个的时候自动选择
-                        myViewHolder.mCurrentItemView.callOnClick();
+                if (mAutoSelect && mDatas.size() == 1){
+                    myViewHolder.mCurrentItemView.post(()-> myViewHolder.mCurrentItemView.callOnClick());
+                    mAutoSelect = false;
                 }
             }
         }
@@ -122,8 +120,26 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         return mDatas == null ? 0 : mDatas.size();
     }
 
-    public JSONObject getItem(int i){
-        return mDatas == null ? null : mDatas.getJSONObject(i);
+    private View.OnClickListener clickListener = (View v)->{
+        mOnItemClickListener.onClick(v);
+    };
+
+    public JSONObject getSelectGoods(final View currentItem){
+        JSONObject object;
+        if (currentItem != null){
+            final TextView barcode_id_tv = currentItem.findViewById(R.id.barcode_id),gp_id_tv = currentItem.findViewById(R.id.gp_id);
+            if (barcode_id_tv != null && gp_id_tv != null){
+                final String barcode_id = barcode_id_tv.getText().toString(),gp_id = gp_id_tv.getText().toString();
+                Logger.d("barcode_id:%s,gp_id:%s",barcode_id,gp_id);
+                for (int i = 0,size = mDatas.size();i < size;i++){
+                    object = mDatas.getJSONObject(i);
+                    if (object != null && barcode_id.equals(object.getString("barcode_id")) && gp_id.equals(object.getString("gp_id"))){
+                        return object;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     void setDatas(int id){
@@ -146,14 +162,13 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
 
         mDatas = SQLiteHelper.getListToJson(sql,0,0,false,err);
         if (mDatas != null){
-            if (mSearchLoad)mSearchLoad = false;
             this.notifyDataSetChanged();
         }else{
             MyDialog.ToastMessage("加载商品错误：" + err,mContext,null);
         }
     }
 
-    public void fuzzy_search_goods(@NonNull final EditText search){
+    public boolean fuzzy_search_goods(@NonNull final EditText search,boolean autoSelect){
         final StringBuilder err = new StringBuilder();
         final ContentValues barcodeRuleObj = new ContentValues();
         final String search_content = search.getText().toString(),sql_where,full_sql,
@@ -175,7 +190,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                 err.append(Utils.getNullStringAsEmpty(object,"info"));
             }
         }else {
-            sql_where = "(barcode like '" + search_content + "%' or only_coding like '" + search_content +"%' or mnemonic_code like '" + search_content +"%')";
+            sql_where = "(barcode like '%" + search_content + "%' or only_coding like '%" + search_content +"%' or mnemonic_code like '%" + search_content +"%')";
             full_sql = sql.replace("%1",sql_where) + " UNION select gp_id,-1 goods_id,ifnull(gp_title,'') goods_title,'' unit_id,ifnull(unit_name,'') unit_name,\n" +
                     "-1 barcode_id,ifnull(gp_code,'') barcode,-1 only_coding,type,gp_price price,ifnull(img_url,'') img_url from goods_group \n" +
                     "where status = '1' and " + sql_where;
@@ -186,18 +201,15 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         Logger.d("full_sql:%s",full_sql);
 
         if (mDatas != null){
-            if(mDatas.size() != 0){
-                if (!mSearchLoad)mSearchLoad = true;
-                search.getText().clear();
-            }else{
-                search.selectAll();
-                MyDialog.ToastMessage("无此商品！",mContext,null);
+            if (autoSelect && mDatas.size() == 1){
+                mAutoSelect = true;
             }
             this.notifyDataSetChanged();
         }else{
-            search.selectAll();
             MyDialog.ToastMessage("搜索商品错误：" + err,mContext,null);
         }
+
+        return mDatas != null && mDatas.size() != 0;
     }
 
     public boolean getSingleGoods(@NonNull JSONObject object, final String weigh_barcode_info, final String id){
@@ -262,7 +274,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
     }
 
     public interface OnItemClickListener{
-        void onClick(View v,int pos);
+        void onClick(View v);
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener){

@@ -13,11 +13,11 @@ import java.util.concurrent.CountDownLatch;
 
 public class SyncManagement extends Thread {
     private CountDownLatch handlerInitLatch;
-    private Handler mHandler;
+    private Handler mMainActivityHandler;
     private SyncHandler mSyncHandler;
     private String mAppId, mAppSecret,mUrl,mPosNum,mOperId,mStoresId;
     private SyncManagement(Handler handler){
-        this.mHandler = handler;
+        this.mMainActivityHandler = handler;
         handlerInitLatch = new CountDownLatch(1);
     }
     public SyncManagement(Handler handler, final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){
@@ -57,7 +57,7 @@ public class SyncManagement extends Thread {
         Logger.i("SyncManagement<%s>启动:%s",getName(),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS",Locale.CHINA).format(new Date()));
         if (mSyncHandler == null) {
             Looper.prepare();
-            mSyncHandler = new SyncHandler(mHandler,this);
+            mSyncHandler = new SyncHandler(mMainActivityHandler,this);
             handlerInitLatch.countDown();
         }
         Looper.loop();
@@ -81,7 +81,7 @@ public class SyncManagement extends Thread {
                 e.printStackTrace();
             }
             mSyncHandler = null;
-            mHandler = null;
+            mMainActivityHandler = null;
             handlerInitLatch = null;
         }
         Logger.i("SyncManagement<%s>退出:%s",getName(),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.CHINA).format(new Date()));
@@ -101,6 +101,14 @@ public class SyncManagement extends Thread {
 
     public void stop_sync(){
         mSyncHandler.stopSync();
+    }
+
+    public void sync_order_info(){
+        sync_refund_order();
+
+        sync_transfer_order();
+
+        sync_retail_order();
     }
 
     public void sync_retail_order(){

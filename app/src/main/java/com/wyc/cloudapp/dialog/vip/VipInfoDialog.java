@@ -28,6 +28,7 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
@@ -41,10 +42,11 @@ public final class VipInfoDialog extends DialogBaseOnMainActivityImp {
     private CustomProgressDialog mProgressDialog;
     private Myhandler mHandler;
     private JSONObject mVip;
-    private TextView mVip_name,mVip_sex,mVip_p_num,mVip_card_id,mVip_balance,mVip_integral;
+    private TextView mVip_name,mVip_sex,mVip_p_num,mVip_card_id,mVip_balance,mVip_integral,mVipGrade,mVipDiscount;
     private Button mSearchBtn;
     private onYesOnclickListener mYesOnclickListener;//确定按钮被点击了的监听器
     private boolean mPrintStatus = true;
+    private Button mAddBtn;
     public VipInfoDialog(@NonNull MainActivity context) {
         super(context,context.getString(R.string.vip_dialog_title_sz));
     }
@@ -62,6 +64,8 @@ public final class VipInfoDialog extends DialogBaseOnMainActivityImp {
         mVip_card_id = findViewById(R.id.vip_card_id);
         mVip_balance = findViewById(R.id.vip_balance);
         mVip_integral = findViewById(R.id.vip_integral);
+        mVipGrade = findViewById(R.id.vip_grade_tv);
+        mVipDiscount = findViewById(R.id.vip_discount);
 
         //初始化搜索条件输入框
         initSearchCondition();
@@ -156,7 +160,7 @@ public final class VipInfoDialog extends DialogBaseOnMainActivityImp {
 
     private void initAddVipBtn(){
         final Button add_btn = findViewById(R.id.vip_add);
-        if (null != add_btn)
+        if (null != add_btn){
             add_btn.setOnClickListener(view -> {
                 if (verifyVipModifyOrAddPermissions()){
                     final AddVipInfoDialog dialog = new AddVipInfoDialog(mContext,mContext.getString(R.string.add_vip_sz),null);
@@ -172,6 +176,8 @@ public final class VipInfoDialog extends DialogBaseOnMainActivityImp {
                     }).show();
                 }
             });
+            mAddBtn = add_btn;
+        }
     }
 
     private void initKeyboard(){
@@ -221,6 +227,20 @@ public final class VipInfoDialog extends DialogBaseOnMainActivityImp {
             }
     }
 
+    private View.OnClickListener button_click = v -> {
+        View view =  getCurrentFocus();
+        if (view != null) {
+            if (view.getId() == R.id.search_content) {
+                EditText tmp_edit = ((EditText)view);
+                int index = tmp_edit.getSelectionStart();
+                Editable editable = tmp_edit.getText();
+                String sz_button = ((Button) v).getText().toString();
+                if (index != tmp_edit.getSelectionEnd())editable.clear();
+                editable.insert(index, sz_button);
+            }
+        }
+    };
+
     private void initSearchCondition(){
         mSearchContent = findViewById(R.id.search_content);
         mSearchContent.setSelectAllOnFocus(true);
@@ -257,19 +277,6 @@ public final class VipInfoDialog extends DialogBaseOnMainActivityImp {
             return false;
         });
     }
-    private View.OnClickListener button_click = v -> {
-        View view =  getCurrentFocus();
-        if (view != null) {
-            if (view.getId() == R.id.search_content) {
-                EditText tmp_edit = ((EditText)view);
-                int index = tmp_edit.getSelectionStart();
-                Editable editable = tmp_edit.getText();
-                String sz_button = ((Button) v).getText().toString();
-                if (index != tmp_edit.getSelectionEnd())editable.clear();
-                editable.insert(index, sz_button);
-            }
-        }
-    };
 
     public static JSONArray serchVip(final String mobile) throws JSONException {
         JSONObject object = new JSONObject(),ret_json;
@@ -317,26 +324,42 @@ public final class VipInfoDialog extends DialogBaseOnMainActivityImp {
     }
 
     private void showVipInfo(JSONObject object){
-        mVip = object;
-        mSearchBtn.setText(mContext.getString(R.string.OK));
-        mVip_name.setText(object.getString("name"));
-        mVip_sex.setText(object.getString("sex"));
-        mVip_p_num.setText(object.getString("mobile"));
-        mVip_card_id.setText(object.getString("card_code"));
-        mVip_balance.setText(String.format(Locale.CHINA,"%.2f",object.getDouble("money_sum")));
-        mVip_integral.setText(String.format(Locale.CHINA,"%.2f",object.getDouble("points_sum")));
+        if (null != object){
+            mVip = object;
+            mSearchBtn.setText(mContext.getString(R.string.OK));
+            mVip_name.setText(object.getString("name"));
+            mVip_sex.setText(object.getString("sex"));
+            mVip_p_num.setText(object.getString("mobile"));
+            mVipGrade.setText(object.getString("grade_name"));
+            mVipDiscount.setText(object.getString("discount"));
+            mVip_card_id.setText(object.getString("card_code"));
+            mVip_balance.setText(String.format(Locale.CHINA,"%.2f",object.getDouble("money_sum")));
+            mVip_integral.setText(String.format(Locale.CHINA,"%.2f",object.getDouble("points_sum")));
+
+            showAddBtn(View.GONE);
+        }
+    }
+
+    private void showAddBtn(int i){
+        final View space = findViewById(R.id.add_space);
+        if (space != null && space.getVisibility() != i)space.setVisibility(i);
+        if (mAddBtn != null && mAddBtn.getVisibility() != i)mAddBtn.setVisibility(i);
     }
 
     private void clearVipInfo(){
         if (mVip != null){
+            final CharSequence space = mContext.getText(R.string.space_sz);
             mSearchBtn.setText(mContext.getString(R.string.search_sz));
             mVip = null;
-            mVip_name.setText(mContext.getText(R.string.space_sz));
-            mVip_sex.setText(mContext.getText(R.string.space_sz));
-            mVip_p_num.setText(mContext.getText(R.string.space_sz));
-            mVip_card_id.setText(mContext.getText(R.string.space_sz));
-            mVip_balance.setText(mContext.getText(R.string.space_sz));
-            mVip_integral.setText(mContext.getText(R.string.space_sz));
+            mVip_name.setText(space);
+            mVip_sex.setText(space);
+            mVip_p_num.setText(space);
+            mVipGrade.setText(space);
+            mVipDiscount.setText(space);
+            mVip_card_id.setText(space);
+            mVip_balance.setText(space);
+            mVip_integral.setText(space);
+            showAddBtn(View.VISIBLE);
         }
     }
 
@@ -376,7 +399,7 @@ public final class VipInfoDialog extends DialogBaseOnMainActivityImp {
                             dialog.showVipInfo(array.getJSONObject(0));
 
                             //触发修改或充值按钮点击事件；做这两个操作之前客户可能没查询会员，必须先查询再操作。
-                            Button btn = dialog.findViewById(msg.arg1);
+                            final Button btn = dialog.findViewById(msg.arg1);
                             if (btn != null)btn.callOnClick();
                         }else{//提示选择对话框
 

@@ -12,6 +12,19 @@
         android:layout_height="@dimen/more_fun_dialog_height">
 
         <Button
+            android:id="@+id/present_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/more_fun_btn_width"
+            android:layout_height="@dimen/more_fun_btn_height"
+            android:layout_marginStart="@dimen/margin_5"
+            android:layout_marginTop="@dimen/margin_5"
+            android:background="@drawable/button_blue"
+            android:text="@string/present_sz"
+            android:textColor="@color/blue_white"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
             android:id="@+id/sync_btn"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/more_fun_btn_width"
@@ -23,21 +36,20 @@
             android:textColor="@color/blue_white"
             android:textSize="@dimen/font_size_14"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/setup_btn" />
 
         <Button
             android:id="@+id/setup_btn"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/more_fun_btn_width"
             android:layout_height="@dimen/more_fun_btn_height"
-            android:layout_marginStart="@dimen/margin_5"
             android:layout_marginTop="@dimen/margin_5"
             android:background="@drawable/button_blue"
             android:text="@string/setup_sz"
             android:textColor="@color/blue_white"
             android:textSize="@dimen/font_size_14"
-            app:layout_constraintStart_toEndOf="@id/query_local_refund_btn"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toStartOf="@id/present_btn"
+            app:layout_constraintTop_toBottomOf="@id/present_btn" />
 
         <Button
             android:id="@+id/o_cashbox"
@@ -48,7 +60,7 @@
             android:background="@drawable/button_blue"
             android:text="@string/o_cashbox_sz"
             android:textColor="@color/blue_white"
-            app:layout_constraintStart_toEndOf="@id/barcode_scale"
+            app:layout_constraintStart_toEndOf="@id/setup_btn"
             app:layout_constraintTop_toTopOf="@id/setup_btn" />
 
         <Button
@@ -57,13 +69,12 @@
             android:layout_width="@dimen/more_fun_btn_width"
             android:layout_height="@dimen/more_fun_btn_height"
             android:layout_marginStart="@dimen/margin_5"
-            android:layout_marginTop="@dimen/margin_5"
             android:background="@drawable/button_blue"
             android:text="@string/b_code_s_d_sz"
             android:textColor="@color/blue_white"
             android:textSize="@dimen/font_size_14"
-            app:layout_constraintStart_toEndOf="@id/sync_btn"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toEndOf="@id/o_cashbox"
+            app:layout_constraintTop_toTopOf="@id/o_cashbox" />
 
         <Button
             android:id="@+id/all_refund_btn"
@@ -76,7 +87,7 @@
             android:text="@string/all_refund_sz"
             android:textColor="@color/blue_white"
             android:textSize="@dimen/font_size_14"
-            app:layout_constraintStart_toEndOf="@id/o_cashbox"
+            app:layout_constraintStart_toEndOf="@id/present_btn"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
@@ -90,7 +101,7 @@
             android:text="@string/local_refund_order_sz"
             android:textColor="@color/blue_white"
             android:textSize="@dimen/font_size_14"
-            app:layout_constraintStart_toEndOf="@id/all_refund_btn"
+            app:layout_constraintStart_toEndOf="@id/single_refund_btn"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
@@ -98,13 +109,13 @@
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/more_fun_btn_width"
             android:layout_height="@dimen/more_fun_btn_height"
-            android:layout_marginTop="@dimen/margin_5"
+            android:layout_marginStart="@dimen/margin_5"
             android:background="@drawable/button_blue"
             android:text="@string/vip_deposit_o_sz"
             android:textColor="@color/blue_white"
             android:textSize="@dimen/font_size_14"
-            app:layout_constraintStart_toStartOf="@id/sync_btn"
-            app:layout_constraintTop_toBottomOf="@id/sync_btn" />
+            app:layout_constraintStart_toEndOf="@id/query_local_refund_btn"
+            app:layout_constraintTop_toTopOf="@id/query_local_refund_btn" />
 
         <Button
             android:id="@+id/single_refund_btn"
@@ -116,7 +127,20 @@
             android:text="@string/single_refund_sz"
             android:textColor="@color/blue_white"
             android:textSize="@dimen/font_size_14"
-            app:layout_constraintStart_toEndOf="@id/vip_deposit_order"
-            app:layout_constraintTop_toTopOf="@id/vip_deposit_order" />
+            app:layout_constraintStart_toEndOf="@id/all_refund_btn"
+            app:layout_constraintTop_toTopOf="@id/all_refund_btn" />
+
+        <Button
+            android:id="@+id/data_upload_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/more_fun_btn_width"
+            android:layout_height="@dimen/more_fun_btn_height"
+            android:layout_marginStart="@dimen/margin_5"
+            android:background="@drawable/button_blue"
+            android:text="@string/data_upload_sz"
+            android:textColor="@color/blue_white"
+            android:textSize="@dimen/font_size_14"
+            app:layout_constraintStart_toEndOf="@id/sync_btn"
+            app:layout_constraintTop_toTopOf="@id/sync_btn" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

@@ -35,6 +35,22 @@
         android:textColor="@color/black" />
 
     <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/original_price"
+        android:layout_toStartOf="@id/original_price"
+        android:text="@string/b_f_ori_price_sz" />
+
+    <TextView
+        android:id="@+id/original_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/goods_title"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="@dimen/margin_5"
+        android:text="88888888" />
+
+    <TextView
         android:id="@+id/discount_sign"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

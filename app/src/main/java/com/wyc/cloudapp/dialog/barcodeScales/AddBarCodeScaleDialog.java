@@ -195,7 +195,7 @@ public class AddBarCodeScaleDialog extends DialogBaseOnContextImp {
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if (s.toString().contains(".")  || s.length() > 2 ){
                 CustomApplication.execute(()->{
-                    Instrumentation inst = new Instrumentation();
+                    final Instrumentation inst = new Instrumentation();
                     inst.sendKeyDownUpSync(KeyEvent.KEYCODE_TAB);
                 });
             }

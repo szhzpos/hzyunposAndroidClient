@@ -7,8 +7,8 @@
     android:orientation="horizontal">
 
     <LinearLayout
-        android:layout_width="@dimen/width_208"
-        android:layout_height="180dp"
+        android:layout_width="248dp"
+        android:layout_height="247dp"
         android:layout_margin="@dimen/margin_1"
         android:background="@drawable/border_sub_gray"
         android:orientation="vertical">
@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/height_58"
             android:layout_marginStart="@dimen/margin_5"
-            android:layout_marginTop="@dimen/margin_12"
+            android:layout_marginTop="@dimen/height_40"
             android:layout_marginEnd="@dimen/margin_5"
             android:layout_marginBottom="@dimen/margin_8"
             android:background="@drawable/border_sub_gray"
@@ -31,7 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/height_50"
             android:layout_marginStart="@dimen/margin_5"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="@dimen/height_58"
             android:layout_marginEnd="@dimen/margin_5"
             android:background="@drawable/border_sub_gray"
             android:ems="10"
@@ -39,24 +39,37 @@
             android:inputType="textPassword"
             android:paddingStart="@dimen/margin_5"
             android:paddingEnd="0dp"
-            android:textSize="@dimen/font_size_16" />
+            android:textSize="@dimen/font_size_16"
+            android:autofillHints="" />
     </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/keyboard"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_2"
-        android:layout_marginTop="@dimen/margin_2"
-        android:layout_marginEnd="@dimen/margin_2"
-        android:focusable="false"
-        android:focusableInTouchMode="false">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/margin_2">
+
+        <Button
+            android:id="@+id/_cancel"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/pay_dialog_button_width"
+            android:layout_height="@dimen/pay_dialog_button_height"
+            android:layout_marginStart="@dimen/margin_2"
+            android:layout_marginTop="@dimen/margin_2"
+            android:background="@drawable/button_sub_blue"
+            android:text="@string/cancel"
+            android:textColor="@color/white"
+            android:textSize="@dimen/num_keyboard_font_size_18"
+            app:layout_constraintStart_toEndOf="@+id/_six"
+            app:layout_constraintTop_toBottomOf="@+id/_back" />
 
         <Button
             android:id="@+id/_one"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/keyboard_button_width"
-            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_width="@dimen/pay_dialog_button_width"
+            android:layout_height="@dimen/pay_dialog_button_height"
+            android:layout_marginStart="@dimen/margin_2"
+            android:layout_weight="2.5"
             android:background="@drawable/button_sub_blue"
             android:text="@string/one_sz"
             android:textAlignment="center"
@@ -69,8 +82,8 @@
         <Button
             android:id="@+id/_two"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/keyboard_button_width"
-            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_width="@dimen/pay_dialog_button_width"
+            android:layout_height="@dimen/pay_dialog_button_height"
             android:layout_marginStart="@dimen/margin_2"
             android:layout_weight="2.5"
             android:background="@drawable/button_sub_blue"
@@ -84,9 +97,10 @@
         <Button
             android:id="@+id/_three"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/keyboard_button_width"
-            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_width="@dimen/pay_dialog_button_width"
+            android:layout_height="@dimen/pay_dialog_button_height"
             android:layout_marginStart="@dimen/margin_2"
+            android:layout_weight="2.5"
             android:background="@drawable/button_sub_blue"
             android:text="@string/three_sz"
             android:textAllCaps="false"
@@ -98,36 +112,37 @@
         <Button
             android:id="@+id/_back"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/keyboard_button_width"
-            android:layout_height="@dimen/keyboard_button_height"
-            android:layout_marginTop="@dimen/margin_2"
+            android:layout_width="@dimen/pay_dialog_button_width"
+            android:layout_height="@dimen/pay_dialog_button_height"
+            android:layout_marginStart="@dimen/margin_2"
             android:background="@drawable/button_sub_blue"
             android:text="@string/back"
             android:textColor="@color/white"
             android:textSize="@dimen/num_keyboard_font_size_18"
-            app:layout_constraintStart_toStartOf="@id/_zero"
-            app:layout_constraintTop_toBottomOf="@id/_zero" />
+            app:layout_constraintStart_toEndOf="@+id/_three"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/_four"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/keyboard_button_width"
-            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_width="@dimen/pay_dialog_button_width"
+            android:layout_height="@dimen/pay_dialog_button_height"
+            android:layout_marginStart="@dimen/margin_2"
             android:layout_marginTop="@dimen/margin_2"
+            android:layout_weight="2.5"
             android:background="@drawable/button_sub_blue"
-            android:focusable="auto"
             android:text="@string/four_sz"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="@dimen/num_keyboard_font_size_24"
-            app:layout_constraintStart_toStartOf="@id/_one"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/_one" />
 
         <Button
             android:id="@+id/_five"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/keyboard_button_width"
-            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_width="@dimen/pay_dialog_button_width"
+            android:layout_height="@dimen/pay_dialog_button_height"
             android:layout_marginStart="@dimen/margin_2"
             android:layout_marginTop="@dimen/margin_2"
             android:layout_weight="2.5"
@@ -142,8 +157,8 @@
         <Button
             android:id="@+id/_six"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/keyboard_button_width"
-            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_width="@dimen/pay_dialog_button_width"
+            android:layout_height="@dimen/pay_dialog_button_height"
             android:layout_marginStart="@dimen/margin_2"
             android:layout_marginTop="@dimen/margin_2"
             android:layout_weight="2.5"
@@ -158,22 +173,24 @@
         <Button
             android:id="@+id/_seven"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/keyboard_button_width"
-            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_width="@dimen/pay_dialog_button_width"
+            android:layout_height="@dimen/pay_dialog_button_height"
+            android:layout_marginStart="@dimen/margin_2"
             android:layout_marginTop="@dimen/margin_2"
+            android:layout_weight="2.5"
             android:background="@drawable/button_sub_blue"
             android:text="@string/seven_sz"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="@dimen/num_keyboard_font_size_24"
-            app:layout_constraintStart_toStartOf="@id/_four"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/_four" />
 
         <Button
             android:id="@+id/_eight"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/keyboard_button_width"
-            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_width="@dimen/pay_dialog_button_width"
+            android:layout_height="@dimen/pay_dialog_button_height"
             android:layout_marginStart="@dimen/margin_2"
             android:layout_marginTop="@dimen/margin_2"
             android:layout_weight="2.5"
@@ -188,8 +205,8 @@
         <Button
             android:id="@+id/_nine"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/keyboard_button_width"
-            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_width="@dimen/pay_dialog_button_width"
+            android:layout_height="@dimen/pay_dialog_button_height"
             android:layout_marginStart="@dimen/margin_2"
             android:layout_marginTop="@dimen/margin_2"
             android:layout_weight="2.5"
@@ -202,31 +219,51 @@
             app:layout_constraintTop_toBottomOf="@+id/_six" />
 
         <Button
+            android:id="@+id/_d_zero"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="152dp"
+            android:layout_height="@dimen/pay_dialog_button_height"
+            android:layout_marginStart="@dimen/margin_2"
+            android:layout_marginTop="@dimen/margin_2"
+            android:background="@drawable/button_sub_blue"
+            android:text="@string/d_zero_sz"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="@dimen/num_keyboard_font_size_24"
+            app:layout_constraintStart_toEndOf="@id/_zero"
+            app:layout_constraintTop_toBottomOf="@id/_seven" />
+
+        <Button
             android:id="@+id/_zero"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/keyboard_button_width"
-            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_width="@dimen/pay_dialog_button_width"
+            android:layout_height="@dimen/pay_dialog_button_height"
             android:layout_marginStart="@dimen/margin_2"
+            android:layout_marginTop="@dimen/margin_2"
             android:background="@drawable/button_sub_blue"
             android:text="@string/zero_sz"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="@dimen/num_keyboard_font_size_24"
-            app:layout_constraintStart_toEndOf="@id/_three"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/_seven" />
 
         <Button
-            android:id="@+id/ok"
+            android:id="@+id/_ok"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/keyboard_button_width"
-            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_width="@dimen/pay_dialog_button_width"
+            android:layout_height="122dp"
+            android:layout_marginStart="@dimen/margin_2"
             android:layout_marginTop="@dimen/margin_2"
-            android:background="@drawable/button_sub_blue"
+            android:layout_marginEnd="@dimen/margin_2"
+            android:background="@drawable/button_orange"
             android:text="@string/OK"
             android:textColor="@color/white"
             android:textSize="@dimen/font_size_18"
-            app:layout_constraintStart_toStartOf="@id/_back"
-            app:layout_constraintTop_toBottomOf="@id/_back" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/_nine"
+            app:layout_constraintTop_toBottomOf="@id/_cancel" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

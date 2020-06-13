@@ -79,7 +79,10 @@ public final class VerifyPermissionDialog extends DialogBaseOnMainActivityImp {
         if (null != keyboard_linear_layout)
             for (int i = 0,child  = keyboard_linear_layout.getChildCount(); i < child;i++){
                 final View tmp_v = keyboard_linear_layout.getChildAt(i);
-                tmp_v.setOnClickListener(mKeyboardListener);
+                if (tmp_v.getId() == R.id._cancel)
+                    tmp_v.setOnClickListener(v -> closeWindow());
+                else
+                    tmp_v.setOnClickListener(mKeyboardListener);
             }
     }
 
@@ -100,7 +103,7 @@ public final class VerifyPermissionDialog extends DialogBaseOnMainActivityImp {
                                 editable.delete(editable.length() - 1,editable.length());
                         }
                         break;
-                    case R.id.ok:
+                    case R.id._ok:
                         mOkBtn = (Button)view;
                         if (mFinishListener != null)mFinishListener.onFinish(VerifyPermissionDialog.this);
                         break;

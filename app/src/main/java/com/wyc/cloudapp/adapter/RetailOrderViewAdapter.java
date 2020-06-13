@@ -99,12 +99,14 @@ public final class RetailOrderViewAdapter extends AbstractQueryDataAdapter<Retai
             final TextView order_code_tv = v.findViewById(R.id.order_code),sale_refund_tv = v.findViewById(R.id.sale_refund);
 
             if (isClickView(order_code_tv,event.getX(),event.getY())){
-                RetailOrderDetailsDialog retailOrderDetailsDialog = new RetailOrderDetailsDialog(mContext,getCurrentOrder());
+                final RetailOrderDetailsDialog retailOrderDetailsDialog = new RetailOrderDetailsDialog(mContext,getCurrentOrder());
                 retailOrderDetailsDialog.show();
             }else if (isClickView(sale_refund_tv,event.getX(),event.getY())){
-                RefundDialog refundDialog = new RefundDialog(mContext,order_code_tv.getText().toString());
-                refundDialog.show();
-                mDialog.dismiss();
+                final RefundDialog refundDialog = new RefundDialog(mContext,order_code_tv.getText().toString());
+                if (RefundDialog.verifyRefundPermission(mContext)){
+                    refundDialog.show();
+                    mDialog.dismiss();
+                }
             }
 
         }

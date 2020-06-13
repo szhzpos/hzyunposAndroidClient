@@ -8,7 +8,9 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -107,6 +109,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onResume(){
         super.onResume();
         checkSelfPermissionAndInitDb();
+        setLastUser();
     }
 
     @Override
@@ -135,10 +138,29 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    private void saveLastUser(){
+        final SharedPreferences preferences=getSharedPreferences("login_user", Context.MODE_PRIVATE);
+        final SharedPreferences.Editor editor= preferences.edit();
+        editor.putString("user",mUser_id.getText().toString());
+        editor.apply();
+    }
+
+    private void setLastUser(){
+        final SharedPreferences preferences=getSharedPreferences("login_user", Context.MODE_PRIVATE);
+        if (mUser_id != null){
+            final String user = preferences.getString("user","");
+            mUser_id.setText(user);
+            if (!"".equals(user) && mPassword != null)mPassword.postDelayed(()-> mPassword.requestFocus(),300);
+        }
+    }
+
     private void initLoginBtn(){
         final Button login_btn = findViewById(R.id.b_login);
         if (null != login_btn)
             login_btn.setOnClickListener((View v)-> {
+
+                saveLastUser();
+
                 login();
             });
         mLoginBtn = login_btn;

@@ -34,5 +34,7 @@ public final  class MessageID {
             CANCEL_LOGIN_ID = 32,
             UPLOAD_TRANS_ORDER_ID = 33,//交班单据
             OFF_LINE_LOGIN_ID = 34,
-            UPLOAD_REFUND_ORDER_ID = 36;
+            UPLOAD_REFUND_ORDER_ID = 36,
+            START_SYNC_ORDER_INFO_ID = 37,
+            FINISH_SYNC_ORDER_INFO_ID = 38;
 }

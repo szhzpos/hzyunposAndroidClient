@@ -88,6 +88,7 @@
     <string name="modify_sz">修改</string>
     <string name="charge_sz">充值</string>
     <string name="add_sz">新增</string>
+    <string name="grade_sz">级别：</string>
     <string name="level_sz">级别：</string>
     <string name="birth_sz">生日：</string>
     <string name="add_vip_sz">新增会员</string>
@@ -218,7 +219,7 @@
     <string name="b_f_cashier_sz">@string/cashier_sz</string>
     <string name="b_f_order_sz">@string/order_sz</string>
     <string name="b_f_header_sz">名称/条码-----单价---数量---小计</string>
-    <string name="b_f_ori_price_sz">原价：</string>
+    <string name="b_f_ori_price_sz">原单价：</string>
     <string name="b_f_disco_sz">优惠：</string>
     <string name="b_f_amt_sz">总价：</string>
     <string name="b_f_units_sz">件数：</string>
@@ -291,4 +292,7 @@
     <string name="close_sz">关闭</string>
     <string name="single_refund_sz">单品退货</string>
     <string name="sum_order_num_sz">总单数</string>
+    <string name="present_sz">赠送</string>
+    <string name="data_upload_sz">数据上传</string>
+    <string name="vip_discount_sz">折扣：</string>
 </resources>

@@ -280,9 +280,15 @@ public class AddVipInfoDialog extends DialogBaseOnMainActivityImp {
     }
     private void showVipInfo(){
         mMemberId = mVip.getString("member_id");
+
         m_vip_p_num_et.setText(mVip.getString("mobile"));
+        m_vip_p_num_et.setEnabled(false);
+
         m_vip_name_et.setText(mVip.getString("name"));
+
         m_card_id_et.setText(mVip.getString("card_code"));
+        m_card_id_et.setEnabled(false);
+
         m_vip_birthday_et.setText(mVip.getString("birthday"));
     }
 

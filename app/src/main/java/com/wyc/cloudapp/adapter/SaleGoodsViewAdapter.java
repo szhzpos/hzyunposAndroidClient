@@ -17,6 +17,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
+import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.dialog.serialScales.GoodsWeighDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.callback.ClickListener;
@@ -33,7 +34,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
     private View mCurrentItemView;
     private int mCurrentItemIndex;
     private int mOrderType = 1;//订单类型 1线下 2线上
-    private boolean d_discount = true;//是否折上折
+    private boolean d_discount = false;//是否折上折
     private boolean mSingleRefundStatus = false;
     public SaleGoodsViewAdapter(MainActivity context){
         this.mContext = context;
@@ -54,7 +55,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView row_id,gp_id,goods_id,goods_title,unit_name,barcode_id,barcode,sale_price,sale_num,sale_amt,discount_sign;
+        TextView row_id,gp_id,goods_id,goods_title,unit_name,barcode_id,barcode,sale_price,sale_num,sale_amt,discount_sign,original_price;
         View mCurrentLayoutItemView;
         MyViewHolder(View itemView) {
             super(itemView);
@@ -70,6 +71,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
             sale_price =  itemView.findViewById(R.id.sale_price);
             sale_num = itemView.findViewById(R.id.sale_num);
             sale_amt = itemView.findViewById(R.id.sale_amt);
+            original_price = itemView.findViewById(R.id.original_price);
         }
     }
 
@@ -99,6 +101,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
                 myViewHolder.unit_name.setText(goods_info.getString("unit_name"));
                 myViewHolder.barcode_id.setText(goods_info.getString("barcode_id"));
                 myViewHolder.barcode.setText(goods_info.getString("barcode"));
+                myViewHolder.original_price.setText(String.format(Locale.CHINA,"%.2f",goods_info.getDoubleValue("original_price")));
                 myViewHolder.sale_price.setText(String.format(Locale.CHINA,"%.2f",goods_info.getDoubleValue("price")));
                 myViewHolder.sale_num.setText(String.format(Locale.CHINA,"%.3f",goods_info.getDoubleValue("xnum")));
                 myViewHolder.sale_amt.setText(String.format(Locale.CHINA,"%.2f",goods_info.getDoubleValue("sale_amt")));
@@ -147,6 +150,8 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
         }
     }
     private void addSaleGoods(final JSONObject goods,double num,boolean isBarcodeWeighingGoods,final JSONObject vip){
+        mContext.clearSearchEt();
+
         boolean exist = false;
         int barcode_id = goods.getIntValue("barcode_id"),gp_id = goods.getIntValue("gp_id"),discount_type = -1;
         double  add_goods_price,discount = 1.0,discount_amt = 0.0,new_price = 0.0,current_sale_amt = 0.0,current_discount_amt = 0.0,original_price = 0.0,original_amt = 0.0;
@@ -305,7 +310,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
                     dialog = new ChangeNumOrPriceDialog(mContext,"新价格",cur_json.getString("price"));
                     break;
                 case 2:
-                    dialog = new ChangeNumOrPriceDialog(mContext,mContext.getString(R.string.discount_sz),String.format(Locale.CHINA,"%.0f",Utils.getNotKeyAsNumberDefault(cur_json,"discount",1.0)*100));
+                    dialog = new ChangeNumOrPriceDialog(mContext,mContext.getString(R.string.discount_sz),String.format(Locale.CHINA,"%.0f",Utils.getNotKeyAsNumberDefault(cur_json,"discount",1.0) * 10));
                     break;
                     case 0:
                         dialog = new ChangeNumOrPriceDialog(mContext,"新数量",String.format(Locale.CHINA,"%.2f",Utils.getNotKeyAsNumberDefault(cur_json,"xnum",1.0)));
@@ -314,6 +319,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
             if (dialog != null)
                 dialog.setYesOnclickListener(myDialog -> {
                     double content = myDialog.getContent();
+                    if (type == 2)content *= 10;
                     if (!verifyDiscountPermissions(content,type))return;
 
                     updateSaleGoodsInfo(content,type);
@@ -323,7 +329,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
             MyDialog.ToastMessage("请选择需要修改的商品!",mContext,null);
         }
     }
-    private void updateSaleGoodsInfo(double value,int type){//type 0 修改数量 1修改价格 2打折
+    private void updateSaleGoodsInfo(double value,int type){//type 0 修改数量 1修改价格 2打折 3赠送
         JSONObject json = getCurrentContent(),discount_json;
         double discount = 1.0,discount_amt = 0.0,original_price = 0.0,original_amt = 0.0,new_price = 0.0,xnum = 0.0,current_discount_amt = 0.0,old_sale_amt = 0.0,current_sale_amt = 0.0;
         int discount_type = 0;
@@ -349,10 +355,15 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
                 }
                 break;
             case 1:
-                if (Utils.equalDouble(value,0.0)){
+            case 3://赠送
+                if (type == 3){
                     discount_type = DISCOUNT_TYPE.PRESENT;
                 }else
                     discount_type = DISCOUNT_TYPE.M_DISCOUNT;
+
+                if(!d_discount){
+                    clearDisoucntRecord(json);
+                }
 
                 discount_details = new JSONArray();
 
@@ -361,9 +372,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
                 original_amt = Utils.formatDouble(xnum * original_price,2);
 
                 new_price = value;
-                if(!d_discount){
-                    clearDisoucntRecord(json);
-                }
+
                 current_sale_amt = Utils.formatDouble(xnum * new_price,2);
 
                 if (!Utils.equalDouble(original_amt,0.0))
@@ -375,6 +384,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
                 json.put("discount_amt", discount_amt);
                 json.put("price",Utils.formatDouble(new_price,4));
                 break;
+
             case 2:
                 if (Utils.equalDouble(value / 100,1.0)){
                     deleteDiscountRecordForType(DISCOUNT_TYPE.M_DISCOUNT);
@@ -429,22 +439,20 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
     private boolean verifyDiscountPermissions(double content,int type){
         if (2 == type || 1 == type){
             if (type == 1){
-                if (Utils.equalDouble(content,0.0)){
-                    return verifyPresentPermissions();
+                double price;
+                if (d_discount){
+                    price = Utils.getNotKeyAsNumberDefault(getCurrentContent(),"price",0.0);
                 }else {
-                    final JSONObject sale_goods = getCurrentContent();
-                    double price = Utils.getNotKeyAsNumberDefault(sale_goods,"price",0.0);
-                    if (Utils.equalDouble(price,0.0)){
-                        content = 100;
-                    }else
-                        content = content / price * 100;
+                    price = Utils.getNotKeyAsNumberDefault(getCurrentContent(),"original_price",0.0);
                 }
+                if (Utils.equalDouble(price,0.0)){
+                    content = 100;
+                }else
+                    content = content / price * 100;
             }
             return mContext.verifyDiscountPermissions(content / 100,null);
-        }else if (0 == type){
-            if (Utils.equalDouble(content,0.0))
+        } else  if (0 == type && Utils.equalDouble(content,0.0))
                 return verifyDeletePermissions();
-        }
 
         return true;
     }
@@ -457,6 +465,13 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
         return mContext.verifyPermissions("1",null);
     }
 
+    public boolean present(){
+        boolean code;
+        if (code = verifyPresentPermissions()){
+            updateSaleGoodsInfo(0,3);
+        }
+        return code;
+    }
     public boolean allDiscount(double value){//整单折 6
         if (!mContext.verifyDiscountPermissions(value /100,null))return false;
 
@@ -656,8 +671,17 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
             notifyDataSetChanged();
         }
     }
-    public String generateSaleOrderCode(final String pos_num, int order_type){
-        String prefix = "N" + pos_num + "-" + new SimpleDateFormat("yyMMddHHmmss",Locale.CHINA).format(new Date()) + "-",order_code ;
+    public String generateOrderCode(final String pos_num, int order_type){
+        String order_code;
+        if (mSingleRefundStatus){
+            order_code = RefundDialog.generateRefundOrderCode(mContext,pos_num);
+        }else {
+            order_code  = generateSaleOrderCode(pos_num,order_type);
+        }
+        return order_code;
+    }
+    private String generateSaleOrderCode(final String pos_num, int order_type){
+        String prefix = "N" + pos_num + "-" + new SimpleDateFormat("yyMMddHHmmss",Locale.CHINA).format(new Date()) + "-",order_code;
         final JSONObject orders= new JSONObject();
         if (SQLiteHelper.execSql(orders,"SELECT count(order_id) + 1 order_id from retail_order where date(addtime,'unixepoch' ) = date('now') and pos_code = '" + pos_num +"'")){
             order_code =orders.getString("order_id");

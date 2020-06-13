@@ -197,15 +197,26 @@ public final class MyDialog extends Dialog {
     }
     private void showBtn(){
         if (mIsYes && !mIsNo) {
+            noOnclickListener = null;
             mNo.setVisibility(View.GONE);
+            mYes.setText(mYesStr);
             mYes.setVisibility(View.VISIBLE);
         } else if (mIsNo && !mIsYes) {
+            yesOnclickListener = null;
             mYes.setVisibility(View.GONE);
+            mNo.setText(mNoStr);
             mNo.setVisibility(View.VISIBLE);
         } else {
             mNo.setVisibility(View.VISIBLE);
             mYes.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void setYes(boolean b){
+        mIsYes = b;
+    }
+    private void setNo(boolean b){
+        mIsNo = b;
     }
 
     private void setContentIconType(IconType type){
@@ -215,36 +226,41 @@ public final class MyDialog extends Dialog {
     public static void displayMessage(MyDialog dialog,String message, Context context){
         if (dialog == null)
             dialog = new	MyDialog(context, IconType.INFO);
-        else
+        else{
             dialog.setContentIconType(IconType.INFO);
-
+            dialog.setNo(false);
+        }
         dialog.setTitle("提示信息").setMessage(message).setNoOnclickListener("确定", Dialog::dismiss).show();
     }
 
     public static void displayErrorMessage(MyDialog dialog,String message, Context context){
         if (dialog == null)
-            dialog = new	MyDialog(context, IconType.ERROR);
-        else
+            dialog = new MyDialog(context, IconType.ERROR);
+        else{
             dialog.setContentIconType(IconType.ERROR);
-
+            dialog.setYes(false);
+        }
         dialog.setTitle("提示信息").setMessage(message).setNoOnclickListener("取消", Dialog::dismiss).show();
     }
 
     public static void displayErrorMessage(MyDialog dialog,String message, Context context,onNoOnclickListener no){
         if (dialog == null)
             dialog  = new	MyDialog(context, IconType.ERROR);
-        else
+        else{
             dialog.setContentIconType(IconType.ERROR);
-
+            dialog.setYes(false);
+        }
         dialog.setTitle("提示信息").setMessage(message).setNoOnclickListener("取消",no).show();
     }
 
     public static void displayAskMessage(MyDialog dialog,String message, Context context,MyDialog.onYesOnclickListener yes,MyDialog.onNoOnclickListener no){
         if (dialog == null)
             dialog = new MyDialog(context, IconType.ASK);
-        else
+        else{
             dialog.setContentIconType(IconType.ASK);
-
+            dialog.setYes(true);
+            dialog.setNo(true);
+        }
         dialog.setTitle("提示信息").setMessage(message).setYesOnclickListener("是",yes).setNoOnclickListener("否", no).show();
     }
 

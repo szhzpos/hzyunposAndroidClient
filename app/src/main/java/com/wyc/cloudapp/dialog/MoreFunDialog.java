@@ -32,17 +32,37 @@ public final class MoreFunDialog extends DialogBaseOnMainActivityImp {
         initQueryRefundOrderBtn();
         initVipDepositOrderBtn();
         initSingleRefundBtn();
+        initPresentBtn();
+        initDataUploadBtn();
     }
     @Override
     protected int getContentLayoutId(){
         return R.layout.more_fun_dialog_layout;
     }
 
+    private void initDataUploadBtn(){
+        final Button btn = findViewById(R.id.data_upload_btn);
+        btn.setOnClickListener(v -> {
+            this.dismiss();
+            mContext.data_upload();
+        });
+    }
+
+    private void initPresentBtn(){
+        final Button btn = findViewById(R.id.present_btn);
+        btn.setOnClickListener(v -> {
+            if (mContext.present())
+                this.dismiss();
+        });
+    }
+
     private void initSingleRefundBtn(){
         final Button btn = findViewById(R.id.single_refund_btn);
         btn.setOnClickListener(v -> {
-            mContext.setSingle(true);
-            this.dismiss();
+            if (RefundDialog.verifyRefundPermission(mContext)){
+                mContext.setSingle(true);
+                this.dismiss();
+            }
         });
     }
 

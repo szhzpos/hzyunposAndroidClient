@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
+import android.app.Instrumentation;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,6 +17,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
+import android.text.TextWatcher;
 import android.text.method.ReplacementTransformationMethod;
 
 import android.view.KeyEvent;
@@ -31,6 +33,7 @@ import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
@@ -224,14 +227,13 @@ public class MainActivity extends AppCompatActivity {
             imageView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake_x));
         }
     }
-
+    public void data_upload(){
+        if (mSyncManagement != null)mSyncManagement.sync_order_info();
+    }
     private void initSyncManagement(){
-        final SyncManagement sync = new SyncManagement(mHandler,mUrl,mAppId, mAppSecret,mStoreInfo.getString("stores_id"),mCashierInfo.getString("pos_num"),mCashierInfo.getString("cas_id"));
-        sync.sync_retail_order();
-        sync.sync_transfer_order();
-        sync.sync_refund_order();
-        sync.start_sync(false);
-        mSyncManagement = sync;
+        mSyncManagement = new SyncManagement(mHandler,mUrl,mAppId, mAppSecret,mStoreInfo.getString("stores_id"),mCashierInfo.getString("pos_num"),mCashierInfo.getString("cas_id"));
+        mSyncManagement.sync_order_info();
+        mSyncManagement.start_sync(false);
     }
 
     private boolean verifyNumBtnPermissions(){
@@ -307,12 +309,17 @@ public class MainActivity extends AppCompatActivity {
         final Button clearBtn = findViewById(R.id.clear);
         if (null != clearBtn){
             clearBtn.setOnClickListener(v -> {
-                if (verifyClearPermissions()){
-                    if (!mSaleGoodsViewAdapter.getDatas().isEmpty())
+                if (!mSaleGoodsViewAdapter.getDatas().isEmpty()){
+                    if (verifyClearPermissions()){
                         MyDialog.displayAskMessage(mDialog,"是否清除销售商品？",this,myDialog -> {
                             resetOrderInfo();
                             myDialog.dismiss();
                         },Dialog::dismiss);
+                    }
+                }else {
+                    if (getSingle()){
+                        resetOrderInfo();
+                    }
                 }
             });
         }
@@ -426,11 +433,11 @@ public class MainActivity extends AppCompatActivity {
         mGoodsInfoViewAdapter.setOnItemClickListener(new GoodsInfoViewAdapter.OnItemClickListener() {
             private View mCurrentView;
             @Override
-            public void onClick(View v, int pos) {
+            public void onClick(View v) {
                 hideLastOrderInfo();
                 Utils.disableView(v,300);
                 set_selected_status(v);//设置选中状态
-                final JSONObject jsonObject = mGoodsInfoViewAdapter.getItem(pos),content = new JSONObject();
+                final JSONObject jsonObject = mGoodsInfoViewAdapter.getSelectGoods(v),content = new JSONObject();
                 if (jsonObject != null){
                     final String id = mGoodsInfoViewAdapter.getGoodsId(jsonObject);
                     final String weigh_barcode_info = (String) jsonObject.remove(GoodsInfoViewAdapter.W_G_MARK);//删除称重标志否则重新选择商品时不弹出称重界面
@@ -499,20 +506,40 @@ public class MainActivity extends AppCompatActivity {
         mHandler.postDelayed(search::requestFocus,300);
         search.setSelectAllOnFocus(true);
         search.setOnKeyListener((view, i, keyEvent) -> {
-            if (mKeyboard.getVisibility() == View.GONE){
-                int keyCode = keyEvent.getKeyCode();
-                Logger.d("keyCode:%d",keyCode);
-                if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && keyEvent.getAction() == KeyEvent.ACTION_DOWN){
-                    String content = search.getText().toString();
-                    if (content.length() == 0){
-                        mGoodsCategoryViewAdapter.trigger_preView();
-                    }else{
-                        mGoodsInfoViewAdapter.fuzzy_search_goods(search);
+            int keyCode = keyEvent.getKeyCode();
+            if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && keyEvent.getAction() == KeyEvent.ACTION_DOWN){
+                final String content = search.getText().toString();
+                if (content.length() == 0){
+                    mGoodsCategoryViewAdapter.trigger_preView();
+                }else{
+                    if (!mGoodsInfoViewAdapter.fuzzy_search_goods(search,true)){
+                        clearSearchEt();
+                        MyDialog.ToastMessage("无此商品!",this,getWindow());
                     }
-                    return true;
                 }
+                return true;
             }
             return false;
+        });
+        search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() != 0){
+                    if (mKeyboard.getVisibility() == View.VISIBLE){
+                        mGoodsInfoViewAdapter.fuzzy_search_goods(search,false);
+                    }
+                }
+            }
         });
         search.setTransformationMethod(new ReplacementTransformationMethod() {
             @Override
@@ -542,7 +569,7 @@ public class MainActivity extends AppCompatActivity {
                         if (editable.length() == 0){
                             mGoodsCategoryViewAdapter.trigger_preView();
                         }else{
-                            mGoodsInfoViewAdapter.fuzzy_search_goods(search);
+                            mGoodsInfoViewAdapter.fuzzy_search_goods(search,true);
                         }
                     }else if(v_id == R.id.hide){
                         mKeyboard.setVisibility(View.GONE);
@@ -715,7 +742,6 @@ public class MainActivity extends AppCompatActivity {
                             showLastOrderInfo(mOrderCodeTv.getText().toString());
                             resetOrderInfo();
                             myDialog.dismiss();
-                            MyDialog.SnackbarMessage(activity.getWindow(),"结账成功！", mOrderCodeTv);
                         }
 
                         @Override
@@ -737,10 +763,10 @@ public class MainActivity extends AppCompatActivity {
     }
     public void resetOrderInfo(){
         mPermissionCashierId = "";
-        resetOrderCode();
         mSaleGoodsViewAdapter.clearGoods();
         clearVipInfo();
         setSingle(false);
+        resetOrderCode();
     }
     private void clearVipInfo(){
         if (mVipInfo != null){
@@ -784,7 +810,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void resetOrderCode(){
-        mOrderCodeTv.setText(mSaleGoodsViewAdapter.generateSaleOrderCode(mCashierInfo.getString("pos_num"),1));
+        mOrderCodeTv.setText(mSaleGoodsViewAdapter.generateOrderCode(mCashierInfo.getString("pos_num"),1));
     }
     private void initSecondDisplay(){
         mSecondDisplay = SecondDisplay.getInstantiate(this);
@@ -956,6 +982,9 @@ public class MainActivity extends AppCompatActivity {
             if (SQLiteHelper.execSql(discount_ojb,"SELECT ifnull(min_discount,0.0) min_discount,cas_id FROM cashier_info where cas_pwd = '" + cas_pwd +"' and stores_id = " + stores_id)){
                 if (!discount_ojb.isEmpty()){
                     double local_dis = discount_ojb.getDoubleValue("min_discount") / 10;
+
+                    Logger.d("local_dis:%f,discount:%f",local_dis,discount);
+
                     if (local_dis > discount){
                         final VerifyPermissionDialog verifyPermissionDialog = new VerifyPermissionDialog(this);
                         verifyPermissionDialog.setHintPerName(String.format(Locale.CHINA,"%.1f%s",discount * 10,"折"));
@@ -981,9 +1010,22 @@ public class MainActivity extends AppCompatActivity {
     }
     public void setSingle(boolean b){
         if (mSaleGoodsViewAdapter != null)mSaleGoodsViewAdapter.setSingle(b);
+        if (b)resetOrderCode();
     }
     public boolean getSingle(){
         return mSaleGoodsViewAdapter != null && mSaleGoodsViewAdapter.getSingle();
+    }
+    public boolean present(){
+        return null != mSaleGoodsViewAdapter && mSaleGoodsViewAdapter.present();
+    }
+    public void clearSearchEt(){
+        if (null != mSearch_content){
+            final Editable editable = mSearch_content.getText();
+            if (editable.length() != 0){
+                editable.clear();
+                mGoodsCategoryViewAdapter.trigger_preView();
+            }
+        }
     }
 
     private static class Myhandler extends Handler {
@@ -1008,6 +1050,7 @@ public class MainActivity extends AppCompatActivity {
                     activity.mSyncManagement.start_sync(false);
                     break;
                 case MessageID.TRANSFERSTATUS_ID://传输状态
+                    if (activity.mProgressDialog != null && activity.mProgressDialog.isShowing())activity.mProgressDialog.dismiss();
                     if (msg.obj instanceof Boolean){
                         imageView = activity.findViewById(R.id.upload_status);
                         boolean code = (boolean)msg.obj;
@@ -1049,6 +1092,12 @@ public class MainActivity extends AppCompatActivity {
                             activity.mProgressDialog.setCancel(false).show();
                         }
                     }
+                    break;
+                case MessageID.START_SYNC_ORDER_INFO_ID:
+                    Toast.makeText(activity,"开始上传数据",Toast.LENGTH_SHORT).show();
+                    break;
+                case MessageID.FINISH_SYNC_ORDER_INFO_ID:
+                    Toast.makeText(activity,"数据上传完成",Toast.LENGTH_SHORT).show();
                     break;
             }
         }

@@ -59,7 +59,7 @@
                 android:gravity="center"
                 android:text="@string/deal_sz"
                 android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_16" />
+                android:textSize="@dimen/font_size_14" />
         </LinearLayout>
 
         <LinearLayout
@@ -86,7 +86,7 @@
                 android:gravity="center_horizontal"
                 android:text="@string/shift_exchange_sz"
                 android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_16" />
+                android:textSize="@dimen/font_size_14" />
         </LinearLayout>
 
         <LinearLayout
@@ -114,56 +114,52 @@
                 android:text="@string/other_sz"
                 android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_16" />
+                android:textSize="@dimen/font_size_14" />
         </LinearLayout>
 
         <LinearLayout
-                android:id="@+id/main_top_right_icon"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:orientation="horizontal">
+            android:id="@+id/main_top_right_icon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
 
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="6" />
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="6" />
 
-                <ImageView
-                    android:id="@+id/network_status"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:contentDescription="@string/space_sz"
-                    app:srcCompat="@drawable/network" />
+            <ImageView
+                android:id="@+id/network_status"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:contentDescription="@string/space_sz"
+                app:srcCompat="@drawable/network" />
 
-                <ImageView
-                    android:id="@+id/printer_status"
-                    android:layout_width="64dp"
-                    android:layout_height="32dp"
-                    android:contentDescription="@string/space_sz"
-                    app:srcCompat="@drawable/printer" />
+            <ImageView
+                android:id="@+id/printer_status"
+                android:layout_width="@dimen/width_78"
+                android:layout_height="32dp"
+                android:contentDescription="@string/space_sz"
+                app:srcCompat="@drawable/printer" />
 
-                <ImageView
-                    android:id="@+id/upload_status"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:contentDescription="@string/space_sz"
-                    app:srcCompat="@drawable/transfer" />
+            <ImageView
+                android:id="@+id/upload_status"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:contentDescription="@string/space_sz"
+                app:srcCompat="@drawable/transfer" />
 
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+            <ImageView
+                android:id="@+id/close"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginStart="@dimen/margin_18"
+                android:layout_weight="0.5"
+                android:contentDescription="@string/space_sz"
+                app:srcCompat="@drawable/close" />
 
-                <ImageView
-                    android:id="@+id/close"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_weight="0.5"
-                    android:contentDescription="@string/space_sz"
-                    app:srcCompat="@drawable/close" />
-
-            </LinearLayout>
+        </LinearLayout>
 
     </LinearLayout>
 

@@ -5,462 +5,511 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/round_shape"
-    android:orientation="vertical">
+    android:orientation="horizontal">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:baselineAligned="false"
-        android:orientation="horizontal">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="@dimen/width_328"
+        android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="@dimen/width_328"
-            android:layout_height="match_parent">
+        <LinearLayout
+            android:id="@+id/status_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_8"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+            app:layout_constraintTop_toBottomOf="@id/constraintLayout"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/space_sz"
+                app:srcCompat="@drawable/nodish" />
 
             <ImageView
                 android:id="@+id/v_printer_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/round_shape_main_color"
-                app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
+                android:layout_gravity="center_vertical"
+                android:background="@color/gray__subtransparent"
+                android:contentDescription="@string/space_sz"
+                android:visibility="gone"
                 app:srcCompat="@drawable/printer" />
+        </LinearLayout>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout"
-                android:layout_width="match_parent"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_2"
+            android:background="@drawable/dot_round_shape"
+            android:padding="@dimen/margin_5"
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/status_layout">
+
+            <TextView
+                android:id="@+id/name_text"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_2"
-                android:background="@drawable/dot_round_shape"
-                android:padding="@dimen/margin_5"
-                android:visibility="visible"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:text="@string/name_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                app:layout_constraintStart_toStartOf="@id/sex_text"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/vip_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                app:layout_constraintStart_toEndOf="@id/name_text"
+                app:layout_constraintTop_toTopOf="@id/name_text" />
+
+            <TextView
+                android:id="@+id/sex_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="28dp"
+                android:text="@string/vip_six_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                app:layout_constraintStart_toEndOf="@id/vip_p_num"
+                app:layout_constraintTop_toTopOf="@id/p_num_text" />
+
+            <TextView
+                android:id="@+id/vip_sex"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                app:layout_constraintStart_toEndOf="@id/sex_text"
+                app:layout_constraintTop_toTopOf="@id/sex_text" />
+
+            <TextView
+                android:id="@+id/p_num_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_8"
+                android:text="@string/vip_ph_num_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toBottomOf="@id/name_text" />
 
-                <TextView
-                    android:id="@+id/name_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
-                    android:text="@string/name_sz"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/vip_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16"
-                    app:layout_constraintStart_toEndOf="@id/name_text"
-                    app:layout_constraintTop_toTopOf="@id/name_text" />
-
-                <TextView
-                    android:id="@+id/sex_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="88dp"
-                    android:text="@string/vip_six_sz"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16"
-                    app:layout_constraintStart_toEndOf="@id/vip_name"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/vip_sex"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16"
-                    app:layout_constraintStart_toEndOf="@id/sex_text"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/p_num_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_18"
-                    android:text="@string/vip_ph_num_sz"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/name_text" />
-
-                <TextView
-                    android:id="@+id/vip_p_num"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16"
-                    app:layout_constraintStart_toEndOf="@id/p_num_text"
-                    app:layout_constraintTop_toTopOf="@id/p_num_text" />
-
-                <TextView
-                    android:id="@+id/id_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/vip_card_id_sz"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16"
-                    app:layout_constraintStart_toStartOf="@id/sex_text"
-                    app:layout_constraintTop_toTopOf="@id/vip_p_num" />
-
-                <TextView
-                    android:id="@+id/vip_card_id"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16"
-                    app:layout_constraintStart_toEndOf="@id/id_text"
-                    app:layout_constraintTop_toTopOf="@id/id_text" />
-
-                <TextView
-                    android:id="@+id/balance_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_18"
-                    android:text="@string/vip_balance_sz"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16"
-                    app:layout_constraintStart_toStartOf="@id/p_num_text"
-                    app:layout_constraintTop_toBottomOf="@id/p_num_text" />
-
-                <TextView
-                    android:id="@+id/vip_balance"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16"
-                    app:layout_constraintStart_toEndOf="@id/balance_text"
-                    app:layout_constraintTop_toTopOf="@id/balance_text" />
-
-                <TextView
-                    android:id="@+id/integral_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/vip_integral_sz"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16"
-                    app:layout_constraintStart_toStartOf="@id/id_text"
-                    app:layout_constraintTop_toTopOf="@id/balance_text" />
-
-                <TextView
-                    android:id="@+id/vip_integral"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16"
-                    app:layout_constraintStart_toEndOf="@id/integral_text"
-                    app:layout_constraintTop_toTopOf="@id/integral_text" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <LinearLayout
-                android:id="@+id/linearLayout2"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/vip_p_num"
+                android:layout_width="@dimen/width_118"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_2"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                app:layout_constraintStart_toEndOf="@id/p_num_text"
+                app:layout_constraintTop_toTopOf="@id/p_num_text" />
 
-                <Button
-                    android:id="@+id/vip_add"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/height_58"
-                    android:background="@drawable/button_blue"
-                    android:text="@string/add_sz"
-                    android:textColor="@color/blue_white"
-                    android:textSize="@dimen/font_size_16" />
+            <TextView
+                android:id="@+id/id_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/vip_card_id_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+            <TextView
+                android:id="@+id/vip_card_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                app:layout_constraintStart_toEndOf="@id/id_text"
+                app:layout_constraintTop_toTopOf="@id/id_text" />
 
-                <Button
-                    android:id="@+id/vip_modify"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/height_58"
-                    android:background="@drawable/button_blue"
-                    android:text="@string/modify_sz"
-                    android:textColor="@color/blue_white"
-                    android:textSize="@dimen/font_size_16"
-                    android:visibility="visible" />
+            <TextView
+                android:id="@+id/balance_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_8"
+                android:text="@string/vip_balance_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                app:layout_constraintStart_toStartOf="@id/p_num_text"
+                app:layout_constraintTop_toBottomOf="@id/vip_grade_tv" />
 
-                <Space
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+            <TextView
+                android:id="@+id/vip_balance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                app:layout_constraintStart_toEndOf="@id/balance_text"
+                app:layout_constraintTop_toTopOf="@id/balance_text" />
 
-                <Button
-                    android:id="@+id/vip_charge"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/height_58"
-                    android:background="@drawable/button_blue"
-                    android:text="@string/charge_sz"
-                    android:textColor="@color/blue_white"
-                    android:textSize="@dimen/font_size_16"
-                    android:visibility="visible" />
-            </LinearLayout>
+            <TextView
+                android:id="@+id/integral_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/vip_integral_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                app:layout_constraintStart_toStartOf="@id/discount_text"
+                app:layout_constraintTop_toTopOf="@id/balance_text" />
 
+            <TextView
+                android:id="@+id/vip_integral"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                app:layout_constraintStart_toEndOf="@id/integral_text"
+                app:layout_constraintTop_toTopOf="@id/integral_text" />
+
+            <TextView
+                android:id="@+id/vip_grade_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/grade_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/p_num_text" />
+
+            <TextView
+                android:id="@+id/vip_grade_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                app:layout_constraintStart_toEndOf="@id/vip_grade_text"
+                app:layout_constraintTop_toTopOf="@id/vip_grade_text" />
+
+            <TextView
+                android:id="@+id/discount_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/vip_discount_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                app:layout_constraintStart_toStartOf="@id/sex_text"
+                app:layout_constraintTop_toTopOf="@id/vip_grade_text" />
+
+            <TextView
+                android:id="@+id/vip_discount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                app:layout_constraintStart_toEndOf="@id/discount_text"
+                app:layout_constraintTop_toTopOf="@id/discount_text" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
-            android:id="@+id/v_right"
-            android:layout_width="wrap_content"
+            android:id="@+id/bottom_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_2"
-            android:layout_marginBottom="@dimen/margin_2"
-            android:background="@drawable/round_shape"
-            android:orientation="vertical">
+            android:layout_margin="@dimen/margin_2"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
-            <EditText
-                android:id="@+id/search_content"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/height_45"
-                android:layout_margin="@dimen/margin_2"
-                android:background="@drawable/border_sub_gray"
-                android:drawableEnd="@drawable/r_card"
-                android:ems="10"
-                android:focusable="auto"
-                android:hint="@string/vip_search_hint_sz"
-                android:importantForAutofill="no"
-                android:inputType="textPersonName"
-                android:padding="@dimen/margin_5"
-                android:textColor="@color/text_color" />
+            <Button
+                android:id="@+id/vip_add"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/height_58"
+                android:background="@drawable/button_blue"
+                android:text="@string/add_sz"
+                android:textColor="@color/blue_white"
+                android:textSize="@dimen/font_size_16" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/keyboard"
+            <Space
+                android:id="@+id/add_space"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_2">
+                android:layout_weight="1" />
 
-                <Button
-                    android:id="@+id/_cancel"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/pay_dialog_button_width"
-                    android:layout_height="@dimen/pay_dialog_button_height"
-                    android:layout_marginStart="@dimen/margin_2"
-                    android:layout_marginTop="@dimen/margin_2"
-                    android:background="@drawable/button_sub_blue"
-                    android:text="@string/cancel"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/num_keyboard_font_size_18"
-                    app:layout_constraintStart_toEndOf="@+id/_six"
-                    app:layout_constraintTop_toBottomOf="@+id/_back" />
+            <Button
+                android:id="@+id/vip_modify"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/height_58"
+                android:background="@drawable/button_blue"
+                android:text="@string/modify_sz"
+                android:textColor="@color/blue_white"
+                android:textSize="@dimen/font_size_16"
+                android:visibility="visible" />
 
-                <Button
-                    android:id="@+id/_one"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/pay_dialog_button_width"
-                    android:layout_height="@dimen/pay_dialog_button_height"
-                    android:layout_marginStart="@dimen/margin_2"
-                    android:layout_weight="2.5"
-                    android:background="@drawable/button_sub_blue"
-                    android:text="@string/one_sz"
-                    android:textAlignment="center"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/num_keyboard_font_size_24"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
 
-                <Button
-                    android:id="@+id/_two"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/pay_dialog_button_width"
-                    android:layout_height="@dimen/pay_dialog_button_height"
-                    android:layout_marginStart="@dimen/margin_2"
-                    android:layout_weight="2.5"
-                    android:background="@drawable/button_sub_blue"
-                    android:text="@string/two_sz"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/num_keyboard_font_size_24"
-                    app:layout_constraintStart_toEndOf="@+id/_one"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <Button
-                    android:id="@+id/_three"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/pay_dialog_button_width"
-                    android:layout_height="@dimen/pay_dialog_button_height"
-                    android:layout_marginStart="@dimen/margin_2"
-                    android:layout_weight="2.5"
-                    android:background="@drawable/button_sub_blue"
-                    android:text="@string/three_sz"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/num_keyboard_font_size_24"
-                    app:layout_constraintStart_toEndOf="@+id/_two"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <Button
-                    android:id="@+id/_back"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/pay_dialog_button_width"
-                    android:layout_height="@dimen/pay_dialog_button_height"
-                    android:layout_marginStart="@dimen/margin_2"
-                    android:background="@drawable/button_sub_blue"
-                    android:text="@string/back"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/num_keyboard_font_size_18"
-                    app:layout_constraintStart_toEndOf="@+id/_three"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <Button
-                    android:id="@+id/_four"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/pay_dialog_button_width"
-                    android:layout_height="@dimen/pay_dialog_button_height"
-                    android:layout_marginStart="@dimen/margin_2"
-                    android:layout_marginTop="@dimen/margin_2"
-                    android:layout_weight="2.5"
-                    android:background="@drawable/button_sub_blue"
-                    android:text="@string/four_sz"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/num_keyboard_font_size_24"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/_one" />
-
-                <Button
-                    android:id="@+id/_five"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/pay_dialog_button_width"
-                    android:layout_height="@dimen/pay_dialog_button_height"
-                    android:layout_marginStart="@dimen/margin_2"
-                    android:layout_marginTop="@dimen/margin_2"
-                    android:layout_weight="2.5"
-                    android:background="@drawable/button_sub_blue"
-                    android:text="@string/five_sz"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/num_keyboard_font_size_24"
-                    app:layout_constraintStart_toEndOf="@+id/_four"
-                    app:layout_constraintTop_toBottomOf="@+id/_two" />
-
-                <Button
-                    android:id="@+id/_six"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/pay_dialog_button_width"
-                    android:layout_height="@dimen/pay_dialog_button_height"
-                    android:layout_marginStart="@dimen/margin_2"
-                    android:layout_marginTop="@dimen/margin_2"
-                    android:layout_weight="2.5"
-                    android:background="@drawable/button_sub_blue"
-                    android:text="@string/six_sz"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/num_keyboard_font_size_24"
-                    app:layout_constraintStart_toEndOf="@+id/_five"
-                    app:layout_constraintTop_toBottomOf="@+id/_three" />
-
-                <Button
-                    android:id="@+id/_seven"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/pay_dialog_button_width"
-                    android:layout_height="@dimen/pay_dialog_button_height"
-                    android:layout_marginStart="@dimen/margin_2"
-                    android:layout_marginTop="@dimen/margin_2"
-                    android:layout_weight="2.5"
-                    android:background="@drawable/button_sub_blue"
-                    android:text="@string/seven_sz"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/num_keyboard_font_size_24"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/_four" />
-
-                <Button
-                    android:id="@+id/_eight"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/pay_dialog_button_width"
-                    android:layout_height="@dimen/pay_dialog_button_height"
-                    android:layout_marginStart="@dimen/margin_2"
-                    android:layout_marginTop="@dimen/margin_2"
-                    android:layout_weight="2.5"
-                    android:background="@drawable/button_sub_blue"
-                    android:text="@string/eight_sz"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/num_keyboard_font_size_24"
-                    app:layout_constraintStart_toEndOf="@+id/_seven"
-                    app:layout_constraintTop_toBottomOf="@+id/_five" />
-
-                <Button
-                    android:id="@+id/_nine"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/pay_dialog_button_width"
-                    android:layout_height="@dimen/pay_dialog_button_height"
-                    android:layout_marginStart="@dimen/margin_2"
-                    android:layout_marginTop="@dimen/margin_2"
-                    android:layout_weight="2.5"
-                    android:background="@drawable/button_sub_blue"
-                    android:text="@string/nine_sz"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/num_keyboard_font_size_24"
-                    app:layout_constraintStart_toEndOf="@+id/_eight"
-                    app:layout_constraintTop_toBottomOf="@+id/_six" />
-
-                <Button
-                    android:id="@+id/_d_zero"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="152dp"
-                    android:layout_height="@dimen/pay_dialog_button_height"
-                    android:layout_marginStart="@dimen/margin_2"
-                    android:layout_marginTop="@dimen/margin_2"
-                    android:background="@drawable/button_sub_blue"
-                    android:text="@string/d_zero_sz"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/num_keyboard_font_size_24"
-                    app:layout_constraintStart_toEndOf="@id/_zero"
-                    app:layout_constraintTop_toBottomOf="@id/_seven" />
-
-                <Button
-                    android:id="@+id/_zero"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/pay_dialog_button_width"
-                    android:layout_height="@dimen/pay_dialog_button_height"
-                    android:layout_marginStart="@dimen/margin_2"
-                    android:layout_marginTop="@dimen/margin_2"
-                    android:background="@drawable/button_sub_blue"
-                    android:text="@string/zero_sz"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/num_keyboard_font_size_24"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/_seven" />
-
-                <Button
-                    android:id="@+id/_ok"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/pay_dialog_button_width"
-                    android:layout_height="122dp"
-                    android:layout_marginStart="@dimen/margin_2"
-                    android:layout_marginTop="@dimen/margin_2"
-                    android:layout_marginEnd="@dimen/margin_2"
-                    android:background="@drawable/button_orange"
-                    android:text="@string/search_sz"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/font_size_18"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toEndOf="@+id/_nine"
-                    app:layout_constraintTop_toBottomOf="@id/_cancel" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            <Button
+                android:id="@+id/vip_charge"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/height_58"
+                android:background="@drawable/button_blue"
+                android:text="@string/charge_sz"
+                android:textColor="@color/blue_white"
+                android:textSize="@dimen/font_size_16"
+                android:visibility="visible" />
         </LinearLayout>
 
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/v_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_2"
+        android:layout_marginBottom="@dimen/margin_2"
+        android:background="@drawable/round_shape"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/search_content"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_45"
+            android:layout_margin="@dimen/margin_2"
+            android:background="@drawable/border_sub_gray"
+            android:drawableEnd="@drawable/r_card"
+            android:ems="10"
+            android:focusable="auto"
+            android:hint="@string/vip_search_hint_sz"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            android:padding="@dimen/margin_5"
+            android:textColor="@color/text_color" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/keyboard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_2">
+
+            <Button
+                android:id="@+id/_cancel"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_marginTop="@dimen/margin_2"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/cancel"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_18"
+                app:layout_constraintStart_toEndOf="@+id/_six"
+                app:layout_constraintTop_toBottomOf="@+id/_back" />
+
+            <Button
+                android:id="@+id/_one"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_weight="2.5"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/one_sz"
+                android:textAlignment="center"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/_two"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_weight="2.5"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/two_sz"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_24"
+                app:layout_constraintStart_toEndOf="@+id/_one"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/_three"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_weight="2.5"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/three_sz"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_24"
+                app:layout_constraintStart_toEndOf="@+id/_two"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/_back"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_marginStart="@dimen/margin_2"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/back"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_18"
+                app:layout_constraintStart_toEndOf="@+id/_three"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/_four"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_marginTop="@dimen/margin_2"
+                android:layout_weight="2.5"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/four_sz"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/_one" />
+
+            <Button
+                android:id="@+id/_five"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_marginTop="@dimen/margin_2"
+                android:layout_weight="2.5"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/five_sz"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_24"
+                app:layout_constraintStart_toEndOf="@+id/_four"
+                app:layout_constraintTop_toBottomOf="@+id/_two" />
+
+            <Button
+                android:id="@+id/_six"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_marginTop="@dimen/margin_2"
+                android:layout_weight="2.5"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/six_sz"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_24"
+                app:layout_constraintStart_toEndOf="@+id/_five"
+                app:layout_constraintTop_toBottomOf="@+id/_three" />
+
+            <Button
+                android:id="@+id/_seven"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_marginTop="@dimen/margin_2"
+                android:layout_weight="2.5"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/seven_sz"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/_four" />
+
+            <Button
+                android:id="@+id/_eight"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_marginTop="@dimen/margin_2"
+                android:layout_weight="2.5"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/eight_sz"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_24"
+                app:layout_constraintStart_toEndOf="@+id/_seven"
+                app:layout_constraintTop_toBottomOf="@+id/_five" />
+
+            <Button
+                android:id="@+id/_nine"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_marginTop="@dimen/margin_2"
+                android:layout_weight="2.5"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/nine_sz"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_24"
+                app:layout_constraintStart_toEndOf="@+id/_eight"
+                app:layout_constraintTop_toBottomOf="@+id/_six" />
+
+            <Button
+                android:id="@+id/_d_zero"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="152dp"
+                android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_marginTop="@dimen/margin_2"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/d_zero_sz"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_24"
+                app:layout_constraintStart_toEndOf="@id/_zero"
+                app:layout_constraintTop_toBottomOf="@id/_seven" />
+
+            <Button
+                android:id="@+id/_zero"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="@dimen/pay_dialog_button_height"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_marginTop="@dimen/margin_2"
+                android:background="@drawable/button_sub_blue"
+                android:text="@string/zero_sz"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/num_keyboard_font_size_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/_seven" />
+
+            <Button
+                android:id="@+id/_ok"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/pay_dialog_button_width"
+                android:layout_height="122dp"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_marginTop="@dimen/margin_2"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:background="@drawable/button_orange"
+                android:text="@string/search_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/_nine"
+                app:layout_constraintTop_toBottomOf="@id/_cancel" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 
 </LinearLayout>
