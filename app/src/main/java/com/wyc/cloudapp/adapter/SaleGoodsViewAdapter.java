@@ -78,7 +78,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View itemView = View.inflate(mContext, R.layout.sale_goods_content_layout, null);
+        final View itemView = View.inflate(mContext, R.layout.sale_goods_content_layout, null);
         itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.sale_goods_height)));
         return new MyViewHolder(itemView);
     }
@@ -134,7 +134,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
             double xnum = goods.getDoubleValue("xnum");//新增的商品不存在xnum字段，xnum等于0.0。挂单以及条码秤称重商品已经存在,以及该字段值不会为0
             boolean isBarcodeWeighingGoods = !Utils.getNullStringAsEmpty(goods,GoodsInfoViewAdapter.W_G_MARK).isEmpty(),isZero = Utils.equalDouble(xnum,0.0);
             if(!isBarcodeWeighingGoods && isZero && goods.getIntValue("type") == 2){//type 1 普通 2散装称重 3鞋帽
-                final GoodsWeighDialog goodsWeighDialog = new GoodsWeighDialog(mContext,mContext.getString(R.string.goods_i_s),goods.getString("barcode_id"));
+                final GoodsWeighDialog goodsWeighDialog = new GoodsWeighDialog(mContext,mContext.getString(R.string.goods_i_sz),goods.getString("barcode_id"));
                 goodsWeighDialog.setOnYesOnclickListener(myDialog -> {
                     double num = myDialog.getContent();
                     if (!Utils.equalDouble(num,0.0)){
@@ -895,16 +895,16 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
         int sale_record = mDatas.size();
         double per_record_mol_amt = getPerRecordMolAmt(mol_amt,sale_record),original_sale_amt = 0.0,new_discount = 0.0,xnum = 0.0,new_price = 0.0,
                 discount_amt = 0.0,current_sale_amt = 0.0;
-        boolean isPreform = true;
+        boolean isContinue = true;
 
         Utils.sortJsonArrayFromDoubleCol(mDatas,"sale_amt");
 
-        for (int i = 0;i < sale_record && isPreform;i++){
+        for (int i = 0;i < sale_record && isContinue;i++){
             object = mDatas.getJSONObject(i);
             original_sale_amt = object.getDoubleValue("sale_amt");
             current_sale_amt = Utils.formatDouble(original_sale_amt - per_record_mol_amt,2);
 
-            if (current_sale_amt > 0.0 || Utils.equalDouble(current_sale_amt,0.0)){
+            if (current_sale_amt > 0.0 || (sale_record == 1 && Utils.equalDouble(current_sale_amt,0.0))){//抹零后销售金额为零并且只存在一个商品时才需要保存
                 new_discount = Utils.formatDouble(current_sale_amt / original_sale_amt,3);
 
                 //处理优惠记录
@@ -926,14 +926,15 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
                 object.put("discount_type",type);
                 object.put("sale_amt",current_sale_amt);
 
-                if (mol_amt == 0){
-                    isPreform = false;
+                if (Utils.equalDouble(Math.abs(mol_amt),0)){
+                    isContinue = false;
                 }else {
                     mol_amt -= per_record_mol_amt;
                     //计算下一次抹零金额，最后一条记录或者剩余抹零金额小于平均抹零金额；要扣除剩余的抹零
-                    if (mol_amt - per_record_mol_amt < 0.0 || i + 2 == sale_record){
+                    if (Math.abs(mol_amt) - Math.abs(per_record_mol_amt) < 0.0 || i + 2 == sale_record){
                         per_record_mol_amt = mol_amt;
                         mol_amt = 0;
+                        if (Utils.equalDouble(per_record_mol_amt,0.0))isContinue = false;;
                     }
                 }
             }

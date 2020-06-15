@@ -291,8 +291,6 @@ public final class SyncHandler extends Handler {
         int gp_id;
         String order_code;
 
-        if (mMainActivityHandler != null)mMainActivityHandler.obtainMessage(MessageID.START_SYNC_ORDER_INFO_ID).sendToTarget();
-
         if (code = null != (orders = SQLiteHelper.getListToJson(sql_orders,err))){
             try {
                 for (int i = 0,size = orders.size();i < size;i++){
@@ -485,8 +483,6 @@ public final class SyncHandler extends Handler {
         if (err.length() != 0){
             mMainActivityHandler.obtainMessage(MessageID.TRANSFERSTATUS_ID,false).sendToTarget();
         }
-
-        if (mMainActivityHandler != null)mMainActivityHandler.obtainMessage(MessageID.FINISH_SYNC_ORDER_INFO_ID).sendToTarget();
     }
 
     private void down_load_pay_method_img(@NonNull final JSONArray datas,final String sys_name) throws JSONException {

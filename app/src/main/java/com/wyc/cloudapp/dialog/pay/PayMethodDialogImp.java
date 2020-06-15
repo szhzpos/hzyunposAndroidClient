@@ -16,7 +16,7 @@ import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 public class PayMethodDialogImp extends AbstractPayDialog {
-    public PayMethodDialogImp(@NonNull MainActivity context, @NonNull final JSONObject pay_method) {
+    PayMethodDialogImp(@NonNull MainActivity context, @NonNull final JSONObject pay_method) {
         super(context,Utils.getNullStringAsEmpty(pay_method,"name"));
         mPayMethod = pay_method;
     }
@@ -77,9 +77,11 @@ public class PayMethodDialogImp extends AbstractPayDialog {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (editable.length()> 0){
+                int length = editable.length();
+                if (length > 0){
                     int index = editable.toString().indexOf('.');
-                    if (index > -1 && editable.length() >= (index += 3)){
+                    if (length == 1 && index > -1)return;
+                    if (length >= (index += 3)){
                         Logger.d("index:%d",index);
                         editable.delete(index,editable.length());
                     }

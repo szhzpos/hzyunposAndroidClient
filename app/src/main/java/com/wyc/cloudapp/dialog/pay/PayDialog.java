@@ -200,7 +200,7 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
         keyboard_linear_layout = findViewById(R.id.keyboard);
         if (null != keyboard_linear_layout)
             for (int i = 0,child  = keyboard_linear_layout.getChildCount(); i < child;i++){
-            View tmp_v = keyboard_linear_layout.getChildAt(i);
+            final View tmp_v = keyboard_linear_layout.getChildAt(i);
             int id = tmp_v.getId();
             if (tmp_v instanceof Button){
                 switch (id){
@@ -217,15 +217,13 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
                                     }else{
                                         if (index == 0)return;
                                         if (index > editable.length())index = editable.length();
-                                        if (view.getId() == R.id.cash_amt) {
-                                            if (index == editable.toString().indexOf(".") + 1) {
-                                                tmp_edit.setSelection(index - 1);
-                                            } else if (index > editable.toString().indexOf(".")) {
-                                                editable.replace(index - 1, index, "0");
-                                                tmp_edit.setSelection(index - 1);
-                                            } else {
-                                                editable.delete(index - 1, index);
-                                            }
+                                        if (index == editable.toString().indexOf(".") + 1) {
+                                            tmp_edit.setSelection(index - 1);
+                                        } else if (index > editable.toString().indexOf(".")) {
+                                            editable.replace(index - 1, index, "0");
+                                            tmp_edit.setSelection(index - 1);
+                                        } else {
+                                            editable.delete(index - 1, index);
                                         }
                                     }
                                 }
@@ -251,7 +249,7 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
         }
     }
     private View.OnClickListener button_click = v -> {
-        View view =  getCurrentFocus();
+        final View view =  getCurrentFocus();
         if (view != null) {
             if (view.getId() == R.id.cash_amt) {
                 final EditText tmp_edit = ((EditText)view);
@@ -261,6 +259,7 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
                 if (-1 != point_index && tmp_edit.getSelectionEnd() == editable.length()){
                     editable.replace(0, editable.length(),sz_button.concat(mContext.getString(R.string.d_zero_point_sz)));
                     point_index = editable.toString().indexOf(".");
+                    if (point_index == index)point_index += 1;
                     tmp_edit.setSelection(point_index);
                 }else{
                     if (".".equals(sz_button)) {
@@ -1016,7 +1015,7 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
     }
     private void autoShowValueFromPayAmt(){
         int amt = (int)mCashAmt,tmp;
-        Button first = findViewById(R.id._ten),sec = findViewById(R.id._twenty),third = findViewById(R.id._fifty),fourth = findViewById(R.id._one_hundred);
+        final Button first = findViewById(R.id._ten),sec = findViewById(R.id._twenty),third = findViewById(R.id._fifty),fourth = findViewById(R.id._one_hundred);
         tmp = amt +(5 - amt % 5);
         first.setText(String.valueOf(tmp));
         sec.setText(String.valueOf((tmp = tmp +(10- tmp % 10))));

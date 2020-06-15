@@ -25,6 +25,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.dialog.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -47,6 +48,7 @@ public final class VipInfoDialog extends DialogBaseOnMainActivityImp {
     private onYesOnclickListener mYesOnclickListener;//确定按钮被点击了的监听器
     private boolean mPrintStatus = true;
     private Button mAddBtn;
+    private KeyboardView mKeyboard;
     public VipInfoDialog(@NonNull MainActivity context) {
         super(context,context.getString(R.string.vip_dialog_title_sz));
     }
@@ -75,7 +77,7 @@ public final class VipInfoDialog extends DialogBaseOnMainActivityImp {
         initChargeBtn();
 
         //初始化数字键盘
-        initKeyboard();
+        initKeyboardView();
 
     }
     @Override
@@ -180,66 +182,27 @@ public final class VipInfoDialog extends DialogBaseOnMainActivityImp {
         }
     }
 
-    private void initKeyboard(){
-        final ConstraintLayout keyboard_linear_layout = findViewById(R.id.keyboard);
-        if (null != keyboard_linear_layout)
-            for (int i = 0,child  = keyboard_linear_layout.getChildCount(); i < child;i++){
-                View tmp_v = keyboard_linear_layout.getChildAt(i);
-                int id = tmp_v.getId();
-                if (tmp_v instanceof Button){
-                    switch (id) {
-                        case R.id._back:
-                            tmp_v.setOnClickListener(v -> {
-                                View view = getCurrentFocus();
-                                if (view != null) {
-                                    if (view.getId() == R.id.search_content) {
-                                        EditText tmp_edit = ((EditText) view);
-                                        int index = tmp_edit.getSelectionStart(), end = tmp_edit.getSelectionEnd();
-                                        if (index != end && end == tmp_edit.getText().length()) {
-                                            tmp_edit.setText(mContext.getString(R.string.space_sz));
-                                        } else {
-                                            if (index == 0) return;
-                                            tmp_edit.getText().delete(index - 1, index);
-                                        }
-                                    }
-                                }
-                            });
-                            break;
-                        case R.id._cancel:
-                            tmp_v.setOnClickListener(v -> closeWindow());
-                            break;
-                        case R.id._ok:
-                            mSearchBtn = (Button) tmp_v;
-                            tmp_v.setOnClickListener(view -> {
-                                if (mVip == null)
-                                    serchVip(mSearchContent.getText().toString(), 0);
-                                else {
-                                    if (mYesOnclickListener != null)
-                                        mYesOnclickListener.onYesClick(VipInfoDialog.this);
-                                }
-                            });
-                            break;
-                        default:
-                            tmp_v.setOnClickListener(button_click);
-                            break;
-                    }
-                }
+    private void initKeyboardView(){
+        final KeyboardView view = findViewById(R.id.keyboard_view);
+        view.layout(R.layout.keyboard_layout);
+        view.setCurrentFocusListenner(() -> {
+            final View focus = getCurrentFocus();
+            if (focus instanceof EditText){
+                return (EditText) focus;
             }
+            return null;
+        });
+        view.setCancelListener(v -> closeWindow());
+        view.setOkListener(v -> {
+            if (mVip == null)
+                serchVip(mSearchContent.getText().toString(), 0);
+            else {
+                if (mYesOnclickListener != null)
+                    mYesOnclickListener.onYesClick(VipInfoDialog.this);
+            }
+        });
+        mSearchBtn = (Button) view.getOkBtn();
     }
-
-    private View.OnClickListener button_click = v -> {
-        View view =  getCurrentFocus();
-        if (view != null) {
-            if (view.getId() == R.id.search_content) {
-                EditText tmp_edit = ((EditText)view);
-                int index = tmp_edit.getSelectionStart();
-                Editable editable = tmp_edit.getText();
-                String sz_button = ((Button) v).getText().toString();
-                if (index != tmp_edit.getSelectionEnd())editable.clear();
-                editable.insert(index, sz_button);
-            }
-        }
-    };
 
     private void initSearchCondition(){
         mSearchContent = findViewById(R.id.search_content);
@@ -326,11 +289,15 @@ public final class VipInfoDialog extends DialogBaseOnMainActivityImp {
     private void showVipInfo(JSONObject object){
         if (null != object){
             mVip = object;
+
+            final String grade_name = object.getString("grade_name");
+            if (grade_name != null)mVipGrade.setText(grade_name);
+
             mSearchBtn.setText(mContext.getString(R.string.OK));
             mVip_name.setText(object.getString("name"));
             mVip_sex.setText(object.getString("sex"));
             mVip_p_num.setText(object.getString("mobile"));
-            mVipGrade.setText(object.getString("grade_name"));
+
             mVipDiscount.setText(object.getString("discount"));
             mVip_card_id.setText(object.getString("card_code"));
             mVip_balance.setText(String.format(Locale.CHINA,"%.2f",object.getDouble("money_sum")));

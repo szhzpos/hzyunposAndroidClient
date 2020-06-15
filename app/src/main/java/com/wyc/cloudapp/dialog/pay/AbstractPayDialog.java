@@ -15,7 +15,9 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
+import com.wyc.cloudapp.dialog.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.utils.Utils;
@@ -49,7 +51,7 @@ public abstract class AbstractPayDialog extends DialogBaseOnMainActivityImp impl
         init_c_amount();
 
         //初始化数字键盘
-        initKeyboard();
+        initKeyboardView();
 
     }
     @Override
@@ -186,62 +188,20 @@ public abstract class AbstractPayDialog extends DialogBaseOnMainActivityImp impl
         });
     }
 
-    private void initKeyboard(){
-        final ConstraintLayout keyboard_linear_layout = findViewById(R.id.keyboard);
-        if (null != keyboard_linear_layout)
-            for (int i = 0,child  = keyboard_linear_layout.getChildCount(); i < child;i++){
-                final View tmp_v = keyboard_linear_layout.getChildAt(i);
-                int id = tmp_v.getId();
-                if (tmp_v instanceof Button){
-                    switch (id){
-                        case R.id._back:
-                            tmp_v.setOnClickListener(v -> {
-                                View view =  getCurrentFocus();
-                                if (view != null) {
-                                    int tmp_id = view.getId();
-                                    if (tmp_id == R.id.c_amt || tmp_id == R.id.pay_code) {
-                                        EditText tmp_edit = ((EditText)view);
-                                        int index = tmp_edit.getSelectionStart(),end = tmp_edit.getSelectionEnd();
-                                        if (index != end && end  == tmp_edit.getText().length()){
-                                            tmp_edit.setText(mContext.getString(R.string.space_sz));
-                                        }else{
-                                            if (index == 0)return;
-                                            tmp_edit.getText().delete(index - 1, index);
-                                        }
-                                    }
-                                }
-                            });
-                            break;
-                        case R.id._cancel:
-                            tmp_v.setOnClickListener(view -> closeWindow());
-                            break;
-                        case R.id._ok:
-                            mOk = (Button) tmp_v;
-                            tmp_v.setOnClickListener(v -> {
-                                if (verify() && mYesOnclickListener != null)mYesOnclickListener.onYesClick(AbstractPayDialog.this);
-                            });
-                            break;
-                        default:
-                            tmp_v.setOnClickListener(button_click);
-                            break;
-                    }
-                }
+    private void initKeyboardView(){
+        final KeyboardView view = findViewById(R.id.keyboard_view);
+        view.layout(R.layout.pay_method_keyboard_layout);
+        view.setCurrentFocusListenner(() -> {
+            final View focus = getCurrentFocus();
+            if (focus instanceof EditText){
+                return (EditText) focus;
             }
+            return null;
+        });
+        view.setCancelListener(v -> closeWindow());
+        view.setOkListener(v -> {
+            if (verify() && mYesOnclickListener != null)mYesOnclickListener.onYesClick(AbstractPayDialog.this);
+        });
+        mOk = view.getOkBtn();
     }
-
-    private View.OnClickListener button_click = v -> {
-        final View view =  getCurrentFocus();
-        if (view != null) {
-            int id = view.getId();
-            if (id == R.id.c_amt || id == R.id.pay_code) {
-                final EditText tmp_edit = ((EditText)view);
-                int index = tmp_edit.getSelectionStart();
-                final Editable editable = tmp_edit.getText();
-                final String sz_button = ((Button) v).getText().toString();
-                if (index != tmp_edit.getSelectionEnd())editable.clear();
-                editable.insert(index, sz_button);
-            }
-        }
-    };
-
 }

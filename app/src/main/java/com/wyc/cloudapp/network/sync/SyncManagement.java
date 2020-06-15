@@ -109,6 +109,9 @@ public class SyncManagement extends Thread {
         sync_transfer_order();
 
         sync_retail_order();
+
+        if (mMainActivityHandler != null)mMainActivityHandler.sendMessageAtFrontOfQueue(mMainActivityHandler.obtainMessage(MessageID.START_SYNC_ORDER_INFO_ID));
+        if (mMainActivityHandler != null)mMainActivityHandler.obtainMessage(MessageID.FINISH_SYNC_ORDER_INFO_ID).sendToTarget();
     }
 
     public void sync_retail_order(){

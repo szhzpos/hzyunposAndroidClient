@@ -27,13 +27,13 @@
         app:layout_constraintTop_toBottomOf="@id/iv_triangle">
 
         <Button
-            android:id="@+id/_one"
+            android:id="@+id/_seven"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/keyboard_button_width"
             android:layout_height="@dimen/keyboard_button_height"
             android:layout_marginStart="@dimen/margin_1"
             android:background="#FF5DA7F8"
-            android:text="@string/one_sz"
+            android:text="@string/seven_sz"
             android:textAlignment="center"
             android:textAllCaps="false"
             android:textColor="@color/white"
@@ -42,32 +42,32 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/_two"
+            android:id="@+id/_eight"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/keyboard_button_width"
             android:layout_height="@dimen/keyboard_button_height"
             android:layout_marginStart="@dimen/margin_1"
             android:layout_weight="2.5"
             android:background="#FF5DA7F8"
-            android:text="@string/two_sz"
+            android:text="@string/eight_sz"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="@dimen/num_keyboard_font_size_24"
-            app:layout_constraintStart_toEndOf="@+id/_one"
+            app:layout_constraintStart_toEndOf="@id/_seven"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/_three"
+            android:id="@+id/_nine"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/keyboard_button_width"
             android:layout_height="@dimen/keyboard_button_height"
             android:layout_marginStart="@dimen/margin_1"
             android:background="#FF5DA7F8"
-            android:text="@string/three_sz"
+            android:text="@string/nine_sz"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="@dimen/num_keyboard_font_size_24"
-            app:layout_constraintStart_toEndOf="@+id/_two"
+            app:layout_constraintStart_toEndOf="@id/_eight"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
@@ -97,7 +97,7 @@
             android:textColor="@color/white"
             android:textSize="@dimen/num_keyboard_font_size_24"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/_one" />
+            app:layout_constraintTop_toBottomOf="@id/_seven" />
 
         <Button
             android:id="@+id/_five"
@@ -113,7 +113,7 @@
             android:textColor="@color/white"
             android:textSize="@dimen/num_keyboard_font_size_24"
             app:layout_constraintStart_toEndOf="@+id/_four"
-            app:layout_constraintTop_toBottomOf="@+id/_two" />
+            app:layout_constraintTop_toBottomOf="@id/_eight" />
 
         <Button
             android:id="@+id/_six"
@@ -129,17 +129,17 @@
             android:textColor="@color/white"
             android:textSize="@dimen/num_keyboard_font_size_24"
             app:layout_constraintStart_toEndOf="@+id/_five"
-            app:layout_constraintTop_toBottomOf="@+id/_three" />
+            app:layout_constraintTop_toBottomOf="@id/_nine" />
 
         <Button
-            android:id="@+id/_seven"
+            android:id="@+id/_one"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/keyboard_button_width"
             android:layout_height="@dimen/keyboard_button_height"
             android:layout_marginStart="@dimen/margin_1"
             android:layout_marginTop="@dimen/margin_1"
             android:background="#FF5DA7F8"
-            android:text="@string/seven_sz"
+            android:text="@string/one_sz"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="@dimen/num_keyboard_font_size_24"
@@ -147,7 +147,7 @@
             app:layout_constraintTop_toBottomOf="@+id/_four" />
 
         <Button
-            android:id="@+id/_eight"
+            android:id="@+id/_two"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/keyboard_button_width"
             android:layout_height="@dimen/keyboard_button_height"
@@ -155,15 +155,15 @@
             android:layout_marginTop="@dimen/margin_1"
             android:layout_weight="2.5"
             android:background="#FF5DA7F8"
-            android:text="@string/eight_sz"
+            android:text="@string/two_sz"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="@dimen/num_keyboard_font_size_24"
-            app:layout_constraintStart_toEndOf="@+id/_seven"
+            app:layout_constraintStart_toEndOf="@id/_one"
             app:layout_constraintTop_toBottomOf="@+id/_five" />
 
         <Button
-            android:id="@+id/_nine"
+            android:id="@+id/_three"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/keyboard_button_width"
             android:layout_height="@dimen/keyboard_button_height"
@@ -171,7 +171,7 @@
             android:layout_marginTop="@dimen/margin_1"
             android:layout_weight="2.5"
             android:background="#FF5DA7F8"
-            android:text="@string/nine_sz"
+            android:text="@string/three_sz"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="@dimen/num_keyboard_font_size_24"

@@ -12,7 +12,9 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.callback.PasswordEditTextReplacement;
+import com.wyc.cloudapp.dialog.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
+import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.utils.Utils;
 
 public class ChangeNumOrPriceDialog extends DialogBaseOnMainActivityImp {
@@ -34,7 +36,7 @@ public class ChangeNumOrPriceDialog extends DialogBaseOnMainActivityImp {
         initNewPrice();
 
         //初始化数字键盘
-        initKeyboard();
+        initKeyboardView();
 
     }
     @Override
@@ -112,65 +114,21 @@ public class ChangeNumOrPriceDialog extends DialogBaseOnMainActivityImp {
             et.setText(mInitVal);
         }
     }
-    private void initKeyboard(){
-        final ConstraintLayout  keyboard_layout = findViewById(R.id.keyboard);
-        if (null != keyboard_layout)
-            for (int i = 0,child  = keyboard_layout.getChildCount(); i < child;i++){
-                View tmp_v = keyboard_layout.getChildAt(i);
-                int id = tmp_v.getId();
-                if (tmp_v instanceof Button){
-                    switch (id) {
-                        case R.id._back:
-                            tmp_v.setOnClickListener(v -> {
-                                View view =  getCurrentFocus();
-                                if (view != null) {
-                                    if (view.getId() == R.id.new_numOrprice_text) {
-                                        EditText tmp_edit = ((EditText)view);
-                                        int index = tmp_edit.getSelectionStart(),end = tmp_edit.getSelectionEnd();
-                                        if (index != end && end  == tmp_edit.getText().length()){
-                                            tmp_edit.setText(mContext.getString(R.string.space_sz));
-                                        }else{
-                                            if (index == 0)return;
-                                            tmp_edit.getText().delete(index - 1, index);
-                                        }
-                                    }
-                                }
-                            });
-                            break;
-                        case R.id.cancel:
-                            tmp_v.setOnClickListener(v -> {
-                                if (noOnclickListener != null){
-                                    noOnclickListener.onNoClick(ChangeNumOrPriceDialog.this);
-                                }else{
-                                    ChangeNumOrPriceDialog.this.dismiss();
-                                }
-                            });
-                            break;
-                        case R.id._ok:
-                            tmp_v.setOnClickListener(v -> {
-                                if (yesOnclickListener != null){
-                                    yesOnclickListener.onYesClick(ChangeNumOrPriceDialog.this);
-                                }
-                            });
-                            break;
-                        default:
-                            tmp_v.setOnClickListener(button_click);
-                            break;
-                    }
-                }
+    private void initKeyboardView(){
+        final KeyboardView view = findViewById(R.id.keyboard_view);
+        view.layout(R.layout.change_price_keyboard_layout);
+        view.setCurrentFocusListenner(() -> {
+            final View focus = getCurrentFocus();
+            if (focus instanceof EditText){
+                return (EditText) focus;
             }
+            return null;
+        });
+        view.setCancelListener(v -> closeWindow());
+        view.setOkListener(v -> {
+            if (yesOnclickListener != null){
+                yesOnclickListener.onYesClick(ChangeNumOrPriceDialog.this);
+            }
+        });
     }
-    private View.OnClickListener button_click = v -> {
-        View view =  getCurrentFocus();
-        if (view != null) {
-            if (view.getId() == R.id.new_numOrprice_text) {
-                final EditText tmp_edit = ((EditText)view);
-                int index = tmp_edit.getSelectionStart();
-                final Editable editable = tmp_edit.getText();
-                final String sz_button = ((Button) v).getText().toString();
-                if (index != tmp_edit.getSelectionEnd())editable.clear();
-                editable.insert(index, sz_button);
-            }
-        }
-    };
 }

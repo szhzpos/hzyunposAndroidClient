@@ -2,13 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:orientation="horizontal">
 
     <LinearLayout
         android:layout_width="248dp"
-        android:layout_height="247dp"
+        android:layout_height="244dp"
         android:layout_margin="@dimen/margin_1"
         android:background="@drawable/border_sub_gray"
         android:orientation="vertical">
@@ -33,237 +33,20 @@
             android:layout_marginStart="@dimen/margin_5"
             android:layout_marginTop="@dimen/height_58"
             android:layout_marginEnd="@dimen/margin_5"
+            android:autofillHints=""
             android:background="@drawable/border_sub_gray"
             android:ems="10"
             android:hint="@string/per_hint_sz"
             android:inputType="textPassword"
             android:paddingStart="@dimen/margin_5"
             android:paddingEnd="0dp"
-            android:textSize="@dimen/font_size_16"
-            android:autofillHints="" />
+            android:textSize="@dimen/font_size_16" />
     </LinearLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/keyboard"
+    <com.wyc.cloudapp.dialog.CustomizationView.KeyboardView
+        android:id="@+id/keyboard_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/margin_2">
-
-        <Button
-            android:id="@+id/_cancel"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/pay_dialog_button_width"
-            android:layout_height="@dimen/pay_dialog_button_height"
-            android:layout_marginStart="@dimen/margin_2"
-            android:layout_marginTop="@dimen/margin_2"
-            android:background="@drawable/button_sub_blue"
-            android:text="@string/cancel"
-            android:textColor="@color/white"
-            android:textSize="@dimen/num_keyboard_font_size_18"
-            app:layout_constraintStart_toEndOf="@+id/_six"
-            app:layout_constraintTop_toBottomOf="@+id/_back" />
-
-        <Button
-            android:id="@+id/_one"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/pay_dialog_button_width"
-            android:layout_height="@dimen/pay_dialog_button_height"
-            android:layout_marginStart="@dimen/margin_2"
-            android:layout_weight="2.5"
-            android:background="@drawable/button_sub_blue"
-            android:text="@string/one_sz"
-            android:textAlignment="center"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="@dimen/num_keyboard_font_size_24"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-            android:id="@+id/_two"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/pay_dialog_button_width"
-            android:layout_height="@dimen/pay_dialog_button_height"
-            android:layout_marginStart="@dimen/margin_2"
-            android:layout_weight="2.5"
-            android:background="@drawable/button_sub_blue"
-            android:text="@string/two_sz"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="@dimen/num_keyboard_font_size_24"
-            app:layout_constraintStart_toEndOf="@+id/_one"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-            android:id="@+id/_three"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/pay_dialog_button_width"
-            android:layout_height="@dimen/pay_dialog_button_height"
-            android:layout_marginStart="@dimen/margin_2"
-            android:layout_weight="2.5"
-            android:background="@drawable/button_sub_blue"
-            android:text="@string/three_sz"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="@dimen/num_keyboard_font_size_24"
-            app:layout_constraintStart_toEndOf="@+id/_two"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-            android:id="@+id/_back"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/pay_dialog_button_width"
-            android:layout_height="@dimen/pay_dialog_button_height"
-            android:layout_marginStart="@dimen/margin_2"
-            android:background="@drawable/button_sub_blue"
-            android:text="@string/back"
-            android:textColor="@color/white"
-            android:textSize="@dimen/num_keyboard_font_size_18"
-            app:layout_constraintStart_toEndOf="@+id/_three"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-            android:id="@+id/_four"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/pay_dialog_button_width"
-            android:layout_height="@dimen/pay_dialog_button_height"
-            android:layout_marginStart="@dimen/margin_2"
-            android:layout_marginTop="@dimen/margin_2"
-            android:layout_weight="2.5"
-            android:background="@drawable/button_sub_blue"
-            android:text="@string/four_sz"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="@dimen/num_keyboard_font_size_24"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/_one" />
-
-        <Button
-            android:id="@+id/_five"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/pay_dialog_button_width"
-            android:layout_height="@dimen/pay_dialog_button_height"
-            android:layout_marginStart="@dimen/margin_2"
-            android:layout_marginTop="@dimen/margin_2"
-            android:layout_weight="2.5"
-            android:background="@drawable/button_sub_blue"
-            android:text="@string/five_sz"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="@dimen/num_keyboard_font_size_24"
-            app:layout_constraintStart_toEndOf="@+id/_four"
-            app:layout_constraintTop_toBottomOf="@+id/_two" />
-
-        <Button
-            android:id="@+id/_six"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/pay_dialog_button_width"
-            android:layout_height="@dimen/pay_dialog_button_height"
-            android:layout_marginStart="@dimen/margin_2"
-            android:layout_marginTop="@dimen/margin_2"
-            android:layout_weight="2.5"
-            android:background="@drawable/button_sub_blue"
-            android:text="@string/six_sz"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="@dimen/num_keyboard_font_size_24"
-            app:layout_constraintStart_toEndOf="@+id/_five"
-            app:layout_constraintTop_toBottomOf="@+id/_three" />
-
-        <Button
-            android:id="@+id/_seven"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/pay_dialog_button_width"
-            android:layout_height="@dimen/pay_dialog_button_height"
-            android:layout_marginStart="@dimen/margin_2"
-            android:layout_marginTop="@dimen/margin_2"
-            android:layout_weight="2.5"
-            android:background="@drawable/button_sub_blue"
-            android:text="@string/seven_sz"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="@dimen/num_keyboard_font_size_24"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/_four" />
-
-        <Button
-            android:id="@+id/_eight"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/pay_dialog_button_width"
-            android:layout_height="@dimen/pay_dialog_button_height"
-            android:layout_marginStart="@dimen/margin_2"
-            android:layout_marginTop="@dimen/margin_2"
-            android:layout_weight="2.5"
-            android:background="@drawable/button_sub_blue"
-            android:text="@string/eight_sz"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="@dimen/num_keyboard_font_size_24"
-            app:layout_constraintStart_toEndOf="@+id/_seven"
-            app:layout_constraintTop_toBottomOf="@+id/_five" />
-
-        <Button
-            android:id="@+id/_nine"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/pay_dialog_button_width"
-            android:layout_height="@dimen/pay_dialog_button_height"
-            android:layout_marginStart="@dimen/margin_2"
-            android:layout_marginTop="@dimen/margin_2"
-            android:layout_weight="2.5"
-            android:background="@drawable/button_sub_blue"
-            android:text="@string/nine_sz"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="@dimen/num_keyboard_font_size_24"
-            app:layout_constraintStart_toEndOf="@+id/_eight"
-            app:layout_constraintTop_toBottomOf="@+id/_six" />
-
-        <Button
-            android:id="@+id/_d_zero"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="152dp"
-            android:layout_height="@dimen/pay_dialog_button_height"
-            android:layout_marginStart="@dimen/margin_2"
-            android:layout_marginTop="@dimen/margin_2"
-            android:background="@drawable/button_sub_blue"
-            android:text="@string/d_zero_sz"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="@dimen/num_keyboard_font_size_24"
-            app:layout_constraintStart_toEndOf="@id/_zero"
-            app:layout_constraintTop_toBottomOf="@id/_seven" />
-
-        <Button
-            android:id="@+id/_zero"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/pay_dialog_button_width"
-            android:layout_height="@dimen/pay_dialog_button_height"
-            android:layout_marginStart="@dimen/margin_2"
-            android:layout_marginTop="@dimen/margin_2"
-            android:background="@drawable/button_sub_blue"
-            android:text="@string/zero_sz"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="@dimen/num_keyboard_font_size_24"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/_seven" />
-
-        <Button
-            android:id="@+id/_ok"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/pay_dialog_button_width"
-            android:layout_height="122dp"
-            android:layout_marginStart="@dimen/margin_2"
-            android:layout_marginTop="@dimen/margin_2"
-            android:layout_marginEnd="@dimen/margin_2"
-            android:background="@drawable/button_orange"
-            android:text="@string/OK"
-            android:textColor="@color/white"
-            android:textSize="@dimen/font_size_18"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/_nine"
-            app:layout_constraintTop_toBottomOf="@id/_cancel" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_margin="@dimen/margin_1" />
 
 </LinearLayout>

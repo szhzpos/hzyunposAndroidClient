@@ -19,7 +19,7 @@ import com.wyc.cloudapp.utils.Utils;
 public abstract class AbstractQueryDataAdapter<T extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<T> {
     protected MainActivity mContext;
     protected JSONArray mDatas;
-    protected View mCurrentItemView;
+    View mCurrentItemView;
 
     public abstract void setDatas(final String sql);
 
@@ -104,7 +104,7 @@ public abstract class AbstractQueryDataAdapter<T extends RecyclerView.ViewHolder
     }
 
 
-    protected boolean isClickView(final View view,float x,float y){
+    boolean isClickView(final View view, float x, float y){
         if (view == null)return false;
         float v_x = view.getX(),v_y = view.getY();
         return x >= v_x && x <= v_x + view.getWidth() && y >= v_y && y <= v_y + view.getHeight();

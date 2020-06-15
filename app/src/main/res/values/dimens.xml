@@ -94,4 +94,5 @@
     <dimen name="transfer_list_height">200dp</dimen>
     <dimen name="transfer_details_col01_width">@dimen/width_68</dimen>
     <dimen name="transfer_details_col02_width">@dimen/width_118</dimen>
+    <dimen name="add_goods_item_h">@dimen/height_45</dimen>
 </resources>

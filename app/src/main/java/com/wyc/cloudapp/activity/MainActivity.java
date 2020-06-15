@@ -8,11 +8,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
-import android.app.Instrumentation;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -46,9 +46,10 @@ import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
 import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.dialog.AddGoodsInfoDialog;
 import com.wyc.cloudapp.dialog.HangBillDialog;
 import com.wyc.cloudapp.dialog.MoreFunDialog;
-import com.wyc.cloudapp.dialog.TmpOrderButton;
+import com.wyc.cloudapp.dialog.CustomizationView.TmpOrderButton;
 import com.wyc.cloudapp.dialog.VerifyPermissionDialog;
 import com.wyc.cloudapp.dialog.orderDialog.QuerySaleOrderDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
@@ -107,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
         mHandler = new Myhandler(this);
         mProgressDialog = new CustomProgressDialog(this);
         mDialog = new MyDialog(this);
-        mSearch_content = findViewById(R.id.search_content);
         mCurrentTimeViewTv = findViewById(R.id.current_time);
         mSaleSumNumTv = findViewById(R.id.sale_sum_num);
         mSaleSumAmtTv = findViewById(R.id.sale_sum_amt);
@@ -258,26 +258,21 @@ public class MainActivity extends AppCompatActivity {
             if (mVipInfo != null){
                 if (1 == MyDialog.showMessageToModalDialog(this,"已存在会员信息,是否清除？")){
                     clearVipInfo();
-                    //vipInfoDialog.setYesOnclickListener(dialog -> {showVipInfo(dialog.getVip());dialog.dismiss(); }).show();
                 }
             }else
                 vipInfoDialog.setYesOnclickListener(dialog -> {showVipInfo(dialog.getVip());dialog.dismiss(); }).show();
         });//会员
 
-        final LinearLayout q_deal_linerLayout = findViewById(R.id.q_deal_linerLayout),other_linearLayout = findViewById(R.id.other_linearLayout);
-
-        if (q_deal_linerLayout != null)
-            q_deal_linerLayout.setOnClickListener(v -> {
+        final LinearLayout q_deal_linerLayout = findViewById(R.id.q_deal_linerLayout),other_linearLayout = findViewById(R.id.other_linearLayout),cloud_background_layout = findViewById(R.id.cloud_background_layout);
+        if (q_deal_linerLayout != null)q_deal_linerLayout.setOnClickListener(v -> {
                 if (verifyQueryBtnBtnPermissions()){
                     final QuerySaleOrderDialog querySaleOrderDialog = new QuerySaleOrderDialog(this);
                     querySaleOrderDialog.show();
                     querySaleOrderDialog.triggerQuery();
                 }
             });//查交易
-
-        if (other_linearLayout != null)
-            other_linearLayout.setOnClickListener(v -> new MoreFunDialog(this,getString(R.string.more_fun_dialog_sz)).show());//更多功能
-
+        if (other_linearLayout != null)other_linearLayout.setOnClickListener(v -> new MoreFunDialog(this,getString(R.string.more_fun_dialog_sz)).show());//更多功能
+        if (cloud_background_layout != null)cloud_background_layout.setOnClickListener(v -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getUrl()))));
     }
     private void initTransferBtn(){
         final LinearLayout shift_exchange_linearLayout = findViewById(R.id.shift_exchange_linearLayout);
@@ -500,8 +495,7 @@ public class MainActivity extends AppCompatActivity {
         mSaleGoodsRecyclerView.setAdapter(mSaleGoodsViewAdapter);
     }
     private void initSearch(){
-        final EditText search = mSearch_content;
-
+        final EditText search = findViewById(R.id.search_content);;
         search.setOnFocusChangeListener((v,b)->Utils.hideKeyBoard((EditText) v));
         mHandler.postDelayed(search::requestFocus,300);
         search.setSelectAllOnFocus(true);
@@ -512,9 +506,19 @@ public class MainActivity extends AppCompatActivity {
                 if (content.length() == 0){
                     mGoodsCategoryViewAdapter.trigger_preView();
                 }else{
-                    if (!mGoodsInfoViewAdapter.fuzzy_search_goods(search,true)){
-                        clearSearchEt();
-                        MyDialog.ToastMessage("无此商品!",this,getWindow());
+                    if (!mGoodsInfoViewAdapter.fuzzy_search_goods(search,true)) {
+                        mHandler.post(()->{
+                            if (AddGoodsInfoDialog.verifyGoodsAddPermissions(this)) {
+                                if (1 == MyDialog.showMessageToModalDialog(this,"未找到匹配商品，是否新增?")){
+                                    final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(MainActivity.this);
+                                    addGoodsInfoDialog.setBarcode(mSearch_content.getText().toString());
+                                    addGoodsInfoDialog.show();
+                                }
+                            } else
+                                MyDialog.ToastMessage("无此商品!", this, getWindow());
+
+                            clearSearchEt();
+                        });
                     }
                 }
                 return true;
@@ -620,6 +624,8 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        mSearch_content = search;
     }
     private void initTmpOrder(){
         final TmpOrderButton tmp_order = findViewById(R.id.tmp_order);
@@ -742,13 +748,14 @@ public class MainActivity extends AppCompatActivity {
                             showLastOrderInfo(mOrderCodeTv.getText().toString());
                             resetOrderInfo();
                             myDialog.dismiss();
+                            MyDialog.SnackbarMessage(activity.getWindow(),"结账成功！", mOrderCodeTv);
                         }
 
                         @Override
                         public void onError(PayDialog myDialog, String err) {
                             if (mProgressDialog.isShowing())mProgressDialog.dismiss();
                             resetOrderCode();//提示错误得重置单号
-                            MyDialog.displayErrorMessage(null,"支付错误：" + err,myDialog.getContext());
+                            MyDialog.displayErrorMessage(null,"支付错误：" + err,activity);
                         }
                     }).show();
                     if (mVipInfo != null)dialog.showVipInfo(mVipInfo,true);

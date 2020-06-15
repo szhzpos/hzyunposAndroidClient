@@ -34,7 +34,6 @@
         <Space
             android:layout_width="18dp"
             android:layout_height="match_parent" />
-
         <LinearLayout
             android:id="@+id/q_deal_linerLayout"
             android:layout_width="wrap_content"
@@ -79,7 +78,6 @@
                 app:srcCompat="@drawable/shift_exchange" />
 
             <TextView
-                android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1.5"
@@ -88,7 +86,31 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/font_size_14" />
         </LinearLayout>
+        <LinearLayout
+            android:id="@+id/cloud_background_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/main_top_icon"
+            android:orientation="vertical"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp">
 
+            <ImageView
+                android:layout_width="@dimen/main_top_fun_btn_width"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:contentDescription="@string/shift_exchange_sz"
+                app:srcCompat="@drawable/shift_exchange" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1.5"
+                android:gravity="center_horizontal"
+                android:text="@string/clound_backgound_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_14" />
+        </LinearLayout>
         <LinearLayout
             android:id="@+id/other_linearLayout"
             android:layout_width="wrap_content"
@@ -501,7 +523,7 @@
             android:textColor="@color/black_white"
             android:textSize="@dimen/fun_button_font_size_16" />
 
-        <com.wyc.cloudapp.dialog.TmpOrderButton
+        <com.wyc.cloudapp.dialog.CustomizationView.TmpOrderButton
             android:id="@+id/tmp_order"
             android:layout_width="@dimen/fun_button_width_size"
             android:layout_height="@dimen/fun_button_height_size"
