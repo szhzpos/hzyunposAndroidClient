@@ -3,7 +3,6 @@ package com.wyc.cloudapp.dialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.View;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
@@ -14,7 +13,6 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
@@ -57,8 +55,8 @@ public class AddGoodsInfoDialog extends DialogBaseOnMainActivityImp {
     private void initUnit(){
         final EditText unit_et = findViewById(R.id.a_unit_et);
         unit_et.setOnClickListener(v -> {
-            final TreeSelectDialog treeSelectDialog = new TreeSelectDialog(mContext,mContext.getString(R.string.unit_sz));
-            treeSelectDialog.show();
+            final TreeListDialog treeListDialog = new TreeListDialog(mContext,mContext.getString(R.string.unit_sz));
+            treeListDialog.show();
         });
         unit_et.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus)v.callOnClick();
@@ -71,8 +69,8 @@ public class AddGoodsInfoDialog extends DialogBaseOnMainActivityImp {
     private void initCategory(){
         final EditText category_et = findViewById(R.id.a_category_et);
         category_et.setOnClickListener(v -> {
-            final TreeSelectDialog treeSelectDialog = new TreeSelectDialog(mContext,mContext.getString(R.string.d_category_sz));
-            treeSelectDialog.show();
+            final TreeListDialog treeListDialog = new TreeListDialog(mContext,mContext.getString(R.string.d_category_sz));
+            treeListDialog.setDatas(Utils.JsondeepCopy(mCategoryList),true).show();
         });
         category_et.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus)v.callOnClick();
@@ -144,15 +142,11 @@ public class AddGoodsInfoDialog extends DialogBaseOnMainActivityImp {
                 mUnitList = Utils.getNullObjectAsEmptyJsonArray(data,"units");
                 mCategoryList = Utils.getNullObjectAsEmptyJsonArray(data,"category");
                 final JSONArray categorys = new JSONArray();
-                parse_category_info(mCategoryList,null,1,categorys);
+                parse_category_info(mCategoryList,null,0,categorys);
 
-                Logger.d_json(categorys.toJSONString());
+                mCategoryList = categorys;
                 break;
         }
-    }
-
-    private void generateTreeListData(final JSONArray datas){
-
     }
 
     private void getGoodsInfoByBarcode(){
@@ -206,11 +200,10 @@ public class AddGoodsInfoDialog extends DialogBaseOnMainActivityImp {
     }
 
     private void parse_category_info(final JSONArray category_jsons,final JSONObject parent,int level,final JSONArray categorys) {
-        JSONObject item;
-        JSONArray kids =  new JSONArray();
-
+        JSONObject item,category_json;
+        JSONArray kids,childs;
         for (int i = 0, length = category_jsons.size(); i < length; i++) {
-            final JSONObject category_json = category_jsons.getJSONObject(i);
+            category_json = category_jsons.getJSONObject(i);
 
             item = new JSONObject();
             item.put("parent_id",category_json.getString("parent_id"));
@@ -220,7 +213,7 @@ public class AddGoodsInfoDialog extends DialogBaseOnMainActivityImp {
             item.put("item_id",category_json.getString("category_id"));
             item.put("item_name",category_json.getString("name"));
 
-            item.put("kids",kids);
+            item.put("kids",new JSONArray());
 
             if (parent != null){
                 kids = parent.getJSONArray("kids");
@@ -228,18 +221,12 @@ public class AddGoodsInfoDialog extends DialogBaseOnMainActivityImp {
             }
 
              if (category_json.containsKey("childs")) {
-                final JSONArray childs = (JSONArray) category_json.remove("childs");
+                childs = (JSONArray) category_json.remove("childs");
                 if (childs != null && childs.size() != 0) {
                     parse_category_info(childs,item,level + 1, null);
                 }
             }
-
-
-            if (categorys != null)
-                categorys.add(item);
-
-
-
+            if (categorys != null)categorys.add(item);
         }
     }
 

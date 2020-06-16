@@ -16,15 +16,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 
 public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyViewHolder> {
     private JSONArray mDatas;
     private Context mContext;
-    private boolean sigleSel = true;
+    private boolean mSingleSel = true;
     private Drawable mUnfoldDb,mFoldDb;
 
 /*    Item{
@@ -39,7 +37,7 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
 
     public TreeListAdapter(Context context,boolean sigle){
         this(context);
-        sigleSel = sigle;
+        mSingleSel = sigle;
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -70,18 +68,17 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
         final JSONObject item = mDatas.getJSONObject(position);
         if (item != null){
 
-            holder.row_id.setText(String.valueOf(position));;
+            holder.row_id.setText(String.valueOf(position));
 
             boolean is_unfold = item.getBooleanValue("unfold");
             boolean is_sel = item.getBooleanValue("isSel");
 
-            setMargins(holder.icon,item.getIntValue("level"));
             if (is_unfold){
                 holder.icon.setImageDrawable(mUnfoldDb);
             }else {
                 holder.icon.setImageDrawable(mFoldDb);
             }
-            if (sigleSel)
+            if (mSingleSel)
                 holder.selected_status.setVisibility(View.GONE);
             else{
                 holder.selected_status.setOnCheckedChangeListener(checkedChangeListener);
@@ -95,6 +92,7 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
             holder.item_id.setText(item.getString("item_id"));
             holder.item_name.setText(item.getString("item_name"));
             holder.mCurrentLayoutItemView.setOnClickListener(itemListener);
+            holder.mCurrentLayoutItemView.setPadding( 12 * item.getIntValue("level"),0,0,0);
         }
     }
 
@@ -103,14 +101,8 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
         return mDatas.size();
     }
 
-    private void setMargins(final View view,int num){
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) view.getLayoutParams();
-        params.setMargins( 12 * num,0,0,0);
-        view.setLayoutParams(params);
-    }
-
     public void setDatas(final JSONArray datas){
-        mDatas = datas;
+        if (datas != null)mDatas = datas;
         notifyDataSetChanged();
     }
     private CompoundButton.OnCheckedChangeListener checkedChangeListener = (buttonView, isChecked) -> {
@@ -145,12 +137,21 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
                     mDatas.add(row_id + i + 1,kids.getJSONObject(i));
                 }
             }else {
-                for (int i = 0,size = kids.size();i < size;i++){
-                    mDatas.remove(row_id + 1);
-                }
+                deleteChildren(object,row_id + 1);
             }
             notifyDataSetChanged();
         }
     };
+
+    private void deleteChildren(final JSONObject object,int index){
+        if (object != null){
+            final JSONArray kids = Utils.getNullObjectAsEmptyJsonArray(object,"kids");
+
+            for (int i = 0,size = kids.size();i < size - 1;i++){
+                deleteChildren(kids.getJSONObject(i),index);
+            }
+            if (index >= 0 && index < mDatas.size())mDatas.remove(index);
+        }
+    }
 
 }
