@@ -508,12 +508,12 @@ public class MainActivity extends AppCompatActivity {
                 }else{
                     if (!mGoodsInfoViewAdapter.fuzzy_search_goods(search,true)) {
                         mHandler.post(()->{
-                            if (AddGoodsInfoDialog.verifyGoodsAddPermissions(this)) {
-                                if (1 == MyDialog.showMessageToModalDialog(this,"未找到匹配商品，是否新增?")){
+                            if (mNetworkStatus.get() && AddGoodsInfoDialog.verifyGoodsAddPermissions(this)) {
+                                //if (1 == MyDialog.showMessageToModalDialog(this,"未找到匹配商品，是否新增?")){
                                     final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(MainActivity.this);
                                     addGoodsInfoDialog.setBarcode(mSearch_content.getText().toString());
                                     addGoodsInfoDialog.show();
-                                }
+                               // }
                             } else
                                 MyDialog.ToastMessage("无此商品!", this, getWindow());
 

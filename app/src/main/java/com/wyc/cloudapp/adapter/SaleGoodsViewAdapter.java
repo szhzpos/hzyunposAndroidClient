@@ -926,15 +926,15 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
                 object.put("discount_type",type);
                 object.put("sale_amt",current_sale_amt);
 
+                Logger.d("%f -= %f:%f",mol_amt,per_record_mol_amt,mol_amt - per_record_mol_amt);
+                mol_amt -= per_record_mol_amt;
                 if (Utils.equalDouble(Math.abs(mol_amt),0)){
-                    isContinue = false;
+                    break;
                 }else {
-                    mol_amt -= per_record_mol_amt;
                     //计算下一次抹零金额，最后一条记录或者剩余抹零金额小于平均抹零金额；要扣除剩余的抹零
-                    if (Math.abs(mol_amt) - Math.abs(per_record_mol_amt) < 0.0 || i + 2 == sale_record){
+                    if (Math.abs(Math.abs(mol_amt) - Math.abs(per_record_mol_amt)) < 0.0 || i + 2 == sale_record){
                         per_record_mol_amt = mol_amt;
                         mol_amt = 0;
-                        if (Utils.equalDouble(per_record_mol_amt,0.0))isContinue = false;;
                     }
                 }
             }

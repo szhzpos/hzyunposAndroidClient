@@ -7,12 +7,17 @@
     android:paddingStart="@dimen/margin_5"
     android:paddingEnd="@dimen/size_0">
 
+    <TextView
+        android:id="@+id/row_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
+
     <ImageView
         android:id="@+id/item_ico"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:layout_gravity="center"
-        android:layout_marginStart="@dimen/margin_2"
         android:contentDescription="@string/space_sz"
         app:srcCompat="@drawable/plus" />
 
@@ -32,5 +37,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
+        android:paddingStart="@dimen/margin_8"
+        android:paddingEnd="0dp"
+        android:textColor="@color/appColor"
         android:textSize="@dimen/font_size_18" />
 </LinearLayout>

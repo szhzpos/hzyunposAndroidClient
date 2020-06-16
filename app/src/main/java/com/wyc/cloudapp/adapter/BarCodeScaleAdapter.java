@@ -52,68 +52,47 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
     }
 
-    static class HeaderHolder extends RecyclerView.ViewHolder {
-        HeaderHolder(View itemView) {
-            super(itemView);
-        }
-    }
-
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View itemView;
-        RecyclerView.ViewHolder holder;
-        if (i == HEADER){
-            itemView = View.inflate(mContext, R.layout.barcode_scale_header_layout, null);
-            itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.table_row_height)));
-            holder = new HeaderHolder(itemView);
-        }else{
-            itemView = View.inflate(mContext, R.layout.barcode_scale_detail_layout, null);
-            itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.table_row_height)));
-            holder = new ContentHolder(itemView);
-        }
-
-        return holder;
+        final View itemView = View.inflate(mContext, R.layout.barcode_scale_detail_layout, null);
+        itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.table_row_height)));
+        return new ContentHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder myViewHolder, int i) {
-        if (myViewHolder instanceof ContentHolder){
-            JSONObject content = mDatas.getJSONObject(i - 1);
-            if (content != null){
-                ContentHolder contentHolder = (ContentHolder)myViewHolder;
-                contentHolder.row_id.setText(String.valueOf(i));
-                contentHolder._id.setText(content.getString("_id"));
-                contentHolder.product_type.setText(content.getString("s_product_t"));
-                contentHolder.scale_ip.setText(content.getString("scale_ip"));
-                contentHolder.scale_port.setText(content.getString("scale_port"));
-                contentHolder.g_c_name.setText(content.getString("g_c_name"));
-                contentHolder.g_c_id.setText(content.getString("g_c_id"));
-               // contentHolder.down_status.setText("");
-                contentHolder.scale_rmk.setText(content.getString("remark"));
+        final JSONObject content = mDatas.getJSONObject(i);
+        if (content != null){
+            ContentHolder contentHolder = (ContentHolder)myViewHolder;
+            contentHolder.row_id.setText(String.valueOf(i + 1));
+            contentHolder._id.setText(content.getString("_id"));
+            contentHolder.product_type.setText(content.getString("s_product_t"));
+            contentHolder.scale_ip.setText(content.getString("scale_ip"));
+            contentHolder.scale_port.setText(content.getString("scale_port"));
+            contentHolder.g_c_name.setText(content.getString("g_c_name"));
+            contentHolder.g_c_id.setText(content.getString("g_c_id"));
+            // contentHolder.down_status.setText("");
+            contentHolder.scale_rmk.setText(content.getString("remark"));
 
-                contentHolder.s_checked.setChecked(false);
-                contentHolder.s_checked.setOnCheckedChangeListener(checkedChangeListener);
-                contentHolder.mCurrentLayoutItemView.setOnClickListener(itemClick);
-            }
+            contentHolder.s_checked.setChecked(false);
+            contentHolder.s_checked.setOnCheckedChangeListener(checkedChangeListener);
+            contentHolder.mCurrentLayoutItemView.setOnClickListener(itemClick);
         }
     }
 
     @Override
     public int getItemCount() {
-        return mDatas == null ? 1 : mDatas.size() + 1;
+        return mDatas == null ? 1 : mDatas.size();
     }
 
     @Override
     public int getItemViewType(int position){
-        if (0 == position){
-            return HEADER;
-        }
         return CONTENT;
     }
 
     private CompoundButton.OnCheckedChangeListener checkedChangeListener = (buttonView, isChecked) -> {
-        View v = (View) buttonView.getParent();
+        final View v = (View) buttonView.getParent();
         final TextView _id = v.findViewById(R.id._id),down_status = v.findViewById(R.id.down_status);
         if (_id != null && null != down_status){
             final String sz_id = _id.getText().toString();
@@ -222,11 +201,4 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             }
         }
     }
-
-    public void clearScale(){
-        mDatas.fluentClear();
-        mCurrentItemIndexMap.clear();
-        notifyDataSetChanged();
-    }
-
 }

@@ -231,6 +231,7 @@
             android:layout_height="match_parent"
             android:layout_margin="@dimen/margin_1"
             android:background="@drawable/left_separator"
+            android:drawableEnd="@drawable/omit"
             android:editable="false"
             android:ems="10"
             android:enabled="true"
