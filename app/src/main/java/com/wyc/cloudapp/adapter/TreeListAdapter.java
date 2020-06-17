@@ -242,8 +242,6 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
 
     private boolean setSelectedItem(final JSONObject item,final JSONObject object,int index){
         if (Utils.getNullStringAsEmpty(object,"item_id").equals(item.getString("item_id"))){
-            Logger.d("setSelectedItem");
-
             item.put("isSel",true);
             unfoldParentItem(mDatas,item.getString("parent_id"));
             return true;
@@ -267,11 +265,12 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
                 if (parent_id.equals(item.getString("item_id"))){
                     Logger.d("i:%d,parent_id:%s,item_id:%s",i,parent_id,item.getString("item_id"));
                     if (!item.getBooleanValue("unfold")){
+                        item.put("unfold",true);
                         for (int k = 0,length = kids.size();k < length;k++){
                             array.add(i + 1 + k,kids.getJSONObject(k));
                         }
+                        unfoldParentItem(array,item.getString("parent_id"));
                     }
-                    unfoldParentItem(array,item.getString("parent_id"));
                 }else {
                     for (int j = 0,j_size = kids.size();j < j_size;j++){
                         unfoldParentItem(kids,parent_id);
