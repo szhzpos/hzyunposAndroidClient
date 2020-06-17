@@ -13,18 +13,15 @@
         android:layout_height="wrap_content"
         android:visibility="gone" />
 
-    <ImageView
-        android:id="@+id/item_ico"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_gravity="center"
-        android:contentDescription="@string/space_sz"
-        app:srcCompat="@drawable/plus" />
+    <RadioButton
+        android:id="@+id/single_rb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <CheckBox
-        android:id="@+id/item_checked"
+        android:id="@+id/multiple_cb"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content" />
 
     <TextView
         android:id="@+id/item_id"
@@ -34,11 +31,21 @@
 
     <TextView
         android:id="@+id/item_name"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
+        android:layout_weight="1"
         android:gravity="center_vertical"
         android:paddingStart="@dimen/margin_8"
         android:paddingEnd="0dp"
         android:textColor="@color/appColor"
         android:textSize="@dimen/font_size_18" />
+
+    <ImageView
+        android:id="@+id/item_ico"
+        android:layout_width="@dimen/width_45"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:contentDescription="@string/space_sz"
+        android:padding="@dimen/margin_12"
+        app:srcCompat="@drawable/fold" />
 </LinearLayout>

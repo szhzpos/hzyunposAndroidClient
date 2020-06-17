@@ -24,7 +24,9 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomePopupWindow;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.TreeListDialog;
 import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnContextImp;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -105,7 +107,7 @@ public class AddBarCodeScaleDialog extends DialogBaseOnContextImp {
                     if (json != null){
                         final String class_name = json.getString("s_id");
                         try {
-                            IBarCodeScale iBarCodeScale = AbstractBarcodeScaleImp.newInstance(class_name);
+                            final IBarCodeScale iBarCodeScale = AbstractBarcodeScaleImp.newInstance(class_name);
                             mPort.setText(iBarCodeScale.getPort());
                             mProductType.setTag(class_name);
                         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
@@ -155,16 +157,38 @@ public class AddBarCodeScaleDialog extends DialogBaseOnContextImp {
     }
 
     private void initCategory(){
-        mGCategoryEt = findViewById(R.id.g_c_name);
-        mGCategoryEt.setOnFocusChangeListener((v, hasFocus) -> {
+        final EditText editText = findViewById(R.id.g_c_name);
+
+        editText.setOnFocusChangeListener((v, hasFocus) -> {
             Utils.hideKeyBoard((EditText)v);
             if (hasFocus){
-                mGCategoryEt.callOnClick();
+                editText.callOnClick();
             }
         });
-        mGCategoryEt.setOnClickListener(v -> {
-            chooseDialog();
+        editText.setOnClickListener(v -> {
+            final JSONArray objects = new JSONArray();
+            generateDatas(null,objects);
+            final TreeListDialog treeListDialog = new TreeListDialog(mContext,mContext.getString(R.string.d_category_sz));
+            treeListDialog.setDatas(objects,mCategoryInfo,false);
+            editText.post(()->{
+                if (treeListDialog.exec() == 1){
+                    final StringBuilder names = new StringBuilder();
+                    mCategoryInfo = treeListDialog.getMultipleContent();
+                    for (int i = 0,size = mCategoryInfo.size();i < size;i++){
+                        final JSONObject object = mCategoryInfo.getJSONObject(i);
+                        if ( null != object){
+                            if (names.length() != 0){
+                                names.append(AbstractBarcodeScaleImp.CATEGORY_SEPARATE);
+                            }
+                            names.append(object.getString("item_name"));
+                        }
+                    }
+                    mGCategoryEt.setText(names);
+                }
+            });
         });
+
+        mGCategoryEt = editText;
     }
 
     private void initScalseInfo(){
@@ -206,6 +230,31 @@ public class AddBarCodeScaleDialog extends DialogBaseOnContextImp {
 
         }
     };
+
+    private void generateDatas(final JSONObject parent,final JSONArray categorys){
+        final StringBuilder err = new StringBuilder();
+        final JSONArray array = SQLiteHelper.getListToJson("SELECT parent_id,depth level,category_id item_id, name item_name FROM shop_category where parent_id = " + Utils.getNullOrEmptyStringAsDefault(parent,"item_id","0"),err);
+        if (array != null){
+            JSONObject item_json;
+            JSONArray kids;
+            for (int i = 0,size = array.size();i < size;i++){
+                item_json = array.getJSONObject(i);
+                item_json.put("unfold",false);
+                item_json.put("isSel",false);
+                item_json.put("kids",new JSONArray());
+
+                if (parent != null){
+                    kids = parent.getJSONArray("kids");
+                    kids.add(item_json);
+                }
+                generateDatas(item_json,null);
+
+                if (categorys != null)categorys.add(item_json);
+            }
+        }else {
+            MyDialog.ToastMessage(err.toString(),mContext,getWindow());
+        }
+    }
 
     private void chooseDialog(){
         final StringBuilder err = new StringBuilder();
@@ -357,8 +406,8 @@ public class AddBarCodeScaleDialog extends DialogBaseOnContextImp {
             for (int i = 0,length = ids.length;i < length;i++){
                 object = new JSONObject();
                 sz_name = names[i];
-                object.put("category_id",ids[i]);
-                object.put("name",sz_name);
+                object.put("item_id",ids[i]);
+                object.put("item_name",sz_name);
                 mCategoryInfo.add(object);
                 if (sb_name.length() != 0){
                     sb_name.append(AbstractBarcodeScaleImp.CATEGORY_SEPARATE);
@@ -372,8 +421,8 @@ public class AddBarCodeScaleDialog extends DialogBaseOnContextImp {
     private boolean getScalseConfig(){
         boolean code = false;
         JSONObject object = new JSONObject(),tmp;
-        StringBuilder names = new StringBuilder(),ids = new StringBuilder();
-        String name = mScaleName.getText().toString(),p_type = mProductType.getText().toString(),ip = getIP(),port = mPort.getText().toString();
+        final StringBuilder names = new StringBuilder(),ids = new StringBuilder();
+        final String name = mScaleName.getText().toString(),p_type = mProductType.getText().toString(),ip = getIP(),port = mPort.getText().toString();
 
         if (p_type.isEmpty()){
             MyDialog.ToastMessage(mProductType,"型号不能为空",mContext,getWindow());
@@ -403,8 +452,8 @@ public class AddBarCodeScaleDialog extends DialogBaseOnContextImp {
                     if (ids.length() != 0){
                         ids.append(AbstractBarcodeScaleImp.CATEGORY_SEPARATE);
                     }
-                    names.append(tmp.getString("name"));
-                    ids.append(tmp.getString("category_id"));
+                    names.append(tmp.getString("item_name"));
+                    ids.append(tmp.getString("item_id"));
                 }
             }
             object.put("g_c_name",names);

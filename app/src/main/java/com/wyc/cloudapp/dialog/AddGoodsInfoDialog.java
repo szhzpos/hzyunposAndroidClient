@@ -13,6 +13,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
@@ -70,7 +71,14 @@ public class AddGoodsInfoDialog extends DialogBaseOnMainActivityImp {
         final EditText category_et = findViewById(R.id.a_category_et);
         category_et.setOnClickListener(v -> {
             final TreeListDialog treeListDialog = new TreeListDialog(mContext,mContext.getString(R.string.d_category_sz));
-            treeListDialog.setDatas(Utils.JsondeepCopy(mCategoryList),true).show();
+            treeListDialog.setDatas(Utils.JsondeepCopy(mCategoryList),null,true);
+            category_et.post(()->{
+                if (treeListDialog.exec() == 1){
+                    final JSONObject object = treeListDialog.getSingleContent();
+                    category_et.setText(object.getString("item_name"));
+                    category_et.setTag(object.getString("item_id"));
+                }
+            });
         });
         category_et.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus)v.callOnClick();
