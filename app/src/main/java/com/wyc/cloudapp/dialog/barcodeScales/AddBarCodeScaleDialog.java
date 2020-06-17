@@ -244,6 +244,7 @@ public class AddBarCodeScaleDialog extends DialogBaseOnContextImp {
                 item_json.put("kids",new JSONArray());
 
                 if (parent != null){
+                    item_json.put("p_ref",parent);
                     kids = parent.getJSONArray("kids");
                     kids.add(item_json);
                 }

@@ -48,10 +48,10 @@ public class TreeListDialog extends DialogBaseOnContextImp {
         mAdapter = listAdapter;
     }
 
-    public TreeListDialog setDatas(final JSONArray obj,final JSONArray items,boolean b){
+    public TreeListDialog setDatas(final JSONArray obj,final JSONArray selectItems,boolean b){
         mSingle = b;
         mDatas = obj;
-        mSelectedItems = items;
+        mSelectedItems = selectItems;
         return this;
     }
 

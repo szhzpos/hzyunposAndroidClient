@@ -158,7 +158,7 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
             for (Object o :mDatas){
                 if (o instanceof JSONObject){
                     final JSONObject object = (JSONObject)o;
-                    object.put("isSel",false);
+                    if (object.getBooleanValue("isSel"))object.put("isSel",false);
                 }
             }
         }
@@ -185,8 +185,10 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
             object.put("unfold",!unfold);
             final JSONArray kids = Utils.getNullObjectAsEmptyJsonArray(object,"kids");
             if (!unfold){
+                JSONObject item;
                 for (int i = 0,size = kids.size();i < size;i++){
-                    mDatas.add(row_id + i + 1,kids.getJSONObject(i));
+                    item = kids.getJSONObject(i);
+                    mDatas.add(row_id + i + 1,item);
                 }
             }else {
                 deleteChildren(kids,row_id + 1);
@@ -265,11 +267,14 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
                 if (parent_id.equals(item.getString("item_id"))){
                     Logger.d("i:%d,parent_id:%s,item_id:%s",i,parent_id,item.getString("item_id"));
                     if (!item.getBooleanValue("unfold")){
+
+                        unfoldParentItem(array,item.getString("parent_id"));
+
                         item.put("unfold",true);
                         for (int k = 0,length = kids.size();k < length;k++){
                             array.add(i + 1 + k,kids.getJSONObject(k));
                         }
-                        unfoldParentItem(array,item.getString("parent_id"));
+
                     }
                 }else {
                     for (int j = 0,j_size = kids.size();j < j_size;j++){
