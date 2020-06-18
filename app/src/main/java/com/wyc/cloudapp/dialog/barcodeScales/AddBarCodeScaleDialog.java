@@ -155,7 +155,6 @@ public class AddBarCodeScaleDialog extends DialogBaseOnContextImp {
             mScaleInfos = object.getJSONArray("products");
         }
     }
-
     private void initCategory(){
         final EditText editText = findViewById(R.id.g_c_name);
 
@@ -233,7 +232,7 @@ public class AddBarCodeScaleDialog extends DialogBaseOnContextImp {
 
     private void generateDatas(final JSONObject parent,final JSONArray categorys){
         final StringBuilder err = new StringBuilder();
-        final JSONArray array = SQLiteHelper.getListToJson("SELECT parent_id,depth level,category_id item_id, name item_name FROM shop_category where parent_id = " + Utils.getNullOrEmptyStringAsDefault(parent,"item_id","0"),err);
+        final JSONArray array = SQLiteHelper.getListToJson("SELECT  depth -1 level,category_id item_id, name item_name FROM shop_category where parent_id = " + Utils.getNullOrEmptyStringAsDefault(parent,"item_id","0"),err);
         if (array != null){
             JSONObject item_json;
             JSONArray kids;
@@ -242,7 +241,6 @@ public class AddBarCodeScaleDialog extends DialogBaseOnContextImp {
                 item_json.put("unfold",false);
                 item_json.put("isSel",false);
                 item_json.put("kids",new JSONArray());
-
                 if (parent != null){
                     item_json.put("p_ref",parent);
                     kids = parent.getJSONArray("kids");
@@ -255,110 +253,6 @@ public class AddBarCodeScaleDialog extends DialogBaseOnContextImp {
         }else {
             MyDialog.ToastMessage(err.toString(),mContext,getWindow());
         }
-    }
-
-    private void chooseDialog(){
-        final StringBuilder err = new StringBuilder();
-        final JSONArray tmps = SQLiteHelper.getListToJson("SELECT category_id, name FROM shop_category ",err),category_info_copy = Utils.JsondeepCopy(mCategoryInfo);
-        if (tmps == null){
-            MyDialog.ToastMessage(err.toString(),mContext,getWindow());
-            return;
-        }
-
-        final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        int tmps_len = tmps.size();
-        final boolean[] isCheckeds  = new boolean[tmps_len];
-
-        JSONObject object;
-        int c_id = -1;
-
-        final List<String> list = new ArrayList<>();
-
-        for (int i = 0,size = tmps.size();i < size;i++){
-            object = tmps.getJSONObject(i);
-            list.add(object.getString("name"));
-
-            c_id = object.getIntValue("category_id");
-
-            for (int j = 0,length = category_info_copy.size();j < length; j++){
-                object = category_info_copy.getJSONObject(j);
-                if (object != null){
-                    if (object.getIntValue("category_id") == c_id){
-                        isCheckeds[i] = true;
-                        break;
-                    }
-                }
-            }
-        }
-
-        builder.setMultiChoiceItems(list.toArray(new String[tmps_len]), isCheckeds, (dialog, which, isChecked) -> {
-            JSONObject object1 = tmps.getJSONObject(which);
-            int id = object1.getIntValue("category_id");
-            if (isChecked){
-                category_info_copy.add(object1);
-            }else {
-                for (int j = 0,length = category_info_copy.size();j < length; j++) {
-                    object1 = category_info_copy.getJSONObject(j);
-                    if (object1 != null) {
-                        if (object1.getIntValue("category_id") == id) {
-                            category_info_copy.remove(j);
-                            break;
-                        }
-                    }
-                }
-            }
-        });
-
-        builder.setPositiveButton(mContext.getString(R.string.OK), (dialog, which) -> {
-            JSONObject object12;
-            StringBuilder names = new StringBuilder();
-            mCategoryInfo = category_info_copy;
-            for (int i = 0,size = mCategoryInfo.size();i < size;i++){
-                object12 = mCategoryInfo.getJSONObject(i);
-                if ( null != object12){
-                    if (names.length() != 0){
-                        names.append(AbstractBarcodeScaleImp.CATEGORY_SEPARATE);
-                    }
-                    names.append(object12.getString("name"));
-                }
-            }
-            mGCategoryEt.setText(names);
-            dialog.dismiss();
-        });
-        builder.setNegativeButton(mContext.getString(R.string.cancel), (dialog, which) -> {
-            dialog.dismiss();
-        });
-
-        final AlertDialog alertDialog = builder.create();
-
-        int blue = mContext.getColor(R.color.blue);
-
-        final TextView title = new TextView(mContext);
-        title.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        title.setPadding(5,5,5,5);
-        title.setTextSize(mContext.getResources().getDimension(R.dimen.font_size_24));
-        title.setTextColor(blue);
-        title.setText(mContext.getString(R.string.d_category_sz));
-        alertDialog.setCustomTitle(title);
-
-        alertDialog.show();
-
-
-        final ListView listView = alertDialog.getListView();
-        listView.setDivider(mContext.getDrawable(R.color.gray__subtransparent));
-        listView.setDividerHeight(1);
-        listView.setBackground(mContext.getDrawable(R.drawable.border_sub_gray));
-
-        final Button cancel = alertDialog.getButton(BUTTON_NEGATIVE), ok = alertDialog.getButton(BUTTON_POSITIVE);
-        cancel.setTextColor(blue);
-        ok.setTextColor(blue);
-        cancel.setTextSize(mContext.getResources().getDimension(R.dimen.font_size_16));
-        ok.setTextSize(mContext.getResources().getDimension(R.dimen.font_size_16));
-
-        final WindowManager.LayoutParams  lp= alertDialog.getWindow().getAttributes();
-        lp.width=588;//定义宽度
-        lp.height=442;//定义高度
-        alertDialog.getWindow().setAttributes(lp);
     }
 
     private String getIP(){

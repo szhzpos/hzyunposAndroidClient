@@ -57,7 +57,14 @@ public class AddGoodsInfoDialog extends DialogBaseOnMainActivityImp {
         final EditText unit_et = findViewById(R.id.a_unit_et);
         unit_et.setOnClickListener(v -> {
             final TreeListDialog treeListDialog = new TreeListDialog(mContext,mContext.getString(R.string.unit_sz));
-            treeListDialog.show();
+            treeListDialog.setDatas(Utils.JsondeepCopy(mUnitList),null,true);
+            unit_et.post(()->{
+                if (treeListDialog.exec() == 1){
+                    final JSONObject object = treeListDialog.getSingleContent();
+                    unit_et.setText(object.getString("item_name"));
+                    unit_et.setTag(object.getString("item_id"));
+                }
+            });
         });
         unit_et.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus)v.callOnClick();
@@ -148,13 +155,67 @@ public class AddGoodsInfoDialog extends DialogBaseOnMainActivityImp {
                 final JSONObject info_obj = JSONObject.parseObject(retJson.getString("info"));
                 final JSONObject data = info_obj.getJSONObject("data");
                 mUnitList = Utils.getNullObjectAsEmptyJsonArray(data,"units");
+                mUnitList = parse_unit_info(mUnitList);
+                Logger.d_json(mUnitList.toJSONString());
+
                 mCategoryList = Utils.getNullObjectAsEmptyJsonArray(data,"category");
                 final JSONArray categorys = new JSONArray();
                 parse_category_info(mCategoryList,null,0,categorys);
-
                 mCategoryList = categorys;
+
                 break;
         }
+    }
+    private void parse_category_info(final JSONArray category_jsons,final JSONObject parent,int level,final JSONArray categorys) {
+        JSONObject item,category_json;
+        JSONArray kids,childs;
+        for (int i = 0, length = category_jsons.size(); i < length; i++) {
+            category_json = category_jsons.getJSONObject(i);
+
+            item = new JSONObject();
+            item.put("level",level);
+            item.put("unfold",false);
+            item.put("isSel",false);
+            item.put("item_id",category_json.getString("category_id"));
+            item.put("item_name",category_json.getString("name"));
+
+            item.put("kids",new JSONArray());
+
+            if (parent != null){
+                item.put("p_ref",parent);
+                kids = parent.getJSONArray("kids");
+                kids.add(item);
+            }
+
+            if (category_json.containsKey("childs")) {
+                childs = (JSONArray) category_json.remove("childs");
+                if (childs != null && childs.size() != 0) {
+                    parse_category_info(childs,item,level + 1, null);
+                }
+            }
+            if (categorys != null)categorys.add(item);
+        }
+    }
+    private JSONArray parse_unit_info(final JSONArray units){
+        final JSONArray array  = new JSONArray();
+        if (units != null){
+            JSONObject object,tmp;
+            for (int i = 0,size = units.size();i < size;i++){
+                tmp = units.getJSONObject(i);
+
+                object = new JSONObject();
+                object.put("level",0);
+                object.put("unfold",false);
+                object.put("isSel",false);
+                object.put("item_id",Utils.getNullStringAsEmpty(tmp,"unit_id"));
+                object.put("item_name",Utils.getNullStringAsEmpty(tmp,"unit_name"));
+
+                //object.put("kids",new JSONArray());
+
+                array.add(object);
+            }
+        }
+        return array;
     }
 
     private void getGoodsInfoByBarcode(){
@@ -205,37 +266,6 @@ public class AddGoodsInfoDialog extends DialogBaseOnMainActivityImp {
             mRetailPriceEt.requestFocus();
         }
 
-    }
-
-    private void parse_category_info(final JSONArray category_jsons,final JSONObject parent,int level,final JSONArray categorys) {
-        JSONObject item,category_json;
-        JSONArray kids,childs;
-        for (int i = 0, length = category_jsons.size(); i < length; i++) {
-            category_json = category_jsons.getJSONObject(i);
-
-            item = new JSONObject();
-            item.put("parent_id",category_json.getString("parent_id"));
-            item.put("level",level);
-            item.put("unfold",false);
-            item.put("isSel",false);
-            item.put("item_id",category_json.getString("category_id"));
-            item.put("item_name",category_json.getString("name"));
-
-            item.put("kids",new JSONArray());
-
-            if (parent != null){
-                kids = parent.getJSONArray("kids");
-                kids.add(item);
-            }
-
-             if (category_json.containsKey("childs")) {
-                childs = (JSONArray) category_json.remove("childs");
-                if (childs != null && childs.size() != 0) {
-                    parse_category_info(childs,item,level + 1, null);
-                }
-            }
-            if (categorys != null)categorys.add(item);
-        }
     }
 
 }

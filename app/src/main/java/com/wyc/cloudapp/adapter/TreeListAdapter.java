@@ -1,7 +1,6 @@
 package com.wyc.cloudapp.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +27,7 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
     private Drawable mUnfoldDb,mFoldDb;
 
 /*    Item{
-        parend_id,p_ref,level,unfold,isSel,item_id,item_name;
+        p_ref,level,unfold,isSel,item_id,item_name,kids; <p_ref , kids>存在上下级时必须存在
     }*/
     private TreeListAdapter(Context context){
             this.mContext = context;
@@ -78,7 +77,8 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
             boolean is_sel = item.getBooleanValue("isSel");
 
             final ImageView ico = holder.icon;
-            if (!Utils.getNullObjectAsEmptyJsonArray(item,"kids").isEmpty()){
+            if ( (position += 1) == mDatas.size())position -= 1;
+            if (is_unfold || mDatas.getJSONObject(position).getJSONObject("p_ref") == item || !Utils.getNullObjectAsEmptyJsonArray(item,"kids").isEmpty()){
                 if (ico.getVisibility() == View.GONE)ico.setVisibility(View.VISIBLE);
                 ico.setOnClickListener(unfoldIcoListener);
                 if (is_unfold){
@@ -123,7 +123,7 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
             holder.item_name.setText(item.getString("item_name"));
 
             holder.mCurrentLayoutItemView.setOnClickListener(itemListener);
-            holder.mCurrentLayoutItemView.setPadding( 12 * item.getIntValue("level"),0,0,0);
+            holder.mCurrentLayoutItemView.setPadding( 15 * item.getIntValue("level"),0,0,0);
         }
     }
 
@@ -147,8 +147,12 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
             int row_id = Integer.valueOf(row_id_tv.getText().toString());
             if (row_id >= 0 && row_id < mDatas.size()){
                 final JSONObject object = mDatas.getJSONObject(row_id);
-                if (mSingleSel)clearSelected();
-                selectItem(object,isChecked);
+                if (mSingleSel){
+                    clearSelected();
+                    object.put("isSel",isChecked);
+                }else
+                    selectItem(object,row_id + 1,isChecked);
+
                 buttonView.post(this::notifyDataSetChanged);
             }
         }
@@ -163,13 +167,19 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
             }
         }
     }
-    private void selectItem(final JSONObject object,boolean isChecked){
+    private void selectItem(final JSONObject object,int index,boolean isChecked){
         if (null != object){
             object.put("isSel",isChecked);
-            if (!mSingleSel){
-                final JSONArray kids = Utils.getNullObjectAsEmptyJsonArray(object,"kids");
-                for (int i = 0,size = kids.size();i < size;i++){
-                    selectItem(kids.getJSONObject(i),isChecked);
+            JSONObject child;
+            for (int j = index,size = mDatas.size();0 <= j && j < size;j++){
+                child = mDatas.getJSONObject(j);
+                if (child.getJSONObject("p_ref") == object){
+                    if (child.getBooleanValue("unfold")){
+                        selectItem(child,j += 1,isChecked);
+                    }
+                    child.put("isSel",isChecked);
+                }else {
+                    break;
                 }
             }
         }
@@ -181,21 +191,44 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
         int row_id = Integer.valueOf(row_id_tv.getText().toString());
         if (row_id >= 0 && row_id < mDatas.size()){
             final JSONObject object = mDatas.getJSONObject(row_id);
-            boolean unfold = object.getBooleanValue("unfold");
+            boolean unfold = object.getBooleanValue("unfold"),is_sel = object.getBooleanValue("isSel");
             object.put("unfold",!unfold);
-            final JSONArray kids = Utils.getNullObjectAsEmptyJsonArray(object,"kids");
-            if (!unfold){
-                JSONObject item;
-                for (int i = 0,size = kids.size();i < size;i++){
-                    item = kids.getJSONObject(i);
-                    mDatas.add(row_id + i + 1,item);
+             if (!unfold){
+                final JSONArray kids = (JSONArray) object.remove("kids");
+                if (kids != null){
+                    boolean single = mSingleSel;
+                    JSONObject item;
+                    for (int i = 0,size = kids.size();i < size;i++){
+                        item = kids.getJSONObject(i);
+                        if (!single && !item.getBooleanValue("isSel"))item.put("isSel",is_sel);
+                        mDatas.add(row_id + i + 1,item);
+                    }
                 }
             }else {
-                deleteChildren(kids,row_id + 1);
+                foldChildren(object,row_id + 1);
             }
             row_id_tv.post(this::notifyDataSetChanged);
         }
     };
+    private void foldChildren(final JSONObject parent, int index){
+        if (parent != null){
+            final JSONArray kids = new JSONArray();
+            JSONObject child;
+            for (int j = index;0 <= j && j < mDatas.size();j++){
+                child = mDatas.getJSONObject(index);
+                if (child.getJSONObject("p_ref") == parent){
+                      if (child.getBooleanValue("unfold")){
+                        child.put("unfold",false);
+                        foldChildren(child,index + 1);
+                    }
+                    kids.add(mDatas.remove(index));
+                }else {
+                    parent.put("kids",kids);
+                    break;
+                }
+            }
+        }
+    }
 
     private View.OnClickListener itemListener = (v)->{
         CompoundButton compoundButton;
@@ -209,20 +242,6 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
         }
     };
 
-    private void deleteChildren(final JSONArray kids,int index){
-        if (kids != null){
-            JSONObject object;
-            for (int i = 0,size = kids.size();i < size;i++){
-                object = kids.getJSONObject(i);
-                if (object.getBooleanValue("unfold")){
-                    object.put("unfold",false);
-                    deleteChildren(Utils.getNullObjectAsEmptyJsonArray(object,"kids"),index);
-                }
-                if (index >= 0 && index < mDatas.size())mDatas.remove(index);
-            }
-        }
-    }
-
     private void setSelectedItem(final JSONArray array){
         if (array != null && !array.isEmpty()){
             for (int i = 0,size = array.size();i < size;i++){
@@ -235,22 +254,22 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
             JSONObject item;
             for (int i = 0,size = mDatas.size();i < size;i++){
                 item = mDatas.getJSONObject(i);
-                if (setSelectedItem(item,object,i + 1)){
+                if (setSelectedItem(item,object,i)){
                     break;
                 }
             }
         }
     }
 
-    private boolean setSelectedItem(final JSONObject item,final JSONObject object,int index){
+    private boolean setSelectedItem(final JSONObject item,final JSONObject object,int first_index){
         if (Utils.getNullStringAsEmpty(object,"item_id").equals(item.getString("item_id"))){
             item.put("isSel",true);
-            unfoldParentItem(mDatas,item.getString("parent_id"));
+            unfoldParentItem(item,first_index);
             return true;
         }else {
             final JSONArray kids = Utils.getNullObjectAsEmptyJsonArray(item,"kids");
             for (int j = 0,j_size = kids.size();j < j_size;j++){
-                if (setSelectedItem(kids.getJSONObject(j),object,index + 1 +j)){
+                if (setSelectedItem(kids.getJSONObject(j),object,first_index)){
                     return true;
                 }
             }
@@ -258,32 +277,54 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
         return false;
     }
 
-    private void unfoldParentItem(final JSONArray array,final String parent_id){
-        if (parent_id != null){
-            JSONObject item;
-            for (int i = 0,size = array.size();i < size;i++){
-                item = array.getJSONObject(i);
-                final JSONArray kids = Utils.getNullObjectAsEmptyJsonArray(item,"kids");
-                if (parent_id.equals(item.getString("item_id"))){
-                    Logger.d("i:%d,parent_id:%s,item_id:%s",i,parent_id,item.getString("item_id"));
-                    if (!item.getBooleanValue("unfold")){
-
-                        unfoldParentItem(array,item.getString("parent_id"));
-
-                        item.put("unfold",true);
-                        for (int k = 0,length = kids.size();k < length;k++){
-                            array.add(i + 1 + k,kids.getJSONObject(k));
+    private void unfoldParentItem(final JSONObject item ,int index){
+        if (item != null && item.getJSONObject("p_ref") != null){//顶层item不需要展开
+            final JSONObject top_item = mDatas.getJSONObject(index);
+            boolean unfold = top_item.getBooleanValue("unfold"),is_sel = top_item.getBooleanValue("isSel");
+            top_item.put("unfold",true);
+            if (!unfold){
+                final JSONArray kids = (JSONArray) top_item.remove("kids");
+                if (kids != null){
+                    JSONObject ch_item;
+                    boolean single = mSingleSel;
+                    for (int i = 0,size = kids.size();i < size;i++){
+                        ch_item = kids.getJSONObject(i);
+                        if (!single && !ch_item.getBooleanValue("isSel"))top_item.put("isSel",is_sel);
+                        mDatas.add(index + i + 1,ch_item);
+                        if (isChild(ch_item,item)){
+                            unfoldParentItem(ch_item,index + i + 1);
+                            index += 1;
                         }
-
-                    }
-                }else {
-                    for (int j = 0,j_size = kids.size();j < j_size;j++){
-                        unfoldParentItem(kids,parent_id);
                     }
                 }
             }
         }
     }
+
+    private boolean isChild(final JSONObject parent_item,final JSONObject child_ite){
+        JSONObject parent = child_ite.getJSONObject("p_ref");
+        while (parent != null){
+            if (parent_item == parent){
+                return true;
+            }
+            parent = parent.getJSONObject("p_ref");
+        }
+        return false;
+    }
+
+    private int getItemIndex(final JSONObject item){
+        if (null != mDatas && item != null){
+            JSONObject ch_item;
+            for (int i = 0,size = mDatas.size();i < size;i++){
+                ch_item = mDatas.getJSONObject(i);
+                if (Utils.getNullStringAsEmpty(ch_item,"item_id").equals(item.getString("item_id"))){
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
 
     public JSONArray getMultipleSelectedContent(){
         final JSONArray objects = new JSONArray();
