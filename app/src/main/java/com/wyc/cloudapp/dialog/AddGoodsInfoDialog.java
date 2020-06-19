@@ -3,17 +3,19 @@ package com.wyc.cloudapp.dialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
@@ -22,8 +24,9 @@ import java.util.Locale;
 public class AddGoodsInfoDialog extends DialogBaseOnMainActivityImp {
     private MainActivity mContext;
     private String mBarcode;
-    private EditText mBarcodeEt,mNameEt,mPurPriceEt,mRetailPriceEt,mCategoryEt,mUnitEt,mCkmlEt;
+    private EditText mBarcodeEt,mNameEt,mPurPriceEt,mRetailPriceEt,mCategoryEt,mUnitEt;
     private JSONArray mUnitList,mCategoryList;
+    private OnFinishListener mFinishListener;
     public AddGoodsInfoDialog(@NonNull MainActivity context) {
         super(context, context.getString(R.string.a_goods_sz));
         mContext = context;
@@ -39,6 +42,7 @@ public class AddGoodsInfoDialog extends DialogBaseOnMainActivityImp {
         initCategory();
         initCkml();
         initBarcode();
+        initSaveBtn();
     }
 
     @Override
@@ -52,7 +56,6 @@ public class AddGoodsInfoDialog extends DialogBaseOnMainActivityImp {
 
         getGoodsInfoByBarcode();
     }
-
     private void initUnit(){
         final EditText unit_et = findViewById(R.id.a_unit_et);
         unit_et.setOnClickListener(v -> {
@@ -73,7 +76,6 @@ public class AddGoodsInfoDialog extends DialogBaseOnMainActivityImp {
 
         mUnitEt = unit_et;
     }
-
     private void initCategory(){
         final EditText category_et = findViewById(R.id.a_category_et);
         category_et.setOnClickListener(v -> {
@@ -94,7 +96,6 @@ public class AddGoodsInfoDialog extends DialogBaseOnMainActivityImp {
 
         mCategoryEt = category_et;
     }
-
     private void initBarcode(){
         final EditText barcdoe_et = findViewById(R.id.a_barcode_et);
         if (barcdoe_et != null){
@@ -127,18 +128,14 @@ public class AddGoodsInfoDialog extends DialogBaseOnMainActivityImp {
                 et.setText(String.format(Locale.CHINA,"%.2f",retail_pirce_et - pur_price));
             }
         });
-        mCkmlEt = et;
         mPurPriceEt = pur_price_et;
     }
-
     public static boolean verifyGoodsAddPermissions(MainActivity context){
         return context.verifyPermissions("31",null,false);
     }
-
     public void setBarcode(final String barcode){
         mBarcode = barcode;
     }
-
     private void getGoodsBase(){
         final HttpRequest httpRequest = new HttpRequest();
         final JSONObject object = new JSONObject();
@@ -156,7 +153,6 @@ public class AddGoodsInfoDialog extends DialogBaseOnMainActivityImp {
                 final JSONObject data = info_obj.getJSONObject("data");
                 mUnitList = Utils.getNullObjectAsEmptyJsonArray(data,"units");
                 mUnitList = parse_unit_info(mUnitList);
-                Logger.d_json(mUnitList.toJSONString());
 
                 mCategoryList = Utils.getNullObjectAsEmptyJsonArray(data,"category");
                 final JSONArray categorys = new JSONArray();
@@ -209,15 +205,11 @@ public class AddGoodsInfoDialog extends DialogBaseOnMainActivityImp {
                 object.put("isSel",false);
                 object.put("item_id",Utils.getNullStringAsEmpty(tmp,"unit_id"));
                 object.put("item_name",Utils.getNullStringAsEmpty(tmp,"unit_name"));
-
-                //object.put("kids",new JSONArray());
-
                 array.add(object);
             }
         }
         return array;
     }
-
     private void getGoodsInfoByBarcode(){
         final CustomProgressDialog progressDialog = new CustomProgressDialog(mContext);
         final JEventLoop jEventLoop = new JEventLoop();
@@ -253,10 +245,9 @@ public class AddGoodsInfoDialog extends DialogBaseOnMainActivityImp {
         jEventLoop.exec();
         progressDialog.dismiss();
     }
-
     private void showGoodsInfo(final JSONObject info){
         mUnitEt.setText(Utils.getNullStringAsEmpty(info,"unit"));
-        mRetailPriceEt.setText(Utils.getNullStringAsEmpty(info,"price"));
+        mRetailPriceEt.setText(String.format(Locale.CHINA,"%.2f",info.getDoubleValue("price")));
 
         final String name = Utils.getNullStringAsEmpty(info,"name");
         if (name.isEmpty()){
@@ -265,7 +256,161 @@ public class AddGoodsInfoDialog extends DialogBaseOnMainActivityImp {
             mNameEt.setText(name);
             mRetailPriceEt.requestFocus();
         }
+    }
 
+    private void initSaveBtn(){
+        final Button btn = findViewById(R.id.save);
+        if (btn != null){
+            btn.setOnClickListener(v -> {
+                final JSONObject data = generateParameter();
+                if (!data.isEmpty()){
+                    if (addGoods(data) && mFinishListener != null){
+                        this.dismiss();
+                        mFinishListener.onFinish(mBarcode);
+                    }
+                }
+            });
+        }
+    }
+
+    private boolean addGoods(final JSONObject data){
+        final CustomProgressDialog progressDialog = new CustomProgressDialog(mContext);
+        final JEventLoop loop = new JEventLoop();
+        final StringBuilder err = new StringBuilder();
+
+        progressDialog.setCancel(false).setMessage("正在上传商品信息...").show();
+
+        CustomApplication.execute(()->{
+
+            final HttpRequest httpRequest = new HttpRequest();
+
+            String param = HttpRequest.generate_request_parm(data,mContext.getAppSecret());
+            JSONObject retJson = httpRequest.sendPost(mContext.getUrl() +"/api/goods_set/goods_sets",param,true);
+
+            switch (retJson.getIntValue("flag")){
+                case 0:
+                    loop.done(0);
+                    err.append(retJson.getString("info"));
+                    break;
+                case 1:
+                    JSONObject info  = JSON.parseObject(retJson.getString("info"));
+                    switch (Utils.getNullStringAsEmpty(info,"status")){
+                        case "n":
+                            loop.done(0);
+                            err.append(info.getString("info"));
+                            break;
+                        case "y":
+                            if (getNewGoodsAndSave(httpRequest,err)){
+                                loop.done(1);
+                            }else
+                                loop.done(0);
+                            break;
+                    }
+                    break;
+            }
+        });
+        int code = loop.exec();
+        progressDialog.dismiss();
+        if (code != 1){
+            MyDialog.displayErrorMessage(null,"新增商品错误:" + err,mContext);
+        }
+        return code == 1;
+    }
+    private boolean getNewGoodsAndSave(final HttpRequest httpRequest, final StringBuilder err){
+        boolean code = true;
+        final MainActivity activity = mContext;
+        final JSONObject data = new JSONObject();
+        data.put("appid",activity.getAppId());
+        data.put("pos_num",activity.getPosNum());
+        data.put("stores_id",activity.getStoreInfo().getString("stores_id"));
+        final String param = HttpRequest.generate_request_parm(data,activity.getAppSecret());
+        final JSONObject retJson = httpRequest.sendPost(activity.getUrl() +"/api_v2/goods/get_goods_all",param,true);
+        switch (retJson.getIntValue("flag")){
+            case 0:
+                code = false;
+                err.append(retJson.getString("info"));
+                break;
+            case 1:
+                final JSONObject info = JSON.parseObject(Utils.getNullOrEmptyStringAsDefault(retJson,"info","{}"));
+                switch (Utils.getNullStringAsEmpty(info,"status")){
+                    case "n":
+                        code = false;
+                        err.append(info.getString("info"));
+                        break;
+                    case "y":
+                        final JSONArray new_goods = JSON.parseArray(Utils.getNullOrEmptyStringAsDefault(info,"data","[]"));
+                        final String[] table_cls = new String[]{"goods_id","barcode_id","barcode","goods_title","only_coding","retail_price","buying_price","trade_price","cost_price","ps_price",
+                                "unit_id","unit_name","specifi","category_name","metering_id","shelf_life","goods_status","brand","origin","type","goods_tare","barcode_status","category_id",
+                                "tax_rate","tc_mode","tc_rate","yh_mode","yh_price","mnemonic_code","image","attr_id","attr_name","attr_code","conversion","update_price","stock_unit_id","stock_unit_name","img_url"};
+                        code = SQLiteHelper.execSQLByBatchFromJson(new_goods,"barcode_info" ,table_cls,err,1);
+                        break;
+                }
+                break;
+        }
+        return code ;
+    }
+    private JSONObject generateParameter(){
+        final JSONObject data = new JSONObject();
+        final MainActivity activity = mContext;
+        final String barcode = mBarcode,name = mNameEt.getText().toString(),category = mCategoryEt.getText().toString(),unit = mUnitEt.getText().toString();
+        if (barcode.isEmpty()){
+            mBarcodeEt.requestFocus();
+            MyDialog.ToastMessage(activity.getString(R.string.not_empty_hint_sz,activity.getString(R.string.barcode_sz)),activity,getWindow());
+            return data;
+        }
+        if (name.isEmpty()){
+            mNameEt.requestFocus();
+            MyDialog.ToastMessage(activity.getString(R.string.not_empty_hint_sz,activity.getString(R.string.g_name_sz)),activity,getWindow());
+            return data;
+        }
+        if (category.isEmpty()){
+            mCategoryEt.requestFocus();
+            MyDialog.ToastMessage(activity.getString(R.string.not_empty_hint_sz,activity.getString(R.string.d_category_sz)),activity,getWindow());
+            return data;
+        }
+        if (unit.isEmpty()){
+            mUnitEt.requestFocus();
+            MyDialog.ToastMessage(activity.getString(R.string.not_empty_hint_sz,activity.getString(R.string.unit_sz)),activity,getWindow());
+            return data;
+        }
+
+        data.put("attr_id",0);
+        data.put("buying_price",mPurPriceEt.getText().toString());
+        data.put("category_id",Utils.getViewTagValue(mCategoryEt,""));
+        data.put("goods_title",name);
+        data.put("spec_id",1);
+        data.put("unit",unit);
+
+        final JSONArray barcode_info = new JSONArray();
+        final JSONObject goods = new JSONObject();
+        goods.put("barcode",barcode);
+        goods.put("mnemonic_code","");
+        goods.put("goods_spec_code","");
+        goods.put("metering_id",0);
+        goods.put("retail_price",mRetailPriceEt.getText().toString());
+        goods.put("sys_unit",unit);
+        goods.put("conversion",1);
+        goods.put("yh_mode",0);
+        goods.put("yh_price",0);
+        goods.put("cost_price",0);
+        goods.put("ps_price",0);
+        goods.put("goods_id",0);
+        goods.put("barcode_id",0);
+        goods.put("del_status",1);
+
+        barcode_info.add(goods);
+
+        data.put("appid",activity.getAppId());
+        data.put("goods",barcode_info);
+
+        return data;
+    }
+
+    public interface OnFinishListener{
+        void onFinish(final String barcode);
+    }
+    public void setFinishListener(OnFinishListener listener){
+        mFinishListener = listener;
     }
 
 }

@@ -281,8 +281,8 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
         if (item != null && item.getJSONObject("p_ref") != null){//顶层item不需要展开
             final JSONObject top_item = mDatas.getJSONObject(index);
             boolean unfold = top_item.getBooleanValue("unfold"),is_sel = top_item.getBooleanValue("isSel");
-            top_item.put("unfold",true);
             if (!unfold){
+                top_item.put("unfold",true);
                 final JSONArray kids = (JSONArray) top_item.remove("kids");
                 if (kids != null){
                     JSONObject ch_item;
@@ -310,6 +310,15 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
             parent = parent.getJSONObject("p_ref");
         }
         return false;
+    }
+
+    private JSONObject getTopParent(final JSONObject item){
+        JSONObject parent = item.getJSONObject("p_ref"),top_parent = item;
+        while (parent != null){
+            top_parent = parent;
+            parent = parent.getJSONObject("p_ref");
+        }
+        return top_parent;
     }
 
     private int getItemIndex(final JSONObject item){

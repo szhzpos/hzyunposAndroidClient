@@ -35,7 +35,7 @@
                 android:ems="24"
                 android:hint="@string/space_sz"
                 android:importantForAutofill="no"
-                android:inputType="textPersonName"
+                android:inputType="number"
                 android:paddingStart="@dimen/margin_5"
                 android:paddingEnd="@dimen/margin_5"
                 android:selectAllOnFocus="true"
