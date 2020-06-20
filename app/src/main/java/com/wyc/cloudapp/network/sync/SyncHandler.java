@@ -30,7 +30,7 @@ public final class SyncHandler extends Handler {
     private Handler mMainActivityHandler;
     private volatile boolean mReportProgress = true;
     private volatile int mCurrentNeworkStatusCode = HttpURLConnection.HTTP_OK;
-    private long mLoseTime = 0;//mSyncInterval 同步时间间隔，默认3秒
+    private long mLoseTime = 0;
     private SyncManagement mSync;
     SyncHandler(final Handler handler,final SyncManagement syncManagement){
         mMainActivityHandler = handler;
