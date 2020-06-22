@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -433,36 +432,13 @@ public class MainActivity extends AppCompatActivity {
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(this,5);
         goods_info_view.setLayoutManager(gridLayoutManager);
         registerGlobalLayoutToRecyclerView(goods_info_view,getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration());
-        mGoodsInfoViewAdapter.setOnItemClickListener(new GoodsInfoViewAdapter.OnItemClickListener() {
-            private View mCurrentView;
-            @Override
-            public void onClick(View v) {
-                hideLastOrderInfo();
-                Utils.disableView(v,300);
-                set_selected_status(v);//设置选中状态
-                final JSONObject jsonObject = mGoodsInfoViewAdapter.getSelectGoods(v),content = new JSONObject();
-                if (jsonObject != null){
-                    final String id = mGoodsInfoViewAdapter.getGoodsId(jsonObject);
-                    final String weigh_barcode_info = (String) jsonObject.remove(GoodsInfoViewAdapter.W_G_MARK);//删除称重标志否则重新选择商品时不弹出称重界面
-                    if (mGoodsInfoViewAdapter.getSingleGoods(content,weigh_barcode_info,id)){
-                        mSaleGoodsViewAdapter.addSaleGoods(content,mVipInfo);
-                    }else{
-                        MyDialog.ToastMessage("选择商品错误：" + content.getString("info"),v.getContext(),null);
-                    }
-                }
-            }
-            private void set_selected_status(View v){
-                TextView goods_name;
-                if(null != mCurrentView){
-                    goods_name = mCurrentView.findViewById(R.id.goods_title);
-                    goods_name.clearAnimation();
-                    goods_name.setTextColor(MainActivity.this.getColor(R.color.good_name_color));
-                }
-                goods_name = v.findViewById(R.id.goods_title);
-                goods_name.startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.shake_x));
-                goods_name.setTextColor(MainActivity.this.getColor(R.color.blue));
-
-                if (mCurrentView != v)mCurrentView = v;
+        mGoodsInfoViewAdapter.setOnItemClickListener(v -> {
+            hideLastOrderInfo();
+            Utils.disableView(v,300);
+            final JSONObject jsonObject = mGoodsInfoViewAdapter.getSelectGoods(v);
+            if (jsonObject != null){
+                addSaleGoods(jsonObject);
+                //if (mSearch_content != null && mSearch_content.length() == 0)mGoodsCategoryViewAdapter.trigger_preView();
             }
         });
         goods_info_view.setAdapter(mGoodsInfoViewAdapter);
@@ -508,36 +484,34 @@ public class MainActivity extends AppCompatActivity {
         search.setOnFocusChangeListener((v,b)->Utils.hideKeyBoard((EditText) v));
         mHandler.postDelayed(search::requestFocus,300);
         search.setSelectAllOnFocus(true);
-        search.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_DOWN){
-                    final MainActivity context = MainActivity.this;
-                    final String content = search.getText().toString();
-                    if (content.length() == 0){
-                        mGoodsCategoryViewAdapter.trigger_preView();
-                    }else{
-                        if (!mGoodsInfoViewAdapter.fuzzy_search_goods(search,true)) {
-                            mHandler.post(()->{
-                                if (mNetworkStatus.get() && AddGoodsInfoDialog.verifyGoodsAddPermissions(context)) {
-                                    if (1 == MyDialog.showMessageToModalDialog(context,"未找到匹配商品，是否新增?")){
-                                        final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(context);
-                                        addGoodsInfoDialog.setBarcode(mSearch_content.getText().toString());
-                                        addGoodsInfoDialog.setFinishListener(barcode -> {
-                                            mGoodsInfoViewAdapter.fuzzy_search_goods(search,true);
-                                        });
-                                        addGoodsInfoDialog.show();
-                                    }
-                                } else
-                                    MyDialog.ToastMessage("无此商品!", context, getWindow());
+        search.setOnKeyListener((v, keyCode, event) -> {
+            if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_DOWN){
+                final MainActivity context = MainActivity.this;
+                final String content = search.getText().toString();
+                if (content.length() == 0){
+                    mGoodsCategoryViewAdapter.trigger_preView();
+                }else{
 
-                            });
-                        }
+                    if (!mGoodsInfoViewAdapter.fuzzy_search_goods(content,true)) {
+                        mHandler.post(()->{
+                            if (mNetworkStatus.get() && AddGoodsInfoDialog.verifyGoodsAddPermissions(context)) {
+                                if (1 == MyDialog.showMessageToModalDialog(context,"未找到匹配商品，是否新增?")){
+                                    final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(context);
+                                    addGoodsInfoDialog.setBarcode(mSearch_content.getText().toString());
+                                    addGoodsInfoDialog.setFinishListener(barcode -> {
+                                        mGoodsInfoViewAdapter.fuzzy_search_goods(content,true);
+                                    });
+                                    addGoodsInfoDialog.show();
+                                }
+                            } else
+                                MyDialog.ToastMessage("无此商品!", context, getWindow());
+
+                        });
                     }
-                    return true;
                 }
-                return false;
+                return true;
             }
+            return false;
         });
         search.setTransformationMethod(new ReplacementTransformationMethod() {
             @Override
@@ -567,7 +541,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void afterTextChanged(Editable s) {
                     if (s.length() != 0){
-                        mGoodsInfoViewAdapter.fuzzy_search_goods(search,false);
+                        mGoodsInfoViewAdapter.fuzzy_search_goods(s.toString(),false);
                     }
                 }
             };
@@ -585,7 +559,7 @@ public class MainActivity extends AppCompatActivity {
                         if (editable.length() == 0){
                             mGoodsCategoryViewAdapter.trigger_preView();
                         }else{
-                            mGoodsInfoViewAdapter.fuzzy_search_goods(search,true);
+                            mGoodsInfoViewAdapter.fuzzy_search_goods(editable.toString(),true);
                         }
                     }else if(v_id == R.id.hide){
                         search.removeTextChangedListener(textWatcher);
@@ -1049,8 +1023,18 @@ public class MainActivity extends AppCompatActivity {
             final Editable editable = mSearch_content.getText();
             if (editable.length() != 0){
                 editable.clear();
-                mGoodsCategoryViewAdapter.trigger_preView();
+                if (mKeyboard.getVisibility() == View.VISIBLE)mGoodsCategoryViewAdapter.trigger_preView();
             }
+        }
+    }
+    public void addSaleGoods(final @NonNull JSONObject jsonObject){
+        final JSONObject content = new JSONObject();
+        final String id = mGoodsInfoViewAdapter.getGoodsId(jsonObject);
+        final String weigh_barcode_info = (String) jsonObject.remove(GoodsInfoViewAdapter.W_G_MARK);//删除称重标志否则重新选择商品时不弹出称重界面
+        if (mGoodsInfoViewAdapter.getSingleGoods(content,weigh_barcode_info,id)){
+            mSaleGoodsViewAdapter.addSaleGoods(content,mVipInfo);
+        }else{
+            MyDialog.ToastMessage("选择商品错误：" + content.getString("info"),this,null);
         }
     }
 

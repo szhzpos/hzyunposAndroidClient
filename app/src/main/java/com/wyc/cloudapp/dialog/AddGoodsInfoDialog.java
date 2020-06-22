@@ -54,6 +54,7 @@ public class AddGoodsInfoDialog extends DialogBaseOnMainActivityImp {
     public void show(){
         super.show();
 
+        getGoodsBase();
         getGoodsInfoByBarcode();
     }
     private void initUnit(){
@@ -137,30 +138,32 @@ public class AddGoodsInfoDialog extends DialogBaseOnMainActivityImp {
         mBarcode = barcode;
     }
     private void getGoodsBase(){
-        final HttpRequest httpRequest = new HttpRequest();
-        final JSONObject object = new JSONObject();
-        object.put("appid",mContext.getAppId());
-        final String sz_param = HttpRequest.generate_request_parm(object,mContext.getAppSecret());
-        final JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + "/api/goods_set/get_bases",sz_param,true);
-        switch (retJson.getIntValue("flag")){
-            case 0:
-                mContext.runOnUiThread(()->{
-                    MyDialog.ToastMessage("查询商品基本信息错误:" + retJson.getString("info"),mContext,getWindow());
-                });
-                break;
-            case 1:
-                final JSONObject info_obj = JSONObject.parseObject(retJson.getString("info"));
-                final JSONObject data = info_obj.getJSONObject("data");
-                mUnitList = Utils.getNullObjectAsEmptyJsonArray(data,"units");
-                mUnitList = parse_unit_info(mUnitList);
+        CustomApplication.execute(()->{
+            final HttpRequest httpRequest = new HttpRequest();
+            final JSONObject object = new JSONObject();
+            object.put("appid",mContext.getAppId());
+            final String sz_param = HttpRequest.generate_request_parm(object,mContext.getAppSecret());
+            final JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + "/api/goods_set/get_bases",sz_param,true);
+            switch (retJson.getIntValue("flag")){
+                case 0:
+                    mContext.runOnUiThread(()->{
+                        MyDialog.ToastMessage("查询商品基本信息错误:" + retJson.getString("info"),mContext,getWindow());
+                    });
+                    break;
+                case 1:
+                    final JSONObject info_obj = JSONObject.parseObject(retJson.getString("info"));
+                    final JSONObject data = info_obj.getJSONObject("data");
+                    mUnitList = Utils.getNullObjectAsEmptyJsonArray(data,"units");
+                    mUnitList = parse_unit_info(mUnitList);
 
-                mCategoryList = Utils.getNullObjectAsEmptyJsonArray(data,"category");
-                final JSONArray categorys = new JSONArray();
-                parse_category_info(mCategoryList,null,0,categorys);
-                mCategoryList = categorys;
+                    mCategoryList = Utils.getNullObjectAsEmptyJsonArray(data,"category");
+                    final JSONArray categorys = new JSONArray();
+                    parse_category_info(mCategoryList,null,0,categorys);
+                    mCategoryList = categorys;
 
-                break;
-        }
+                    break;
+            }
+        });
     }
     private void parse_category_info(final JSONArray category_jsons,final JSONObject parent,int level,final JSONArray categorys) {
         JSONObject item,category_json;
@@ -229,12 +232,6 @@ public class AddGoodsInfoDialog extends DialogBaseOnMainActivityImp {
                     });
                     break;
                 case 1:
-                    try {
-                        getGoodsBase();
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-
                     mContext.runOnUiThread(()->{
                         showGoodsInfo(JSONObject.parseObject(retJson.getString("info")));
                     });

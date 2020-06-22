@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,6 +18,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.LoginActivity;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -26,12 +28,13 @@ import com.wyc.cloudapp.utils.Utils;
 import java.util.Locale;
 
 public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdapter.MyViewHolder> {
-    public static String W_G_MARK = "IWG";//计重、计份并且通过扫条码选择的商品标志
-    private Context mContext;
+    public static final String W_G_MARK = "IWG";//计重、计份并且通过扫条码选择的商品标志
+    private MainActivity mContext;
     private JSONArray mDatas;
     private OnItemClickListener mOnItemClickListener;
-    private boolean mShowPic = true,mAutoSelect;
-    public GoodsInfoViewAdapter(Context context){
+    private boolean mShowPic = true;
+    private View mCurrentItemView;
+    public GoodsInfoViewAdapter(final MainActivity context){
         this.mContext = context;
         JSONObject jsonObject = new JSONObject();
         if (SQLiteHelper.getLocalParameter("g_i_show",jsonObject)){
@@ -101,15 +104,11 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                 myViewHolder.price.setText(goods_info.getString("price"));
 
                 if(myViewHolder.goods_title.getCurrentTextColor() == mContext.getResources().getColor(R.color.blue,null)){
-                    myViewHolder.goods_title.setTextColor(mContext.getColor(R.color.good_name_color));//需要重新设置颜色；不然重用之后内容颜色为重用之前的。
+                   myViewHolder.goods_title.setTextColor(mContext.getColor(R.color.good_name_color));//需要重新设置颜色；不然重用之后内容颜色为重用之前的。
                 }
 
                 if (mOnItemClickListener != null){
                     myViewHolder.mCurrentItemView.setOnClickListener(clickListener);
-                }
-                if (mAutoSelect && mDatas.size() == 1){
-                    myViewHolder.mCurrentItemView.post(()-> myViewHolder.mCurrentItemView.callOnClick());
-                    mAutoSelect = false;
                 }
             }
         }
@@ -121,8 +120,22 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
     }
 
     private View.OnClickListener clickListener = (View v)->{
+        set_selected_status(v);
         mOnItemClickListener.onClick(v);
     };
+    private void set_selected_status(View v){
+        TextView goods_name;
+        if(null != mCurrentItemView){
+            goods_name = mCurrentItemView.findViewById(R.id.goods_title);
+            goods_name.clearAnimation();
+            goods_name.setTextColor(mContext.getColor(R.color.good_name_color));
+        }
+        goods_name = v.findViewById(R.id.goods_title);
+        goods_name.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.shake_x));
+        goods_name.setTextColor(mContext.getColor(R.color.blue));
+
+        if (mCurrentItemView != v)mCurrentItemView = v;
+    }
 
     public JSONObject getSelectGoods(final View currentItem){
         JSONObject object;
@@ -167,25 +180,25 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         }
     }
 
-    public boolean fuzzy_search_goods(@NonNull final EditText search,boolean autoSelect){
+    public boolean fuzzy_search_goods(@NonNull final String search_content,boolean autoSelect){
+        boolean code = false;
         final StringBuilder err = new StringBuilder();
         final ContentValues barcodeRuleObj = new ContentValues();
-        final String search_content = search.getText().toString(),sql_where,full_sql,
-                sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(case type when 2 then only_coding else barcode end,'') barcode,only_coding,type,retail_price price\n" +
+        String sql_where,full_sql,sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(case type when 2 then only_coding else barcode end,'') barcode,only_coding,type,retail_price price\n" +
                 ",ifnull(img_url,'') img_url from barcode_info where (goods_status = 1 and barcode_status = 1) and %1";
 
+        JSONArray array = null;
         if (isBarcodeWeighingGoods(search_content,barcodeRuleObj)){
             sql_where = "only_coding = '" + barcodeRuleObj.getAsString("item_id") + "'";
             full_sql = sql.replace("%1",sql_where);
             final JSONObject object = new JSONObject();
             if (SQLiteHelper.execSql(object,full_sql)){
-                mDatas.fluentClear();
                 if (!object.isEmpty()){
+                    array = new JSONArray();
                     object.put(W_G_MARK,search_content);
-                    mDatas.add(object);
+                    array.add(object);
                 }
             }else {
-                mDatas = null;
                 err.append(Utils.getNullStringAsEmpty(object,"info"));
             }
         }else {
@@ -194,21 +207,27 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                     "-1 barcode_id,ifnull(gp_code,'') barcode,-1 only_coding,type,gp_price price,ifnull(img_url,'') img_url from goods_group \n" +
                     "where status = '1' and " + sql_where;
 
-            mDatas = SQLiteHelper.getListToJson(full_sql,0,0,false,err);
+            array = SQLiteHelper.getListToJson(full_sql,0,0,false,err);
         }
 
         Logger.d("full_sql:%s",full_sql);
 
-        if (mDatas != null){
-            if (autoSelect && mDatas.size() == 1){
-                mAutoSelect = true;
+        if (array != null){
+            if (code = !array.isEmpty()){
+                if (autoSelect && array.size() == 1){
+                    mContext.addSaleGoods(array.getJSONObject(0));
+                }else {
+                    if (mDatas != null && code){
+                        if (!mDatas.isEmpty())mDatas.clear();
+                        Utils.moveJsonArray(array,mDatas);
+                        this.notifyDataSetChanged();
+                    }
+                }
             }
-            this.notifyDataSetChanged();
         }else{
             MyDialog.ToastMessage("搜索商品错误：" + err,mContext,null);
         }
-
-        return mDatas != null && mDatas.size() != 0;
+        return code;
     }
 
     public boolean getSingleGoods(@NonNull JSONObject object, final String weigh_barcode_info, final String id){

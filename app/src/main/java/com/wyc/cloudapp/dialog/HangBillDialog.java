@@ -253,6 +253,7 @@ public class HangBillDialog extends DialogBaseOnMainActivityImp {
             mCurrentHangId = null;
             loadHangBill(null);
             mHbDetailCursorAdapter.changeCursor(null);
+            if (mHbCursorAdapter.isEmpty())dismiss();
         }
         return code;
     }
