@@ -4,7 +4,7 @@
         <layer-list >
             <item>
                 <shape>
-                    <solid android:color="@color/gray__subtransparent" />
+                    <solid android:color="@color/gray_subtransparent" />
                 </shape>
             </item>
             <item

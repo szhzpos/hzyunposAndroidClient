@@ -285,7 +285,7 @@ public abstract class AbstractQuerySuperDialog extends DialogBaseOnMainActivityI
         alertDialog.show();
 
         final ListView listView = alertDialog.getListView();
-        listView.setDivider(mContext.getDrawable(R.color.gray__subtransparent));
+        listView.setDivider(mContext.getDrawable(R.color.gray_subtransparent));
         listView.setDividerHeight(1);
         listView.setBackground(mContext.getDrawable(R.drawable.border_sub_gray));
 
@@ -296,12 +296,15 @@ public abstract class AbstractQuerySuperDialog extends DialogBaseOnMainActivityI
         ok.setTextColor(blue);
         ok.setTextSize(mContext.getResources().getDimension(R.dimen.font_size_16));
 
-        final WindowManager.LayoutParams  lp= alertDialog.getWindow().getAttributes();
-        lp.width= 368;
-        if (currentStatusItems.length > 3){
-            lp.height= 288;
+        final Window window = alertDialog.getWindow();
+        if (null != window){
+            final WindowManager.LayoutParams  lp= window.getAttributes();
+            lp.width= 368;
+            if (currentStatusItems.length > 3){
+                lp.height= 288;
+            }
+            window.setAttributes(lp);
         }
-        alertDialog.getWindow().setAttributes(lp);
     }
     private void initEndDateAndTime(){
         final EditText end_date = mEndDateEt = findViewById(R.id.end_date),end_time = mEndTimeEt = findViewById(R.id.end_time);

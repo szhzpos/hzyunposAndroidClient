@@ -33,7 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:background="@color/gray__subtransparent"
+                android:background="@color/gray_subtransparent"
                 android:contentDescription="@string/space_sz"
                 android:visibility="gone"
                 app:srcCompat="@drawable/printer" />

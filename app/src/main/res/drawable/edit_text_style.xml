@@ -10,7 +10,7 @@
     <item android:state_enabled="false">
         <shape android:shape="rectangle">
             <!--填充颜色为白色-->
-            <solid android:color="@color/gray__subtransparent" />
+            <solid android:color="@color/gray_subtransparent" />
             <stroke android:width="0dp"/>
             <corners android:radius="2dp"/>
         </shape>

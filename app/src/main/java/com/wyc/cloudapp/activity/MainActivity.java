@@ -7,7 +7,10 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -97,7 +100,6 @@ public class MainActivity extends AppCompatActivity {
     private String mPermissionCashierId = "";
     private SecondDisplay mSecondDisplay;
     private ConstraintLayout mLastOrderInfo;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -272,7 +274,13 @@ public class MainActivity extends AppCompatActivity {
                 }
             });//查交易
         if (other_linearLayout != null)other_linearLayout.setOnClickListener(v -> new MoreFunDialog(this,getString(R.string.more_fun_dialog_sz)).show());//更多功能
-        if (cloud_background_layout != null)cloud_background_layout.setOnClickListener(v -> startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getUrl()))));
+        if (cloud_background_layout != null)cloud_background_layout.setOnClickListener(v -> {
+            try {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getUrl())));
+            }catch (ActivityNotFoundException e){
+                MyDialog.ToastMessage("系统未安装浏览器!",this,getWindow());
+            }
+        });
     }
     private void initTransferBtn(){
         final LinearLayout shift_exchange_linearLayout = findViewById(R.id.shift_exchange_linearLayout);
@@ -490,61 +498,45 @@ public class MainActivity extends AppCompatActivity {
                 if (mSecondDisplay != null)mSecondDisplay.notifyChange(mSaleGoodsViewAdapter.getCurrentItemIndex());
             }
         });
-        registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray__subtransparent),mSaleGoodsViewAdapter));
+        registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray_subtransparent),mSaleGoodsViewAdapter));
         mSaleGoodsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
         mSaleGoodsRecyclerView.setAdapter(mSaleGoodsViewAdapter);
     }
+    @SuppressLint("ClickableViewAccessibility")
     private void initSearch(){
         final EditText search = findViewById(R.id.search_content);;
         search.setOnFocusChangeListener((v,b)->Utils.hideKeyBoard((EditText) v));
         mHandler.postDelayed(search::requestFocus,300);
         search.setSelectAllOnFocus(true);
-        search.setOnKeyListener((view, i, keyEvent) -> {
-            int keyCode = keyEvent.getKeyCode();
-            if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && keyEvent.getAction() == KeyEvent.ACTION_DOWN){
-                final String content = search.getText().toString();
-                if (content.length() == 0){
-                    mGoodsCategoryViewAdapter.trigger_preView();
-                }else{
-                    if (!mGoodsInfoViewAdapter.fuzzy_search_goods(search,true)) {
-                        mHandler.post(()->{
-                            if (mNetworkStatus.get() && AddGoodsInfoDialog.verifyGoodsAddPermissions(this)) {
-                                if (1 == MyDialog.showMessageToModalDialog(this,"未找到匹配商品，是否新增?")){
-                                    final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(MainActivity.this);
-                                    addGoodsInfoDialog.setBarcode(mSearch_content.getText().toString());
-                                    addGoodsInfoDialog.setFinishListener(barcode -> {
-                                        mGoodsInfoViewAdapter.fuzzy_search_goods(search,true);
-                                    });
-                                    addGoodsInfoDialog.show();
-                                }
-                            } else
-                                MyDialog.ToastMessage("无此商品!", this, getWindow());
+        search.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_DOWN){
+                    final MainActivity context = MainActivity.this;
+                    final String content = search.getText().toString();
+                    if (content.length() == 0){
+                        mGoodsCategoryViewAdapter.trigger_preView();
+                    }else{
+                        if (!mGoodsInfoViewAdapter.fuzzy_search_goods(search,true)) {
+                            mHandler.post(()->{
+                                if (mNetworkStatus.get() && AddGoodsInfoDialog.verifyGoodsAddPermissions(context)) {
+                                    if (1 == MyDialog.showMessageToModalDialog(context,"未找到匹配商品，是否新增?")){
+                                        final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(context);
+                                        addGoodsInfoDialog.setBarcode(mSearch_content.getText().toString());
+                                        addGoodsInfoDialog.setFinishListener(barcode -> {
+                                            mGoodsInfoViewAdapter.fuzzy_search_goods(search,true);
+                                        });
+                                        addGoodsInfoDialog.show();
+                                    }
+                                } else
+                                    MyDialog.ToastMessage("无此商品!", context, getWindow());
 
-                        });
+                            });
+                        }
                     }
+                    return true;
                 }
-                return true;
-            }
-            return false;
-        });
-        search.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (s.length() != 0){
-                    if (mKeyboard.getVisibility() == View.VISIBLE){
-                        mGoodsInfoViewAdapter.fuzzy_search_goods(search,false);
-                    }
-                }
+                return false;
             }
         });
         search.setTransformationMethod(new ReplacementTransformationMethod() {
@@ -561,6 +553,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         search.setOnTouchListener(new View.OnTouchListener() {
+            private TextWatcher textWatcher = new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    if (s.length() != 0){
+                        mGoodsInfoViewAdapter.fuzzy_search_goods(search,false);
+                    }
+                }
+            };
             private View.OnClickListener mKeyboardListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -578,6 +588,7 @@ public class MainActivity extends AppCompatActivity {
                             mGoodsInfoViewAdapter.fuzzy_search_goods(search,true);
                         }
                     }else if(v_id == R.id.hide){
+                        search.removeTextChangedListener(textWatcher);
                         mKeyboard.setVisibility(View.GONE);
                     }else {
                         if (search.getSelectionStart() != search.getSelectionEnd()){
@@ -593,12 +604,18 @@ public class MainActivity extends AppCompatActivity {
                 switch (motionEvent.getAction()){
                     case MotionEvent.ACTION_DOWN:
                         if (motionEvent.getX() > (search.getWidth() - search.getCompoundPaddingRight())){
-
-                            mKeyboard.setVisibility(mKeyboard.getVisibility()== View.VISIBLE ? View.GONE : View.VISIBLE);
-                            //registerGlobalLayoutToRecyclerView(findViewById(R.id.goods_info_list),MainActivity.this.getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration());
+                            TableLayout keyboard = mKeyboard;
+                            int visible = keyboard.getVisibility();
+                            if (visible == View.VISIBLE ){
+                                search.removeTextChangedListener(textWatcher);
+                                keyboard.setVisibility(View.GONE);
+                            }else {
+                                search.addTextChangedListener(textWatcher);
+                                keyboard.setVisibility(View.VISIBLE);
+                            }
                             search.selectAll();
-                            for(int i = 0,childCounts = mKeyboard.getChildCount();i < childCounts;i ++){
-                                View vObj = mKeyboard.getChildAt(i);
+                            for(int i = 0,childCounts = keyboard.getChildCount();i < childCounts;i ++){
+                                View vObj = keyboard.getChildAt(i);
                                 if ( vObj instanceof TableRow){
                                     final TableRow tableRow = (TableRow)vObj ;
                                     int buttons = tableRow.getChildCount();
@@ -606,7 +623,7 @@ public class MainActivity extends AppCompatActivity {
                                         vObj = tableRow.getChildAt(j);
                                         if (vObj instanceof Button){
                                             final Button button = (Button)vObj;
-                                            if (mKeyboard.getVisibility() == View.VISIBLE){
+                                            if (keyboard.getVisibility() == View.VISIBLE){
                                                 button.setOnClickListener(mKeyboardListener);
                                             }else{
                                                 button.setOnClickListener(null);
@@ -781,7 +798,7 @@ public class MainActivity extends AppCompatActivity {
         if (mVipInfo != null){
             mVipInfo = null;
 
-            registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray__subtransparent),mSaleGoodsViewAdapter));
+            registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray_subtransparent),mSaleGoodsViewAdapter));
 
             LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
             vip_info_linearLayout.setVisibility(View.GONE);
@@ -868,7 +885,7 @@ public class MainActivity extends AppCompatActivity {
     public void showVipInfo(@NonNull JSONObject vip){
         mVipInfo = vip;
 
-        registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray__subtransparent),mSaleGoodsViewAdapter));
+        registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray_subtransparent),mSaleGoodsViewAdapter));
 
         final LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
         vip_info_linearLayout.setVisibility(View.VISIBLE);
