@@ -895,11 +895,10 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
         int sale_record = mDatas.size();
         double per_record_mol_amt = getPerRecordMolAmt(mol_amt,sale_record),original_sale_amt = 0.0,new_discount = 0.0,xnum = 0.0,new_price = 0.0,
                 discount_amt = 0.0,current_sale_amt = 0.0;
-        boolean isContinue = true;
 
         Utils.sortJsonArrayFromDoubleCol(mDatas,"sale_amt");
 
-        for (int i = 0;i < sale_record && isContinue;i++){
+        for (int i = 0;i < sale_record;i++){
             object = mDatas.getJSONObject(i);
             original_sale_amt = object.getDoubleValue("sale_amt");
             current_sale_amt = Utils.formatDouble(original_sale_amt - per_record_mol_amt,2);

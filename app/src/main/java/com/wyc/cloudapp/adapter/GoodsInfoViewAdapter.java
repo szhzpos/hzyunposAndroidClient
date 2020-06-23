@@ -217,7 +217,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                 if (autoSelect && array.size() == 1){
                     mContext.addSaleGoods(array.getJSONObject(0));
                 }else {
-                    if (mDatas != null && code){
+                    if (mDatas != null){
                         if (!mDatas.isEmpty())mDatas.clear();
                         Utils.moveJsonArray(array,mDatas);
                         this.notifyDataSetChanged();

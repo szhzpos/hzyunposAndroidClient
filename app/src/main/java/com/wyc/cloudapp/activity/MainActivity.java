@@ -438,7 +438,6 @@ public class MainActivity extends AppCompatActivity {
             final JSONObject jsonObject = mGoodsInfoViewAdapter.getSelectGoods(v);
             if (jsonObject != null){
                 addSaleGoods(jsonObject);
-                //if (mSearch_content != null && mSearch_content.length() == 0)mGoodsCategoryViewAdapter.trigger_preView();
             }
         });
         goods_info_view.setAdapter(mGoodsInfoViewAdapter);
@@ -491,7 +490,6 @@ public class MainActivity extends AppCompatActivity {
                 if (content.length() == 0){
                     mGoodsCategoryViewAdapter.trigger_preView();
                 }else{
-
                     if (!mGoodsInfoViewAdapter.fuzzy_search_goods(content,true)) {
                         mHandler.post(()->{
                             if (mNetworkStatus.get() && AddGoodsInfoDialog.verifyGoodsAddPermissions(context)) {
