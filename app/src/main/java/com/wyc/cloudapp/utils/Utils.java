@@ -417,6 +417,41 @@ public final class Utils {
         }
     }
 
+    public static void bubbling_sort(int[] arr){
+        int size = arr.length;
+        long start_time = System.currentTimeMillis();
+        for (int i = 0;i < size;i++){
+            for (int j = 0;j < size - i -1;j++){
+                int key = arr[j];
+                if(key > arr[j + 1]){
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = key;
+                }
+            }
+        }
+        Logger.d("end_time:%d",System.currentTimeMillis() - start_time);
+    }
+
+    public static void insertion_sort(int[] arr){
+        long start_time = System.currentTimeMillis();
+        for (int i = 1,size = arr.length;i < size;i ++){
+            int key = arr[i];
+            int j = i - 1;
+            while (j >= 0 && arr[j] > key){
+                arr[j + 1] = arr[j];
+                j = j -1;
+            }
+            arr[j + 1] = key;
+        }
+        Logger.d("end_time:%d",System.currentTimeMillis() - start_time);
+    }
+
+    public static void merger_sort(int[] arr,int s,int e){
+        int left = s,middle = 1 + (e - 1) / 2 - 1,right = e -1;
+
+    }
+
+
     public static void  disableView(final View v,final long mill){
         if (v != null){
             v.setEnabled(false);

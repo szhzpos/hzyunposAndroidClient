@@ -51,6 +51,7 @@ import com.wyc.cloudapp.utils.Utils;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
+import java.util.Arrays;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -159,9 +160,22 @@ public class LoginActivity extends AppCompatActivity {
         if (null != login_btn)
             login_btn.setOnClickListener((View v)-> {
 
-                saveLastUser();
+                //saveLastUser();
 
-                login();
+                //login();
+                int length = 10000;
+                int[] arr = new int[length];
+                int j = 1;
+                for (int i = length; i > 0;i--)arr[i -1] = j++;
+
+                //Utils.bubbling_sort(arr);
+                //Utils.insertion_sort(arr);
+                long start_time = System.currentTimeMillis();
+
+                Logger.d("end_time:%d",System.currentTimeMillis() - start_time);
+
+                //Logger.d(Arrays.toString(arr));
+
             });
         mLoginBtn = login_btn;
     }
@@ -484,13 +498,6 @@ public class LoginActivity extends AppCompatActivity {
         private Myhandler(LoginActivity loginActivity){
             this.weakHandler = new WeakReference<>(loginActivity);
         }
-        private void launchLogin(LoginActivity activity,boolean isConnection){
-            final Intent intent = new Intent(activity,MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            intent.putExtra("network",isConnection);
-            activity.startActivity(intent);
-            activity.finish();
-        }
 
         public void handleMessage(@NonNull Message msg){
             final LoginActivity activity = weakHandler.get();
@@ -508,7 +515,7 @@ public class LoginActivity extends AppCompatActivity {
                     activity.finish();
                     break;
                 case MessageID.SYNC_FINISH_ID://同步成功启动主界面
-                    launchLogin(activity,true);
+                    activity.launchLogin(true);
                     break;
                 case MessageID.LOGIN_OK_ID://登录成功
                     activity.mSyncManagement = new SyncManagement(this,activity.mUrl,activity.mAppId,activity.mAppScret,activity.mStoresId,activity.mPosNum,activity.mOperId);
@@ -543,37 +550,47 @@ public class LoginActivity extends AppCompatActivity {
                     }
                     break;
                 case MessageID.OFF_LINE_LOGIN_ID:
-                    MyDialog.displayAskMessage(activity.myDialog, "连接服务器失败，是否离线登录？", activity, new MyDialog.onYesOnclickListener() {
-                        @Override
-                        public void onYesClick(MyDialog myDialog) {
-                            myDialog.dismiss();
-                            final String user_id = activity.mUser_id.getText().toString(),password = activity.mPassword.getText().toString();
-                            final String local_password = Utils.getUserIdAndPasswordCombinationOfMD5(user_id + password);
-                            final StringBuilder err = new StringBuilder();
-                            JSONObject param_obj = new JSONObject();
-                            if (SQLiteHelper.getLocalParameter("connParam",param_obj)){
-                                param_obj = Utils.getNullObjectAsEmptyJson(param_obj,"storeInfo");
-                                final String stroesid = param_obj.getString("stores_id");
-                                final String sz_count = SQLiteHelper.getString("SELECT count(cas_id) count FROM cashier_info where " +
-                                        "cas_account = '"+ user_id +"' and stores_id = '" + stroesid +"' and cas_pwd = '"+ local_password +"'",err);
-
-                                Logger.d("SELECT count(cas_id) count FROM cashier_info where " +
-                                        "cas_account = '"+ user_id +"' and stores_id = '" + stroesid +"' and cas_pwd = '"+ local_password +"'");
-
-                                if (Integer.valueOf(sz_count) > 0){
-                                    launchLogin(activity,false);
-                                }else {
-                                    activity.myHandler.obtainMessage(MessageID.LOGIN_ID_ERROR_ID, "不存在此用户！").sendToTarget();
-                                }
-                            }else {
-                                MyDialog.displayErrorMessage(activity.myDialog,"查询连接参数错误:" + param_obj.getString("info"),activity);
-                            }
-                        }
-                    }, MyDialog::dismiss);
+                    activity.offline_login();
                     break;
             }
         }
     }
+
+    private void launchLogin(boolean isConnection){
+        final Intent intent = new Intent(this,MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("network",isConnection);
+        startActivity(intent);
+        finish();
+    }
+
+    private void offline_login(){
+        MyDialog.displayAskMessage(myDialog, "连接服务器失败，是否离线登录？", this, myDialog -> {
+            myDialog.dismiss();
+            final String user_id = mUser_id.getText().toString(),password = mPassword.getText().toString();
+            final String local_password = Utils.getUserIdAndPasswordCombinationOfMD5(user_id + password);
+            final StringBuilder err = new StringBuilder();
+            JSONObject param_obj = new JSONObject();
+            if (SQLiteHelper.getLocalParameter("connParam",param_obj)){
+                param_obj = Utils.getNullObjectAsEmptyJson(param_obj,"storeInfo");
+                final String stroesid = param_obj.getString("stores_id");
+                final String sz_count = SQLiteHelper.getString("SELECT count(cas_id) count FROM cashier_info where " +
+                        "cas_account = '"+ user_id +"' and stores_id = '" + stroesid +"' and cas_pwd = '"+ local_password +"'",err);
+
+                Logger.d("SELECT count(cas_id) count FROM cashier_info where " +
+                        "cas_account = '"+ user_id +"' and stores_id = '" + stroesid +"' and cas_pwd = '"+ local_password +"'");
+
+                if (Integer.valueOf(sz_count) > 0){
+                    launchLogin(false);
+                }else {
+                    myHandler.obtainMessage(MessageID.LOGIN_ID_ERROR_ID, "不存在此用户！").sendToTarget();
+                }
+            }else {
+                MyDialog.displayErrorMessage(myDialog,"查询连接参数错误:" + param_obj.getString("info"),this);
+            }
+        }, MyDialog::dismiss);
+    }
+
 
     public void initGoodsImgDirectory(){
         final File file = new File(IMG_PATH);

@@ -893,48 +893,55 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
         JSONObject object,discount_obj;
         final JSONArray discount_details = new JSONArray();
         int sale_record = mDatas.size();
-        double per_record_mol_amt = getPerRecordMolAmt(mol_amt,sale_record),original_sale_amt = 0.0,new_discount = 0.0,xnum = 0.0,new_price = 0.0,
+        double per_record_mol_amt = 0.0, o_per_record_mol_amt = getPerRecordMolAmt(mol_amt,sale_record),original_sale_amt = 0.0,new_discount = 0.0,xnum = 0.0,new_price = 0.0,
                 discount_amt = 0.0,current_sale_amt = 0.0;
 
         Utils.sortJsonArrayFromDoubleCol(mDatas,"sale_amt");
 
         for (int i = 0;i < sale_record;i++){
+            per_record_mol_amt = o_per_record_mol_amt;
+
             object = mDatas.getJSONObject(i);
             original_sale_amt = object.getDoubleValue("sale_amt");
-            current_sale_amt = Utils.formatDouble(original_sale_amt - per_record_mol_amt,2);
 
-            if (current_sale_amt > 0.0 || (sale_record == 1 && Utils.equalDouble(current_sale_amt,0.0))){//抹零后销售金额为零并且只存在一个商品时才需要保存
-                new_discount = Utils.formatDouble(current_sale_amt / original_sale_amt,3);
+            if (Utils.equalDouble(original_sale_amt,0.0))continue;
 
-                //处理优惠记录
-                discount_obj = new JSONObject();
-                discount_obj.put("gp_id",object.getIntValue("gp_id"));
-                discount_obj.put("barcode_id",object.getIntValue("barcode_id"));
-                discount_obj.put("price",per_record_mol_amt);//单品折扣金额
-                discount_details.add(discount_obj);
+            if (original_sale_amt < per_record_mol_amt){
+                per_record_mol_amt = original_sale_amt;
+                current_sale_amt = 0.0;
+            }else
+                current_sale_amt = Utils.formatDouble(original_sale_amt - per_record_mol_amt,2);
 
-                xnum = Utils.getNotKeyAsNumberDefault(object,"xnum",1.0);
+            new_discount = Utils.formatDouble(current_sale_amt / original_sale_amt,3);
 
-                new_price = Utils.formatDouble(current_sale_amt / xnum,4);
+            //处理优惠记录
+            discount_obj = new JSONObject();
+            discount_obj.put("gp_id",object.getIntValue("gp_id"));
+            discount_obj.put("barcode_id",object.getIntValue("barcode_id"));
+            discount_obj.put("price",per_record_mol_amt);//单品折扣金额
+            discount_details.add(discount_obj);
 
-                discount_amt = original_sale_amt - current_sale_amt;
+            xnum = Utils.getNotKeyAsNumberDefault(object,"xnum",1.0);
 
-                object.put("discount", new_discount);
-                object.put("discount_amt", Utils.formatDouble(discount_amt + object.getDoubleValue("discount_amt"),2));
-                object.put("price",new_price);
-                object.put("discount_type",type);
-                object.put("sale_amt",current_sale_amt);
+            new_price = Utils.formatDouble(current_sale_amt / xnum,4);
 
-                Logger.d("%f -= %f:%f",mol_amt,per_record_mol_amt,mol_amt - per_record_mol_amt);
-                mol_amt -= per_record_mol_amt;
-                if (Utils.equalDouble(Math.abs(mol_amt),0)){
-                    break;
-                }else {
-                    //计算下一次抹零金额，最后一条记录或者剩余抹零金额小于平均抹零金额；要扣除剩余的抹零
-                    if (Math.abs(Math.abs(mol_amt) - Math.abs(per_record_mol_amt)) < 0.0 || i + 2 == sale_record){
-                        per_record_mol_amt = mol_amt;
-                        mol_amt = 0;
-                    }
+            discount_amt = original_sale_amt - current_sale_amt;
+
+            object.put("discount", new_discount);
+            object.put("discount_amt", Utils.formatDouble(discount_amt + object.getDoubleValue("discount_amt"),2));
+            object.put("price",new_price);
+            object.put("discount_type",type);
+            object.put("sale_amt",current_sale_amt);
+
+            Logger.d("%f -= %f:%f",mol_amt,per_record_mol_amt,mol_amt - per_record_mol_amt);
+            mol_amt -= per_record_mol_amt;
+            if (Utils.equalDouble(Math.abs(mol_amt),0)){
+                break;
+            }else {
+                //计算下一次抹零金额，最后一条记录或者剩余抹零金额小于平均抹零金额；要扣除剩余的抹零
+                if (Math.abs(Math.abs(mol_amt) - Math.abs(per_record_mol_amt)) < 0.0 || i + 2 == sale_record){
+                    o_per_record_mol_amt = mol_amt;
+                    mol_amt = 0;
                 }
             }
         }
