@@ -160,22 +160,9 @@ public class LoginActivity extends AppCompatActivity {
         if (null != login_btn)
             login_btn.setOnClickListener((View v)-> {
 
-                //saveLastUser();
+                saveLastUser();
 
-                //login();
-                int length = 10000;
-                int[] arr = new int[length];
-                int j = 1;
-                for (int i = length; i > 0;i--)arr[i -1] = j++;
-
-                //Utils.bubbling_sort(arr);
-                //Utils.insertion_sort(arr);
-                long start_time = System.currentTimeMillis();
-
-                Logger.d("end_time:%d",System.currentTimeMillis() - start_time);
-
-                //Logger.d(Arrays.toString(arr));
-
+                login();
             });
         mLoginBtn = login_btn;
     }

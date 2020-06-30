@@ -68,6 +68,7 @@ public final class SyncHandler extends Handler {
                     table_cls = new String[]{"category_id","name","parent_id","depth","path","status","sort"};
                     url = base_url + "/api/scale/get_category_info";
                     object.put("pos_num",pos_num);
+                    object.put("page",msg.obj);
                     break;
                 case MessageID.SYNC_STORES_ID://仓库信息
                     table_name = "shop_stores";
@@ -94,6 +95,7 @@ public final class SyncHandler extends Handler {
                     sys_name = "正在同步支付方式";
                     url = base_url + "/api/cashier/get_pm_info";
                     object.put("stores_id",stores_id);
+                    object.put("page",msg.obj);
                     object.put("pos_num",pos_num);
                     break;
                 case MessageID.SYNC_CASHIER_ID://收银员
@@ -111,7 +113,7 @@ public final class SyncHandler extends Handler {
                 case MessageID.SYNC_GP_INFO_ID://商品组合信息
                     sys_name = "正在同步组合商品";
                     url = base_url + "/api/promotion/get_gp_info";
-
+                    object.put("page",msg.obj);
                     object.put("pos_num",pos_num);
                     object.put("stores_id",stores_id);
                     break;
@@ -171,20 +173,34 @@ public final class SyncHandler extends Handler {
                             if(data.size() != 0){
                                 StringBuilder err = new StringBuilder();
                                 switch (msg.what){
-                                    case MessageID.SYNC_GP_INFO_ID:
-                                        code = deal_good_group(data,err);
+                                    case MessageID.SYNC_GP_INFO_ID:{
+                                        if ((code = deal_good_group(data,err))){
+                                            int max_page = info_json.getIntValue("max_page"),current_page = (int)msg.obj;
+                                            if ((current_page++ <= max_page)){
+                                                Logger.d("current_page:%d,max_page:%d",current_page,max_page);
+                                                sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_GOODS_ID,current_page));
+                                            }
+                                        };
+                                    }
                                         break;
                                     case MessageID.SYNC_PAY_METHOD_ID:
                                         if((code = SQLiteHelper.execSQLByBatchFromJson(data,table_name ,table_cls,err,1))){
                                             down_load_pay_method_img(data,sys_name);
+
+                                            int max_page = info_json.getIntValue("max_page"),current_page = (int)msg.obj;
+                                            if ((current_page++ <= max_page)){
+                                                Logger.d("current_page:%d,max_page:%d",current_page,max_page);
+                                                sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_GOODS_ID,current_page));
+                                            }
                                         }
                                         break;
+                                    case MessageID.SYNC_GOODS_CATEGORY_ID:
                                     case MessageID.SYNC_GOODS_ID: {
                                         int max_page = info_json.getIntValue("max_page"),current_page = (int)msg.obj;
-                                        if((code = SQLiteHelper.execSQLByBatchFromJson(data,table_name ,table_cls,err,1))){
-                                            down_laod_goods_img_and_upload_barcode_id(data,sys_name);//保存成功才能标记已获取
+                                        if((code = SQLiteHelper.execSQLByBatchFromJson(data,table_name ,table_cls,err,1)) && msg.what ==  MessageID.SYNC_GOODS_ID){
+                                            down_laod_goods_img_and_upload_barcode_id(data,sys_name);//保存成功才能标记商品已获取
                                         }
-                                        if ((current_page++ <= max_page) && code){
+                                        if ((current_page++ <= max_page)){
                                             Logger.d("current_page:%d,max_page:%d",current_page,max_page);
                                             sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_GOODS_ID,current_page));
                                         }
@@ -587,10 +603,10 @@ public final class SyncHandler extends Handler {
     void sync(){
         if (mCurrentNeworkStatusCode == HttpURLConnection.HTTP_OK){
             if (!hasMessages(MessageID.SYNC_CASHIER_ID))obtainMessage(MessageID.SYNC_CASHIER_ID).sendToTarget();//收银员
-            if (!hasMessages(MessageID.SYNC_GOODS_CATEGORY_ID))obtainMessage(MessageID.SYNC_GOODS_CATEGORY_ID).sendToTarget();//商品类别
-            if (!hasMessages(MessageID.SYNC_PAY_METHOD_ID))obtainMessage(MessageID.SYNC_PAY_METHOD_ID).sendToTarget();//支付方式
+            if (!hasMessages(MessageID.SYNC_GOODS_CATEGORY_ID))obtainMessage(MessageID.SYNC_GOODS_CATEGORY_ID,0).sendToTarget();//商品类别
+            if (!hasMessages(MessageID.SYNC_PAY_METHOD_ID))obtainMessage(MessageID.SYNC_PAY_METHOD_ID,0).sendToTarget();//支付方式
             if (!hasMessages(MessageID.SYNC_STORES_ID))obtainMessage(MessageID.SYNC_STORES_ID).sendToTarget();//仓库信息
-            if (!hasMessages(MessageID.SYNC_GP_INFO_ID))obtainMessage(MessageID.SYNC_GP_INFO_ID).sendToTarget();//商品组合ID
+            if (!hasMessages(MessageID.SYNC_GP_INFO_ID))obtainMessage(MessageID.SYNC_GP_INFO_ID,0).sendToTarget();//商品组合ID
             if (!hasMessages(MessageID.SYNC_GOODS_ID))obtainMessage(MessageID.SYNC_GOODS_ID,0).sendToTarget();//商品信息obj代表当前下载页数
         }
     }
