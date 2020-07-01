@@ -32,12 +32,15 @@ public final class SyncHandler extends Handler {
     private volatile int mCurrentNeworkStatusCode = HttpURLConnection.HTTP_OK;
     private long mLoseTime = 0;
     private SyncManagement mSync;
+    private JSONObject mHeartbeat;
     SyncHandler(final Handler handler,final SyncManagement syncManagement){
         mMainActivityHandler = handler;
         mSync = syncManagement;
 
         mHttp = new HttpRequest();
         mHttp.setConnTimeOut(3000);
+
+        initHeartbeatParameter(syncManagement);
     }
     @Override
     public void handleMessage(Message msg){
@@ -136,10 +139,13 @@ public final class SyncHandler extends Handler {
                     if (msg.obj instanceof  Boolean)
                         mReportProgress = (boolean)msg.obj;
                     return;
-                case MessageID.MARK_GOODS_STATUS_ID:
+                case MessageID.MARK_DOWNLOAD_RECORD_ID:
                     if (mReportProgress)
                         mMainActivityHandler.obtainMessage(SYNC_DIS_INFO_ID,"准备同步...").sendToTarget();
                     upload_barcode_id(null);
+                    upload_pay_method_id(null);
+                    up_category(null);
+                    up_gp_goods(null);
                     return;
                 case MessageID.SYNC_THREAD_QUIT_ID://由于处理程序内部会发送消息，消息队列退出需在处理程序内部处理
                     if (mHttp != null)mHttp.clearConnection(HttpRequest.CLOSEMODE.BOTH);
@@ -178,31 +184,35 @@ public final class SyncHandler extends Handler {
                                             int max_page = info_json.getIntValue("max_page"),current_page = (int)msg.obj;
                                             if ((current_page++ <= max_page)){
                                                 Logger.d("current_page:%d,max_page:%d",current_page,max_page);
-                                                sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_GOODS_ID,current_page));
+                                                sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_GP_INFO_ID,current_page));
                                             }
                                         };
                                     }
                                         break;
                                     case MessageID.SYNC_PAY_METHOD_ID:
-                                        if((code = SQLiteHelper.execSQLByBatchFromJson(data,table_name ,table_cls,err,1))){
-                                            down_load_pay_method_img(data,sys_name);
-
-                                            int max_page = info_json.getIntValue("max_page"),current_page = (int)msg.obj;
-                                            if ((current_page++ <= max_page)){
-                                                Logger.d("current_page:%d,max_page:%d",current_page,max_page);
-                                                sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_GOODS_ID,current_page));
-                                            }
-                                        }
-                                        break;
                                     case MessageID.SYNC_GOODS_CATEGORY_ID:
                                     case MessageID.SYNC_GOODS_ID: {
                                         int max_page = info_json.getIntValue("max_page"),current_page = (int)msg.obj;
-                                        if((code = SQLiteHelper.execSQLByBatchFromJson(data,table_name ,table_cls,err,1)) && msg.what ==  MessageID.SYNC_GOODS_ID){
-                                            down_laod_goods_img_and_upload_barcode_id(data,sys_name);//保存成功才能标记商品已获取
-                                        }
-                                        if ((current_page++ <= max_page)){
-                                            Logger.d("current_page:%d,max_page:%d",current_page,max_page);
-                                            sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_GOODS_ID,current_page));
+                                        if((code = SQLiteHelper.execSQLByBatchFromJson(data,table_name ,table_cls,err,1))){
+                                            if (msg.what ==  MessageID.SYNC_GOODS_ID) {
+                                                down_laod_goods_img_and_upload_barcode_id(data, sys_name);//保存成功才能标记商品已获取
+                                                if ((current_page++ <= max_page)){
+                                                    Logger.d("current_page:%d,max_page:%d",current_page,max_page);
+                                                    sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_GOODS_ID,current_page));
+                                                }
+                                            }else if (msg.what ==  MessageID.SYNC_GOODS_CATEGORY_ID){
+                                                up_category(data);
+                                                if ((current_page++ <= max_page)){
+                                                    Logger.d("current_page:%d,max_page:%d",current_page,max_page);
+                                                    sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_GOODS_CATEGORY_ID,current_page));
+                                                }
+                                            }else {
+                                                down_load_pay_method_img_and_upload_pay_method(data,sys_name);
+                                                if ((current_page++ <= max_page)){
+                                                    Logger.d("current_page:%d,max_page:%d",current_page,max_page);
+                                                    sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_PAY_METHOD_ID,current_page));
+                                                }
+                                            }
                                         }
                                     }
                                         break;
@@ -242,18 +252,22 @@ public final class SyncHandler extends Handler {
         }
     }
 
+    private void initHeartbeatParameter(final SyncManagement sync){
+        final JSONObject data = new JSONObject();
+        data.put("appid",sync.getAppId());
+        data.put("pos_num",sync.getPosNum());
+        data.put("cas_id",sync.getOperId());
+        mHeartbeat = data;
+    }
     private void testNetworkStatus() throws JSONException {
         int syncInterval = 5000;
-        final JSONObject data = new JSONObject();
         final SyncManagement sync = mSync;
         final String test_url = sync.getUrl() + "/api/heartbeat/index";
         int err_code;
-        data.put("appid",sync.getAppId());
-        data.put("pos_num",sync.getPosNum());
-        data.put("randstr", Utils.getNonce_str(8));
-        data.put("cas_id",sync.getOperId());
 
-        final JSONObject retJson = mHttp.sendPost(test_url,HttpRequest.generate_request_parm(data,sync.getAppSecret()),true);
+        mHeartbeat.put("randstr", Utils.getNonce_str(8));
+
+        final JSONObject retJson = mHttp.sendPost(test_url,HttpRequest.generate_request_parm(mHeartbeat,sync.getAppSecret()),true);
         err_code = retJson.getIntValue("rsCode");
         switch (retJson.getIntValue("flag")) {
             case 0:
@@ -267,7 +281,7 @@ public final class SyncHandler extends Handler {
                 if (mCurrentNeworkStatusCode != HttpURLConnection.HTTP_OK){//如果之前网络响应状态不为OK,则重连成功
                     mCurrentNeworkStatusCode = HttpURLConnection.HTTP_OK;
                     Logger.i("重新连接服务器成功！");
-                    mSync.sync_order_info();
+                    sync.sync_order_info();
                 }
                 final JSONObject  info_json = JSON.parseObject(retJson.getString("info"));
                 switch (info_json.getString("status")){
@@ -291,7 +305,7 @@ public final class SyncHandler extends Handler {
     private void uploadRetailOrderInfo(final String appid,final String url,final String appSecret) {
         final StringBuilder err = new StringBuilder(),order_gp_ids = new StringBuilder();
         final String sql_orders = "SELECT discount_money,card_code,member_id,name,mobile,transfer_time,transfer_status,pay_time,pay_status,order_status,pos_code,addtime,cashier_id,total,\n" +
-                "discount_price,order_code,stores_id,spare_param1,spare_param2,replace(remark,'&','') remark FROM retail_order where order_status = 2 and pay_status = 2 and upload_status = 1 limit 100",
+                "discount_price,order_code,stores_id,spare_param1,spare_param2,replace(remark,'&','') remark FROM retail_order where order_status = 2 and pay_status = 2 and upload_status = 1 limit 500",
                 sql_goods_detail = "select conversion,zk_cashier_id,gp_id,tc_rate,tc_mode,tax_rate,ps_price,cost_price,trade_price,retail_price,buying_price,price,xnum,barcode_id from retail_order_goods where order_code = '%1'",
                 sql_pays_detail = "select print_info,return_code,card_no,xnote,discount_money,give_change_money,pre_sale_money,zk_money,is_check,remark,pay_code,pay_serial_no,pay_status,pay_time,pay_money,pay_method,order_code from retail_order_pays where order_code = '%1'",
                 sql_combination_goods = "SELECT b.retail_price,a.xnum,c.gp_price,c.gp_id,d.zk_cashier_id,d.order_code FROM  goods_group_info a LEFT JOIN  barcode_info b on a.barcode_id = b.barcode_id\n" +
@@ -501,11 +515,13 @@ public final class SyncHandler extends Handler {
         }
     }
 
-    private void down_load_pay_method_img(@NonNull final JSONArray datas,final String sys_name) throws JSONException {
+    private void down_load_pay_method_img_and_upload_pay_method(@NonNull final JSONArray datas, final String sys_name) throws JSONException {
         String img_url_info,img_file_name;
         JSONObject object;
+        final JSONArray pay_method_ids = new JSONArray();
         for (int k = 0,length = datas.size();k < length;k++){
             object = datas.getJSONObject(k);
+            pay_method_ids.add(object.getIntValue("pay_method_id"));
             img_url_info = object.getString("pay_img");
             if (!img_url_info.equals("")){
                 img_file_name = img_url_info.substring(img_url_info.lastIndexOf("/") + 1);
@@ -518,7 +534,43 @@ public final class SyncHandler extends Handler {
                 }
             }
         }
+        if (pay_method_ids.size() != 0){
+            upload_pay_method_id(pay_method_ids);
+        }
     }
+    private void upload_pay_method_id(JSONArray datas) throws JSONException {
+        final StringBuilder err = new StringBuilder();
+        if(datas == null){
+            datas = SQLiteHelper.getListToValue("select pay_method_id from pay_method",err);
+            if (null == datas){
+                Logger.e("标记已获取的商品错误：" + err);
+                return;
+            }
+        }
+        if (datas.size() == 0){
+            clear_download_record();
+        }else{
+            final SyncManagement sync = mSync;
+            final String url = sync.getUrl() + "/api/cashier/up_pm";
+
+            JSONObject object = new JSONObject();
+
+            object.put("appid",sync.getAppId());
+            object.put("pay_method_ids",datas);
+            object.put("pos_num",sync.getPosNum());
+
+            object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,sync.getAppSecret()),true);
+            if (object.getIntValue("flag") == 1){
+                object = JSON.parseObject(object.getString("info"));
+                if ("n".equals(object.getString("status"))){
+                    Logger.e(err.append("标记已获取支付方式错误:") + object.getString("info"));
+                }
+            }else{
+                Logger.e(err.append("标记已获取支付方式错误:") + object.getString("info"));
+            }
+        }
+    }
+
     private void down_laod_goods_img_and_upload_barcode_id(@NonNull final JSONArray datas,final String sys_name) throws JSONException {
         String img_url_info,img_file_name;
         final JSONArray goods_ids = new JSONArray();
@@ -543,10 +595,16 @@ public final class SyncHandler extends Handler {
         }
     }
     private boolean deal_good_group(@NonNull JSONArray data,StringBuilder err) throws JSONException {
-        final JSONArray goods_list = new JSONArray();
+        final JSONArray goods_list = new JSONArray(),gp_ids = new JSONArray();
         final JSONObject tmp_goods = new JSONObject();
+
+        JSONObject gp_obj;
         for (int k = 0, size = data.size(); k < size; k++) {
-            final JSONArray tmp = (JSONArray) data.getJSONObject(k).remove("goods_list");
+            gp_obj = data.getJSONObject(k);
+
+            gp_ids.add(gp_obj.get("gp_id"));
+
+            final JSONArray tmp = (JSONArray)gp_obj.remove("goods_list");
             if (tmp != null)
                 for (int j = 0, length = tmp.size(); j < length; j++) {
                     goods_list.add(tmp.get(j));
@@ -557,13 +615,47 @@ public final class SyncHandler extends Handler {
         List<String> goods_group_cols = Arrays.asList("mnemonic_code", "gp_id", "gp_code", "gp_title", "gp_price", "status", "addtime", "unit_name", "stores_id", "img_url"),
                 goods_group_info_cols = Arrays.asList("xnum", "barcode_id", "gp_id", "_id");
 
-        return SQLiteHelper.execSQLByBatchFromJson(tmp_goods, Arrays.asList("goods_group", "goods_group_info"), Arrays.asList(goods_group_cols, goods_group_info_cols), err, 1);
+        boolean code = SQLiteHelper.execSQLByBatchFromJson(tmp_goods, Arrays.asList("goods_group", "goods_group_info"), Arrays.asList(goods_group_cols, goods_group_info_cols), err, 1);
+        if (code){
+            up_gp_goods(gp_ids);
+        }
+        return code;
     }
-    private void upload_barcode_id(JSONArray datas) throws JSONException {
-        JSONObject object;
+    private void up_gp_goods(JSONArray datas){
         final StringBuilder err = new StringBuilder();
-        String url;
-        final SyncManagement sync = mSync;
+        if(datas == null){
+            datas = SQLiteHelper.getListToValue("select gp_id from goods_group",err);
+            if (null == datas){
+                Logger.e("标记已获取的组合商品错误：" + err);
+                return;
+            }
+        }
+        if (datas.size() == 0){
+            clear_download_record();
+        }else{
+            final SyncManagement sync = mSync;
+            final String url = sync.getUrl() + "/api/promotion/up_gp";
+
+            JSONObject object = new JSONObject();
+
+            object.put("appid",sync.getAppId());
+            object.put("gp_ids",datas);
+            object.put("pos_num",sync.getPosNum());
+
+            object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,sync.getAppSecret()),true);
+            if (object.getIntValue("flag") == 1){
+                object = JSON.parseObject(object.getString("info"));
+                if ("n".equals(object.getString("status"))){
+                    Logger.e(err.append("标记已获取的组合商品错误:") + object.getString("info"));
+                }
+            }else{
+                Logger.e(err.append("标记已获取的组合商品错误:") + object.getString("info"));
+            }
+        }
+    }
+
+    private void upload_barcode_id(JSONArray datas) throws JSONException {
+        final StringBuilder err = new StringBuilder();
         if(datas == null){
             datas = SQLiteHelper.getListToValue("select barcode_id from barcode_info",err);
             if (null == datas){
@@ -571,29 +663,86 @@ public final class SyncHandler extends Handler {
                 return;
             }
         }
-        object = new JSONObject();
         if (datas.size() == 0){
-            url = sync.getUrl() + "/api/cashier/clear_download_record";
-            object.put("appid",sync.getAppId());
-            object.put("pos_num",sync.getPosNum());
-            object.put("stores_id",sync.getStoresId());
-            err.append("清除已标记商品错误:");
+            clear_download_record();
         }else{
-            err.append("标记已获取商品错误:");
-            url = sync.getUrl() + "/api/goods/up_goods";
+            final SyncManagement sync = mSync;
+            final String url = sync.getUrl() + "/api/goods/up_goods";
+
+            JSONObject object = new JSONObject();
+
             object.put("appid",sync.getAppId());
             object.put("goods_ids",datas);
             object.put("pos_num",sync.getPosNum());
-        }
 
-        object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,sync.getAppSecret()),true);
-        if (object.getIntValue("flag") == 1){
-            object = JSON.parseObject(object.getString("info"));
-            if ("n".equals(object.getString("status"))){
-                Logger.e(err + object.getString("info"));
+            object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,sync.getAppSecret()),true);
+            if (object.getIntValue("flag") == 1){
+                object = JSON.parseObject(object.getString("info"));
+                if ("n".equals(object.getString("status"))){
+                    Logger.e(err.append("标记已获取商品错误:") + object.getString("info"));
+                }
+            }else{
+                Logger.e(err.append("标记已获取商品错误:") + object.getString("info"));
+            }
+        }
+    }
+    private void clear_download_record(){
+        final JSONObject object = new JSONObject();
+        final SyncManagement sync = mSync;
+        final String url = sync.getUrl() + "/api/cashier/clear_download_record";
+
+        object.put("appid",sync.getAppId());
+        object.put("pos_num",sync.getPosNum());
+        object.put("stores_id",sync.getStoresId());
+
+        final JSONObject retJson = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,sync.getAppSecret()),true);
+
+        if (retJson.getIntValue("flag") == 1){
+            final JSONObject info = JSON.parseObject(retJson.getString("info"));
+            if ("n".equals(info.getString("status"))){
+                Logger.e("清空已同步数据错误:%s",info.getString("info"));
             }
         }else{
-            Logger.e(err + object.getString("info"));
+            Logger.e("清空已同步数据错误:%s",object.getString("info"));
+        }
+    }
+
+    private void up_category(JSONArray datas){
+        final StringBuilder err = new StringBuilder();
+        if(datas == null){
+            datas = SQLiteHelper.getListToJson("select category_id from shop_category",err);
+            if (null == datas){
+                Logger.e("标记已获取的类别错误：" + err);
+                return;
+            }
+        }
+        if (datas.size() == 0){
+            clear_download_record();
+        }else{
+            JSONObject object;
+            final SyncManagement sync = mSync;
+            final String url = sync.getUrl() + "/api/scale/up_category";
+
+            final JSONArray category_ids = new JSONArray();
+            for (int k = 0,length = datas.size();k < length;k++) {
+                object = datas.getJSONObject(k);
+                category_ids.add(object.getIntValue("category_id"));
+            }
+
+            object = new JSONObject();
+            object.put("appid",sync.getAppId());
+            object.put("category_ids",category_ids);
+            object.put("pos_num",sync.getPosNum());
+
+            object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,sync.getAppSecret()),true);
+            if (object.getIntValue("flag") == 1){
+                object = JSON.parseObject(object.getString("info"));
+                if ("n".equals(object.getString("status"))){
+                    Logger.e(err.append("标记已获取类别错误:") + object.getString("info"));
+                }
+            }else{
+                Logger.e(err.append("标记已获取类别错误:") + object.getString("info"));
+            }
         }
     }
 
@@ -611,7 +760,7 @@ public final class SyncHandler extends Handler {
         }
     }
     void stopSync(){
-        removeMessages(MessageID.MARK_GOODS_STATUS_ID);
+        removeMessages(MessageID.MARK_DOWNLOAD_RECORD_ID);
         removeMessages(MessageID.SYNC_CASHIER_ID);
         removeMessages(MessageID.SYNC_GOODS_CATEGORY_ID);
         removeMessages(MessageID.SYNC_STORES_ID);
@@ -656,8 +805,8 @@ public final class SyncHandler extends Handler {
     }
     void sign_downloaded(){//标记已下载
         if (mCurrentNeworkStatusCode == HttpURLConnection.HTTP_OK) {
-            if (!hasMessages(MessageID.MARK_GOODS_STATUS_ID))
-                obtainMessage(MessageID.MARK_GOODS_STATUS_ID).sendToTarget();
+            if (!hasMessages(MessageID.MARK_DOWNLOAD_RECORD_ID))
+                obtainMessage(MessageID.MARK_DOWNLOAD_RECORD_ID).sendToTarget();
         }
     }
 }

@@ -116,8 +116,20 @@ public final class MoreFunDialog extends DialogBaseOnMainActivityImp {
     private void initSyncBtn(){
         final Button sync_btn = findViewById(R.id.sync_btn);
         sync_btn.setOnClickListener(v->{
-            StringBuilder err = new StringBuilder();
+            final StringBuilder err = new StringBuilder();
             if (SQLiteHelper.execDelete("barcode_info",null,null,err) < 0){
+                MyDialog.ToastMessage(err.toString(),mContext,getWindow());
+            }
+            if (SQLiteHelper.execDelete("pay_method",null,null,err) < 0){
+                MyDialog.ToastMessage(err.toString(),mContext,getWindow());
+            }
+            if (SQLiteHelper.execDelete("shop_category",null,null,err) < 0){
+                MyDialog.ToastMessage(err.toString(),mContext,getWindow());
+            }
+            if (SQLiteHelper.execDelete("goods_group",null,null,err) < 0){
+                MyDialog.ToastMessage(err.toString(),mContext,getWindow());
+            }
+            if (SQLiteHelper.execDelete("goods_group_info",null,null,err) < 0){
                 MyDialog.ToastMessage(err.toString(),mContext,getWindow());
             }
             mContext.sync(true);
