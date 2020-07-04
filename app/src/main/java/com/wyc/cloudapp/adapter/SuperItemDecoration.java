@@ -34,11 +34,11 @@ public class SuperItemDecoration extends RecyclerView.ItemDecoration {
         super.getItemOffsets(outRect, view, parent, state);
     }
 
-    protected void drawVertical(Canvas c, RecyclerView parent) {
+    protected void drawVerticalPadding(Canvas c, RecyclerView parent) {
 
     }
 
-    protected void drawHorizontal(Canvas c, RecyclerView parent) {
+    protected void drawHorizontalPadding(Canvas c, RecyclerView parent) {
 
      }
 

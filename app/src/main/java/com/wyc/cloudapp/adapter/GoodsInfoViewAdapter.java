@@ -27,7 +27,8 @@ import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
-public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdapter.MyViewHolder> {
+public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdapter.MyViewHolder> implements View.OnClickListener {
+    public static final int spanCount = 5;
     public static final String W_G_MARK = "IWG";//计重、计份并且通过扫条码选择的商品标志
     private MainActivity mContext;
     private JSONArray mDatas;
@@ -42,6 +43,12 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         }else{
             MyDialog.ToastMessage("加载是否显示商品图片参数错误：" + jsonObject.getString("info"),mContext,null);
         }
+    }
+
+    @Override
+    public void onClick(View v) {
+        set_selected_status(v);
+        mOnItemClickListener.onClick(v);
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -108,7 +115,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
                 }
 
                 if (mOnItemClickListener != null){
-                    myViewHolder.mCurrentItemView.setOnClickListener(clickListener);
+                    myViewHolder.mCurrentItemView.setOnClickListener(this);
                 }
             }
         }
@@ -119,10 +126,6 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
         return mDatas == null ? 0 : mDatas.size();
     }
 
-    private View.OnClickListener clickListener = (View v)->{
-        set_selected_status(v);
-        mOnItemClickListener.onClick(v);
-    };
     private void set_selected_status(View v){
         TextView goods_name;
         if(null != mCurrentItemView){
@@ -156,7 +159,7 @@ public class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdap
 
     void setDatas(int id){
 
-        StringBuilder err = new StringBuilder();
+        final StringBuilder err = new StringBuilder();
         String sql = "",category_id;
         if (-1 == id){
             sql = "select gp_id,-1 goods_id,ifnull(gp_title,'') goods_title,'' unit_id,ifnull(unit_name,'') unit_name,\n" +

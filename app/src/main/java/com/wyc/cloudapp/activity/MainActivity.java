@@ -88,7 +88,6 @@ public class MainActivity extends AppCompatActivity {
     private MyDialog mDialog;
     private AtomicBoolean mNetworkStatus;
     private AtomicBoolean mTransferStatus;
-    private volatile boolean mPrintStatus = true;//打印状态
     private long mCurrentTimestamp = 0;
     private String mAppId, mAppSecret,mUrl;
     private TextView mCurrentTimeViewTv, mSaleSumNumTv, mSaleSumAmtTv, mOrderCodeTv, mDisSumAmtTv;
@@ -99,23 +98,14 @@ public class MainActivity extends AppCompatActivity {
     private String mPermissionCashierId = "";
     private SecondDisplay mSecondDisplay;
     private ConstraintLayout mLastOrderInfo;
+    private ImageView mPrinterStatusIv;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        //初始化成员变量
-        mHandler = new Myhandler(this);
-        mProgressDialog = new CustomProgressDialog(this);
-        mDialog = new MyDialog(this);
-        mCurrentTimeViewTv = findViewById(R.id.current_time);
-        mSaleSumNumTv = findViewById(R.id.sale_sum_num);
-        mSaleSumAmtTv = findViewById(R.id.sale_sum_amt);
-        mKeyboard = findViewById(R.id.keyboard_layout);
-        mOrderCodeTv = findViewById(R.id.order_code);
-        mDisSumAmtTv = findViewById(R.id.dis_sum_amt);
-        mTransferStatus = new AtomicBoolean(true);//传输状态
+        initMemberVariable();
 
         initNetworkStatus();
         initLastOrderInfo();
@@ -153,6 +143,19 @@ public class MainActivity extends AppCompatActivity {
 
         //初始化副屏
         initSecondDisplay();
+
+    }
+    private void initMemberVariable(){
+        mHandler = new Myhandler(this);
+        mProgressDialog = new CustomProgressDialog(this);
+        mDialog = new MyDialog(this);
+        mCurrentTimeViewTv = findViewById(R.id.current_time);
+        mSaleSumNumTv = findViewById(R.id.sale_sum_num);
+        mSaleSumAmtTv = findViewById(R.id.sale_sum_amt);
+        mKeyboard = findViewById(R.id.keyboard_layout);
+        mOrderCodeTv = findViewById(R.id.order_code);
+        mDisSumAmtTv = findViewById(R.id.dis_sum_amt);
+        mTransferStatus = new AtomicBoolean(true);//传输状态
     }
     @Override
     public void onResume(){
@@ -203,8 +206,8 @@ public class MainActivity extends AppCompatActivity {
                 final Button last_reprint_btn = constraintLayout.findViewById(R.id.last_reprint_btn);
 
                 last_order_code.setText(order_info.getString("order_code"));
-                last_rec_amt.setText(order_info.getString("pay_amt"));
-                last_reality_amt.setText(order_info.getString("pre_amt"));
+                last_rec_amt.setText(String.format(Locale.CHINA,"%.2f",order_info.getDoubleValue("pay_amt")));
+                last_reality_amt.setText(String.format(Locale.CHINA,"%.2f",order_info.getDoubleValue("pre_amt")));
                 last_zl.setText(String.format(Locale.CHINA,"%.2f",order_info.getDoubleValue("zl_amt")));
                 close_tv.setOnClickListener(v -> {
                     constraintLayout.setVisibility(View.GONE);
@@ -429,7 +432,7 @@ public class MainActivity extends AppCompatActivity {
     private void initGoodsInfoAdapter(){
         mGoodsInfoViewAdapter = new GoodsInfoViewAdapter(this);
         final RecyclerView goods_info_view = findViewById(R.id.goods_info_list);
-        final GridLayoutManager gridLayoutManager = new GridLayoutManager(this,5);
+        final GridLayoutManager gridLayoutManager = new GridLayoutManager(this,GoodsInfoViewAdapter.spanCount);
         goods_info_view.setLayoutManager(gridLayoutManager);
         registerGlobalLayoutToRecyclerView(goods_info_view,getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration());
         mGoodsInfoViewAdapter.setOnItemClickListener(v -> {
@@ -672,38 +675,45 @@ public class MainActivity extends AppCompatActivity {
         final ImageView imageView = findViewById(R.id.printer_status);
         imageView.setOnClickListener(v -> {
             final Bitmap printer = BitmapFactory.decodeResource(getResources(),R.drawable.printer);
-            if (mPrintStatus){
-                mPrintStatus = false;
+            final Object ps = imageView.getTag();
+            boolean b = false;
+            if (ps instanceof Boolean)b = (boolean)ps;
+            if (b){
+                b = false;
                 imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(printer,15,15));
                 MyDialog.ToastMessage(imageView,"打印功能已关闭！",this,getWindow());
             }else{
-                mPrintStatus = true;
+                b = true;
                 imageView.setImageBitmap(printer);
                 MyDialog.ToastMessage(imageView,"打印功能已开启！",this,getWindow());
             }
-            saveAndShowPrintStatus(imageView,mPrintStatus,true);
+            saveAndShowPrintStatus(b,true);
         });
-        saveAndShowPrintStatus(imageView,false,false);
+        saveAndShowPrintStatus(false,false);
+        mPrinterStatusIv = imageView;
     }
-    private void saveAndShowPrintStatus(final ImageView imageView,boolean print_s,boolean type){
+    private void saveAndShowPrintStatus(boolean print_s,boolean type){
         final JSONObject object = new JSONObject();
         final StringBuilder err = new StringBuilder();
-        if (type){
-            object.put("v",print_s);
-            if (!SQLiteHelper.saveLocalParameter("print_s",object,"打印开关",err)){
-                MyDialog.ToastMessage(imageView,"保存打印状态错误:" + err,this,getWindow());
-            }
-        }else {
-            if (SQLiteHelper.getLocalParameter("print_s",object)){
-                if (imageView != null && !object.isEmpty()){
-                    boolean status = object.getBooleanValue("v");
-                    final Bitmap printer = BitmapFactory.decodeResource(getResources(),R.drawable.printer);
-                    if (status){
-                        imageView.setImageBitmap(printer);
-                    }else {
-                        imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(printer,15,15));
+        final ImageView imageView = mPrinterStatusIv;
+        if (null != imageView){
+            if (type){
+                object.put("v",print_s);
+                if (!SQLiteHelper.saveLocalParameter("print_s",object,"打印开关",err)){
+                    MyDialog.ToastMessage(imageView,"保存打印状态错误:" + err,this,getWindow());
+                }
+            }else {
+                if (SQLiteHelper.getLocalParameter("print_s",object)){
+                    if (!object.isEmpty()){
+                        boolean status = object.getBooleanValue("v");
+                        final Bitmap printer = BitmapFactory.decodeResource(getResources(),R.drawable.printer);
+                        if (status){
+                            imageView.setImageBitmap(printer);
+                        }else {
+                            imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(printer,15,15));
+                        }
+                        imageView.setTag(status);
                     }
-                    mPrintStatus = status;
                 }
             }
         }
@@ -769,16 +779,14 @@ public class MainActivity extends AppCompatActivity {
     private void clearVipInfo(){
         if (mVipInfo != null){
             mVipInfo = null;
-
-            registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray_subtransparent),mSaleGoodsViewAdapter));
-
-            LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
+            final LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
             vip_info_linearLayout.setVisibility(View.GONE);
             ((TextView)vip_info_linearLayout.findViewById(R.id.vip_name)).setText(getText(R.string.space_sz));
             ((TextView)vip_info_linearLayout.findViewById(R.id.vip_phone_num)).setText(getText(R.string.space_sz));
             if (!mSaleGoodsViewAdapter.getDatas().isEmpty()){
                 mSaleGoodsViewAdapter.deleteVipDiscountRecord();
             }
+            registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray_subtransparent),mSaleGoodsViewAdapter));
         }
     }
     private void registerGlobalLayoutToRecyclerView(@NonNull final View view,final float size,@NonNull final SuperItemDecoration superItemDecoration){
@@ -789,7 +797,7 @@ public class MainActivity extends AppCompatActivity {
                 vertical_counts = viewHeight / m_height;
                 per_vertical_space = vertical_space / (vertical_counts != 0 ? vertical_counts:1);
 
-                return (int)per_vertical_space;
+                return (int)Utils.formatDouble(per_vertical_space,0);
             }
             @Override
             public void onGlobalLayout() {
@@ -894,7 +902,13 @@ public class MainActivity extends AppCompatActivity {
         return mUrl;
     }
     public boolean getPrintStatus(){
-        return mPrintStatus;
+        if (mPrinterStatusIv != null){
+            final Object o = mPrinterStatusIv.getTag();
+            if (o instanceof Boolean){
+                return (boolean)o;
+            }
+        }
+        return false;
     }
     public void disposeHangBill(){
         final Button tmp_order = findViewById(R.id.tmp_order);
@@ -1035,6 +1049,7 @@ public class MainActivity extends AppCompatActivity {
             MyDialog.ToastMessage("选择商品错误：" + content.getString("info"),this,null);
         }
     }
+    public ImageView getPrinterStatusIv(){return mPrinterStatusIv;}
 
     private static class Myhandler extends Handler {
         private WeakReference<MainActivity> weakHandler;

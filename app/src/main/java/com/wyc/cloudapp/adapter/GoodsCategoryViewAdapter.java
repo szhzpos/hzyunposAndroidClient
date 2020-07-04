@@ -17,7 +17,7 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 
-public class GoodsCategoryViewAdapter extends RecyclerView.Adapter<GoodsCategoryViewAdapter.MyViewHolder> {
+public class GoodsCategoryViewAdapter extends RecyclerView.Adapter<GoodsCategoryViewAdapter.MyViewHolder> implements View.OnClickListener{
     private MainActivity mContext;
     private JSONArray mDatas;
     private View mCurrentItemView;//当前选择的类别item
@@ -31,6 +31,41 @@ public class GoodsCategoryViewAdapter extends RecyclerView.Adapter<GoodsCategory
         mChildGoodsCategoryView = v;
         laodChildShow();
     }
+
+    @Override
+    public void onClick(View view) {
+        TextView name,category_id;
+        if (null != mCurrentItemView){
+            if (mCurrentItemView != view){
+                mCurrentItemView.setBackgroundColor(mContext.getResources().getColor(R.color.white,null));
+                name = mCurrentItemView.findViewById(R.id.category_name);
+                name.setTextColor(mContext.getResources().getColor(R.color.blue,null));
+
+                mCurrentItemView = view;
+                mCurrentItemView.setBackgroundColor(mContext.getResources().getColor(R.color.blue,null));
+                name = mCurrentItemView.findViewById(R.id.category_name);
+                name.setTextColor(mContext.getResources().getColor(R.color.white,null));
+            }
+        }else{
+            view.setBackgroundColor(mContext.getResources().getColor(R.color.blue,null));
+            name = view.findViewById(R.id.category_name);
+            name.setTextColor(mContext.getResources().getColor(R.color.white,null));
+            mCurrentItemView = view;
+        }
+
+        category_id = view.findViewById(R.id.category_id);
+        if (null != mGoodsInfoAdapter && category_id != null){
+            int id = -1;
+            try {
+                id =  Integer.valueOf(category_id.getText().toString());
+            }catch (NumberFormatException e){
+                e.printStackTrace();
+            }
+            mGoodsInfoAdapter.setDatas(id);
+            showSecGoodsType();
+        }
+    }
+
     static class MyViewHolder extends RecyclerView.ViewHolder {
         private TextView category_id,category_name;
         private View mCurrentLayoutItemView;//当前布局的item
@@ -52,39 +87,8 @@ public class GoodsCategoryViewAdapter extends RecyclerView.Adapter<GoodsCategory
         }else{
             itemView.setLayoutParams(new RecyclerView.LayoutParams(88,ViewGroup.LayoutParams.MATCH_PARENT));
         }
+        itemView.setOnClickListener(this);
 
-        itemView.setOnClickListener(view -> {
-            TextView name,category_id;
-            if (null != mCurrentItemView){
-                if (mCurrentItemView != view){
-                    mCurrentItemView.setBackgroundColor(mContext.getResources().getColor(R.color.white,null));
-                    name = mCurrentItemView.findViewById(R.id.category_name);
-                    name.setTextColor(mContext.getResources().getColor(R.color.blue,null));
-
-                    mCurrentItemView = view;
-                    mCurrentItemView.setBackgroundColor(mContext.getResources().getColor(R.color.blue,null));
-                    name = mCurrentItemView.findViewById(R.id.category_name);
-                    name.setTextColor(mContext.getResources().getColor(R.color.white,null));
-                }
-            }else{
-                view.setBackgroundColor(mContext.getResources().getColor(R.color.blue,null));
-                name = view.findViewById(R.id.category_name);
-                name.setTextColor(mContext.getResources().getColor(R.color.white,null));
-                mCurrentItemView = view;
-            }
-
-            category_id = view.findViewById(R.id.category_id);
-            if (null != mGoodsInfoAdapter && category_id != null){
-                int id = -1;
-                try {
-                    id =  Integer.valueOf(category_id.getText().toString());
-                }catch (NumberFormatException e){
-                    e.printStackTrace();
-                }
-                mGoodsInfoAdapter.setDatas(id);
-                showSecGoodsType();
-            }
-        });
         return new MyViewHolder(itemView);
     }
 

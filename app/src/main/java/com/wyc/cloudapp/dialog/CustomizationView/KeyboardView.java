@@ -13,7 +13,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import com.wyc.cloudapp.R;
-public final class KeyboardView extends LinearLayout {
+public final class KeyboardView extends LinearLayout implements View.OnClickListener {
     private Context mContext;
     private OnCurrentFocus mCurrentFocusListener;
     private Button mCancel,mOk;
@@ -84,14 +84,15 @@ public final class KeyboardView extends LinearLayout {
                             mOk = (Button) tmp_v;
                             break;
                         default:
-                            tmp_v.setOnClickListener(button_click);
+                            tmp_v.setOnClickListener(this);
                             break;
                     }
                 }
             }
     }
 
-    private View.OnClickListener button_click = v -> {
+    @Override
+    public void onClick(View v) {
         if (mCurrentFocusListener != null){
             final EditText view =  mCurrentFocusListener.getFocusEditText();
             if (view != null) {
@@ -102,9 +103,9 @@ public final class KeyboardView extends LinearLayout {
                 editable.insert(index, sz_button);
             }
         }
-    };
+    }
 
-   public interface OnCurrentFocus{
+    public interface OnCurrentFocus{
        EditText getFocusEditText();
    }
    public void setCurrentFocusListenner(OnCurrentFocus onCurrentFocus){

@@ -1,16 +1,27 @@
 package com.wyc.cloudapp.print;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.graphics.PixelFormat;
+import android.graphics.Point;
 import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
+import android.view.Display;
+import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.view.WindowManager;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 
@@ -35,6 +46,8 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import android_serialport_api.SerialPort;
+
+import static android.content.Context.WINDOW_SERVICE;
 
 public final class Printer {
     private static final String  CHARACTER_SET = "GB2312";
@@ -412,5 +425,59 @@ public final class Printer {
                 }
             }
         });
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    public static void showPrintIcon(final MainActivity activity,boolean b){
+        final WindowManager m = (WindowManager)activity.getSystemService(WINDOW_SERVICE);
+        final ImageView ps = activity.getPrinterStatusIv();
+        if (m != null && ps != null){
+            if (!b){
+                m.removeView(ps);
+                return;
+            }
+
+            final Display display = m.getDefaultDisplay();
+            final Point point = new Point();
+            display.getSize(point);
+
+            final WindowManager.LayoutParams wLayou = new WindowManager.LayoutParams();
+            wLayou.type = WindowManager.LayoutParams.TYPE_PHONE;
+            wLayou.format= PixelFormat.RGBA_8888;
+            wLayou.gravity= Gravity.LEFT|Gravity.TOP;
+            wLayou.flags= WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL| WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;;
+            wLayou.height = 32;
+            wLayou.width = 32;
+            wLayou.x = point.x;
+            wLayou.y = point.y;
+            final ImageView imageView = new ImageView(activity);
+            imageView.setImageDrawable(activity.getDrawable(R.drawable.printer));
+            ps.setBackgroundColor(activity.getColor(R.color.appColor));
+            ps.setOnTouchListener(new View.OnTouchListener() {
+                private double touchX,touchY;
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    switch (event.getAction()){
+                        case MotionEvent.ACTION_DOWN:
+                            touchX = event.getX();
+                            touchY = event.getY();
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            m.updateViewLayout(ps,wLayou);
+                            break;
+                        case MotionEvent.ACTION_MOVE:
+                            wLayou.x = (int) (event.getRawX() - touchX);
+                            wLayou.y = (int) (event.getRawY() - touchY);
+                            m.updateViewLayout(ps,wLayou);
+                            break;
+                    }
+
+                    return false;
+                }
+            });
+            final ViewGroup viewParent = (ViewGroup) ps.getParent();
+            viewParent.removeView(ps);
+            m.addView(ps,wLayou);
+        }
     }
 }

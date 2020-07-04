@@ -110,10 +110,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
                     myViewHolder.goods_title.setTextColor(mContext.getColor(R.color.black));//需要重新设置颜色；不然重用之后内容颜色为重用之前的。
                 }
 
-                myViewHolder.mCurrentLayoutItemView.setOnTouchListener(new ClickListener(v -> {
-                    setCurrentItemIndexAndItemView(v);
-                    deleteSaleGoods(mCurrentItemIndex,0);
-                }, this::setSelectStatus));
+                myViewHolder.mCurrentLayoutItemView.setOnTouchListener(onTouchListener);
 
                 if (mCurrentItemIndex == i){
                     setSelectStatus(myViewHolder.mCurrentLayoutItemView);
@@ -127,6 +124,11 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
     public int getItemCount() {
         return mDatas == null ? 0 : mDatas.size();
     }
+
+    private ClickListener onTouchListener = new ClickListener(v -> {
+        setCurrentItemIndexAndItemView(v);
+        deleteSaleGoods(mCurrentItemIndex,0);
+    }, this::setSelectStatus);
 
 
     public void addSaleGoods(final JSONObject goods,final JSONObject vip){

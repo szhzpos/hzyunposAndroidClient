@@ -11,7 +11,7 @@ import android.widget.Button;
 import com.wyc.cloudapp.R;
 
 @SuppressLint("AppCompatCustomView")
-public class TmpOrderButton extends Button {
+public final class TmpOrderButton extends Button {
     private Paint mPaint;
     private Path mPath;
     private int mOrderNum;

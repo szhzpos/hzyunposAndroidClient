@@ -3,16 +3,20 @@ package com.wyc.cloudapp.dialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
+import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.os.Bundle;
 
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -30,6 +34,7 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
+import com.wyc.cloudapp.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -98,17 +103,13 @@ public class HangBillDialog extends DialogBaseOnMainActivityImp {
             });
     }
     private void initWindowSize(){
-        //初始化窗口尺寸
-        WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
+        final WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
         if (m != null){
-            Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
-            Point point = new Point();
-            d.getSize(point);
-            Window dialogWindow = this.getWindow();
+            final Window dialogWindow = this.getWindow();
             if (dialogWindow != null){
-                WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+                final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
                 dialogWindow.setGravity(Gravity.CENTER);
-                lp.height = (int)(0.8 * point.y);
+                lp.height = 584;
                 dialogWindow.setAttributes(lp);
             }
         }

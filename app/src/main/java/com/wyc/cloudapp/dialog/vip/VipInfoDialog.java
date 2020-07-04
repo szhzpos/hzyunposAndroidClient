@@ -46,9 +46,7 @@ public final class VipInfoDialog extends DialogBaseOnMainActivityImp {
     private TextView mVip_name,mVip_sex,mVip_p_num,mVip_card_id,mVip_balance,mVip_integral,mVipGrade,mVipDiscount;
     private Button mSearchBtn;
     private onYesOnclickListener mYesOnclickListener;//确定按钮被点击了的监听器
-    private boolean mPrintStatus = true;
     private Button mAddBtn;
-    private KeyboardView mKeyboard;
     public VipInfoDialog(@NonNull MainActivity context) {
         super(context,context.getString(R.string.vip_dialog_title_sz));
     }
@@ -73,7 +71,6 @@ public final class VipInfoDialog extends DialogBaseOnMainActivityImp {
         initSearchCondition();
         initAddVipBtn();
         initModifyBtn();
-        initPrinterStatus();
         initChargeBtn();
 
         //初始化数字键盘
@@ -108,7 +105,7 @@ public final class VipInfoDialog extends DialogBaseOnMainActivityImp {
             chargeBtn.setOnClickListener(view -> {
                 if (verifyVipDepositPermissions()){
                     if (mVip != null){
-                        final VipChargeDialogImp vipChargeDialogImp = new VipChargeDialogImp(mContext,mVip,mPrintStatus);
+                        final VipChargeDialogImp vipChargeDialogImp = new VipChargeDialogImp(mContext,mVip);
                         vipChargeDialogImp.setYesOnclickListener(dialog -> {
                             showVipInfo(dialog.getContent());
                             dialog.dismiss();
@@ -118,23 +115,6 @@ public final class VipInfoDialog extends DialogBaseOnMainActivityImp {
                     }
                 }
             });
-    }
-    private void initPrinterStatus(){
-        final ImageView imageView =  findViewById(R.id.v_printer_status);
-        if (null != imageView){
-            imageView.setOnClickListener(v -> {
-                Bitmap printer = BitmapFactory.decodeResource(mContext.getResources(),R.drawable.printer);
-                if (mPrintStatus){
-                    mPrintStatus = false;
-                    imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(printer,15,15));
-                    MyDialog.ToastMessage(imageView,"打印功能已关闭！",mContext,getWindow());
-                }else{
-                    mPrintStatus = true;
-                    imageView.setImageBitmap(printer);
-                    MyDialog.ToastMessage(imageView,"打印功能已开启！",mContext,getWindow());
-                }
-            });//打印状态
-        }
     }
 
     private boolean verifyVipModifyOrAddPermissions(){

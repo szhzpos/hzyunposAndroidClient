@@ -35,16 +35,13 @@ import java.lang.ref.WeakReference;
 import java.util.Date;
 import java.util.Locale;
 
-public class VipChargeDialogImp extends AbstractPayDialog {
+public final class VipChargeDialogImp extends AbstractPayDialog {
     private JSONObject mVip;
     private Myhandler mHandler;
-    private boolean mOpenCashbox = false;
     private PayMethodViewAdapter mPayMethodViewAdapter;
-    private boolean mPrintStatus = true;
-    VipChargeDialogImp(@NonNull MainActivity context, final JSONObject vip, boolean s) {
+    VipChargeDialogImp(@NonNull MainActivity context, final JSONObject vip) {
         super(context,context.getString(R.string.vip_charge_sz));
         mVip = vip;
-        mPrintStatus = s;
     }
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -60,6 +57,14 @@ public class VipChargeDialogImp extends AbstractPayDialog {
         mOk.setOnClickListener(view -> vip_charge());//父类默认会调用mYesOnclickListener接口，如果覆盖了记得单独调用mYesOnclickListener
 
         setHint(mContext.getString(R.string.c_amt_hint_sz));
+
+        Printer.showPrintIcon(mContext,true);
+    }
+
+    @Override
+    public void closeWindow(){
+        super.closeWindow();
+        Printer.showPrintIcon(mContext,false);
     }
 
     @Override
@@ -69,11 +74,6 @@ public class VipChargeDialogImp extends AbstractPayDialog {
         mPayMethodViewAdapter.setOnItemClickListener((v, pos) -> {
             mPayMethod = mPayMethodViewAdapter.getItem(pos);
             if (mPayMethod != null) {
-                Logger.d_json(mPayMethod.toString());
-
-                //开钱箱
-                mOpenCashbox = PayMethodViewAdapter.CASH_METHOD_ID.equals(mPayMethod.getString("pay_method_id"));
-
                 if (mPayMethod.getIntValue("is_check") != 2){ //显示付款码输入框
                     mPayCode.setVisibility(View.VISIBLE);
                     mPayCode.requestFocus();
@@ -339,7 +339,7 @@ public class VipChargeDialogImp extends AbstractPayDialog {
                                                                 mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,err.toString()).sendToTarget();
                                                             }else {
                                                                 mHandler.obtainMessage(MessageID.VIP_C_SUCCESS_ID,member).sendToTarget();
-                                                                if (mPrintStatus){
+                                                                if (mContext.getPrintStatus()){
                                                                     Printer.print(mContext,get_print_content(mContext,order_code));
                                                                 }
                                                             }

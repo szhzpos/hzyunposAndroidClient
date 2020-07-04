@@ -18,13 +18,10 @@ import com.wyc.cloudapp.utils.Utils;
 public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int HEADER = -1;
     private static final int CONTENT = -2;
-    private static final int FOOTER = -3;
     private Context mContext;
     private JSONArray mDatas;
     private View mCurrentItemView;
     private int mCurrentItemIndex;
-    private OnItemClickListener mOnItemClickListener;
-    private OnItemDoubleClickListener mOnItemDoubleClickListener;
     public PayDetailViewAdapter(Context context){
         this.mContext = context;
         mDatas = new JSONArray();
@@ -83,14 +80,7 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
                 contentHolder.mCurrentLayoutItemView.setOnTouchListener(new ClickListener(v -> {
                     setCurrentItemIndexAndItemView(v);
                     deletePayDetail(mCurrentItemIndex);
-                    if (mOnItemDoubleClickListener != null){
-                        mOnItemDoubleClickListener.onClick(v,i);
-                    }
-                }, v -> {
-                    setSelectStatus(v);
-                    if (mOnItemClickListener != null){
-                        mOnItemClickListener.onClick(v,i); }
-                }));
+                }, this::setSelectStatus));
 
                 if (mCurrentItemIndex == i){
                     setSelectStatus(contentHolder.mCurrentLayoutItemView);
@@ -113,19 +103,6 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
         return CONTENT;
     }
 
-    public interface OnItemClickListener{
-        void onClick(View v,int pos);
-    }
-    public interface OnItemDoubleClickListener{
-        void onClick(View v,int pos);
-    }
-
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener){
-        this.mOnItemClickListener = onItemClickListener;
-    }
-    public void setOnItemDoubleClickListener(OnItemDoubleClickListener onItemDoubleClickListener){
-        this.mOnItemDoubleClickListener = onItemDoubleClickListener;
-    }
     private void setCurrentItemIndexAndItemView(View v){
         TextView tv_id;
         mCurrentItemView = v;
@@ -196,12 +173,8 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
         return null;
     }
-    public void clearPayDetail(){
-        mDatas.fluentClear();
-        notifyDataSetChanged();
-    }
 
-    public double getPaySumAmt(){//验证付款金额
+    public double getPaySumAmt(){
         double amt = 0.0;
         for (int i = 0,size = mDatas.size();i < size;i++){
             JSONObject object = mDatas.getJSONObject(i);

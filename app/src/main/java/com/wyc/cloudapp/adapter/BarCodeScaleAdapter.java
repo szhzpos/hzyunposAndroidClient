@@ -21,7 +21,7 @@ import com.wyc.cloudapp.utils.Utils;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements View.OnClickListener,CompoundButton.OnCheckedChangeListener {
     private static final int HEADER = -1;
     private static final int CONTENT = -2;
     private Context mContext;
@@ -32,6 +32,26 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         mDatas = new JSONArray();
         mCurrentItemIndexMap = new HashMap<>();
     }
+
+    @Override
+    public void onClick(View v) {
+        setSelectStatus(v);
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        final View v = (View) buttonView.getParent();
+        final TextView _id = v.findViewById(R.id._id),down_status = v.findViewById(R.id.down_status);
+        if (_id != null && null != down_status){
+            final String sz_id = _id.getText().toString();
+            if (isChecked){
+                mCurrentItemIndexMap.put(sz_id,down_status);
+            }else {
+                mCurrentItemIndexMap.remove(sz_id);
+            }
+        }
+    }
+
     static class ContentHolder extends RecyclerView.ViewHolder {
         private TextView _id,row_id,product_type,scale_ip,scale_port,g_c_name,g_c_id,down_status,scale_rmk;
         private CheckBox s_checked;
@@ -76,8 +96,8 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             contentHolder.scale_rmk.setText(content.getString("remark"));
 
             contentHolder.s_checked.setChecked(false);
-            contentHolder.s_checked.setOnCheckedChangeListener(checkedChangeListener);
-            contentHolder.mCurrentLayoutItemView.setOnClickListener(itemClick);
+            contentHolder.s_checked.setOnCheckedChangeListener(this);
+            contentHolder.mCurrentLayoutItemView.setOnClickListener(this);
         }
     }
 
@@ -90,20 +110,6 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public int getItemViewType(int position){
         return CONTENT;
     }
-
-    private CompoundButton.OnCheckedChangeListener checkedChangeListener = (buttonView, isChecked) -> {
-        final View v = (View) buttonView.getParent();
-        final TextView _id = v.findViewById(R.id._id),down_status = v.findViewById(R.id.down_status);
-        if (_id != null && null != down_status){
-            final String sz_id = _id.getText().toString();
-            if (isChecked){
-                mCurrentItemIndexMap.put(sz_id,down_status);
-            }else {
-                mCurrentItemIndexMap.remove(sz_id);
-            }
-        }
-    };
-    private View.OnClickListener itemClick = this::setSelectStatus;
 
     public JSONArray getCurrentScalseInfos() {
         final JSONArray scalses = new JSONArray();

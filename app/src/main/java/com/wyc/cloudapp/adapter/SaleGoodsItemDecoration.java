@@ -5,16 +5,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.view.View;
-import android.widget.Adapter;
 
 import androidx.annotation.NonNull;
-import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.logger.Logger;
 
 public class SaleGoodsItemDecoration extends SuperItemDecoration {
     private SaleGoodsViewAdapter mSaleGoodsViewAdapter;
@@ -47,9 +41,9 @@ public class SaleGoodsItemDecoration extends SuperItemDecoration {
         final RecyclerView.LayoutManager manager = parent.getLayoutManager();
         if (manager instanceof LinearLayoutManager) {
             if (((LinearLayoutManager) manager).getOrientation() == LinearLayoutManager.VERTICAL) {
-                drawVertical(c, parent);
+                drawVerticalPadding(c, parent);
             } else {
-                drawHorizontal(c, parent);
+                drawHorizontalPadding(c, parent);
             }
         }
     }
@@ -58,23 +52,18 @@ public class SaleGoodsItemDecoration extends SuperItemDecoration {
     public void getItemOffsets(@NonNull Rect outRect,@NonNull View view,@NonNull RecyclerView parent,@NonNull RecyclerView.State state) {
         super.getItemOffsets(outRect, view, parent, state);
 
-        RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
+        final RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
         if (layoutManager instanceof LinearLayoutManager) {
-            final RecyclerView.Adapter adapter = parent.getAdapter();
-            if (null != adapter){
-                if (((LinearLayoutManager) layoutManager).getOrientation() == LinearLayoutManager.HORIZONTAL) {
-                    if (parent.getChildAdapterPosition(view) != adapter.getItemCount() - 1)
-                        outRect.set(0, 0,mSpace, 0);
-                } else {
-                    if (parent.getChildAdapterPosition(view) != adapter.getItemCount() - 1)
-                        outRect.set(0, 0, 0,mSpace);
-                }
+            if (((LinearLayoutManager) layoutManager).getOrientation() == LinearLayoutManager.HORIZONTAL) {
+                outRect.set(0, 0,mSpace, 0);
+            } else {
+                outRect.set(0, 0, 0,mSpace);
             }
         }
     }
 
     @Override
-    protected void drawVertical(final Canvas c, final RecyclerView parent) {
+    protected void drawVerticalPadding(final Canvas c, final RecyclerView parent) {
         final int left = parent.getPaddingLeft();
         final int right = parent.getWidth() - parent.getPaddingRight();
         final int childCount = parent.getChildCount();
@@ -87,7 +76,7 @@ public class SaleGoodsItemDecoration extends SuperItemDecoration {
         }
     }
 
-    protected void drawHorizontal(final Canvas c,final RecyclerView parent) {
+    protected void drawHorizontalPadding(final Canvas c, final RecyclerView parent) {
         final int top = parent.getPaddingTop();
         final int bottom = parent.getHeight() - parent.getPaddingBottom();
         final int childCount = parent.getChildCount();
@@ -96,7 +85,7 @@ public class SaleGoodsItemDecoration extends SuperItemDecoration {
             final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
             final int left = child.getRight() + params.rightMargin + Math.round(child.getTranslationX());
             final int right =(left + mSpace);
-            c.drawRect(left, bottom + 1, right, bottom, mPaint);
+            c.drawRect(left, top, right, bottom, mPaint);
         }
     }
 }
