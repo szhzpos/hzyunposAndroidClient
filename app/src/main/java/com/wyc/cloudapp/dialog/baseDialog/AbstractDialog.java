@@ -3,10 +3,15 @@ package com.wyc.cloudapp.dialog.baseDialog;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Point;
 import android.os.Bundle;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -18,23 +23,47 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.logger.Logger;
 
+import java.util.Arrays;
+
 public abstract class AbstractDialog extends Dialog {
     protected Context mContext;
     protected String mTitle;
+    private WindowManager mWM;
+    private WindowManager.LayoutParams mLayoutParams;
+    private View mRootView;
     private JEventLoop mEventLoop;
     private int mCode;
+    private double mTouchX,mTouchY;
     private AbstractDialog(@NonNull Context context){
         super(context);
-        mContext = context;
+        init(context);
     }
     AbstractDialog(@NonNull Context context, final String title, int style){
         super(context,style);
-        mContext = context;
+        init(context);
         mTitle = title;
     }
     AbstractDialog(@NonNull Context context, final String title) {
         this(context);
         mTitle = title;
+    }
+
+    private void init(final Context context){
+        mContext = context;
+        mWM = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+    }
+
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        final Display display = mWM.getDefaultDisplay();
+        final Point point = new Point();
+        display.getSize(point);
+
+        final Window window = getWindow();
+        mRootView =  window.getDecorView();
+        mLayoutParams = (WindowManager.LayoutParams)mRootView.getLayoutParams();
     }
 
     @Override
@@ -55,6 +84,30 @@ public abstract class AbstractDialog extends Dialog {
         if (mEventLoop != null)mEventLoop.done(mCode);
     }
 
+    @Override
+    public boolean onTouchEvent(@NonNull MotionEvent event) {
+
+        Logger.d("action:%d",event.getAction());
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                mTouchX = event.getX();
+                mTouchY = event.getY();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                Logger.d("X:%f,Y:%f",event.getX(),event.getY());
+                mLayoutParams.x = (int) (event.getRawX() - mTouchY);
+                mLayoutParams.y = (int) (event.getRawY() - mTouchY);
+                mWM.updateViewLayout(mRootView,mLayoutParams);
+                break;
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+
+                break;
+            default:
+        }
+        return super.onTouchEvent(event);
+    }
+
     public void setCodeAndExit(int code ){
         mCode = code;
         dismiss();
@@ -71,28 +124,6 @@ public abstract class AbstractDialog extends Dialog {
         setContentView(R.layout.base_dialog_layout);
         final LinearLayout main_layout = findViewById(R.id.dialog_main_layout);
         if (null != main_layout) {
-            final TextView title_tv = main_layout.findViewById(R.id.title);
-            title_tv.setOnTouchListener(new View.OnTouchListener() {
-                private boolean mPress;
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    Logger.d("action:%d",event.getAction());
-                    switch (event.getAction()){
-                        case MotionEvent.ACTION_DOWN:
-                            mPress = true;
-                            break;
-                        case MotionEvent.ACTION_UP:
-                            mPress = false;
-                            break;
-                        case MotionEvent.ACTION_MOVE:
-                            if (mPress)Logger.d("X:%f,Y:%f",event.getX(),event.getY());
-                            break;
-
-                    }
-                    v.performClick();
-                    return false;
-                }
-            });
             final View dialog_content = View.inflate(mContext,getContentLayoutId(), null);
             if (dialog_content != null)
                 main_layout.addView(dialog_content, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));

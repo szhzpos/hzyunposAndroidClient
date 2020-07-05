@@ -6,6 +6,8 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.hardware.usb.UsbConstants;
@@ -14,6 +16,7 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
+import android.provider.Settings;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -22,6 +25,7 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 
@@ -50,6 +54,7 @@ import android_serialport_api.SerialPort;
 import static android.content.Context.WINDOW_SERVICE;
 
 public final class Printer {
+    private static ImageView mICN;
     private static final String  CHARACTER_SET = "GB2312";
     public static final byte[][] byteCommands = {
             { 0x1b, 0x4d, 0x00 },// 标准ASCII字体
@@ -269,7 +274,6 @@ public final class Printer {
 
     public static void print(@NonNull final Activity context, @NonNull final String content){
         if (content.isEmpty())return;
-
         try {
             print(context,content.getBytes(CHARACTER_SET));
         } catch (UnsupportedEncodingException e) {
@@ -429,15 +433,17 @@ public final class Printer {
 
     @SuppressLint("ClickableViewAccessibility")
     public static void showPrintIcon(final MainActivity activity,boolean b){
-        final WindowManager m = (WindowManager)activity.getSystemService(WINDOW_SERVICE);
-        final ImageView ps = activity.getPrinterStatusIv();
-        if (m != null && ps != null){
-            if (!b){
-                m.removeView(ps);
+        if (!Settings.canDrawOverlays(activity))return;
+
+        final WindowManager wm = (WindowManager)activity.getSystemService(WINDOW_SERVICE);
+        if (wm != null){
+            if (!b && mICN != null){
+                wm.removeViewImmediate(mICN);
+                mICN = null;
                 return;
             }
 
-            final Display display = m.getDefaultDisplay();
+            final Display display = wm.getDefaultDisplay();
             final Point point = new Point();
             display.getSize(point);
 
@@ -449,35 +455,52 @@ public final class Printer {
             wLayou.height = 32;
             wLayou.width = 32;
             wLayou.x = point.x;
-            wLayou.y = point.y;
-            final ImageView imageView = new ImageView(activity);
-            imageView.setImageDrawable(activity.getDrawable(R.drawable.printer));
-            ps.setBackgroundColor(activity.getColor(R.color.appColor));
-            ps.setOnTouchListener(new View.OnTouchListener() {
+            wLayou.y = point.y / 2;
+
+            final Bitmap printer = BitmapFactory.decodeResource(activity.getResources(),R.drawable.printer);
+            if (mICN  != null)wm.removeViewImmediate(mICN);
+            mICN = new ImageView(activity);
+            if (!activity.getPrintStatus()){
+                if (printer != null)mICN.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(printer,15,15));
+            }else
+                mICN.setImageDrawable(activity.getDrawable(R.drawable.printer));
+
+            mICN.setBackgroundColor(activity.getColor(R.color.appColor));
+            mICN.setOnTouchListener(new View.OnTouchListener() {
                 private double touchX,touchY;
+                private boolean mIsMove;
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     switch (event.getAction()){
                         case MotionEvent.ACTION_DOWN:
+                            mIsMove = false;
                             touchX = event.getX();
                             touchY = event.getY();
                             break;
                         case MotionEvent.ACTION_UP:
-                            m.updateViewLayout(ps,wLayou);
+                            if (!mIsMove){
+                                activity.triggerPsClick();
+                                if (null != mICN && null != printer){
+                                    if (activity.getPrintStatus()){
+                                        mICN.setImageBitmap(printer);
+                                    }else {
+                                        mICN.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(printer,15,15));
+                                    }
+                                }
+                            }
+                            wm.updateViewLayout(mICN,wLayou);
                             break;
                         case MotionEvent.ACTION_MOVE:
+                            if (!mIsMove)mIsMove = true;
                             wLayou.x = (int) (event.getRawX() - touchX);
                             wLayou.y = (int) (event.getRawY() - touchY);
-                            m.updateViewLayout(ps,wLayou);
+                            wm.updateViewLayout(mICN,wLayou);
                             break;
                     }
-
                     return false;
                 }
             });
-            final ViewGroup viewParent = (ViewGroup) ps.getParent();
-            viewParent.removeView(ps);
-            m.addView(ps,wLayou);
+            wm.addView(mICN,wLayou);
         }
     }
 }

@@ -49,7 +49,17 @@ public class TransferDialog extends DialogBaseOnMainActivityImp {
     protected int getContentLayoutId() {
         return R.layout.transfer_dialog_layout;
     }
+    @Override
+    public void dismiss(){
+        super.dismiss();
+        Printer.showPrintIcon(mContext,false);
+    }
 
+    @Override
+    public void show(){
+        super.show();
+        Printer.showPrintIcon(mContext,true);
+    }
     private void initTransferInfoList(){
         final RecyclerView transfer_list = findViewById(R.id.transfer_info_list);
         mTransferDetailsAdapter.setDatas(mContext.getCashierInfo().getString("cas_id"));
@@ -132,7 +142,6 @@ public class TransferDialog extends DialogBaseOnMainActivityImp {
     public void setFinishListener(onFinishListener listener){
         mFinishListener = listener;
     }
-
     public void verifyTransfer(){
         final StringBuilder info  = new StringBuilder();
         int code = mTransferDetailsAdapter.verifyTransfer(info);
@@ -159,7 +168,6 @@ public class TransferDialog extends DialogBaseOnMainActivityImp {
                 break;
         }
     }
-
     private static String c_format_58(final Context context, final JSONObject format_info, final JSONObject order_info,boolean no_visible){
         Logger.d_json(order_info.toJSONString());
 
@@ -303,7 +311,6 @@ public class TransferDialog extends DialogBaseOnMainActivityImp {
 
         return content;
     }
-
     private static boolean getPrintOrderInfo(final String ti_code,final JSONObject order_info) {
         boolean code = false;
         String details_where_sql = " where ti_code = '"+ ti_code +"'",

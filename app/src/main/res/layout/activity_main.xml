@@ -155,13 +155,14 @@
                 android:id="@+id/network_status"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
+                android:layout_marginEnd="@dimen/margin_18"
                 android:contentDescription="@string/space_sz"
                 app:srcCompat="@drawable/network" />
 
             <ImageView
                 android:id="@+id/printer_status"
-                android:layout_width="@dimen/width_78"
-                android:layout_height="32dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:contentDescription="@string/space_sz"
                 app:srcCompat="@drawable/printer" />
 
@@ -169,6 +170,7 @@
                 android:id="@+id/upload_status"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
+                android:layout_marginStart="@dimen/margin_18"
                 android:contentDescription="@string/space_sz"
                 app:srcCompat="@drawable/transfer" />
 

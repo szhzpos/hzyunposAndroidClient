@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.dialog.vip;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -181,9 +182,10 @@ public final class VipInfoDialog extends DialogBaseOnMainActivityImp {
                     mYesOnclickListener.onYesClick(VipInfoDialog.this);
             }
         });
-        mSearchBtn = (Button) view.getOkBtn();
+        mSearchBtn =  view.getOkBtn();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void initSearchCondition(){
         mSearchContent = findViewById(R.id.search_content);
         mSearchContent.setSelectAllOnFocus(true);

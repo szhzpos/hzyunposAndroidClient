@@ -290,8 +290,6 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
          if (null != transfer_retail_codes && null != transfer_refund_codes && null != transfer_deposit_codes ){
              if (mTransferOrderCodes == null)mTransferOrderCodes = new JSONArray();
 
-             Logger.d(transfer_retail_codes.size());
-
              mTransferSumInfo.put("order_num",transfer_retail_codes.size());
              mTransferSumInfo.put("refund_num",transfer_refund_codes.size());
              mTransferSumInfo.put("recharge_num",transfer_deposit_codes.size());

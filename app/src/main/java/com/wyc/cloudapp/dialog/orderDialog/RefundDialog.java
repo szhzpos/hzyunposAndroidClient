@@ -69,6 +69,11 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
         return R.layout.refund_dialog_layout;
     }
     @Override
+    public void dismiss(){
+        super.dismiss();
+        Printer.showPrintIcon(mContext,false);
+    }
+    @Override
     public void show(){
         super.show();
         if (mRefundGoodsInfoAdapter.isSingleRefundStatus() && mRefundBtn != null){
@@ -76,6 +81,7 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
         }else {
             if (mQueryBtn != null && mOrderCode != null && mOrderCode.length() != 0)mQueryBtn.callOnClick();
         }
+        Printer.showPrintIcon(mContext,true);
     }
 
     private void initRemarkBtn(){
@@ -328,6 +334,7 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
 
         }).setNoOnclickListener(mContext.getString(R.string.cancel),MyDialog::dismiss).show();
     }
+
     private void refundWithNotCheck(final StringBuilder err){
         if (updateFromRefundResult(null,mOrderCode,mRefundCode,err)){
             if (mRefundGoodsInfoAdapter.isSingleRefundStatus()){//单品退货允许离线操作,保存单据之后再发起上传单据消息启动异步上传
@@ -378,7 +385,6 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
                 break;
         }
     }
-
     private void initVipInfoLayout(){
         final LinearLayout vip_info_layout = findViewById(R.id.vip_info_layout);
         if (null != vip_info_layout){
@@ -394,7 +400,6 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
             }
         }
     }
-
     public static String generateRefundOrderCode(Context context,final String pos_num){
         String prefix = "T" + pos_num + "-" + new SimpleDateFormat("yyMMddHHmmss",Locale.CHINA).format(new Date()) + "-",order_code ;
         JSONObject orders= new JSONObject();
@@ -407,7 +412,6 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
         }
         return order_code;
     }
-
     private boolean generateRefundData(final @NonNull JSONObject refund_info){
         final String stores_id = mContext.getStoreInfo().getString("stores_id"),pos_num = mContext.getPosNum(),cashier_id = mContext.getCashierInfo().getString("cas_id"),
                 cashier_name = mContext.getCashierInfo().getString("cas_name"),sz_refund_remark = mRemarkEt == null ? "" : mRemarkEt.getText().toString();
@@ -514,7 +518,6 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
 
         return SQLiteHelper.execSQLByBatchFromJson(data,tables,Arrays.asList(refund_order_cols,refund_order_goods_cols,refund_order_pays_cols),err,0);
     }
-
     public static boolean uploadRefundOrder(final String appid,final String url,final String appSecret,final String order_code,final String ro_code,@NonNull final StringBuilder err){
         final String refund_order_sql = "SELECT refund_total total,member_id,remark,card_code,name,mobile,\n" +
                 "       pos_code,addtime,cashier_id,type,total order_money,order_code,ro_code,stores_id FROM refund_order where order_status = 2 and upload_status = 1 and ro_code = '" + ro_code +"' and (ifnull(order_code,'') = '" + order_code +"')",
@@ -580,7 +583,6 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
         }
         return code;
     }
-
     private boolean updateFromRefundResult(JSONArray refund_money_info,final String order_code,final String ro_code,final StringBuilder err){
         final List<String> update_sqls_list = new ArrayList<>();
         final StringBuilder update_sqls = new StringBuilder();
@@ -606,7 +608,6 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
         }
         return SQLiteHelper.execBatchUpdateSql(update_sqls_list,err);
     }
-
     private static String c_format_58(final Context context, final JSONObject format_info, final JSONObject order_info, boolean is_open_cash_box){
 
         final StringBuilder info = new StringBuilder();
@@ -707,32 +708,32 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
         return info.toString();
     }
     static String get_print_content(final MainActivity context,final String refund_code,boolean is_open_cash_box){
-        final JSONObject print_format_info = new JSONObject(),order_info = new JSONObject();
         String content = "";
-        if (SQLiteHelper.getLocalParameter("r_f_info",print_format_info)){
-            if (print_format_info.getIntValue("f") == R.id.refund_format){
-                if (getPrintOrderInfo(refund_code,order_info)){
-                    switch (print_format_info.getIntValue("f_z")){
-                        case R.id.f_58:
-                            content = c_format_58(context,print_format_info,order_info,is_open_cash_box);
-                            break;
-                        case R.id.f_76:
-                            break;
-                        case R.id.f_80:
-                            break;
+        if (context.getPrintStatus()){
+            final JSONObject print_format_info = new JSONObject(),order_info = new JSONObject();
+            if (SQLiteHelper.getLocalParameter("r_f_info",print_format_info)){
+                if (print_format_info.getIntValue("f") == R.id.refund_format){
+                    if (getPrintOrderInfo(refund_code,order_info)){
+                        switch (print_format_info.getIntValue("f_z")){
+                            case R.id.f_58:
+                                content = c_format_58(context,print_format_info,order_info,is_open_cash_box);
+                                break;
+                            case R.id.f_76:
+                                break;
+                            case R.id.f_80:
+                                break;
+                        }
+                    }else {
+                        context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_c_err_hint_sz,order_info.getString("info")), context,context.getWindow()));
                     }
                 }else {
-                    context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_c_err_hint_sz,order_info.getString("info")), context,context.getWindow()));
+                    context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.f_not_sz), context,context.getWindow()));
                 }
-            }else {
-                context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.f_not_sz), context,context.getWindow()));
-            }
-        }else
-            context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_f_err_hint_sz,print_format_info.getString("info")), context,context.getWindow()));
-
+            }else
+                context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_f_err_hint_sz,print_format_info.getString("info")), context,context.getWindow()));
+        }
         return content;
     }
-
     private static boolean getPrintOrderInfo(final String refund_code,final JSONObject order_info){
         boolean code = false;
         if (SQLiteHelper.execSql(order_info,"SELECT a.ro_code,b.cas_name,a.pos_code pos_num,a.stores_id,c.stores_name,datetime(a.addtime, 'unixepoch', 'localtime') oper_time,c.telphone,c.region" +

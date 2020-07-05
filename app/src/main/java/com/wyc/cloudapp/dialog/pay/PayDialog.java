@@ -104,11 +104,13 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
     @Override
     public void dismiss(){
         super.dismiss();
+        Printer.showPrintIcon(mContext,false);
     }
     @Override
     public void show(){
         super.show();
         refreshContent();
+        Printer.showPrintIcon(mContext,true);
     }
     @Override
     public void onAttachedToWindow(){
@@ -1192,30 +1194,31 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
         return info.toString();
     }
     public static String get_print_content(final MainActivity context,final String order_code,boolean is_open_cash_box){
-        final JSONObject print_format_info = new JSONObject();
         String content = "";
-        if (SQLiteHelper.getLocalParameter("c_f_info",print_format_info)){
-            if (print_format_info.getIntValue("f") == R.id.checkout_format){
-                final JSONObject order_info = new JSONObject();
-                if (getPrintOrderInfo(order_code,order_info)){
-                    switch (print_format_info.getIntValue("f_z")){
-                        case R.id.f_58:
-                            content = c_format_58(context,print_format_info,order_info,is_open_cash_box);
-                            break;
-                        case R.id.f_76:
-                            break;
-                        case R.id.f_80:
-                            break;
+        if (context.getPrintStatus()){
+            final JSONObject print_format_info = new JSONObject();
+            if (SQLiteHelper.getLocalParameter("c_f_info",print_format_info)){
+                if (print_format_info.getIntValue("f") == R.id.checkout_format){
+                    final JSONObject order_info = new JSONObject();
+                    if (getPrintOrderInfo(order_code,order_info)){
+                        switch (print_format_info.getIntValue("f_z")){
+                            case R.id.f_58:
+                                content = c_format_58(context,print_format_info,order_info,is_open_cash_box);
+                                break;
+                            case R.id.f_76:
+                                break;
+                            case R.id.f_80:
+                                break;
+                        }
+                    }else {
+                        context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_c_err_hint_sz,order_info.getString("info")), context,context.getWindow()));
                     }
                 }else {
-                    context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_c_err_hint_sz,order_info.getString("info")), context,context.getWindow()));
+                    context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.f_not_sz), context,context.getWindow()));
                 }
-            }else {
-                context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.f_not_sz), context,context.getWindow()));
-            }
-        }else
-            context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_f_err_hint_sz,print_format_info.getString("info")), context,context.getWindow()));
-
+            }else
+                context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_f_err_hint_sz,print_format_info.getString("info")), context,context.getWindow()));
+        }
         return content;
     }
 

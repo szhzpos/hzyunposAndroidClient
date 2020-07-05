@@ -1,13 +1,11 @@
 package com.wyc.cloudapp.dialog.CustomizationView;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.text.Editable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -15,27 +13,21 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.wyc.cloudapp.R;
 public final class KeyboardView extends LinearLayout implements View.OnClickListener {
     private Context mContext;
-    private OnCurrentFocus mCurrentFocusListener;
+    private OnCurrentFocusListener mCurrentFocusListener;
     private Button mCancel,mOk;
     public KeyboardView(Context context) {
         super(context);
         mContext = context;
-        initView(context);
     }
 
     public KeyboardView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mContext = context;
-        initView(context);
     }
 
     public KeyboardView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
-        initView(context);
-    }
-    private void initView(Context context) {
-
     }
 
     @Override
@@ -105,11 +97,11 @@ public final class KeyboardView extends LinearLayout implements View.OnClickList
         }
     }
 
-    public interface OnCurrentFocus{
+    public interface OnCurrentFocusListener {
        EditText getFocusEditText();
    }
-   public void setCurrentFocusListenner(OnCurrentFocus onCurrentFocus){
-       mCurrentFocusListener = onCurrentFocus;
+   public void setCurrentFocusListenner(OnCurrentFocusListener onCurrentFocusListener){
+       mCurrentFocusListener = onCurrentFocusListener;
    }
 
    public void setCancelListener(OnClickListener listener){

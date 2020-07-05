@@ -171,11 +171,13 @@ public class MainActivity extends AppCompatActivity {
         //清除资源
         clearResource();
     }
-
     @Override
     public void onBackPressed(){
-        if (null != mCloseBtn)
-            mCloseBtn.callOnClick();
+        if (null != mCloseBtn)mCloseBtn.callOnClick();
+    }
+    @Override
+    public void finalize(){
+        Logger.d("MainActivity finalize");
     }
 
     private void initLastOrderInfo(){
@@ -689,8 +691,11 @@ public class MainActivity extends AppCompatActivity {
             }
             saveAndShowPrintStatus(b,true);
         });
-        saveAndShowPrintStatus(false,false);
+
+        imageView.setTag(true);
         mPrinterStatusIv = imageView;
+
+        saveAndShowPrintStatus(true,false);
     }
     private void saveAndShowPrintStatus(boolean print_s,boolean type){
         final JSONObject object = new JSONObject();
@@ -705,17 +710,17 @@ public class MainActivity extends AppCompatActivity {
             }else {
                 if (SQLiteHelper.getLocalParameter("print_s",object)){
                     if (!object.isEmpty()){
-                        boolean status = object.getBooleanValue("v");
+                        print_s = object.getBooleanValue("v");
                         final Bitmap printer = BitmapFactory.decodeResource(getResources(),R.drawable.printer);
-                        if (status){
+                        if (print_s){
                             imageView.setImageBitmap(printer);
                         }else {
                             imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(printer,15,15));
                         }
-                        imageView.setTag(status);
                     }
                 }
             }
+            imageView.setTag(print_s);
         }
     }
 
@@ -1049,7 +1054,9 @@ public class MainActivity extends AppCompatActivity {
             MyDialog.ToastMessage("选择商品错误：" + content.getString("info"),this,null);
         }
     }
-    public ImageView getPrinterStatusIv(){return mPrinterStatusIv;}
+    public void triggerPsClick(){
+        if (null != mPrinterStatusIv)mPrinterStatusIv.callOnClick();
+    }
 
     private static class Myhandler extends Handler {
         private WeakReference<MainActivity> weakHandler;

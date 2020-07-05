@@ -62,6 +62,17 @@ public class RetailOrderDetailsDialog extends DialogBaseOnMainActivityImp {
         return R.layout.retail_details_dialog_layout;
     }
 
+    @Override
+    public void dismiss(){
+        super.dismiss();
+        Printer.showPrintIcon(mContext,false);
+    }
+
+    @Override
+    public void show(){
+        super.show();
+        Printer.showPrintIcon(mContext,true);
+    }
     private void showOrderInfo(){
         final JSONObject object = mOrderInfo;
         if (null != object){

@@ -42,6 +42,18 @@ public class RefundOrderDetailsDialog extends DialogBaseOnMainActivityImp {
         return R.layout.refund_details_dialog_layout;
     }
 
+    @Override
+    public void dismiss(){
+        super.dismiss();
+        Printer.showPrintIcon(mContext,false);
+    }
+
+    @Override
+    public void show(){
+        super.show();
+        Printer.showPrintIcon(mContext,true);
+    }
+
     private void initReprint(){
         final Button reprint_btn = findViewById(R.id.reprint_btn);
         if (null != reprint_btn){
