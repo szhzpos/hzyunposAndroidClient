@@ -29,9 +29,9 @@ import com.wyc.cloudapp.adapter.PayDetailViewAdapter;
 import com.wyc.cloudapp.adapter.PayMethodItemDecoration;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractShowPrinterICODialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
@@ -45,7 +45,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public final class PayDialog extends DialogBaseOnMainActivityImp {
+public final class PayDialog extends AbstractShowPrinterICODialog {
     private EditText mCashMoneyEt,mZlAmtEt,mRemarkEt;
     private onPayListener mPayListener;
     private PayMethodViewAdapter mPayMethodViewAdapter;
@@ -102,15 +102,9 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
     }
 
     @Override
-    public void dismiss(){
-        super.dismiss();
-        Printer.showPrintIcon(mContext,false);
-    }
-    @Override
     public void show(){
         super.show();
         refreshContent();
-        Printer.showPrintIcon(mContext,true);
     }
     @Override
     public void onAttachedToWindow(){
@@ -362,7 +356,7 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
 
                 if (verifyPayBalance()){
                     if (Utils.equalDouble(mActual_amt,mAmt_received)){//支付明细数据发送变化后，计算是否已经付款完成，如果完成触发支付完成事件
-                        double sale_amt = mContext.getSaleSumAmt();
+                        double sale_amt = mContext.getSumAmt(3);
                         double rec_pay_amt = mPayDetailViewAdapter.getPaySumAmt();
 
                         if (Utils.equalDouble(sale_amt,rec_pay_amt)){//再次验证销售金额以及付款金额是否相等
@@ -384,30 +378,21 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
         recyclerView.setAdapter(mPayDetailViewAdapter);
     }
     private void setMolAmt(){
-        double  sum = 0.0,original_amt = 0.0,disSumAmt = 0.0,disc = 0.0;
-        final JSONArray datas = mContext.getSaleData();
+        double  sale_sum_amt = 0.0;
         final JSONObject object = new JSONObject();
         if (SQLiteHelper.getLocalParameter("auto_mol",object)){
             if (object.getIntValue("s") == 1){
-                for (int i = 0,length = datas.size();i < length; i ++){
-                    JSONObject jsonObject = datas.getJSONObject(i);
-                    if (null != jsonObject){
-                        original_amt += jsonObject.getDoubleValue("original_amt");
-                        disSumAmt += jsonObject.getDoubleValue("discount_amt");
-                    }
-                }
-                sum = original_amt - disSumAmt;
-
+                sale_sum_amt = mContext.getSumAmt(3);
                 int v = object.getIntValue("v");
                 switch (v){
                     case 1://四舍五入到元
-                        mMolAmt =sum - Double.valueOf(String.format(Locale.CHINA,"%.0f",sum));
+                        mMolAmt =sale_sum_amt - Double.valueOf(String.format(Locale.CHINA,"%.0f",sale_sum_amt));
                         break;
                     case 2://四舍五入到角
-                        mMolAmt =sum - Double.valueOf(String.format(Locale.CHINA,"%.1f",sum));
+                        mMolAmt =sale_sum_amt - Double.valueOf(String.format(Locale.CHINA,"%.1f",sale_sum_amt));
                         break;
                 }
-                Logger.d("mMolAmt:%f,sum：%f",mMolAmt,sum);
+                Logger.d("mMolAmt:%f,sum：%f",mMolAmt,sale_sum_amt);
             }
         }else{
             MyDialog.ToastMessage("自动抹零错误：" + object.getString("info"), mContext,null);
@@ -427,15 +412,10 @@ public final class PayDialog extends DialogBaseOnMainActivityImp {
         }
     }
     private void calculatePayContent(){
-        JSONObject jsonObject;
-        final JSONArray datas = mContext.getSaleData();
         clearContent();
-        for (int i = 0,length = datas.size();i < length; i ++){
-            jsonObject = datas.getJSONObject(i);
-            mDiscount_amt += jsonObject.getDoubleValue("discount_amt");
-        }
         mAmt_received = mPayDetailViewAdapter == null ? 0.0 :mPayDetailViewAdapter.getPaySumAmt();;
-        mActual_amt = mContext.getSaleSumAmt();
+        mDiscount_amt = mContext.getSumAmt(1);
+        mActual_amt = mContext.getSumAmt(3);
         mOrder_amt = mActual_amt + mDiscount_amt;
         mPay_amt = mActual_amt;
         mPay_balance = mActual_amt - mAmt_received;//剩余付款金额等于应收金额已收金额

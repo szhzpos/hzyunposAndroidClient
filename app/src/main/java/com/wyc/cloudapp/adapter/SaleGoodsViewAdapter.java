@@ -977,12 +977,23 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
         }
         return true;
     }
-    public double getSaleSumAmt(){//验证销售金额
+    public double getSumAmt(int type){//计算金额
+        String key;
+        switch (type){
+            case 1:
+                key = "discount_amt"; //折扣金额
+                break;
+            case 2:
+                key = "original_amt";//原价金额
+                default:
+                    key = "sale_amt";//销售金额
+                    break;
+        }
         double amt = 0.0;
         for (int i = 0,size = mDatas.size();i < size;i++){
             final JSONObject object = mDatas.getJSONObject(i);
             if (null != object)
-                amt += object.getDoubleValue("sale_amt");
+                amt += object.getDoubleValue(key);
         }
         return amt;
     }
@@ -997,5 +1008,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
     public boolean getSingle(){
         return mSingleRefundStatus;
     }
-
+    public boolean isEmpty(){
+        return mDatas.isEmpty();
+    }
 }

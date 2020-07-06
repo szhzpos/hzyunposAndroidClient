@@ -12,14 +12,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnContextImp;
-import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnContextImp;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
 
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.view.Display;
 import android.view.Gravity;
@@ -39,12 +37,12 @@ import java.util.Locale;
 
 import static android.content.Context.WINDOW_SERVICE;
 
-public class ConnSettingDialog extends DialogBaseOnContextImp {
+public class ConnSettingDialog extends AbstractDialogBaseOnContextImp {
     private TextView mUrl,mAppId,mAppscret,mStore_name;
     private CustomProgressDialog mDialog;
     private Myhandler mHandler;
     private EditText mShopId;
-    public ConnSettingDialog(final Context context,final String title) {
+    public ConnSettingDialog(final Context context, final String title) {
         super(context,title,R.style.MyDialog);
     }
 

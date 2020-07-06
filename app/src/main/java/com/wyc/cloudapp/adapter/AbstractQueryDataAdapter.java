@@ -1,7 +1,6 @@
 package com.wyc.cloudapp.adapter;
 
 import android.graphics.Color;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -12,8 +11,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
-import com.wyc.cloudapp.dialog.orderDialog.RetailOrderDetailsDialog;
 import com.wyc.cloudapp.utils.Utils;
 
 public abstract class AbstractQueryDataAdapter<T extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<T> {

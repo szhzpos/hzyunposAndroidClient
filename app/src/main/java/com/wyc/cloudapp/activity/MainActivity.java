@@ -216,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
                     close_tv.setOnClickListener(null);
                     last_reprint_btn.setOnClickListener(null);
                 });
-                last_reprint_btn.setOnClickListener(v -> Printer.print(this,PayDialog.get_print_content(this,last_order_code.getText().toString(),false)));
+                last_reprint_btn.setOnClickListener(v -> Printer.print(this, PayDialog.get_print_content(this,last_order_code.getText().toString(),false)));
             }else {
                 MyDialog.ToastMessage(order_info.getString("info"),this,getWindow());
             }
@@ -591,8 +591,9 @@ public class MainActivity extends AppCompatActivity {
                                 keyboard.setVisibility(View.VISIBLE);
                             }
                             search.selectAll();
+                            View vObj;
                             for(int i = 0,childCounts = keyboard.getChildCount();i < childCounts;i ++){
-                                View vObj = keyboard.getChildAt(i);
+                                vObj = keyboard.getChildAt(i);
                                 if ( vObj instanceof TableRow){
                                     final TableRow tableRow = (TableRow)vObj ;
                                     int buttons = tableRow.getChildCount();
@@ -725,8 +726,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showPayDialog(){
-        final JSONArray datas = getSaleData();
-        if (datas.size() != 0){
+        if (!mSaleGoodsViewAdapter.isEmpty()){
             if (!getSingle()){
                 final PayDialog dialog = new PayDialog(this,getString(R.string.affirm_pay_sz));
                 if (dialog.initPayContent()){
@@ -879,8 +879,8 @@ public class MainActivity extends AppCompatActivity {
 
         mSaleGoodsViewAdapter.updateGoodsInfoToVip(mVipInfo);
     }
-    public double getSaleSumAmt(){
-        return mSaleGoodsViewAdapter.getSaleSumAmt();
+    public double getSumAmt(int type){
+        return mSaleGoodsViewAdapter.getSumAmt(type);
     }
     public String getPosNum(){if (null == mCashierInfo)return "";return mCashierInfo.getString("pos_num");}
     public JSONObject getCashierInfo(){
@@ -916,8 +916,10 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
     public void disposeHangBill(){
-        final Button tmp_order = findViewById(R.id.tmp_order);
-        if (tmp_order != null)tmp_order.callOnClick();
+        if (mSaleGoodsViewAdapter.isEmpty()){
+            final Button tmp_order = findViewById(R.id.tmp_order);
+            if (tmp_order != null)tmp_order.callOnClick();
+        }
     }
     public boolean isConnection(){
         return mNetworkStatus.get();
@@ -1025,6 +1027,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return code;
     }
+
     public void setSingle(boolean b){
         if (mSaleGoodsViewAdapter != null)mSaleGoodsViewAdapter.setSingle(b);
         if (b)resetOrderCode();

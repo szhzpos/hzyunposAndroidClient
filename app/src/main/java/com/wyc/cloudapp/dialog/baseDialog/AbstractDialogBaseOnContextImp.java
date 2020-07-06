@@ -5,12 +5,12 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
-public abstract class DialogBaseOnContextImp extends AbstractDialog {
+public abstract class AbstractDialogBaseOnContextImp extends AbstractDialog {
 
-    public DialogBaseOnContextImp(@NonNull Context context, final String title){
+    public AbstractDialogBaseOnContextImp(@NonNull Context context, final String title){
         super(context,title);
     }
-    public DialogBaseOnContextImp(@NonNull Context context, final String title, int style){
+    public AbstractDialogBaseOnContextImp(@NonNull Context context, final String title, int style){
         super(context,title,style);
     }
 

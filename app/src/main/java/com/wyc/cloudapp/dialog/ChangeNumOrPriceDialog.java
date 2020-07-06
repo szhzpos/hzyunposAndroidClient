@@ -4,20 +4,16 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.callback.PasswordEditTextReplacement;
 import com.wyc.cloudapp.dialog.CustomizationView.KeyboardView;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
-import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.utils.Utils;
 
-public class ChangeNumOrPriceDialog extends DialogBaseOnMainActivityImp {
+public class ChangeNumOrPriceDialog extends AbstractDialogBaseOnMainActivityImp {
     private EditText mNew_price_text;
     private String mInitVal;
     private onNoOnclickListener noOnclickListener;//取消按钮被点击了的监听器

@@ -22,7 +22,7 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractShowPrinterICODialog;
 import com.wyc.cloudapp.dialog.pay.PayDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
@@ -37,7 +37,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class RetailOrderDetailsDialog extends DialogBaseOnMainActivityImp {
+public class RetailOrderDetailsDialog extends AbstractShowPrinterICODialog {
     private JSONObject mOrderInfo, mPayRecord;
     private RetailDetailsPayInfoAdapter mRetailDetailsPayInfoAdapter;
     private String mRetailOrderCode;
@@ -62,17 +62,6 @@ public class RetailOrderDetailsDialog extends DialogBaseOnMainActivityImp {
         return R.layout.retail_details_dialog_layout;
     }
 
-    @Override
-    public void dismiss(){
-        super.dismiss();
-        Printer.showPrintIcon(mContext,false);
-    }
-
-    @Override
-    public void show(){
-        super.show();
-        Printer.showPrintIcon(mContext,true);
-    }
     private void showOrderInfo(){
         final JSONObject object = mOrderInfo;
         if (null != object){

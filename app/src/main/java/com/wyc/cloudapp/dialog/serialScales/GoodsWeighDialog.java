@@ -6,28 +6,25 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
-public class GoodsWeighDialog extends DialogBaseOnMainActivityImp {
+public class GoodsWeighDialog extends AbstractDialogBaseOnMainActivityImp {
     private String mBarcodeId;
     private OnYesOnclickListener mOnYesClick;
     private EditText mWvalueEt;

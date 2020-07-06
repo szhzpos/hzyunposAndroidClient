@@ -1,8 +1,6 @@
 package com.wyc.cloudapp.dialog.pay;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -10,22 +8,20 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.utils.Utils;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public abstract class AbstractPayDialog extends DialogBaseOnMainActivityImp implements IPay {
+public abstract class AbstractPayDialog extends AbstractDialogBaseOnMainActivityImp implements IPay {
     protected EditText mPayAmtEt,mPayCode;
     protected Button mOk;
     protected CustomProgressDialog mProgressDialog;
@@ -34,7 +30,7 @@ public abstract class AbstractPayDialog extends DialogBaseOnMainActivityImp impl
     protected double mOriginalPayAmt = 0.0;
     protected Window mDialogWindow;
     private onCancelListener mCancelListener;
-    public AbstractPayDialog(@NonNull MainActivity context,final String title) {
+    public AbstractPayDialog(@NonNull MainActivity context, final String title) {
         super(context,title);
     }
 

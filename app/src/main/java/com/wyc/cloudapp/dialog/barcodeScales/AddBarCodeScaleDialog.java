@@ -1,6 +1,5 @@
 package com.wyc.cloudapp.dialog.barcodeScales;
 
-import android.app.AlertDialog;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.os.Bundle;
@@ -8,11 +7,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -25,25 +21,22 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomePopupWindow;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.TreeListDialog;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnContextImp;
-import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnContextImp;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
 
-public class AddBarCodeScaleDialog extends DialogBaseOnContextImp {
+public class AddBarCodeScaleDialog extends AbstractDialogBaseOnContextImp {
     private EditText mManufacturerEt,mProductType, mScaleName,mPort,mGCategoryEt;
     private LinearLayout mIP;
     private CustomePopupWindow mPopupWindow;
     private JSONArray mCategoryInfo,mManufacturerInfos, mScaleInfos;
     private OnGetContentCallBack mGetContent;
     private JSONObject mModifyScale;
-    AddBarCodeScaleDialog(@NonNull Context context,final String title) {
+    AddBarCodeScaleDialog(@NonNull Context context, final String title) {
         super(context,title);
     }
-    AddBarCodeScaleDialog(@NonNull Context context,JSONObject object) {
+    AddBarCodeScaleDialog(@NonNull Context context, JSONObject object) {
         this(context,context.getString(R.string.modify_scale_sz));
         mModifyScale = object;
     }

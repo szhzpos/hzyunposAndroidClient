@@ -21,11 +21,8 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 
@@ -35,11 +32,9 @@ import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.vip.VipChargeDialogImp;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -49,12 +44,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 
-import android_serialport_api.SerialPort;
-
 import static android.content.Context.WINDOW_SERVICE;
 
 public final class Printer {
-    private static ImageView mICN;
+    private static ImageView mICO;
     private static final String  CHARACTER_SET = "GB2312";
     public static final byte[][] byteCommands = {
             { 0x1b, 0x4d, 0x00 },// 标准ASCII字体
@@ -437,9 +430,9 @@ public final class Printer {
 
         final WindowManager wm = (WindowManager)activity.getSystemService(WINDOW_SERVICE);
         if (wm != null){
-            if (!b && mICN != null){
-                wm.removeViewImmediate(mICN);
-                mICN = null;
+            if (!b && mICO != null){
+                wm.removeViewImmediate(mICO);
+                mICO = null;
                 return;
             }
 
@@ -458,15 +451,15 @@ public final class Printer {
             wLayou.y = point.y / 2;
 
             final Bitmap printer = BitmapFactory.decodeResource(activity.getResources(),R.drawable.printer);
-            if (mICN  != null)wm.removeViewImmediate(mICN);
-            mICN = new ImageView(activity);
+            if (mICO != null)wm.removeViewImmediate(mICO);
+            mICO = new ImageView(activity);
             if (!activity.getPrintStatus()){
-                if (printer != null)mICN.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(printer,15,15));
+                if (printer != null) mICO.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(printer,15,15));
             }else
-                mICN.setImageDrawable(activity.getDrawable(R.drawable.printer));
+                mICO.setImageDrawable(activity.getDrawable(R.drawable.printer));
 
-            mICN.setBackgroundColor(activity.getColor(R.color.appColor));
-            mICN.setOnTouchListener(new View.OnTouchListener() {
+            mICO.setBackgroundColor(activity.getColor(R.color.appColor));
+            mICO.setOnTouchListener(new View.OnTouchListener() {
                 private double touchX,touchY;
                 private boolean mIsMove;
                 @Override
@@ -480,27 +473,27 @@ public final class Printer {
                         case MotionEvent.ACTION_UP:
                             if (!mIsMove){
                                 activity.triggerPsClick();
-                                if (null != mICN && null != printer){
+                                if (null != mICO && null != printer){
                                     if (activity.getPrintStatus()){
-                                        mICN.setImageBitmap(printer);
+                                        mICO.setImageBitmap(printer);
                                     }else {
-                                        mICN.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(printer,15,15));
+                                        mICO.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(printer,15,15));
                                     }
                                 }
                             }
-                            wm.updateViewLayout(mICN,wLayou);
+                            wm.updateViewLayout(mICO,wLayou);
                             break;
                         case MotionEvent.ACTION_MOVE:
                             if (!mIsMove)mIsMove = true;
                             wLayou.x = (int) (event.getRawX() - touchX);
                             wLayou.y = (int) (event.getRawY() - touchY);
-                            wm.updateViewLayout(mICN,wLayou);
+                            wm.updateViewLayout(mICO,wLayou);
                             break;
                     }
                     return false;
                 }
             });
-            wm.addView(mICN,wLayou);
+            wm.addView(mICO,wLayou);
         }
     }
 }

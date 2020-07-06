@@ -33,7 +33,8 @@ public abstract class AbstractDialog extends Dialog {
     private View mRootView;
     private JEventLoop mEventLoop;
     private int mCode;
-    private double mTouchX,mTouchY;
+    private float mTouchX,mTouchY;
+    private boolean isTitle;
     private AbstractDialog(@NonNull Context context){
         super(context);
         init(context);
@@ -53,6 +54,7 @@ public abstract class AbstractDialog extends Dialog {
         mWM = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
     }
 
+    @CallSuper
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
@@ -86,26 +88,38 @@ public abstract class AbstractDialog extends Dialog {
 
     @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
-
-        Logger.d("action:%d",event.getAction());
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mTouchX = event.getX();
-                mTouchY = event.getY();
+                if (isTitle = isTitleView(event.getX(), event.getY())){
+                    mTouchX = event.getRawX();
+                    mTouchY = event.getRawY();
+                }
                 break;
             case MotionEvent.ACTION_MOVE:
-                Logger.d("X:%f,Y:%f",event.getX(),event.getY());
-                mLayoutParams.x = (int) (event.getRawX() - mTouchY);
-                mLayoutParams.y = (int) (event.getRawY() - mTouchY);
-                mWM.updateViewLayout(mRootView,mLayoutParams);
+                if (isTitle){
+                    mLayoutParams.x = (int) (event.getRawX() - mTouchX);
+                    mLayoutParams.y = (int) (event.getRawY() - mTouchY);
+                    mWM.updateViewLayout(mRootView,mLayoutParams);
+                }
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-
+                isTitle = false;
                 break;
             default:
         }
         return super.onTouchEvent(event);
+    }
+
+    private boolean isTitleView(float x, float y){
+        if (mRootView != null){
+            final TextView title_tv = mRootView.findViewById(R.id.title);
+            if (title_tv != null){
+                float v_x = title_tv.getX(),v_y = title_tv.getY();
+                return x >= v_x && x <= v_x + title_tv.getWidth() && y >= v_y && y <= v_y + title_tv.getHeight();
+            }
+        }
+        return false;
     }
 
     public void setCodeAndExit(int code ){

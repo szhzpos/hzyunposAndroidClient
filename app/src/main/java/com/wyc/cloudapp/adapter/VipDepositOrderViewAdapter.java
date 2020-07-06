@@ -14,8 +14,6 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
-import com.wyc.cloudapp.dialog.orderDialog.RetailOrderDetailsDialog;
 import com.wyc.cloudapp.dialog.vip.VipDepositDetailsDialog;
 import com.wyc.cloudapp.logger.Logger;
 

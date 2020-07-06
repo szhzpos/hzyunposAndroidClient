@@ -1,22 +1,15 @@
 package com.wyc.cloudapp.dialog;
 
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
-import android.graphics.PixelFormat;
-import android.graphics.Point;
 import android.os.Bundle;
 
-import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -32,9 +25,8 @@ import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
-import com.wyc.cloudapp.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,7 +35,7 @@ import java.util.Locale;
 
 import static android.content.Context.WINDOW_SERVICE;
 
-public class HangBillDialog extends DialogBaseOnMainActivityImp {
+public class HangBillDialog extends AbstractDialogBaseOnMainActivityImp {
     private SimpleCursorAdapter mHbCursorAdapter,mHbDetailCursorAdapter;
     private View mVipInfoView;
     private String mCurrentHangId;
@@ -88,7 +80,7 @@ public class HangBillDialog extends DialogBaseOnMainActivityImp {
         final Button del_hang_b = findViewById(R.id.del_hang_b);
         if (null != del_hang_b)
             del_hang_b.setOnClickListener(v -> {
-                if (null != mCurrentHangId) {
+                if (null != mCurrentHangId && !"".equals(mCurrentHangId)) {
                     if (1 == MyDialog.showMessageToModalDialog(mContext,"是否删除挂单?")){
                         if (verifyDeleteBillPermissions()){
                             final StringBuilder err = new StringBuilder();
@@ -308,9 +300,9 @@ public class HangBillDialog extends DialogBaseOnMainActivityImp {
                                     final JSONArray vips = VipInfoDialog.serchVip(card_code);
                                     mContext.runOnUiThread(() -> {
                                         if (deleteBill(mCurrentHangId, err)) {
-                                            mContext.runOnUiThread(() -> mGetListener.onGet(barcode_ids, vips.getJSONObject(0)));
+                                            mGetListener.onGet(barcode_ids, vips.getJSONObject(0));
                                         } else {
-                                            mContext.runOnUiThread(() -> MyDialog.ToastMessage("删除挂单信息错误：" + err, mContext, null));
+                                            MyDialog.ToastMessage("删除挂单信息错误：" + err, mContext, null);
                                         }
                                     });
                                 } catch (JSONException e) {

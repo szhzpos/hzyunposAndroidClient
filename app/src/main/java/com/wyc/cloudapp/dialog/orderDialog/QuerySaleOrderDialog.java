@@ -14,7 +14,6 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
 import com.wyc.cloudapp.adapter.RetailOrderViewAdapter;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.text.SimpleDateFormat;

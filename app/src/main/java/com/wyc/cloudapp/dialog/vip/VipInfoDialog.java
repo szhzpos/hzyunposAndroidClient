@@ -1,8 +1,6 @@
 package com.wyc.cloudapp.dialog.vip;
 
 import android.annotation.SuppressLint;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -12,11 +10,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -27,11 +23,9 @@ import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomizationView.KeyboardView;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -39,7 +33,7 @@ import com.wyc.cloudapp.utils.http.HttpRequest;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 
-public final class VipInfoDialog extends DialogBaseOnMainActivityImp {
+public final class VipInfoDialog extends AbstractDialogBaseOnMainActivityImp {
     private EditText mSearchContent;
     private CustomProgressDialog mProgressDialog;
     private Myhandler mHandler;
@@ -84,12 +78,12 @@ public final class VipInfoDialog extends DialogBaseOnMainActivityImp {
     }
     @Override
     public void onAttachedToWindow(){
-
+        super.onAttachedToWindow();
     }
 
     @Override
     public void onDetachedFromWindow(){
-
+        super.onDetachedFromWindow();
     }
 
     @Override

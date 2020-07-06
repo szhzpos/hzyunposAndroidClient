@@ -22,7 +22,7 @@ import com.wyc.cloudapp.callback.PasswordEditTextReplacement;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractShowPrinterICODialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.Utils;
@@ -30,7 +30,7 @@ import com.wyc.cloudapp.utils.Utils;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-public class TransferDialog extends DialogBaseOnMainActivityImp {
+public class TransferDialog extends AbstractShowPrinterICODialog {
     private TransferDetailsAdapter mTransferDetailsAdapter;
     private onFinishListener mFinishListener;
     public TransferDialog(@NonNull MainActivity context) {
@@ -49,17 +49,7 @@ public class TransferDialog extends DialogBaseOnMainActivityImp {
     protected int getContentLayoutId() {
         return R.layout.transfer_dialog_layout;
     }
-    @Override
-    public void dismiss(){
-        super.dismiss();
-        Printer.showPrintIcon(mContext,false);
-    }
 
-    @Override
-    public void show(){
-        super.show();
-        Printer.showPrintIcon(mContext,true);
-    }
     private void initTransferInfoList(){
         final RecyclerView transfer_list = findViewById(R.id.transfer_info_list);
         mTransferDetailsAdapter.setDatas(mContext.getCashierInfo().getString("cas_id"));

@@ -51,7 +51,6 @@ import com.wyc.cloudapp.utils.Utils;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
-import java.util.Arrays;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;

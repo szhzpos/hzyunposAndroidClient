@@ -2,7 +2,6 @@ package com.wyc.cloudapp.dialog;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
@@ -14,10 +13,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.TreeListAdapter;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnContextImp;
-import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnContextImp;
 
-public class TreeListDialog extends DialogBaseOnContextImp {
+public class TreeListDialog extends AbstractDialogBaseOnContextImp {
     private TreeListAdapter mAdapter;
     private JSONArray mDatas,mSelectedItems;
     private boolean mSingle;
@@ -48,7 +46,7 @@ public class TreeListDialog extends DialogBaseOnContextImp {
         mAdapter = listAdapter;
     }
 
-    public TreeListDialog setDatas(final JSONArray obj,final JSONArray selectItems,boolean b){
+    public TreeListDialog setDatas(final JSONArray obj, final JSONArray selectItems, boolean b){
         mSingle = b;
         mDatas = obj;
         mSelectedItems = selectItems;

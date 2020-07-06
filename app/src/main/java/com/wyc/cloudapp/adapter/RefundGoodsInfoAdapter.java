@@ -18,7 +18,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.dialog.DigitKeyboardPopup;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
@@ -27,7 +27,7 @@ import com.wyc.cloudapp.utils.http.HttpRequest;
 import java.util.Locale;
 
 public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoodsInfoAdapter.MyViewHolder>  {
-    private DialogBaseOnMainActivityImp mDialog;
+    private AbstractDialogBaseOnMainActivityImp mDialog;
     private MainActivity mContext;
     private JSONArray mGoodsDatas,mPayDatas,mOriPayDatas;;
     private onRefundGoodsDataChange mRefundGoodsDataChange;
@@ -35,7 +35,7 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
     private JSONObject mVipInfo;
     private DigitKeyboardPopup mDigitKeyboardPopup;
     private boolean mSingleRefundStatus;
-    public RefundGoodsInfoAdapter(DialogBaseOnMainActivityImp dialog){
+    public RefundGoodsInfoAdapter(AbstractDialogBaseOnMainActivityImp dialog){
         mDialog = dialog;
         mContext = dialog.getPrivateContext();
         mDigitKeyboardPopup = new DigitKeyboardPopup(mContext);

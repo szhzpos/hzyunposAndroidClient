@@ -196,8 +196,8 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
             full_sql = sql.replace("%1",sql_where);
             final JSONObject object = new JSONObject();
             if (SQLiteHelper.execSql(object,full_sql)){
+                array = new JSONArray();
                 if (!object.isEmpty()){
-                    array = new JSONArray();
                     object.put(W_G_MARK,search_content);
                     array.add(object);
                 }

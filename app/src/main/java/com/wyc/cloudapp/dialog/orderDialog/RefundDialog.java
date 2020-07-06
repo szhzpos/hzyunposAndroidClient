@@ -26,7 +26,7 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractShowPrinterICODialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.Utils;
@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Locale;
 
 
-public final class RefundDialog extends DialogBaseOnMainActivityImp {
+public final class RefundDialog extends AbstractShowPrinterICODialog {
     private RefundGoodsInfoAdapter mRefundGoodsInfoAdapter;
     private String mOrderCode,mRefundCode;
     private CustomProgressDialog mProgressDialog;
@@ -68,11 +68,7 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
     protected int getContentLayoutId(){
         return R.layout.refund_dialog_layout;
     }
-    @Override
-    public void dismiss(){
-        super.dismiss();
-        Printer.showPrintIcon(mContext,false);
-    }
+
     @Override
     public void show(){
         super.show();
@@ -81,7 +77,6 @@ public final class RefundDialog extends DialogBaseOnMainActivityImp {
         }else {
             if (mQueryBtn != null && mOrderCode != null && mOrderCode.length() != 0)mQueryBtn.callOnClick();
         }
-        Printer.showPrintIcon(mContext,true);
     }
 
     private void initRemarkBtn(){

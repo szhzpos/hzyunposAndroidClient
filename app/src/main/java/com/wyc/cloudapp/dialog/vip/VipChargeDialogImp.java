@@ -58,13 +58,18 @@ public final class VipChargeDialogImp extends AbstractPayDialog {
 
         setHint(mContext.getString(R.string.c_amt_hint_sz));
 
-        Printer.showPrintIcon(mContext,true);
     }
 
     @Override
-    public void closeWindow(){
-        super.closeWindow();
+    public void dismiss(){
+        super.dismiss();
         Printer.showPrintIcon(mContext,false);
+    }
+
+    @Override
+    public void show(){
+        super.show();
+        Printer.showPrintIcon(mContext,true);
     }
 
     @Override

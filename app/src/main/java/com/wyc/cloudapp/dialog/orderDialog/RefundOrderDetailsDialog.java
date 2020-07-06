@@ -16,14 +16,13 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.RefundDetailsGoodsInfoAdapter;
 import com.wyc.cloudapp.adapter.RefundDetailsPayInfoAdapter;
-import com.wyc.cloudapp.dialog.baseDialog.DialogBaseOnMainActivityImp;
-import com.wyc.cloudapp.dialog.pay.PayDialog;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractShowPrinterICODialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.Utils;
 
 
-public class RefundOrderDetailsDialog extends DialogBaseOnMainActivityImp {
+public class RefundOrderDetailsDialog extends AbstractShowPrinterICODialog {
     private JSONObject mRefundOrderInfo;
     private String mRefundOrderCode;
     public RefundOrderDetailsDialog(@NonNull MainActivity context, final JSONObject info) {
@@ -40,18 +39,6 @@ public class RefundOrderDetailsDialog extends DialogBaseOnMainActivityImp {
     @Override
     protected int getContentLayoutId(){
         return R.layout.refund_details_dialog_layout;
-    }
-
-    @Override
-    public void dismiss(){
-        super.dismiss();
-        Printer.showPrintIcon(mContext,false);
-    }
-
-    @Override
-    public void show(){
-        super.show();
-        Printer.showPrintIcon(mContext,true);
     }
 
     private void initReprint(){

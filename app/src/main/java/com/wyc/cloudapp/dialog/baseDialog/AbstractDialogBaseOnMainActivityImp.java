@@ -12,9 +12,9 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.logger.Logger;
 
-public abstract class DialogBaseOnMainActivityImp extends AbstractDialog {
+public abstract class AbstractDialogBaseOnMainActivityImp extends AbstractDialog {
     protected MainActivity mContext;
-    public DialogBaseOnMainActivityImp(@NonNull MainActivity context, String title) {
+    public AbstractDialogBaseOnMainActivityImp(@NonNull MainActivity context, String title) {
         super(context, title);
         mContext = context;
 
