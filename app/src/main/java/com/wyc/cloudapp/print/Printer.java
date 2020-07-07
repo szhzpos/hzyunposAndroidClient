@@ -318,6 +318,7 @@ public final class Printer {
 
                                 if (count == 0){
                                     outputStream.write(content);
+                                    outputStream.flush();
                                 }else{
                                     if ((mod_length = length % max_length) > 0)count += 1;
                                     while (tmp_c < count){
@@ -327,10 +328,10 @@ public final class Printer {
                                             tmpBytes = Arrays.copyOfRange(content,tmp_c * max_length,tmp_c * max_length + max_length);
 
                                         outputStream.write(tmpBytes);
+                                        outputStream.flush();
                                         tmp_c++;
                                     }
                                 }
-                                outputStream.flush();
                             } catch (IOException e) {
                                 e.printStackTrace();
                                 context.runOnUiThread(()->MyDialog.ToastMessage("打印错误：" + e.getMessage(),context,null));
@@ -426,12 +427,12 @@ public final class Printer {
 
     @SuppressLint("ClickableViewAccessibility")
     public static void showPrintIcon(final MainActivity activity,boolean b){
-        if (!Settings.canDrawOverlays(activity))return;
+        if (b && !Settings.canDrawOverlays(activity))return;
 
         final WindowManager wm = (WindowManager)activity.getSystemService(WINDOW_SERVICE);
         if (wm != null){
-            if (!b && mICO != null){
-                wm.removeViewImmediate(mICO);
+            if (!b){
+                if (mICO != null)wm.removeViewImmediate(mICO);
                 mICO = null;
                 return;
             }

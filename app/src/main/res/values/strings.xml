@@ -214,6 +214,7 @@
     <string name="card_code_sz">卡号</string>
     <!-- 结账单 -->
     <string name="line_58">--------------------------------</string>
+    <string name="b_f_title_sz">结账单</string>
     <string name="b_f_store_id_sz">店号：</string>
     <string name="b_f_jh_sz">@string/jh_sz</string>
     <string name="b_f_cashier_sz">@string/cashier_sz</string>
@@ -254,6 +255,7 @@
     <string name="shift_time_sz">班次时间</string>
     <string name="payable_cash_sz">应交现金</string>
     <!-- 交班单 -->
+    <string name="t_f_title_sz">交班单</string>
     <string name="t_f_detail_h_sz">名称----------金额---------笔数</string>
     <string name="t_f_store_sz">@string/store_sz</string>
     <string name="t_f_order_sz">@string/order_sz</string>

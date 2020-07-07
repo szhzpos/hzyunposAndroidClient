@@ -16,6 +16,74 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bottom_separator"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="@dimen/margin_2">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_5"
+                android:layout_marginEnd="@dimen/size_0"
+                android:text="@string/print_way_sz"
+                android:textColor="@color/text_color"
+                android:visibility="visible" />
+
+            <RadioGroup
+                android:id="@+id/print_way"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/bluetooth_p"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/bluetooth_p_sz"
+                    android:textColor="@color/text_color" />
+
+                <RadioButton
+                    android:id="@+id/usb_p"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/USB_p_sz"
+                    android:textColor="@color/text_color" />
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/print_id_label"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/margin_5"
+                android:layout_marginTop="@dimen/margin_1"
+                android:layout_marginBottom="@dimen/margin_1"
+                android:background="@drawable/left_separator"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/size_0"
+                android:text="@string/printer_sz"
+                android:textColor="@color/text_color"
+                android:visibility="visible" />
+
+            <Spinner
+                android:id="@+id/printer_id"
+                style="@style/Widget.AppCompat.Light.Spinner.DropDown.ActionBar"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/height_40"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:dropDownWidth="wrap_content"
+                android:foreground="@drawable/spinner_style"
+                android:minWidth="@dimen/width_88"
+                android:overlapAnchor="false" />
+
+        </LinearLayout>
+
         <RadioGroup
             android:id="@+id/format_rg"
             android:layout_width="match_parent"
@@ -24,13 +92,15 @@
             android:background="@drawable/bottom_separator"
             android:baselineAligned="false"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="gone">
 
             <RadioButton
                 android:id="@+id/checkout_format"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/margin_8"
+                android:checked="true"
                 android:text="@string/checkout_format_sz"
                 android:textColor="@color/appColor"
                 android:textSize="@dimen/font_size_16" />
@@ -183,27 +253,6 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/print_c_sz"
-                android:textColor="@color/text_color" />
-
-            <EditText
-                android:id="@+id/p_count"
-                android:layout_width="@dimen/width_45"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_1"
-                android:background="@drawable/border_sub_gray"
-                android:ems="10"
-                android:inputType="number"
-                android:padding="@dimen/margin_2"
-                android:paddingTop="@dimen/size_0"
-                android:text="@string/one_sz"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_18"
                 android:text="@string/footer_s_sz"
                 android:textColor="@color/text_color" />
 
@@ -217,9 +266,109 @@
                 android:inputType="number"
                 android:padding="@dimen/margin_2"
                 android:paddingTop="@dimen/size_0"
+                android:selectAllOnFocus="true"
                 android:text="@string/five_sz"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_14" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_18"
+                android:text="@string/print_c_sz"
+                android:textColor="@color/text_color" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/b_f_title_sz"
+                android:textColor="@color/text_color"
+                android:textSize="12sp" />
+
+            <EditText
+                android:id="@+id/c_count"
+                android:layout_width="@dimen/width_45"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_1"
+                android:background="@drawable/border_sub_gray"
+                android:ems="10"
+                android:inputType="number"
+                android:padding="@dimen/margin_2"
+                android:paddingTop="@dimen/size_0"
+                android:selectAllOnFocus="true"
+                android:text="@string/one_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_5"
+                android:text="@string/vip_c_format_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_12" />
+
+            <EditText
+                android:id="@+id/v_c_count"
+                android:layout_width="@dimen/width_45"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_1"
+                android:background="@drawable/border_sub_gray"
+                android:ems="10"
+                android:inputType="number"
+                android:padding="@dimen/margin_2"
+                android:paddingTop="@dimen/size_0"
+                android:selectAllOnFocus="true"
+                android:text="@string/one_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_5"
+                android:text="@string/r_b_title_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_12" />
+
+            <EditText
+                android:id="@+id/r_c_count"
+                android:layout_width="@dimen/width_45"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_1"
+                android:background="@drawable/border_sub_gray"
+                android:ems="10"
+                android:inputType="number"
+                android:padding="@dimen/margin_2"
+                android:paddingTop="@dimen/size_0"
+                android:selectAllOnFocus="true"
+                android:text="@string/one_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="@string/t_f_title_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_12" />
+
+            <EditText
+                android:id="@+id/t_c_count"
+                android:layout_width="@dimen/width_45"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_1"
+                android:background="@drawable/border_sub_gray"
+                android:ems="10"
+                android:inputType="number"
+                android:padding="@dimen/margin_2"
+                android:paddingTop="@dimen/size_0"
+                android:selectAllOnFocus="true"
+                android:text="@string/one_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
         </LinearLayout>
     </LinearLayout>
 

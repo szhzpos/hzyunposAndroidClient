@@ -17,6 +17,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.fragment.PrintFormatFragment;
 import com.wyc.cloudapp.logger.Logger;
 
 /**
@@ -42,7 +43,7 @@ public class GlobalBroadcast extends BroadcastReceiver {
                         UsbDevice device =  intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                         UsbManager manager = (UsbManager)context.getSystemService(Context.USB_SERVICE);
                         if (null != manager && !manager.hasPermission(device)){
-                            PendingIntent permissionIntent = PendingIntent.getBroadcast(context, 0, new Intent("com.wyc.cloudapp.USB_PERMISSION"), 0);
+                            PendingIntent permissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(PrintFormatFragment.ACTION_USB_PERMISSION), 0);
                             manager.requestPermission(device, permissionIntent);
                         }
                     }

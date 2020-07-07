@@ -475,11 +475,11 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
         return code;
     }
     public boolean allDiscount(double value){//整单折 6
-        if (!mContext.verifyDiscountPermissions(value /100,null))return false;
+        if (!mContext.verifyDiscountPermissions(value /10,null))return false;
 
         double  discount_amt = 0.0,original_amt = 0.0,new_price = 0.0,xnum = 1.0,discount,current_discount_amt = 0.0,old_sale_amt = 0.0,current_sale_amt = 0.0;
         int discount_type = DISCOUNT_TYPE.A_DISCOUNT;
-        if (Utils.equalDouble(value / 100,1.0)){//discount 1.0 还原价格并清除折扣记录
+        if (Utils.equalDouble(value / 10,1.0)){//discount 1.0 还原价格并清除折扣记录
             deleteDiscountRecordForType(discount_type);
         }else{
             JSONObject discount_json,json;
@@ -491,7 +491,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
             for(int i = 0,length = mDatas.size();i < length;i++){
                 json  = mDatas.getJSONObject(i);
 
-                discount = Utils.formatDouble(value / 100,4);
+                discount = Utils.formatDouble(value / 10,4);
                 xnum = Utils.getNotKeyAsNumberDefault(json,"xnum",1.0);
                 old_sale_amt = json.getDoubleValue("sale_amt");
                 original_amt = Utils.formatDouble(xnum * Utils.getNotKeyAsNumberDefault(json,"original_price",1.0),2);

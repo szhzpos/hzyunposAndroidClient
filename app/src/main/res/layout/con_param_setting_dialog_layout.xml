@@ -45,7 +45,8 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:text="@string/server_url_sz"
-            android:textSize="@dimen/font_size_18" />
+            android:textSize="@dimen/font_size_18"
+            android:visibility="gone" />
 
     </LinearLayout>
 

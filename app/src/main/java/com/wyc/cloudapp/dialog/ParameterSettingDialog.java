@@ -24,7 +24,7 @@ public class ParameterSettingDialog extends DialogFragment {
 
     private Context mContext;
 
-    public ParameterSettingDialog(@NonNull Context context) {
+    ParameterSettingDialog(@NonNull Context context) {
         mContext = context;
     }
     @Override

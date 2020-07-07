@@ -132,7 +132,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
         final Button all_discount_btn = findViewById(R.id.all_discount);
         if (null != all_discount_btn)
             all_discount_btn.setOnClickListener(view -> {
-                ChangeNumOrPriceDialog dialog = new ChangeNumOrPriceDialog(mContext, mContext.getString(R.string.discount_sz),String.format(Locale.CHINA,"%d",100));
+                ChangeNumOrPriceDialog dialog = new ChangeNumOrPriceDialog(mContext, mContext.getString(R.string.discount_sz),String.format(Locale.CHINA,"%d",10));
                 dialog.setYesOnclickListener(myDialog -> {
                     if (mContext.allDiscount(myDialog.getContent())){
                         deleteMolDiscountRecord();

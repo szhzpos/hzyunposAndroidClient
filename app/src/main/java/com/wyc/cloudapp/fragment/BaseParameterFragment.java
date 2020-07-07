@@ -36,11 +36,11 @@ public class BaseParameterFragment extends BaseFragment {
 
     @Override
     public JSONObject laodContent() {
-        get_save_period(false);
-        get_dual_view(false);
-        get_goods_img_show(false);
-        get_sec_level_category_show(false);
-        get_auto_mol(false);
+        get_or_show_saveDataPeriod(false);
+        get_or_show_dual_view(false);
+        get_or_show_goodsImgSetting(false);
+        get_or_show_secLevelCategorySetting(false);
+        get_or_show_autoMol(false);
          return null;
     }
 
@@ -52,31 +52,31 @@ public class BaseParameterFragment extends BaseFragment {
         final StringBuilder err = new StringBuilder();
 
         content.put(p_id_key,"d_s_period");
-        content.put(p_c_key,get_save_period(true));
+        content.put(p_c_key, get_or_show_saveDataPeriod(true));
         content.put(p_desc_key,"本地数据保存周期");
         array.add(content);
 
         content = new JSONObject();
         content.put(p_id_key,"dual_v");
-        content.put(p_c_key,get_dual_view(true));
+        content.put(p_c_key, get_or_show_dual_view(true));
         content.put(p_desc_key,"双屏设置");
         array.add(content);
 
         content = new JSONObject();
         content.put(p_id_key,"g_i_show");
-        content.put(p_c_key,get_goods_img_show(true));
+        content.put(p_c_key, get_or_show_goodsImgSetting(true));
         content.put(p_desc_key,"显示商品图片设置");
         array.add(content);
 
         content = new JSONObject();
         content.put(p_id_key,"sec_l_c_show");
-        content.put(p_c_key,get_sec_level_category_show(true));
+        content.put(p_c_key, get_or_show_secLevelCategorySetting(true));
         content.put(p_desc_key,"二级类别显示设置");
         array.add(content);
 
         content = new JSONObject();
         content.put(p_id_key,"auto_mol");
-        content.put(p_c_key,get_auto_mol(true));
+        content.put(p_c_key, get_or_show_autoMol(true));
         content.put(p_desc_key,"自动抹零设置");
         array.add(content);
         if (!SQLiteHelper.execSQLByBatchFromJson(array,"local_parameter",null,err,1)){
@@ -180,7 +180,7 @@ public class BaseParameterFragment extends BaseFragment {
         }
     }
 
-    private JSONObject get_save_period(boolean way){
+    private JSONObject get_or_show_saveDataPeriod(boolean way){
         //数据保存周期
         final JSONObject value_obj = new JSONObject();
         final RadioGroup group = mRootView.findViewById(R.id.save_period);
@@ -202,7 +202,7 @@ public class BaseParameterFragment extends BaseFragment {
         }
         return value_obj;
     }
-    private JSONObject get_dual_view(boolean b){
+    private JSONObject get_or_show_dual_view(boolean b){
         //双屏
         final JSONObject value_obj = new JSONObject();
         final Switch dual_view_sh = mRootView.findViewById(R.id._dual_view_switch);
@@ -239,7 +239,7 @@ public class BaseParameterFragment extends BaseFragment {
 
         return value_obj;
     }
-    private JSONObject get_goods_img_show(boolean b){
+    private JSONObject get_or_show_goodsImgSetting(boolean b){
         JSONObject value_obj = new JSONObject();
         Switch sh = mRootView.findViewById(R.id._goods_img_show_switch);
         int status = 0;
@@ -258,7 +258,7 @@ public class BaseParameterFragment extends BaseFragment {
 
         return value_obj;
     }
-    private JSONObject get_sec_level_category_show(boolean b){
+    private JSONObject get_or_show_secLevelCategorySetting(boolean b){
         JSONObject value_obj = new JSONObject();
         Switch sh = mRootView.findViewById(R.id._sec_level_category_show);
         int status = 0;
@@ -276,7 +276,7 @@ public class BaseParameterFragment extends BaseFragment {
         }
         return value_obj;
     }
-    private JSONObject get_auto_mol(boolean b) {
+    private JSONObject get_or_show_autoMol(boolean b) {
         JSONObject value_obj = new JSONObject();
         Switch sh = mRootView.findViewById(R.id.auto_mol_switch);
         int status = 0,value = 0,id = -1;

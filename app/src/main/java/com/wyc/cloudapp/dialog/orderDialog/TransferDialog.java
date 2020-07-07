@@ -259,7 +259,7 @@ public class TransferDialog extends AbstractShowPrinterICODialog {
                 info.append(context.getString(R.string.b_f_hotline_sz)).append(Utils.getNullOrEmptyStringAsDefault(order_info,"telphone","")).append(new_line);
                 info.append(context.getString(R.string.b_f_stores_address_sz)).append(Utils.getNullOrEmptyStringAsDefault(order_info,"region","")).append(new_line);
             }else {
-                info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(footer_c);
+                info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(footer_c).append(new_line);;
             }
             info.append(Printer.printTwoData(1,context.getString(R.string.t_f_f_sign_sz),context.getString(R.string.t_f_c_sign_sz))).append(new_line);
 
