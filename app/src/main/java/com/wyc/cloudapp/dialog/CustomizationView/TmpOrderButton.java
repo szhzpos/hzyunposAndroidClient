@@ -8,10 +8,11 @@ import android.graphics.Path;
 import android.util.AttributeSet;
 import android.widget.Button;
 
+import androidx.appcompat.widget.AppCompatButton;
+
 import com.wyc.cloudapp.R;
 
-@SuppressLint("AppCompatCustomView")
-public final class TmpOrderButton extends Button {
+public final class TmpOrderButton extends AppCompatButton {
     private Paint mPaint;
     private Path mPath;
     private int mOrderNum;

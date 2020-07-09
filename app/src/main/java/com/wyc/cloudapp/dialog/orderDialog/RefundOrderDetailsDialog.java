@@ -21,6 +21,8 @@ import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.Utils;
 
+import java.util.Locale;
+
 
 public class RefundOrderDetailsDialog extends AbstractShowPrinterICODialog {
     private JSONObject mRefundOrderInfo;
@@ -59,8 +61,8 @@ public class RefundOrderDetailsDialog extends AbstractShowPrinterICODialog {
 
             if (order_code_tv != null)order_code_tv.setText(mRefundOrderCode = Utils.getNullStringAsEmpty(object,"refund_order_code"));
 
-            if (order_amt_tv != null)order_amt_tv.setText(Utils.getNullStringAsEmpty(object,"refund_order_amt"));
-            if (refund_amt_tv != null)refund_amt_tv.setText(Utils.getNullStringAsEmpty(object,"refund_amt"));
+            if (order_amt_tv != null)order_amt_tv.setText(String.format(Locale.CHINA,"%.2f",object.getDoubleValue("refund_order_amt")));
+            if (refund_amt_tv != null)refund_amt_tv.setText(String.format(Locale.CHINA,"%.2f",object.getDoubleValue("refund_amt")));
             if (refund_type_tv != null)refund_type_tv.setText(Utils.getNullStringAsEmpty(object,"refund_type_name"));
             if (s_e_status_tv != null)s_e_status_tv.setText(Utils.getNullStringAsEmpty(object,"s_e_status_name"));
             if (refund_status_tv != null)refund_status_tv.setText(Utils.getNullStringAsEmpty(object,"refund_status_name"));

@@ -72,8 +72,8 @@ public class RetailOrderDetailsDialog extends AbstractShowPrinterICODialog {
 
             if (order_code_tv != null)order_code_tv.setText(mRetailOrderCode = Utils.getNullStringAsEmpty(object,"order_code"));
 
-            if (order_amt_tv != null)order_amt_tv.setText(Utils.getNullStringAsEmpty(object,"order_amt"));
-            if (reality_amt_tv != null)reality_amt_tv.setText(Utils.getNullStringAsEmpty(object,"reality_amt"));
+            if (order_amt_tv != null)order_amt_tv.setText(String.format(Locale.CHINA,"%.2f",object.getDoubleValue("order_amt")));
+            if (reality_amt_tv != null)reality_amt_tv.setText(String.format(Locale.CHINA,"%.2f",object.getDoubleValue("reality_amt")));
             if (order_status_tv != null)order_status_tv.setText(Utils.getNullStringAsEmpty(object,"order_status_name"));
             if (pay_status_tv != null)pay_status_tv.setText(Utils.getNullStringAsEmpty(object,"pay_status_name"));
             if (s_e_status_tv != null)s_e_status_tv.setText(Utils.getNullStringAsEmpty(object,"s_e_status_name"));

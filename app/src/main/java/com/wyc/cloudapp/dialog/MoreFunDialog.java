@@ -69,7 +69,8 @@ public final class MoreFunDialog extends AbstractDialogBaseOnMainActivityImp {
     private void initAllRefundBtn(){
         final Button btn = findViewById(R.id.all_refund_btn);
         btn.setOnClickListener(v -> {
-            RefundDialog dialog = new RefundDialog(mContext,null);
+            mContext.setSingle(false);
+            final RefundDialog dialog = new RefundDialog(mContext,null);
             dialog.show();
             this.dismiss();
         });

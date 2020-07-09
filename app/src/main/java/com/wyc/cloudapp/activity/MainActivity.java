@@ -478,9 +478,12 @@ public class MainActivity extends AppCompatActivity {
                 if (mSecondDisplay != null)mSecondDisplay.notifyChange(mSaleGoodsViewAdapter.getCurrentItemIndex());
             }
         });
-        registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray_subtransparent),mSaleGoodsViewAdapter));
+        reSizeSaleGoodsView();
         mSaleGoodsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
         mSaleGoodsRecyclerView.setAdapter(mSaleGoodsViewAdapter);
+    }
+    private void reSizeSaleGoodsView(){
+        registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray_subtransparent)));
     }
     @SuppressLint("ClickableViewAccessibility")
     private void initSearch(){
@@ -646,6 +649,7 @@ public class MainActivity extends AppCompatActivity {
             }else{
                 if (HangBillDialog.getHangCounts(activity) > 0){
                     hangBillDialog.setGetBillDetailListener((array, vip) -> {
+                        hideLastOrderInfo();
                         if (null != vip)showVipInfo(vip);
                         JSONObject barcode_id_obj,goods_info;
                         String id;
@@ -791,7 +795,7 @@ public class MainActivity extends AppCompatActivity {
             if (!mSaleGoodsViewAdapter.getDatas().isEmpty()){
                 mSaleGoodsViewAdapter.deleteVipDiscountRecord();
             }
-            registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray_subtransparent),mSaleGoodsViewAdapter));
+            reSizeSaleGoodsView();
         }
     }
     private void registerGlobalLayoutToRecyclerView(@NonNull final View view,final float size,@NonNull final SuperItemDecoration superItemDecoration){
@@ -870,7 +874,7 @@ public class MainActivity extends AppCompatActivity {
     public void showVipInfo(@NonNull JSONObject vip){
         mVipInfo = vip;
 
-        registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray_subtransparent),mSaleGoodsViewAdapter));
+        reSizeSaleGoodsView();
 
         final LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
         vip_info_linearLayout.setVisibility(View.VISIBLE);

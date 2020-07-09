@@ -11,18 +11,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class SaleGoodsItemDecoration extends SuperItemDecoration {
-    private SaleGoodsViewAdapter mSaleGoodsViewAdapter;
-    public SaleGoodsItemDecoration(int color,SaleGoodsViewAdapter adapter){
+    public SaleGoodsItemDecoration(int color){
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setColor(color);
-        mSaleGoodsViewAdapter = adapter;
     }
     @Override
     public void onDrawOver(@NonNull Canvas c,@NonNull RecyclerView parent,@NonNull RecyclerView.State state) {
         super.onDrawOver(c, parent, state);
-
-        if (mSaleGoodsViewAdapter.getSingle()){
+        final SaleGoodsViewAdapter adapter = (SaleGoodsViewAdapter) parent.getAdapter();
+        if (adapter != null && adapter.getSingle()){
             final Paint paint = new Paint();
             paint.setAntiAlias(true);
             paint.setColor(Color.RED);
