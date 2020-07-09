@@ -190,8 +190,8 @@ public class LoginActivity extends AppCompatActivity {
     private void show_shop_info(final JSONObject shop_info){
         final TextView et_url = findViewById(R.id._url_text),shop_name_tv = findViewById(R.id.shop_name);
         if (et_url != null && shop_name_tv != null && shop_info != null){
-            et_url.setText(shop_info.getString("shop_id"));
-            shop_name_tv.setText(shop_info.getString("shop_name"));
+            et_url.setText(Utils.getNullStringAsEmpty(shop_info,"shop_id"));
+            shop_name_tv.setText(Utils.getNullStringAsEmpty(shop_info,"shop_name"));
         }
     }
     private void initPassword(){
@@ -281,9 +281,9 @@ public class LoginActivity extends AppCompatActivity {
         final JSONObject param = new JSONObject();
         if(SQLiteHelper.getLocalParameter("connParam",param)){
             if (Utils.JsonIsNotEmpty(param)){
-                final JSONObject shop_info = param.getJSONObject("storeInfo");
-                shop_info.put("shop_id",param.getString("shop_id"));
-                shop_info.put("shop_name",String.format("%s%s%s%s",shop_info.getString("stores_name"),"[",shop_info.getString("stores_id"),"]"));
+                final JSONObject shop_info = JSON.parseObject(Utils.getNullOrEmptyStringAsDefault(param,"storeInfo","{}"));
+                shop_info.put("shop_id",Utils.getNullStringAsEmpty(param,"shop_id"));
+                shop_info.put("shop_name",String.format("%s%s%s%s",Utils.getNullStringAsEmpty(shop_info,"stores_name"),"[",Utils.getNullStringAsEmpty(shop_info,"stores_id"),"]"));
                 show_shop_info(shop_info);
             }
         }else{

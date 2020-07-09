@@ -37,6 +37,7 @@
             android:ems="10"
             android:inputType="textUri|textPersonName"
             android:padding="@dimen/margin_5"
+            android:selectAllOnFocus="true"
             android:textColor="@color/text_color" />
 
         <TextView

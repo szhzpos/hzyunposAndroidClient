@@ -38,10 +38,8 @@ import java.util.Locale;
 import static android.content.Context.WINDOW_SERVICE;
 
 public class ConnSettingDialog extends AbstractDialogBaseOnContextImp {
-    private TextView mUrl,mAppId,mAppscret,mStore_name;
-    private CustomProgressDialog mDialog;
-    private Myhandler mHandler;
-    private EditText mShopId;
+    private TextView mUrlTv, mAppIdTv, mAppscretTv,mStore_nameTv;
+    private EditText mShopIdEt;
     public ConnSettingDialog(final Context context, final String title) {
         super(context,title,R.style.MyDialog);
     }
@@ -70,46 +68,38 @@ public class ConnSettingDialog extends AbstractDialogBaseOnContextImp {
 
     private void initView() {
 
-        mShopId = findViewById(R.id.shop_id_et);
-        mUrl = findViewById(R.id.server_url);
-        mAppId = findViewById(R.id.appId);
-        mAppscret = findViewById(R.id.appSecret);
-        mStore_name = findViewById(R.id.store_name);
+        mShopIdEt = findViewById(R.id.shop_id_et);
 
-        mDialog = new CustomProgressDialog(mContext);
-        mHandler = new Myhandler(this);
+        mAppIdTv = findViewById(R.id.appId);
+        mAppscretTv = findViewById(R.id.appSecret);
+        mStore_nameTv = findViewById(R.id.store_name);
 
-        mUrl.setSelectAllOnFocus(true);
-        mAppscret.setSelectAllOnFocus(true);
-        mAppId.setSelectAllOnFocus(true);
+        mAppscretTv.setSelectAllOnFocus(true);
+        mAppIdTv.setSelectAllOnFocus(true);
 
-
-        mUrl.setOnFocusChangeListener((v,hasFocus)->{
-            if (!hasFocus){
-                verifyUrl();
-            }
-        });
-
-/*        mStore_name.setOnClickListener((View v)-> queryStoreInfo());
-
-        mStore_name.setOnFocusChangeListener((v, hasFocus) -> {
-            Utils.hideKeyBoard((EditText)v);
-            if (hasFocus){
-                queryStoreInfo();
-            }
-        });*/
-
+        initUrlTv();
         initCancelBtn();
         initSaveBtn();
         initWindowSize();
 
     }
 
+    private void initUrlTv(){
+        final TextView tv = findViewById(R.id.server_url);
+        tv.setSelectAllOnFocus(true);
+        tv.setOnFocusChangeListener((v, hasFocus)->{
+            if (!hasFocus){
+                verifyUrl();
+            }
+        });
+        mUrlTv = tv;
+    }
+
     private void initCancelBtn(){
         final Button cancel = findViewById(R.id.cancel);
         cancel.setOnClickListener((View v)-> {
-            if (mShopId != null){
-                mShopId.setText(Utils.getViewTagValue(mShopId,""));
+            if (mShopIdEt != null){
+                mShopIdEt.setText(Utils.getViewTagValue(mShopIdEt,""));
             }
             closeWindow();
         });
@@ -147,14 +137,13 @@ public class ConnSettingDialog extends AbstractDialogBaseOnContextImp {
         final Button save_btn = findViewById(R.id.save);
         if (null != save_btn){
             save_btn.setOnClickListener((View v)->{
-                final String shop_id = mShopId.getText().toString();
+                final String shop_id = mShopIdEt.getText().toString();
                 if (!"".equals(shop_id)){
-
                     final JSONObject param = new JSONObject();
-
                     if (check_shop_id(shop_id,param)){
                         MyDialog.displayAskMessage(null, "当前商户与数据库中的商户不一致，是否需要保存？", mContext, myDialog -> {
                             myDialog.dismiss();
+                            if (mStore_nameTv != null)mStore_nameTv.setText(mContext.getString(R.string.space_sz));
 
                             final JEventLoop loop = new JEventLoop();
                             final StringBuilder err = new StringBuilder();
@@ -190,10 +179,10 @@ public class ConnSettingDialog extends AbstractDialogBaseOnContextImp {
             final StringBuilder err = new StringBuilder();
 
             json.put("server_url",verifyUrl());
-            json.put("appId",mAppId.getText().toString());
-            json.put("url",mUrl.getText().toString());
+            json.put("appId", mAppIdTv.getText().toString());
+            json.put("url", mUrlTv.getText().toString());
             json.put("shop_id",shop_id);
-            json.put("appScret",mAppscret.getText().toString());
+            json.put("appScret", mAppscretTv.getText().toString());
             json.put("storeInfo","{}");
 
             if (SQLiteHelper.saveLocalParameter("connParam",json,"门店信息、服务器连接参数",err)){
@@ -204,81 +193,18 @@ public class ConnSettingDialog extends AbstractDialogBaseOnContextImp {
         }
     }
 
-    private static class Myhandler extends Handler {
-        private WeakReference<ConnSettingDialog> weakConnSettingDialog;
-        private Myhandler(ConnSettingDialog dialog){
-            this.weakConnSettingDialog = new WeakReference<>(dialog);
-        }
-        public void handleMessage(@NonNull Message msg){
-            ConnSettingDialog settingDialog = weakConnSettingDialog.get();
-            if (settingDialog == null)return;
-            if (settingDialog.mDialog !=null)settingDialog.mDialog.dismiss();
-            switch (msg.what){
-                case MessageID.DIS_ERR_INFO_ID:
-                    if (msg.obj != null)
-                        MyDialog.displayErrorMessage(null,msg.obj.toString(), settingDialog.mContext);
-                    break;
-                case MessageID.DIS_STORE_INFO_ID://查询门店信息正确,则要在线请求仓库信息
-
-                    break;
-            }
-
-        }
-    }
-
-    private void queryStoreInfo(){
-        if (mUrl.getText().length() == 0){
-            mUrl.requestFocus();
-            MyDialog.SnackbarMessage(getWindow(),"服务器URL不能为空！",getCurrentFocus());
-            return;
-        }
-
-        mDialog.setMessage("正在查询门店信息...").show();
-        final HttpRequest httpRequest = new HttpRequest();
-        AsyncTask.execute(()->{
-            String  url = mUrl.getText() + "/api/scale/get_stores",sz_param;
-            JSONObject object = new JSONObject(),retJson,info_json;
-
-            try {
-                object.put("appid",mAppId.getText());
-
-                sz_param = HttpRequest.generate_request_parm(object,mAppscret.getText().toString());
-                retJson = httpRequest.sendPost(url,sz_param,true);
-                switch (retJson.getIntValue("flag")) {
-                    case 0:
-                        mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,retJson.getString("info")).sendToTarget();
-                        break;
-                    case 1:
-                        info_json = JSON.parseObject(retJson.getString("info"));
-                        switch (info_json.getString("status")){
-                            case "n":
-                                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,info_json.getString("info")).sendToTarget();
-                                break;
-                            case "y":
-                                mHandler.obtainMessage(MessageID.DIS_STORE_INFO_ID,info_json.getJSONArray("data")).sendToTarget();
-                                break;
-                        }
-                        break;
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,e.getMessage()).sendToTarget();
-            }
-        });
-    }
-
     private void showConnParam(){
         final JSONObject param = new JSONObject();
         if(SQLiteHelper.getLocalParameter("connParam",param)){
             if (Utils.JsonIsNotEmpty(param)){
                 try {
-                    mShopId.setText(param.getString("shop_id"));
-                    mShopId.setTag(mShopId.getText().toString());
+                    mShopIdEt.setText(param.getString("shop_id"));
+                    mShopIdEt.setTag(mShopIdEt.getText().toString());
 
-                    mUrl.setText(param.getString("url"));
+                    mUrlTv.setText(param.getString("url"));
                     final JSONObject storeInfo = JSON.parseObject(param.getString("storeInfo"));
                     if (storeInfo.containsKey("stores_name")){
-                        mStore_name.setText(String.format("%s%s%s%s",storeInfo.getString("stores_name"),"[",storeInfo.getString("stores_id"),"]"));
+                        mStore_nameTv.setText(String.format("%s%s%s%s",storeInfo.getString("stores_name"),"[",storeInfo.getString("stores_id"),"]"));
                     }else {
                         final View view = findViewById(R.id.ip_fo);
                         view.setVisibility(View.GONE);
@@ -297,18 +223,18 @@ public class ConnSettingDialog extends AbstractDialogBaseOnContextImp {
     }
 
     private String verifyUrl(){
-        String url = mUrl.getText().toString();
+        String url = mUrlTv.getText().toString();
         if (!url.isEmpty() && !url.contains("http")){
-            url = "http://" + mShopId.getText() + url;
+            url = "http://" + mShopIdEt.getText() + url;
         }
         return url;
     }
 
     public JSONObject getShopInfo(){
         JSONObject object = new JSONObject();
-        if (null != mShopId && mStore_name != null){
-            object.put("shop_id",mShopId.getText().toString());
-            object.put("shop_name",mStore_name.getText().toString());
+        if (null != mShopIdEt && mStore_nameTv != null){
+            object.put("shop_id", mShopIdEt.getText().toString());
+            object.put("shop_name",mStore_nameTv.getText().toString());
         }
         return object;
     }
