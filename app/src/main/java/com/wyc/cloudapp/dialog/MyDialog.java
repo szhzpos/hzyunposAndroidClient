@@ -326,7 +326,6 @@ public final class MyDialog extends Dialog {
                 }else{
                     int[] location = new int[2];
                     anchor.getLocationOnScreen(location);
-                    Logger.d(anchor.getMeasuredWidth());
                     toast.setGravity( Gravity.TOP|Gravity.START,location[0] - Utils.dpToPx(context,72),location[1] + anchor.getMeasuredHeight() / 2);
                 }
                 toast.show();
@@ -343,9 +342,9 @@ public final class MyDialog extends Dialog {
             final Snackbar snackbar = Snackbar.make(window.getDecorView(),message, Snackbar.LENGTH_LONG);
             window.setCallback(new WindowCallback(window,snackbar));
             if (anchor != null)snackbar.setAnchorView(anchor);
-            View snackbar_view = snackbar.getView();
+            final View snackbar_view = snackbar.getView();
             snackbar_view.setBackgroundResource(R.drawable.snackbar_background);
-            TextView tvSnackbarText = snackbar_view.findViewById(R.id.snackbar_text);
+            final TextView tvSnackbarText = snackbar_view.findViewById(R.id.snackbar_text);
             tvSnackbarText.setTextSize(20);
             snackbar.show();
         }

@@ -687,7 +687,7 @@ public class MainActivity extends AppCompatActivity {
             if (ps instanceof Boolean)b = (boolean)ps;
             if (b){
                 b = false;
-                imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(printer,Utils.px2dip(this,15),Utils.px2dip(this,15)));
+                imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(printer,15,15));
                 MyDialog.ToastMessage(imageView,"打印功能已关闭！",this,getWindow());
             }else{
                 b = true;
