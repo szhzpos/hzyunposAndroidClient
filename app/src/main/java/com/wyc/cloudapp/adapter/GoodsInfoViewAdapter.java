@@ -37,7 +37,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     private View mCurrentItemView;
     public GoodsInfoViewAdapter(final MainActivity context){
         this.mContext = context;
-        JSONObject jsonObject = new JSONObject();
+        final JSONObject jsonObject = new JSONObject();
         if (SQLiteHelper.getLocalParameter("g_i_show",jsonObject)){
             mShowPic = (Utils.getNotKeyAsNumberDefault(jsonObject,"s",1) == 1);
         }else{

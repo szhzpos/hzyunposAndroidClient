@@ -11,6 +11,7 @@ import android.widget.Button;
 import androidx.appcompat.widget.AppCompatButton;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 public final class TmpOrderButton extends AppCompatButton {
@@ -53,7 +54,10 @@ public final class TmpOrderButton extends AppCompatButton {
         super.onDraw(canvas);
         mPaint.setColor(mContext.getColor(R.color.orange));
 
-        int w = getMeasuredWidth(),h = getMeasuredHeight(),offset = Utils.dpToPx(mContext,30),arcAngle = Utils.dpToPx(mContext,5);
+        int w = getMeasuredWidth(),h = getMeasuredHeight(),offset = 30,arcAngle = 5;
+
+        Logger.d("w:%d,h:%d",w,h);
+
         mPath.moveTo(w - offset, 0);
         mPath.arcTo(w - arcAngle,0,w,arcAngle,-90,90,false);
         mPath.lineTo(w, h - Utils.dpToPx(mContext,10));
@@ -61,8 +65,8 @@ public final class TmpOrderButton extends AppCompatButton {
         canvas.drawPath(mPath, mPaint);
 
         mPaint.setColor(mContext.getColor(R.color.white));
-        mPaint.setTextSize(Utils.dpToPx(mContext,12));
-        canvas.drawText(String.valueOf(mOrderNum),getMeasuredWidth() - Utils.dpToPx(mContext,12),Utils.dpToPx(mContext,15),mPaint);
+        mPaint.setTextSize(mContext.getResources().getDimension(R.dimen.font_size_12));
+        canvas.drawText(String.valueOf(mOrderNum),w - 12,15,mPaint);
     }
 
     public void setNum(int num){

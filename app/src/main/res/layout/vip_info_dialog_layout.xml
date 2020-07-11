@@ -17,15 +17,14 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/margin_8"
             android:orientation="horizontal"
-            app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+            app:layout_constraintBottom_toTopOf="@id/constraintLayout"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/constraintLayout"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/imageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/width_118"
+                android:layout_height="@dimen/width_88"
                 android:contentDescription="@string/space_sz"
                 app:srcCompat="@drawable/nodish" />
 
@@ -76,7 +75,7 @@
                 android:id="@+id/sex_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="28dp"
+                android:layout_marginStart="@dimen/size_28"
                 android:text="@string/vip_six_sz"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_16"
@@ -214,7 +213,8 @@
             android:id="@+id/bottom_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_2"
+            android:layout_marginStart="@dimen/margin_2"
+            android:layout_marginBottom="@dimen/margin_1"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent">
@@ -222,7 +222,7 @@
             <Button
                 android:id="@+id/vip_add"
                 style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="wrap_content"
+                android:layout_width="@dimen/width_88"
                 android:layout_height="@dimen/height_58"
                 android:background="@drawable/button_blue"
                 android:text="@string/add_sz"
@@ -238,7 +238,7 @@
             <Button
                 android:id="@+id/vip_modify"
                 style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="wrap_content"
+                android:layout_width="@dimen/width_88"
                 android:layout_height="@dimen/height_58"
                 android:background="@drawable/button_blue"
                 android:text="@string/modify_sz"
@@ -254,7 +254,7 @@
             <Button
                 android:id="@+id/vip_charge"
                 style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="wrap_content"
+                android:layout_width="@dimen/width_88"
                 android:layout_height="@dimen/height_58"
                 android:background="@drawable/button_blue"
                 android:text="@string/charge_sz"
@@ -289,12 +289,13 @@
             android:importantForAutofill="no"
             android:inputType="textPersonName"
             android:padding="@dimen/margin_5"
-            android:textColor="@color/text_color" />
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_18" />
 
         <com.wyc.cloudapp.dialog.CustomizationView.KeyboardView
             android:id="@+id/keyboard_view"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
 </LinearLayout>

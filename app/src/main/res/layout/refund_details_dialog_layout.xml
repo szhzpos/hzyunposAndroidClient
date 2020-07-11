@@ -471,7 +471,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/goods_details"
             android:layout_width="match_parent"
-            android:layout_height="200dp" />
+            android:layout_height="@dimen/size_200" />
 
     </LinearLayout>
 
@@ -554,7 +554,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/pay_details"
             android:layout_width="match_parent"
-            android:layout_height="100dp" />
+            android:layout_height="@dimen/size_100" />
     </LinearLayout>
 
     <LinearLayout

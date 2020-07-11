@@ -22,15 +22,15 @@
         android:id="@+id/title"
         android:layout_width="@dimen/width_208"
         android:layout_height="0dp"
-        android:layout_marginBottom="24dp"
+        android:gravity="center_vertical"
         android:lines="1"
         android:text="@string/loading_sz"
         android:textColor="@color/white"
         android:textSize="@dimen/font_size_18"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@id/pb_load" />
+        app:layout_constraintStart_toEndOf="@id/pb_load"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/show_time"
@@ -49,6 +49,7 @@
         android:layout_height="wrap_content"
         android:text="@string/sec_sign_sz"
         android:textColor="@color/white"
+        android:textSize="@dimen/font_size_14"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

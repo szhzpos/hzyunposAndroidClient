@@ -21,6 +21,7 @@
             android:background="@drawable/button_blue"
             android:text="@string/present_sz"
             android:textColor="@color/blue_white"
+            android:textSize="@dimen/font_size_14"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -60,6 +61,7 @@
             android:background="@drawable/button_blue"
             android:text="@string/o_cashbox_sz"
             android:textColor="@color/blue_white"
+            android:textSize="@dimen/font_size_14"
             app:layout_constraintStart_toEndOf="@id/setup_btn"
             app:layout_constraintTop_toTopOf="@id/setup_btn" />
 

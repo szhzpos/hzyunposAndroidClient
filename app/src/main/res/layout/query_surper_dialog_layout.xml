@@ -35,6 +35,7 @@
                 android:id="@+id/start_date"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
                 android:background="@drawable/edit_text_style"
                 android:focusable="auto"
                 android:focusableInTouchMode="true"
@@ -43,12 +44,14 @@
                 android:minWidth="@dimen/width_80"
                 android:paddingStart="@dimen/margin_5"
                 android:paddingEnd="@dimen/margin_2"
-                android:textColor="@color/text_color" />
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_18" />
 
             <EditText
                 android:id="@+id/start_time"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
                 android:layout_marginEnd="@dimen/margin_1"
                 android:background="@drawable/left_separator"
                 android:focusable="auto"
@@ -58,7 +61,8 @@
                 android:paddingStart="@dimen/margin_2"
                 android:paddingEnd="@dimen/margin_5"
                 android:text="@string/start_time_sz"
-                android:textColor="@color/text_color" />
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_18" />
         </LinearLayout>
 
         <TextView
@@ -87,12 +91,13 @@
                 android:minWidth="@dimen/width_80"
                 android:paddingStart="@dimen/margin_5"
                 android:paddingEnd="@dimen/margin_2"
-                android:textColor="@color/text_color" />
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_18" />
 
             <EditText
                 android:id="@+id/end_time"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginEnd="@dimen/margin_1"
                 android:background="@drawable/left_separator"
                 android:focusable="auto"
@@ -102,7 +107,8 @@
                 android:paddingStart="@dimen/margin_2"
                 android:paddingEnd="@dimen/margin_5"
                 android:text="@string/end_time_sz"
-                android:textColor="@color/text_color" />
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_18" />
         </LinearLayout>
 
         <TextView
@@ -130,7 +136,8 @@
             android:paddingStart="@dimen/margin_5"
             android:paddingEnd="@dimen/margin_5"
             android:selectAllOnFocus="true"
-            android:textColor="@color/text_color" />
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_18" />
 
         <Button
             android:id="@+id/query_btn"

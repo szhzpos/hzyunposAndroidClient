@@ -32,14 +32,16 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/goods_title"
         android:layout_alignStart="@id/goods_title"
-        android:textColor="@color/black" />
+        android:textColor="@color/black"
+        android:textSize="@dimen/font_size_14" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/original_price"
         android:layout_toStartOf="@id/original_price"
-        android:text="@string/b_f_ori_price_sz" />
+        android:text="@string/b_f_ori_price_sz"
+        android:textSize="@dimen/font_size_14" />
 
     <TextView
         android:id="@+id/original_price"
@@ -48,21 +50,24 @@
         android:layout_below="@id/goods_title"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="@dimen/margin_5"
-        android:text="88888888" />
+        android:text="88888888"
+        android:textSize="@dimen/font_size_14" />
 
     <TextView
         android:id="@+id/discount_sign"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:textColor="@color/orange_1" />
+        android:textColor="@color/orange_1"
+        android:textSize="@dimen/font_size_14" />
 
     <TextView
         android:id="@+id/row_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_5"
-        android:textColor="@color/text_color" />
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_14" />
 
     <TextView
         android:id="@+id/goods_title"
@@ -84,7 +89,8 @@
         android:layout_centerHorizontal="false"
         android:layout_marginStart="@dimen/width_78"
         android:text="@string/currency_symbol_sz"
-        android:textColor="@color/text_color" />
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_14" />
 
     <TextView
         android:id="@+id/sale_price"
@@ -94,7 +100,8 @@
         android:layout_toEndOf="@+id/symbol_text"
         android:text="1028"
         android:textAlignment="viewStart"
-        android:textColor="@color/text_color" />
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_14" />
 
     <TextView
         android:id="@+id/sale_num"
@@ -103,7 +110,8 @@
         android:layout_alignParentBottom="true"
         android:layout_marginStart="@dimen/size_35"
         android:layout_toEndOf="@id/sale_price"
-        android:textColor="@color/text_color" />
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_14" />
 
     <TextView
         android:id="@+id/amt_symbol"
@@ -132,6 +140,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginStart="@dimen/margin_8"
         android:layout_toEndOf="@id/sale_num"
-        android:textColor="@color/text_color" />
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_14" />
 
 </RelativeLayout>

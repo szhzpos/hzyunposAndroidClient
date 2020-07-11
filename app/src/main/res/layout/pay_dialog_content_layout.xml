@@ -11,7 +11,7 @@
 
     <LinearLayout
         android:id="@+id/left"
-        android:layout_width="468dp"
+        android:layout_width="@dimen/pay_dialog_left_w"
         android:layout_height="match_parent"
         android:layout_marginEnd="@dimen/margin_5"
         android:background="@drawable/round_shape"
@@ -88,7 +88,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/order_amt_sz"
-                    android:textAlignment="center" />
+                    android:textAlignment="center"
+                    android:textSize="@dimen/font_size_14" />
 
                 <TextView
                     android:id="@+id/order_amt"
@@ -112,7 +113,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/discount_amt_sz"
-                    android:textAlignment="center" />
+                    android:textAlignment="center"
+                    android:textSize="@dimen/font_size_14" />
 
                 <TextView
                     android:id="@+id/dis_sum_amt"
@@ -137,7 +139,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/rec_amt_sz"
-                    android:textAlignment="center" />
+                    android:textAlignment="center"
+                    android:textSize="@dimen/font_size_14" />
 
                 <TextView
                     android:id="@+id/actual_amt"
@@ -188,7 +191,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/unpay_amt_sz"
-                        android:textAlignment="center" />
+                        android:textAlignment="center"
+                        android:textSize="@dimen/font_size_14" />
 
                     <TextView
                         android:id="@+id/pay_amt"
@@ -220,7 +224,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/amt_received_sz"
-                        android:textAlignment="center" />
+                        android:textAlignment="center"
+                        android:textSize="@dimen/font_size_14" />
 
                     <TextView
                         android:id="@+id/amt_received"
@@ -252,7 +257,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/balance_sz"
-                        android:textAlignment="center" />
+                        android:textAlignment="center"
+                        android:textSize="@dimen/font_size_14" />
 
                     <TextView
                         android:id="@+id/pay_balance"

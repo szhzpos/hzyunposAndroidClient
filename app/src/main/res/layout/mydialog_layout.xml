@@ -39,7 +39,6 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/linearLayout9"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/transparent"
@@ -47,18 +46,17 @@
 
         <TextView
             android:id="@+id/content"
-            android:layout_width="428dp"
-            android:layout_height="108dp"
+            android:layout_width="@dimen/size_428"
+            android:layout_height="@dimen/size_108"
             android:background="@drawable/top_main_color_separator"
             android:drawableStart="@drawable/ask"
             android:gravity="center_vertical"
-            android:lineSpacingExtra="4sp"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
+            android:paddingLeft="@dimen/margin_12"
+            android:paddingRight="@dimen/margin_12"
             android:scrollbars="vertical"
             android:textAlignment="gravity"
             android:textColor="@color/white"
-            android:textSize="18sp" />
+            android:textSize="@dimen/font_size_18" />
     </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout

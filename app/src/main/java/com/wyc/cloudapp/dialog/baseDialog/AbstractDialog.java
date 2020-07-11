@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -133,14 +134,12 @@ public abstract class AbstractDialog extends Dialog {
         return mEventLoop.exec();
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     private void setContentLayout() {
         setContentView(R.layout.base_dialog_layout);
         final LinearLayout main_layout = findViewById(R.id.dialog_main_layout);
         if (null != main_layout) {
-            final View dialog_content = View.inflate(mContext,getContentLayoutId(), null);
-            if (dialog_content != null)
-                main_layout.addView(dialog_content, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            main_layout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            View.inflate(mContext,getContentLayoutId(), main_layout);
         }
     }
 
