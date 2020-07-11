@@ -11,6 +11,7 @@ import android.widget.Button;
 import androidx.appcompat.widget.AppCompatButton;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.utils.Utils;
 
 public final class TmpOrderButton extends AppCompatButton {
     private Paint mPaint;
@@ -29,10 +30,7 @@ public final class TmpOrderButton extends AppCompatButton {
         mPaint.setAntiAlias(true);
 
         mPath = new Path();
-        mPath.moveTo(50, 0);
-        mPath.arcTo(80,0,85,5,-90,90,false);
-        mPath.lineTo(85, 40);
-        mPath.close();
+
     }
 
     public TmpOrderButton(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -53,12 +51,18 @@ public final class TmpOrderButton extends AppCompatButton {
     @Override
     public void onDraw(Canvas canvas){
         super.onDraw(canvas);
-
         mPaint.setColor(mContext.getColor(R.color.orange));
+
+        int w = getMeasuredWidth(),h = getMeasuredHeight(),offset = Utils.dpToPx(mContext,30),arcAngle = Utils.dpToPx(mContext,5);
+        mPath.moveTo(w - offset, 0);
+        mPath.arcTo(w - arcAngle,0,w,arcAngle,-90,90,false);
+        mPath.lineTo(w, h - Utils.dpToPx(mContext,10));
+        mPath.close();
         canvas.drawPath(mPath, mPaint);
 
         mPaint.setColor(mContext.getColor(R.color.white));
-        canvas.drawText(String.valueOf(mOrderNum),getMeasuredWidth() - 16,15,mPaint);
+        mPaint.setTextSize(Utils.dpToPx(mContext,12));
+        canvas.drawText(String.valueOf(mOrderNum),getMeasuredWidth() - Utils.dpToPx(mContext,12),Utils.dpToPx(mContext,15),mPaint);
     }
 
     public void setNum(int num){

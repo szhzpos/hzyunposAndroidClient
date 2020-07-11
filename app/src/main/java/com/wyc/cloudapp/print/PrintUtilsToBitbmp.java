@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.Utils;
 
 public final class PrintUtilsToBitbmp {
     private final static int WIDTH = 240;//8的整数倍
@@ -194,12 +195,13 @@ public final class PrintUtilsToBitbmp {
     public static Bitmap drawErrorSignToBitmap(final Bitmap in,int w,int h){
         final Bitmap bitmap = in.copy(Bitmap.Config.ARGB_8888, true);
         int width = bitmap.getWidth(),height = bitmap.getHeight();
-        Canvas canvas = new Canvas(bitmap);
+        final Canvas canvas = new Canvas(bitmap);
         Paint paint = new Paint();
         paint.setColor(Color.RED);
         paint.setStrokeWidth(2);
         paint.setAntiAlias(true);
-        RectF rectF = new RectF(width- w,height - h,width - 2,height - 2);
+
+        final RectF rectF = new RectF(width- w,height - h,width - 2,height - 2);
         canvas.drawArc(rectF, 0, 360, false, paint);
         paint.setColor(Color.WHITE);
         canvas.drawLine(rectF.left+2,rectF.top+2,rectF.right-2,rectF.bottom-2,paint);

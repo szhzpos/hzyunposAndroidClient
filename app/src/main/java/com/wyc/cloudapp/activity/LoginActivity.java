@@ -18,6 +18,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
+import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.View;
@@ -51,6 +52,7 @@ import com.wyc.cloudapp.utils.Utils;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
+import java.util.Locale;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -85,8 +87,8 @@ public class LoginActivity extends AppCompatActivity {
         initPassword();
         initSetup();
 
-        //初始化数字键盘
         initKeyboard();
+        intitDisplayInfo();
     }
 
     @Override
@@ -135,6 +137,18 @@ public class LoginActivity extends AppCompatActivity {
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    private void intitDisplayInfo(){
+        final TextView tv = findViewById(R.id.display_info_tv);
+        final WindowManager wm = getWindowManager();
+        if (null != tv && wm != null){
+            final Display display = wm.getDefaultDisplay();
+            final DisplayMetrics displayMetrics = new DisplayMetrics();
+            display.getMetrics(displayMetrics);;
+            Logger.d("density:%f",displayMetrics.density);
+            tv.setText(String.format(Locale.CHINA,"H:%d x W:%d DPI:%d",displayMetrics.heightPixels,displayMetrics.widthPixels,displayMetrics.densityDpi));
         }
     }
 

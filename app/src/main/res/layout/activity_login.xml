@@ -361,4 +361,12 @@
 
     </RelativeLayout>
 
+    <TextView
+        android:id="@+id/display_info_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:padding="8dp"
+        android:textColor="@color/white" />
+
 </RelativeLayout>

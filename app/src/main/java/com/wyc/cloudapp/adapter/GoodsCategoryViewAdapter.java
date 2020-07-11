@@ -24,7 +24,7 @@ public class GoodsCategoryViewAdapter extends RecyclerView.Adapter<GoodsCategory
     private GoodsInfoViewAdapter mGoodsInfoAdapter;
     private GoodsCategoryViewAdapter mChildGoodsCategoryAdpter;
     private RecyclerView mChildGoodsCategoryView;
-    private boolean mChildShow = false;
+    private boolean mChildShow = false,mFirstLoad = true;
     public GoodsCategoryViewAdapter(MainActivity context, RecyclerView v){
         this.mContext = context;
         this.mGoodsInfoAdapter = context.getGoodsInfoViewAdapter();
@@ -85,7 +85,7 @@ public class GoodsCategoryViewAdapter extends RecyclerView.Adapter<GoodsCategory
          if (null == mChildGoodsCategoryView){
              itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,50));
         }else{
-            itemView.setLayoutParams(new RecyclerView.LayoutParams(88,ViewGroup.LayoutParams.MATCH_PARENT));
+            itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.MATCH_PARENT));
         }
         itemView.setOnClickListener(this);
 
@@ -95,13 +95,14 @@ public class GoodsCategoryViewAdapter extends RecyclerView.Adapter<GoodsCategory
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
         if (mDatas != null){
-            JSONObject goods_type_info = mDatas.getJSONObject(i);
+            final JSONObject goods_type_info = mDatas.getJSONObject(i);
             if (goods_type_info != null){
                 myViewHolder.category_id.setText(goods_type_info.getString("category_id"));
                 myViewHolder.category_name.setText(goods_type_info.getString("name"));
-                if (i == 1){//一级分类触发第二个类别查询
-                        if (mChildGoodsCategoryView != null){
-                            myViewHolder.mCurrentLayoutItemView.callOnClick();
+                if (i == 1 && mFirstLoad){//一级分类触发第二个类别查询
+                    mFirstLoad = false;
+                    if (mChildGoodsCategoryView != null){
+                        myViewHolder.mCurrentLayoutItemView.callOnClick();
                     }
                 }
             }
@@ -111,10 +112,6 @@ public class GoodsCategoryViewAdapter extends RecyclerView.Adapter<GoodsCategory
     @Override
     public int getItemCount() {
         return mDatas == null ? 0 : mDatas.size();
-    }
-
-    public JSONObject getItem(int i){
-       return mDatas == null ? null : mDatas.getJSONObject(i);
     }
 
     public void setDatas(int parent_id){

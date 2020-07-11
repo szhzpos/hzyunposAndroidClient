@@ -27,6 +27,7 @@
             android:id="@+id/cashier_desk_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_marginEnd="@dimen/margin_8"
             android:contentDescription="@string/cashier_desk_sz"
             app:srcCompat="@drawable/main" />
@@ -161,8 +162,8 @@
 
             <ImageView
                 android:id="@+id/printer_status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:contentDescription="@string/space_sz"
                 app:srcCompat="@drawable/printer" />
 
@@ -456,112 +457,127 @@
         app:layout_constraintStart_toEndOf="@id/main_middle_left"
         app:layout_constraintTop_toBottomOf="@+id/main_top">
 
-        <Button
-            android:id="@+id/add_num"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/fun_button_width_size"
-            android:layout_height="@dimen/fun_button_height_size"
-            android:layout_gravity="center"
-            android:background="@drawable/dialog_button_blue"
-            android:text="@string/add"
-            android:textColor="@color/blue_white"
-            android:textSize="@dimen/fun_button_font_size_24" />
-
-        <Button
-            android:id="@+id/minus_num"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/fun_button_width_size"
-            android:layout_height="@dimen/fun_button_height_size"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/margin_2"
-            android:background="@drawable/dialog_button_pink"
-            android:text="@string/minus"
-            android:textAlignment="gravity"
-            android:textColor="@color/pink_white"
-            android:textSize="@dimen/fun_button_font_size_24" />
-
-        <Button
-            android:id="@+id/num"
-            android:layout_width="@dimen/fun_button_width_size"
-            android:layout_height="@dimen/fun_button_height_size"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/margin_2"
-            android:background="@drawable/button_green"
-            android:text="@string/num_not_colon_sz"
-            android:textColor="@color/black_white"
-            android:textSize="@dimen/fun_button_font_size_16" />
-
-        <Button
-            android:id="@+id/clear"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/fun_button_width_size"
-            android:layout_height="@dimen/fun_button_height_size"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/margin_2"
-            android:background="@drawable/button_green"
-            android:text="@string/clear_sz"
-            android:textColor="@color/black_white"
-            android:textSize="@dimen/fun_button_font_size_16" />
-
-        <Button
-            android:id="@+id/discount"
-            android:layout_width="@dimen/fun_button_width_size"
-            android:layout_height="@dimen/fun_button_height_size"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/margin_2"
-            android:background="@drawable/button_green"
-            android:text="@string/discount_sz"
-            android:textColor="@color/black_white"
-            android:textSize="@dimen/fun_button_font_size_16" />
-
-        <Button
-            android:id="@+id/change_price"
-            android:layout_width="@dimen/fun_button_width_size"
-            android:layout_height="@dimen/fun_button_height_size"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/margin_2"
-            android:background="@drawable/button_green"
-            android:text="@string/change_price_sz"
-            android:textColor="@color/black_white"
-            android:textSize="@dimen/fun_button_font_size_16" />
-
-        <com.wyc.cloudapp.dialog.CustomizationView.TmpOrderButton
-            android:id="@+id/tmp_order"
-            android:layout_width="@dimen/fun_button_width_size"
-            android:layout_height="@dimen/fun_button_height_size"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/margin_2"
-            android:background="@drawable/button_green"
-            android:text="@string/tmp_order_sz"
-            android:textColor="@color/black_white"
-            android:textSize="@dimen/font_size_16" />
-
-        <Button
-            android:id="@+id/vip"
-            android:layout_width="@dimen/fun_button_width_size"
-            android:layout_height="@dimen/fun_button_height_size"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/margin_2"
-            android:background="@drawable/button_green"
-            android:text="@string/vip_button_sz"
-            android:textColor="@color/black_white"
-            android:textSize="@dimen/fun_button_font_size_16" />
-
-        <Button
-            android:id="@+id/b_sale_man"
-            android:layout_width="@dimen/fun_button_width_size"
-            android:layout_height="@dimen/fun_button_height_size"
-            android:layout_marginTop="@dimen/margin_2"
-            android:background="@drawable/button_green"
-            android:text="@string/sale_man_sz"
-            android:textColor="@color/black_white"
-            android:textSize="@dimen/fun_button_font_size_16"
-            android:visibility="gone" />
-
-        <Space
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_marginBottom="@dimen/margin_18"
+            android:layout_weight="1"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/add_num"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/fun_button_width_size"
+                    android:layout_height="@dimen/fun_button_height_size"
+                    android:layout_gravity="center"
+                    android:background="@drawable/dialog_button_blue"
+                    android:text="@string/add"
+                    android:textColor="@color/blue_white"
+                    android:textSize="@dimen/fun_button_font_size_24" />
+
+                <Button
+                    android:id="@+id/minus_num"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/fun_button_width_size"
+                    android:layout_height="@dimen/fun_button_height_size"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/margin_2"
+                    android:background="@drawable/dialog_button_pink"
+                    android:text="@string/minus"
+                    android:textAlignment="gravity"
+                    android:textColor="@color/pink_white"
+                    android:textSize="@dimen/fun_button_font_size_24" />
+
+                <Button
+                    android:id="@+id/num"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/fun_button_width_size"
+                    android:layout_height="@dimen/fun_button_height_size"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/margin_2"
+                    android:background="@drawable/button_green"
+                    android:text="@string/num_not_colon_sz"
+                    android:textColor="@color/black_white"
+                    android:textSize="@dimen/fun_button_font_size_16" />
+
+                <Button
+                    android:id="@+id/clear"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/fun_button_width_size"
+                    android:layout_height="@dimen/fun_button_height_size"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/margin_2"
+                    android:background="@drawable/button_green"
+                    android:text="@string/clear_sz"
+                    android:textColor="@color/black_white"
+                    android:textSize="@dimen/fun_button_font_size_16" />
+
+                <Button
+                    android:id="@+id/discount"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/fun_button_width_size"
+                    android:layout_height="@dimen/fun_button_height_size"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/margin_2"
+                    android:background="@drawable/button_green"
+                    android:text="@string/discount_sz"
+                    android:textColor="@color/black_white"
+                    android:textSize="@dimen/fun_button_font_size_16" />
+
+                <Button
+                    android:id="@+id/change_price"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/fun_button_width_size"
+                    android:layout_height="@dimen/fun_button_height_size"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/margin_2"
+                    android:background="@drawable/button_green"
+                    android:text="@string/change_price_sz"
+                    android:textColor="@color/black_white"
+                    android:textSize="@dimen/fun_button_font_size_16" />
+
+                <com.wyc.cloudapp.dialog.CustomizationView.TmpOrderButton
+                    android:id="@+id/tmp_order"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/fun_button_width_size"
+                    android:layout_height="@dimen/fun_button_height_size"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/margin_2"
+                    android:background="@drawable/button_green"
+                    android:text="@string/tmp_order_sz"
+                    android:textColor="@color/black_white"
+                    android:textSize="@dimen/font_size_16" />
+
+                <Button
+                    android:id="@+id/vip"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/fun_button_width_size"
+                    android:layout_height="@dimen/fun_button_height_size"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/margin_2"
+                    android:background="@drawable/button_green"
+                    android:text="@string/vip_button_sz"
+                    android:textColor="@color/black_white"
+                    android:textSize="@dimen/fun_button_font_size_16" />
+
+                <Button
+                    android:id="@+id/b_sale_man"
+                    android:layout_width="@dimen/fun_button_width_size"
+                    android:layout_height="@dimen/fun_button_height_size"
+                    android:layout_marginTop="@dimen/margin_2"
+                    android:background="@drawable/button_green"
+                    android:text="@string/sale_man_sz"
+                    android:textColor="@color/black_white"
+                    android:textSize="@dimen/fun_button_font_size_16"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+        </ScrollView>
 
         <Button
             android:id="@+id/check_out"
@@ -573,6 +589,7 @@
             android:text="@string/check_out_sz"
             android:textColor="@color/white"
             android:textSize="@dimen/fun_button_font_size_24" />
+
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView

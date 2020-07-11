@@ -2,8 +2,10 @@ package com.wyc.cloudapp.dialog;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
+import android.graphics.Point;
 import android.os.Bundle;
 
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +29,7 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
+import com.wyc.cloudapp.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -95,13 +98,16 @@ public class HangBillDialog extends AbstractDialogBaseOnMainActivityImp {
             });
     }
     private void initWindowSize(){
-        final WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
+        WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
         if (m != null){
-            final Window dialogWindow = this.getWindow();
+            Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+            Point point = new Point();
+            d.getSize(point);
+            Window dialogWindow = this.getWindow();
             if (dialogWindow != null){
-                final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+                WindowManager.LayoutParams lp = dialogWindow.getAttributes();
                 dialogWindow.setGravity(Gravity.CENTER);
-                lp.height = 584;
+                lp.height = (int)(0.9 * point.y);
                 dialogWindow.setAttributes(lp);
             }
         }
