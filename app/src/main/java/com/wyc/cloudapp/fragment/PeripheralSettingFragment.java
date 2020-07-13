@@ -1,49 +1,28 @@
 package com.wyc.cloudapp.fragment;
 
-import android.Manifest;
-import android.app.Dialog;
-import android.app.PendingIntent;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothClass;
-import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.hardware.usb.UsbDevice;
-import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.RadioGroup;
 import android.widget.Spinner;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.serialScales.AbstractSerialScaleImp;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
-import java.util.HashMap;
 import android_serialport_api.SerialPortFinder;
-import static android.app.Activity.RESULT_OK;
 
-public class PeripheralSettingFragment extends BaseFragment {
+public class PeripheralSettingFragment extends AbstractBaseFragment {
     private static final String mTitle = "外设设置";
     private Context mContext;
     private View mRootView;

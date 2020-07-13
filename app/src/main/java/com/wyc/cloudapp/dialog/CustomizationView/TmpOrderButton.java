@@ -54,7 +54,7 @@ public final class TmpOrderButton extends AppCompatButton {
         super.onDraw(canvas);
         mPaint.setColor(mContext.getColor(R.color.orange));
 
-        int w = getMeasuredWidth(),h = getMeasuredHeight(),offset = 30,arcAngle = 5;
+        int w = getMeasuredWidth(),h = getMeasuredHeight(),offset = Utils.dpToPx(mContext,30),arcAngle = Utils.dpToPx(mContext,5);
 
         Logger.d("w:%d,h:%d",w,h);
 
@@ -66,7 +66,7 @@ public final class TmpOrderButton extends AppCompatButton {
 
         mPaint.setColor(mContext.getColor(R.color.white));
         mPaint.setTextSize(mContext.getResources().getDimension(R.dimen.font_size_12));
-        canvas.drawText(String.valueOf(mOrderNum),w - 12,15,mPaint);
+        canvas.drawText(String.valueOf(mOrderNum),w - Utils.dpToPx(mContext,12),Utils.dpToPx(mContext,15),mPaint);
     }
 
     public void setNum(int num){

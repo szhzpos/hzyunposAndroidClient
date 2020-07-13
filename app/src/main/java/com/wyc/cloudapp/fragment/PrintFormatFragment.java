@@ -44,7 +44,7 @@ import java.util.HashMap;
 
 import static android.app.Activity.RESULT_OK;
 
-public class PrintFormatFragment extends BaseFragment {
+public class PrintFormatFragment extends AbstractBaseFragment {
     public static final String ACTION_USB_PERMISSION = "com.wyc.cloudapp.USB_PERMISSION";
     private static final int REQUEST_BLUETOOTH__PERMISSIONS = 0xabc8;
     private static final int REQUEST_BLUETOOTH_ENABLE = 0X8888;

@@ -5,6 +5,6 @@
         />
     <!--圆角-->
     <corners
-        android:topLeftRadius="3dp"
-        android:topRightRadius="3dp"/>
+        android:topLeftRadius="@dimen/size_3"
+        android:topRightRadius="@dimen/size_3"/>
 </shape>

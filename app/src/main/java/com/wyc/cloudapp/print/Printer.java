@@ -35,6 +35,7 @@ import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -306,19 +307,18 @@ public final class Printer {
                         BluetoothDevice bluetoothDevice = bluetoothAdapter.getRemoteDevice(device_addr);
                         synchronized (Printer.class){
                             try (BluetoothSocket bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
-                                 OutputStream outputStream = bluetoothSocket.getOutputStream();){
+                                 BufferedOutputStream outputStream = new BufferedOutputStream(bluetoothSocket.getOutputStream());){
 
                                 bluetoothSocket.connect();
 
                                 outputStream.write(RESET);
 
                                 byte[] tmpBytes;
-                                int length = content.length,max_length = 2048;
+                                int length = content.length,max_length = 512;
                                 int count = length / max_length,tmp_c = 0,mod_length = 0;
 
                                 if (count == 0){
                                     outputStream.write(content);
-                                    outputStream.flush();
                                 }else{
                                     if ((mod_length = length % max_length) > 0)count += 1;
                                     while (tmp_c < count){
@@ -327,11 +327,13 @@ public final class Printer {
                                         }else
                                             tmpBytes = Arrays.copyOfRange(content,tmp_c * max_length,tmp_c * max_length + max_length);
 
-                                        outputStream.write(tmpBytes);
                                         outputStream.flush();
+                                        outputStream.write(tmpBytes);
                                         tmp_c++;
                                     }
                                 }
+
+                                Logger.d("count:%d,bytes.length:%d",count,length);
                             } catch (IOException e) {
                                 e.printStackTrace();
                                 context.runOnUiThread(()->MyDialog.ToastMessage("打印错误：" + e.getMessage(),context,null));
@@ -455,7 +457,7 @@ public final class Printer {
             if (mICO != null)wm.removeViewImmediate(mICO);
             mICO = new ImageView(activity);
             if (!activity.getPrintStatus()){
-                if (printer != null) mICO.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(printer,15,15));
+                if (printer != null) mICO.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(activity,printer,Utils.dpToPx(activity,15),Utils.dpToPx(activity,15)));
             }else
                 mICO.setImageDrawable(activity.getDrawable(R.drawable.printer));
 
@@ -478,7 +480,7 @@ public final class Printer {
                                     if (activity.getPrintStatus()){
                                         mICO.setImageBitmap(printer);
                                     }else {
-                                        mICO.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(printer,15,15));
+                                        mICO.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(activity,printer,Utils.dpToPx(activity,15),Utils.dpToPx(activity,15)));
                                     }
                                 }
                             }

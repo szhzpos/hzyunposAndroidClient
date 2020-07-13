@@ -11,7 +11,7 @@
         android:layout_width="@dimen/width_45"
         android:layout_height="@dimen/height_45"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="-25dp"
+        android:layout_marginTop="@dimen/_size_25"
         android:contentDescription="@string/space_sz"
         android:src="@drawable/blue_triangle_up"
         android:visibility="visible" />

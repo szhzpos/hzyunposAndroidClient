@@ -5,9 +5,9 @@
         />
     <!--边框颜色-->
     <stroke
-        android:dashGap="3dp"
-        android:dashWidth="1dp"
-        android:width="1px"
+        android:dashGap="@dimen/size_3"
+        android:dashWidth="@dimen/size_1"
+        android:width="@dimen/size_1"
         android:color="@color/blue" />
     <!--圆角-->
     <corners android:radius="0dp"/>

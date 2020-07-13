@@ -687,7 +687,7 @@ public class MainActivity extends AppCompatActivity {
             if (ps instanceof Boolean)b = (boolean)ps;
             if (b){
                 b = false;
-                imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(printer,15,15));
+                imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(this,printer,Utils.dpToPx(this,15),Utils.dpToPx(this,15)));
                 MyDialog.ToastMessage(imageView,"打印功能已关闭！",this,getWindow());
             }else{
                 b = true;
@@ -720,7 +720,7 @@ public class MainActivity extends AppCompatActivity {
                         if (print_s){
                             imageView.setImageBitmap(printer);
                         }else {
-                            imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(printer,15,15));
+                            imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(this,printer,Utils.dpToPx(this,15),Utils.dpToPx(this,15)));
                         }
                     }
                 }

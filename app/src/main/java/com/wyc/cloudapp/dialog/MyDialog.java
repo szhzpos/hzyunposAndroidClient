@@ -326,7 +326,7 @@ public final class MyDialog extends Dialog {
                 }else{
                     int[] location = new int[2];
                     anchor.getLocationOnScreen(location);
-                    toast.setGravity( Gravity.TOP|Gravity.START,location[0] - Utils.dpToPx(context,72),location[1] + anchor.getMeasuredHeight() / 2);
+                    toast.setGravity( Gravity.TOP|Gravity.START,location[0] - Utils.dpToPx(context,72),location[1] + anchor.getMeasuredHeight() / 4);
                 }
                 toast.show();
             }

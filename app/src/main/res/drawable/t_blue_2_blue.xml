@@ -3,7 +3,7 @@
     <item android:state_enabled="false">
         <shape android:shape="rectangle">
             <!-- 圆角 -->
-            <corners android:radius="2dp" />
+            <corners android:radius="@dimen/size_2" />
             <!--填充颜色为白色-->
             <solid android:color="@color/blue_subtransparent" />
         </shape>
@@ -11,7 +11,7 @@
     <item android:state_hovered="true">
         <shape android:shape="rectangle">
             <!--圆角-->
-            <corners android:radius="2dp" />
+            <corners android:radius="@dimen/size_2" />
             <!--填充颜色为蓝色-->
             <solid android:color="@color/blue" />
         </shape>
@@ -19,7 +19,7 @@
     <item android:state_focused="true">
         <shape android:shape="rectangle">
             <!--圆角-->
-            <corners android:radius="2dp" />
+            <corners android:radius="@dimen/size_2" />
             <!--填充颜色为蓝色-->
             <solid android:color="@color/blue" />
         </shape>
@@ -28,7 +28,7 @@
     <item android:state_pressed="true">
         <shape android:shape="rectangle">
             <!--圆角-->
-            <corners android:radius="2dp" />
+            <corners android:radius="@dimen/size_2" />
             <!--填充颜色为蓝色-->
             <solid android:color="@color/blue" />
         </shape>

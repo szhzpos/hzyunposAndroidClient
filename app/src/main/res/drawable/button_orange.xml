@@ -3,26 +3,26 @@
     <item android:state_enabled="false">
         <shape android:shape="rectangle">
             <!-- 圆角 -->
-            <corners android:radius="2dp" />
+            <corners android:radius="@dimen/size_2" />
             <!--填充颜色为白色-->
             <solid android:color="@color/orange" />
             <!-- 描边 -->
-            <stroke android:width="1dp" android:color="@color/orange" />
+            <stroke android:width="@dimen/size_1" android:color="@color/orange" />
         </shape>
     </item>
     <item android:state_hovered="true">
         <shape android:shape="rectangle">
             <!--圆角-->
-            <corners android:radius="2dp" />
+            <corners android:radius="@dimen/size_2" />
             <solid android:color="#FF55FF" />
             <!--描边-->
-            <stroke android:width="1dp" android:color="#FF55FF" />
+            <stroke android:width="@dimen/size_1" android:color="#FF55FF" />
         </shape>
     </item>
     <item android:state_focused="true">
         <shape android:shape="rectangle">
             <!--圆角-->
-            <corners android:radius="2dp" />
+            <corners android:radius="@dimen/size_2" />
             <solid android:color="#FF55FF" />
             <!--描边-->
             <stroke android:width="1dp" android:color="#FF55FF" />
@@ -31,10 +31,10 @@
     <item android:state_pressed="true">
         <shape android:shape="rectangle">
             <!--圆角-->
-            <corners android:radius="2dp" />
+            <corners android:radius="@dimen/size_2" />
             <solid android:color="#FF55FF" />
             <!--描边-->
-            <stroke android:width="1dp" android:color="#FF55FF" />
+            <stroke android:width="@dimen/size_1" android:color="#FF55FF" />
         </shape>
     </item>
 </selector>

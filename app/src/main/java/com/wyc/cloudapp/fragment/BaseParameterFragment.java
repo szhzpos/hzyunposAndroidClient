@@ -22,7 +22,7 @@ import com.wyc.cloudapp.dialog.DigitKeyboardPopup;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
 
-public class BaseParameterFragment extends BaseFragment {
+public class BaseParameterFragment extends AbstractBaseFragment {
     private static final String mTitle = "基本参数";
     private View mRootView;
     private Context mContext;

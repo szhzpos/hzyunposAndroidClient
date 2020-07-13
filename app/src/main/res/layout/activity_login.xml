@@ -261,17 +261,18 @@
 
                 <EditText
                     android:id="@+id/_url_text"
-                    android:layout_width="@dimen/login_text_width"
+                    android:layout_width="wrap_content"
                     android:layout_height="@dimen/height_40"
+                    android:layout_weight="1"
                     android:background="@drawable/border_sub_gray"
                     android:drawableStart="@drawable/shop"
                     android:drawablePadding="@dimen/margin_5"
-                    android:ems="10"
+                    android:ems="11"
                     android:enabled="false"
                     android:focusableInTouchMode="true"
                     android:importantForAutofill="no"
                     android:inputType="textUri"
-                    android:paddingStart="@dimen/margin_5"
+                    android:paddingStart="@dimen/margin_8"
                     android:paddingEnd="@dimen/size_0"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/font_size_18" />
@@ -283,8 +284,8 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/setup_ico"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
+                    android:layout_width="@dimen/size_25"
+                    android:layout_height="@dimen/size_25"
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/margin_2"
                     android:background="@drawable/setup">
@@ -332,7 +333,7 @@
                 android:hint="@string/user_name"
                 android:importantForAutofill="no"
                 android:inputType="textPersonName"
-                android:paddingStart="8dp"
+                android:paddingStart="@dimen/margin_8"
                 android:paddingEnd="0dp"
                 android:singleLine="true"
                 android:textColor="@color/text_color"
@@ -353,7 +354,7 @@
                 android:focusable="auto"
                 android:hint="@string/password"
                 android:inputType="text|textPassword"
-                android:paddingStart="8dp"
+                android:paddingStart="@dimen/margin_8"
                 android:paddingEnd="0dp"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_16" />

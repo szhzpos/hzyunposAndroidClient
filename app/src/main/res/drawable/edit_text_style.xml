@@ -12,7 +12,7 @@
             <!--填充颜色为白色-->
             <solid android:color="@color/gray_subtransparent" />
             <stroke android:width="0dp"/>
-            <corners android:radius="2dp"/>
+            <corners android:radius="@dimen/size_2"/>
         </shape>
     </item>
 </selector>

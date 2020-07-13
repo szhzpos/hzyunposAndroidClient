@@ -3,5 +3,5 @@
     <!-- 形状颜色 -->
     <solid android:color="@color/transparent"
         />
-    <corners android:radius="2dp"/>
+    <corners android:radius="@dimen/size_2"/>
 </shape>

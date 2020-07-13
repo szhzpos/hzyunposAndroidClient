@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.print;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -192,7 +193,7 @@ public final class PrintUtilsToBitbmp {
     }
 
     //在bitmap画错误标志<红圈白×>
-    public static Bitmap drawErrorSignToBitmap(final Bitmap in,int w,int h){
+    public static Bitmap drawErrorSignToBitmap(final Context context, final Bitmap in, int w, int h){
         final Bitmap bitmap = in.copy(Bitmap.Config.ARGB_8888, true);
         int width = bitmap.getWidth(),height = bitmap.getHeight();
         final Canvas canvas = new Canvas(bitmap);
@@ -204,8 +205,11 @@ public final class PrintUtilsToBitbmp {
         final RectF rectF = new RectF(width- w,height - h,width - 2,height - 2);
         canvas.drawArc(rectF, 0, 360, false, paint);
         paint.setColor(Color.WHITE);
-        canvas.drawLine(rectF.left+2,rectF.top+2,rectF.right-2,rectF.bottom-2,paint);
-        canvas.drawLine(rectF.right-2,rectF.top+2, rectF.left+2,rectF.bottom-2,paint);
+
+        int offset = Utils.dpToPx(context,2);
+
+        canvas.drawLine(rectF.left + offset,rectF.top + offset,rectF.right - offset,rectF.bottom - offset,paint);
+        canvas.drawLine(rectF.right - offset,rectF.top + offset, rectF.left + offset,rectF.bottom-offset,paint);
 
         return bitmap;
     }

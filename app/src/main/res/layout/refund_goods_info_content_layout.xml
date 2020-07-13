@@ -31,6 +31,7 @@
 
     <CheckBox
         android:id="@+id/sel_status"
+        style="@style/Widget.AppCompat.CompoundButton.CheckBox"
         android:layout_width="@dimen/size_35"
         android:layout_height="wrap_content"
         android:checked="false"
