@@ -125,7 +125,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
 
     @Override
     protected void finalize(){
-        Logger.d("PayDialog finalize");
+        Logger.d("PayDialog finalized");
     }
 
     private void allDiscountBtn(){

@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
     }
     @Override
     public void finalize(){
-        Logger.d("MainActivity finalize");
+        Logger.d("MainActivity finalized");
     }
 
     private void initLastOrderInfo(){

@@ -55,6 +55,11 @@ public class SuperItemDecoration extends RecyclerView.ItemDecoration {
         }
     }
 
+    @Override
+    public void finalize(){
+        Logger.d("SuperItemDecoration finalized");
+    }
+
     protected void drawVerticalPadding(final Canvas c, final RecyclerView parent) {
         final int left = parent.getPaddingLeft();
         final int right = parent.getWidth() - parent.getPaddingRight();
