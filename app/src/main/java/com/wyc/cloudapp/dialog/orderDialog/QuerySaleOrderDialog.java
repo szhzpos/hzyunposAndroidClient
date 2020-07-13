@@ -103,7 +103,7 @@ public class QuerySaleOrderDialog extends AbstractQuerySuperDialog {
 
     @Override
     protected void initWindowSize(){//初始化窗口尺寸
-        WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
+        final WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
         if (m != null){
             final Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
             final Point point = new Point();
@@ -113,7 +113,6 @@ public class QuerySaleOrderDialog extends AbstractQuerySuperDialog {
                 WindowManager.LayoutParams lp = dialogWindow.getAttributes();
                 dialogWindow.setGravity(Gravity.CENTER);
                 lp.height = (int)(0.9 * point.y);
-                lp.width = (int)(0.85 * point.x) - 4;
                 dialogWindow.setAttributes(lp);
             }
         }

@@ -130,7 +130,7 @@ public abstract class AbstractPayDialog extends AbstractDialogBaseOnMainActivity
     protected boolean verify(){
         if (mPayAmtEt.getVisibility() == View.VISIBLE &&(mPayAmtEt.length() == 0 || Utils.equalDouble(getPayAmt(),0.0))){
             mPayAmtEt.requestFocus();
-            return MyDialog.ToastMessage(mPayAmtEt,mContext.getString(R.string.not_empty_hint_sz,mPayCode.getHint().toString()),mContext,getWindow(),false);
+            return MyDialog.ToastMessage(mPayAmtEt,mContext.getString(R.string.not_empty_hint_sz,mPayAmtEt.getHint().toString()),mContext,getWindow(),false);
         }
         if (mPayCode.getVisibility() == View.VISIBLE && mPayCode.length() == 0){
             mPayCode.requestFocus();

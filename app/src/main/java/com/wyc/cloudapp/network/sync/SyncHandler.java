@@ -305,7 +305,7 @@ public final class SyncHandler extends Handler {
     private void uploadRetailOrderInfo(final String appid,final String url,final String appSecret) {
         final StringBuilder err = new StringBuilder(),order_gp_ids = new StringBuilder();
         final String sql_orders = "SELECT discount_money,card_code,member_id,name,mobile,transfer_time,transfer_status,pay_time,pay_status,order_status,pos_code,addtime,cashier_id,total,\n" +
-                "discount_price,order_code,stores_id,spare_param1,spare_param2,replace(remark,'&','') remark FROM retail_order where order_status = 2 and pay_status = 2 and upload_status = 1 limit 500",
+                "discount_price,order_code,stores_id,spare_param1,spare_param2,replace(remark,'&','') remark FROM retail_order where order_status = 2 and pay_status = 2 and upload_status = 1 limit 200",
                 sql_goods_detail = "select conversion,zk_cashier_id,gp_id,tc_rate,tc_mode,tax_rate,ps_price,cost_price,trade_price,retail_price,buying_price,price,xnum,barcode_id from retail_order_goods where order_code = '%1'",
                 sql_pays_detail = "select print_info,return_code,card_no,xnote,discount_money,give_change_money,pre_sale_money,zk_money,is_check,remark,pay_code,pay_serial_no,pay_status,pay_time,pay_money,pay_method,order_code from retail_order_pays where order_code = '%1'",
                 sql_combination_goods = "SELECT b.retail_price,a.xnum,c.gp_price,c.gp_id,d.zk_cashier_id,d.order_code FROM  goods_group_info a LEFT JOIN  barcode_info b on a.barcode_id = b.barcode_id\n" +
@@ -322,7 +322,8 @@ public final class SyncHandler extends Handler {
         String order_code;
 
         if (code = null != (orders = SQLiteHelper.getListToJson(sql_orders,err))){
-            try {
+            if (!orders.isEmpty()){
+                startUploadRetailOrder();
                 for (int i = 0,size = orders.size();i < size;i++){
                     order_gp_ids.delete(0,order_gp_ids.length());
 
@@ -400,13 +401,8 @@ public final class SyncHandler extends Handler {
                         }
                     }
                 }
-            }catch (JSONException e){
-                code = false;
-                err.append(e.getMessage());
-                e.printStackTrace();
             }
         }
-
         if (!code){
             Logger.e("上传单据错误：%s",err);
             mMainActivityHandler.obtainMessage(MessageID.TRANSFERSTATUS_ID,false).sendToTarget();
@@ -417,7 +413,7 @@ public final class SyncHandler extends Handler {
         //上传交班单据
         String transfer_sum_sql = "SELECT sj_money,cards_num oncecard_num,cards_money oncecard_money,\n" +
                 "       order_money,order_e_date,order_b_date,recharge_num,recharge_money,refund_num,\n" +
-                "       refund_money,cashbox_money unpaid_money,sum_money,ti_code,transfer_time,order_num,cas_id,stores_id FROM transfer_info where upload_status = 1 limit 50",details_where_sql = "where ti_code  = ",
+                "       refund_money,cashbox_money unpaid_money,sum_money,ti_code,transfer_time,order_num,cas_id,stores_id FROM transfer_info where upload_status = 1 limit 100",details_where_sql = "where ti_code  = ",
                 transfer_orders_sql = "SELECT ifnull(order_code,'') order_code FROM transfer_order ",
                 transfer_retails_sql = "SELECT order_num,pay_method,pay_money FROM transfer_money_info ",transfer_cards_sql = "SELECT order_num,pay_method,pay_money FROM transfer_once_cardsc ",
                 transfer_recharge_sql = "SELECT order_num,pay_method,pay_money FROM transfer_recharge_money ",transfer_refund_sql = "SELECT order_num,pay_method,pay_money FROM transfer_refund_money ";
@@ -780,7 +776,6 @@ public final class SyncHandler extends Handler {
     }
     void startUploadRetailOrder(){
         if (mCurrentNeworkStatusCode == HttpURLConnection.HTTP_OK){
-            stopSync();
             sendMessageAtFrontOfQueue(obtainMessage(MessageID.UPLOAD_ORDER_ID));
         }
     }

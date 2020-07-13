@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.adapter;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -10,80 +11,32 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.utils.Utils;
+
 public class SaleGoodsItemDecoration extends SuperItemDecoration {
     public SaleGoodsItemDecoration(int color){
-        mPaint = new Paint();
-        mPaint.setAntiAlias(true);
         mPaint.setColor(color);
     }
     @Override
     public void onDrawOver(@NonNull Canvas c,@NonNull RecyclerView parent,@NonNull RecyclerView.State state) {
         super.onDrawOver(c, parent, state);
         final SaleGoodsViewAdapter adapter = (SaleGoodsViewAdapter) parent.getAdapter();
+        final Context context = parent.getContext();
         if (adapter != null && adapter.getSingle()){
             final Paint paint = new Paint();
             paint.setAntiAlias(true);
             paint.setColor(Color.RED);
-            paint.setTextSize(18);
+            paint.setTextSize(context.getResources().getDimension(R.dimen.font_size_18));
             paint.setStyle(Paint.Style.STROKE);
             final Rect rect = new Rect();
-            rect.set(parent.getWidth() /2,parent.getHeight() / 2,48,parent.getHeight() / 2 + 48);
+            rect.set(parent.getWidth() /2,parent.getHeight() / 2, Utils.dpToPx(context,48),parent.getHeight() / 2 + Utils.dpToPx(context,48));
             c.drawRect(rect,paint);
 
             final String sz = "单品退货";
             float[] ints = new float[sz.length()];
             paint.getTextWidths(sz,ints);
             c.drawText(sz,(rect.left  - ints[0] * (ints.length / 2)) + rect.width() / 2,rect.bottom - rect.height() / 3,paint);
-        }
-
-        final RecyclerView.LayoutManager manager = parent.getLayoutManager();
-        if (manager instanceof LinearLayoutManager) {
-            if (((LinearLayoutManager) manager).getOrientation() == LinearLayoutManager.VERTICAL) {
-                drawVerticalPadding(c, parent);
-            } else {
-                drawHorizontalPadding(c, parent);
-            }
-        }
-    }
-
-    @Override
-    public void getItemOffsets(@NonNull Rect outRect,@NonNull View view,@NonNull RecyclerView parent,@NonNull RecyclerView.State state) {
-        super.getItemOffsets(outRect, view, parent, state);
-
-        final RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
-        if (layoutManager instanceof LinearLayoutManager) {
-            if (((LinearLayoutManager) layoutManager).getOrientation() == LinearLayoutManager.HORIZONTAL) {
-                outRect.set(0, 0,mSpace, 0);
-            } else {
-                outRect.set(0, 0, 0,mSpace);
-            }
-        }
-    }
-
-    @Override
-    protected void drawVerticalPadding(final Canvas c, final RecyclerView parent) {
-        final int left = parent.getPaddingLeft();
-        final int right = parent.getWidth() - parent.getPaddingRight();
-        final int childCount = parent.getChildCount();
-        for (int i = 0; i < childCount; i++) {
-            final View child = parent.getChildAt(i);
-            final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
-            final int top = child.getBottom() + params.bottomMargin + Math.round(child.getTranslationY());
-            final int bottom = (top + mSpace);
-            c.drawRect(left, bottom + 1, right, bottom, mPaint);
-        }
-    }
-
-    protected void drawHorizontalPadding(final Canvas c, final RecyclerView parent) {
-        final int top = parent.getPaddingTop();
-        final int bottom = parent.getHeight() - parent.getPaddingBottom();
-        final int childCount = parent.getChildCount();
-        for (int i = 0; i < childCount; i++) {
-            final View child = parent.getChildAt(i);
-            final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
-            final int left = child.getRight() + params.rightMargin + Math.round(child.getTranslationX());
-            final int right =(left + mSpace);
-            c.drawRect(left, top, right, bottom, mPaint);
         }
     }
 }

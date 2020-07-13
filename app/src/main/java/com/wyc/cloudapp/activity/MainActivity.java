@@ -436,7 +436,8 @@ public class MainActivity extends AppCompatActivity {
         final RecyclerView goods_info_view = findViewById(R.id.goods_info_list);
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(this,GoodsInfoViewAdapter.spanCount);
         goods_info_view.setLayoutManager(gridLayoutManager);
-        registerGlobalLayoutToRecyclerView(goods_info_view,getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration());
+        final GoodsInfoItemDecoration goodsInfoItemDecoration = new GoodsInfoItemDecoration();
+        goodsInfoItemDecoration.registerGlobalLayoutToRecyclerView(goods_info_view,getResources().getDimension(R.dimen.goods_height));
         mGoodsInfoViewAdapter.setOnItemClickListener(v -> {
             hideLastOrderInfo();
             Utils.disableView(v,300);
@@ -483,7 +484,8 @@ public class MainActivity extends AppCompatActivity {
         mSaleGoodsRecyclerView.setAdapter(mSaleGoodsViewAdapter);
     }
     private void reSizeSaleGoodsView(){
-        registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray_subtransparent)));
+        final SaleGoodsItemDecoration saleGoodsItemDecoration = new SaleGoodsItemDecoration(getColor(R.color.gray_subtransparent));
+        saleGoodsItemDecoration.registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height));
     }
     @SuppressLint("ClickableViewAccessibility")
     private void initSearch(){
@@ -797,31 +799,6 @@ public class MainActivity extends AppCompatActivity {
             }
             reSizeSaleGoodsView();
         }
-    }
-    private void registerGlobalLayoutToRecyclerView(@NonNull final View view,final float size,@NonNull final SuperItemDecoration superItemDecoration){
-        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            private int getVerSpacing(int viewHeight,int m_height){
-                double vertical_space ,vertical_counts,per_vertical_space;
-                vertical_space = viewHeight % m_height;
-                vertical_counts = viewHeight / m_height;
-                per_vertical_space = vertical_space / (vertical_counts != 0 ? vertical_counts:1);
-
-                return (int)Utils.formatDouble(per_vertical_space,0);
-            }
-            @Override
-            public void onGlobalLayout() {
-                view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                int height = view.getMeasuredHeight();
-                if (view instanceof RecyclerView){
-                    final RecyclerView recyclerView = ((RecyclerView)view);
-                    if (recyclerView.getItemDecorationCount() > 0){
-                        recyclerView.removeItemDecorationAt(0);
-                    }
-                    superItemDecoration.setSpace(getVerSpacing(height,(int) size));
-                    recyclerView.addItemDecoration(superItemDecoration);
-                }
-            }
-        });
     }
 
     private void resetOrderCode(){

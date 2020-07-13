@@ -1,6 +1,7 @@
 package com.wyc.cloudapp.dialog.orderDialog;
 
 import android.app.AlertDialog;
+import android.content.res.Resources;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
@@ -23,6 +24,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
+import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
+import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnMainActivityImp;
@@ -50,12 +53,10 @@ public abstract class AbstractQuerySuperDialog extends AbstractDialogBaseOnMainA
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTableLayout();
-
         initStartDateAndTime();
         initEndDateAndTime();
         initStatusEt();
         initCashierEt();
-
         initTable();
         initQueryBtn();
         initWindowSize();
@@ -108,6 +109,8 @@ public abstract class AbstractQuerySuperDialog extends AbstractDialogBaseOnMainA
             body.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
             body.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
             body.setAdapter(mAdapter);
+            final SuperItemDecoration superItemDecoration = new SuperItemDecoration();
+            superItemDecoration.registerGlobalLayoutToRecyclerView(body,mContext.getResources().getDimension(R.dimen.table_row_height));
         }
     }
     private void setTableLayout(){
@@ -263,6 +266,7 @@ public abstract class AbstractQuerySuperDialog extends AbstractDialogBaseOnMainA
                     et.setTag(mCurrentStatusIndex);
                     et.setText(currentStatusItems[mCurrentStatusIndex]);
                 }
+                triggerQuery();
             }
             dialog.dismiss();
         });
@@ -274,10 +278,11 @@ public abstract class AbstractQuerySuperDialog extends AbstractDialogBaseOnMainA
 
         int blue = mContext.getColor(R.color.blue);
 
+        final Resources resources = mContext.getResources();
         final TextView titleTv = new TextView(mContext);
         titleTv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         titleTv.setPadding(5,5,5,5);
-        titleTv.setTextSize(mContext.getResources().getDimension(R.dimen.font_size_22));
+        titleTv.setTextSize(Utils.px2sp(mContext,resources.getDimension(R.dimen.font_size_22)));
         titleTv.setTextColor(blue);
         titleTv.setText(title);
         alertDialog.setCustomTitle(titleTv);
@@ -289,19 +294,20 @@ public abstract class AbstractQuerySuperDialog extends AbstractDialogBaseOnMainA
         listView.setDividerHeight(1);
         listView.setBackground(mContext.getDrawable(R.drawable.border_sub_gray));
 
+        float btn_font_size = Utils.px2sp(mContext,resources.getDimension(R.dimen.font_size_16));
         final Button cancel = alertDialog.getButton(BUTTON_NEGATIVE), ok = alertDialog.getButton(BUTTON_POSITIVE);
         cancel.setTextColor(blue);
-        cancel.setTextSize(mContext.getResources().getDimension(R.dimen.font_size_16));
+        cancel.setTextSize(btn_font_size);
 
         ok.setTextColor(blue);
-        ok.setTextSize(mContext.getResources().getDimension(R.dimen.font_size_16));
+        ok.setTextSize(btn_font_size);
 
         final Window window = alertDialog.getWindow();
         if (null != window){
             final WindowManager.LayoutParams  lp= window.getAttributes();
-            lp.width= 368;
+            lp.width= (int) resources.getDimension(R.dimen.size_368);
             if (currentStatusItems.length > 3){
-                lp.height= 288;
+                lp.height= (int) resources.getDimension(R.dimen.size_288);
             }
             window.setAttributes(lp);
         }

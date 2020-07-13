@@ -12,6 +12,7 @@
         android:layout_height="@dimen/height_50"
         android:layout_marginStart="@dimen/margin_1"
         android:layout_marginEnd="@dimen/margin_1"
+        android:layout_marginBottom="@dimen/margin_1"
         android:background="@drawable/bottom_separator"
         android:orientation="horizontal">
 

@@ -74,7 +74,7 @@ public final class VipChargeDialogImp extends AbstractPayDialog {
 
     @Override
     protected void initPayMethod(){
-        mPayMethodViewAdapter = new PayMethodViewAdapter(mContext,94);
+        mPayMethodViewAdapter = new PayMethodViewAdapter(mContext,(int) mContext.getResources().getDimension(R.dimen.pay_method_width));
         mPayMethodViewAdapter.setDatas("3");
         mPayMethodViewAdapter.setOnItemClickListener((v, pos) -> {
             mPayMethod = mPayMethodViewAdapter.getItem(pos);

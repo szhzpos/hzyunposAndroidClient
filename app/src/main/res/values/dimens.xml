@@ -101,6 +101,11 @@
     <dimen name="size_532">532dp</dimen>
     <dimen name="size_278">278dp</dimen>
     <dimen name="size_468">468dp</dimen>
+    <dimen name="size_3">3dp</dimen>
+    <dimen name="size_16">16dp</dimen>
+    <dimen name="size_382">382dp</dimen>
+    <dimen name="size_368">368dp</dimen>
+    <dimen name="size_228">228dp</dimen>
 
     <dimen name="dialog_head_heigth">@dimen/height_45</dimen>
     <dimen name="goods_height">@dimen/size_82</dimen>
@@ -148,6 +153,4 @@
     <dimen name="login_info_w">@dimen/size_532</dimen>
     <dimen name="user_info_w">@dimen/size_278</dimen>
     <dimen name="pay_dialog_left_w">@dimen/size_468</dimen>
-    <dimen name="size_3">3dp</dimen>
-    <dimen name="size_16">16dp</dimen>
 </resources>
