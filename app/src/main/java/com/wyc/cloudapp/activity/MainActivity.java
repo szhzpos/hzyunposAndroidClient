@@ -436,10 +436,8 @@ public class MainActivity extends AppCompatActivity {
         final RecyclerView goods_info_view = findViewById(R.id.goods_info_list);
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(this,GoodsInfoViewAdapter.spanCount);
         goods_info_view.setLayoutManager(gridLayoutManager);
-        final GoodsInfoItemDecoration goodsInfoItemDecoration = new GoodsInfoItemDecoration();
-        goodsInfoItemDecoration.registerGlobalLayoutToRecyclerView(goods_info_view,getResources().getDimension(R.dimen.goods_height));
+        SuperItemDecoration.registerGlobalLayoutToRecyclerView(goods_info_view,getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration(-1));
         mGoodsInfoViewAdapter.setOnItemClickListener(v -> {
-            hideLastOrderInfo();
             Utils.disableView(v,300);
             final JSONObject jsonObject = mGoodsInfoViewAdapter.getSelectGoods(v);
             if (jsonObject != null){
@@ -479,13 +477,13 @@ public class MainActivity extends AppCompatActivity {
                 if (mSecondDisplay != null)mSecondDisplay.notifyChange(mSaleGoodsViewAdapter.getCurrentItemIndex());
             }
         });
-        reSizeSaleGoodsView();
+        SuperItemDecoration.registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray_subtransparent)));
         mSaleGoodsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
         mSaleGoodsRecyclerView.setAdapter(mSaleGoodsViewAdapter);
     }
     private void reSizeSaleGoodsView(){
-        final SaleGoodsItemDecoration saleGoodsItemDecoration = new SaleGoodsItemDecoration(getColor(R.color.gray_subtransparent));
-        saleGoodsItemDecoration.registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height));
+        SuperItemDecoration.registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),null);
+        mSaleGoodsRecyclerView.scrollToPosition(0);
     }
     @SuppressLint("ClickableViewAccessibility")
     private void initSearch(){
@@ -513,7 +511,6 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             } else
                                 MyDialog.ToastMessage("无此商品!", context, getWindow());
-
                         });
                     }
                 }
@@ -850,15 +847,14 @@ public class MainActivity extends AppCompatActivity {
     }
     public void showVipInfo(@NonNull JSONObject vip){
         mVipInfo = vip;
-
-        reSizeSaleGoodsView();
-
         final LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
         vip_info_linearLayout.setVisibility(View.VISIBLE);
         ((TextView)vip_info_linearLayout.findViewById(R.id.vip_name)).setText(mVipInfo.getString("name"));
         ((TextView)vip_info_linearLayout.findViewById(R.id.vip_phone_num)).setText(mVipInfo.getString("mobile"));
 
         mSaleGoodsViewAdapter.updateGoodsInfoToVip(mVipInfo);
+
+        reSizeSaleGoodsView();
     }
     public double getSumAmt(int type){
         return mSaleGoodsViewAdapter.getSumAmt(type);
@@ -1033,6 +1029,7 @@ public class MainActivity extends AppCompatActivity {
         final String id = mGoodsInfoViewAdapter.getGoodsId(jsonObject);
         final String weigh_barcode_info = (String) jsonObject.remove(GoodsInfoViewAdapter.W_G_MARK);//删除称重标志否则重新选择商品时不弹出称重界面
         if (mGoodsInfoViewAdapter.getSingleGoods(content,weigh_barcode_info,id)){
+            hideLastOrderInfo();
             mSaleGoodsViewAdapter.addSaleGoods(content,mVipInfo);
         }else{
             MyDialog.ToastMessage("选择商品错误：" + content.getString("info"),this,null);

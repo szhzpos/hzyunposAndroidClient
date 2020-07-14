@@ -366,6 +366,8 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
                         }else{
                             MyDialog.displayErrorMessage(null,String.format(Locale.CHINA,"销售金额:%f  不等于 付款金额:%f",sale_amt,pay_amt), mContext);
                         }
+                    }else {
+                        MyDialog.displayErrorMessage(null,String.format(Locale.CHINA,"应收金额:%f  不等于 已收金额:%f",mActual_amt,mAmt_received), mContext);
                     }
                 }else{
                     MyDialog.SnackbarMessage(mWindow,"剩余付款金额不能小于零！",mPayBalanceTv);

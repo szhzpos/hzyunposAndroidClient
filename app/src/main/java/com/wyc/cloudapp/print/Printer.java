@@ -448,8 +448,8 @@ public final class Printer {
             wLayou.format= PixelFormat.RGBA_8888;
             wLayou.gravity= Gravity.LEFT|Gravity.TOP;
             wLayou.flags= WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL| WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;;
-            wLayou.height = 32;
-            wLayou.width = 32;
+            wLayou.height = Utils.dpToPx(activity,32);
+            wLayou.width = Utils.dpToPx(activity,32);
             wLayou.x = point.x;
             wLayou.y = point.y / 2;
 

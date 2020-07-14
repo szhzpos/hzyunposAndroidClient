@@ -21,8 +21,8 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:paddingStart="@dimen/margin_18"
-        android:paddingEnd="@dimen/margin_18"
+        android:paddingStart="@dimen/margin_12"
+        android:paddingEnd="@dimen/margin_12"
         android:textAlignment="center"
         android:textColor="@color/blue"
         android:textSize="@dimen/fun_button_font_size_16" />

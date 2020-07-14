@@ -27,7 +27,7 @@ public class WindowCallback implements Window.Callback {
     }
     @Override
     protected void finalize(){
-        Logger.d("WindowCallback finalize");
+        Logger.d("WindowCallback finalized");
     }
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {

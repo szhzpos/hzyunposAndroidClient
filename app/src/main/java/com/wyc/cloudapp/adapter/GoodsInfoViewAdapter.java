@@ -284,7 +284,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
                 Logger.d("price：%f,xnum:%f,sale_amt:%f",price,xnum,amt);
 
                 object.put("price",price);
-                object.put("xnum",String.format(Locale.CHINA,"%.3f",xnum));
+                object.put("xnum",String.format(Locale.CHINA,"%.4f",xnum));
                 object.put("sale_amt",amt);
                 object.put(W_G_MARK,weigh_barcode_info);
             }else {

@@ -19,11 +19,12 @@ import com.wyc.cloudapp.utils.Utils;
 
 public class SuperItemDecoration extends RecyclerView.ItemDecoration {
     int mSpace;
-    Paint mPaint;
-    public SuperItemDecoration(){
+    private Paint mPaint;
+    public SuperItemDecoration(int color){
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mPaint.setColor(0x4DA1A1A1);
+        if (-1 == color)color = 0x4DA1A1A1;
+        mPaint.setColor(color);
     }
     @Override
     public void onDraw(@NonNull Canvas c,@NonNull RecyclerView parent,@NonNull RecyclerView.State state) {
@@ -85,33 +86,32 @@ public class SuperItemDecoration extends RecyclerView.ItemDecoration {
             c.drawRect(left, top, right, bottom, mPaint);
         }
     }
-
-    public SuperItemDecoration setSpace(int space){
-        mSpace = space;
-        return this;
+    private void getVerSpacing(int viewHeight,int m_height){
+        double vertical_space ,vertical_counts,per_vertical_space;
+        vertical_space = viewHeight % m_height;
+        vertical_counts = viewHeight / m_height;
+        per_vertical_space = vertical_space / (vertical_counts != 0 ? vertical_counts:1);
+        mSpace = (int) Utils.formatDouble(per_vertical_space,0);
     }
 
-    public void registerGlobalLayoutToRecyclerView(@NonNull final View view,final float size){
-        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            private int getVerSpacing(int viewHeight,int m_height){
-                double vertical_space ,vertical_counts,per_vertical_space;
-                vertical_space = viewHeight % m_height;
-                vertical_counts = viewHeight / m_height;
-                per_vertical_space = vertical_space / (vertical_counts != 0 ? vertical_counts:1);
-
-                return (int) Utils.formatDouble(per_vertical_space,0);
-            }
+    public static void registerGlobalLayoutToRecyclerView(@NonNull final RecyclerView recyclerView,final float size,final SuperItemDecoration decoration){
+        recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                int height = view.getMeasuredHeight();
-                if (view instanceof RecyclerView){
-                    final RecyclerView recyclerView = ((RecyclerView)view);
-                    if (recyclerView.getItemDecorationCount() > 0){
-                        recyclerView.removeItemDecorationAt(0);
+                recyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                int height = recyclerView.getMeasuredHeight(),counts = recyclerView.getItemDecorationCount();
+                if (null != decoration){
+                    if (counts > 0)recyclerView.removeItemDecorationAt(0);
+                    decoration.getVerSpacing(height, (int) size);
+                    recyclerView.addItemDecoration(decoration);
+                }else {
+                    if (counts > 0){
+                        final RecyclerView.ItemDecoration itemDecoration = recyclerView.getItemDecorationAt(0);
+                        if (itemDecoration instanceof SuperItemDecoration){
+                            ((SuperItemDecoration) itemDecoration).getVerSpacing(height, (int) size);
+                            recyclerView.invalidateItemDecorations();
+                        }
                     }
-                    setSpace(getVerSpacing(height,(int) size));
-                    recyclerView.addItemDecoration(SuperItemDecoration.this);
                 }
             }
         });

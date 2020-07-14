@@ -24,7 +24,7 @@ public final class JEventLoop {
 
     @Override
     protected void finalize(){
-        Logger.d("JEventLoop finalize");
+        Logger.d("JEventLoop finalized");
     }
 
     public int exec(){

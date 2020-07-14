@@ -109,8 +109,7 @@ public abstract class AbstractQuerySuperDialog extends AbstractDialogBaseOnMainA
             body.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
             body.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
             body.setAdapter(mAdapter);
-            final SuperItemDecoration superItemDecoration = new SuperItemDecoration();
-            superItemDecoration.registerGlobalLayoutToRecyclerView(body,mContext.getResources().getDimension(R.dimen.table_row_height));
+            SuperItemDecoration.registerGlobalLayoutToRecyclerView(body,mContext.getResources().getDimension(R.dimen.table_row_height),new SuperItemDecoration(mContext.getColor(R.color.gray_subtransparent)));
         }
     }
     private void setTableLayout(){

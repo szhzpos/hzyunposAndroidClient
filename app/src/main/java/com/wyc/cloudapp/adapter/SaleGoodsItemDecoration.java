@@ -16,7 +16,7 @@ import com.wyc.cloudapp.utils.Utils;
 
 public class SaleGoodsItemDecoration extends SuperItemDecoration {
     public SaleGoodsItemDecoration(int color){
-        mPaint.setColor(color);
+        super(color);
     }
     @Override
     public void onDrawOver(@NonNull Canvas c,@NonNull RecyclerView parent,@NonNull RecyclerView.State state) {

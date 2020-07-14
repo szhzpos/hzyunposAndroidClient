@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.wyc.cloudapp.logger.Logger;
 
 public class GoodsInfoItemDecoration extends SuperItemDecoration {
-    public GoodsInfoItemDecoration(){
-
+    public GoodsInfoItemDecoration(int color){
+        super(color);
     }
     @Override
     public void onDraw(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
