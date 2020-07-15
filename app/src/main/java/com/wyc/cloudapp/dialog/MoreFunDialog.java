@@ -133,7 +133,7 @@ public final class MoreFunDialog extends AbstractDialogBaseOnMainActivityImp {
             if (SQLiteHelper.execDelete("goods_group_info",null,null,err) < 0){
                 MyDialog.ToastMessage(err.toString(),mContext,getWindow());
             }
-            mContext.sync(true);
+            mContext.manualSync();
             this.dismiss();
         });
     }

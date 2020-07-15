@@ -28,8 +28,10 @@ import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.PayDetailViewAdapter;
 import com.wyc.cloudapp.adapter.PayMethodItemDecoration;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
+import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractShowPrinterICODialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
@@ -47,7 +49,6 @@ import java.util.Locale;
 
 public final class PayDialog extends AbstractShowPrinterICODialog {
     private EditText mCashMoneyEt,mZlAmtEt,mRemarkEt;
-    private onPayListener mPayListener;
     private PayMethodViewAdapter mPayMethodViewAdapter;
     private PayDetailViewAdapter mPayDetailViewAdapter;
     private TextView mOrderAmtTv,mDiscountAmtTv,mActualAmtTv,mPayAmtTv,mAmtReceivedTv,mPayBalanceTv, mDiscountDescriptionTv;
@@ -57,8 +58,10 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
     private JSONObject mVip;
     private boolean mPayStatus = true;
     private Window mWindow;
+    private CustomProgressDialog mProgressDialog;
     public PayDialog(MainActivity context, final String title){
         super(context,title);
+        mProgressDialog = new CustomProgressDialog(context);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +108,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
     public void show(){
         super.show();
         refreshContent();
+        showVipInfo();
     }
     @Override
     public void onAttachedToWindow(){
@@ -149,7 +153,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
                 final VipInfoDialog vipInfoDialog = new VipInfoDialog(mContext);
                 vipInfoDialog.setYesOnclickListener(dialog -> {
                     deleteMolDiscountRecord();
-                    showVipInfo(dialog.getVip(),false);
+                    setVipInfo(dialog.getVip(),false);
                     dialog.dismiss();
                 }).show();
             });
@@ -339,14 +343,11 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
                 final JSONArray jsonArray = getContent();
                 double pay_amt = 0.0,zl_amt = 0.0;
                 JSONObject object;
-
                 for (int i = 0,length = jsonArray.size();i < length;i ++){
                     object = jsonArray.getJSONObject(i);
                     pay_amt += object.getDouble("pamt");
                     zl_amt += object.getDouble("pzl");
                 }
-
-                Logger.d("amt:%f - zl_amt:%f = %f",pay_amt,zl_amt,pay_amt - zl_amt);
 
                 mAmt_received = pay_amt - zl_amt;
                 mPay_balance = mPay_amt - mAmt_received;
@@ -354,20 +355,16 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
 
                 refreshContent();
 
+                Logger.d("amt:%f - zl_amt:%f = %f,mActual_amt:%f,mAmt_received:%f",pay_amt,zl_amt,pay_amt - zl_amt,mActual_amt,mAmt_received);
                 if (verifyPayBalance()){
                     if (Utils.equalDouble(mActual_amt,mAmt_received)){//支付明细数据发送变化后，计算是否已经付款完成，如果完成触发支付完成事件
-                        double sale_amt = mContext.getSumAmt(3);
-                        double rec_pay_amt = mPayDetailViewAdapter.getPaySumAmt();
-
+                        double sale_amt = Utils.formatDouble(mContext.getSumAmt(3),2);
+                        double rec_pay_amt = Utils.formatDouble(mPayDetailViewAdapter.getPaySumAmt(),2);
                         if (Utils.equalDouble(sale_amt,rec_pay_amt)){//再次验证销售金额以及付款金额是否相等
-                            if (mPayListener != null){
-                                mPayListener.onStart(PayDialog.this);
-                            }
+                            startPay();
                         }else{
                             MyDialog.displayErrorMessage(null,String.format(Locale.CHINA,"销售金额:%f  不等于 付款金额:%f",sale_amt,pay_amt), mContext);
                         }
-                    }else {
-                        MyDialog.displayErrorMessage(null,String.format(Locale.CHINA,"应收金额:%f  不等于 已收金额:%f",mActual_amt,mAmt_received), mContext);
                     }
                 }else{
                     MyDialog.SnackbarMessage(mWindow,"剩余付款金额不能小于零！",mPayBalanceTv);
@@ -379,6 +376,22 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
         recyclerView.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(mPayDetailViewAdapter);
     }
+
+    private void startPay(){
+        mProgressDialog.setCancel(false).setMessage("正在保存单据...").refreshMessage().show();
+        final StringBuilder err = new StringBuilder();
+        if (saveOrderInfo(err)){
+            CustomApplication.execute(this::requestPay);
+        }else{
+            MyDialog.displayErrorMessage(null,"保存单据错误：" + err,mContext);
+        }
+    }
+
+    private boolean verifyPayBalance(){
+        Logger.d("mPay_balance:%f",mPay_balance);
+        return (mPay_balance > 0.0 || Utils.equalDouble(mPay_balance,0.0));
+    }
+
     private void setMolAmt(){
         double  sale_sum_amt = 0.0;
         final JSONObject object = new JSONObject();
@@ -415,10 +428,10 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
     }
     private void calculatePayContent(){
         clearContent();
-        mAmt_received = mPayDetailViewAdapter == null ? 0.0 :mPayDetailViewAdapter.getPaySumAmt();;
-        mDiscount_amt = mContext.getSumAmt(1);
-        mActual_amt = mContext.getSumAmt(3);
-        mOrder_amt = mActual_amt + mDiscount_amt;
+        mAmt_received = Utils.formatDouble(mPayDetailViewAdapter == null ? 0.0 :mPayDetailViewAdapter.getPaySumAmt(),2);
+        mDiscount_amt = Utils.formatDouble(mContext.getSumAmt(1),2);
+        mActual_amt = Utils.formatDouble(mContext.getSumAmt(3),2);
+        mOrder_amt = Utils.formatDouble(mActual_amt + mDiscount_amt,2);
         mPay_amt = mActual_amt;
         mPay_balance = mActual_amt - mAmt_received;//剩余付款金额等于应收金额已收金额
         mCashAmt = mPay_balance;
@@ -624,7 +637,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
 
         return true;
     }
-    public boolean saveOrderInfo(final StringBuilder err){
+    private boolean saveOrderInfo(final StringBuilder err){
         boolean code;
         final JSONObject counts = new JSONObject(),data = new JSONObject();
         final List<String>  tables = Arrays.asList("retail_order","retail_order_goods","retail_order_pays","discount_record"),
@@ -665,9 +678,8 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
         return SQLiteHelper.execUpdateSql("retail_order_pays",values," order_code = ? and pay_method = ? and pay_code = ?",
                 new String[]{order_code,Utils.getNullOrEmptyStringAsDefault(pay_detail,"pay_method","-1"),Utils.getNullStringAsEmpty(pay_detail,"pay_code")},err);
     }
-    public void requestPay(){
-
-        if (mPayListener != null) mContext.runOnUiThread(()->mPayListener.onProgress(PayDialog.this,"正在支付..."));
+    private void requestPay(){
+        mProgressDialog.setMessage("正在支付...").refreshMessage();
         mPayStatus = true;
         int is_check,pay_status = 1;
         long pay_time = 0;
@@ -689,9 +701,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
 
         //更新订单到正在支付状态
         if (updateOrderToPayingStatus(order_code,err) < 0){
-            if (mPayListener != null){
-                mContext.runOnUiThread(()-> mPayListener.onError(PayDialog.this,err.toString()));
-            }
+            payError(err);
             return;
         }
 
@@ -715,9 +725,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
                     }else{
                         //更新支付记录到正在支付状态
                         if (updateToPayingStatus(pay_detail,order_code,err) < 0){
-                            if (mPayListener != null){
-                                mContext.runOnUiThread(()-> mPayListener.onError(PayDialog.this,err.toString()));
-                            }
+                            payError(err);
                             return;
                         }
 
@@ -791,8 +799,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
                                                     break;
                                                 case 3:
                                                 case 4:
-                                                    if (mPayListener != null)
-                                                        mContext.runOnUiThread(()->mPayListener.onProgress(PayDialog.this,"正在查询支付状态..."));
+                                                    mProgressDialog.setMessage("正在查询支付状态...").refreshMessage();
 
                                                     while (mPayStatus && (res_code == 3 ||  res_code == 4)){
                                                         final JSONObject object = new JSONObject();
@@ -937,9 +944,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
                     if (mContext.getPrintStatus()){
                         Printer.print(mContext, PayDialog.get_print_content(mContext,order_code,open_cashbox));
                     }
-                    if (mPayListener != null){
-                        mContext.runOnUiThread(()-> mPayListener.onSuccess(PayDialog.this));
-                    }
+                    paySuccess();
                 }
             } else{
                 final String sz_err = String.format(Locale.CHINA,"数据表,%s未更新，value:%s,whereClause:%s,whereArgs:%s",tables.get(index),valueList.get(index),whereClauseList.get(index),Arrays.toString(whereArgsList.get(index)));
@@ -948,8 +953,22 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
             }
         }
 
-        if (err.length() != 0 && mPayListener != null)
-            mContext.runOnUiThread(()-> mPayListener.onError(PayDialog.this,err.toString()));
+        if (!mPayStatus && err.length() != 0)payError(err);
+    }
+
+    private void payError(final StringBuilder err){
+        mContext.runOnUiThread(()->{
+            MyDialog.displayErrorMessage(null,err.toString(),mContext);
+            if (mProgressDialog != null && mProgressDialog.isShowing())mProgressDialog.dismiss();
+            mContext.resetOrderCode();
+        });
+    }
+
+    private void paySuccess(){
+        mContext.runOnUiThread(()->{
+            setCodeAndExit(1);
+            if (mProgressDialog != null && mProgressDialog.isShowing())mProgressDialog.dismiss();
+        });
     }
 
     private void initCsahText(){
@@ -994,9 +1013,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
     private String getCashPayCode() {
         return new SimpleDateFormat("yyyyMMddHHmmssSSS",Locale.CHINA).format(new Date())+ mContext.getPosNum() + Utils.getNonce_str(8);
     }
-    private boolean verifyPayBalance(){
-      return (mPay_balance > 0.0 || Utils.equalDouble(mPay_balance,0.0));
-    }
+
     private void autoShowValueFromPayAmt(){
         int amt = (int)mCashAmt,tmp;
         final Button first = findViewById(R.id._ten),sec = findViewById(R.id._twenty),third = findViewById(R.id._fifty),fourth = findViewById(R.id._one_hundred);
@@ -1014,16 +1031,6 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
         }
     }
 
-    public PayDialog setPayListener(onPayListener listener) {
-        this.mPayListener = listener;
-        return  this;
-    }
-    public interface onPayListener {
-        void onStart(PayDialog myDialog);
-        void onProgress(PayDialog myDialog, final String info);
-        void onSuccess(PayDialog myDialog);
-        void onError(PayDialog myDialog, final String err);
-    }
     public boolean initPayContent(){
         antoMol();
         calculatePayContent();
@@ -1032,17 +1039,23 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
     public JSONArray getContent(){
         return mPayDetailViewAdapter.getDatas();
     }
-    public void showVipInfo(@NonNull JSONObject vip,boolean show){//show为true则只显示不再刷新已销售商品
+    public void setVipInfo(@NonNull JSONObject vip, boolean show){//show为true则只设置不再刷新已销售商品
         mVip = vip;
-        final LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
-        if (vip_info_linearLayout != null){
-            vip_info_linearLayout.setVisibility(View.VISIBLE);
-            ((TextView)vip_info_linearLayout.findViewById(R.id.vip_name)).setText(mVip.getString("name"));
-            ((TextView)vip_info_linearLayout.findViewById(R.id.vip_phone_num)).setText(mVip.getString("mobile"));
-        }
         if (!show){
+            showVipInfo();
             mContext.showVipInfo(vip);
             refreshPayContent();
+        }
+    }
+    private void showVipInfo(){
+        final LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
+        if (vip_info_linearLayout != null && mVip != null){
+            vip_info_linearLayout.setVisibility(View.VISIBLE);
+            final TextView vip_name_tv = vip_info_linearLayout.findViewById(R.id.vip_name),vip_phone_num_tv = vip_info_linearLayout.findViewById(R.id.vip_phone_num);
+            if (null != vip_name_tv && vip_phone_num_tv != null){
+                vip_name_tv.setText(mVip.getString("name"));
+                vip_phone_num_tv.setText(mVip.getString("mobile"));
+            }
         }
     }
 

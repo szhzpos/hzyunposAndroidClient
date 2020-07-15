@@ -25,7 +25,6 @@ import android.text.method.ReplacementTransformationMethod;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -290,22 +289,19 @@ public class MainActivity extends AppCompatActivity {
         final LinearLayout shift_exchange_linearLayout = findViewById(R.id.shift_exchange_linearLayout);
         if (shift_exchange_linearLayout != null)
             shift_exchange_linearLayout.setOnClickListener(v -> {
-                if (verifyPermissions("6",null)){
-                    final MainActivity activity = MainActivity.this;
+                final MainActivity activity = MainActivity.this;
+                if (TransferDialog.verifyTransferPermissions(activity)){
                     final TransferDialog transferDialog = new TransferDialog(activity);
                     transferDialog.setFinishListener(() -> {
                         mSyncManagement.sync_transfer_order();
                         MyDialog my_dialog = new MyDialog(activity);
-                        my_dialog.setMessage("交班成功！").setYesOnclickListener(activity.getString(R.string.OK), new MyDialog.onYesOnclickListener() {
-                            @Override
-                            public void onYesClick(MyDialog myDialog) {
-                                transferDialog.dismiss();
-                                myDialog.dismiss();
-                                final Intent intent = new Intent(activity, LoginActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                activity.startActivity(intent);
-                                activity.finish();
-                            }
+                        my_dialog.setMessage("交班成功！").setYesOnclickListener(activity.getString(R.string.OK), myDialog -> {
+                            transferDialog.dismiss();
+                            myDialog.dismiss();
+                            final Intent intent = new Intent(activity, LoginActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            activity.startActivity(intent);
+                            activity.finish();
                         }).show();
                     });
                     transferDialog.verifyTransfer();
@@ -732,42 +728,13 @@ public class MainActivity extends AppCompatActivity {
         if (!mSaleGoodsViewAdapter.isEmpty()){
             if (!getSingle()){
                 final PayDialog dialog = new PayDialog(this,getString(R.string.affirm_pay_sz));
-                if (dialog.initPayContent()){
-                    final MainActivity activity = MainActivity.this;
-                    dialog.setPayListener(new PayDialog.onPayListener() {
-                        @Override
-                        public void onStart(PayDialog myDialog) {
-                            mProgressDialog.setCancel(false).setMessage("正在保存单据...").refreshMessage().show();
-                            final StringBuilder err = new StringBuilder();
-                            if (myDialog.saveOrderInfo(err)){
-                                CustomApplication.execute(myDialog::requestPay);
-                            }else{
-                                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,err.toString()).sendToTarget();
-                            }
-                        }
-                        @Override
-                        public void onProgress(PayDialog myDialog, final String info) {
-                            mProgressDialog.setMessage(info).refreshMessage();
-                        }
-
-                        @Override
-                        public void onSuccess(PayDialog myDialog) {
-                            if (mProgressDialog.isShowing())mProgressDialog.dismiss();
-                            mSyncManagement.sync_retail_order();
-                            showLastOrderInfo(mOrderCodeTv.getText().toString());
-                            resetOrderInfo();
-                            myDialog.dismiss();
-                            MyDialog.SnackbarMessage(activity.getWindow(),"结账成功！", mOrderCodeTv);
-                        }
-
-                        @Override
-                        public void onError(PayDialog myDialog, String err) {
-                            if (mProgressDialog.isShowing())mProgressDialog.dismiss();
-                            resetOrderCode();//提示错误得重置单号
-                            MyDialog.displayErrorMessage(null,"支付错误：" + err,activity);
-                        }
-                    }).show();
-                    if (mVipInfo != null)dialog.showVipInfo(mVipInfo,true);
+                dialog.initPayContent();
+                if (mVipInfo != null)dialog.setVipInfo(mVipInfo,true);
+                if (dialog.exec() == 1){
+                    mSyncManagement.sync_retail_order();
+                    showLastOrderInfo(mOrderCodeTv.getText().toString());
+                    resetOrderInfo();
+                    MyDialog.SnackbarMessage(getWindow(),"结账成功！", mOrderCodeTv);
                 }
             }else {
                 final RefundDialog refundDialog = new RefundDialog(this,"");
@@ -789,8 +756,11 @@ public class MainActivity extends AppCompatActivity {
             mVipInfo = null;
             final LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
             vip_info_linearLayout.setVisibility(View.GONE);
-            ((TextView)vip_info_linearLayout.findViewById(R.id.vip_name)).setText(getText(R.string.space_sz));
-            ((TextView)vip_info_linearLayout.findViewById(R.id.vip_phone_num)).setText(getText(R.string.space_sz));
+            final TextView vip_name_tv = vip_info_linearLayout.findViewById(R.id.vip_name),vip_phone_num_tv = vip_info_linearLayout.findViewById(R.id.vip_phone_num);
+            if (null != vip_name_tv && vip_phone_num_tv != null){
+                vip_name_tv.setText(getText(R.string.space_sz));
+                vip_phone_num_tv.setText(getText(R.string.space_sz));
+            }
             if (!mSaleGoodsViewAdapter.getDatas().isEmpty()){
                 mSaleGoodsViewAdapter.deleteVipDiscountRecord();
             }
@@ -798,7 +768,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void resetOrderCode(){
+    public void showVipInfo(final JSONObject vip){
+        mVipInfo = vip;
+        final LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
+        if (vip_info_linearLayout != null && vip != null){
+            vip_info_linearLayout.setVisibility(View.VISIBLE);
+            final TextView vip_name_tv = vip_info_linearLayout.findViewById(R.id.vip_name),vip_phone_num_tv = vip_info_linearLayout.findViewById(R.id.vip_phone_num);
+            if (null != vip_name_tv && vip_phone_num_tv != null){
+                vip_name_tv.setText(vip.getString("name"));
+                vip_phone_num_tv.setText(vip.getString("mobile"));
+            }
+            mSaleGoodsViewAdapter.updateGoodsInfoToVip(mVipInfo);
+        }
+        reSizeSaleGoodsView();
+    }
+
+    public void resetOrderCode(){
         mOrderCodeTv.setText(mSaleGoodsViewAdapter.generateOrderCode(mCashierInfo.getString("pos_num"),1));
     }
     private void initSecondDisplay(){
@@ -827,10 +812,10 @@ public class MainActivity extends AppCompatActivity {
     public void manualMol(double mol_amt){
         mSaleGoodsViewAdapter.manualMol(mol_amt);
     }
-    public void sync(boolean b){
+    public void manualSync(){
         if (mSyncManagement != null){
             if (mProgressDialog != null && !mProgressDialog.isShowing())mProgressDialog.setMessage("正在同步...").refreshMessage().show();
-            mSyncManagement.start_sync(b);
+            mSyncManagement.start_sync(true);
         }
     }
     public void sync_refund_order(){
@@ -844,17 +829,6 @@ public class MainActivity extends AppCompatActivity {
     }
     public boolean splitCombinationalGoods(final JSONArray combination_goods,int gp_id,double gp_price,double gp_num,StringBuilder err){
         return mSaleGoodsViewAdapter.splitCombinationalGoods(combination_goods,gp_id,gp_price,gp_num,err);
-    }
-    public void showVipInfo(@NonNull JSONObject vip){
-        mVipInfo = vip;
-        final LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
-        vip_info_linearLayout.setVisibility(View.VISIBLE);
-        ((TextView)vip_info_linearLayout.findViewById(R.id.vip_name)).setText(mVipInfo.getString("name"));
-        ((TextView)vip_info_linearLayout.findViewById(R.id.vip_phone_num)).setText(mVipInfo.getString("mobile"));
-
-        mSaleGoodsViewAdapter.updateGoodsInfoToVip(mVipInfo);
-
-        reSizeSaleGoodsView();
     }
     public double getSumAmt(int type){
         return mSaleGoodsViewAdapter.getSumAmt(type);
@@ -1061,7 +1035,6 @@ public class MainActivity extends AppCompatActivity {
                     activity.mSyncManagement.start_sync(false);
                     break;
                 case MessageID.TRANSFERSTATUS_ID://传输状态
-                    if (activity.mProgressDialog != null && activity.mProgressDialog.isShowing())activity.mProgressDialog.dismiss();
                     if (msg.obj instanceof Boolean){
                         imageView = activity.findViewById(R.id.upload_status);
                         boolean code = (boolean)msg.obj;

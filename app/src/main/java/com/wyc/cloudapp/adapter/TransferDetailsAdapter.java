@@ -34,7 +34,7 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
     public TransferDetailsAdapter(MainActivity context){
         mContext = context;
         mTransferSumInfo = new JSONObject();
-        mTransferAmtNotVisible = !context.verifyPermissions("7",null,false);
+        mTransferAmtNotVisible = !verifyShowAmtPermissions();
 
         if (mTransferAmtNotVisible)
             editTextReplacement = new PasswordEditTextReplacement();
@@ -132,6 +132,10 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
             }
         }
         if (err.length() != 0)mContext.runOnUiThread(()->MyDialog.ToastMessage(err.toString(),mContext,null));
+    }
+
+    private boolean verifyShowAmtPermissions(){//是否显示金额权限
+        return mContext.verifyPermissions("7",null,false);
     }
 
     private String getTransferStartTime(final String cas_id,int stores_id,final StringBuilder err){
@@ -301,6 +305,7 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
              Logger.d_json(mTransferOrderCodes.toJSONString());
 
              if (mTransferOrderCodes.isEmpty()){
+                 mTransferSumInfo.clear();
                  err.append("无交班信息!");
              }else {
                  JSONObject obj;

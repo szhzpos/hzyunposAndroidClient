@@ -48,9 +48,11 @@
             android:id="@+id/transfer_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:autofillHints=""
             android:background="@drawable/left_separator"
             android:enabled="false"
             android:gravity="center_vertical"
+            android:inputType="datetime"
             android:paddingStart="@dimen/margin_5"
             android:paddingEnd="@dimen/margin_5"
             android:textColor="@color/text_color"
@@ -341,7 +343,7 @@
             android:textSize="@dimen/font_size_24" />
 
         <Space
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 

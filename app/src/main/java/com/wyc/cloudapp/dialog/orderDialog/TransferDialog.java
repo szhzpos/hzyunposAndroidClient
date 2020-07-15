@@ -334,4 +334,8 @@ public class TransferDialog extends AbstractShowPrinterICODialog {
         }
         return code;
     }
+
+    public static boolean verifyTransferPermissions(final MainActivity activity){
+        return activity.verifyPermissions("6",null);
+    }
 }
