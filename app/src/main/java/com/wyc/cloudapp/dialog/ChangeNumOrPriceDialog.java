@@ -25,6 +25,10 @@ public class ChangeNumOrPriceDialog extends AbstractDialogBaseOnMainActivityImp 
         this(context,title);
         mInitVal = initVal;
     }
+    public ChangeNumOrPriceDialog(MainActivity context, final CharSequence title, final String initVal){
+        super(context,title);
+        mInitVal = initVal;
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

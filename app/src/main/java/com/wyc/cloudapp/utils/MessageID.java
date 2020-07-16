@@ -20,7 +20,6 @@ public final  class MessageID {
             SYNC_GOODS_CATEGORY_ID = 16,
             LOGIN_PW_ERROR_ID = 17,
             LOGIN_ID_ERROR_ID = 18,
-            CONN_PARAM_ERR_ID = 20,
             QUERY_VIP_INFO_ID = 21,
             QUERY_VIP_LEVEL_ID = 22,
             ADD_VIP_INFO_ID = 23,
@@ -36,5 +35,6 @@ public final  class MessageID {
             OFF_LINE_LOGIN_ID = 34,
             UPLOAD_REFUND_ORDER_ID = 36,
             START_SYNC_ORDER_INFO_ID = 37,
-            FINISH_SYNC_ORDER_INFO_ID = 38;
+            FINISH_SYNC_ORDER_INFO_ID = 38,
+            APP_CHECK_VER_ID = 39,APP_UPDATE_ID = 40,APP_UPDATESERVICE_EXIT_ID  = 41;
 }

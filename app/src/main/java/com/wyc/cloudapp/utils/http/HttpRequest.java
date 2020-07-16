@@ -32,6 +32,14 @@ public final class HttpRequest {
     private volatile HttpURLConnection mPostConn,mGetConn;
     private int mConnTimeOut = 30000,mReadTimeOut = 30000;
     private int mPostCode = HttpURLConnection.HTTP_BAD_REQUEST,mGetCode = HttpURLConnection.HTTP_BAD_REQUEST;
+    private OnRequestListener mListener;
+
+    public interface OnRequestListener{
+        void onSize(long size);
+    }
+    public void setRequestListener(OnRequestListener listener){
+        mListener = listener;
+    }
     public enum CLOSEMODE{
         GET,POST,BOTH
     }
@@ -124,7 +132,7 @@ public final class HttpRequest {
         try {
             final URL url_obj = new URL(url);
             mGetConn =(HttpURLConnection)url_obj.openConnection();
-            mGetConn.setRequestProperty("Content-Type", "application/vnd.android.package-archive");
+            //mGetConn.setRequestProperty("Content-Type", "application/vnd.android.package-archive");
             mGetConn.setUseCaches(false);
             mGetConn.setConnectTimeout(mConnTimeOut);
             mGetConn.setReadTimeout(mReadTimeOut);
@@ -157,6 +165,55 @@ public final class HttpRequest {
         }
 	    return content;
     }
+    public synchronized JSONObject getFileForPost(final String url,@NonNull final String param,Object store_file){
+        final JSONObject content = new JSONObject();
+        File download_file = null;
+        final byte[] buffer = new byte[1024];
+        int lenght = 0,file_size = 0;
+
+        try {
+            final URL url_obj = new URL(url);
+            mPostConn =(HttpURLConnection)url_obj.openConnection();
+            //mGetConn.setRequestProperty("Content-Type", "application/vnd.android.package-archive");
+            mPostConn.setUseCaches(false);
+            mPostConn.setConnectTimeout(mConnTimeOut);
+            mPostConn.setReadTimeout(mReadTimeOut);
+            mPostConn.setRequestMethod("POST");
+            mPostConn.connect();
+
+            try(BufferedWriter out = new BufferedWriter(new OutputStreamWriter(mPostConn.getOutputStream(),StandardCharsets.UTF_8));) {
+                out.write(param);
+                out.flush();
+            }
+            mPostCode = mPostConn.getResponseCode();
+            if(mPostCode != HttpURLConnection.HTTP_OK){
+                content.put("flag", 0);
+                content.put("info",mPostConn.getResponseMessage());
+            }else{
+                if (store_file instanceof File){//可能产生效率问题，后续跟进优化
+                    download_file = (File) store_file;
+                }else {
+                    download_file = new File(store_file.toString());
+                }
+                try ( BufferedInputStream in = new BufferedInputStream(mPostConn.getInputStream()); FileOutputStream  fileOutputStream = new FileOutputStream(download_file);){
+                    while ((lenght = in.read(buffer)) != -1){
+                        fileOutputStream.write(buffer,0,lenght);
+                        if (mListener != null)mListener.onSize(file_size += lenght);
+                    }
+                }
+            }
+            content.put("flag",1);
+            content.put("rsCode", mPostCode);
+        }catch (IOException | JSONException e){
+            content.put("flag",0);
+            content.put("rsCode", HttpURLConnection.HTTP_BAD_REQUEST);
+            content.put("info","下载失败！ " + e.getLocalizedMessage());
+        }finally {
+            clearConnection(CLOSEMODE.POST);
+        }
+        return content;
+    }
+
     public synchronized JSONObject sendPost(final String url,@NonNull final String param,boolean json) {//json 请求返回数据类型 true 为json格式 否则为XML
         BufferedReader in = null;
         BufferedWriter out = null;

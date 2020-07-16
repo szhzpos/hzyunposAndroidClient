@@ -182,7 +182,7 @@ public class ConnSettingDialog extends AbstractDialogBaseOnContextImp {
             json.put("appId", mAppIdTv.getText().toString());
             json.put("url", mUrlTv.getText().toString());
             json.put("shop_id",shop_id);
-            json.put("appScret", mAppscretTv.getText().toString());
+            json.put("appSecret", mAppscretTv.getText().toString());
             json.put("storeInfo","{}");
 
             if (SQLiteHelper.saveLocalParameter("connParam",json,"门店信息、服务器连接参数",err)){

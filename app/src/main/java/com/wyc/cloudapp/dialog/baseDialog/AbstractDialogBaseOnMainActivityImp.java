@@ -14,7 +14,7 @@ import com.wyc.cloudapp.logger.Logger;
 
 public abstract class AbstractDialogBaseOnMainActivityImp extends AbstractDialog {
     protected MainActivity mContext;
-    public AbstractDialogBaseOnMainActivityImp(@NonNull MainActivity context, String title) {
+    public AbstractDialogBaseOnMainActivityImp(@NonNull MainActivity context,final String title) {
         super(context, title);
         mContext = context;
 
@@ -25,6 +25,10 @@ public abstract class AbstractDialogBaseOnMainActivityImp extends AbstractDialog
             }
             return false;
         });
+    }
+    public AbstractDialogBaseOnMainActivityImp(@NonNull MainActivity context,final CharSequence title) {
+        super(context, title);
+        mContext = context;
     }
 
     @Override

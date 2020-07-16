@@ -94,7 +94,7 @@ public abstract class AbstractPayDialog extends AbstractDialogBaseOnMainActivity
     }
 
     protected String getTitle(){
-        return mTitle;
+        return mTitle.toString();
     }
 
     protected void setHint(final String hint){

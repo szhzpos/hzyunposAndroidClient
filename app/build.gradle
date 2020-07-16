@@ -53,7 +53,7 @@ android {
         variant ->
             variant.outputs.all {
                 //在这里修改apk文件名
-                outputFileName = "${"hz_yun_app"}.apk"
+                outputFileName = "${"yunpos_pad_" + defaultConfig.versionCode + "_v" + defaultConfig.versionName}.apk"
             }
     }
 }

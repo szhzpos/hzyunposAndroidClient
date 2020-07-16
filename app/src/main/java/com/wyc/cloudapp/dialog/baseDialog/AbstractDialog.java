@@ -1,12 +1,11 @@
 package com.wyc.cloudapp.dialog.baseDialog;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,13 +21,11 @@ import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.dialog.JEventLoop;
-import com.wyc.cloudapp.logger.Logger;
-
-import java.util.Arrays;
+import com.wyc.cloudapp.utils.FontSizeTagHandler;
 
 public abstract class AbstractDialog extends Dialog {
     protected Context mContext;
-    protected String mTitle;
+    protected CharSequence mTitle;
     private WindowManager mWM;
     private WindowManager.LayoutParams mLayoutParams;
     private View mRootView;
@@ -46,6 +43,10 @@ public abstract class AbstractDialog extends Dialog {
         mTitle = title;
     }
     AbstractDialog(@NonNull Context context, final String title) {
+        this(context);
+        mTitle = title;
+    }
+    AbstractDialog(@NonNull Context context, final CharSequence title) {
         this(context);
         mTitle = title;
     }
@@ -146,7 +147,7 @@ public abstract class AbstractDialog extends Dialog {
     private void setTitle() {
         final TextView title_tv = findViewById(R.id.title);
         if (null != title_tv && null != mTitle) {
-            title_tv.setText(mTitle);
+            title_tv.setText( mTitle);
         }
     }
 

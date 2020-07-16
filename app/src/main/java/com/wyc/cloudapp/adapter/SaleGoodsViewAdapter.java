@@ -5,6 +5,7 @@ import android.app.Dialog;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
@@ -22,6 +23,7 @@ import com.wyc.cloudapp.dialog.serialScales.GoodsWeighDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.callback.ClickListener;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.FontSizeTagHandler;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.text.SimpleDateFormat;
@@ -315,7 +317,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
                     dialog = new ChangeNumOrPriceDialog(mContext,"新价格",cur_json.getString("price"));
                     break;
                 case 2:
-                    dialog = new ChangeNumOrPriceDialog(mContext,mContext.getString(R.string.discount_sz),String.format(Locale.CHINA,"%.0f",Utils.getNotKeyAsNumberDefault(cur_json,"discount",1.0) * 10));
+                    dialog = new ChangeNumOrPriceDialog(mContext,Html.fromHtml("折扣率<size value='14'>[1-10],10为不折扣</size> ",null,new FontSizeTagHandler(mContext)),String.format(Locale.CHINA,"%.0f",Utils.getNotKeyAsNumberDefault(cur_json,"discount",1.0) * 10));
                     break;
                     case 0:
                         dialog = new ChangeNumOrPriceDialog(mContext,"新数量",String.format(Locale.CHINA,"%.2f",Utils.getNotKeyAsNumberDefault(cur_json,"xnum",1.0)));
