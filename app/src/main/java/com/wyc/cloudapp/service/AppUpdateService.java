@@ -3,6 +3,8 @@ package com.wyc.cloudapp.service;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -19,12 +21,15 @@ import androidx.core.content.FileProvider;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
 import java.io.File;
+import java.util.Locale;
+
 public class AppUpdateService extends Service {
     public static final String APP_PROGRESS_BROADCAST = "com.wyc.cloudapp.download_progress";
     public static final int SUCCESS_STATUS = 1,ERROR_STATUS = 2,PROGRESS_STATUS = 3;
@@ -41,24 +46,20 @@ public class AppUpdateService extends Service {
             super(looper);
         }
         @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what){
-                case MessageID.APP_CHECK_VER_ID:
-                    startId = msg.arg1;
-                    if (msg.obj instanceof JSONObject){
-                        check_ver((JSONObject) msg.obj);
-                    }
-                    break;
-                case MessageID.APP_UPDATE_ID:
+        protected void finalize(){
+            Logger.d("AppUpdateService finalized");
+        }
 
-                    break;
-                case MessageID.APP_UPDATESERVICE_EXIT_ID:
-                    stopSelf(startId);
-                    break;
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == MessageID.APP_CHECK_VER_ID) {
+                startId = msg.arg1;
+                if (msg.obj instanceof JSONObject) {
+                    check_ver((JSONObject) msg.obj);
+                }
             }
         }
         private void check_ver(final JSONObject json){
-
             final String base_url = Utils.getNullStringAsEmpty(json,"url"),appid = Utils.getNullStringAsEmpty(json,"appid"),
                     appSecret = Utils.getNullStringAsEmpty(json,"appSecret"),url = base_url + "/api/pos_upgrade/index";
 
@@ -68,7 +69,6 @@ public class AppUpdateService extends Service {
 
             final HttpRequest httpRequest = new HttpRequest();
             JSONObject retJson = httpRequest.setConnTimeOut(3000).setReadTimeOut(3000).sendPost(url,HttpRequest.generate_request_parm(object,appSecret), true);
-            Logger.d_json(retJson.toString());
             switch (retJson.getIntValue("flag")) {
                 case 0:
                     update_error(retJson.getString("info"));
@@ -81,31 +81,54 @@ public class AppUpdateService extends Service {
                             break;
                         case "y":
                             final JSONArray file_list = JSON.parseArray(Utils.getNullOrEmptyStringAsDefault(info_json,"file_list","[]"));
+                            final Intent check_ver_intent = new Intent(APP_PROGRESS_BROADCAST) ;
                             if (file_list.isEmpty()){
-                                final Intent check_ver_intent = new Intent(APP_PROGRESS_BROADCAST) ;
                                 check_ver_intent.putExtra("status",SUCCESS_STATUS);
                                 sendBroadcast(check_ver_intent);
                             }else {
-                                final JSONObject file_info = file_list.getJSONObject(0);
-
-
-
+                                final JSONObject file_info = file_list.getJSONObject(0);//可能抛出java.lang.IndexOutOfBoundsException异常
                                 final String name = Utils.getNullStringAsEmpty(file_info,"name"),dwn_url = Utils.getNullStringAsEmpty(file_info,"dwn_url");
                                 final int file_size = Utils.getNotKeyAsNumberDefault(file_info,"size",0);
+                                int v_index = name.indexOf("v"),last_index = name.lastIndexOf(".");
+                                if (v_index != -1 && last_index != -1){
+                                    final String online_ver = name.substring(v_index + 1,last_index);
+                                    Logger.d("file_name:%s,online_ver:%s",name,online_ver);
 
-                                object.clear();
-                                object.put("appid",appid);
+                                    try {
+                                        final PackageInfo packageInfo = getPackageManager().getPackageInfo("com.wyc.cloudapp",0);
+                                        long version_code = -1;
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                                            version_code = packageInfo.getLongVersionCode();
+                                        }else {
+                                            version_code = packageInfo.versionCode;
+                                        }
+                                        Logger.d("version_code:%d,versionName:%s",version_code,packageInfo.versionName);
 
-                                downloadApkFile(httpRequest,dwn_url,HttpRequest.generate_request_parm(object,appSecret),file_size);
+                                        if (packageInfo.versionName.compareTo(online_ver) < 0){
+                                            object.clear();
+                                            object.put("appid",appid);
+                                            downloadApkFile(httpRequest,dwn_url,HttpRequest.generate_request_parm(object,appSecret),file_size);
+                                        }else {
+                                            check_ver_intent.putExtra("status",SUCCESS_STATUS);
+                                            sendBroadcast(check_ver_intent);
+                                        }
+                                    } catch (PackageManager.NameNotFoundException e) {
+                                        e.printStackTrace();
+                                        update_error(e.getMessage());
+                                    }
+                                }else {
+                                    update_error(String.format(Locale.CHINA,"版本信息解析错误,文件名:%s",name));
+                                }
                             }
                             break;
                     }
                     break;
             }
+            stopSelf(startId);
         }
 
         private void downloadApkFile(final HttpRequest httpRequest,final String dwn_url,final String param,final long file_size){
-            final String file_directory = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzposupdatefile",filepath = file_directory + "/app-release.apk";
+            final String file_directory = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzposupdatefile",filepath = file_directory + "/app.apk";
             final File down_file = new File(filepath);
             if (down_file.exists()){
                 down_file.delete();
@@ -119,7 +142,6 @@ public class AppUpdateService extends Service {
                     sendBroadcast(intent);
                 });
                final JSONObject retJson = httpRequest.getFileForPost(dwn_url,param,down_file);
-               Logger.d_json(retJson.toString());
                 switch (retJson.getIntValue("flag")) {
                     case 0:
                         update_error(retJson.getString("info"));
@@ -171,7 +193,6 @@ public class AppUpdateService extends Service {
             intent.setDataAndType(data, "application/vnd.android.package-archive");
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             mContext.startActivity(intent);
-            stopSelf(startId);
         }
     }
 

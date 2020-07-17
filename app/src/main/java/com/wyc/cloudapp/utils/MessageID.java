@@ -16,7 +16,6 @@ public final  class MessageID {
             LOGIN_OK_ID = 9,
             NETWORKSTATUS_ID = 11,
             TRANSFERSTATUS_ID = 12,
-            DIS_STORE_INFO_ID = 13,
             SYNC_GOODS_CATEGORY_ID = 16,
             LOGIN_PW_ERROR_ID = 17,
             LOGIN_ID_ERROR_ID = 18,
@@ -36,5 +35,5 @@ public final  class MessageID {
             UPLOAD_REFUND_ORDER_ID = 36,
             START_SYNC_ORDER_INFO_ID = 37,
             FINISH_SYNC_ORDER_INFO_ID = 38,
-            APP_CHECK_VER_ID = 39,APP_UPDATE_ID = 40,APP_UPDATESERVICE_EXIT_ID  = 41;
+            APP_CHECK_VER_ID = 39,FULLREDUCE_ID = 40;
 }

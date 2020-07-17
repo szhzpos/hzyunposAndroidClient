@@ -13,8 +13,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -92,7 +94,7 @@ public class LoginActivity extends AppCompatActivity {
         initSetup();
 
         initKeyboard();
-        intitDisplayInfo();
+        intitDisplayInfoAndVersion();
 
         registerReceiver(receiver,new IntentFilter(AppUpdateService.APP_PROGRESS_BROADCAST));
     }
@@ -135,7 +137,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void finalize(){
-        Logger.d("LoginActivity finalize");
+        Logger.d("LoginActivity finalized");
     }
 
     @Override
@@ -152,15 +154,20 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void intitDisplayInfo(){
+    private void intitDisplayInfoAndVersion(){
         final TextView tv = findViewById(R.id.display_info_tv);
         final WindowManager wm = getWindowManager();
         if (null != tv && wm != null){
-            final Display display = wm.getDefaultDisplay();
-            final DisplayMetrics displayMetrics = new DisplayMetrics();
-            display.getMetrics(displayMetrics);;
-            Logger.d("density:%f",displayMetrics.density);
-            tv.setText(String.format(Locale.CHINA,"H:%d x W:%d DPI:%d",displayMetrics.heightPixels,displayMetrics.widthPixels,displayMetrics.densityDpi));
+            try {
+                final PackageInfo packageInfo = getPackageManager().getPackageInfo("com.wyc.cloudapp",0);
+                final Display display = wm.getDefaultDisplay();
+                final DisplayMetrics displayMetrics = new DisplayMetrics();
+                display.getRealMetrics(displayMetrics);
+                tv.setText(String.format(Locale.CHINA,"高:%d x 宽:%d DPI:%d 版本号:%s",displayMetrics.heightPixels,displayMetrics.widthPixels,displayMetrics.densityDpi,packageInfo.versionName));
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+                MyDialog.ToastMessage(e.getMessage(),this,getWindow());
+            }
         }
     }
 
@@ -193,25 +200,25 @@ public class LoginActivity extends AppCompatActivity {
         mLoginBtn = login_btn;
     }
     private void check_ver(){
-        mProgressDialog.setCancel(false).setMessage("正在检查更新...").show();
+        mProgressDialog.setCancel(false).setMessage("正在检查更新...").refreshMessage().show();
 
         final JSONObject conn_param = new JSONObject();
         if (SQLiteHelper.getLocalParameter("connParam", conn_param)) {
             if (Utils.JsonIsNotEmpty(conn_param)) {
-
                 final Intent intentService = new Intent(this, AppUpdateService.class);
                 intentService.putExtra("url",Utils.getNullStringAsEmpty(conn_param,"server_url"));
                 intentService.putExtra("appid",Utils.getNullStringAsEmpty(conn_param,"appId"));
                 intentService.putExtra("appSecret",Utils.getNullStringAsEmpty(conn_param,"appSecret"));
                 startService(intentService);
-
                 mConnParam = conn_param;
             } else {
+                mProgressDialog.dismiss();
                 MyDialog.ToastMessage("连接参数不能为空!",this,getWindow());
                 final View view = findViewById(R.id.setup_ico);
                 if (null != view)view.callOnClick();
             }
         }else {
+            mProgressDialog.dismiss();
             MyDialog.displayErrorMessage(myDialog,conn_param.getString("info"),this);
         }
     }
@@ -224,16 +231,15 @@ public class LoginActivity extends AppCompatActivity {
             int status = intent.getIntExtra("status",0);
             switch (status){
                 case AppUpdateService.SUCCESS_STATUS:
-                    mProgressDialog.dismiss();
-                    break;
-                case AppUpdateService.ERROR_STATUS:
-                    MyDialog.displayErrorMessage(myDialog,"检查版本错误:" + intent.getStringExtra("info"),activity);
+                    login();
                     break;
                 case AppUpdateService.PROGRESS_STATUS:
-                    mProgressDialog.setMessage(String.format(Locale.CHINA,"正在下载文件...%d%s",(int)(intent.getDoubleExtra("Progress",0) * 100),"%")).refreshMessage().show();
+                    mProgressDialog.setMessage(String.format(Locale.CHINA,"正在更新,请稍后...%d%s",(int)(intent.getDoubleExtra("Progress",0) * 100),"%")).refreshMessage().show();
                     break;
+                case AppUpdateService.ERROR_STATUS:
                     default:
-                        MyDialog.displayErrorMessage(myDialog,"未知下载错误!",activity);
+                        mProgressDialog.dismiss();
+                        MyDialog.displayErrorMessage(myDialog,"检查版本错误:" + intent.getStringExtra("info"),activity);
                         break;
             }
         }

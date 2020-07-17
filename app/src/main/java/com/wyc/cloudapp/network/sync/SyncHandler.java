@@ -12,6 +12,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.MessageID;
@@ -120,6 +121,14 @@ public final class SyncHandler extends Handler {
                     object.put("pos_num",pos_num);
                     object.put("stores_id",stores_id);
                     break;
+                case MessageID.FULLREDUCE_ID:
+                    table_name = "fullreduce_info";
+                    table_cls = new String[]{"full_id","title","modes","fold","rule","start_time","end_time","starttime","endtime"};
+                    sys_name = "正在同步满减信息";
+                    url = base_url + "/api/promotion/fullreduce_info";
+                    object.put("stores_id",stores_id);
+                    object.put("type",1);
+                    break;
                 case MessageID.SYNC_FINISH_ID:
                     mMainActivityHandler.obtainMessage(MessageID.SYNC_FINISH_ID).sendToTarget();//同步完成
                     return;
@@ -175,9 +184,25 @@ public final class SyncHandler extends Handler {
                             sys_name = sys_name.concat("错误:").concat(info_json.getString("info"));
                             break;
                         case "y":
-                            final JSONArray data = info_json.getJSONArray("data");
+                            final JSONArray data;
+                            StringBuilder err = new StringBuilder();
+                            if (msg.what == MessageID.FULLREDUCE_ID){
+                                if (SQLiteHelper.execDelete("fullreduce_info",null,null,err) < 0){
+                                    code = false;
+                                    data = new JSONArray();
+                                }else {
+                                    final String json = Utils.getNullStringAsEmpty(info_json,"data");
+                                    if (json.startsWith("{")){
+                                        final JSONObject obj = info_json.getJSONObject("data");
+                                        data = Utils.getNullObjectAsEmptyJsonArray(obj,"fullreduce");
+                                    }else {
+                                        data = Utils.getNullObjectAsEmptyJsonArray(info_json,"data");
+                                    }
+                                }
+                            }else {
+                                data = Utils.getNullObjectAsEmptyJsonArray(info_json,"data");
+                            }
                             if(data.size() != 0){
-                                StringBuilder err = new StringBuilder();
                                 switch (msg.what){
                                     case MessageID.SYNC_GP_INFO_ID:{
                                         if ((code = deal_good_group(data,err))){
@@ -220,9 +245,8 @@ public final class SyncHandler extends Handler {
                                             code = SQLiteHelper.execSQLByBatchFromJson(data,table_name ,table_cls,err,1);
                                             break;
                                 }
-                                if (!code)
-                                    sys_name = sys_name.concat("错误:").concat(err.toString());
                             }
+                            if (!code)sys_name = sys_name.concat("错误:").concat(err.toString());
                             break;
                     }
                     break;
@@ -753,6 +777,7 @@ public final class SyncHandler extends Handler {
             if (!hasMessages(MessageID.SYNC_STORES_ID))obtainMessage(MessageID.SYNC_STORES_ID).sendToTarget();//仓库信息
             if (!hasMessages(MessageID.SYNC_GP_INFO_ID))obtainMessage(MessageID.SYNC_GP_INFO_ID,0).sendToTarget();//商品组合ID
             if (!hasMessages(MessageID.SYNC_GOODS_ID))obtainMessage(MessageID.SYNC_GOODS_ID,0).sendToTarget();//商品信息obj代表当前下载页数
+            if (!hasMessages(MessageID.FULLREDUCE_ID))obtainMessage(MessageID.FULLREDUCE_ID).sendToTarget();//满减信息
         }
     }
     void stopSync(){
@@ -763,6 +788,7 @@ public final class SyncHandler extends Handler {
         removeMessages(MessageID.SYNC_PAY_METHOD_ID);
         removeMessages(MessageID.SYNC_GP_INFO_ID);
         removeMessages(MessageID.SYNC_GOODS_ID);
+        removeMessages(MessageID.FULLREDUCE_ID);
         removeMessages(MessageID.SYNC_FINISH_ID);
     }
     void modifyReportProgressStatus(boolean b){

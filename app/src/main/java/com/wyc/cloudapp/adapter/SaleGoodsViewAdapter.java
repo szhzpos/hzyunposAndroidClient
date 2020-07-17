@@ -53,7 +53,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
                      6 => '整单折扣',
                      7 => '自动抹零',
                      8 => '手动抹零',*/
-        static final int MONEY_OFF = 1,PRESENT = 2,PROMOTION = 3,M_DISCOUNT = 4,V_DISCOUNT = 5,A_DISCOUNT = 6,AUTO_MOL =7,M_MOL = 8;
+        static final int FULL_REDUCE = 1,PRESENT = 2,PROMOTION = 3,M_DISCOUNT = 4,V_DISCOUNT = 5,A_DISCOUNT = 6,AUTO_MOL =7,M_MOL = 8;
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -87,44 +87,42 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
-        if (mDatas != null){
-            final JSONObject goods_info = mDatas.getJSONObject(i);
-            if (goods_info != null){
-                final int discount_type = Utils.getNotKeyAsNumberDefault(goods_info,"discount_type",-1);
-                if (discount_type == DISCOUNT_TYPE.PRESENT)
-                    myViewHolder.discount_sign.setText(getDiscountName(discount_type));
-                else
-                    myViewHolder.discount_sign.setText(mContext.getString(R.string.space_sz));
+        final JSONObject goods_info = mDatas.getJSONObject(i);
+        if (goods_info != null){
+            final int discount_type = Utils.getNotKeyAsNumberDefault(goods_info,"discount_type",-1);
+            if (discount_type == DISCOUNT_TYPE.PRESENT)
+                myViewHolder.discount_sign.setText(getDiscountName(discount_type));
+            else
+                myViewHolder.discount_sign.setText(mContext.getString(R.string.space_sz));
 
-                myViewHolder.row_id.setText(String.format(Locale.CHINA,"%s%s",i + 1,"、"));
-                myViewHolder.goods_id.setText(goods_info.getString("goods_id"));
-                myViewHolder.gp_id.setText(goods_info.getString("gp_id"));
-                myViewHolder.goods_title.setText(goods_info.getString("goods_title"));
-                myViewHolder.unit_name.setText(goods_info.getString("unit_name"));
-                myViewHolder.barcode_id.setText(goods_info.getString("barcode_id"));
-                myViewHolder.barcode.setText(goods_info.getString("barcode"));
-                myViewHolder.original_price.setText(String.format(Locale.CHINA,"%.2f",goods_info.getDoubleValue("original_price")));
-                myViewHolder.sale_price.setText(String.format(Locale.CHINA,"%.2f",goods_info.getDoubleValue("price")));
-                myViewHolder.sale_num.setText(String.format(Locale.CHINA,"%.3f",goods_info.getDoubleValue("xnum")));
-                myViewHolder.sale_amt.setText(String.format(Locale.CHINA,"%.2f",goods_info.getDoubleValue("sale_amt")));
+            myViewHolder.row_id.setText(String.format(Locale.CHINA,"%s%s",i + 1,"、"));
+            myViewHolder.goods_id.setText(goods_info.getString("goods_id"));
+            myViewHolder.gp_id.setText(goods_info.getString("gp_id"));
+            myViewHolder.goods_title.setText(goods_info.getString("goods_title"));
+            myViewHolder.unit_name.setText(goods_info.getString("unit_name"));
+            myViewHolder.barcode_id.setText(goods_info.getString("barcode_id"));
+            myViewHolder.barcode.setText(goods_info.getString("barcode"));
+            myViewHolder.original_price.setText(String.format(Locale.CHINA,"%.2f",goods_info.getDoubleValue("original_price")));
+            myViewHolder.sale_price.setText(String.format(Locale.CHINA,"%.2f",goods_info.getDoubleValue("price")));
+            myViewHolder.sale_num.setText(String.format(Locale.CHINA,"%.3f",goods_info.getDoubleValue("xnum")));
+            myViewHolder.sale_amt.setText(String.format(Locale.CHINA,"%.2f",goods_info.getDoubleValue("sale_amt")));
 
-                if(myViewHolder.goods_title.getCurrentTextColor() == mContext.getResources().getColor(R.color.blue,null)){
-                    myViewHolder.goods_title.setTextColor(mContext.getColor(R.color.black));//需要重新设置颜色；不然重用之后内容颜色为重用之前的。
-                }
+            if(myViewHolder.goods_title.getCurrentTextColor() == mContext.getResources().getColor(R.color.blue,null)){
+                myViewHolder.goods_title.setTextColor(mContext.getColor(R.color.black));//需要重新设置颜色；不然重用之后内容颜色为重用之前的。
+            }
 
-                myViewHolder.mCurrentLayoutItemView.setOnTouchListener(onTouchListener);
+            myViewHolder.mCurrentLayoutItemView.setOnTouchListener(onTouchListener);
 
-                if (mCurrentItemIndex == i){
-                    setSelectStatus(myViewHolder.mCurrentLayoutItemView);
-                    mCurrentItemView = myViewHolder.mCurrentLayoutItemView;
-                }
+            if (mCurrentItemIndex == i){
+                setSelectStatus(myViewHolder.mCurrentLayoutItemView);
+                mCurrentItemView = myViewHolder.mCurrentLayoutItemView;
             }
         }
     }
 
     @Override
     public int getItemCount() {
-        return mDatas == null ? 0 : mDatas.size();
+        return mDatas.size();
     }
 
     private ClickListener onTouchListener = new ClickListener(v -> {
@@ -583,7 +581,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
     }
     private String getDiscountName(int discount_type){
         switch (discount_type) {
-            case SaleGoodsViewAdapter.DISCOUNT_TYPE.MONEY_OFF:
+            case SaleGoodsViewAdapter.DISCOUNT_TYPE.FULL_REDUCE:
                 return "满减";
             case SaleGoodsViewAdapter.DISCOUNT_TYPE.PRESENT:
                 return "赠送";
@@ -709,15 +707,13 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
         if (null != mCurrentItemView && (tv_id = mCurrentItemView.findViewById(R.id.goods_id)) != null &&
                 (tv_barcode_id = mCurrentItemView.findViewById(R.id.barcode_id)) != null && (tv_gp_id = mCurrentItemView.findViewById(R.id.gp_id) ) != null){
 
-            CharSequence id = tv_id.getText(),barcode_id = tv_barcode_id.getText(),gp_id = tv_gp_id.getText();
-            if (mDatas != null ){
-                for (int i = 0,length = mDatas.size();i < length;i ++){
-                    JSONObject json = mDatas.getJSONObject(i);
-                    if (id.equals(json.getString("goods_id")) && barcode_id.equals(json.getString("barcode_id")) &&
-                            gp_id.equals(json.getString("gp_id"))){
-                        mCurrentItemIndex = i;
-                        return;
-                    }
+            final CharSequence id = tv_id.getText(),barcode_id = tv_barcode_id.getText(),gp_id = tv_gp_id.getText();
+            for (int i = 0,length = mDatas.size();i < length;i ++){
+                JSONObject json = mDatas.getJSONObject(i);
+                if (id.equals(json.getString("goods_id")) && barcode_id.equals(json.getString("barcode_id")) &&
+                        gp_id.equals(json.getString("gp_id"))){
+                    mCurrentItemIndex = i;
+                    return;
                 }
             }
         }
@@ -918,7 +914,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
                 per_record_mol_amt = original_sale_amt;
                 current_sale_amt = 0.0;
             }else
-                current_sale_amt = Utils.formatDouble(original_sale_amt - per_record_mol_amt,2);
+                current_sale_amt = Utils.formatDouble(original_sale_amt - per_record_mol_amt,4);
 
             new_discount = Utils.formatDouble(current_sale_amt / original_sale_amt,3);
 
@@ -947,7 +943,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
                 break;
             }else {
                 //计算下一次抹零金额，最后一条记录或者剩余抹零金额小于平均抹零金额；要扣除剩余的抹零
-                if (Math.abs(Math.abs(mol_amt) - Math.abs(per_record_mol_amt)) < 0.0 || i + 2 == sale_record){
+                if (Math.abs(mol_amt) - Math.abs(per_record_mol_amt) < 0.0 || i + 2 == sale_record){
                     o_per_record_mol_amt = mol_amt;
                     mol_amt = 0;
                 }
@@ -959,6 +955,94 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
         notifyDataSetChanged();
     }
 
+    public void fullReduce(){
+        final StringBuilder err = new StringBuilder();
+        final JSONArray array = SQLiteHelper.getListToJson("select * from fullreduce_info where starttime <= datetime('now') <= endtime",err);
+        if (null != array){
+            if (!array.isEmpty()){
+                final JSONObject full_reduce_obj = array.getJSONObject(0);
+                final JSONArray rules = JSON.parseArray(Utils.getNullOrEmptyStringAsDefault(full_reduce_obj,"rule","[]"));
+                if (!rules.isEmpty()){
+                    Utils.sortJsonArrayFromDoubleCol(rules,"full_money");
+                    int modes = full_reduce_obj.getIntValue("modes"),fold = full_reduce_obj.getIntValue("fold");
+                    double amt = 0.0;
+                    switch (modes){
+                        case 1:
+                            amt = getSumAmt(2);
+                            break;
+                        case 2:
+                            amt = getSumAmt(3);
+                            break;
+                    }
+                    double reduce_money = 0.0;
+                    for (int i = 0,size = rules.size();i < size;i++){
+                        final JSONObject rule_json = rules.getJSONObject(i);
+                        if (amt >= rule_json.getDoubleValue("full_money")){
+                            reduce_money = rule_json.getDoubleValue("reduce_money");
+                            break;
+                        }
+                    }
+
+
+                }
+            }
+        }else {
+            MyDialog.displayErrorMessage(null,"满减优惠错误:" + err,mContext);
+        }
+    }
+    private void addFullReduce(double reduce_money,double sale_amt){
+        JSONObject object,discount_obj;
+        final JSONArray discount_details = new JSONArray();
+        int sale_record = mDatas.size();
+        double per_record_amt = 0.0, percent = Utils.formatDouble(reduce_money / sale_amt,4),original_sale_amt = 0.0,new_discount = 0.0,xnum = 0.0,new_price = 0.0,
+                discount_amt = 0.0,current_sale_amt = 0.0;
+
+        for (int i = 0;i < sale_record;i++){
+            object = mDatas.getJSONObject(i);
+
+            if (Utils.equalDouble(original_sale_amt,0.0))continue;
+
+            original_sale_amt = object.getDoubleValue("sale_amt");
+            current_sale_amt = Utils.formatDouble(percent * original_sale_amt,4);
+            per_record_amt = original_sale_amt - current_sale_amt;
+
+            new_discount = Utils.formatDouble(current_sale_amt / original_sale_amt,3);
+
+            //处理优惠记录
+            discount_obj = new JSONObject();
+            discount_obj.put("gp_id",object.getIntValue("gp_id"));
+            discount_obj.put("barcode_id",object.getIntValue("barcode_id"));
+            discount_obj.put("price",per_record_amt);//单品折扣金额
+            discount_details.add(discount_obj);
+
+            xnum = Utils.getNotKeyAsNumberDefault(object,"xnum",1.0);
+
+            new_price = Utils.formatDouble(current_sale_amt / xnum,4);
+
+            discount_amt = original_sale_amt - current_sale_amt;
+
+            object.put("discount", new_discount);
+            object.put("discount_amt", Utils.formatDouble(discount_amt + object.getDoubleValue("discount_amt"),2));
+            object.put("price",new_price);
+            object.put("discount_type",DISCOUNT_TYPE.FULL_REDUCE);
+            object.put("sale_amt",current_sale_amt);
+
+            reduce_money -= per_record_amt;
+            if (Utils.equalDouble(Math.abs(reduce_money),0)){
+                break;
+            }else {
+                //计算下一次抹零金额，最后一条记录或者剩余抹零金额小于平均抹零金额；要扣除剩余的抹零
+                if (Math.abs(Math.abs(reduce_money) - Math.abs(per_record_amt)) < 0.0 || i + 2 == sale_record){
+                    per_record_amt = reduce_money;
+                    reduce_money = 0;
+                }
+            }
+        }
+        if (!discount_details.isEmpty()){
+            addDiscountRecords(DISCOUNT_TYPE.FULL_REDUCE,discount_details);
+        }
+        notifyDataSetChanged();
+    }
 
     public boolean splitCombinationalGoods(final JSONArray arrays,int gp_id,double gp_price,double gp_num,StringBuilder err){
         final String sql = "select b.xnum xnum,(b.xnum * b.retail_price / a.amt) * " + gp_price +" / case b.xnum when 0 then 1 else b.xnum end price," +
@@ -1004,8 +1088,11 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
         }
         return amt;
     }
-    public void setDatas(@NonNull final JSONArray array){
-        mDatas = array;
+    public void setDatas(final JSONArray array){
+        if (null != array)
+            mDatas = array;
+        else
+            mDatas = new JSONArray();
     }
 
     public void setSingle(final boolean b){

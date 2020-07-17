@@ -412,7 +412,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     mUrl = st_info.getString("server_url");
                     mAppId = st_info.getString("appId");
-                    mAppSecret = st_info.getString("appScret");
+                    mAppSecret = st_info.getString("appSecret");
 
                     mStoreInfo = JSON.parseObject(st_info.getString("storeInfo"));
                     store_name.setText(String.format("%s%s%s%s",mStoreInfo.getString("stores_name"),"[",mStoreInfo.getString("stores_id"),"]"));
