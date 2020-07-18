@@ -38,8 +38,9 @@ import java.util.Locale;
 import static android.content.Context.WINDOW_SERVICE;
 
 public class ConnSettingDialog extends AbstractDialogBaseOnContextImp {
-    private TextView mUrlTv, mAppIdTv, mAppscretTv,mStore_nameTv;
+    private TextView mUrlTv, mAppIdTv, mAppSecretTv,mStore_nameTv;
     private EditText mShopIdEt;
+
     public ConnSettingDialog(final Context context, final String title) {
         super(context,title,R.style.MyDialog);
     }
@@ -71,10 +72,10 @@ public class ConnSettingDialog extends AbstractDialogBaseOnContextImp {
         mShopIdEt = findViewById(R.id.shop_id_et);
 
         mAppIdTv = findViewById(R.id.appId);
-        mAppscretTv = findViewById(R.id.appSecret);
+        mAppSecretTv = findViewById(R.id.appSecret);
         mStore_nameTv = findViewById(R.id.store_name);
 
-        mAppscretTv.setSelectAllOnFocus(true);
+        mAppSecretTv.setSelectAllOnFocus(true);
         mAppIdTv.setSelectAllOnFocus(true);
 
         initUrlTv();
@@ -182,7 +183,7 @@ public class ConnSettingDialog extends AbstractDialogBaseOnContextImp {
             json.put("appId", mAppIdTv.getText().toString());
             json.put("url", mUrlTv.getText().toString());
             json.put("shop_id",shop_id);
-            json.put("appSecret", mAppscretTv.getText().toString());
+            json.put("appSecret", mAppSecretTv.getText().toString());
             json.put("storeInfo","{}");
 
             if (SQLiteHelper.saveLocalParameter("connParam",json,"门店信息、服务器连接参数",err)){
