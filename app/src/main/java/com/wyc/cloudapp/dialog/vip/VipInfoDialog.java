@@ -224,7 +224,7 @@ public final class VipInfoDialog extends AbstractDialogBaseOnMainActivityImp {
         if (SQLiteHelper.getLocalParameter("connParam",object)){
             object.put("appid",object.getString("appId"));
             object.put("mobile",mobile);
-            ret_json = httpRequest.sendPost(object.getString("server_url") + "/api/member/get_member_info",HttpRequest.generate_request_parm(object,object.getString("appScret")),true);
+            ret_json = httpRequest.sendPost(object.getString("server_url") + "/api/member/get_member_info",HttpRequest.generate_request_parm(object,object.getString("appSecret")),true);
             switch (ret_json.getIntValue("flag")){
                 case 0:
                     throw new JSONException(ret_json.getString("info"));

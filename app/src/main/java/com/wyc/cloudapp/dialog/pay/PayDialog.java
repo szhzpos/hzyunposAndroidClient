@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.Html;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.Window;
@@ -24,6 +25,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.adapter.FullReduceRulesAdapter;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.PayDetailViewAdapter;
 import com.wyc.cloudapp.adapter.PayMethodItemDecoration;
@@ -37,6 +39,7 @@ import com.wyc.cloudapp.dialog.baseDialog.AbstractShowPrinterICODialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
+import com.wyc.cloudapp.utils.FontSizeTagHandler;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
@@ -109,6 +112,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
         super.show();
         refreshContent();
         showVipInfo();
+        showFullReducDes();
     }
     @Override
     public void onAttachedToWindow(){
@@ -123,6 +127,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
             mContext.deleteMolDiscountRecord();
         }
         if (!Utils.equalDouble(mDiscount_amt,0.0)){
+            mContext.deleteFullReduce();
             mContext.deleteAlldiscountRecord();
         }
     }
@@ -136,9 +141,10 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
         final Button all_discount_btn = findViewById(R.id.all_discount);
         if (null != all_discount_btn)
             all_discount_btn.setOnClickListener(view -> {
-                ChangeNumOrPriceDialog dialog = new ChangeNumOrPriceDialog(mContext, mContext.getString(R.string.discount_sz),String.format(Locale.CHINA,"%d",10));
+                final ChangeNumOrPriceDialog dialog = new ChangeNumOrPriceDialog(mContext, Html.fromHtml("折扣率<size value='14'>[1-10],10为不折扣</size> ",null,new FontSizeTagHandler(mContext)),String.format(Locale.CHINA,"%d",10));
                 dialog.setYesOnclickListener(myDialog -> {
                     if (mContext.allDiscount(myDialog.getContent())){
+                        deleteFullReduceDiscount();
                         deleteMolDiscountRecord();
                         refreshPayContent();
                         myDialog.dismiss();
@@ -152,6 +158,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
             vip_btn.setOnClickListener(view -> {
                 final VipInfoDialog vipInfoDialog = new VipInfoDialog(mContext);
                 vipInfoDialog.setYesOnclickListener(dialog -> {
+                    deleteFullReduceDiscount();
                     deleteMolDiscountRecord();
                     setVipInfo(dialog.getVip(),false);
                     dialog.dismiss();
@@ -392,6 +399,47 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
         return (mPay_balance > 0.0 || Utils.equalDouble(mPay_balance,0.0));
     }
 
+    public boolean initPayContent(){
+        antoMol();
+        fullReduceDiscount();
+        calculatePayContent();
+        return true;
+    }
+    private void refreshPayContent(){
+        if (initPayContent()){
+            refreshContent();
+            if (null != mPayDetailViewAdapter && !mPayDetailViewAdapter.getDatas().isEmpty())mPayDetailViewAdapter.notifyDataSetChanged();
+        }
+    }
+    private void fullReduceDiscount(){
+        mContext.fullReduceDiscount();
+    }
+    private void deleteFullReduceDiscount(){
+        mContext.deleteFullReduce();
+    }
+    private void showFullReducDes(){
+        final JSONObject object = mContext.getFullReduceRecord();
+        if (null != object){
+            final LinearLayout fullreduce_des_layout = findViewById(R.id.fullreduce_des_layout);
+            if (null != fullreduce_des_layout){
+                fullreduce_des_layout.setVisibility(View.VISIBLE);
+                final RecyclerView recyclerView = fullreduce_des_layout.findViewById(R.id.fullreduce_list);
+                if (null != recyclerView){
+                    recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
+                    recyclerView.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
+                    recyclerView.setAdapter(new FullReduceRulesAdapter(mContext,object.getJSONArray("rules_des")));
+                }
+                final TextView name = fullreduce_des_layout.findViewById(R.id.fullreduce_name_tv),time = fullreduce_des_layout.findViewById(R.id.fullreduce_time_tv);
+                if (null != name && time != null){
+                    name.setText(object.getString("name"));
+                    time.setText(object.getString("time"));
+                }
+
+                final LinearLayout payed_amt_info = findViewById(R.id.payed_amt_info);
+                if (null != payed_amt_info)payed_amt_info.setVisibility(View.GONE);
+            }
+        }
+    }
     private void setMolAmt(){
         double  sale_sum_amt = 0.0;
         final JSONObject object = new JSONObject();
@@ -422,8 +470,6 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
         if (!Utils.equalDouble(mMolAmt,0.0)){
             mMolAmt = 0.0;
             mContext.deleteMolDiscountRecord();
-            calculatePayContent();
-            refreshContent();
         }
     }
     private void calculatePayContent(){
@@ -1024,18 +1070,6 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
         fourth.setText(String.valueOf( tmp +(50- tmp % 50)));
     }
 
-    private void refreshPayContent(){
-        if (initPayContent()){
-            refreshContent();
-            if (null != mPayDetailViewAdapter && !mPayDetailViewAdapter.getDatas().isEmpty())mPayDetailViewAdapter.notifyDataSetChanged();
-        }
-    }
-
-    public boolean initPayContent(){
-        antoMol();
-        calculatePayContent();
-        return true;
-    }
     public JSONArray getContent(){
         return mPayDetailViewAdapter.getDatas();
     }

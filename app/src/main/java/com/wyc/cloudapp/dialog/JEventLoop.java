@@ -16,7 +16,7 @@ public final class JEventLoop {
     private final Object mLock = new Object();
     public JEventLoop(){
     }
-    private class ExitException extends RuntimeException{
+    private static class ExitException extends RuntimeException{
         ExitException(){
             super();
         }

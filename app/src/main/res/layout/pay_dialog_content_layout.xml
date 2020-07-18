@@ -11,10 +11,10 @@
 
     <LinearLayout
         android:id="@+id/left"
-        android:layout_width="@dimen/pay_dialog_left_w"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginEnd="@dimen/margin_5"
-        android:background="@drawable/round_shape"
+        android:layout_margin="@dimen/margin_1"
+        android:background="@drawable/border_sub_gray"
         android:orientation="vertical">
 
         <LinearLayout
@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/height_40"
             android:layout_margin="@dimen/margin_2"
-            android:background="@drawable/border_sub_gray"
+            android:background="@drawable/bottom_separator"
             android:orientation="horizontal"
             android:visibility="gone">
 
@@ -69,11 +69,11 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/pay_amount_info"
+            android:id="@+id/pay_amt_info"
             android:layout_width="match_parent"
             android:layout_height="@dimen/height_58"
             android:layout_margin="@dimen/margin_2"
-            android:background="@drawable/border_sub_gray"
+            android:background="@drawable/bottom_separator"
             android:baselineAligned="false"
             android:orientation="horizontal">
 
@@ -160,201 +160,231 @@
             android:layout_height="@dimen/height_30"
             android:layout_marginStart="@dimen/margin_2"
             android:layout_marginEnd="@dimen/margin_2"
-            android:background="@drawable/border_sub_gray"
+            android:layout_marginBottom="@dimen/margin_2"
+            android:background="@drawable/bottom_separator"
             android:gravity="center"
             android:textColor="@color/orange"
             android:visibility="gone" />
 
         <LinearLayout
-            android:id="@+id/pay_method_info"
+            android:id="@+id/fullreduce_des_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="@dimen/margin_2"
-            android:background="@drawable/border_sub_gray"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_1"
+            android:background="@drawable/bottom_separator"
+            android:orientation="vertical"
+            android:visibility="gone">
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/fullreduce_name_tv"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/height_58"
-                android:layout_margin="@dimen/margin_2"
-                android:background="@drawable/bottom_separator"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_12" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/unpay_amt_sz"
-                        android:textAlignment="center"
-                        android:textSize="@dimen/font_size_14" />
-
-                    <TextView
-                        android:id="@+id/pay_amt"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="128.00"
-                        android:textAlignment="center"
-                        android:textColor="@color/text_color"
-                        android:textSize="@dimen/font_size_16" />
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/textView36"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:text="@string/minus"
-                    android:textAlignment="center"
-                    android:textSize="@dimen/fun_button_font_size_24" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/amt_received_sz"
-                        android:textAlignment="center"
-                        android:textSize="@dimen/font_size_14" />
-
-                    <TextView
-                        android:id="@+id/amt_received"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="28.00"
-                        android:textAlignment="center"
-                        android:textColor="@color/text_color"
-                        android:textSize="@dimen/font_size_16" />
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/textView37"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:text="@string/equal_sign_sz"
-                    android:textAlignment="center"
-                    android:textSize="@dimen/fun_button_font_size_24" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/balance_sz"
-                        android:textAlignment="center"
-                        android:textSize="@dimen/font_size_14" />
-
-                    <TextView
-                        android:id="@+id/pay_balance"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="68.00"
-                        android:textAlignment="center"
-                        android:textColor="@color/orange_1"
-                        android:textSize="@dimen/font_size_18" />
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <EditText
-                android:id="@+id/et_remark"
+            <TextView
+                android:id="@+id/fullreduce_time_tv"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/height_40"
-                android:layout_margin="@dimen/margin_2"
-                android:background="@drawable/border_sub_gray"
-                android:ems="10"
-                android:hint="@string/remark_hint_sz"
-                android:importantForAutofill="no"
-                android:inputType="textPersonName"
-                android:paddingStart="@dimen/margin_5"
-                android:paddingEnd="0dp"
-                android:textColorHint="@color/orange_1"
-                android:textSize="@dimen/font_size_14"
-                android:visibility="gone" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/pay_detail_list"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_margin="@dimen/margin_2"
-                android:layout_weight="1"
-                android:background="@drawable/bottom_separator">
-
-            </androidx.recyclerview.widget.RecyclerView>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/height_58"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_2"
                 android:layout_marginEnd="@dimen/margin_2"
-                android:layout_marginBottom="@dimen/margin_2"
-                android:orientation="horizontal">
+                android:background="@drawable/bottom_separator"
+                android:gravity="center"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_12" />
 
-                <Button
-                    android:id="@+id/vip"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_margin="@dimen/margin_2"
-                    android:layout_weight="1"
-                    android:background="@drawable/button_blue"
-                    android:text="@string/vip_button_sz"
-                    android:textColor="@color/blue_white"
-                    android:textSize="@dimen/font_size_16" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/fullreduce_list"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/height_78"
+                android:layout_marginBottom="@dimen/margin_1" />
+        </LinearLayout>
 
-                <Button
-                    android:id="@+id/all_discount"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_margin="@dimen/margin_2"
-                    android:layout_weight="1"
-                    android:background="@drawable/button_blue"
-                    android:text="@string/all_discount_sz"
-                    android:textColor="@color/blue_white"
-                    android:textSize="@dimen/font_size_16" />
+        <LinearLayout
+            android:id="@+id/payed_amt_info"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_58"
+            android:layout_marginStart="@dimen/margin_2"
+            android:layout_marginEnd="@dimen/margin_2"
+            android:background="@drawable/bottom_separator"
+            android:orientation="horizontal"
+            android:visibility="visible">
 
-                <Button
-                    android:id="@+id/mo_l"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_margin="@dimen/margin_2"
-                    android:layout_weight="1"
-                    android:background="@drawable/button_blue"
-                    android:text="@string/mo_l_sz"
-                    android:textColor="@color/blue_white"
-                    android:textSize="@dimen/font_size_16" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-                <Button
-                    android:id="@+id/remark"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_margin="@dimen/margin_2"
-                    android:layout_weight="1"
-                    android:background="@drawable/button_blue"
-                    android:text="@string/remark_sz"
-                    android:textColor="@color/blue_white"
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/unpay_amt_sz"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/font_size_14" />
+
+                <TextView
+                    android:id="@+id/pay_amt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="128.00"
+                    android:textAlignment="center"
+                    android:textColor="@color/text_color"
                     android:textSize="@dimen/font_size_16" />
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/textView36"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="@string/minus"
+                android:textAlignment="center"
+                android:textSize="@dimen/fun_button_font_size_24" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/amt_received_sz"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/font_size_14" />
+
+                <TextView
+                    android:id="@+id/amt_received"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="28.00"
+                    android:textAlignment="center"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/textView37"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="@string/equal_sign_sz"
+                android:textAlignment="center"
+                android:textSize="@dimen/fun_button_font_size_24" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/balance_sz"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/font_size_14" />
+
+                <TextView
+                    android:id="@+id/pay_balance"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="68.00"
+                    android:textAlignment="center"
+                    android:textColor="@color/orange_1"
+                    android:textSize="@dimen/font_size_18" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/et_remark"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_40"
+            android:layout_margin="@dimen/margin_2"
+            android:background="@drawable/border_sub_gray"
+            android:ems="10"
+            android:hint="@string/remark_hint_sz"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="0dp"
+            android:textColorHint="@color/orange_1"
+            android:textSize="@dimen/font_size_14"
+            android:visibility="gone" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/pay_detail_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="@dimen/margin_2"
+            android:layout_weight="1"
+            android:background="@drawable/bottom_separator">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <LinearLayout
+            android:id="@+id/func_btn_layout"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_58"
+            android:layout_marginStart="@dimen/margin_2"
+            android:layout_marginEnd="@dimen/margin_2"
+            android:layout_marginBottom="@dimen/margin_2"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/vip"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="@dimen/margin_2"
+                android:layout_weight="1"
+                android:background="@drawable/button_blue"
+                android:text="@string/vip_button_sz"
+                android:textColor="@color/blue_white"
+                android:textSize="@dimen/font_size_16" />
+
+            <Button
+                android:id="@+id/all_discount"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="@dimen/margin_2"
+                android:layout_weight="1"
+                android:background="@drawable/button_blue"
+                android:text="@string/all_discount_sz"
+                android:textColor="@color/blue_white"
+                android:textSize="@dimen/font_size_16" />
+
+            <Button
+                android:id="@+id/mo_l"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="@dimen/margin_2"
+                android:layout_weight="1"
+                android:background="@drawable/button_blue"
+                android:text="@string/mo_l_sz"
+                android:textColor="@color/blue_white"
+                android:textSize="@dimen/font_size_16" />
+
+            <Button
+                android:id="@+id/remark"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="@dimen/margin_2"
+                android:layout_weight="1"
+                android:background="@drawable/button_blue"
+                android:text="@string/remark_sz"
+                android:textColor="@color/blue_white"
+                android:textSize="@dimen/font_size_16" />
         </LinearLayout>
 
     </LinearLayout>
@@ -363,7 +393,8 @@
         android:id="@+id/right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/round_shape"
+        android:layout_margin="@dimen/margin_1"
+        android:background="@drawable/border_sub_gray"
         android:orientation="vertical">
 
         <TextView
@@ -377,8 +408,7 @@
             android:id="@+id/pay_method_list"
             android:layout_width="match_parent"
             android:layout_height="@dimen/height_68"
-            android:layout_margin="@dimen/margin_2"
-            android:foreground="@drawable/round_shape_blue_foreground" />
+            android:layout_margin="@dimen/margin_2" />
 
         <LinearLayout
             android:layout_width="match_parent"

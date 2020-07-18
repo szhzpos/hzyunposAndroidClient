@@ -209,7 +209,7 @@
                 android:layout_width="@dimen/width_85"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="@string/a_ckml"
+                android:text="@string/a_ckml_sz"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_16" />

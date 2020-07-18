@@ -306,5 +306,7 @@
     <string name="a_retail_price">零售价：</string>
     <string name="a_category_sz">所属分类：</string>
     <string name="a_unit_sz">计量单位：</string>
-    <string name="a_ckml">参考毛利：</string>
+    <string name="a_ckml_sz">参考毛利：</string>
+    <string name="fullreduce_des_sz">满%1$s减%2$s</string>
+    <string name="diff_des_sz">差%1$s元</string>
 </resources>

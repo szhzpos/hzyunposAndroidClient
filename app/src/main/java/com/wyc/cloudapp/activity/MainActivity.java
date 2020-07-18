@@ -812,6 +812,15 @@ public class MainActivity extends AppCompatActivity {
     public void manualMol(double mol_amt){
         mSaleGoodsViewAdapter.manualMol(mol_amt);
     }
+    public void fullReduceDiscount(){
+        mSaleGoodsViewAdapter.fullReduceDiscount();
+    }
+    public void deleteFullReduce(){
+        mSaleGoodsViewAdapter.deleteFullReduceRecord();
+    }
+    public JSONObject getFullReduceRecord(){
+        return mSaleGoodsViewAdapter.getFullReduceRecord();
+    }
     public void manualSync(){
         if (mSyncManagement != null){
             if (mProgressDialog != null && !mProgressDialog.isShowing())mProgressDialog.setMessage("正在同步...").refreshMessage().show();

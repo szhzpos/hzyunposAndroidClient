@@ -76,7 +76,6 @@ public abstract class AbstractDialog extends Dialog {
         super.onCreate(savedInstanceState);
         setContentLayout();
         setCancelable(false);
-
         setTitle();
         initCloseBtn();
     }
@@ -93,8 +92,8 @@ public abstract class AbstractDialog extends Dialog {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 if (isTitle = isTitleView(event.getX(), event.getY())){
-                    mTouchX = event.getRawX();
-                    mTouchY = event.getRawY();
+                    mTouchX = event.getRawX() - mLayoutParams.x;
+                    mTouchY = event.getRawY() - mLayoutParams.y;
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
