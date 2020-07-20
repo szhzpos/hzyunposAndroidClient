@@ -115,6 +115,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
             myViewHolder.mCurrentLayoutItemView.setOnTouchListener(onTouchListener);
 
             if (mCurrentItemIndex == i){
+                Logger.d("i:%d",mCurrentItemIndex);
                 setSelectStatus(myViewHolder.mCurrentLayoutItemView);
                 mCurrentItemView = myViewHolder.mCurrentLayoutItemView;
             }
@@ -155,18 +156,29 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
     private void addSaleGoods(final JSONObject goods,double num,boolean isBarcodeWeighingGoods,final JSONObject vip){
         mContext.clearSearchEt();
 
-        boolean exist = false;
+        boolean exist = false,isPromotion = goods.getBooleanValue("isPromotion");
         int barcode_id = goods.getIntValue("barcode_id"),gp_id = goods.getIntValue("gp_id"),discount_type = -1;
-        double  add_goods_price,discount = 1.0,discount_amt = 0.0,new_price = 0.0,current_sale_amt = 0.0,current_discount_amt = 0.0,original_price = 0.0,original_amt = 0.0;
+        double  sale_price,discount = 1.0,discount_amt = 0.0,new_price = 0.0,current_sale_amt = 0.0,current_discount_amt = 0.0,original_price = 0.0,original_amt = 0.0;
         JSONObject tmp_obj;
-        add_goods_price = Utils.getNotKeyAsNumberDefault(goods,"price",1.0);
+        sale_price = Utils.getNotKeyAsNumberDefault(goods,"price",1.0);
+
         for (int i = 0,length = mDatas.size();i < length;i++){
             tmp_obj = mDatas.getJSONObject(i);
-            if (barcode_id == tmp_obj.getIntValue("barcode_id") && gp_id == tmp_obj.getIntValue("gp_id")){
+
+            original_price = tmp_obj.getDoubleValue("original_price");
+            double sum_xnum = tmp_obj.getDoubleValue("xnum") + num;
+            if (isPromotion){
+                double limit_xnum = goods.getDoubleValue("limit_xnum");
+                if (!Utils.equalDouble(limit_xnum,0.0) && limit_xnum < sum_xnum){
+                    goods.remove("isPromotion");
+                    goods.put("price",original_price);
+                    addSaleGoods(goods,num,isBarcodeWeighingGoods,vip);
+                    return;
+                }
+            }
+            if (barcode_id == tmp_obj.getIntValue("barcode_id") && gp_id == tmp_obj.getIntValue("gp_id") && isPromotion == tmp_obj.getBooleanValue("isPromotion")){
                 exist = true;
 
-                double sum_xnum = tmp_obj.getDoubleValue("xnum") + num;
-                original_price = tmp_obj.getDoubleValue("original_price");
                 discount  = Utils.getNotKeyAsNumberDefault(tmp_obj,"discount",1.0);
                 if (isBarcodeWeighingGoods){
                     current_sale_amt = goods.getDoubleValue("sale_amt");
@@ -174,7 +186,11 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
                     current_sale_amt = tmp_obj.getDoubleValue("sale_amt") + current_sale_amt * discount;
                     if (!Utils.equalDouble(sum_xnum,0.0))new_price = Utils.formatDouble(current_sale_amt / sum_xnum,4);
                 }else{
-                    new_price = Utils.formatDouble(add_goods_price * discount,4);
+                    if (isPromotion){
+                        new_price = Utils.formatDouble(original_price * discount,4);
+                    }else
+                        new_price = Utils.formatDouble(sale_price * discount,4);
+
                     current_sale_amt = sum_xnum * new_price;
                     current_discount_amt = Utils.formatDouble((original_price - new_price) * num,2);
                 }
@@ -193,18 +209,27 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
                 tmp_obj.put("original_amt",original_amt);
                 mCurrentItemIndex = i;
 
-                discount_type = tmp_obj.getIntValue("discount_type");
+                Logger.d("Xi:%d,mCurrentItemIndex:%d",i,mCurrentItemIndex);
+
+               discount_type = tmp_obj.getIntValue("discount_type");
                 break;
             }
         }
 
         if (!exist){
+            original_price = goods.getDoubleValue("retail_price");
+
+            if (isPromotion){//促销商品
+                if (!Utils.equalDouble(original_price,0.0))discount = Utils.formatDouble(goods.getDoubleValue("price") / original_price,4);
+                discount_type = DISCOUNT_TYPE.PROMOTION;
+                goods.put("discount_type", discount_type);
+            }
             if (isBarcodeWeighingGoods){
                 original_amt = goods.getDoubleValue("sale_amt");
                 if (!Utils.equalDouble(num,0.0))new_price = original_amt / num;
             }else{
-                new_price = add_goods_price;
-                original_amt = Utils.formatDouble(add_goods_price * num,4);
+                new_price = sale_price;
+                original_amt = Utils.formatDouble(original_price * num,4);
             }
 
             if (vip != null){
@@ -214,8 +239,8 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
                 switch (goods.getIntValue("yh_mode")){
                     case 0://无优惠
                         discount  = 1.0;
-                        new_price = add_goods_price;
-                        current_sale_amt = original_amt;
+                        new_price = sale_price;
+                        current_sale_amt = original_amt * discount;;
                         break;
                     case 1://会员价
                         new_price = Utils.formatDouble(goods.getDoubleValue("yh_price"),4);
@@ -225,8 +250,13 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
                         }
                         break;
                     case 2://会员折扣
-                        discount  = Utils.formatDouble(Utils.getNotKeyAsNumberDefault(vip,"discount",10.0) / 10,2);
+                        if (d_discount){
+                            discount  *= Utils.formatDouble(Utils.getNotKeyAsNumberDefault(vip,"discount",10.0) / 10,4);
+                        }else {
+                            discount  = Utils.formatDouble(Utils.getNotKeyAsNumberDefault(vip,"discount",10.0) / 10,4);
+                        }
                         current_sale_amt = original_amt * discount;
+
                         if (!Utils.equalDouble(num,0)){
                             new_price = Utils.formatDouble(current_sale_amt / num,4);
                         }
@@ -235,18 +265,21 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
                 discount_type = DISCOUNT_TYPE.V_DISCOUNT;
                 goods.put("discount_type", discount_type);
             }else {
-                current_sale_amt = original_amt;
+                current_sale_amt = original_amt * discount;
             }
 
-            discount_amt = current_discount_amt = Utils.formatDouble(original_amt - original_amt * discount,2);
+            discount_amt = current_discount_amt = original_amt - current_sale_amt;
 
-            goods.put("original_price", add_goods_price);
+            goods.put("original_price",original_price);
             goods.put("price",new_price);
             goods.put("discount", discount);
             goods.put("discount_amt", discount_amt);
             goods.put("xnum",num);
             goods.put("sale_amt",Utils.formatDouble(current_sale_amt,4));
             goods.put("original_amt",original_amt);
+
+            Logger.d_json(goods.toString());
+
             mDatas.add(goods);
             mCurrentItemIndex = mDatas.size() - 1;
         }
@@ -262,8 +295,12 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
             //处理商品优惠明细
             addDiscountRecords(discount_type,discount_details);
         }
+
+        Logger.d("mCurrentItemIndex:%d",mCurrentItemIndex);
+
         this.notifyDataSetChanged();
     }
+
 
     public void deleteSaleGoods(int index,double num){
         int size = mDatas.size();

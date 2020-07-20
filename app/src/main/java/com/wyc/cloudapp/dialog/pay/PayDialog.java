@@ -390,6 +390,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
         if (saveOrderInfo(err)){
             CustomApplication.execute(this::requestPay);
         }else{
+            mProgressDialog.dismiss();
             MyDialog.displayErrorMessage(null,"保存单据错误：" + err,mContext);
         }
     }

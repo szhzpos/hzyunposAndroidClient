@@ -28,7 +28,7 @@ import com.wyc.cloudapp.utils.Utils;
 import java.util.Locale;
 
 public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdapter.MyViewHolder> implements View.OnClickListener {
-    public static final int spanCount = 5;
+    public static final int SPAN_COUNT = 5;
     public static final String W_G_MARK = "IWG";//计重、计份并且通过扫条码选择的商品标志
     private MainActivity mContext;
     private JSONArray mDatas;
@@ -246,9 +246,44 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
                 "gp_price retail_price,gp_price price,0 tc_rate,0 tc_mode,0 tax_rate,0 ps_price,0 cost_price,0 trade_price,gp_price buying_price,0 yh_mode,0 yh_price,1 metering_id,1 conversion from goods_group \n" +
                 "where status = 1 and gp_id = " + id;
 
-        //Logger.d("full_sql:%s",full_sql);
+        boolean code =  SQLiteHelper.execSql(object,full_sql);
+        if (code){
+            final JSONObject promotion_obj = new JSONObject();
+            if (code = getPromotionGoods(Utils.getNotKeyAsNumberDefault(object,"barcode_id",-1),promotion_obj)){
+                Logger.d_json(promotion_obj.toString());
+                if (!promotion_obj.isEmpty()){
+                    object.put("isPromotion",true);
+                    object.put("limit_xnum",promotion_obj.getDoubleValue("limit_xnum"));
 
-       return SQLiteHelper.execSql(object,full_sql);
+                    int way = promotion_obj.getIntValue("way");
+                    switch (way){
+                        case 1://定价
+                            object.put("price",promotion_obj.getDoubleValue("promotion_price"));
+                            break;
+                        case 2://折扣
+                            object.put("price",promotion_obj.getDoubleValue("promotion_price") / 10 * object.getDoubleValue("retail_price"));
+                            break;
+                    }
+                }
+            }else {
+                object.clear();
+                object.put("info",promotion_obj.getString("info"));
+            }
+        }
+
+       return code;
+    }
+
+    private boolean getPromotionGoods(int barcode_id,final JSONObject object){
+        final String sql = "select way,limit_xnum,promotion_price from promotion_info where barcode_id = '" + barcode_id +"' and status = 1 and " +
+                "stores_id = '" + Utils.getNotKeyAsNumberDefault(mContext.getStoreInfo(),"stores_id",-1) +"' " +
+                "and start_date <= strftime('%s','now') and strftime('%s','now') <= end_date and \n" +
+                "promotion_week like '%' ||case strftime('%w','now' ) when 0 then 7 else strftime('%w','now' ) end||'%' \n" +
+                "and begin_time <= time('now', 'localtime') and time('now', 'localtime') <= end_time";
+
+        Logger.d("PromotionGoodsSQL：%s",sql);
+
+        return SQLiteHelper.execSql(object,sql);
     }
 
     private boolean parseElectronicBarcode(@NonNull String full_sql,@NonNull final JSONObject object,@NonNull final String weigh_barcode_info){

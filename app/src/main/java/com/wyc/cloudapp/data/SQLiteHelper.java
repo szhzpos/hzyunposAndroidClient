@@ -1509,7 +1509,23 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    end_time   VARCHAR,\n" +
                 "    starttime  NUMERIC,\n" +
                 "    endtime    NUMERIC\n" +
-                ");";
+                ");",sql_promotion_info = "CREATE TABLE IF NOT EXISTS promotion_info (\n" +
+                "    tlp_id        INTEGER PRIMARY KEY\n" +
+                "                            NOT NULL,\n" +
+                "    tlpb_id      INTEGER,\n" +
+                "    barcode_id      INTEGER,\n" +
+                "    status          INTEGER,\n" +
+                "    way             INTEGER,\n" +
+                "    limit_xnum      INTEGER,\n" +
+                "    promotion_price NUMERIC,\n" +
+                "    stores_id       INTEGER,\n" +
+                "    start_date      VARCHAR,\n" +
+                "    end_date        VARCHAR,\n" +
+                "    promotion_week  VARCHAR,\n" +
+                "    begin_time      VARCHAR,\n" +
+                "    end_time        VARCHAR,\n" +
+                "    xtype           INTEGER\n" +
+                ");\n";
 
         list.add(sql_shop_stores);
         list.add(sql_shop_category);
@@ -1540,6 +1556,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         list.add(sql_transfer_refund_money);
         list.add(sql_once_cards);
         list.add(sql_fullreduce_info);
+        list.add(sql_promotion_info);
 
         try {
             db.beginTransaction();

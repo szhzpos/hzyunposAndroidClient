@@ -35,5 +35,5 @@ public final  class MessageID {
             UPLOAD_REFUND_ORDER_ID = 36,
             START_SYNC_ORDER_INFO_ID = 37,
             FINISH_SYNC_ORDER_INFO_ID = 38,
-            APP_CHECK_VER_ID = 39,FULLREDUCE_ID = 40;
+            APP_CHECK_VER_ID = 39, SYNC_FULLREDUCE_ID = 40,SYNC_PROMOTION_ID = 41;
 }

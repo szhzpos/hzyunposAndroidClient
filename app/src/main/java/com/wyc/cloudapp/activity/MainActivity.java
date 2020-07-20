@@ -337,9 +337,9 @@ public class MainActivity extends AppCompatActivity {
         mCloseBtn.setOnClickListener((View V)->{
             MyDialog.displayAskMessage(mDialog,"是否退出收银？",MainActivity.this,(MyDialog myDialog)->{
                 myDialog.dismiss();
-                Intent intent = new Intent(this,LoginActivity.class);
+                /*Intent intent = new Intent(this,LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
+                startActivity(intent);*/
                 this.finish();
             }, Dialog::dismiss);
         });
@@ -430,7 +430,7 @@ public class MainActivity extends AppCompatActivity {
     private void initGoodsInfoAdapter(){
         mGoodsInfoViewAdapter = new GoodsInfoViewAdapter(this);
         final RecyclerView goods_info_view = findViewById(R.id.goods_info_list);
-        final GridLayoutManager gridLayoutManager = new GridLayoutManager(this,GoodsInfoViewAdapter.spanCount);
+        final GridLayoutManager gridLayoutManager = new GridLayoutManager(this,GoodsInfoViewAdapter.SPAN_COUNT);
         goods_info_view.setLayoutManager(gridLayoutManager);
         SuperItemDecoration.registerGlobalLayoutToRecyclerView(goods_info_view,getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration(-1));
         mGoodsInfoViewAdapter.setOnItemClickListener(v -> {

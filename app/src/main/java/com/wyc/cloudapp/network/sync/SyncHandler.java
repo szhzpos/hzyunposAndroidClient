@@ -12,7 +12,6 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.MessageID;
@@ -121,13 +120,23 @@ public final class SyncHandler extends Handler {
                     object.put("pos_num",pos_num);
                     object.put("stores_id",stores_id);
                     break;
-                case MessageID.FULLREDUCE_ID:
+                case MessageID.SYNC_FULLREDUCE_ID:
                     table_name = "fullreduce_info";
                     table_cls = new String[]{"full_id","title","modes","fold","rule","start_time","end_time","starttime","endtime"};
                     sys_name = "正在同步满减信息";
                     url = base_url + "/api/promotion/fullreduce_info";
                     object.put("stores_id",stores_id);
                     object.put("type",1);
+                    break;
+                case MessageID.SYNC_PROMOTION_ID:
+                    table_name = "promotion_info";
+                    table_cls = new String[]{"tlpb_id","tlp_id","barcode_id","status","way","limit_xnum","promotion_price","stores_id",
+                            "start_date","end_date","promotion_week","begin_time","end_time","xtype"};
+                    sys_name = "正在同步促销信息";
+                    url = base_url + "/api/promotion/get_promotion_info";
+                    object.put("stores_id",stores_id);
+                    object.put("page",msg.obj);
+                    object.put("pos_num",pos_num);
                     break;
                 case MessageID.SYNC_FINISH_ID:
                     mMainActivityHandler.obtainMessage(MessageID.SYNC_FINISH_ID).sendToTarget();//同步完成
@@ -155,6 +164,7 @@ public final class SyncHandler extends Handler {
                     upload_pay_method_id(null);
                     up_category(null);
                     up_gp_goods(null);
+                    up_promotion(null);
                     return;
                 case MessageID.SYNC_THREAD_QUIT_ID://由于处理程序内部会发送消息，消息队列退出需在处理程序内部处理
                     if (mHttp != null)mHttp.clearConnection(HttpRequest.CLOSEMODE.BOTH);
@@ -186,7 +196,7 @@ public final class SyncHandler extends Handler {
                         case "y":
                             final JSONArray data;
                             StringBuilder err = new StringBuilder();
-                            if (msg.what == MessageID.FULLREDUCE_ID){
+                            if (msg.what == MessageID.SYNC_FULLREDUCE_ID){
                                 if (SQLiteHelper.execDelete("fullreduce_info",null,null,err) < 0){
                                     code = false;
                                     data = new JSONArray();
@@ -214,6 +224,7 @@ public final class SyncHandler extends Handler {
                                         };
                                     }
                                         break;
+                                    case MessageID.SYNC_PROMOTION_ID:
                                     case MessageID.SYNC_PAY_METHOD_ID:
                                     case MessageID.SYNC_GOODS_CATEGORY_ID:
                                     case MessageID.SYNC_GOODS_ID: {
@@ -231,11 +242,17 @@ public final class SyncHandler extends Handler {
                                                     Logger.d("current_page:%d,max_page:%d",current_page,max_page);
                                                     sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_GOODS_CATEGORY_ID,current_page));
                                                 }
-                                            }else {
+                                            }else if (msg.what ==  MessageID.SYNC_PAY_METHOD_ID){
                                                 down_load_pay_method_img_and_upload_pay_method(data,sys_name);
                                                 if ((current_page++ <= max_page)){
                                                     Logger.d("current_page:%d,max_page:%d",current_page,max_page);
                                                     sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_PAY_METHOD_ID,current_page));
+                                                }
+                                            }else if (msg.what == MessageID.SYNC_PROMOTION_ID){
+                                                up_promotion(data);
+                                                if ((current_page++ <= max_page)){
+                                                    Logger.d("current_page:%d,max_page:%d",current_page,max_page);
+                                                    sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_PROMOTION_ID,current_page));
                                                 }
                                             }
                                         }
@@ -766,6 +783,45 @@ public final class SyncHandler extends Handler {
         }
     }
 
+    private void up_promotion(JSONArray datas){
+        final StringBuilder err = new StringBuilder();
+        if(datas == null){
+            datas = SQLiteHelper.getListToJson("select tlp_id from promotion_info",err);
+            if (null == datas){
+                Logger.e("标记已获取的类别错误：" + err);
+                return;
+            }
+        }
+        if (datas.size() == 0){
+            clear_download_record();
+        }else{
+            JSONObject object;
+            final SyncManagement sync = mSync;
+            final String url = sync.getUrl() + "/api/promotion/up_promotion";
+
+            final JSONArray tlp_ids = new JSONArray();
+            for (int k = 0,length = datas.size();k < length;k++) {
+                object = datas.getJSONObject(k);
+                tlp_ids.add(object.getIntValue("tlp_id"));
+            }
+
+            object = new JSONObject();
+            object.put("appid",sync.getAppId());
+            object.put("tlp_ids",tlp_ids);
+            object.put("pos_num",sync.getPosNum());
+
+            object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,sync.getAppSecret()),true);
+            if (object.getIntValue("flag") == 1){
+                object = JSON.parseObject(object.getString("info"));
+                if ("n".equals(object.getString("status"))){
+                    Logger.e(err.append("标记已获取促销信息错误:") + object.getString("info"));
+                }
+            }else{
+                Logger.e(err.append("标记已获取促销信息错误:") + object.getString("info"));
+            }
+        }
+    }
+
     void stop(){
         sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_THREAD_QUIT_ID));
     }
@@ -777,7 +833,8 @@ public final class SyncHandler extends Handler {
             if (!hasMessages(MessageID.SYNC_STORES_ID))obtainMessage(MessageID.SYNC_STORES_ID).sendToTarget();//仓库信息
             if (!hasMessages(MessageID.SYNC_GP_INFO_ID))obtainMessage(MessageID.SYNC_GP_INFO_ID,0).sendToTarget();//商品组合ID
             if (!hasMessages(MessageID.SYNC_GOODS_ID))obtainMessage(MessageID.SYNC_GOODS_ID,0).sendToTarget();//商品信息obj代表当前下载页数
-            if (!hasMessages(MessageID.FULLREDUCE_ID))obtainMessage(MessageID.FULLREDUCE_ID).sendToTarget();//满减信息
+            if (!hasMessages(MessageID.SYNC_FULLREDUCE_ID))obtainMessage(MessageID.SYNC_FULLREDUCE_ID).sendToTarget();//满减信息
+            if (!hasMessages(MessageID.SYNC_PROMOTION_ID))obtainMessage(MessageID.SYNC_PROMOTION_ID,0).sendToTarget();//商品信息obj代表当前下载页数
         }
     }
     void stopSync(){
@@ -788,7 +845,8 @@ public final class SyncHandler extends Handler {
         removeMessages(MessageID.SYNC_PAY_METHOD_ID);
         removeMessages(MessageID.SYNC_GP_INFO_ID);
         removeMessages(MessageID.SYNC_GOODS_ID);
-        removeMessages(MessageID.FULLREDUCE_ID);
+        removeMessages(MessageID.SYNC_FULLREDUCE_ID);
+        removeMessages(MessageID.SYNC_PROMOTION_ID);
         removeMessages(MessageID.SYNC_FINISH_ID);
     }
     void modifyReportProgressStatus(boolean b){
