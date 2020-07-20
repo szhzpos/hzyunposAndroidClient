@@ -201,7 +201,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
         mSaleGoodsAdapter.setCurrentItemIndex(index).notifyDataSetChanged();
     }
 
-    public void loadAdImg(final String url,final String appid,final String appScret){
+    public void loadAdImg(final String url,final String appid,final String appSecret){
         final File img_dir = new File(mAdFilePath);
         if (!img_dir.exists()){
             if (!img_dir.mkdir()){
@@ -220,7 +220,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
 
             try {
                 object.put("appid",appid);
-                final JSONObject retJson = httpRequest.setConnTimeOut(10000).sendPost(url  + "/api/get_config/get_sc_ad",HttpRequest.generate_request_parm(object,appScret),true);
+                final JSONObject retJson = httpRequest.setConnTimeOut(10000).sendPost(url  + "/api/get_config/get_sc_ad",HttpRequest.generate_request_parm(object,appSecret),true);
                 if (retJson.getIntValue("flag") == 1){
                     object = JSON.parseObject(retJson.getString("info"));
                     if ("y".equals(object.getString("status"))){
