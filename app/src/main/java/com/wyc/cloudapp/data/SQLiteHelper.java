@@ -22,6 +22,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.Utils;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -108,7 +109,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         boolean code = false;
         try {
             zipFile(db,file_absolute_path + File.separator + new_name + ".zip");
-            deleteFile(db);
+            Utils.deleteFile(db);
             closeDB();
             code = true;
         } catch (IOException e) {
@@ -117,19 +118,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         }
         return code;
     }
-    private static void deleteFile(final File file) throws IOException {
-        if (file.isFile()){
-            if (!file.delete())throw new IOException(String.format(Locale.CHINA,"delete file fi:%s failed",file.getName()));
-        }else {
-            final File[] files = file.listFiles();
-            if (files != null){
-                for (File f : files){
-                    deleteFile(f);
-                }
-            }
-        }
 
-    }
     private static void zipFile(File dbFile, final String backup_name) throws IOException {
         try (ZipOutputStream out = new ZipOutputStream( new FileOutputStream(backup_name));) {
             zip(dbFile.listFiles(),"",out);

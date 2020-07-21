@@ -253,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
                 vip_btn = findViewById(R.id.vip);
 
         if (minus_num_btn != null)minus_num_btn.setOnClickListener(v -> mSaleGoodsViewAdapter.deleteSaleGoods(mSaleGoodsViewAdapter.getCurrentItemIndex(),1));//数量减
-        if (add_num_btn != null)add_num_btn.setOnClickListener(v -> mSaleGoodsViewAdapter.addSaleGoods(mSaleGoodsViewAdapter.getCurrentContent(),mVipInfo));//数量加
+        if (add_num_btn != null)add_num_btn.setOnClickListener(v -> mSaleGoodsViewAdapter.addSaleGoods(mSaleGoodsViewAdapter.getCurrentContent()));//数量加
         if (num_btn != null)num_btn.setOnClickListener(view -> {if (verifyNumBtnPermissions())mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 0);});//数量
         if (discount_btn != null)discount_btn.setOnClickListener(v-> {mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 2);});//打折
         if (change_price_btn != null)change_price_btn.setOnClickListener(v-> {mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 1);});//改价
@@ -656,7 +656,7 @@ public class MainActivity extends AppCompatActivity {
                                 id = mGoodsInfoViewAdapter.getGoodsId(barcode_id_obj);
                                 if (mGoodsInfoViewAdapter.getSingleGoods(goods_info,isBarcodeWeighingGoods,id)){
                                     goods_info.put("xnum",barcode_id_obj.getDoubleValue("xnum"));//挂单取出重量
-                                    mSaleGoodsViewAdapter.addSaleGoods(goods_info,mVipInfo);
+                                    mSaleGoodsViewAdapter.addSaleGoods(goods_info);
                                     hangBillDialog.dismiss();
                                 }else{
                                     MyDialog.ToastMessage(mSaleGoodsRecyclerView,"查询商品信息错误：" + goods_info.getString("info"),activity,getWindow());
@@ -1013,7 +1013,7 @@ public class MainActivity extends AppCompatActivity {
         final String weigh_barcode_info = (String) jsonObject.remove(GoodsInfoViewAdapter.W_G_MARK);//删除称重标志否则重新选择商品时不弹出称重界面
         if (mGoodsInfoViewAdapter.getSingleGoods(content,weigh_barcode_info,id)){
             hideLastOrderInfo();
-            mSaleGoodsViewAdapter.addSaleGoods(content,mVipInfo);
+            mSaleGoodsViewAdapter.addSaleGoods(content);
         }else{
             MyDialog.ToastMessage("选择商品错误：" + content.getString("info"),this,null);
         }
@@ -1021,7 +1021,9 @@ public class MainActivity extends AppCompatActivity {
     public void triggerPsClick(){
         if (null != mPrinterStatusIv)mPrinterStatusIv.callOnClick();
     }
-
+    public JSONObject getVipInfo(){
+        return mVipInfo;
+    }
     private static class Myhandler extends Handler {
         private WeakReference<MainActivity> weakHandler;
         private Myhandler(MainActivity mainActivity){

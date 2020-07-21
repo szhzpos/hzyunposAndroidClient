@@ -30,9 +30,12 @@ import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Locale;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -209,7 +212,12 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
                 return;
             }
         }else{
-            mAdFileNames = img_dir.list();
+            //mAdFileNames = img_dir.list();
+            try {
+                Utils.deleteFile(img_dir);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         CustomApplication.execute(()->{
             HttpRequest httpRequest = new HttpRequest();
@@ -220,21 +228,36 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
 
             try {
                 object.put("appid",appid);
-                final JSONObject retJson = httpRequest.setConnTimeOut(10000).sendPost(url  + "/api/get_config/get_sc_ad",HttpRequest.generate_request_parm(object,appSecret),true);
+                object.put("pos_num",mContext.getPosNum());
+                object.put("stores_id", Utils.getNullStringAsEmpty(mContext.getStoreInfo(),"stores_id"));
+                final JSONObject retJson = httpRequest.setConnTimeOut(10000).sendPost(url  + "/api/pos_img/index",HttpRequest.generate_request_parm(object,appSecret),true);
                 if (retJson.getIntValue("flag") == 1){
                     object = JSON.parseObject(retJson.getString("info"));
                     if ("y".equals(object.getString("status"))){
                         String img_url_info,img_file_name;
-                        JSONArray imgs = JSON.parseArray(object.getString("sc_logo_list"));
+
+                        final String data_sz = object.getString("data");
+                        final JSONArray imgs;
+                        if (data_sz.startsWith("[")){
+                            imgs = JSON.parseArray(data_sz);
+                        }else {
+                            final JSONObject obj = JSON.parseObject(data_sz);
+                            imgs = Utils.getNullObjectAsEmptyJsonArray(obj,"sc_ad_yr");
+                        }
+                        Logger.d_json(imgs.toString());
+
                         for(int i = 0,size = imgs.size();i < size;i++){
-                            img_url_info = imgs.getString(i);
+                            object = imgs.getJSONObject(i);
+                            img_url_info = object.getString("url");
                             if (!img_url_info.equals("")){
                                 img_file_name = img_url_info.substring(img_url_info.lastIndexOf("/") + 1);
-                                File file = new File(mAdFilePath + img_file_name);
+                                final File file = new File(mAdFilePath + img_file_name);
                                 if (!file.exists()){
                                     final JSONObject img_obj = httpRequest.getFile(file,img_url_info);
                                     if (img_obj.getIntValue("flag") == 0){
-                                        if (activity != null)activity.runOnUiThread(()->MyDialog.ToastMessage(err + img_obj.getString("info"),mContext,getWindow()));
+                                        final String error = err.concat(img_obj.getString("info"));
+                                        Logger.d("load_img_err:%s",error);
+                                        if (activity != null)activity.runOnUiThread(()->MyDialog.ToastMessage(error,mContext,getWindow()));
                                     }
                                 }
                             }

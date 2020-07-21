@@ -24,6 +24,7 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 
@@ -390,6 +391,19 @@ public final class Utils {
     }
     public static String getUserIdAndPasswordCombinationOfMD5(final String content){
         return Utils.getMD5((content + "hzyunpos").getBytes());
+    }
+    public static void deleteFile(final File file) throws IOException {
+        if (file.isFile()){
+            if (!file.delete())throw new IOException(String.format(Locale.CHINA,"delete file fi:%s failed",file.getName()));
+        }else {
+            final File[] files = file.listFiles();
+            if (files != null){
+                for (File f : files){
+                    deleteFile(f);
+                }
+            }
+        }
+
     }
     public static void moveJsonArray(final JSONArray from,final JSONArray to){
         if (from != null && to != null){

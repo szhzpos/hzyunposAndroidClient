@@ -51,6 +51,10 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         mOnItemClickListener.onClick(v);
     }
 
+    public final static class SALE_TYPE{
+        public static final int COMMON = 0,SPECIAL_PROMOTION = 1;
+    }
+
     static class MyViewHolder extends RecyclerView.ViewHolder {
         TextView gp_id,goods_id,goods_title,unit_id,unit_name,barcode_id,barcode,price;
         ImageView goods_img;
@@ -252,7 +256,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
             if (code = getPromotionGoods(Utils.getNotKeyAsNumberDefault(object,"barcode_id",-1),promotion_obj)){
                 Logger.d_json(promotion_obj.toString());
                 if (!promotion_obj.isEmpty()){
-                    object.put("isPromotion",true);
+                    object.put("sale_type",SALE_TYPE.SPECIAL_PROMOTION);//1 零售特价促销
                     object.put("limit_xnum",promotion_obj.getDoubleValue("limit_xnum"));
 
                     int way = promotion_obj.getIntValue("way");
@@ -276,10 +280,10 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
 
     private boolean getPromotionGoods(int barcode_id,final JSONObject object){
         final String sql = "select way,limit_xnum,promotion_price from promotion_info where barcode_id = '" + barcode_id +"' and status = 1 and " +
-                "stores_id = '" + Utils.getNotKeyAsNumberDefault(mContext.getStoreInfo(),"stores_id",-1) +"' " +
-                "and start_date <= strftime('%s','now') and strftime('%s','now') <= end_date and \n" +
-                "promotion_week like '%' ||case strftime('%w','now' ) when 0 then 7 else strftime('%w','now' ) end||'%' \n" +
-                "and begin_time <= time('now', 'localtime') and time('now', 'localtime') <= end_time";
+                "stores_id = " + Utils.getNotKeyAsNumberDefault(mContext.getStoreInfo(),"stores_id",-1) +
+                " and date(start_date, 'unixepoch', 'localtime') || ' ' ||begin_time  <= datetime('now', 'localtime') \n" +
+                " and datetime('now', 'localtime') <= date(end_date, 'unixepoch', 'localtime') || ' ' ||end_time and \n" +
+                "promotion_week like '%' ||case strftime('%w','now' ) when 0 then 7 else strftime('%w','now' ) end||'%' ";
 
         Logger.d("PromotionGoodsSQL：%s",sql);
 
