@@ -212,12 +212,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
                 return;
             }
         }else{
-            //mAdFileNames = img_dir.list();
-            try {
-                Utils.deleteFile(img_dir);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            mAdFileNames = img_dir.list();
         }
         CustomApplication.execute(()->{
             HttpRequest httpRequest = new HttpRequest();
@@ -234,7 +229,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
                 if (retJson.getIntValue("flag") == 1){
                     object = JSON.parseObject(retJson.getString("info"));
                     if ("y".equals(object.getString("status"))){
-                        String img_url_info,img_file_name;
+                        String img_url_info,img_file_name,file_hash;
 
                         final String data_sz = object.getString("data");
                         final JSONArray imgs;
@@ -244,13 +239,19 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
                             final JSONObject obj = JSON.parseObject(data_sz);
                             imgs = Utils.getNullObjectAsEmptyJsonArray(obj,"sc_ad_yr");
                         }
-                        Logger.d_json(imgs.toString());
 
                         for(int i = 0,size = imgs.size();i < size;i++){
                             object = imgs.getJSONObject(i);
                             img_url_info = object.getString("url");
+                            file_hash = object.getString("hash");
                             if (!img_url_info.equals("")){
                                 img_file_name = img_url_info.substring(img_url_info.lastIndexOf("/") + 1);
+                                if (img_file_name.contains(".")){
+                                    img_file_name = String.format(Locale.CHINA,"%d_%s%s",i,file_hash,img_file_name.substring(img_file_name.indexOf(".")));
+                                }else {
+                                    img_file_name = String.format(Locale.CHINA,"%d_%s",i,file_hash);
+                                }
+
                                 final File file = new File(mAdFilePath + img_file_name);
                                 if (!file.exists()){
                                     final JSONObject img_obj = httpRequest.getFile(file,img_url_info);
@@ -258,6 +259,15 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
                                         final String error = err.concat(img_obj.getString("info"));
                                         Logger.d("load_img_err:%s",error);
                                         if (activity != null)activity.runOnUiThread(()->MyDialog.ToastMessage(error,mContext,getWindow()));
+                                    }
+                                }
+                            }else {
+                                if (mAdFileNames != null){
+                                    for (String name : mAdFileNames){
+                                        if (name.startsWith(String.valueOf(i))){
+                                            final File file = new File(mAdFilePath + name);
+                                            file.delete();
+                                        }
                                     }
                                 }
                             }
