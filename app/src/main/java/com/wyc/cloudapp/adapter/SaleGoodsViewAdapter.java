@@ -785,14 +785,11 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
             final CharSequence id = tv_id.getText(),barcode_id = tv_barcode_id.getText(),gp_id = tv_gp_id.getText();
             int sale_type = Utils.getViewTagValue(sale_type_tv,0);
 
-            Logger.d("sale_type:%d,sale_type_tv:%s",sale_type,sale_type_tv);
-
             for (int i = 0,length = mDatas.size();i < length;i ++){
                 final JSONObject json = mDatas.getJSONObject(i);
                 if (id.equals(json.getString("goods_id")) && barcode_id.equals(json.getString("barcode_id")) &&
                         gp_id.equals(json.getString("gp_id")) && sale_type == json.getIntValue("sale_type")){
                     mCurrentItemIndex = i;
-                    Logger.d("mCurrentItemIndex:%d",mCurrentItemIndex);
                     return;
                 }
             }
@@ -1156,8 +1153,6 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
         mFullReduceRecord.put("name",name);
         mFullReduceRecord.put("time",time);
         mFullReduceRecord.put("rules_des",rules_des);
-
-        Logger.d_json(mFullReduceRecord.toString());
     }
 
     public JSONObject getFullReduceRecord(){

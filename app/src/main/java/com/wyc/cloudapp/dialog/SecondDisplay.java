@@ -35,7 +35,6 @@ import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Locale;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -48,7 +47,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
     private SaleGoodsViewAdapter mSaleGoodsAdapter;
     private RecyclerView mSaleGoodsView;
     private MainActivity mContext;
-    private JSONObject mStoreinfo;
+    private JSONObject mStoreInfo;
     private TextView mSaleSumNum,mSaleSumAmount;
     private int mShowAdImgTimes = 0,mShowInterval = 5;//mShowAdImgTimes显示图片次数
     private volatile String[] mAdFileNames;
@@ -175,16 +174,16 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
         }
     }
     private void initNavigationInfo(){
-        if (mStoreinfo != null){
+        if (mStoreInfo != null){
             final TextView stores_name = findViewById(R.id.store_name),stores_hotline = findViewById(R.id.sec_stores_hotline),
             stores_addr = findViewById(R.id.sec_stores_addr);
-            stores_name.setText(mStoreinfo.getString("stores_name"));
-            stores_hotline.setText(mStoreinfo.getString("telphone"));
-            stores_addr.setText(mStoreinfo.getString("region"));
+            stores_name.setText(mStoreInfo.getString("stores_name"));
+            stores_hotline.setText(mStoreInfo.getString("telphone"));
+            stores_addr.setText(mStoreInfo.getString("region"));
         }
     }
     public SecondDisplay setNavigationInfo(JSONObject object){
-        mStoreinfo = object;
+        mStoreInfo = object;
         return this;
     }
     public SecondDisplay setDatas(JSONArray array){
@@ -215,7 +214,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
             mAdFileNames = img_dir.list();
         }
         CustomApplication.execute(()->{
-            HttpRequest httpRequest = new HttpRequest();
+            final HttpRequest httpRequest = new HttpRequest();
             JSONObject object = new JSONObject();
             final String err = "获取广告图片错误：";
 
@@ -254,6 +253,8 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
 
                                 final File file = new File(mAdFilePath + img_file_name);
                                 if (!file.exists()){
+                                    deleteAdImgFromIndex(i);
+
                                     final JSONObject img_obj = httpRequest.getFile(file,img_url_info);
                                     if (img_obj.getIntValue("flag") == 0){
                                         final String error = err.concat(img_obj.getString("info"));
@@ -262,14 +263,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
                                     }
                                 }
                             }else {
-                                if (mAdFileNames != null){
-                                    for (String name : mAdFileNames){
-                                        if (name.startsWith(String.valueOf(i))){
-                                            final File file = new File(mAdFilePath + name);
-                                            file.delete();
-                                        }
-                                    }
-                                }
+                                deleteAdImgFromIndex(i);
                             }
                         }
                         mAdFileNames = img_dir.list();
@@ -284,6 +278,19 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
                 if (activity != null)activity.runOnUiThread(()->MyDialog.ToastMessage(err + e.getMessage(), mContext,getWindow()));
             }
         });
+    }
+
+    private void deleteAdImgFromIndex(int index){
+        if (mAdFileNames != null){
+            for (String name : mAdFileNames){
+                if (name.startsWith(String.valueOf(index))){
+                    final File file = new File(mAdFilePath + name);
+                    @SuppressWarnings("unused")
+                    final boolean delete = file.delete();
+                    break;
+                }
+            }
+        }
     }
 
     private void stopShowImg(){
@@ -336,6 +343,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
         }
     };
 
+    @SuppressWarnings("unused")
     private static Display getDisplayFromMediaRouter(Context context){
         Display presentationDisplay = null;
         MediaRouter mediaRouter = (MediaRouter) context.getSystemService(Context.MEDIA_ROUTER_SERVICE);

@@ -254,7 +254,6 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         if (code){
             final JSONObject promotion_obj = new JSONObject();
             if (code = getPromotionGoods(Utils.getNotKeyAsNumberDefault(object,"barcode_id",-1),promotion_obj)){
-                Logger.d_json(promotion_obj.toString());
                 if (!promotion_obj.isEmpty()){
                     object.put("sale_type",SALE_TYPE.SPECIAL_PROMOTION);//1 零售特价促销
                     object.put("limit_xnum",promotion_obj.getDoubleValue("limit_xnum"));

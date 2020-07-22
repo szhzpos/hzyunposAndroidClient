@@ -29,7 +29,7 @@ public final class SyncHandler extends Handler {
     private HttpRequest mHttp;
     private Handler mMainActivityHandler;
     private volatile boolean mReportProgress = true;
-    private volatile int mCurrentNeworkStatusCode = HttpURLConnection.HTTP_OK;
+    private volatile int mCurrentNetworkStatusCode = HttpURLConnection.HTTP_OK;
     private long mLoseTime = 0;
     private SyncManagement mSync;
     private JSONObject mHeartbeat;
@@ -48,7 +48,7 @@ public final class SyncHandler extends Handler {
 
         final String base_url =  sync.getUrl(),app_id = sync.getAppId(),appSecret = sync.getAppSecret(),pos_num = sync.getPosNum(),oper_id = sync.getOperId(),stores_id = sync.getStoresId();
         JSONObject object = new JSONObject(),info_json,retJson;
-        String table_name = "",sys_name = "",url = "",sz_param = "";
+        String table_name = "",sys_name = "",url = "",sz_param;
         String[] table_cls = null;
         boolean code = true;
         try{
@@ -221,7 +221,7 @@ public final class SyncHandler extends Handler {
                                                 Logger.d("current_page:%d,max_page:%d",current_page,max_page);
                                                 sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_GP_INFO_ID,current_page));
                                             }
-                                        };
+                                        }
                                     }
                                         break;
                                     case MessageID.SYNC_PROMOTION_ID:
@@ -312,15 +312,15 @@ public final class SyncHandler extends Handler {
         err_code = retJson.getIntValue("rsCode");
         switch (retJson.getIntValue("flag")) {
             case 0:
-                if (mCurrentNeworkStatusCode != err_code){
+                if (mCurrentNetworkStatusCode != err_code){
                     Logger.e("连接服务器错误：" + retJson.getString("info"));
                 }
                 mMainActivityHandler.obtainMessage(MessageID.NETWORKSTATUS_ID,false).sendToTarget();
                 break;
             case 1:
                 mMainActivityHandler.obtainMessage(MessageID.NETWORKSTATUS_ID,true).sendToTarget();
-                if (mCurrentNeworkStatusCode != HttpURLConnection.HTTP_OK){//如果之前网络响应状态不为OK,则重连成功
-                    mCurrentNeworkStatusCode = HttpURLConnection.HTTP_OK;
+                if (mCurrentNetworkStatusCode != HttpURLConnection.HTTP_OK){//如果之前网络响应状态不为OK,则重连成功
+                    mCurrentNetworkStatusCode = HttpURLConnection.HTTP_OK;
                     Logger.i("重新连接服务器成功！");
                     sync.sync_order_info();
                 }
@@ -331,7 +331,7 @@ public final class SyncHandler extends Handler {
                         Logger.e("网络检测错误：" + info_json.getString("info"));
                         break;
                     case "y":
-                        if (System.currentTimeMillis() - mLoseTime >= syncInterval && mCurrentNeworkStatusCode == HttpURLConnection.HTTP_OK) {
+                        if (System.currentTimeMillis() - mLoseTime >= syncInterval && mCurrentNetworkStatusCode == HttpURLConnection.HTTP_OK) {
                             mLoseTime = System.currentTimeMillis();
                             if (mReportProgress)modifyReportProgressStatus(false);
                             sync();
@@ -341,7 +341,7 @@ public final class SyncHandler extends Handler {
                 }
                 break;
         }
-        mCurrentNeworkStatusCode = err_code;
+        mCurrentNetworkStatusCode = err_code;
     }
     private void uploadRetailOrderInfo(final String appid,final String url,final String appSecret) {
         final StringBuilder err = new StringBuilder(),order_gp_ids = new StringBuilder();
@@ -826,7 +826,7 @@ public final class SyncHandler extends Handler {
         sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_THREAD_QUIT_ID));
     }
     void sync(){
-        if (mCurrentNeworkStatusCode == HttpURLConnection.HTTP_OK){
+        if (mCurrentNetworkStatusCode == HttpURLConnection.HTTP_OK){
             if (!hasMessages(MessageID.SYNC_CASHIER_ID))obtainMessage(MessageID.SYNC_CASHIER_ID).sendToTarget();//收银员
             if (!hasMessages(MessageID.SYNC_GOODS_CATEGORY_ID))obtainMessage(MessageID.SYNC_GOODS_CATEGORY_ID,0).sendToTarget();//商品类别
             if (!hasMessages(MessageID.SYNC_PAY_METHOD_ID))obtainMessage(MessageID.SYNC_PAY_METHOD_ID,0).sendToTarget();//支付方式
@@ -859,17 +859,17 @@ public final class SyncHandler extends Handler {
         }
     }
     void startUploadRetailOrder(){
-        if (mCurrentNeworkStatusCode == HttpURLConnection.HTTP_OK){
+        if (mCurrentNetworkStatusCode == HttpURLConnection.HTTP_OK){
             sendMessageAtFrontOfQueue(obtainMessage(MessageID.UPLOAD_ORDER_ID));
         }
     }
     void startUploadTransferOrder(){
-        if (mCurrentNeworkStatusCode == HttpURLConnection.HTTP_OK){
+        if (mCurrentNetworkStatusCode == HttpURLConnection.HTTP_OK){
             sendMessageAtFrontOfQueue(obtainMessage(MessageID.UPLOAD_TRANS_ORDER_ID));
         }
     }
     void startUploadRefundOrder(){
-        if (mCurrentNeworkStatusCode == HttpURLConnection.HTTP_OK){
+        if (mCurrentNetworkStatusCode == HttpURLConnection.HTTP_OK){
             sendMessageAtFrontOfQueue(obtainMessage(MessageID.UPLOAD_REFUND_ORDER_ID));
         }
     }
@@ -883,7 +883,7 @@ public final class SyncHandler extends Handler {
         }
     }
     void sign_downloaded(){//标记已下载
-        if (mCurrentNeworkStatusCode == HttpURLConnection.HTTP_OK) {
+        if (mCurrentNetworkStatusCode == HttpURLConnection.HTTP_OK) {
             if (!hasMessages(MessageID.MARK_DOWNLOAD_RECORD_ID))
                 obtainMessage(MessageID.MARK_DOWNLOAD_RECORD_ID).sendToTarget();
         }

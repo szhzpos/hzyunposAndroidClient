@@ -460,9 +460,36 @@ public final class Utils {
         Logger.d("end_time:%d",System.currentTimeMillis() - start_time);
     }
 
-    public static void merger_sort(int[] arr,int s,int e){
-        int left = s,middle = 1 + (e - 1) / 2 - 1,right = e -1;
+    public static void merge_sort(int[] data, int start, int end){
+        int mid = (start+end)/2;
+        if(start < end){
+            merge_sort(data,start,mid);
+            merge_sort(data,mid+1,end);
+            merge(data,start,mid,end);
+        }
+    }
 
+    private static void merge(int[] data, int start, int mid, int end){
+        int p = start, q = mid+1, r = 0;
+        int[] newdata = new int[end-start+1];
+        while(p <= mid && q <= end){
+            if(data[p] <= data[q]){                 //从大到小排序
+                newdata[r++] = data[p++];
+            }else{
+                newdata[r++] = data[q++];
+            }
+        }
+
+        //此时，两个子数组中会有一个中元素还未被全部归并到新数组中，作如下处理
+        while(p <= mid){
+            newdata[r++] = data[p++];
+        }
+        while(q <= end){
+            newdata[r++] = data[q++];
+        }
+        //再将有序的数组中的值赋给原数组，其实也可以直接返回这个新数组
+        int length = end + 1 - start;
+        if (length >= 0)System.arraycopy(newdata, 0, data, start, length);
     }
 
 
@@ -564,13 +591,8 @@ public final class Utils {
 
     public static long factorial(int n){
         if (n < 0)return 0;
-        long sum = 0;
-        if (n == 0){
-            return 1;
-        }else {
-            sum += n * factorial(n - 1);
-        }
-        return sum;
+        if (n == 0) return 1;
+        return n * factorial(n - 1);
     }
 
 }
