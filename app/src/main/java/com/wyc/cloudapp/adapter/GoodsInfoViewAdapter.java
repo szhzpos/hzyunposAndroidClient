@@ -224,11 +224,8 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
                 if (autoSelect && array.size() == 1){
                     mContext.addSaleGoods(array.getJSONObject(0));
                 }else {
-                    if (mDatas != null){
-                        if (!mDatas.isEmpty())mDatas.clear();
-                        Utils.moveJsonArray(array,mDatas);
-                        this.notifyDataSetChanged();
-                    }
+                    mDatas = array;
+                    notifyDataSetChanged();
                 }
             }
         }else{
@@ -253,7 +250,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         boolean code =  SQLiteHelper.execSql(object,full_sql);
         if (code){
             final JSONObject promotion_obj = new JSONObject();
-            if (code = getPromotionGoods(Utils.getNotKeyAsNumberDefault(object,"barcode_id",-1),promotion_obj)){
+            if (code = getPromotionGoods(promotion_obj,Utils.getNotKeyAsNumberDefault(object,"barcode_id",-1),Utils.getNotKeyAsNumberDefault(mContext.getStoreInfo(),"stores_id",-1))){
                 if (!promotion_obj.isEmpty()){
                     object.put("sale_type",SALE_TYPE.SPECIAL_PROMOTION);//1 零售特价促销
                     object.put("limit_xnum",promotion_obj.getDoubleValue("limit_xnum"));
@@ -277,10 +274,9 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
        return code;
     }
 
-    private boolean getPromotionGoods(int barcode_id,final JSONObject object){
+    public static boolean getPromotionGoods(final JSONObject object,int barcode_id,int stores_id){
         final String sql = "select way,limit_xnum,promotion_price from promotion_info where barcode_id = '" + barcode_id +"' and status = 1 and " +
-                "stores_id = " + Utils.getNotKeyAsNumberDefault(mContext.getStoreInfo(),"stores_id",-1) +
-                " and date(start_date, 'unixepoch', 'localtime') || ' ' ||begin_time  <= datetime('now', 'localtime') \n" +
+                "stores_id = " + stores_id + " and date(start_date, 'unixepoch', 'localtime') || ' ' ||begin_time  <= datetime('now', 'localtime') \n" +
                 " and datetime('now', 'localtime') <= date(end_date, 'unixepoch', 'localtime') || ' ' ||end_time and \n" +
                 "promotion_week like '%' ||case strftime('%w','now' ) when 0 then 7 else strftime('%w','now' ) end||'%' ";
 

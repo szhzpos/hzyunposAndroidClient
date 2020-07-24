@@ -253,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
                 vip_btn = findViewById(R.id.vip);
 
         if (minus_num_btn != null)minus_num_btn.setOnClickListener(v -> mSaleGoodsViewAdapter.deleteSaleGoods(mSaleGoodsViewAdapter.getCurrentItemIndex(),1));//数量减
-        if (add_num_btn != null)add_num_btn.setOnClickListener(v -> mSaleGoodsViewAdapter.addSaleGoods(mSaleGoodsViewAdapter.getCurrentContent()));//数量加
+        if (add_num_btn != null)add_num_btn.setOnClickListener(v -> addOneSaleGoods());//数量加
         if (num_btn != null)num_btn.setOnClickListener(view -> {if (verifyNumBtnPermissions())mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 0);});//数量
         if (discount_btn != null)discount_btn.setOnClickListener(v-> {mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 2);});//打折
         if (change_price_btn != null)change_price_btn.setOnClickListener(v-> {mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 1);});//改价
@@ -627,7 +627,7 @@ public class MainActivity extends AppCompatActivity {
         final MainActivity activity = this;
         tmp_order.setNum(HangBillDialog.getHangCounts(activity));
         tmp_order.setOnClickListener(v -> {
-            JSONArray datas = mSaleGoodsViewAdapter.getDatas();
+            final JSONArray datas = mSaleGoodsViewAdapter.getDatas();
             final HangBillDialog hangBillDialog = new HangBillDialog(activity);
             if (Utils.JsonIsNotEmpty(datas)){
                 //MyDialog.displayAskMessage(null, "是否挂单？", activity, myDialog -> {
@@ -647,14 +647,11 @@ public class MainActivity extends AppCompatActivity {
                         hideLastOrderInfo();
                         if (null != vip)showVipInfo(vip);
                         JSONObject barcode_id_obj,goods_info;
-                        String id;
                         for (int i = 0,length = array.size();i < length;i ++){
                             barcode_id_obj = array.getJSONObject(i);
                             if (barcode_id_obj != null){
                                 goods_info = new JSONObject();
-                                final String isBarcodeWeighingGoods = barcode_id_obj.getString(GoodsInfoViewAdapter.W_G_MARK);
-                                id = mGoodsInfoViewAdapter.getGoodsId(barcode_id_obj);
-                                if (mGoodsInfoViewAdapter.getSingleGoods(goods_info,isBarcodeWeighingGoods,id)){
+                                if (mGoodsInfoViewAdapter.getSingleGoods(goods_info,barcode_id_obj.getString(GoodsInfoViewAdapter.W_G_MARK),mGoodsInfoViewAdapter.getGoodsId(barcode_id_obj))){
                                     goods_info.put("xnum",barcode_id_obj.getDoubleValue("xnum"));//挂单取出重量
                                     mSaleGoodsViewAdapter.addSaleGoods(goods_info);
                                     hangBillDialog.dismiss();
@@ -1017,6 +1014,11 @@ public class MainActivity extends AppCompatActivity {
         }else{
             MyDialog.ToastMessage("选择商品错误：" + content.getString("info"),this,null);
         }
+    }
+    public void addOneSaleGoods(){
+        final JSONObject object = Utils.JsondeepCopy(mSaleGoodsViewAdapter.getCurrentContent());
+        object.put("xnum",1.0);
+        mSaleGoodsViewAdapter.addSaleGoods(object);
     }
     public void triggerPsClick(){
         if (null != mPrinterStatusIv)mPrinterStatusIv.callOnClick();

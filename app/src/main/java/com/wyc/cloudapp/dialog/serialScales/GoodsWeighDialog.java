@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.Html;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
@@ -16,21 +17,24 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnMainActivityImp;
+import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.FontSizeTagHandler;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
 public class GoodsWeighDialog extends AbstractDialogBaseOnMainActivityImp {
-    private String mBarcodeId;
+    private int mBarcodeId;
     private OnYesOnclickListener mOnYesClick;
     private EditText mWvalueEt;
     private TextView mPriceTv,mAmtTv;
     private AbstractSerialScaleImp mSerialScale;
-    public GoodsWeighDialog(@NonNull MainActivity context, final String title, final String barcode_id) {
+    public GoodsWeighDialog(@NonNull MainActivity context, final String title, final int barcode_id) {
         super(context,title);
         mBarcodeId = barcode_id;
     }
@@ -126,21 +130,39 @@ public class GoodsWeighDialog extends AbstractDialogBaseOnMainActivityImp {
                 " UNION select ifnull(gp_title,'') goods_title,ifnull(unit_name,'') unit_name,gp_price price,ifnull(img_url,'') img_url from goods_group where status = '1' and gp_id = '" + mBarcodeId +"'");
         if (code){
             if (!object.isEmpty()){
-                final TextView name = findViewById(R.id.w_g_name),unit = findViewById(R.id.unit_name);
-                name.setText(Utils.getNullStringAsEmpty(object,"goods_title"));
-                mPriceTv.setText(Utils.getNullOrEmptyStringAsDefault(object,"price","0.0"));
-                unit.setText("/".concat(Utils.getNullStringAsEmpty(object,"unit_name")));
+                final JSONObject promotion_obj = new JSONObject();
+                CharSequence goods_title = Utils.getNullStringAsEmpty(object,"goods_title");
+                if (GoodsInfoViewAdapter.getPromotionGoods(promotion_obj,mBarcodeId,Utils.getNotKeyAsNumberDefault(mContext.getStoreInfo(),"stores_id",-1))){
+                    if (!promotion_obj.isEmpty()){
+                        int way = promotion_obj.getIntValue("way");
+                        switch (way){
+                            case 1://定价
+                                object.put("price",promotion_obj.getDoubleValue("promotion_price"));
+                                break;
+                            case 2://折扣
+                                object.put("price",promotion_obj.getDoubleValue("promotion_price") / 10 * object.getDoubleValue("price"));
+                                break;
+                        }
+                        goods_title = Html.fromHtml(goods_title + "<font color='red'><size value='14'>(促销)</size></font> ",null,new FontSizeTagHandler(mContext));
+                    }
+                    final TextView name = findViewById(R.id.w_g_name),unit = findViewById(R.id.unit_name);
+                    name.setText(goods_title);
+                    mPriceTv.setText(Utils.getNullOrEmptyStringAsDefault(object,"price","0.0"));
+                    unit.setText("/".concat(Utils.getNullStringAsEmpty(object,"unit_name")));
 
-                final String img_url = Utils.getNullStringAsEmpty(object,"img_url");
-                final ImageView imageView = findViewById(R.id.w_g_img);
-                if (!"".equals(img_url)){
-                    final String szImage = img_url.substring(img_url.lastIndexOf("/") + 1);
-                    final Bitmap bitmap = BitmapFactory.decodeFile(LoginActivity.IMG_PATH + szImage);
-                    imageView.setImageBitmap(bitmap);
-                }else{
-                    imageView.setImageDrawable(mContext.getDrawable(R.drawable.nodish));
+                    final String img_url = Utils.getNullStringAsEmpty(object,"img_url");
+                    final ImageView imageView = findViewById(R.id.w_g_img);
+                    if (!"".equals(img_url)){
+                        final String szImage = img_url.substring(img_url.lastIndexOf("/") + 1);
+                        final Bitmap bitmap = BitmapFactory.decodeFile(LoginActivity.IMG_PATH + szImage);
+                        imageView.setImageBitmap(bitmap);
+                    }else{
+                        imageView.setImageDrawable(mContext.getDrawable(R.drawable.nodish));
+                    }
+                    mWvalueEt.setText(String.format(Locale.CHINA,"%.2f",1.0));
+                }else {
+                    MyDialog.ToastMessage("查询促销信息错误：" +promotion_obj.getString("info"),mContext,getWindow());
                 }
-                mWvalueEt.setText(String.format(Locale.CHINA,"%.2f",1.0));
             }
         }else{
             MyDialog.ToastMessage("初始化商品错误：" + object.getString("info"),mContext,getWindow());
