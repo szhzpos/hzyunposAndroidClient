@@ -317,10 +317,34 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
                 }
                 Logger.d("price：%f,xnum:%f,sale_amt:%f",price,xnum,amt);
 
-                object.put("price",price);
-                object.put("xnum",String.format(Locale.CHINA,"%.4f",xnum));
-                object.put("sale_amt",amt);
-                object.put(W_G_MARK,weigh_barcode_info);
+                final JSONObject promotion_obj = new JSONObject();
+                if (code = getPromotionGoods(promotion_obj,Utils.getNotKeyAsNumberDefault(object,"barcode_id",-1),Utils.getNotKeyAsNumberDefault(mContext.getStoreInfo(),"stores_id",-1))){
+                    double discount = 1.0,ori_price = object.getDoubleValue("retail_price");
+                    if (!promotion_obj.isEmpty()){
+                        object.put("sale_type",SALE_TYPE.SPECIAL_PROMOTION);//1 零售特价促销
+                        object.put("limit_xnum",promotion_obj.getDoubleValue("limit_xnum"));
+
+                        int way = promotion_obj.getIntValue("way");
+                        switch (way){
+                            case 1://定价
+                                if (!Utils.equalDouble(ori_price,0.0))discount = promotion_obj.getDoubleValue("promotion_price") / ori_price;
+                                break;
+                            case 2://折扣
+                                discount = promotion_obj.getDoubleValue("promotion_price") / 10;
+                                break;
+                        }
+                    }
+
+                    Logger.d("discount:%f,xnum:%f,amt:%f",discount,xnum,amt);
+
+                    object.put("price",price * discount);
+                    object.put("xnum",String.format(Locale.CHINA,"%.4f",xnum));
+                    object.put("sale_amt",amt);
+                    object.put(W_G_MARK,weigh_barcode_info);
+
+                }else {
+                    object.put("info",promotion_obj.getString("info"));
+                }
             }else {
                 object.put("info",barcodeRuleObj.getAsString("info"));
             }
