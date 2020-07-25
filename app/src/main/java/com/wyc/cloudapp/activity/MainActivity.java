@@ -748,7 +748,7 @@ public class MainActivity extends AppCompatActivity {
         setSingle(false);
         resetOrderCode();
     }
-    private void clearVipInfo(){
+    public void clearVipInfo(){
         if (mVipInfo != null){
             mVipInfo = null;
             final LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);

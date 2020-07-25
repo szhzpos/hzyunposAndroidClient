@@ -157,13 +157,32 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
         if (null != vip_btn)
             vip_btn.setOnClickListener(view -> {
                 final VipInfoDialog vipInfoDialog = new VipInfoDialog(mContext);
-                vipInfoDialog.setYesOnclickListener(dialog -> {
-                    deleteFullReduceDiscount();
-                    deleteMolDiscountRecord();
-                    setVipInfo(dialog.getVip(),false);
-                    dialog.dismiss();
-                }).show();
+                if (mVip != null){
+                    if (1 == MyDialog.showMessageToModalDialog(mContext,"已存在会员信息,是否清除？")){
+                        clearVipInfo();
+                    }
+                }else
+                    vipInfoDialog.setYesOnclickListener(dialog -> {
+                        deleteFullReduceDiscount();
+                        deleteMolDiscountRecord();
+                        setVipInfo(dialog.getVip(),false);
+                        dialog.dismiss();
+                    }).show();
             });
+    }
+    private void clearVipInfo(){
+        if (mVip != null){
+            mVip = null;
+            final LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
+            vip_info_linearLayout.setVisibility(View.GONE);
+            final TextView vip_name_tv = vip_info_linearLayout.findViewById(R.id.vip_name),vip_phone_num_tv = vip_info_linearLayout.findViewById(R.id.vip_phone_num);
+            if (null != vip_name_tv && vip_phone_num_tv != null){
+                vip_name_tv.setText(mContext.getText(R.string.space_sz));
+                vip_phone_num_tv.setText(mContext.getText(R.string.space_sz));
+            }
+            mContext.clearVipInfo();
+            refreshPayContent();
+        }
     }
     private void initRemarkBtn(){
         final Button remark_btn = findViewById(R.id.remark);
