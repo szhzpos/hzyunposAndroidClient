@@ -32,7 +32,7 @@ import java.util.Locale;
 
 public class AppUpdateService extends Service {
     public static final String APP_PROGRESS_BROADCAST = "com.wyc.cloudapp.download_progress";
-    public static final int SUCCESS_STATUS = 1,ERROR_STATUS = 2,PROGRESS_STATUS = 3;
+    public static final int SUCCESS_STATUS = 1,ERROR_STATUS = 2,PROGRESS_STATUS = 3,INSTALL_STATUS = 4;
     private ServiceHandler mServiceHandler;
     private HandlerThread thread;
 
@@ -147,10 +147,9 @@ public class AppUpdateService extends Service {
                         update_error(retJson.getString("info"));
                         break;
                     case 1:
-                        intent.putExtra("status",SUCCESS_STATUS);
+                        intent.putExtra("status",INSTALL_STATUS);
+                        intent.putExtra("filePath",filepath);
                         sendBroadcast(intent);
-
-                        installAPK(getBaseContext(),filepath);
                         break;
                 }
             }
@@ -174,26 +173,6 @@ public class AppUpdateService extends Service {
             sendBroadcast(check_ver_intent);
             stopSelf(startId);
         }
-
-        //下载到本地后执行安装
-        private void installAPK(Context mContext,String filepath) {
-            Uri data ;
-            final Intent intent= new Intent(Intent.ACTION_VIEW);
-            final File file =  new File(filepath);
-
-            // 判断版本大于等于7.0
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                // "com.wyc.cloudapp.fileprovider"即是在清单文件中配置的authorities
-                data = FileProvider.getUriForFile(mContext, "com.wyc.cloudapp.fileprovider",file);
-                // 给目标应用一个临时授权
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            } else {
-                data = Uri.fromFile(file);
-            }
-            intent.setDataAndType(data, "application/vnd.android.package-archive");
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            mContext.startActivity(intent);
-        }
     }
 
     @Override
@@ -205,8 +184,6 @@ public class AppUpdateService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(this, "service starting", Toast.LENGTH_SHORT).show();
-
         final String url = intent.getStringExtra("url"),appid = intent.getStringExtra("appid"),appSecret = intent.getStringExtra("appSecret");
         final JSONObject obj = new JSONObject();
         obj.put("url",url);
@@ -220,7 +197,6 @@ public class AppUpdateService extends Service {
     public void onDestroy() {
         mServiceHandler.removeCallbacksAndMessages(null);
         thread.quit();
-        Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
     }
 
     @Override

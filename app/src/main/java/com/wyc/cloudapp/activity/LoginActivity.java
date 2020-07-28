@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import android.Manifest;
 import android.app.Dialog;
@@ -16,6 +17,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -131,7 +133,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onNewIntent(Intent intent){
         super.onNewIntent(intent);
-        Logger.d("Action:%s",intent.getAction());
+        Logger.d("onNewIntentAction:%s",intent.getAction());
         //if activity called finish method ,onNewIntent will not be called;
     }
 
@@ -236,6 +238,10 @@ public class LoginActivity extends AppCompatActivity {
                 case AppUpdateService.PROGRESS_STATUS:
                     mProgressDialog.setMessage(String.format(Locale.CHINA,"正在更新,请稍后...%d%s",(int)(intent.getDoubleExtra("Progress",0) * 100),"%")).refreshMessage().show();
                     break;
+                case AppUpdateService.INSTALL_STATUS:
+                    mProgressDialog.dismiss();
+                    installAPK(intent.getStringExtra("filePath"));
+                    break;
                 case AppUpdateService.ERROR_STATUS:
                     default:
                         mProgressDialog.dismiss();
@@ -244,6 +250,34 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
     };
+
+    private void installAPK(final String filepath) {
+        Uri data ;
+        final Intent intent= new Intent(Intent.ACTION_VIEW);
+        final File file =  new File(filepath);
+
+        // 判断版本大于等于7.0
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // "com.wyc.cloudapp.fileprovider"即是在清单文件中配置的authorities
+            data = FileProvider.getUriForFile(this, "com.wyc.cloudapp.fileprovider",file);
+            // 给目标应用一个临时授权
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } else {
+            data = Uri.fromFile(file);
+        }
+        intent.setDataAndType(data, "application/vnd.android.package-archive");
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivityForResult(intent,0x000000cc);
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent){
+        super.onActivityResult(requestCode,resultCode,intent);
+        if (resultCode == RESULT_CANCELED && requestCode == 0x000000cc){
+            finish();
+            final Intent intent_launch = new Intent(this,LoginActivity.class);
+            startActivity(intent_launch);
+        }
+    }
 
     private void initCloseMainWindow(){
         mCancelBtn = findViewById(R.id.cancel);

@@ -29,6 +29,7 @@ public final class JEventLoop {
 
     public int exec(){
         if (!mDone){
+            Stack<JEventLoop> stack;
             synchronized (mLock){
 
                 if (mDone){
@@ -36,7 +37,7 @@ public final class JEventLoop {
                     return mCode;
                 }
 
-                Stack<JEventLoop> stack = sThreadLocal.get();
+                stack = sThreadLocal.get();
                 if (stack == null){
                     stack = new Stack<>();
                     sThreadLocal.set(stack);
@@ -57,6 +58,8 @@ public final class JEventLoop {
                 Looper.loop();
             }catch (ExitException ignored){
             }
+            if (stack.pop() != this)throw new IllegalThreadStateException("JEventLoop internal error");
+            Logger.d("%s线程exit,JEventLoop:<%s>,数量:%d,mCode:%d",Thread.currentThread().getName(),this,stack.size(),mCode);
         }
 
         mDone = false;
@@ -72,11 +75,6 @@ public final class JEventLoop {
     }
 
     private void exit(){
-        final Stack<JEventLoop> stack = sThreadLocal.get();
-        if (stack != null && !stack.isEmpty()){
-            if (stack.pop() != this)throw new IllegalThreadStateException("JEventLoop internal error");
-            Logger.d("%s线程exit,JEventLoop:<%s>,数量:%d,mCode:%d",Thread.currentThread().getName(),this,stack.size(),mCode);
-            throw new ExitException();
-        }
+        throw new ExitException();
     }
 }
