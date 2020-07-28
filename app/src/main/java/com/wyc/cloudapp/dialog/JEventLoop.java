@@ -54,12 +54,21 @@ public final class JEventLoop {
                     mHandler = new Handler(looper);
                 }
             }
-            try {
-                Looper.loop();
-            }catch (ExitException ignored){
-            }
+
+            //当mDone 为true时才退出循环，防止非当前对象退出
+            while (!mDone)
+                try {
+                    Looper.loop();
+                }catch (ExitException ignored){
+                }
+
             if (stack.pop() != this)throw new IllegalThreadStateException("JEventLoop internal error");
             Logger.d("%s线程exit,JEventLoop:<%s>,数量:%d,mCode:%d",Thread.currentThread().getName(),this,stack.size(),mCode);
+            if (!stack.isEmpty()){
+                final JEventLoop loop = stack.peek();
+                //如果栈顶对象的mDone为真，在对象mHandler所属的消息队列最前面加入退出事件。当当前循环退出后立即让栈顶对象退出。
+                if (loop.mDone)if (loop.mHandler != null){ loop.mHandler.postAtFrontOfQueue(loop::exit);}
+            }
         }
 
         mDone = false;
