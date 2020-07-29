@@ -362,7 +362,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
     }
     public void updateSaleGoodsDialog(final short type){//type 0 修改数量 1修改价格 2打折
         final JSONObject cur_json = getCurrentContent();
-        if (cur_json != null){
+        if (!cur_json.isEmpty()){
             ChangeNumOrPriceDialog dialog = null;
             switch (type){
                 case 1:

@@ -39,6 +39,7 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.google.android.material.snackbar.Snackbar;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.GoodsInfoItemDecoration;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
@@ -908,30 +909,38 @@ public class MainActivity extends AppCompatActivity {
                         permissions = JSON.parseArray(authority);
                     }
                     if (permissions != null){
+                        boolean isExist = false;
+                        JSONObject obj = null;
                         for (int i = 0,size = permissions.size();i < size;i ++){
-                            final JSONObject obj = permissions.getJSONObject(i);
+                            obj = permissions.getJSONObject(i);
                             if (obj != null){
                                 if (Utils.getNullStringAsEmpty(obj,"authority").equals(per_id)){
                                     code = (1 == obj.getIntValue("is_have"));
-                                    if (isShow){
-                                        if (!code){
-                                            final VerifyPermissionDialog verifyPermissionDialog = new VerifyPermissionDialog(this);
-                                            verifyPermissionDialog.setHintPerName(Utils.getNullStringAsEmpty(obj,"authority_name"));
-                                            verifyPermissionDialog.setFinishListener(dialog -> {
-                                                if (verifyPermissions(per_id,dialog.getContent(),true)){
-                                                    dialog.setCodeAndExit(1);
-                                                }else{
-                                                    dialog.setCodeAndExit(0);
-                                                }
-
-                                            });
-                                            code = verifyPermissionDialog.exec() == 1;
-                                        }else {
-                                            mPermissionCashierId = Utils.getNullStringAsEmpty(obj,"cas_id");
-                                        }
-                                    }
+                                    isExist = true;
+                                    break;
                                 }
                             }
+                        }
+                        if (!isExist || !code){
+                            if (isShow){
+                                final VerifyPermissionDialog verifyPermissionDialog = new VerifyPermissionDialog(this);
+                                if (isExist)
+                                    verifyPermissionDialog.setHintPerName(Utils.getNullStringAsEmpty(obj,"authority_name"));
+                                else
+                                    verifyPermissionDialog.setHintPerName(String.format(Locale.CHINA,"权限编号为%s",per_id));
+                                verifyPermissionDialog.setFinishListener(dialog -> {
+                                    if (verifyPermissions(per_id,dialog.getContent(),true)){
+                                        dialog.setCodeAndExit(1);
+                                    }else{
+                                        dialog.setCodeAndExit(0);
+                                    }
+
+                                });
+                                code = verifyPermissionDialog.exec() == 1;
+                                verifyPermissionDialog.dismiss();
+                            }
+                        }else {
+                            mPermissionCashierId = Utils.getNullStringAsEmpty(obj,"cas_id");
                         }
                     }else {
                         MyDialog.displayErrorMessage(mDialog,"未找到授权工号的权限记录,请确定输入是否正确!",this);
@@ -1017,14 +1026,19 @@ public class MainActivity extends AppCompatActivity {
     }
     public void addOneSaleGoods(){
         final JSONObject object = Utils.JsondeepCopy(mSaleGoodsViewAdapter.getCurrentContent());
-        object.put("xnum",1.0);
-        mSaleGoodsViewAdapter.addSaleGoods(object);
+        if (!object.isEmpty()){
+            object.put("xnum",1.0);
+            mSaleGoodsViewAdapter.addSaleGoods(object);
+        }
     }
     public void triggerPsClick(){
         if (null != mPrinterStatusIv)mPrinterStatusIv.callOnClick();
     }
     public JSONObject getVipInfo(){
         return mVipInfo;
+    }
+    public void showAdjustPriceDialog(){
+        if (mGoodsInfoViewAdapter != null && null != mSearch_content)mGoodsInfoViewAdapter.showAdjustPriceDialog(mSearch_content);
     }
     private static class Myhandler extends Handler {
         private WeakReference<MainActivity> weakHandler;

@@ -1,10 +1,12 @@
 package com.wyc.cloudapp.dialog;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -13,6 +15,7 @@ import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.dialog.orderDialog.QueryRefundOrderDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.dialog.vip.VipDepositOrderDialog;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
 
 public final class MoreFunDialog extends AbstractDialogBaseOnMainActivityImp {
@@ -22,6 +25,7 @@ public final class MoreFunDialog extends AbstractDialogBaseOnMainActivityImp {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setCancelable(true);
 
         //初始化按钮事件
         initSyncBtn();
@@ -34,6 +38,7 @@ public final class MoreFunDialog extends AbstractDialogBaseOnMainActivityImp {
         initSingleRefundBtn();
         initPresentBtn();
         initDataUploadBtn();
+        initPriceAdjustBtn();
     }
     @Override
     protected int getContentLayoutId(){
@@ -146,7 +151,7 @@ public final class MoreFunDialog extends AbstractDialogBaseOnMainActivityImp {
         btn.setOnClickListener(v -> {
             final QueryRefundOrderDialog queryRefundOrderDialog = new QueryRefundOrderDialog(mContext);
             queryRefundOrderDialog.show();
-            this.dismiss();
+            closeWindow();
         });
     }
 
@@ -159,8 +164,22 @@ public final class MoreFunDialog extends AbstractDialogBaseOnMainActivityImp {
             if (verifyVipDepositOrderPermissions()){
                 final VipDepositOrderDialog vipDepositOrderDialog = new VipDepositOrderDialog(mContext);
                 vipDepositOrderDialog.show();
-                this.dismiss();
+                closeWindow();
             }
         });
     }
+
+    private boolean verifyPriceAdjustPermissions(){
+        return mContext.verifyPermissions("32",null);
+    }
+    private void initPriceAdjustBtn(){
+        final Button btn = findViewById(R.id.price_adj_btn);
+        btn.setOnClickListener(v -> {
+            if (verifyPriceAdjustPermissions()){
+                mContext.showAdjustPriceDialog();
+                closeWindow();
+            }
+        });
+    }
+
 }

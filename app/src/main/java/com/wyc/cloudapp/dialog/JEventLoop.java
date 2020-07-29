@@ -12,7 +12,7 @@ public final class JEventLoop {
     private static final ThreadLocal<Stack<JEventLoop>> sThreadLocal = new ThreadLocal<>();
     private int mCode = 0;
     private Handler mHandler;
-    private volatile boolean mDone = false;
+    private volatile boolean mDone,mExec;
     private final Object mLock = new Object();
     public JEventLoop(){
     }
@@ -56,11 +56,14 @@ public final class JEventLoop {
             }
 
             //当mDone 为true时才退出循环，防止非当前对象退出
-            while (!mDone)
+            while (!mDone){
+                mExec = true;
                 try {
                     Looper.loop();
                 }catch (ExitException ignored){
                 }
+            }
+            mExec = false;
 
             if (stack.pop() != this)throw new IllegalThreadStateException("JEventLoop internal error");
             Logger.d("%s线程exit,JEventLoop:<%s>,数量:%d,mCode:%d",Thread.currentThread().getName(),this,stack.size(),mCode);
@@ -84,6 +87,6 @@ public final class JEventLoop {
     }
 
     private void exit(){
-        throw new ExitException();
+        if (mExec)throw new ExitException();
     }
 }

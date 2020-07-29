@@ -144,5 +144,18 @@
             android:textSize="@dimen/font_size_14"
             app:layout_constraintStart_toEndOf="@id/sync_btn"
             app:layout_constraintTop_toTopOf="@id/sync_btn" />
+
+        <Button
+            android:id="@+id/price_adj_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/more_fun_btn_width"
+            android:layout_height="@dimen/more_fun_btn_height"
+            android:layout_marginStart="@dimen/margin_5"
+            android:background="@drawable/button_blue"
+            android:text="@string/price_adjust_sz"
+            android:textColor="@color/blue_white"
+            android:textSize="@dimen/font_size_14"
+            app:layout_constraintStart_toEndOf="@id/barcode_scale"
+            app:layout_constraintTop_toTopOf="@id/barcode_scale" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

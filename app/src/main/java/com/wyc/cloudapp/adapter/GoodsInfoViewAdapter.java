@@ -16,11 +16,13 @@ import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.android.material.snackbar.Snackbar;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.dialog.GoodsPriceAdjustDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
@@ -35,6 +37,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     private OnItemClickListener mOnItemClickListener;
     private boolean mShowPic = true;
     private View mCurrentItemView;
+    private boolean mPriceAdjustMode;
     public GoodsInfoViewAdapter(final MainActivity context){
         this.mContext = context;
         final JSONObject jsonObject = new JSONObject();
@@ -145,20 +148,35 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     }
 
     public JSONObject getSelectGoods(final View currentItem){
-        JSONObject object;
-        if (currentItem != null){
-            final TextView barcode_id_tv = currentItem.findViewById(R.id.barcode_id),gp_id_tv = currentItem.findViewById(R.id.gp_id);
-            if (barcode_id_tv != null && gp_id_tv != null){
-                final String barcode_id = barcode_id_tv.getText().toString(),gp_id = gp_id_tv.getText().toString();
-                for (int i = 0,size = mDatas.size();i < size;i++){
-                    object = mDatas.getJSONObject(i);
-                    if (object != null && barcode_id.equals(object.getString("barcode_id")) && gp_id.equals(object.getString("gp_id"))){
-                        return object;
+        if (mPriceAdjustMode){
+            final GoodsPriceAdjustDialog priceAdjustDialog = new GoodsPriceAdjustDialog(mContext);
+            priceAdjustDialog.show();
+        }else
+            if (currentItem != null){
+                final TextView barcode_id_tv = currentItem.findViewById(R.id.barcode_id),gp_id_tv = currentItem.findViewById(R.id.gp_id);
+                if (barcode_id_tv != null && gp_id_tv != null){
+                    final String barcode_id = barcode_id_tv.getText().toString(),gp_id = gp_id_tv.getText().toString();
+                    for (int i = 0,size = mDatas.size();i < size;i++){
+                        final JSONObject object = mDatas.getJSONObject(i);
+                        if (object != null && barcode_id.equals(object.getString("barcode_id")) && gp_id.equals(object.getString("gp_id"))){
+                            return object;
+                        }
                     }
                 }
             }
-        }
         return null;
+    }
+    public void showAdjustPriceDialog(@NonNull View anchor){
+        final Snackbar snackbar = Snackbar.make(anchor,R.string.price_adjust_sz, Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAnchorView(anchor);
+        snackbar.setAction("点击退出调价模式!", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPriceAdjustMode = false;
+            }
+        });
+        mPriceAdjustMode = true;
+        snackbar.show();
     }
 
     void setDatas(int id){

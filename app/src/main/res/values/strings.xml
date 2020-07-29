@@ -309,4 +309,5 @@
     <string name="a_ckml_sz">参考毛利：</string>
     <string name="fullreduce_des_sz">满%1$s减%2$s</string>
     <string name="diff_des_sz">差%1$s元</string>
+    <string name="price_adjust_sz">商品调价</string>
 </resources>
