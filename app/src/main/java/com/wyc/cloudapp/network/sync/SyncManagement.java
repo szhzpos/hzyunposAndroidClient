@@ -86,12 +86,15 @@ public class SyncManagement extends Thread {
         }
         Logger.i("SyncManagement<%s>退出:%s",getName(),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.CHINA).format(new Date()));
     }
-
+    public void afresh_sync(){
+        acquireHandler();
+        mSyncHandler.sign_downloaded();
+        start_sync(true);
+    }
     public void start_sync(boolean b){
         acquireHandler();
         if (b){
             mSyncHandler.modifyReportProgressStatus(true);
-            mSyncHandler.sign_downloaded();
             mSyncHandler.sync();
             mSyncHandler.obtainMessage(MessageID.SYNC_FINISH_ID).sendToTarget();//最后发送同步完成消息;
         }else{

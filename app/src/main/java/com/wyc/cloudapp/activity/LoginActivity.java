@@ -611,7 +611,11 @@ public class LoginActivity extends AppCompatActivity {
                 case MessageID.LOGIN_OK_ID://登录成功
                     activity.mSyncManagement = new SyncManagement(this,Utils.getNullStringAsEmpty(activity.mConnParam,"server_url"),Utils.getNullStringAsEmpty(activity.mConnParam,"appId"),
                             Utils.getNullStringAsEmpty(activity.mConnParam,"appSecret"),activity.mStoresId,activity.mPosNum,activity.mOperId);
-                    activity.mSyncManagement.start_sync(true);
+                    if (SQLiteHelper.isNew()) {
+                        activity.mProgressDialog.setMessage("准备重新同步...").refreshMessage().show();
+                        activity.mSyncManagement.afresh_sync();
+                    }else
+                        activity.mSyncManagement.start_sync(true);
                     break;
                 case MessageID.LOGIN_ID_ERROR_ID://账号错误
                     activity.mUser_id.requestFocus();
@@ -628,12 +632,7 @@ public class LoginActivity extends AppCompatActivity {
                         MyDialog.ToastMessage(activity.mPassword,msg.obj.toString(),activity,null);
                     break;
                 case MessageID.SYNC_DIS_INFO_ID://资料同步进度信息
-                    if (activity.mProgressDialog != null){
-                        activity.mProgressDialog.setMessage(msg.obj.toString()).refreshMessage();
-                        if (!activity.mProgressDialog.isShowing()) {
-                            activity.mProgressDialog.show();
-                        }
-                    }
+                    activity.mProgressDialog.setMessage(msg.obj.toString()).refreshMessage().show();
                     break;
                 case MessageID.OFF_LINE_LOGIN_ID:
                     activity.offline_login();

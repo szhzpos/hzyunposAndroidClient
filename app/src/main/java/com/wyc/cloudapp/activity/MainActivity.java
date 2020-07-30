@@ -628,45 +628,46 @@ public class MainActivity extends AppCompatActivity {
         final MainActivity activity = this;
         tmp_order.setNum(HangBillDialog.getHangCounts(activity));
         tmp_order.setOnClickListener(v -> {
-            final JSONArray datas = mSaleGoodsViewAdapter.getDatas();
-            final HangBillDialog hangBillDialog = new HangBillDialog(activity);
-            if (Utils.JsonIsNotEmpty(datas)){
-                //MyDialog.displayAskMessage(null, "是否挂单？", activity, myDialog -> {
+            if (isAdjustPriceMode()){
+                MyDialog.ToastMessage(mSaleGoodsRecyclerView,"调价模式不允许挂单操作!",activity,null);
+            }else {
+                final JSONArray datas = mSaleGoodsViewAdapter.getDatas();
+                final HangBillDialog hangBillDialog = new HangBillDialog(activity);
+                if (Utils.JsonIsNotEmpty(datas)){
                     final StringBuilder err = new StringBuilder();
                     if (hangBillDialog.save(datas,mVipInfo,err)){
                         tmp_order.setNum(HangBillDialog.getHangCounts(activity));
                         resetOrderInfo();
                         MyDialog.ToastMessage(mSaleGoodsRecyclerView,"挂单成功！",activity,null);
-                        //myDialog.dismiss();
                     }else{
                         MyDialog.ToastMessage(mSaleGoodsRecyclerView,"保存挂单错误：" + err,activity,null);
                     }
-                //}, Dialog::dismiss);
-            }else{
-                if (HangBillDialog.getHangCounts(activity) > 0){
-                    hangBillDialog.setGetBillDetailListener((array, vip) -> {
-                        hideLastOrderInfo();
-                        if (null != vip)showVipInfo(vip);
-                        JSONObject barcode_id_obj,goods_info;
-                        for (int i = 0,length = array.size();i < length;i ++){
-                            barcode_id_obj = array.getJSONObject(i);
-                            if (barcode_id_obj != null){
-                                goods_info = new JSONObject();
-                                if (mGoodsInfoViewAdapter.getSingleGoods(goods_info,barcode_id_obj.getString(GoodsInfoViewAdapter.W_G_MARK),mGoodsInfoViewAdapter.getGoodsId(barcode_id_obj))){
-                                    goods_info.put("xnum",barcode_id_obj.getDoubleValue("xnum"));//挂单取出重量
-                                    mSaleGoodsViewAdapter.addSaleGoods(goods_info);
-                                    hangBillDialog.dismiss();
-                                }else{
-                                    MyDialog.ToastMessage(mSaleGoodsRecyclerView,"查询商品信息错误：" + goods_info.getString("info"),activity,getWindow());
-                                    return;
+                }else{
+                    if (HangBillDialog.getHangCounts(activity) > 0){
+                        hangBillDialog.setGetBillDetailListener((array, vip) -> {
+                            hideLastOrderInfo();
+                            if (null != vip)showVipInfo(vip);
+                            JSONObject barcode_id_obj,goods_info;
+                            for (int i = 0,length = array.size();i < length;i ++){
+                                barcode_id_obj = array.getJSONObject(i);
+                                if (barcode_id_obj != null){
+                                    goods_info = new JSONObject();
+                                    if (mGoodsInfoViewAdapter.getSingleGoods(goods_info,barcode_id_obj.getString(GoodsInfoViewAdapter.W_G_MARK),mGoodsInfoViewAdapter.getGoodsId(barcode_id_obj))){
+                                        goods_info.put("xnum",barcode_id_obj.getDoubleValue("xnum"));//挂单取出重量
+                                        mSaleGoodsViewAdapter.addSaleGoods(goods_info);
+                                        hangBillDialog.dismiss();
+                                    }else{
+                                        if (!isAdjustPriceMode()) MyDialog.ToastMessage("选择商品错误：" + goods_info.getString("info"),this,null);
+                                        return;
+                                    }
                                 }
                             }
-                        }
-                    });
-                    hangBillDialog.setOnDismissListener(dialog -> tmp_order.setNum(HangBillDialog.getHangCounts(activity)));
-                    hangBillDialog.show();
-                }else{
-                    MyDialog.ToastMessage(mSaleGoodsRecyclerView,"无挂单信息！",activity,null);
+                        });
+                        hangBillDialog.setOnDismissListener(dialog -> tmp_order.setNum(HangBillDialog.getHangCounts(activity)));
+                        hangBillDialog.show();
+                    }else{
+                        MyDialog.ToastMessage(mSaleGoodsRecyclerView,"无挂单信息！",activity,null);
+                    }
                 }
             }
         });
@@ -723,23 +724,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showPayDialog(){
-        if (!mSaleGoodsViewAdapter.isEmpty()){
-            if (!getSingle()){
-                final PayDialog dialog = new PayDialog(this,getString(R.string.affirm_pay_sz));
-                dialog.initPayContent();
-                if (mVipInfo != null)dialog.setVipInfo(mVipInfo,true);
-                if (dialog.exec() == 1){
-                    mSyncManagement.sync_retail_order();
-                    showLastOrderInfo(mOrderCodeTv.getText().toString());
-                    resetOrderInfo();
-                    MyDialog.SnackbarMessage(getWindow(),"结账成功！", mOrderCodeTv);
+        if (isAdjustPriceMode()){
+            MyDialog.ToastMessage(mSaleGoodsRecyclerView,"调价模式不允许收款操作!",this,null);
+        }else {
+            if (!mSaleGoodsViewAdapter.isEmpty()){
+                if (!getSingle()){
+                    final PayDialog dialog = new PayDialog(this,getString(R.string.affirm_pay_sz));
+                    dialog.initPayContent();
+                    if (mVipInfo != null)dialog.setVipInfo(mVipInfo,true);
+                    if (dialog.exec() == 1){
+                        mSyncManagement.sync_retail_order();
+                        showLastOrderInfo(mOrderCodeTv.getText().toString());
+                        resetOrderInfo();
+                        MyDialog.SnackbarMessage(getWindow(),"结账成功！", mOrderCodeTv);
+                    }
+                }else {
+                    final RefundDialog refundDialog = new RefundDialog(this,"");
+                    refundDialog.show();
                 }
-            }else {
-                final RefundDialog refundDialog = new RefundDialog(this,"");
-                refundDialog.show();
+            }else{
+                MyDialog.SnackbarMessage(getWindow(),"已选商品为空！!",getCurrentFocus());
             }
-        }else{
-            MyDialog.SnackbarMessage(getWindow(),"已选商品为空！!",getCurrentFocus());
         }
     }
     public void resetOrderInfo(){
@@ -822,7 +827,7 @@ public class MainActivity extends AppCompatActivity {
     public void manualSync(){
         if (mSyncManagement != null){
             if (mProgressDialog != null && !mProgressDialog.isShowing())mProgressDialog.setMessage("正在同步...").refreshMessage().show();
-            mSyncManagement.start_sync(true);
+            mSyncManagement.afresh_sync();
         }
     }
     public void sync_refund_order(){
@@ -1021,8 +1026,11 @@ public class MainActivity extends AppCompatActivity {
             hideLastOrderInfo();
             mSaleGoodsViewAdapter.addSaleGoods(content);
         }else{
-            MyDialog.ToastMessage("选择商品错误：" + content.getString("info"),this,null);
+            if (!isAdjustPriceMode()) MyDialog.ToastMessage("选择商品错误：" + content.getString("info"),this,null);
         }
+    }
+    private boolean isAdjustPriceMode(){
+        return mGoodsInfoViewAdapter != null  && mGoodsInfoViewAdapter.isPriceAdjustMode() ;
     }
     public void addOneSaleGoods(){
         final JSONObject object = Utils.JsondeepCopy(mSaleGoodsViewAdapter.getCurrentContent());

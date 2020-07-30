@@ -83,24 +83,34 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         boolean code = true;
         if (mDb == null){
             synchronized (SQLiteHelper.class){
-                if (mDb == null)
+                if (mDb == null){
                     try {
                         final SQLiteHelper sqLiteHelper = new SQLiteHelper(context);
                         mDb = sqLiteHelper.getWritableDatabase();
                     }catch (SQLiteCantOpenDatabaseException e){
                         MyDialog.displayErrorMessage(null,"打开数据库错误：" + e.getLocalizedMessage(),context,(MyDialog myDialog)->{
                             myDialog.dismiss();
-                           if (context instanceof Activity){
-                               ((Activity)context).finish();
-                           }else{
-                               System.exit(0);
-                           }
+                            if (context instanceof Activity){
+                                ((Activity)context).finish();
+                            }else{
+                                System.exit(0);
+                            }
                         });
                         code = false;
                     }
+                }
             }
         }
         return code;
+    }
+    public static boolean isNew(){
+        final StringBuilder err = new StringBuilder();
+        final String sql = "select count(1) from barcode_info";
+        final String szCount = getString(sql,err);
+        if (szCount != null){
+            return "0".equals(szCount);
+        }
+        return false;
     }
 
     public static boolean backupDB(final String new_name,final StringBuilder err) {

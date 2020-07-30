@@ -158,13 +158,7 @@ public final class SyncHandler extends Handler {
                         mReportProgress = (boolean)msg.obj;
                     return;
                 case MessageID.MARK_DOWNLOAD_RECORD_ID:
-                    if (mReportProgress)
-                        mMainActivityHandler.obtainMessage(SYNC_DIS_INFO_ID,"准备同步...").sendToTarget();
-                    upload_barcode_id(null);
-                    upload_pay_method_id(null);
-                    up_category(null);
-                    up_gp_goods(null);
-                    up_promotion(null);
+                    clear_download_record();
                     return;
                 case MessageID.SYNC_THREAD_QUIT_ID://由于处理程序内部会发送消息，消息队列退出需在处理程序内部处理
                     if (mHttp != null)mHttp.clearConnection(HttpRequest.CLOSEMODE.BOTH);
@@ -575,18 +569,8 @@ public final class SyncHandler extends Handler {
             upload_pay_method_id(pay_method_ids);
         }
     }
-    private void upload_pay_method_id(JSONArray datas) throws JSONException {
-        final StringBuilder err = new StringBuilder();
-        if(datas == null){
-            datas = SQLiteHelper.getListToValue("select pay_method_id from pay_method",err);
-            if (null == datas){
-                Logger.e("标记已获取的商品错误：" + err);
-                return;
-            }
-        }
-        if (datas.size() == 0){
-            clear_download_record();
-        }else{
+    private void upload_pay_method_id(final JSONArray datas) throws JSONException {
+        if (datas != null && !datas.isEmpty()){
             final SyncManagement sync = mSync;
             final String url = sync.getUrl() + "/api/cashier/up_pm";
 
@@ -600,10 +584,10 @@ public final class SyncHandler extends Handler {
             if (object.getIntValue("flag") == 1){
                 object = JSON.parseObject(object.getString("info"));
                 if ("n".equals(object.getString("status"))){
-                    Logger.e(err.append("标记已获取支付方式错误:") + object.getString("info"));
+                    Logger.e("标记已获取支付方式错误:" + object.getString("info"));
                 }
             }else{
-                Logger.e(err.append("标记已获取支付方式错误:") + object.getString("info"));
+                Logger.e("标记已获取支付方式错误:" + object.getString("info"));
             }
         }
     }
@@ -658,18 +642,8 @@ public final class SyncHandler extends Handler {
         }
         return code;
     }
-    private void up_gp_goods(JSONArray datas){
-        final StringBuilder err = new StringBuilder();
-        if(datas == null){
-            datas = SQLiteHelper.getListToValue("select gp_id from goods_group",err);
-            if (null == datas){
-                Logger.e("标记已获取的组合商品错误：" + err);
-                return;
-            }
-        }
-        if (datas.size() == 0){
-            clear_download_record();
-        }else{
+    private void up_gp_goods(final JSONArray datas){
+        if (datas != null && !datas.isEmpty()){
             final SyncManagement sync = mSync;
             final String url = sync.getUrl() + "/api/promotion/up_gp";
 
@@ -683,26 +657,16 @@ public final class SyncHandler extends Handler {
             if (object.getIntValue("flag") == 1){
                 object = JSON.parseObject(object.getString("info"));
                 if ("n".equals(object.getString("status"))){
-                    Logger.e(err.append("标记已获取的组合商品错误:") + object.getString("info"));
+                    Logger.e("标记已获取的组合商品错误:" + object.getString("info"));
                 }
             }else{
-                Logger.e(err.append("标记已获取的组合商品错误:") + object.getString("info"));
+                Logger.e("标记已获取的组合商品错误:" + object.getString("info"));
             }
         }
     }
 
-    private void upload_barcode_id(JSONArray datas) throws JSONException {
-        final StringBuilder err = new StringBuilder();
-        if(datas == null){
-            datas = SQLiteHelper.getListToValue("select barcode_id from barcode_info",err);
-            if (null == datas){
-                Logger.e("标记已获取的商品错误：" + err);
-                return;
-            }
-        }
-        if (datas.size() == 0){
-            clear_download_record();
-        }else{
+    private void upload_barcode_id(final JSONArray datas) throws JSONException {
+        if (datas != null && !datas.isEmpty()){
             final SyncManagement sync = mSync;
             final String url = sync.getUrl() + "/api/goods/up_goods";
 
@@ -716,10 +680,10 @@ public final class SyncHandler extends Handler {
             if (object.getIntValue("flag") == 1){
                 object = JSON.parseObject(object.getString("info"));
                 if ("n".equals(object.getString("status"))){
-                    Logger.e(err.append("标记已获取商品错误:") + object.getString("info"));
+                    Logger.e("标记已获取商品错误:" + object.getString("info"));
                 }
             }else{
-                Logger.e(err.append("标记已获取商品错误:") + object.getString("info"));
+                Logger.e("标记已获取商品错误:" + object.getString("info"));
             }
         }
     }
@@ -744,18 +708,8 @@ public final class SyncHandler extends Handler {
         }
     }
 
-    private void up_category(JSONArray datas){
-        final StringBuilder err = new StringBuilder();
-        if(datas == null){
-            datas = SQLiteHelper.getListToJson("select category_id from shop_category",err);
-            if (null == datas){
-                Logger.e("标记已获取的类别错误：" + err);
-                return;
-            }
-        }
-        if (datas.size() == 0){
-            clear_download_record();
-        }else{
+    private void up_category(final JSONArray datas){
+        if (datas != null && !datas.isEmpty()){
             JSONObject object;
             final SyncManagement sync = mSync;
             final String url = sync.getUrl() + "/api/scale/up_category";
@@ -775,26 +729,16 @@ public final class SyncHandler extends Handler {
             if (object.getIntValue("flag") == 1){
                 object = JSON.parseObject(object.getString("info"));
                 if ("n".equals(object.getString("status"))){
-                    Logger.e(err.append("标记已获取类别错误:") + object.getString("info"));
+                    Logger.e("标记已获取类别错误:" + object.getString("info"));
                 }
             }else{
-                Logger.e(err.append("标记已获取类别错误:") + object.getString("info"));
+                Logger.e("标记已获取类别错误:" + object.getString("info"));
             }
         }
     }
 
-    private void up_promotion(JSONArray datas){
-        final StringBuilder err = new StringBuilder();
-        if(datas == null){
-            datas = SQLiteHelper.getListToJson("select tlp_id from promotion_info",err);
-            if (null == datas){
-                Logger.e("标记已获取的类别错误：" + err);
-                return;
-            }
-        }
-        if (datas.size() == 0){
-            clear_download_record();
-        }else{
+    private void up_promotion(final JSONArray datas){
+        if (datas != null && !datas.isEmpty()){
             JSONObject object;
             final SyncManagement sync = mSync;
             final String url = sync.getUrl() + "/api/promotion/up_promotion";
@@ -814,10 +758,10 @@ public final class SyncHandler extends Handler {
             if (object.getIntValue("flag") == 1){
                 object = JSON.parseObject(object.getString("info"));
                 if ("n".equals(object.getString("status"))){
-                    Logger.e(err.append("标记已获取促销信息错误:") + object.getString("info"));
+                    Logger.e("标记已获取促销信息错误:" + object.getString("info"));
                 }
             }else{
-                Logger.e(err.append("标记已获取促销信息错误:") + object.getString("info"));
+                Logger.e("标记已获取促销信息错误:" + object.getString("info"));
             }
         }
     }
@@ -883,9 +827,8 @@ public final class SyncHandler extends Handler {
         }
     }
     void sign_downloaded(){//标记已下载
-        if (mCurrentNetworkStatusCode == HttpURLConnection.HTTP_OK) {
-            if (!hasMessages(MessageID.MARK_DOWNLOAD_RECORD_ID))
-                obtainMessage(MessageID.MARK_DOWNLOAD_RECORD_ID).sendToTarget();
+        if (mCurrentNetworkStatusCode == HttpURLConnection.HTTP_OK && !hasMessages(MessageID.MARK_DOWNLOAD_RECORD_ID)) {
+            obtainMessage(MessageID.MARK_DOWNLOAD_RECORD_ID).sendToTarget();
         }
     }
 }

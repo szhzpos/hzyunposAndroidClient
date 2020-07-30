@@ -148,22 +148,18 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     }
 
     public JSONObject getSelectGoods(final View currentItem){
-        if (mPriceAdjustMode){
-            final GoodsPriceAdjustDialog priceAdjustDialog = new GoodsPriceAdjustDialog(mContext);
-            priceAdjustDialog.show();
-        }else
-            if (currentItem != null){
-                final TextView barcode_id_tv = currentItem.findViewById(R.id.barcode_id),gp_id_tv = currentItem.findViewById(R.id.gp_id);
-                if (barcode_id_tv != null && gp_id_tv != null){
-                    final String barcode_id = barcode_id_tv.getText().toString(),gp_id = gp_id_tv.getText().toString();
-                    for (int i = 0,size = mDatas.size();i < size;i++){
-                        final JSONObject object = mDatas.getJSONObject(i);
-                        if (object != null && barcode_id.equals(object.getString("barcode_id")) && gp_id.equals(object.getString("gp_id"))){
-                            return object;
-                        }
+        if (currentItem != null){
+            final TextView barcode_id_tv = currentItem.findViewById(R.id.barcode_id),gp_id_tv = currentItem.findViewById(R.id.gp_id);
+            if (barcode_id_tv != null && gp_id_tv != null){
+                final String barcode_id = barcode_id_tv.getText().toString(),gp_id = gp_id_tv.getText().toString();
+                for (int i = 0,size = mDatas.size();i < size;i++){
+                    final JSONObject object = mDatas.getJSONObject(i);
+                    if (object != null && barcode_id.equals(object.getString("barcode_id")) && gp_id.equals(object.getString("gp_id"))){
+                        return object;
                     }
                 }
             }
+        }
         return null;
     }
     public void showAdjustPriceDialog(@NonNull View anchor){
@@ -256,40 +252,51 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         final String full_sql,sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,only_coding,ifnull(type,0) type," +
                 "retail_price,retail_price price,tc_rate,tc_mode,tax_rate,ps_price,cost_price,trade_price,buying_price,yh_mode,yh_price,metering_id,conversion from barcode_info where goods_status = 1 and barcode_status = 1 and ";
 
-        if (weigh_barcode_info != null && weigh_barcode_info.length() != 0){
+        boolean isWeighBarcode = weigh_barcode_info != null && weigh_barcode_info.length() != 0;
+        if (isWeighBarcode){
             full_sql = sql + "only_coding = '" + id + "'";
-            return parseElectronicBarcode(full_sql,object,weigh_barcode_info);
-        }
-
-        full_sql = sql + "barcode_id = " + id + " UNION select gp_id ,-1 goods_id,ifnull(gp_title,'') goods_title,ifnull(unit_name,'') unit_name, -1 barcode_id,ifnull(gp_code,'') barcode,-1 only_coding,ifnull(type,0) type," +
-                "gp_price retail_price,gp_price price,0 tc_rate,0 tc_mode,0 tax_rate,0 ps_price,0 cost_price,0 trade_price,gp_price buying_price,0 yh_mode,0 yh_price,1 metering_id,1 conversion from goods_group \n" +
-                "where status = 1 and gp_id = " + id;
-
+        }else
+            full_sql = sql + "barcode_id = " + id + " UNION select gp_id ,-1 goods_id,ifnull(gp_title,'') goods_title,ifnull(unit_name,'') unit_name, -1 barcode_id,ifnull(gp_code,'') barcode,-1 only_coding,ifnull(type,0) type," +
+                    "gp_price retail_price,gp_price price,0 tc_rate,0 tc_mode,0 tax_rate,0 ps_price,0 cost_price,0 trade_price,gp_price buying_price,0 yh_mode,0 yh_price,1 metering_id,1 conversion from goods_group \n" +
+                    "where status = 1 and gp_id = " + id;
         boolean code =  SQLiteHelper.execSql(object,full_sql);
         if (code){
-            final JSONObject promotion_obj = new JSONObject();
-            if (code = getPromotionGoods(promotion_obj,Utils.getNotKeyAsNumberDefault(object,"barcode_id",-1),Utils.getNotKeyAsNumberDefault(mContext.getStoreInfo(),"stores_id",-1))){
-                if (!promotion_obj.isEmpty()){
-                    object.put("sale_type",SALE_TYPE.SPECIAL_PROMOTION);//1 零售特价促销
-                    object.put("limit_xnum",promotion_obj.getDoubleValue("limit_xnum"));
+            if (mPriceAdjustMode){
+                code = false;
+                final GoodsPriceAdjustDialog priceAdjustDialog = new GoodsPriceAdjustDialog(mContext);
+                priceAdjustDialog.show();
+            }else {
+                if (isWeighBarcode){
+                    code = parseElectronicBarcode(object,weigh_barcode_info);
+                }else {
+                    final JSONObject promotion_obj = new JSONObject();
+                    if (code = getPromotionGoods(promotion_obj,Utils.getNotKeyAsNumberDefault(object,"barcode_id",-1),Utils.getNotKeyAsNumberDefault(mContext.getStoreInfo(),"stores_id",-1))){
+                        if (!promotion_obj.isEmpty()){
+                            object.put("sale_type",SALE_TYPE.SPECIAL_PROMOTION);//1 零售特价促销
+                            object.put("limit_xnum",promotion_obj.getDoubleValue("limit_xnum"));
 
-                    int way = promotion_obj.getIntValue("way");
-                    switch (way){
-                        case 1://定价
-                            object.put("price",promotion_obj.getDoubleValue("promotion_price"));
-                            break;
-                        case 2://折扣
-                            object.put("price",promotion_obj.getDoubleValue("promotion_price") / 10 * object.getDoubleValue("retail_price"));
-                            break;
+                            int way = promotion_obj.getIntValue("way");
+                            switch (way){
+                                case 1://定价
+                                    object.put("price",promotion_obj.getDoubleValue("promotion_price"));
+                                    break;
+                                case 2://折扣
+                                    object.put("price",promotion_obj.getDoubleValue("promotion_price") / 10 * object.getDoubleValue("retail_price"));
+                                    break;
+                            }
+                        }
+                    }else {
+                        object.clear();
+                        object.put("info",promotion_obj.getString("info"));
                     }
                 }
-            }else {
-                object.clear();
-                object.put("info",promotion_obj.getString("info"));
             }
         }
-
        return code;
+    }
+
+    public boolean isPriceAdjustMode(){
+        return mPriceAdjustMode;
     }
 
     public static boolean getPromotionGoods(final JSONObject object,int barcode_id,int stores_id){
@@ -303,69 +310,64 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         return SQLiteHelper.execSql(object,sql);
     }
 
-    private boolean parseElectronicBarcode(@NonNull String full_sql,@NonNull final JSONObject object,@NonNull final String weigh_barcode_info){
+    private boolean parseElectronicBarcode(@NonNull final JSONObject object,@NonNull final String weigh_barcode_info){
         boolean code = true;
         ContentValues barcodeRuleObj = new ContentValues();
+        if (code = parseBarcodeRule(weigh_barcode_info,barcodeRuleObj)){
+            double xnum = 0.0,price = 0.0;
+            int metering_id = object.getIntValue("metering_id");
+            int amt_point = barcodeRuleObj.getAsInteger("moneyLen");
+            double amt = barcodeRuleObj.getAsDouble("amt") / Math.pow(10,amt_point);
 
-        Logger.d(full_sql);
-
-        if (code = SQLiteHelper.execSql(object,full_sql)){
-            if (code = parseBarcodeRule(weigh_barcode_info,barcodeRuleObj)){
-                double xnum = 0.0,price = 0.0;
-                int metering_id = object.getIntValue("metering_id");
-                int amt_point = barcodeRuleObj.getAsInteger("moneyLen");
-                double amt = barcodeRuleObj.getAsDouble("amt") / Math.pow(10,amt_point);
-
-                if (barcodeRuleObj.containsKey("weight") && barcodeRuleObj.containsKey("amt")){
-                    int w_point = barcodeRuleObj.getAsInteger("weightLen");
-                    double weight = barcodeRuleObj.getAsDouble("weight") / Math.pow(10,w_point);
-                    if (metering_id == 0){//计重
-                        xnum = weight;
-                    }else{//计份
-                        xnum = 1;
-                    }
-                    price = (Utils.equalDouble(weight,0.0) ? 0 : amt / weight);
-                }else{
-                    price = object.getDoubleValue("price");
-                    if (metering_id == 0){//计重
-                        xnum = (Utils.equalDouble(price,0.0) ? 0.0 : amt / price);
-                    }else{//计份
-                        xnum = 1;
-                    }
+            if (barcodeRuleObj.containsKey("weight") && barcodeRuleObj.containsKey("amt")){
+                int w_point = barcodeRuleObj.getAsInteger("weightLen");
+                double weight = barcodeRuleObj.getAsDouble("weight") / Math.pow(10,w_point);
+                if (metering_id == 0){//计重
+                    xnum = weight;
+                }else{//计份
+                    xnum = 1;
                 }
-                Logger.d("price：%f,xnum:%f,sale_amt:%f",price,xnum,amt);
-
-                final JSONObject promotion_obj = new JSONObject();
-                if (code = getPromotionGoods(promotion_obj,Utils.getNotKeyAsNumberDefault(object,"barcode_id",-1),Utils.getNotKeyAsNumberDefault(mContext.getStoreInfo(),"stores_id",-1))){
-                    double discount = 1.0,ori_price = object.getDoubleValue("retail_price");
-                    if (!promotion_obj.isEmpty()){
-                        object.put("sale_type",SALE_TYPE.SPECIAL_PROMOTION);//1 零售特价促销
-                        object.put("limit_xnum",promotion_obj.getDoubleValue("limit_xnum"));
-
-                        int way = promotion_obj.getIntValue("way");
-                        switch (way){
-                            case 1://定价
-                                if (!Utils.equalDouble(ori_price,0.0))discount = promotion_obj.getDoubleValue("promotion_price") / ori_price;
-                                break;
-                            case 2://折扣
-                                discount = promotion_obj.getDoubleValue("promotion_price") / 10;
-                                break;
-                        }
-                    }
-
-                    Logger.d("discount:%f,xnum:%f,amt:%f",discount,xnum,amt);
-
-                    object.put("price",price * discount);
-                    object.put("xnum",String.format(Locale.CHINA,"%.4f",xnum));
-                    object.put("sale_amt",amt);
-                    object.put(W_G_MARK,weigh_barcode_info);
-
-                }else {
-                    object.put("info",promotion_obj.getString("info"));
+                price = (Utils.equalDouble(weight,0.0) ? 0 : amt / weight);
+            }else{
+                price = object.getDoubleValue("price");
+                if (metering_id == 0){//计重
+                    xnum = (Utils.equalDouble(price,0.0) ? 0.0 : amt / price);
+                }else{//计份
+                    xnum = 1;
                 }
-            }else {
-                object.put("info",barcodeRuleObj.getAsString("info"));
             }
+            Logger.d("price：%f,xnum:%f,sale_amt:%f",price,xnum,amt);
+
+            final JSONObject promotion_obj = new JSONObject();
+            if (code = getPromotionGoods(promotion_obj,Utils.getNotKeyAsNumberDefault(object,"barcode_id",-1),Utils.getNotKeyAsNumberDefault(mContext.getStoreInfo(),"stores_id",-1))){
+                double discount = 1.0,ori_price = object.getDoubleValue("retail_price");
+                if (!promotion_obj.isEmpty()){
+                    object.put("sale_type",SALE_TYPE.SPECIAL_PROMOTION);//1 零售特价促销
+                    object.put("limit_xnum",promotion_obj.getDoubleValue("limit_xnum"));
+
+                    int way = promotion_obj.getIntValue("way");
+                    switch (way){
+                        case 1://定价
+                            if (!Utils.equalDouble(ori_price,0.0))discount = promotion_obj.getDoubleValue("promotion_price") / ori_price;
+                            break;
+                        case 2://折扣
+                            discount = promotion_obj.getDoubleValue("promotion_price") / 10;
+                            break;
+                    }
+                }
+
+                Logger.d("discount:%f,xnum:%f,amt:%f",discount,xnum,amt);
+
+                object.put("price",price * discount);
+                object.put("xnum",String.format(Locale.CHINA,"%.4f",xnum));
+                object.put("sale_amt",amt);
+                object.put(W_G_MARK,weigh_barcode_info);
+
+            }else {
+                object.put("info",promotion_obj.getString("info"));
+            }
+        }else {
+            object.put("info",barcodeRuleObj.getAsString("info"));
         }
         return code;
     }
