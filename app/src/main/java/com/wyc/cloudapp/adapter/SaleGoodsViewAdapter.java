@@ -288,19 +288,18 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
 
     private JSONObject verifyPromotion(final @NonNull JSONObject object,double num){
         JSONObject tmp_obj;
-        int barcode_id = object.getIntValue("barcode_id"),gp_id = object.getIntValue("gp_id");
         int sale_type = object.getIntValue("sale_type");
-        double sum_xnum = 0.0;
-        if (sale_type == GoodsInfoViewAdapter.SALE_TYPE.SPECIAL_PROMOTION){
+        double limit_xnum = object.getDoubleValue("limit_xnum");
+        if (sale_type == GoodsInfoViewAdapter.SALE_TYPE.SPECIAL_PROMOTION && !Utils.equalDouble(limit_xnum,0.0)){
+            int barcode_id = object.getIntValue("barcode_id"),gp_id = object.getIntValue("gp_id");
+            double sum_xnum = 0.0,diff_xnum = 0.0,ori_price = 0.0;
             for (int i = 0,length = mDatas.size();i < length;i++) {
                 tmp_obj = mDatas.getJSONObject(i);
-                if (barcode_id == tmp_obj.getIntValue("barcode_id") && gp_id == tmp_obj.getIntValue("gp_id") && sale_type == tmp_obj.getIntValue("sale_type")){
+                if (sale_type == tmp_obj.getIntValue("sale_type") && barcode_id == tmp_obj.getIntValue("barcode_id") && gp_id == tmp_obj.getIntValue("gp_id")){
                     sum_xnum  += tmp_obj.getDoubleValue("xnum");
                 }
             }
-
-            double limit_xnum = object.getDoubleValue("limit_xnum"),diff_xnum = 0.0,ori_price = 0.0;
-            if (!Utils.equalDouble(limit_xnum,0.0) && (diff_xnum = sum_xnum + num - limit_xnum) > 0){
+            if ((diff_xnum = sum_xnum + num - limit_xnum) > 0){
                 final JSONObject copy = Utils.JsondeepCopy(object);
                 ori_price = copy.getDoubleValue("retail_price");
                 copy.put("sale_type",GoodsInfoViewAdapter.SALE_TYPE.COMMON);
