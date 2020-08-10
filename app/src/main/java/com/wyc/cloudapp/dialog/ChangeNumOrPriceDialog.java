@@ -104,9 +104,6 @@ public class ChangeNumOrPriceDialog extends AbstractDialogBaseOnMainActivityImp 
     private void initNewPrice(){
         final EditText et = mNew_price_text =  findViewById(R.id.new_numOrprice_text);
         if (et != null){
-            et.setSelectAllOnFocus(true);
-            et.setOnFocusChangeListener((v, hasFocus) -> Utils.hideKeyBoard((EditText)v));
-            et.postDelayed(et::requestFocus,300);
             if ("".equals(mInitVal)) {
                 et.setInputType(InputType.TYPE_NUMBER_VARIATION_PASSWORD);
                 et.setTransformationMethod(new PasswordEditTextReplacement());

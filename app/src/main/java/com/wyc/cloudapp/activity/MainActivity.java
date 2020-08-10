@@ -39,7 +39,6 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import com.google.android.material.snackbar.Snackbar;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.GoodsInfoItemDecoration;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
@@ -49,7 +48,7 @@ import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
 import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.AddGoodsInfoDialog;
-import com.wyc.cloudapp.dialog.HangBillDialog;
+import com.wyc.cloudapp.dialog.orderDialog.HangBillDialog;
 import com.wyc.cloudapp.dialog.MoreFunDialog;
 import com.wyc.cloudapp.dialog.CustomizationView.TmpOrderButton;
 import com.wyc.cloudapp.dialog.VerifyPermissionDialog;
@@ -194,13 +193,13 @@ public class MainActivity extends AppCompatActivity {
             constraintLayout.setVisibility(View.GONE);
         }
     }
-    private void showLastOrderInfo(final String order_code){
+    private void showLastOrderInfo(){
         final ConstraintLayout constraintLayout = mLastOrderInfo;
         if (constraintLayout != null){
             constraintLayout.setVisibility(View.VISIBLE);
             final JSONObject order_info = new JSONObject();
             if (SQLiteHelper.execSql(order_info,"SELECT order_code,sum(pre_sale_money) pre_amt,sum(pay_money) pay_amt,sum(pre_sale_money - pay_money) zl_amt FROM " +
-                    "retail_order_pays where order_code = '" + order_code +"' group by order_code")){
+                    "retail_order_pays where order_code = '" + mOrderCodeTv.getText() +"' group by order_code")){
 
                 final TextView last_order_code = constraintLayout.findViewById(R.id.last_order_code),last_reality_amt = constraintLayout.findViewById(R.id.last_reality_amt),
                         last_rec_amt = constraintLayout.findViewById(R.id.last_rec_amt),last_zl = constraintLayout.findViewById(R.id.last_zl),close_tv = constraintLayout.findViewById(R.id.order_info_close_tv);
@@ -485,9 +484,6 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("ClickableViewAccessibility")
     private void initSearch(){
         final EditText search = findViewById(R.id.search_content);;
-        search.setOnFocusChangeListener((v,b)->Utils.hideKeyBoard((EditText) v));
-        mHandler.postDelayed(search::requestFocus,300);
-        search.setSelectAllOnFocus(true);
         search.setOnKeyListener((v, keyCode, event) -> {
             if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_DOWN){
                 final MainActivity context = MainActivity.this;
@@ -734,7 +730,7 @@ public class MainActivity extends AppCompatActivity {
                     if (mVipInfo != null)dialog.setVipInfo(mVipInfo,true);
                     if (dialog.exec() == 1){
                         mSyncManagement.sync_retail_order();
-                        showLastOrderInfo(mOrderCodeTv.getText().toString());
+                        showLastOrderInfo();
                         resetOrderInfo();
                         MyDialog.SnackbarMessage(getWindow(),"结账成功！", mOrderCodeTv);
                     }
@@ -1032,6 +1028,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean isAdjustPriceMode(){
         return mGoodsInfoViewAdapter != null  && mGoodsInfoViewAdapter.isPriceAdjustMode() ;
     }
+    public void refreshGoodsInfo(final JSONArray array){
+        if(mGoodsInfoViewAdapter != null && null != array)mGoodsInfoViewAdapter.updateGoodsInfo(array);
+    }
     public void addOneSaleGoods(){
         final JSONObject object = Utils.JsondeepCopy(mSaleGoodsViewAdapter.getCurrentContent());
         if (!object.isEmpty()){
@@ -1046,7 +1045,7 @@ public class MainActivity extends AppCompatActivity {
         return mVipInfo;
     }
     public void showAdjustPriceDialog(){
-        if (mGoodsInfoViewAdapter != null && null != mSearch_content)mGoodsInfoViewAdapter.showAdjustPriceDialog(mSearch_content);
+        if (mGoodsInfoViewAdapter != null)mGoodsInfoViewAdapter.showAdjustPriceDialog(findViewById(R.id.goods_type_list));
     }
     private static class Myhandler extends Handler {
         private WeakReference<MainActivity> weakHandler;

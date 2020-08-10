@@ -276,7 +276,7 @@
         android:background="@drawable/round_shape"
         android:orientation="vertical">
 
-        <EditText
+        <com.wyc.cloudapp.dialog.CustomizationView.EditTextForHideKeyBoard
             android:id="@+id/search_content"
             android:layout_width="match_parent"
             android:layout_height="@dimen/height_45"

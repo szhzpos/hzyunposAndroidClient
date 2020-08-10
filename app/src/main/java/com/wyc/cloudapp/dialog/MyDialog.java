@@ -286,7 +286,7 @@ public final class MyDialog extends Dialog {
     }
 
     public static void ToastMessage(final String message, @NonNull final Context context, final Window window){
-        Toast toast = new Toast(context);
+        final Toast toast = new Toast(context);
         if (null != window){
             window.setCallback(new WindowCallback(window,toast));
         }else if (context instanceof Activity){
@@ -307,7 +307,7 @@ public final class MyDialog extends Dialog {
         }
     }
     public static void ToastMessage(View anchor,final String message, @NonNull final Context context, final Window window){
-        Toast toast = new Toast(context);
+        final Toast toast = new Toast(context);
         if (null != window){
             window.setCallback(new WindowCallback(window,toast));
         }else if (context instanceof Activity){

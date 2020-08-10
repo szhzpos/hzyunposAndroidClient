@@ -5,138 +5,133 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/border_sub_gray"
-    android:orientation="horizontal">
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/g_name_tv"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_45"
+        android:layout_marginStart="@dimen/margin_5"
+        android:layout_marginTop="@dimen/margin_5"
+        android:layout_marginEnd="@dimen/margin_5"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/margin_8"
+        android:paddingEnd="@dimen/size_0"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
 
     <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/margin_1"
-        android:layout_weight="1"
-        android:background="@drawable/left_separator"
-        android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_margin="@dimen/margin_5"
+            android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/height_45"
-                android:layout_marginStart="@dimen/margin_5"
-                android:gravity="center"
-                android:text="@string/name_sz"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_18" />
-
-            <TextView
-                android:id="@+id/g_name_tv"
+            <com.wyc.cloudapp.dialog.CustomizationView.EditTextForHideKeyBoard
+                android:id="@+id/new_retail_price_et"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="start|center_vertical"
-                android:paddingStart="@dimen/margin_8"
-                android:paddingEnd="@dimen/size_0"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_18" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/height_45"
-                android:layout_marginStart="@dimen/margin_5"
-                android:gravity="center"
-                android:text="@string/g_price_sz"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_18" />
-
-            <TextView
-                android:id="@+id/w_g_price"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/height_45"
-                android:gravity="start|center_vertical"
-                android:paddingStart="@dimen/margin_8"
-                android:paddingEnd="@dimen/size_0"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_18" />
-
-            <TextView
-                android:id="@+id/unit_name"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/height_45"
-                android:gravity="start|center_vertical"
-                android:paddingStart="@dimen/margin_8"
-                android:paddingEnd="@dimen/size_0"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_18" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/height_45"
-                android:layout_marginStart="@dimen/margin_5"
-                android:gravity="center"
-                android:text="@string/weigh_sz"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_18" />
-
-            <EditText
-                android:id="@+id/w_value"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="@dimen/margin_1"
-                android:background="@drawable/border_sub_gray"
-                android:ems="8"
+                android:layout_height="@dimen/height_50"
+                android:layout_marginBottom="@dimen/margin_8"
+                android:background="@drawable/round_shape_blue"
+                android:ems="10"
                 android:focusable="auto"
                 android:focusableInTouchMode="true"
+                android:hint="@string/new_retail_price_sz"
                 android:inputType="numberSigned|numberDecimal"
                 android:padding="@dimen/margin_5"
-                android:textSize="@dimen/font_size_18" />
+                android:textSize="@dimen/font_size_16"
+                app:onFocusTime="300" />
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/height_45"
-                android:layout_marginStart="@dimen/margin_5"
-                android:gravity="center"
-                android:text="@string/amt_sz"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_18" />
-
-            <TextView
-                android:id="@+id/w_amt"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/height_45"
-                android:gravity="start|center_vertical"
-                android:paddingStart="@dimen/margin_8"
-                android:paddingEnd="@dimen/size_0"
-                android:text="@string/z_p_z_sz"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_18" />
-        </LinearLayout>
-    </LinearLayout>
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-    <com.wyc.cloudapp.dialog.CustomizationView.KeyboardView
-        android:id="@+id/keyboard_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_5"
+                    android:gravity="center"
+                    android:text="@string/ori_retail_price_sz"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_14" />
+
+                <TextView
+                    android:id="@+id/ori_retail_price_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start|center_vertical"
+                    android:paddingStart="@dimen/margin_8"
+                    android:paddingEnd="@dimen/size_0"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_14" />
+
+            </LinearLayout>
+
+            <com.wyc.cloudapp.dialog.CustomizationView.EditTextForHideKeyBoard
+                android:id="@+id/new_vip_price_et"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/height_50"
+                android:layout_marginTop="@dimen/margin_8"
+                android:layout_marginBottom="@dimen/margin_8"
+                android:background="@drawable/round_shape_blue"
+                android:ems="10"
+                android:focusable="auto"
+                android:focusableInTouchMode="true"
+                android:hint="@string/new_vip_price_sz"
+                android:inputType="numberSigned|numberDecimal"
+                android:padding="@dimen/margin_5"
+                android:textSize="@dimen/font_size_16"
+                app:onFocusTime="0" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_5"
+                    android:gravity="center"
+                    android:text="@string/ori_vip_price_sz"
+                    android:textAlignment="viewEnd"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_14" />
+
+                <TextView
+                    android:id="@+id/ori_vip_price_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start|center_vertical"
+                    android:paddingStart="@dimen/margin_8"
+                    android:paddingEnd="@dimen/size_0"
+                    android:text="@string/z_p_z_sz"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_14" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/height_35"
+                android:layout_marginTop="@dimen/margin_5"
+                android:layout_marginBottom="@dimen/margin_5"
+                android:gravity="center_vertical"
+                android:text="@string/adjust_hint_sz"
+                android:textColor="@color/orange_1"
+                android:textSize="@dimen/font_size_12" />
+        </LinearLayout>
+
+        <com.wyc.cloudapp.dialog.CustomizationView.KeyboardView
+            android:id="@+id/keyboard_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
 
 </LinearLayout>

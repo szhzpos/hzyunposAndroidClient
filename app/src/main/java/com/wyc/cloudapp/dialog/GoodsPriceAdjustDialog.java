@@ -3,27 +3,47 @@ package com.wyc.cloudapp.dialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnMainActivityImp;
+import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.Utils;
+import com.wyc.cloudapp.utils.http.HttpRequest;
+
 
 public final class GoodsPriceAdjustDialog extends AbstractDialogBaseOnMainActivityImp {
-    public GoodsPriceAdjustDialog(@NonNull MainActivity context) {
+    private JSONObject mGoods;
+    private EditText mNewRetailPriceEt,mNewVipPriceEt;
+    public GoodsPriceAdjustDialog(@NonNull MainActivity context,final JSONObject object) {
         super(context, context.getText(R.string.price_adjust_sz));
+        mGoods = object;
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initKeyboardView();
+        mNewVipPriceEt = findViewById(R.id.new_vip_price_et);
+        mNewRetailPriceEt = findViewById(R.id.new_retail_price_et);
     }
 
     @Override
     protected int getContentLayoutId() {
         return R.layout.goods_price_adjust_dialog_layout;
+    }
+    @Override
+    public void show(){
+        super.show();
+        showGoodsInfo();
     }
 
     private void initKeyboardView(){
@@ -38,7 +58,90 @@ public final class GoodsPriceAdjustDialog extends AbstractDialogBaseOnMainActivi
         });
         view.setCancelListener(v -> closeWindow());
         view.setOkListener(v -> {
+            if (mGoods != null)adjustRequest();
+        });
+    }
+
+    private void adjustRequest(){
+        final String retail_price = mNewRetailPriceEt.getText().toString(),vip_price = mNewVipPriceEt.getText().toString();
+        if (retail_price.isEmpty()){
+            mNewRetailPriceEt.requestFocus();
+            MyDialog.ToastMessage(mNewRetailPriceEt,mContext.getString(R.string.not_empty_hint_sz,mNewRetailPriceEt.getHint()),mContext,getWindow());
+            return;
+        }
+        if (vip_price.isEmpty()){
+            mNewVipPriceEt.requestFocus();
+            MyDialog.ToastMessage(mNewVipPriceEt,mContext.getString(R.string.not_empty_hint_sz,mNewVipPriceEt.getHint()),mContext,getWindow());
+            return;
+        }
+        final JSONObject object = new JSONObject(),goods = new JSONObject();
+        if (!SQLiteHelper.execSql(object,"SELECT pt_user_id FROM cashier_info where cas_code = '"+ Utils.getNullStringAsEmpty(mContext.getCashierInfo(),"cas_code") +"'")){
+            MyDialog.ToastMessage(object.getString("info"),mContext,getWindow());
+            return;
+        }
+        if ("".equals(Utils.getNullStringAsEmpty(object,"pt_user_id"))){
+            MyDialog.ToastMessage(mContext.getString(R.string.not_empty_hint_sz,"制单人"),mContext,getWindow());
+            return;
+        }
+        final JSONArray array = new JSONArray();
+        final JEventLoop loop = new JEventLoop();
+        final CustomProgressDialog progressDialog = new CustomProgressDialog(mContext);
+        progressDialog.setMessage("正在更新商品信息...").show();
+        CustomApplication.execute(()->{
+            try {
+                final HttpRequest httpRequest = new HttpRequest();
+                object.put("appid",mContext.getAppId());
+
+                goods.put("barcode_id",mGoods.getString("barcode_id"));
+                goods.put("retail_price",retail_price);
+                goods.put("yh_price",vip_price);
+
+
+                array.add(goods);
+                object.put("goods",array);
+
+                Logger.d_json(object.toString());
+
+                final JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + "/api/goods_set/goods_adjust_price",HttpRequest.generate_request_parm(object,mContext.getAppSecret()),true);
+                switch (retJson.getIntValue("flag")){
+                    case 0:
+                        loop.done(0);
+                        mContext.runOnUiThread(()->{
+                            MyDialog.displayErrorMessage(null,retJson.getString("info"),mContext);
+                        });
+                        break;
+                    case 1:
+                        final JSONObject info = JSON.parseObject(retJson.getString("info"));
+                        if ("y".equals(info.getString("status"))){
+                            goods.put("price",retail_price);
+                            loop.done(1);
+                        }else {
+                            loop.done(0);
+                            mContext.runOnUiThread(()->{
+                                MyDialog.displayErrorMessage(null,info.getString("info"),mContext);
+                            });
+                        }
+                        break;
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
 
         });
+        int code = loop.exec();
+        progressDialog.dismiss();
+        if (code == 1){
+            mContext.refreshGoodsInfo(array);
+            closeWindow();
+        }
+    }
+
+    private void showGoodsInfo(){
+        if (mGoods != null){
+            final TextView g_name_tv = findViewById(R.id.g_name_tv),ori_retail_price_tv = findViewById(R.id.ori_retail_price_tv),ori_vip_price_tv = findViewById(R.id.ori_vip_price_tv);
+            g_name_tv.setText(mGoods.getString("goods_title"));
+            ori_retail_price_tv.setText(mGoods.getString("price"));
+            ori_vip_price_tv.setText(mGoods.getString("yh_price"));
+        }
     }
 }

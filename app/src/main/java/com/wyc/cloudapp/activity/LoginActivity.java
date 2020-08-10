@@ -311,8 +311,6 @@ public class LoginActivity extends AppCompatActivity {
     private void initPassword(){
         final EditText password  = findViewById(R.id.password);
         password.setTransformationMethod(new PasswordEditTextReplacement());
-        password.setOnFocusChangeListener((v, hasFocus) -> Utils.hideKeyBoard((EditText)v));
-        password.setSelectAllOnFocus(true);
         password.setOnKeyListener((view, i, keyEvent) -> {
             int keyCode = keyEvent.getKeyCode();
             if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && keyEvent.getAction() == KeyEvent.ACTION_DOWN){
@@ -325,9 +323,6 @@ public class LoginActivity extends AppCompatActivity {
     }
     private void initUserId(){
         final EditText user_id = findViewById(R.id.user_id);
-        user_id.setOnFocusChangeListener((v, hasFocus) -> Utils.hideKeyBoard((EditText)v));
-        user_id.postDelayed(user_id::requestFocus,300);
-        user_id.setSelectAllOnFocus(true);
         user_id.setOnKeyListener((view, i, keyEvent) -> {
             int keyCode = keyEvent.getKeyCode();
             if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && keyEvent.getAction() == KeyEvent.ACTION_DOWN){

@@ -73,11 +73,6 @@ public class GoodsWeighDialog extends AbstractDialogBaseOnMainActivityImp {
 
     private void initWvalueEt(){
         mWvalueEt = findViewById(R.id.w_value);
-        mWvalueEt.setSelectAllOnFocus(true);
-        mWvalueEt.setOnFocusChangeListener((v, hasFocus) -> Utils.hideKeyBoard((EditText)v));
-        mWvalueEt.postDelayed(()->{
-            mWvalueEt.requestFocus();
-        },300);
         mWvalueEt.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {

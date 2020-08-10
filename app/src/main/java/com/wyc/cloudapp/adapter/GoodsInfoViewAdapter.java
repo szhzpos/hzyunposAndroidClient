@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -54,8 +55,8 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         mOnItemClickListener.onClick(v);
     }
 
-    public final static class SALE_TYPE{
-        public static final int COMMON = 0,SPECIAL_PROMOTION = 1;
+    final static class SALE_TYPE{
+        static final int COMMON = 0,SPECIAL_PROMOTION = 1;
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -165,12 +166,15 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     public void showAdjustPriceDialog(@NonNull View anchor){
         final Snackbar snackbar = Snackbar.make(anchor,R.string.price_adjust_sz, Snackbar.LENGTH_INDEFINITE);
         snackbar.setAnchorView(anchor);
-        snackbar.setAction("点击退出调价模式!", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mPriceAdjustMode = false;
-            }
-        });
+        final View snackbar_view = snackbar.getView();
+        snackbar_view.setTranslationX(120);
+        snackbar_view.setBackgroundResource(R.drawable.snackbar_background);
+        final Button btn = snackbar_view.findViewById(R.id.snackbar_action);
+        final TextView tvSnackbarText = snackbar_view.findViewById(R.id.snackbar_text);
+        tvSnackbarText.setTextSize(22);
+        if (null != btn)btn.setTextSize(20);
+        snackbar.setActionTextColor(mContext.getColor(R.color.orange_1));
+        snackbar.setAction("点击退出调价模式!", v -> mPriceAdjustMode = false);
         mPriceAdjustMode = true;
         snackbar.show();
     }
@@ -263,7 +267,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         if (code){
             if (mPriceAdjustMode){
                 code = false;
-                final GoodsPriceAdjustDialog priceAdjustDialog = new GoodsPriceAdjustDialog(mContext);
+                final GoodsPriceAdjustDialog priceAdjustDialog = new GoodsPriceAdjustDialog(mContext,object);
                 priceAdjustDialog.show();
             }else {
                 if (isWeighBarcode){
@@ -391,6 +395,18 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
             }
         }
         return id;
+    }
+
+    public void updateGoodsInfo(final @NonNull JSONArray array){
+        if (!array.isEmpty()){
+            final JSONObject object = getSelectGoods(mCurrentItemView),new_object = array.getJSONObject(0);
+            if (object != null && null != new_object && object.getIntValue("barcode_id") == new_object.getIntValue("barcode_id")){
+                for(final String key : new_object.keySet()){
+                    object.put(key,new_object.getString(key));
+                }
+                notifyDataSetChanged();
+            }
+        }
     }
 
     private boolean isBarcodeWeighingGoods(final String barcode,final ContentValues object){

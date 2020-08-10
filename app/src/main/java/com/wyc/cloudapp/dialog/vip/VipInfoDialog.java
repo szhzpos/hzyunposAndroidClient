@@ -182,9 +182,6 @@ public final class VipInfoDialog extends AbstractDialogBaseOnMainActivityImp {
     @SuppressLint("ClickableViewAccessibility")
     private void initSearchCondition(){
         mSearchContent = findViewById(R.id.search_content);
-        mSearchContent.setSelectAllOnFocus(true);
-        mSearchContent.setOnFocusChangeListener((view, b) -> Utils.hideKeyBoard((EditText) view));
-        mSearchContent.postDelayed(()->{mSearchContent.requestFocus();},300);
         mSearchContent.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {

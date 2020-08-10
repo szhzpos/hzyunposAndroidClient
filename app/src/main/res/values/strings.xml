@@ -310,4 +310,9 @@
     <string name="fullreduce_des_sz">满%1$s减%2$s</string>
     <string name="diff_des_sz">差%1$s元</string>
     <string name="price_adjust_sz">商品调价</string>
+    <string name="ori_vip_price_sz">原会员价:</string>
+    <string name="ori_retail_price_sz">原零售价:</string>
+    <string name="new_vip_price_sz">新会员价</string>
+    <string name="new_retail_price_sz">新零售价</string>
+    <string name="adjust_hint_sz">注：该调价会直接更新总部档案价格</string>
 </resources>

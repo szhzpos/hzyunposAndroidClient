@@ -7,7 +7,7 @@
     android:background="@drawable/border_sub_gray"
     android:orientation="vertical">
 
-    <EditText
+    <com.wyc.cloudapp.dialog.CustomizationView.EditTextForHideKeyBoard
         android:id="@+id/new_numOrprice_text"
         android:layout_width="match_parent"
         android:layout_height="@dimen/height_45"

@@ -98,7 +98,7 @@
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_18" />
 
-            <EditText
+            <com.wyc.cloudapp.dialog.CustomizationView.EditTextForHideKeyBoard
                 android:id="@+id/w_value"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

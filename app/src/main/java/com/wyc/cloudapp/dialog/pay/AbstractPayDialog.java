@@ -160,8 +160,6 @@ public abstract class AbstractPayDialog extends AbstractDialogBaseOnMainActivity
     private void init_c_amount(){
         mPayAmtEt = findViewById(R.id.c_amt);
         mPayAmtEt.setText(String.format(Locale.CHINA,"%.2f",mOriginalPayAmt));
-        mPayAmtEt.setSelectAllOnFocus(true);
-        mPayAmtEt.setOnFocusChangeListener((view, b) -> Utils.hideKeyBoard((EditText) view));
         mPayAmtEt.setOnKeyListener((dialog, keyCode, event) -> {
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_UP){
                 keyListenerCallBack();
@@ -173,8 +171,6 @@ public abstract class AbstractPayDialog extends AbstractDialogBaseOnMainActivity
 
     private void init_pay_code(){
         mPayCode = findViewById(R.id.pay_code);
-        mPayCode.setSelectAllOnFocus(true);
-        mPayCode.setOnFocusChangeListener((view, b) -> Utils.hideKeyBoard((EditText) view));
         mPayCode.setOnKeyListener((dialog, keyCode, event) -> {
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_UP){
                 keyListenerCallBack();

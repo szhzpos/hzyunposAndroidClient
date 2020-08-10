@@ -222,8 +222,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
             });
     }
     private void initKeyboard(){
-        ConstraintLayout keyboard_linear_layout;
-        keyboard_linear_layout = findViewById(R.id.keyboard);
+        final ConstraintLayout keyboard_linear_layout  = findViewById(R.id.keyboard);
         if (null != keyboard_linear_layout)
             for (int i = 0,child  = keyboard_linear_layout.getChildCount(); i < child;i++){
             final View tmp_v = keyboard_linear_layout.getChildAt(i);
@@ -1040,8 +1039,6 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
     private void initCsahText(){
         final EditText cm = mCashMoneyEt = findViewById(R.id.cash_amt);
         cm.setText(String.format(Locale.CHINA,"%.2f",mActual_amt));
-        cm.setSelectAllOnFocus(true);
-        cm.setOnFocusChangeListener((view, b) -> Utils.hideKeyBoard((EditText) view));
         cm.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {

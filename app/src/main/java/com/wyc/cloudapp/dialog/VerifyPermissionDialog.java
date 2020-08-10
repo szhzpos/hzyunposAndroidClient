@@ -66,10 +66,7 @@ public final class VerifyPermissionDialog extends AbstractDialogBaseOnMainActivi
     }
     private void initCasIdEt(){
         final EditText et = findViewById(R.id.cas_content);
-        et.setSelectAllOnFocus(true);
         et.setTransformationMethod(new PasswordEditTextReplacement());
-        et.setOnFocusChangeListener((v, hasFocus) -> Utils.hideKeyBoard((EditText)v));
-        et.postDelayed(et::requestFocus,300);
         mCasContent = et;
     }
     private void initKeyboardView(){

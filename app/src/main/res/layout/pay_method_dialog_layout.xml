@@ -24,7 +24,7 @@
         android:background="@drawable/border_sub_gray"
         android:orientation="horizontal">
 
-        <EditText
+        <com.wyc.cloudapp.dialog.CustomizationView.EditTextForHideKeyBoard
             android:id="@+id/c_amt"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -39,7 +39,7 @@
             android:textColor="@color/orange_1"
             android:textSize="@dimen/font_size_18" />
 
-        <EditText
+        <com.wyc.cloudapp.dialog.CustomizationView.EditTextForHideKeyBoard
             android:id="@+id/pay_code"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

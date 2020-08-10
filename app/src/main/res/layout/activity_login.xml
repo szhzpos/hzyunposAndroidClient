@@ -318,7 +318,7 @@
                 android:textColor="@color/pink_white"
                 android:textSize="@dimen/font_size_18" />
 
-            <EditText
+            <com.wyc.cloudapp.dialog.CustomizationView.EditTextForHideKeyBoard
                 android:id="@+id/user_id"
                 android:layout_width="@dimen/login_text_width"
                 android:layout_height="@dimen/login_text_height"
@@ -339,7 +339,7 @@
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_16" />
 
-            <EditText
+            <com.wyc.cloudapp.dialog.CustomizationView.EditTextForHideKeyBoard
                 android:id="@+id/password"
                 android:layout_width="@dimen/login_text_width"
                 android:layout_height="@dimen/login_text_height"

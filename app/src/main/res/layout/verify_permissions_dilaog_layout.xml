@@ -26,7 +26,7 @@
             android:textColor="@color/orange_1"
             android:textSize="@dimen/font_size_16" />
 
-        <EditText
+        <com.wyc.cloudapp.dialog.CustomizationView.EditTextForHideKeyBoard
             android:id="@+id/cas_content"
             android:layout_width="match_parent"
             android:layout_height="@dimen/height_50"

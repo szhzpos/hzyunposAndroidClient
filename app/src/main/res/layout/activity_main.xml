@@ -1195,7 +1195,7 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/fun_button_font_size_18" />
 
-        <EditText
+        <com.wyc.cloudapp.dialog.CustomizationView.EditTextForHideKeyBoard
             android:id="@+id/search_content"
             android:layout_width="@dimen/size_248"
             android:layout_height="@dimen/height_40"
