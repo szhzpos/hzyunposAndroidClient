@@ -25,7 +25,6 @@ public class EditTextForHideKeyBoard extends EditText {
         for (int i = 0; i < indexCount; i++) {
             int index = typedArray.getIndex(i);
             if (index == R.styleable.EditTextForHideKeyBoard_onFocusTime) {
-                Logger.d("mOnFocusTime:%d",mOnFocusTime);
                 mOnFocusTime = typedArray.getInteger(index, 300);
             }
         }

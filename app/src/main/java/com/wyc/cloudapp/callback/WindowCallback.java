@@ -21,7 +21,9 @@ import com.wyc.cloudapp.logger.Logger;
 public class WindowCallback implements Window.Callback {
     private Window mWin;
     private Object mObj;
+    private Window.Callback  mOri;
     public WindowCallback(@NonNull final Window window,final Object obj){
+        mOri = window.getCallback();
         mWin = window;
         mObj = obj;
     }
@@ -31,7 +33,6 @@ public class WindowCallback implements Window.Callback {
     }
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-
         return mWin.superDispatchKeyEvent(event);
     }
 
@@ -50,6 +51,8 @@ public class WindowCallback implements Window.Callback {
             }
             mObj = null;//断开引用
         }
+        mWin.setCallback(mOri);
+        mOri = null;
         return mWin.superDispatchTouchEvent(event);
     }
 

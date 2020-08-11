@@ -14,13 +14,12 @@ import java.util.concurrent.TimeoutException;
 import android_serialport_api.SerialPort;
 
 public class DhSerialScale extends AbstractSerialScaleImp {
-    private Future<?> mTask;
     public DhSerialScale(final String port){
         mPort = port;
     }
     @Override
     public void startRead() {
-        mTask = CustomApplication.submit(()->{
+        CustomApplication.submit(()->{
             try {
                 // 打开/dev/ttyUSB0路径设备的串口
                 synchronized(this){
@@ -59,7 +58,7 @@ public class DhSerialScale extends AbstractSerialScaleImp {
                 }
             } catch (IOException | SecurityException | NumberFormatException e) {
                 e.printStackTrace();
-                if (mReading)if (mOnReadStatus != null)mOnReadStatus.onError(e.getMessage());//读过程中发生错误
+                if (mReading && mOnReadStatus != null)mOnReadStatus.onError(e.getMessage());//读过程中发生错误
             }finally {
                 close();
             }
@@ -69,12 +68,6 @@ public class DhSerialScale extends AbstractSerialScaleImp {
     @Override
     public void stopRead() {
         mReading = false;
-        try {
-            mTask.get(100, TimeUnit.MILLISECONDS);
-        } catch (ExecutionException | TimeoutException | InterruptedException e) {
-            if (e instanceof TimeoutException){
-                close();
-            }
-        }
+        close();
     }
 }

@@ -164,11 +164,11 @@ public final class RefundDialog extends AbstractShowPrinterICODialog {
                         }
 
                         refund_sum_num += refund_num;
-                        refund_sum_amt += Utils.formatDouble(refund_num * refund_price,2);
+                        refund_sum_amt += refund_num * refund_price;
                         returnable_sum_num += returnable_num;
                     }
                     refund_sum_num_tv.setText(String.format(Locale.CHINA,"%.3f",refund_sum_num));
-                    refund_sum_amt_tv.setText(String.format(Locale.CHINA,"%.2f",refund_sum_amt));
+                    refund_sum_amt_tv.setText(String.format(Locale.CHINA,"%.2f",Utils.formatDouble(refund_sum_amt,2)));
 
                     if (!mRefundGoodsInfoAdapter.isSingleRefundStatus()){
                         if (Utils.equalDouble(refund_sum_num,0.0)){

@@ -1,7 +1,7 @@
 package com.wyc.cloudapp.adapter;
 
 import android.content.ContentValues;
-import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -52,7 +51,8 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     @Override
     public void onClick(View v) {
         set_selected_status(v);
-        mOnItemClickListener.onClick(v);
+        Utils.disableView(v,300);
+        mOnItemClickListener.onClick(getSelectGoodsByIndex());
     }
 
     final static class SALE_TYPE{
@@ -60,7 +60,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView gp_id,goods_id,goods_title,unit_id,unit_name,barcode_id,barcode,price;
+        TextView gp_id,goods_id,goods_title,unit_name,barcode_id,barcode,price;
         ImageView goods_img;
         View mCurrentItemView;
         MyViewHolder(View itemView) {
@@ -71,7 +71,6 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
             goods_id = itemView.findViewById(R.id.goods_id);
             gp_id = itemView.findViewById(R.id.gp_id);
             goods_title =  itemView.findViewById(R.id.goods_title);
-            unit_id =  itemView.findViewById(R.id.unit_id);
             unit_name =  itemView.findViewById(R.id.unit_name);
             barcode_id =  itemView.findViewById(R.id.barcode_id);
             barcode =  itemView.findViewById(R.id.barcode);
@@ -91,40 +90,39 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
         if (mDatas != null){
-            JSONObject goods_info = mDatas.getJSONObject(i);
-            if (goods_info != null){
+            final JSONObject goods_info = mDatas.getJSONObject(i);
+            final ImageView goods_img = myViewHolder.goods_img;
+            final TextView goods_title = myViewHolder.goods_title;
+            if (mShowPic){
                 final String img_url = Utils.getNullStringAsEmpty(goods_info,"img_url");
-                if (mShowPic){
-                    if (!"".equals(img_url)){
-                        final String szImage = img_url.substring(img_url.lastIndexOf("/") + 1);
-                        CustomApplication.execute(()->{
-                            final Bitmap bitmap = BitmapFactory.decodeFile(LoginActivity.IMG_PATH + szImage);
-                            myViewHolder.goods_img.post(()-> myViewHolder.goods_img.setImageBitmap(bitmap));
-                        });
-                    }else{
-                        myViewHolder.goods_img.setImageDrawable(mContext.getDrawable(R.drawable.nodish));
-                    }
+                if (!"".equals(img_url)){
+                    final String szImage = img_url.substring(img_url.lastIndexOf("/") + 1);
+                    CustomApplication.execute(()->{
+                        final Bitmap bitmap = BitmapFactory.decodeFile(LoginActivity.IMG_PATH + szImage);
+                        goods_img.post(()-> myViewHolder.goods_img.setImageBitmap(bitmap));
+                    });
                 }else{
-                    myViewHolder.goods_img.setVisibility(View.GONE);
+                    goods_img.setImageDrawable(mContext.getDrawable(R.drawable.nodish));
                 }
+            }else{
+                if (goods_img.isShown())goods_img.setVisibility(View.GONE);
+            }
+            myViewHolder.goods_id.setText(goods_info.getString("goods_id"));
+            myViewHolder.gp_id.setText(goods_info.getString("gp_id"));
+            myViewHolder.unit_name.setText(goods_info.getString("unit_name"));
 
-                myViewHolder.goods_id.setText(goods_info.getString("goods_id"));
-                myViewHolder.gp_id.setText(goods_info.getString("gp_id"));
-                myViewHolder.goods_title.setText(goods_info.getString("goods_title"));
-                myViewHolder.unit_id.setText(goods_info.getString("unit_id"));
-                myViewHolder.unit_name.setText(goods_info.getString("unit_name"));
+            myViewHolder.barcode_id.setTag(i);
+            myViewHolder.barcode_id.setText(goods_info.getString("barcode_id"));
+            myViewHolder.barcode.setText(goods_info.getString("barcode"));
+            myViewHolder.price.setText(goods_info.getString("price"));
 
-                myViewHolder.barcode_id.setText(goods_info.getString("barcode_id"));
-                myViewHolder.barcode.setText(goods_info.getString("barcode"));
-                myViewHolder.price.setText(goods_info.getString("price"));
+            goods_title.setText(goods_info.getString("goods_title"));
+            if(goods_title.getCurrentTextColor() != mContext.getResources().getColor(R.color.good_name_color,null)){
+                goods_title.setTextColor(mContext.getColor(R.color.good_name_color));//需要重新设置颜色；不然重用之后内容颜色为重用之前的。
+            }
 
-                if(myViewHolder.goods_title.getCurrentTextColor() == mContext.getResources().getColor(R.color.blue,null)){
-                   myViewHolder.goods_title.setTextColor(mContext.getColor(R.color.good_name_color));//需要重新设置颜色；不然重用之后内容颜色为重用之前的。
-                }
-
-                if (mOnItemClickListener != null){
-                    myViewHolder.mCurrentItemView.setOnClickListener(this);
-                }
+            if (mOnItemClickListener != null){
+                myViewHolder.mCurrentItemView.setOnClickListener(this);
             }
         }
     }
@@ -148,26 +146,23 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         if (mCurrentItemView != v)mCurrentItemView = v;
     }
 
-    public JSONObject getSelectGoods(final View currentItem){
-        if (currentItem != null){
-            final TextView barcode_id_tv = currentItem.findViewById(R.id.barcode_id),gp_id_tv = currentItem.findViewById(R.id.gp_id);
-            if (barcode_id_tv != null && gp_id_tv != null){
-                final String barcode_id = barcode_id_tv.getText().toString(),gp_id = gp_id_tv.getText().toString();
-                for (int i = 0,size = mDatas.size();i < size;i++){
-                    final JSONObject object = mDatas.getJSONObject(i);
-                    if (object != null && barcode_id.equals(object.getString("barcode_id")) && gp_id.equals(object.getString("gp_id"))){
-                        return object;
-                    }
-                }
+    private JSONObject getSelectGoodsByIndex(){
+        if (mCurrentItemView != null){
+            final TextView barcode_id_tv = mCurrentItemView.findViewById(R.id.barcode_id);
+            int index = Utils.getViewTagValue(barcode_id_tv,-1);
+            if (0 <= index && index < mDatas.size()){
+                return mDatas.getJSONObject(index);
             }
         }
         return null;
     }
     public void showAdjustPriceDialog(@NonNull View anchor){
+        mPriceAdjustMode = true;
+
         final Snackbar snackbar = Snackbar.make(anchor,R.string.price_adjust_sz, Snackbar.LENGTH_INDEFINITE);
         snackbar.setAnchorView(anchor);
         final View snackbar_view = snackbar.getView();
-        snackbar_view.setTranslationX(120);
+        snackbar_view.setTranslationX(Utils.dpToPx(mContext,121));
         snackbar_view.setBackgroundResource(R.drawable.snackbar_background);
         final Button btn = snackbar_view.findViewById(R.id.snackbar_action);
         final TextView tvSnackbarText = snackbar_view.findViewById(R.id.snackbar_text);
@@ -175,11 +170,18 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         if (null != btn)btn.setTextSize(20);
         snackbar.setActionTextColor(mContext.getColor(R.color.orange_1));
         snackbar.setAction("点击退出调价模式!", v -> mPriceAdjustMode = false);
-        mPriceAdjustMode = true;
         snackbar.show();
     }
 
-    void setDatas(int id){
+    public void loadGoodsByCategoryId(final String id){
+        try {
+            setDatas(Integer.valueOf(id));
+        }catch (NumberFormatException e){
+            e.printStackTrace();
+        }
+    }
+
+    private void setDatas(int id){
 
         final StringBuilder err = new StringBuilder();
         String sql = "",category_id;
@@ -377,7 +379,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     }
 
     public interface OnItemClickListener{
-        void onClick(View v);
+        void onClick(final JSONObject object);
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener){
@@ -399,12 +401,16 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
 
     public void updateGoodsInfo(final @NonNull JSONArray array){
         if (!array.isEmpty()){
-            final JSONObject object = getSelectGoods(mCurrentItemView),new_object = array.getJSONObject(0);
+            final JSONObject object = getSelectGoodsByIndex(),new_object = array.getJSONObject(0);
             if (object != null && null != new_object && object.getIntValue("barcode_id") == new_object.getIntValue("barcode_id")){
                 for(final String key : new_object.keySet()){
                     object.put(key,new_object.getString(key));
                 }
-                notifyDataSetChanged();
+                try {
+                    notifyItemChanged(Utils.getViewTagValue(mCurrentItemView.findViewById(R.id.barcode_id),0));
+                }catch (NumberFormatException e){
+                    e.printStackTrace();
+                }
             }
         }
     }

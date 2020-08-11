@@ -460,9 +460,9 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
                 record = mGoodsDatas.getJSONObject(i);
                 refund_price = record.getDoubleValue("refund_price");
                 refund_num = record.getDoubleValue("refund_num");
-                refund_sum_amt += Utils.formatDouble(refund_num * refund_price,2);
+                refund_sum_amt += refund_num * refund_price;
             }
-        return refund_sum_amt;
+        return Utils.formatDouble(refund_sum_amt,2);
     }
 
     public String PayDatasToString(){

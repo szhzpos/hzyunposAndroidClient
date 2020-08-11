@@ -17,13 +17,12 @@ import java.util.concurrent.TimeoutException;
 import android_serialport_api.SerialPort;
 
 public class DjSerialScale extends AbstractSerialScaleImp {
-    private Future<?> mTask;
     public DjSerialScale(final String port){
         mPort = port;
     }
     @Override
     public void startRead() {
-        mTask = CustomApplication.submit(()->{
+        CustomApplication.submit(()->{
             try {
                 synchronized(this){
                     mSerialPort = new SerialPort(new File(mPort), 9600, 0);
@@ -60,7 +59,7 @@ public class DjSerialScale extends AbstractSerialScaleImp {
                 }
             } catch (IOException | NumberFormatException e) {
                 e.printStackTrace();
-                if (mReading)if (mOnReadStatus != null)mOnReadStatus.onError(e.getMessage());//读过程中发生错误
+                if (mReading && mOnReadStatus != null)mOnReadStatus.onError(e.getMessage());//读过程中发生错误
             }finally {
                 close();
             }
@@ -70,14 +69,6 @@ public class DjSerialScale extends AbstractSerialScaleImp {
     @Override
     public void stopRead() {
         mReading = false;
-        try {
-            mTask.get(300, TimeUnit.SECONDS);
-        } catch (ExecutionException | TimeoutException | InterruptedException | CancellationException e) {
-            e.printStackTrace();
-            if (e instanceof TimeoutException ){//如果超时重新关闭
-                close();
-            }
-        }
+        close();
     }
-
 }

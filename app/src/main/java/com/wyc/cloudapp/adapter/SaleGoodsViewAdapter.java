@@ -36,9 +36,9 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
     private View mCurrentItemView;
     private int mCurrentItemIndex;
     private int mOrderType = 1;//订单类型 1线下 2线上
-    private boolean d_discount = false;//是否折上折
-    private boolean mSingleRefundStatus = false;
+    private boolean mSingleRefundStatus = false,d_discount = false;//d_discount是否折上折
     private JSONObject mFullReduceRecord;
+    private GoodsWeighDialog mWeighDialog;
     public SaleGoodsViewAdapter(MainActivity context){
         this.mContext = context;
         mDatas = new JSONArray();
@@ -137,21 +137,32 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
         deleteSaleGoods(mCurrentItemIndex,0);
     }, this::setSelectStatus);
 
-
     public void addSaleGoods(final JSONObject goods){
         if (null != goods && !goods.isEmpty()){
             double xnum = goods.getDoubleValue("xnum");//新增的商品不存在xnum字段，xnum等于0.0。挂单以及条码秤称重商品已经存在,以及该字段值不会为0
             boolean isBarcodeWeighingGoods = !Utils.getNullStringAsEmpty(goods,GoodsInfoViewAdapter.W_G_MARK).isEmpty(),isZero = Utils.equalDouble(xnum,0.0);
             if(!isBarcodeWeighingGoods && isZero && goods.getIntValue("type") == 2){//type 1 普通 2散装称重 3鞋帽
-                final GoodsWeighDialog goodsWeighDialog = new GoodsWeighDialog(mContext,mContext.getString(R.string.goods_i_sz),goods.getIntValue("barcode_id"));
-                goodsWeighDialog.setOnYesOnclickListener(myDialog -> {
-                    double num = myDialog.getContent();
+                if (mWeighDialog == null){
+                    mWeighDialog = new GoodsWeighDialog(mContext,mContext.getString(R.string.goods_i_sz));
+                }
+                mWeighDialog.setOnYesOnclickListener(num -> {
                     if (!Utils.equalDouble(num,0.0)){
-                        addSaleGoods(goods,num,false);
+                        if (mWeighDialog.isContinuousWeighing()) {
+                            Logger.d("w_num:%f,x_num:%f",num,getSumNum());
+                            num -= getSumNum();
+                            updateSaleGoodsInfo(num, 0);
+                        }else{
+                            addSaleGoods(goods,num,false);
+                        }
                     }
-                    myDialog.dismiss();
                 });
-                goodsWeighDialog.show();
+                mWeighDialog.setBarcodeId(goods.getIntValue("barcode_id"));
+                if (mWeighDialog.isContinuousWeighing()){
+                    addSaleGoods(goods,0,false);
+                }else{
+                    mWeighDialog.read();
+                    mWeighDialog.show();
+                }
             }else{
                 if (!isBarcodeWeighingGoods && isZero)xnum = 1.0;
                 addSaleGoods(goods,xnum,isBarcodeWeighingGoods);
@@ -597,6 +608,10 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
         mDiscountRecords.fluentClear();
         mDatas.fluentClear();
         if(mFullReduceRecord != null)mFullReduceRecord = null;
+        if (mWeighDialog != null){
+            mWeighDialog.stopRead();
+            mWeighDialog = null;
+        }
         notifyDataSetChanged();
     }
     public JSONObject getCurrentContent() {
@@ -1004,6 +1019,14 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
             addDiscountRecords(type,discount_details);
         }
         notifyDataSetChanged();
+    }
+    private double getSumNum(){
+        double num = 0.0;
+        for (int i = 0,size = mDatas.size();i < size;i++){
+            final JSONObject object = mDatas.getJSONObject(i);
+            num += object.getDoubleValue("xnum");
+       }
+        return num;
     }
 
     public void fullReduceDiscount(){

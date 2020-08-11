@@ -312,17 +312,10 @@ public class MainActivity extends AppCompatActivity {
         final Button clearBtn = findViewById(R.id.clear);
         if (null != clearBtn){
             clearBtn.setOnClickListener(v -> {
-                if (!mSaleGoodsViewAdapter.getDatas().isEmpty()){
-                    if (verifyClearPermissions()){
-                        MyDialog.displayAskMessage(mDialog,"是否清除销售商品？",this,myDialog -> {
-                            resetOrderInfo();
-                            myDialog.dismiss();
-                        },Dialog::dismiss);
-                    }
+                if (!mSaleGoodsViewAdapter.isEmpty()){
+                    clearSaleGoods();
                 }else {
-                    if (getSingle()){
-                        resetOrderInfo();
-                    }
+                    if (getSingle())resetOrderInfo();
                 }
             });
         }
@@ -330,6 +323,16 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean verifyClearPermissions(){
         return verifyPermissions("2",null);
+    }
+
+    public boolean clearSaleGoods(){
+        boolean code ;
+        if (code = verifyClearPermissions()){
+            if (code =(MyDialog.showMessageToModalDialog(this,"是否清除销售商品？") == 1)){
+                resetOrderInfo();
+            }
+        }
+        return code;
     }
 
     private void initCloseMainWindow(){
@@ -433,12 +436,8 @@ public class MainActivity extends AppCompatActivity {
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(this,GoodsInfoViewAdapter.SPAN_COUNT);
         goods_info_view.setLayoutManager(gridLayoutManager);
         SuperItemDecoration.registerGlobalLayoutToRecyclerView(goods_info_view,getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration(-1));
-        mGoodsInfoViewAdapter.setOnItemClickListener(v -> {
-            Utils.disableView(v,300);
-            final JSONObject jsonObject = mGoodsInfoViewAdapter.getSelectGoods(v);
-            if (jsonObject != null){
-                addSaleGoods(jsonObject);
-            }
+        mGoodsInfoViewAdapter.setOnItemClickListener(object -> {
+            if (object != null)addSaleGoods(object);
         });
         goods_info_view.setAdapter(mGoodsInfoViewAdapter);
     }
@@ -853,8 +852,8 @@ public class MainActivity extends AppCompatActivity {
         if ("".equals(mPermissionCashierId))return mCashierInfo.getString("cas_id");
         return mPermissionCashierId;
     }
-    public GoodsInfoViewAdapter getGoodsInfoViewAdapter(){
-        return mGoodsInfoViewAdapter;
+    public void loadGoods(final String id){
+        if (mGoodsInfoViewAdapter != null)mGoodsInfoViewAdapter.loadGoodsByCategoryId(id);
     }
     public String getAppId(){
         return mAppId;
@@ -1028,7 +1027,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isAdjustPriceMode(){
         return mGoodsInfoViewAdapter != null  && mGoodsInfoViewAdapter.isPriceAdjustMode() ;
     }
-    public void refreshGoodsInfo(final JSONArray array){
+    public void adjustPriceRefreshGoodsInfo(final JSONArray array){
         if(mGoodsInfoViewAdapter != null && null != array)mGoodsInfoViewAdapter.updateGoodsInfo(array);
     }
     public void addOneSaleGoods(){

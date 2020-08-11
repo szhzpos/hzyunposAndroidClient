@@ -26,16 +26,13 @@ public abstract class AbstractSerialScaleImp implements ISerialScale {
 
     public static int readWeight(final JSONObject object){
         int code = -1;
-        AbstractSerialScaleImp serialScale = null;
         if (SQLiteHelper.getLocalParameter("serial_port_scale",object)){
-            final String cls_id = Utils.getNullStringAsEmpty(object,"cls_id"),
-                    ser_port = Utils.getNullOrEmptyStringAsDefault(object,"ser_port","NONE");
+            final String cls_id = Utils.getNullStringAsEmpty(object,"cls_id"),ser_port = Utils.getNullOrEmptyStringAsDefault(object,"ser_port","NONE");
             if (!"NONE".equals(ser_port)){
                 try {
                     Class<?> scale_class = Class.forName("com.wyc.cloudapp.dialog.serialScales." + cls_id);
                     Constructor<?> constructor = scale_class.getConstructor(String.class);
-                    serialScale = (AbstractSerialScaleImp)constructor.newInstance(ser_port);
-                    object.fluentClear().put("info",serialScale);
+                    object.fluentClear().put("info",constructor.newInstance(ser_port));
                     code = 0;
                 } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InstantiationException |
                         InvocationTargetException e) {

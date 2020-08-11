@@ -175,11 +175,12 @@ public final class MoreFunDialog extends AbstractDialogBaseOnMainActivityImp {
     private void initPriceAdjustBtn(){
         final Button btn = findViewById(R.id.price_adj_btn);
         btn.setOnClickListener(v -> {
-            if (verifyPriceAdjustPermissions()){
+            boolean code = true;
+            if (!mContext.getSaleData().isEmpty())code = mContext.clearSaleGoods();
+            if (code && verifyPriceAdjustPermissions()){
                 mContext.showAdjustPriceDialog();
                 closeWindow();
             }
         });
     }
-
 }

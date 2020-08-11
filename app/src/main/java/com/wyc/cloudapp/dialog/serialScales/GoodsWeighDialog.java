@@ -34,9 +34,14 @@ public class GoodsWeighDialog extends AbstractDialogBaseOnMainActivityImp {
     private EditText mWvalueEt;
     private TextView mPriceTv,mAmtTv;
     private AbstractSerialScaleImp mSerialScale;
-    public GoodsWeighDialog(@NonNull MainActivity context, final String title, final int barcode_id) {
+    private double mValue;
+    private MainActivity mCotext;
+    private boolean mContinuousWeighing = true;
+    public GoodsWeighDialog(@NonNull MainActivity context, final String title) {
         super(context,title);
-        mBarcodeId = barcode_id;
+        mCotext = context;
+
+        read();
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,12 +53,12 @@ public class GoodsWeighDialog extends AbstractDialogBaseOnMainActivityImp {
         //初始化重量
         initWvalueEt();
 
-        //初始化商品信息
-        initGoodsInfo();
-
         //初始化数字键盘
         initKeyboardView();
-
+    }
+    @Override
+    public void finalize(){
+        Logger.d("GoodsWeighDialog finalized");
     }
     @Override
     protected int getContentLayoutId(){
@@ -62,15 +67,23 @@ public class GoodsWeighDialog extends AbstractDialogBaseOnMainActivityImp {
     @Override
     public void onAttachedToWindow(){
         super.onAttachedToWindow();
-        read();
+
+        //初始化商品信息
+        initGoodsInfo();
+
+        if (getCurrentFocus() != mWvalueEt && mWvalueEt != null)
+            mWvalueEt.postDelayed(()->{mWvalueEt.requestFocus();},300);
     }
 
     @Override
     public void onDetachedFromWindow(){
         super.onDetachedFromWindow();
-        if (mSerialScale != null)mSerialScale.stopRead();
+        stopRead();
     }
 
+    public void setBarcodeId(final int id){
+        mBarcodeId = id;
+    }
     private void initWvalueEt(){
         mWvalueEt = findViewById(R.id.w_value);
         mWvalueEt.addTextChangedListener(new TextWatcher() {
@@ -115,7 +128,8 @@ public class GoodsWeighDialog extends AbstractDialogBaseOnMainActivityImp {
         view.setCancelListener(v -> closeWindow());
         view.setOkListener(v -> {
             if (mOnYesClick != null){
-                mOnYesClick.onYesClick(GoodsWeighDialog.this);
+                mOnYesClick.onYesClick(getContent());
+                dismiss();
             }
         });
     }
@@ -164,44 +178,51 @@ public class GoodsWeighDialog extends AbstractDialogBaseOnMainActivityImp {
         }
     }
 
-    private void read(){
-        final JSONObject object = new JSONObject();
-        int code = AbstractSerialScaleImp.readWeight(object);
-        if (code >= 0){
-            if (code == 0){
+    public void stopRead(){
+        if (mWvalueEt != null)mWvalueEt.clearFocus();
+        if (mSerialScale != null){
+            mSerialScale.stopRead();
+            mSerialScale = null;
+        }
+    }
+    public void read(){
+        if (mSerialScale == null){
+            final JSONObject object = new JSONObject();
+            int code = AbstractSerialScaleImp.readWeight(object);
+            if (code >= 0){
                 mSerialScale = (AbstractSerialScaleImp) object.get("info");
                 if (mSerialScale != null){
                     mSerialScale.setOnReadListener(new AbstractSerialScaleImp.OnReadStatus() {
                         @Override
                         public void onFinish(double num) {
-                            mWvalueEt.post(()->{
-                                mWvalueEt.setText(String.format(Locale.CHINA,"%.3f",num));
-                            });
+                            mValue = num;
+                            if (mContinuousWeighing){
+                                if (mOnYesClick != null)mContext.runOnUiThread(()-> mOnYesClick.onYesClick(num));
+                            }else
+                            if (null != mWvalueEt)mWvalueEt.post(()-> mWvalueEt.setText(String.format(Locale.CHINA,"%.3f",num)));
                         }
                         @Override
                         public void onError(String err) {
-                            mWvalueEt.post(()-> MyDialog.ToastMessage("读串口错误：" + err,mContext,getWindow()));
+                            mCotext.runOnUiThread(()-> MyDialog.ToastMessage("读串口错误：" + err,mContext,getWindow()));
                         }
                     }).startRead();
                 }
+            }else{
+                MyDialog.ToastMessage("读串口错误：" + Utils.getNullStringAsEmpty(object,"info"),mContext,getWindow());
             }
-        }else{
-            MyDialog.ToastMessage("读串口错误：" + Utils.getNullStringAsEmpty(object,"info"),mContext,getWindow());
         }
+    }
+
+    public boolean isContinuousWeighing(){
+        return mContinuousWeighing;
     }
 
     public final double getContent(){
-        double v = 0.0;
-        try {
-            v = Double.valueOf(mWvalueEt.getText().toString());
-        }catch (NumberFormatException e){
-            e.printStackTrace();
-        }
-        return v;
+        return mValue;
     }
 
     public interface OnYesOnclickListener {
-        void onYesClick(GoodsWeighDialog myDialog);
+        void onYesClick(double num);
     }
     public final void setOnYesOnclickListener(OnYesOnclickListener listener){
         mOnYesClick = listener;

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -69,11 +70,7 @@ public final class GoodsPriceAdjustDialog extends AbstractDialogBaseOnMainActivi
             MyDialog.ToastMessage(mNewRetailPriceEt,mContext.getString(R.string.not_empty_hint_sz,mNewRetailPriceEt.getHint()),mContext,getWindow());
             return;
         }
-        if (vip_price.isEmpty()){
-            mNewVipPriceEt.requestFocus();
-            MyDialog.ToastMessage(mNewVipPriceEt,mContext.getString(R.string.not_empty_hint_sz,mNewVipPriceEt.getHint()),mContext,getWindow());
-            return;
-        }
+
         final JSONObject object = new JSONObject(),goods = new JSONObject();
         if (!SQLiteHelper.execSql(object,"SELECT pt_user_id FROM cashier_info where cas_code = '"+ Utils.getNullStringAsEmpty(mContext.getCashierInfo(),"cas_code") +"'")){
             MyDialog.ToastMessage(object.getString("info"),mContext,getWindow());
@@ -94,13 +91,10 @@ public final class GoodsPriceAdjustDialog extends AbstractDialogBaseOnMainActivi
 
                 goods.put("barcode_id",mGoods.getString("barcode_id"));
                 goods.put("retail_price",retail_price);
-                goods.put("yh_price",vip_price);
-
+                if (!vip_price.isEmpty())goods.put("yh_price",vip_price);
 
                 array.add(goods);
                 object.put("goods",array);
-
-                Logger.d_json(object.toString());
 
                 final JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + "/api/goods_set/goods_adjust_price",HttpRequest.generate_request_parm(object,mContext.getAppSecret()),true);
                 switch (retJson.getIntValue("flag")){
@@ -131,7 +125,7 @@ public final class GoodsPriceAdjustDialog extends AbstractDialogBaseOnMainActivi
         int code = loop.exec();
         progressDialog.dismiss();
         if (code == 1){
-            mContext.refreshGoodsInfo(array);
+            mContext.adjustPriceRefreshGoodsInfo(array);
             closeWindow();
         }
     }

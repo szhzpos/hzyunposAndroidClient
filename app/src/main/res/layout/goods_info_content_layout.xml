@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/goods_height"
     android:background="@drawable/round_shape_blue"
-    android:paddingStart="@dimen/margin_2">
+    android:paddingStart="@dimen/margin_1"
+    android:paddingEnd="@dimen/margin_1">
 
     <ImageView
         android:id="@+id/g_img"
@@ -17,12 +18,6 @@
 
     <TextView
         android:id="@+id/barcode_id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone" />
-
-    <TextView
-        android:id="@+id/unit_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone" />
@@ -94,7 +89,6 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/sale_price"
         android:layout_marginStart="@dimen/margin_8"
-        android:layout_marginBottom="@dimen/margin_2"
         android:layout_toEndOf="@id/sale_price"
         android:textColor="@color/black"
         android:textSize="@dimen/font_size_14" />

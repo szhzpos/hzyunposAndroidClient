@@ -21,13 +21,11 @@ public class GoodsCategoryViewAdapter extends RecyclerView.Adapter<GoodsCategory
     private MainActivity mContext;
     private JSONArray mDatas;
     private View mCurrentItemView;//当前选择的类别item
-    private GoodsInfoViewAdapter mGoodsInfoAdapter;
     private GoodsCategoryViewAdapter mChildGoodsCategoryAdpter;
     private RecyclerView mChildGoodsCategoryView;
     private boolean mChildShow = false,mFirstLoad = true;
     public GoodsCategoryViewAdapter(MainActivity context, RecyclerView v){
         this.mContext = context;
-        this.mGoodsInfoAdapter = context.getGoodsInfoViewAdapter();
         mChildGoodsCategoryView = v;
         laodChildShow();
     }
@@ -54,14 +52,8 @@ public class GoodsCategoryViewAdapter extends RecyclerView.Adapter<GoodsCategory
         }
 
         category_id = view.findViewById(R.id.category_id);
-        if (null != mGoodsInfoAdapter && category_id != null){
-            int id = -1;
-            try {
-                id =  Integer.valueOf(category_id.getText().toString());
-            }catch (NumberFormatException e){
-                e.printStackTrace();
-            }
-            mGoodsInfoAdapter.setDatas(id);
+        if (category_id != null){
+            mContext.loadGoods(category_id.getText().toString());
             showSecGoodsType();
         }
     }
@@ -169,14 +161,14 @@ public class GoodsCategoryViewAdapter extends RecyclerView.Adapter<GoodsCategory
 
     public void trigger_preView(){
         Logger.d("trigger_preView");
-        int id = 0;
         if (mCurrentItemView != null){
+            final String id;
             if (mChildShow && mChildGoodsCategoryView != null && mChildGoodsCategoryAdpter.mCurrentItemView != null){
-                id = Integer.valueOf(((TextView) mChildGoodsCategoryAdpter.mCurrentItemView.findViewById(R.id.category_id)).getText().toString());
+                id = ((TextView) mChildGoodsCategoryAdpter.mCurrentItemView.findViewById(R.id.category_id)).getText().toString();
             }else{
-                id = Integer.valueOf(((TextView) mCurrentItemView.findViewById(R.id.category_id)).getText().toString());
+                id = ((TextView) mCurrentItemView.findViewById(R.id.category_id)).getText().toString();
             }
-            if (null != mGoodsInfoAdapter)mGoodsInfoAdapter.setDatas(id);
+            mContext.loadGoods(id);
         }
     }
 
