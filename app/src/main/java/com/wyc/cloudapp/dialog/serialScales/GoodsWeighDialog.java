@@ -36,7 +36,7 @@ public class GoodsWeighDialog extends AbstractDialogBaseOnMainActivityImp {
     private AbstractSerialScaleImp mSerialScale;
     private double mValue;
     private MainActivity mCotext;
-    private boolean mContinuousWeighing = true;
+    private boolean mContinuousWeighing = false;
     public GoodsWeighDialog(@NonNull MainActivity context, final String title) {
         super(context,title);
         mCotext = context;
@@ -110,6 +110,7 @@ public class GoodsWeighDialog extends AbstractDialogBaseOnMainActivityImp {
                     v = 0.0;
                     price = 0.0;
                 }
+                mValue = v;
                 mAmtTv.setText(String.format(Locale.CHINA,"%.2f",v * price));
             }
         });
@@ -195,11 +196,11 @@ public class GoodsWeighDialog extends AbstractDialogBaseOnMainActivityImp {
                     mSerialScale.setOnReadListener(new AbstractSerialScaleImp.OnReadStatus() {
                         @Override
                         public void onFinish(double num) {
-                            mValue = num;
                             if (mContinuousWeighing){
+                                mValue = num;
                                 if (mOnYesClick != null)mContext.runOnUiThread(()-> mOnYesClick.onYesClick(num));
                             }else
-                            if (null != mWvalueEt)mWvalueEt.post(()-> mWvalueEt.setText(String.format(Locale.CHINA,"%.3f",num)));
+                                if (null != mWvalueEt)mWvalueEt.post(()-> mWvalueEt.setText(String.format(Locale.CHINA,"%.3f",num)));
                         }
                         @Override
                         public void onError(String err) {

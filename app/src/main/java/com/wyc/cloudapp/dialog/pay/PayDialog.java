@@ -464,7 +464,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
         final JSONObject object = new JSONObject();
         if (SQLiteHelper.getLocalParameter("auto_mol",object)){
             if (object.getIntValue("s") == 1){
-                sale_sum_amt = mContext.getSumAmt(3);
+                sale_sum_amt = Utils.formatDouble(mContext.getSumAmt(3),2);
                 int v = object.getIntValue("v");
                 switch (v){
                     case 1://四舍五入到元

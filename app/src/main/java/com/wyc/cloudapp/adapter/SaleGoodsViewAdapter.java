@@ -137,29 +137,39 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
         deleteSaleGoods(mCurrentItemIndex,0);
     }, this::setSelectStatus);
 
+    private boolean isScalesWeighingGoods(final JSONObject object){
+        return object != null && Utils.getNullStringAsEmpty(object,GoodsInfoViewAdapter.W_G_MARK).isEmpty() && (object.getIntValue("type") == 2);
+    }
+    private double getScalesWeighingGoodsSumNum(){
+        double num = 0.0;
+        for (int i = 0,size = mDatas.size();i < size;i++){
+            final JSONObject object = mDatas.getJSONObject(i);
+            if (object != getCurrentContent() && isScalesWeighingGoods(object))num += object.getDoubleValue("xnum");
+        }
+        return num;
+    }
     public void addSaleGoods(final JSONObject goods){
         if (null != goods && !goods.isEmpty()){
             double xnum = goods.getDoubleValue("xnum");//新增的商品不存在xnum字段，xnum等于0.0。挂单以及条码秤称重商品已经存在,以及该字段值不会为0
             boolean isBarcodeWeighingGoods = !Utils.getNullStringAsEmpty(goods,GoodsInfoViewAdapter.W_G_MARK).isEmpty(),isZero = Utils.equalDouble(xnum,0.0);
             if(!isBarcodeWeighingGoods && isZero && goods.getIntValue("type") == 2){//type 1 普通 2散装称重 3鞋帽
-                if (mWeighDialog == null){
-                    mWeighDialog = new GoodsWeighDialog(mContext,mContext.getString(R.string.goods_i_sz));
-                }
+                if (mWeighDialog == null)mWeighDialog = new GoodsWeighDialog(mContext,mContext.getString(R.string.goods_i_sz));
                 mWeighDialog.setOnYesOnclickListener(num -> {
                     if (!Utils.equalDouble(num,0.0)){
                         if (mWeighDialog.isContinuousWeighing()) {
-                            Logger.d("w_num:%f,x_num:%f",num,getSumNum());
-                            num -= getSumNum();
-                            updateSaleGoodsInfo(num, 0);
+                            if (isScalesWeighingGoods(getCurrentContent())){
+                                num -= getScalesWeighingGoodsSumNum();
+                                if (!Utils.equalDouble(num,0.0))updateSaleGoodsInfo(num, 0);
+                            }
                         }else{
                             addSaleGoods(goods,num,false);
                         }
                     }
                 });
-                mWeighDialog.setBarcodeId(goods.getIntValue("barcode_id"));
                 if (mWeighDialog.isContinuousWeighing()){
-                    addSaleGoods(goods,0,false);
+                    addSaleGoods(goods,1,false);
                 }else{
+                    mWeighDialog.setBarcodeId(goods.getIntValue("barcode_id"));
                     mWeighDialog.read();
                     mWeighDialog.show();
                 }
@@ -408,7 +418,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
         switch (type){
             case 0:
                 if (value <= 0){
-                    deleteSaleGoods(getCurrentItemIndex(),0);
+                    deleteSaleGoods(getCurrentItemIndex(),value);
                 }else{
                     double ori_xnum = json.getDoubleValue("xnum");
                     final JSONObject copy_obj = verifyPromotion(json,value - ori_xnum);
@@ -946,7 +956,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
 
     private double getPerRecordMolAmt(double mol_amt,int sale_record){
         if (!Utils.equalDouble(mol_amt,0.0) && sale_record != 0){
-            double per_record_mol_amt = Utils.formatDouble(mol_amt / sale_record,2);//保留到分
+            double per_record_mol_amt = Utils.formatDoubleDown(mol_amt / sale_record,2);//保留到分
             Logger.d("per_record_mol_amt:%f",per_record_mol_amt);
             if (Math.abs(per_record_mol_amt) < 0.01){
                 Logger.d("sale_record:%d",sale_record);
@@ -967,7 +977,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
         double per_record_mol_amt = 0.0, o_per_record_mol_amt = getPerRecordMolAmt(mol_amt,sale_record),original_sale_amt = 0.0,new_discount = 0.0
                 ,xnum = 0.0,new_price = 0.0,current_sale_amt = 0.0;
 
-        Utils.sortJsonArrayFromDoubleCol(mDatas,"sale_amt");
+        //Utils.sortJsonArrayFromDoubleCol(mDatas,"sale_amt");
 
         for (int i = 0;i < sale_record;i++){
             per_record_mol_amt = o_per_record_mol_amt;
@@ -1005,13 +1015,13 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
 
             Logger.d("%f -= %f:%f",mol_amt,per_record_mol_amt,mol_amt - per_record_mol_amt);
             mol_amt -= per_record_mol_amt;
-            if (Utils.equalDouble(Math.abs(mol_amt),0)){
+            if (Utils.equalDouble(Math.abs(mol_amt),0.0)){
                 break;
             }else {
-                //计算下一次抹零金额，最后一条记录或者剩余抹零金额小于平均抹零金额；要扣除剩余的抹零
-                if (Math.abs(mol_amt) - Math.abs(per_record_mol_amt) < 0.0 || i + 2 == sale_record){
+                if (Math.abs(Math.abs(mol_amt) - Math.abs(per_record_mol_amt)) < 0.00 || i + 2 == sale_record){
                     o_per_record_mol_amt = mol_amt;
                     mol_amt = 0;
+                    Logger.d("o_per_record_mol_amt:%f",o_per_record_mol_amt);
                 }
             }
         }
@@ -1019,14 +1029,6 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
             addDiscountRecords(type,discount_details);
         }
         notifyDataSetChanged();
-    }
-    private double getSumNum(){
-        double num = 0.0;
-        for (int i = 0,size = mDatas.size();i < size;i++){
-            final JSONObject object = mDatas.getJSONObject(i);
-            num += object.getDoubleValue("xnum");
-       }
-        return num;
     }
 
     public void fullReduceDiscount(){

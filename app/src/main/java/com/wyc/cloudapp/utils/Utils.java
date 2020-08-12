@@ -32,6 +32,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 
+import java.math.RoundingMode;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
@@ -249,6 +250,11 @@ public final class Utils {
     public static double formatDouble(double d,int scale) {
         // 新方法，如果不需要四舍五入，可以使用RoundingMode.DOWN
         return BigDecimal.valueOf(d).setScale(scale,BigDecimal.ROUND_HALF_UP ).doubleValue();
+    }
+
+    public static double formatDoubleDown(double d,int scale) {
+        // 新方法，如果不需要四舍五入，可以使用RoundingMode.DOWN
+        return BigDecimal.valueOf(d).setScale(scale, RoundingMode.DOWN ).doubleValue();
     }
 
     public static String getNonce_str(int length) {

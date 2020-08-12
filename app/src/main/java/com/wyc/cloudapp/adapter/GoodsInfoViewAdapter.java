@@ -309,7 +309,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         final String sql = "select way,limit_xnum,promotion_price from promotion_info where barcode_id = '" + barcode_id +"' and status = 1 and " +
                 "stores_id = " + stores_id + " and date(start_date, 'unixepoch', 'localtime') || ' ' ||begin_time  <= datetime('now', 'localtime') \n" +
                 " and datetime('now', 'localtime') <= date(end_date, 'unixepoch', 'localtime') || ' ' ||end_time and \n" +
-                "promotion_week like '%' ||case strftime('%w','now' ) when 0 then 7 else strftime('%w','now' ) end||'%' ";
+                "promotion_week like '%' ||case strftime('%w','now' ) when 0 then 7 else strftime('%w','now' ) end||'%' order by tlp_id desc";
 
         Logger.d("PromotionGoodsSQL：%s",sql);
 
