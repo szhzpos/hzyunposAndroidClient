@@ -3,6 +3,7 @@ package com.wyc.cloudapp.dialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -16,6 +17,7 @@ import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnMainActivityImp;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
@@ -24,8 +26,8 @@ import java.util.Locale;
 public class AddGoodsInfoDialog extends AbstractDialogBaseOnMainActivityImp {
     private MainActivity mContext;
     private String mBarcode;
-    private EditText mBarcodeEt,mNameEt,mPurPriceEt,mRetailPriceEt,mCategoryEt,mUnitEt;
-    private JSONArray mUnitList,mCategoryList;
+    private EditText mBarcodeEt,mNameEt,mPurPriceEt,mRetailPriceEt,mCategoryEt,mUnitEt,mGoodsAttrEt,mItemIdEt;
+    private JSONArray mUnitList,mCategoryList,mSupplierList;
     private OnFinishListener mFinishListener;
     public AddGoodsInfoDialog(@NonNull MainActivity context) {
         super(context, context.getString(R.string.a_goods_sz));
@@ -38,10 +40,14 @@ public class AddGoodsInfoDialog extends AbstractDialogBaseOnMainActivityImp {
 
         mNameEt = findViewById(R.id.a_name_et);
         mRetailPriceEt = findViewById(R.id.a_retail_price_et);
+        mItemIdEt = findViewById(R.id.a_item_no_et);
+
         initUnit();
         initCategory();
         initCkml();
         initBarcode();
+        initSupplier();
+        initGoodsTypeAndMetering();
         initSaveBtn();
     }
 
@@ -56,6 +62,8 @@ public class AddGoodsInfoDialog extends AbstractDialogBaseOnMainActivityImp {
 
         getGoodsBase();
         getGoodsInfoByBarcode();
+        getSupplier();
+        getOnlycodeAndBarcode();
     }
     private void initUnit(){
         final EditText unit_et = findViewById(R.id.a_unit_et);
@@ -74,6 +82,8 @@ public class AddGoodsInfoDialog extends AbstractDialogBaseOnMainActivityImp {
             if (hasFocus)v.callOnClick();
             Utils.hideKeyBoard(unit_et);
         });
+        unit_et.setText("未定义");
+        unit_et.setTag("");
 
         mUnitEt = unit_et;
     }
@@ -94,13 +104,119 @@ public class AddGoodsInfoDialog extends AbstractDialogBaseOnMainActivityImp {
             if (hasFocus)v.callOnClick();
             Utils.hideKeyBoard(category_et);
         });
+        category_et.setText("不定类");
+        category_et.setTag("00");
 
         mCategoryEt = category_et;
     }
+
+    private void initSupplier(){
+        final EditText supplier_et = findViewById(R.id.a_supplier_et);
+        supplier_et.setOnClickListener(v -> {
+            final String sup = mContext.getString(R.string.a_supplier_sz);
+            final TreeListDialog treeListDialog = new TreeListDialog(mContext,sup.substring(0,sup.length() - 1));
+            treeListDialog.setDatas(Utils.JsondeepCopy(mSupplierList),null,true);
+            supplier_et.post(()->{
+                if (treeListDialog.exec() == 1){
+                    final JSONObject object = treeListDialog.getSingleContent();
+                    supplier_et.setText(object.getString("item_name"));
+                    supplier_et.setTag(object.getString("item_id"));
+                }
+            });
+        });
+        supplier_et.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus)v.callOnClick();
+            Utils.hideKeyBoard(supplier_et);
+        });
+        supplier_et.setText("门店自采货商");
+        supplier_et.setTag("0000");
+    }
+
+    private void initGoodsTypeAndMetering(){
+        final EditText goods_attr_et = findViewById(R.id.a_goods_attr_et),metering_et = findViewById(R.id.a_metering_et);
+        goods_attr_et.setOnClickListener(v -> {
+            final String attr = mContext.getString(R.string.a_goods_attr_sz);
+            final TreeListDialog treeListDialog = new TreeListDialog(mContext,attr.substring(0,attr.length() - 1));
+            final JSONArray array = new JSONArray();
+            final JSONObject obj = new JSONObject();
+            obj.put("level",0);
+            obj.put("unfold",false);
+            obj.put("isSel",true);
+            obj.put("item_id","1");
+            obj.put("item_name","普通商品");
+            array.add(Utils.JsondeepCopy(obj));
+            obj.put("isSel",false);
+            obj.put("item_id","2");
+            obj.put("item_name","称重商品");
+            array.add(obj);
+
+            treeListDialog.setDatas(array,null,true);
+
+            goods_attr_et.post(()->{
+                if (treeListDialog.exec() == 1){
+                    final JSONObject object = treeListDialog.getSingleContent();
+                    final String id = object.getString("item_id");
+                    goods_attr_et.setText(object.getString("item_name"));
+                    goods_attr_et.setTag(id);
+                    if ("2".equals(id)){
+                        metering_et.setText("计重");
+                        metering_et.setTag("0");
+                        metering_et.setVisibility(View.VISIBLE);
+                    }else{
+                        metering_et.setVisibility(View.GONE);
+                    }
+                }
+            });
+        });
+        goods_attr_et.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus)v.callOnClick();
+            Utils.hideKeyBoard(goods_attr_et);
+        });
+        goods_attr_et.setText("普通商品");
+        goods_attr_et.setTag("1");
+        mGoodsAttrEt = goods_attr_et;
+
+        metering_et.setOnClickListener(v -> {
+            final String attr = mContext.getString(R.string.a_goods_attr_sz);
+            final TreeListDialog treeListDialog = new TreeListDialog(mContext,attr.substring(0,attr.length() - 1));
+            final JSONArray array = new JSONArray();
+
+            final JSONObject obj = new JSONObject();
+            obj.put("level",0);
+            obj.put("unfold",false);
+            obj.put("isSel",true);
+            obj.put("item_id","0");
+            obj.put("item_name","计重");
+            array.add(Utils.JsondeepCopy(obj));
+            obj.put("isSel",false);
+            obj.put("item_id","1");
+            obj.put("item_name","计件");
+            array.add(Utils.JsondeepCopy(obj));
+            obj.put("isSel",false);
+            obj.put("item_id","2");
+            obj.put("item_name","定重");
+            array.add(obj);
+
+            treeListDialog.setDatas(array,null,true);
+            metering_et.post(()->{
+                if (treeListDialog.exec() == 1){
+                    final JSONObject object = treeListDialog.getSingleContent();
+                    metering_et.setText(object.getString("item_name"));
+                    metering_et.setTag(object.getString("item_id"));
+                }
+            });
+        });
+        metering_et.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus)v.callOnClick();
+            Utils.hideKeyBoard(metering_et);
+        });
+    }
+
     private void initBarcode(){
         final EditText barcdoe_et = findViewById(R.id.a_barcode_et);
         if (barcdoe_et != null){
             barcdoe_et.setText(mBarcode);
+            barcdoe_et.requestFocus();
         }
         mBarcodeEt = barcdoe_et;
     }
@@ -146,25 +262,27 @@ public class AddGoodsInfoDialog extends AbstractDialogBaseOnMainActivityImp {
             final JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + "/api/goods_set/get_bases",sz_param,true);
             switch (retJson.getIntValue("flag")){
                 case 0:
-                    mContext.runOnUiThread(()->{
-                        MyDialog.ToastMessage("查询商品基本信息错误:" + retJson.getString("info"),mContext,getWindow());
-                    });
+                    mContext.runOnUiThread(()-> MyDialog.ToastMessage("查询商品基本信息错误:" + retJson.getString("info"),mContext,getWindow()));
                     break;
                 case 1:
                     final JSONObject info_obj = JSONObject.parseObject(retJson.getString("info"));
-                    final JSONObject data = info_obj.getJSONObject("data");
-                    mUnitList = Utils.getNullObjectAsEmptyJsonArray(data,"units");
-                    mUnitList = parse_unit_info(mUnitList);
+                    if ("n".equals(Utils.getNullOrEmptyStringAsDefault(info_obj,"status","n"))){
+                        mContext.runOnUiThread(()-> MyDialog.ToastMessage("查询商品基本信息错误:" + info_obj.getString("info"),mContext,getWindow()));
+                    }else{
+                        final JSONObject data = info_obj.getJSONObject("data");
 
-                    mCategoryList = Utils.getNullObjectAsEmptyJsonArray(data,"category");
-                    final JSONArray categorys = new JSONArray();
-                    parse_category_info(mCategoryList,null,0,categorys);
-                    mCategoryList = categorys;
+                        mUnitList = parse_unit_info(Utils.getNullObjectAsEmptyJsonArray(data,"units"));
 
+                        mCategoryList = Utils.getNullObjectAsEmptyJsonArray(data,"category");
+                        final JSONArray categorys = new JSONArray();
+                        parse_category_info(mCategoryList,null,0,categorys);
+                        mCategoryList = categorys;
+                    }
                     break;
             }
         });
     }
+
     private void parse_category_info(final JSONArray category_jsons,final JSONObject parent,int level,final JSONArray categorys) {
         JSONObject item,category_json;
         JSONArray kids,childs;
@@ -213,7 +331,94 @@ public class AddGoodsInfoDialog extends AbstractDialogBaseOnMainActivityImp {
         }
         return array;
     }
+    private void getSupplier(){
+        CustomApplication.execute(()->{
+            final HttpRequest httpRequest = new HttpRequest();
+            final JSONObject object = new JSONObject();
+            object.put("appid",mContext.getAppId());
+            object.put("stores_id",mContext.getStoreInfo().getString("stores_id"));
+            final String sz_param = HttpRequest.generate_request_parm(object,mContext.getAppSecret());
+            final JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + "/api/supplier_search/xlist",sz_param,true);
+            switch (retJson.getIntValue("flag")){
+                case 0:
+                    mContext.runOnUiThread(()->{
+                        MyDialog.ToastMessage("查询供应商信息错误:" + retJson.getString("info"),mContext,getWindow());
+                    });
+                    break;
+                case 1:
+                    final JSONObject info_obj = JSONObject.parseObject(retJson.getString("info"));
+                    if ("n".equals(Utils.getNullOrEmptyStringAsDefault(info_obj,"status","n"))){
+                        mContext.runOnUiThread(()-> MyDialog.ToastMessage("查询供应商信息错误:" + info_obj.getString("info"),mContext,getWindow()));
+                    }else{
+                        final JSONArray data = info_obj.getJSONArray("data");
+                        mSupplierList = parse_supplier_info(data);
+                    }
+                    break;
+            }
+        });
+    }
+
+    private void getOnlycodeAndBarcode(){
+        CustomApplication.execute(()->{
+            final HttpRequest httpRequest = new HttpRequest();
+            final JSONObject object = new JSONObject();
+            object.put("appid",mContext.getAppId());
+            object.put("category_id",Utils.getViewTagValue(mCategoryEt,"00"));
+            object.put("spec_id",Utils.getViewTagValue(mGoodsAttrEt,"1"));
+
+            final String sz_param = HttpRequest.generate_request_parm(object,mContext.getAppSecret());
+            final JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + "/api/goods_set/get_onlycode_barcode",sz_param,true);
+            switch (retJson.getIntValue("flag")){
+                case 0:
+                    mContext.runOnUiThread(()-> MyDialog.ToastMessage("生成条码信息错误:" + retJson.getString("info"),mContext,getWindow()));
+                    break;
+                case 1:
+                    final JSONObject info_obj = JSONObject.parseObject(retJson.getString("info"));
+                    if ("n".equals(Utils.getNullOrEmptyStringAsDefault(info_obj,"status","n"))){
+                        mContext.runOnUiThread(()-> MyDialog.ToastMessage("生成条码信息错误:" + info_obj.getString("info"),mContext,getWindow()));
+                    }else{
+                        final JSONObject data = info_obj.getJSONObject("data");
+                        if (data != null){
+                            mContext.runOnUiThread(()-> setBarcodeAndItemId(data));
+                        }
+                    }
+                    break;
+            }
+        });
+    }
+
+    private void setBarcodeAndItemId(final @NonNull JSONObject data){
+        final String only_coding = data.getString("only_coding");
+        if (mItemIdEt != null)mItemIdEt.setText(only_coding);
+        if (mBarcodeEt != null && mBarcode != null && mBarcode.isEmpty()){
+            if ("2".equals(Utils.getViewTagValue(mGoodsAttrEt,"1"))){
+                mBarcodeEt.setText(only_coding);
+            }else
+                mBarcodeEt.setText(data.getString("barcode"));
+        }
+    }
+
+    private JSONArray parse_supplier_info(final JSONArray suppliers){
+        final JSONArray array  = new JSONArray();
+        if (suppliers != null){
+            JSONObject object,tmp;
+            for (int i = 0,size = suppliers.size();i < size;i++){
+                tmp = suppliers.getJSONObject(i);
+
+                object = new JSONObject();
+                object.put("level",0);
+                object.put("unfold",false);
+                object.put("isSel",false);
+                object.put("item_id",Utils.getNullStringAsEmpty(tmp,"gs_id"));
+                object.put("item_name",Utils.getNullStringAsEmpty(tmp,"gs_name"));
+                array.add(object);
+            }
+        }
+        return array;
+    }
     private void getGoodsInfoByBarcode(){
+        if (mBarcode == null || mBarcode.isEmpty())return;
+
         final CustomProgressDialog progressDialog = new CustomProgressDialog(mContext);
         final JEventLoop jEventLoop = new JEventLoop();
         progressDialog.setMessage("正在加载商品信息...").setCancel(false).show();
@@ -227,14 +432,10 @@ public class AddGoodsInfoDialog extends AbstractDialogBaseOnMainActivityImp {
             final JSONObject retJson = httpRequest.sendPost("http://adm.hzyunpos.com/api/getgoods/get_goods",sz_param,true);
             switch (retJson.getIntValue("flag")){
                 case 0:
-                    mContext.runOnUiThread(()->{
-                        MyDialog.ToastMessage("查询商品信息错误:" + retJson.getString("info"),mContext,getWindow());
-                    });
+                    mContext.runOnUiThread(()-> MyDialog.ToastMessage("查询商品信息错误:" + retJson.getString("info"),mContext,getWindow()));
                     break;
                 case 1:
-                    mContext.runOnUiThread(()->{
-                        showGoodsInfo(JSONObject.parseObject(retJson.getString("info")));
-                    });
+                    mContext.runOnUiThread(()-> showGoodsInfo(JSONObject.parseObject(retJson.getString("info"))));
                     break;
             }
             jEventLoop.done(0);
@@ -243,7 +444,8 @@ public class AddGoodsInfoDialog extends AbstractDialogBaseOnMainActivityImp {
         progressDialog.dismiss();
     }
     private void showGoodsInfo(final JSONObject info){
-        mUnitEt.setText(Utils.getNullStringAsEmpty(info,"unit"));
+        final String unit_sz = Utils.getNullStringAsEmpty(info,"unit");
+        if (!unit_sz.isEmpty())mUnitEt.setText(unit_sz);
         mRetailPriceEt.setText(String.format(Locale.CHINA,"%.2f",info.getDoubleValue("price")));
 
         final String name = Utils.getNullStringAsEmpty(info,"name");
@@ -281,8 +483,8 @@ public class AddGoodsInfoDialog extends AbstractDialogBaseOnMainActivityImp {
 
             final HttpRequest httpRequest = new HttpRequest();
 
-            String param = HttpRequest.generate_request_parm(data,mContext.getAppSecret());
-            JSONObject retJson = httpRequest.sendPost(mContext.getUrl() +"/api/goods_set/goods_sets",param,true);
+            final String param = HttpRequest.generate_request_parm(data,mContext.getAppSecret());
+            final JSONObject retJson = httpRequest.sendPost(mContext.getUrl() +"/api/goods_set/goods_sets",param,true);
 
             switch (retJson.getIntValue("flag")){
                 case 0:
@@ -290,7 +492,7 @@ public class AddGoodsInfoDialog extends AbstractDialogBaseOnMainActivityImp {
                     err.append(retJson.getString("info"));
                     break;
                 case 1:
-                    JSONObject info  = JSON.parseObject(retJson.getString("info"));
+                    final JSONObject info  = JSON.parseObject(retJson.getString("info"));
                     switch (Utils.getNullStringAsEmpty(info,"status")){
                         case "n":
                             loop.done(0);

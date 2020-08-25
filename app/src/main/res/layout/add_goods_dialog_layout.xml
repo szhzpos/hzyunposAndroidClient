@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:background="@drawable/border_sub_gray"
-    android:orientation="horizontal"
-    android:baselineAligned="false">
+    android:baselineAligned="false"
+    android:orientation="horizontal">
 
     <LinearLayout
         android:id="@+id/left"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical">
 
@@ -17,6 +17,55 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/add_goods_item_h"
             android:layout_marginTop="@dimen/margin_2"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="@dimen/width_85"
+                android:layout_height="wrap_content"
+                android:text="@string/a_goods_attr_sz"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <EditText
+                android:id="@+id/a_goods_attr_et"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/border_sub_gray"
+                android:drawableEnd="@drawable/omit"
+                android:ems="12"
+                android:hint="@string/space_sz"
+                android:importantForAutofill="no"
+                android:inputType="number"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/margin_5"
+                android:selectAllOnFocus="true"
+                android:textColor="@color/text_color" />
+
+            <EditText
+                android:id="@+id/a_metering_et"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_weight="2"
+                android:background="@drawable/border_sub_gray"
+                android:drawableEnd="@drawable/omit"
+                android:ems="12"
+                android:hint="@string/space_sz"
+                android:importantForAutofill="no"
+                android:inputType="number"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/margin_5"
+                android:selectAllOnFocus="true"
+                android:textColor="@color/text_color"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/add_goods_item_h"
+            android:layout_marginTop="@dimen/margin_8"
             android:orientation="horizontal">
 
             <TextView
@@ -32,7 +81,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="@drawable/border_sub_gray"
-                android:ems="24"
+                android:ems="12"
                 android:hint="@string/space_sz"
                 android:importantForAutofill="no"
                 android:inputType="number"
@@ -43,9 +92,9 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="@dimen/add_goods_item_h"
-            android:layout_marginTop="@dimen/margin_2"
+            android:layout_marginTop="@dimen/margin_8"
             android:orientation="horizontal">
 
             <TextView
@@ -61,7 +110,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="@drawable/border_sub_gray"
-                android:ems="24"
+                android:ems="12"
                 android:hint="@string/space_sz"
                 android:importantForAutofill="no"
                 android:inputType="textPersonName"
@@ -72,39 +121,9 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="@dimen/add_goods_item_h"
-            android:layout_marginTop="@dimen/margin_2"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="@dimen/width_85"
-                android:layout_height="wrap_content"
-                android:text="@string/a_purchase_price_sz"
-                android:textAlignment="viewEnd"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16" />
-
-            <EditText
-                android:id="@+id/a_pur_price_et"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:background="@drawable/border_sub_gray"
-                android:ems="8"
-                android:hint="@string/space_sz"
-                android:importantForAutofill="no"
-                android:inputType="numberDecimal"
-                android:paddingStart="@dimen/margin_5"
-                android:paddingEnd="@dimen/margin_5"
-                android:selectAllOnFocus="true"
-                android:text="@string/z_p_z_sz"
-                android:textColor="@color/text_color" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/add_goods_item_h"
-            android:layout_marginTop="@dimen/margin_2"
+            android:layout_marginTop="@dimen/margin_8"
             android:orientation="horizontal">
 
             <TextView
@@ -131,18 +150,51 @@
                 android:textColor="@color/text_color" />
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/add_goods_item_h"
+            android:layout_marginTop="@dimen/margin_8"
+            android:layout_marginBottom="@dimen/margin_2"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="@dimen/width_85"
+                android:layout_height="wrap_content"
+                android:text="@string/a_supplier_sz"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <EditText
+                android:id="@+id/a_supplier_et"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/border_sub_gray"
+                android:drawableEnd="@drawable/omit"
+                android:ems="8"
+                android:hint="@string/space_sz"
+                android:importantForAutofill="no"
+                android:inputType="numberDecimal"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/margin_5"
+                android:selectAllOnFocus="true"
+                android:text="@string/space_sz"
+                android:textColor="@color/text_color" />
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/right"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_12"
+        android:layout_marginEnd="@dimen/margin_5"
         android:layout_marginBottom="@dimen/margin_2"
         android:layout_weight="1"
         android:orientation="vertical">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="@dimen/add_goods_item_h"
             android:layout_marginTop="@dimen/margin_2"
             android:orientation="horizontal">
@@ -161,7 +213,7 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/border_sub_gray"
                 android:drawableEnd="@drawable/omit"
-                android:ems="8"
+                android:ems="10"
                 android:hint="@string/space_sz"
                 android:importantForAutofill="no"
                 android:inputType="textPersonName"
@@ -173,7 +225,36 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/add_goods_item_h"
-            android:layout_marginTop="@dimen/margin_2"
+            android:layout_marginTop="@dimen/margin_5"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="@dimen/width_85"
+                android:layout_height="wrap_content"
+                android:text="@string/a_item_no_sz"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <EditText
+                android:id="@+id/a_item_no_et"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/border_sub_gray"
+                android:ems="10"
+                android:hint="@string/space_sz"
+                android:importantForAutofill="no"
+                android:inputType="number"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/margin_5"
+                android:selectAllOnFocus="true"
+                android:textColor="@color/text_color" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/add_goods_item_h"
+            android:layout_marginTop="@dimen/margin_8"
             android:orientation="horizontal">
 
             <TextView
@@ -190,7 +271,7 @@
                 android:layout_height="match_parent"
                 android:background="@drawable/border_sub_gray"
                 android:drawableEnd="@drawable/omit"
-                android:ems="8"
+                android:ems="10"
                 android:hint="@string/space_sz"
                 android:importantForAutofill="no"
                 android:inputType="textPersonName"
@@ -200,19 +281,43 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="@dimen/add_goods_item_h"
-            android:layout_marginTop="@dimen/margin_2"
+            android:layout_marginTop="@dimen/margin_8"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="@dimen/width_85"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="@string/a_ckml_sz"
+                android:text="@string/a_purchase_price_sz"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_16" />
+
+            <EditText
+                android:id="@+id/a_pur_price_et"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/border_sub_gray"
+                android:ems="4"
+                android:hint="@string/space_sz"
+                android:importantForAutofill="no"
+                android:inputType="numberDecimal"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/margin_5"
+                android:selectAllOnFocus="true"
+                android:text="@string/z_p_z_sz"
+                android:textColor="@color/text_color" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/margin_2"
+                android:text="@string/a_ckml_sz"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_14" />
 
             <EditText
                 android:id="@+id/a_ckml_et"
@@ -226,7 +331,36 @@
                 android:text="@string/z_p_z_sz"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_16" />
+        </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/add_goods_item_h"
+            android:layout_marginTop="@dimen/margin_8"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="@dimen/width_85"
+                android:layout_height="wrap_content"
+                android:text="@string/a_vip_price_sz"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <EditText
+                android:id="@+id/editText4"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/border_sub_gray"
+                android:ems="10"
+                android:hint="@string/space_sz"
+                android:importantForAutofill="no"
+                android:inputType="number"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/margin_5"
+                android:selectAllOnFocus="true"
+                android:text="@string/z_p_z_sz"
+                android:textColor="@color/text_color" />
         </LinearLayout>
 
         <Button
@@ -235,7 +369,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_marginTop="@dimen/height_50"
+            android:layout_marginTop="@dimen/height_40"
             android:layout_marginEnd="@dimen/margin_2"
             android:background="@drawable/button_blue"
             android:text="@string/save_sz"

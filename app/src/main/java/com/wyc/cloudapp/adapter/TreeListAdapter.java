@@ -123,7 +123,7 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
             holder.item_name.setText(item.getString("item_name"));
 
             holder.mCurrentLayoutItemView.setOnClickListener(itemListener);
-            holder.mCurrentLayoutItemView.setPadding( 15 * item.getIntValue("level"),0,0,0);
+            holder.mCurrentLayoutItemView.setPadding( 25 * item.getIntValue("level"),0,0,0);
         }
     }
 
