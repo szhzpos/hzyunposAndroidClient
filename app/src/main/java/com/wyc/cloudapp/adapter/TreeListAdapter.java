@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -25,7 +26,8 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
     private Context mContext;
     private boolean mSingleSel = true;
     private Drawable mUnfoldDb,mFoldDb;
-
+    private OnItemClick mItemClick;//不为null的时候会隐藏单选、多选按钮，改变mCurrenttemView的背景色来表示选中；此种模式下只支持选中单个项目并触发事件。
+    private View mCurrenttemView;
 /*    Item{
         p_ref,level,unfold,isSel,item_id,item_name,kids; <p_ref , kids>存在上下级时必须存在
     }*/
@@ -92,38 +94,40 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
 
             final CheckBox item_sel_cb =  holder.mul_cb;
             final RadioButton item_single_rb = holder.single_rb;
-            if (mSingleSel){
-                item_sel_cb.setVisibility(View.GONE);
-                item_sel_cb.setOnCheckedChangeListener(null);
+            if (mItemClick  == null){
+                if (mSingleSel){
+                    item_sel_cb.setVisibility(View.GONE);
+                    item_sel_cb.setOnCheckedChangeListener(null);
 
-                item_single_rb.setVisibility(View.VISIBLE);
-                item_single_rb.setOnCheckedChangeListener(null);
-                if (is_sel){
-                    if (!item_single_rb.isChecked())item_single_rb.setChecked(true);
-                }else {
-                    if (item_single_rb.isChecked())item_single_rb.setChecked(false);
+                    item_single_rb.setVisibility(View.VISIBLE);
+                    item_single_rb.setOnCheckedChangeListener(null);
+                    if (is_sel){
+                        if (!item_single_rb.isChecked())item_single_rb.setChecked(true);
+                    }else {
+                        if (item_single_rb.isChecked())item_single_rb.setChecked(false);
+                    }
+                    item_single_rb.setOnCheckedChangeListener(checkedChangeListener);
+                }else{
+                    item_single_rb.setVisibility(View.GONE);
+                    item_single_rb.setOnCheckedChangeListener(null);
+
+                    item_sel_cb.setVisibility(View.VISIBLE);
+                    item_sel_cb.setOnCheckedChangeListener(null);
+                    if (is_sel){
+                        if (!item_sel_cb.isChecked())item_sel_cb.setChecked(true);
+                    }else {
+                        if (item_sel_cb.isChecked())item_sel_cb.setChecked(false);
+                    }
+                    item_sel_cb.setOnCheckedChangeListener(checkedChangeListener);
                 }
-                item_single_rb.setOnCheckedChangeListener(checkedChangeListener);
-
             }else{
-                item_single_rb.setVisibility(View.GONE);
-                item_single_rb.setOnCheckedChangeListener(null);
-
-                item_sel_cb.setVisibility(View.VISIBLE);
-                item_sel_cb.setOnCheckedChangeListener(null);
-                if (is_sel){
-                    if (!item_sel_cb.isChecked())item_sel_cb.setChecked(true);
-                }else {
-                    if (item_sel_cb.isChecked())item_sel_cb.setChecked(false);
-                }
-                item_sel_cb.setOnCheckedChangeListener(checkedChangeListener);
+                if (is_sel)setViewBackgroundColor(mCurrenttemView = holder.mCurrentLayoutItemView,true);
             }
-
             holder.item_id.setText(item.getString("item_id"));
             holder.item_name.setText(item.getString("item_name"));
 
-            holder.mCurrentLayoutItemView.setOnClickListener(itemListener);
             holder.mCurrentLayoutItemView.setPadding( 25 * item.getIntValue("level"),0,0,0);
+            holder.mCurrentLayoutItemView.setOnClickListener(itemListener);
         }
     }
 
@@ -131,7 +135,10 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
     public int getItemCount() {
         return mDatas.size();
     }
-
+    @Override
+    public void onViewRecycled (@NonNull MyViewHolder holder){
+        if (mItemClick != null && mCurrenttemView == holder.mCurrentLayoutItemView)setViewBackgroundColor(mCurrenttemView,false);
+    }
 
     public void setDatas(final JSONArray datas,final JSONArray items){
         if (datas != null)mDatas = datas;
@@ -157,13 +164,12 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
             }
         }
     };
+
     private void clearSelected(){
         if (mDatas != null){
             for (Object o :mDatas){
-                if (o instanceof JSONObject){
-                    final JSONObject object = (JSONObject)o;
-                    if (object.getBooleanValue("isSel"))object.put("isSel",false);
-                }
+                final JSONObject object = (JSONObject)o;
+                if (object.getBooleanValue("isSel"))object.put("isSel",false);
             }
         }
     }
@@ -240,7 +246,65 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
         if (null != compoundButton){
             compoundButton.setChecked(!compoundButton.isChecked());
         }
+        if (mItemClick != null){
+            if (mCurrenttemView != v){
+                clearSelected();
+                setViewBackgroundColor(mCurrenttemView,false);
+                mCurrenttemView = v;
+                setViewBackgroundColor(v,true);
+            }
+            mItemClick.OnClick(getCurrentItem(v));
+        }
     };
+
+    private void setViewBackgroundColor(View view,boolean s){
+        if(view!= null){
+            int text_color,selected_color;
+            if (s){
+                selected_color = mContext.getColor(R.color.listSelected);
+                text_color = mContext.getColor(R.color.white);
+            } else {
+                text_color = mContext.getColor(R.color.appColor);
+                selected_color = mContext.getColor(R.color.white);
+            }
+            view.setBackgroundColor(selected_color);
+            if (view instanceof LinearLayout){
+                final LinearLayout linearLayout = (LinearLayout)view;
+                int count = linearLayout.getChildCount();
+                View ch;
+                for (int i = 0;i < count;i++){
+                    ch = linearLayout.getChildAt(i);
+                    if (ch instanceof TextView){
+                        ((TextView) ch).setTextColor(text_color);
+                    }
+                }
+            }
+        }
+    }
+
+    private JSONObject getCurrentItem(final @NonNull View view){
+        final TextView row_id_tv = view.findViewById(R.id.row_id);
+        if (row_id_tv != null){
+            int row_id = Integer.valueOf(row_id_tv.getText().toString());
+            if (row_id >= 0 && row_id < mDatas.size()){
+                final JSONObject obj = mDatas.getJSONObject(row_id);
+                obj.put("isSel",true);
+
+                final JSONObject object = Utils.JsondeepCopy(obj);
+                object.remove("kids");
+                object.remove("p_ref");
+                return object;
+            }
+        }
+        return new JSONObject();
+    }
+
+    public interface OnItemClick{
+        void OnClick(final JSONObject object);
+    }
+    public void setItemListener(OnItemClick click){
+        mItemClick = click;
+    }
 
     private void setSelectedItem(final JSONArray array){
         if (array != null && !array.isEmpty()){
@@ -337,9 +401,11 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
 
     public JSONArray getMultipleSelectedContent(){
         final JSONArray objects = new JSONArray();
+        JSONObject object;
         for (int i = 0,size = mDatas.size();i < size;i++){
-            final JSONObject object = mDatas.getJSONObject(i);
+            object = mDatas.getJSONObject(i);
             if (object.getBooleanValue("isSel")){
+                object = Utils.JsondeepCopy(object);
                 object.remove("kids");
                 objects.add(object);
             }
@@ -348,10 +414,13 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
     }
 
     public JSONObject getSingleSelectedContent(){
+        JSONObject object;
         for (int i = 0,size = mDatas.size();i < size;i++){
-            final JSONObject object = mDatas.getJSONObject(i);
+            object = mDatas.getJSONObject(i);
             if (object.getBooleanValue("isSel")){
+                object = Utils.JsondeepCopy(object);
                 object.remove("kids");
+                object.remove("p_ref");
                 return object;
             }
         }

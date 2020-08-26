@@ -16,6 +16,7 @@ import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.Utils;
 
 public class GoodsCategoryViewAdapter extends RecyclerView.Adapter<GoodsCategoryViewAdapter.MyViewHolder> implements View.OnClickListener{
     private MainActivity mContext;
@@ -169,6 +170,34 @@ public class GoodsCategoryViewAdapter extends RecyclerView.Adapter<GoodsCategory
                 id = ((TextView) mCurrentItemView.findViewById(R.id.category_id)).getText().toString();
             }
             mContext.loadGoods(id);
+        }
+    }
+    public static JSONArray getCategoryAsTreeListData(final Context context){
+        final JSONArray categorys = new JSONArray();
+        final StringBuilder err = new StringBuilder();
+        generateDatas(null,categorys,err);
+        if (err.length() != 0)MyDialog.ToastMessage(err.toString(),context,null);
+        return categorys;
+    }
+    private static void generateDatas(final JSONObject parent,final JSONArray categorys,final StringBuilder err){
+        final JSONArray array = SQLiteHelper.getListToJson("SELECT  depth -1 level,category_id item_id, name item_name FROM shop_category where parent_id = " + Utils.getNullOrEmptyStringAsDefault(parent,"item_id","0"),err);
+        if (array != null){
+            JSONObject item_json;
+            JSONArray kids;
+            for (int i = 0,size = array.size();i < size;i++){
+                item_json = array.getJSONObject(i);
+                item_json.put("unfold",false);
+                item_json.put("isSel",false);
+                item_json.put("kids",new JSONArray());
+                if (parent != null){
+                    item_json.put("p_ref",parent);
+                    kids = parent.getJSONArray("kids");
+                    kids.add(item_json);
+                }
+                generateDatas(item_json,null,err);
+
+                if (categorys != null)categorys.add(item_json);
+            }
         }
     }
 

@@ -153,4 +153,6 @@
     <dimen name="login_info_w">@dimen/size_532</dimen>
     <dimen name="user_info_w">@dimen/size_278</dimen>
     <dimen name="pay_dialog_left_w">@dimen/size_468</dimen>
+    <dimen name="tree_list_h">400dp</dimen>
+    <dimen name="tree_list_w">488dp</dimen>
 </resources>

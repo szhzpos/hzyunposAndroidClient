@@ -321,4 +321,22 @@
     <string name="new_retail_price_sz">新零售价</string>
     <string name="adjust_hint_sz">注：该调价会直接更新总部档案价格</string>
 
+    <!-- 商品查询窗口-->
+    <string name="manage_name_sz">@string/g_name_sz</string>
+    <string name="manage_barcode_sz">@string/barcode_sz</string>
+    <string name="manage_item_no_sz">@string/item_no_sz</string>
+    <string name="manage_goods_sz">商品管理</string>
+    <string name="manage_normal_sz">正常</string>
+    <string name="manage_unShelve_sz">下架</string>
+    <string name="manage_deleted_sz">已删除</string>
+    <string name="manage_zjm_sz">助记码</string>
+    <string name="manage_specification_sz">规格</string>
+    <string name="manage_pro_place_sz">产地</string>
+    <string name="manage_retail_price_sz">零售价</string>
+    <string name="manage_vip_price_sz">会员价</string>
+    <string name="manage_category_sz">所属分类</string>
+    <string name="manage_goods_attr_sz">商品属性</string>
+    <string name="manage_goods_status_sz">商品状态</string>
+
+
 </resources>

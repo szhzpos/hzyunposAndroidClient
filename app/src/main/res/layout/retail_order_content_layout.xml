@@ -105,7 +105,7 @@
 
     <TextView
         android:id="@+id/oper_time"
-        android:layout_width="188dp"
+        android:layout_width="@dimen/size_200"
         android:layout_height="match_parent"
         android:gravity="center"
         android:paddingTop="@dimen/margin_8"

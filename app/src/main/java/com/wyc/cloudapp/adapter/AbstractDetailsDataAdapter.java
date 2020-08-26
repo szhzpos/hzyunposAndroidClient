@@ -30,7 +30,7 @@ public abstract class AbstractDetailsDataAdapter <T extends RecyclerView.ViewHol
             setViewBackgroundColor(v,false);
             mCurrentItemView = null;
         }
-        if (mItemClickCallback != null)mItemClickCallback.onClick(getCurrentPayRecord());
+        if (mItemClickCallback != null)mItemClickCallback.onClick(getCurrentRecord());
     }
     private void setViewBackgroundColor(View view,boolean s){
         if(view!= null){
@@ -63,13 +63,13 @@ public abstract class AbstractDetailsDataAdapter <T extends RecyclerView.ViewHol
     }
 
     public interface ItemClickCallBack{
-        void onClick(final JSONObject pay_record);
+        void onClick(final JSONObject record);
     }
     public void setItemClickListener(final ItemClickCallBack clickCallBack){
         mItemClickCallback = clickCallBack;
     }
 
-    private JSONObject getCurrentPayRecord(){
+    private JSONObject getCurrentRecord(){
         if (mCurrentItemView != null){
             final TextView name = mCurrentItemView.findViewById(R.id.pay_method_name);
             if (name != null){

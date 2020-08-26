@@ -60,7 +60,7 @@ public class BarCodeScaleDownDialog extends AbstractDialogBaseOnContextImp {
         final Button add_scale_btn = findViewById(R.id.add_scale);
         if (null != add_scale_btn)
             add_scale_btn.setOnClickListener(v -> {
-                AddBarCodeScaleDialog addBarCodeScaleDialog = new AddBarCodeScaleDialog(mContext,mContext.getString(R.string.add_scale_sz));
+                AddBarcodeScaleDialog addBarCodeScaleDialog = new AddBarcodeScaleDialog(mContext,mContext.getString(R.string.add_scale_sz));
                 addBarCodeScaleDialog.setGetContent(object -> {
                     mBarCodeScaleAdapter.addScale(object);
                 });
@@ -96,7 +96,7 @@ public class BarCodeScaleDownDialog extends AbstractDialogBaseOnContextImp {
                 if (isDownloadFinished()){
                     final JSONArray array = mBarCodeScaleAdapter.getCurrentScalseInfos();
                     if (array != null && !array.isEmpty()){
-                        AddBarCodeScaleDialog addBarCodeScaleDialog = new AddBarCodeScaleDialog(mContext,array.getJSONObject(0));
+                        AddBarcodeScaleDialog addBarCodeScaleDialog = new AddBarcodeScaleDialog(mContext,array.getJSONObject(0));
                         addBarCodeScaleDialog.setGetContent(object -> mBarCodeScaleAdapter.addScale(object));
                         addBarCodeScaleDialog.show();
                     }

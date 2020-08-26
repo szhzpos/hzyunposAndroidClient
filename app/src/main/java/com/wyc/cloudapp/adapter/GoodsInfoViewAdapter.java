@@ -22,7 +22,7 @@ import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.dialog.GoodsPriceAdjustDialog;
+import com.wyc.cloudapp.dialog.goods.GoodsPriceAdjustDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;

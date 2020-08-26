@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.adapter.GoodsCategoryViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomePopupWindow;
@@ -26,17 +27,17 @@ import com.wyc.cloudapp.utils.Utils;
 
 import java.lang.reflect.InvocationTargetException;
 
-public class AddBarCodeScaleDialog extends AbstractDialogBaseOnContextImp {
+public class AddBarcodeScaleDialog extends AbstractDialogBaseOnContextImp {
     private EditText mManufacturerEt,mProductType, mScaleName,mPort,mGCategoryEt;
     private LinearLayout mIP;
     private CustomePopupWindow mPopupWindow;
     private JSONArray mCategoryInfo,mManufacturerInfos, mScaleInfos;
     private OnGetContentCallBack mGetContent;
     private JSONObject mModifyScale;
-    AddBarCodeScaleDialog(@NonNull Context context, final String title) {
+    AddBarcodeScaleDialog(@NonNull Context context, final String title) {
         super(context,title);
     }
-    AddBarCodeScaleDialog(@NonNull Context context, JSONObject object) {
+    AddBarcodeScaleDialog(@NonNull Context context, JSONObject object) {
         this(context,context.getString(R.string.modify_scale_sz));
         mModifyScale = object;
     }
@@ -65,7 +66,7 @@ public class AddBarCodeScaleDialog extends AbstractDialogBaseOnContextImp {
         //初始化按钮事件
         findViewById(R.id.save).setOnClickListener(v -> {
             if (getScalseConfig()){
-                AddBarCodeScaleDialog.this.dismiss();
+                AddBarcodeScaleDialog.this.dismiss();
             }
         });
 
@@ -158,10 +159,8 @@ public class AddBarCodeScaleDialog extends AbstractDialogBaseOnContextImp {
             }
         });
         editText.setOnClickListener(v -> {
-            final JSONArray objects = new JSONArray();
-            generateDatas(null,objects);
             final TreeListDialog treeListDialog = new TreeListDialog(mContext,mContext.getString(R.string.d_category_sz));
-            treeListDialog.setDatas(objects,mCategoryInfo,false);
+            treeListDialog.setDatas(GoodsCategoryViewAdapter.getCategoryAsTreeListData(mContext),mCategoryInfo,false);
             editText.post(()->{
                 if (treeListDialog.exec() == 1){
                     final StringBuilder names = new StringBuilder();
@@ -222,31 +221,6 @@ public class AddBarCodeScaleDialog extends AbstractDialogBaseOnContextImp {
 
         }
     };
-
-    private void generateDatas(final JSONObject parent,final JSONArray categorys){
-        final StringBuilder err = new StringBuilder();
-        final JSONArray array = SQLiteHelper.getListToJson("SELECT  depth -1 level,category_id item_id, name item_name FROM shop_category where parent_id = " + Utils.getNullOrEmptyStringAsDefault(parent,"item_id","0"),err);
-        if (array != null){
-            JSONObject item_json;
-            JSONArray kids;
-            for (int i = 0,size = array.size();i < size;i++){
-                item_json = array.getJSONObject(i);
-                item_json.put("unfold",false);
-                item_json.put("isSel",false);
-                item_json.put("kids",new JSONArray());
-                if (parent != null){
-                    item_json.put("p_ref",parent);
-                    kids = parent.getJSONArray("kids");
-                    kids.add(item_json);
-                }
-                generateDatas(item_json,null);
-
-                if (categorys != null)categorys.add(item_json);
-            }
-        }else {
-            MyDialog.ToastMessage(err.toString(),mContext,getWindow());
-        }
-    }
 
     private String getIP(){
         View view;

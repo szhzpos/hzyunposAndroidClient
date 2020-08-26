@@ -47,7 +47,7 @@ import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
 import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.dialog.AddGoodsInfoDialog;
+import com.wyc.cloudapp.dialog.goods.AddGoodsInfoDialog;
 import com.wyc.cloudapp.dialog.orderDialog.HangBillDialog;
 import com.wyc.cloudapp.dialog.MoreFunDialog;
 import com.wyc.cloudapp.dialog.CustomizationView.TmpOrderButton;

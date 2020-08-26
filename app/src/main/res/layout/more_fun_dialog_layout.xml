@@ -157,5 +157,18 @@
             android:textSize="@dimen/font_size_14"
             app:layout_constraintStart_toEndOf="@id/barcode_scale"
             app:layout_constraintTop_toTopOf="@id/barcode_scale" />
+
+        <Button
+            android:id="@+id/goods_manage_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/more_fun_btn_width"
+            android:layout_height="@dimen/more_fun_btn_height"
+            android:layout_marginStart="@dimen/margin_5"
+            android:background="@drawable/button_blue"
+            android:text="@string/manage_goods_sz"
+            android:textColor="@color/blue_white"
+            android:textSize="@dimen/font_size_14"
+            app:layout_constraintStart_toEndOf="@id/price_adj_btn"
+            app:layout_constraintTop_toTopOf="@id/price_adj_btn" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

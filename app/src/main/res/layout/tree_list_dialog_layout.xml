@@ -6,8 +6,8 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/item_list"
-        android:layout_width="488dp"
-        android:layout_height="400dp"
+        android:layout_width="@dimen/tree_list_w"
+        android:layout_height="@dimen/tree_list_h"
         android:background="@drawable/border_sub_gray" />
 
     <LinearLayout

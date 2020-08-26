@@ -12,6 +12,7 @@ import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.barcodeScales.BarCodeScaleDownDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnMainActivityImp;
+import com.wyc.cloudapp.dialog.goods.GoodsManageDialog;
 import com.wyc.cloudapp.dialog.orderDialog.QueryRefundOrderDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.dialog.vip.VipDepositOrderDialog;
@@ -39,6 +40,7 @@ public final class MoreFunDialog extends AbstractDialogBaseOnMainActivityImp {
         initPresentBtn();
         initDataUploadBtn();
         initPriceAdjustBtn();
+        initGoodsManageBtn();
     }
     @Override
     protected int getContentLayoutId(){
@@ -181,6 +183,14 @@ public final class MoreFunDialog extends AbstractDialogBaseOnMainActivityImp {
                 mContext.showAdjustPriceDialog();
                 closeWindow();
             }
+        });
+    }
+    private void initGoodsManageBtn(){
+        final Button btn = findViewById(R.id.goods_manage_btn);
+        btn.setOnClickListener(v -> {
+            final GoodsManageDialog dialog = new GoodsManageDialog(mContext);
+            dialog.show();
+            this.dismiss();
         });
     }
 }

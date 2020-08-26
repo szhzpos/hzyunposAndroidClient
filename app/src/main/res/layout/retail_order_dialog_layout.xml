@@ -108,7 +108,7 @@ android:orientation="vertical">
                 android:textSize="@dimen/font_size_18" />
 
             <TextView
-                android:layout_width="188dp"
+                android:layout_width="@dimen/size_200"
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:paddingTop="@dimen/margin_8"
