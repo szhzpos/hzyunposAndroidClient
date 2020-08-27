@@ -26,7 +26,7 @@ import com.wyc.cloudapp.utils.http.HttpRequest;
 
 import java.util.Locale;
 
-public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoodsInfoAdapter.MyViewHolder>  {
+public final class RefundDialogAdapter extends RecyclerView.Adapter<RefundDialogAdapter.MyViewHolder>  {
     private AbstractDialogBaseOnMainActivityImp mDialog;
     private MainActivity mContext;
     private JSONArray mGoodsDatas,mPayDatas,mOriPayDatas;;
@@ -35,7 +35,7 @@ public final class RefundGoodsInfoAdapter extends RecyclerView.Adapter<RefundGoo
     private JSONObject mVipInfo;
     private DigitKeyboardPopup mDigitKeyboardPopup;
     private boolean mSingleRefundStatus;
-    public RefundGoodsInfoAdapter(AbstractDialogBaseOnMainActivityImp dialog){
+    public RefundDialogAdapter(AbstractDialogBaseOnMainActivityImp dialog){
         mDialog = dialog;
         mContext = dialog.getPrivateContext();
         mDigitKeyboardPopup = new DigitKeyboardPopup(mContext);

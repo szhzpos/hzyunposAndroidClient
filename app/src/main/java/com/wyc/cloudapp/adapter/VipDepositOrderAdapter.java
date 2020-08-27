@@ -19,9 +19,9 @@ import com.wyc.cloudapp.logger.Logger;
 
 import java.util.Locale;
 
-public class VipDepositOrderViewAdapter extends AbstractQueryDataAdapter<VipDepositOrderViewAdapter.MyViewHolder> {
+public class VipDepositOrderAdapter extends AbstractQueryDataAdapter<VipDepositOrderAdapter.MyViewHolder> {
 
-    public VipDepositOrderViewAdapter(MainActivity context){
+    public VipDepositOrderAdapter(MainActivity context){
         mContext = context;
     }
 
@@ -51,14 +51,14 @@ public class VipDepositOrderViewAdapter extends AbstractQueryDataAdapter<VipDepo
     }
     @NonNull
     @Override
-    public VipDepositOrderViewAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public VipDepositOrderAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = View.inflate(mContext, R.layout.vip_deposit_order_content_layout, null);
         itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int) mContext.getResources().getDimension(R.dimen.table_row_height)));
-        return new VipDepositOrderViewAdapter.MyViewHolder(itemView);
+        return new VipDepositOrderAdapter.MyViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull VipDepositOrderViewAdapter.MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull VipDepositOrderAdapter.MyViewHolder holder, int position) {
         if (null != mDatas){
             final JSONObject order_info = mDatas.getJSONObject(position);
             if (order_info != null){

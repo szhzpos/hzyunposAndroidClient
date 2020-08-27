@@ -21,9 +21,9 @@ import com.wyc.cloudapp.logger.Logger;
 
 import java.util.Locale;
 
-public final class RetailOrderViewAdapter extends AbstractQueryDataAdapter<RetailOrderViewAdapter.MyViewHolder> {
+public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrderAdapter.MyViewHolder> {
     private AbstractDialogBaseOnMainActivityImp mDialog;
-    public RetailOrderViewAdapter(final AbstractDialogBaseOnMainActivityImp abstractDialogBaseOnMainActivityImp){
+    public RetailOrderAdapter(final AbstractDialogBaseOnMainActivityImp abstractDialogBaseOnMainActivityImp){
         mDialog = abstractDialogBaseOnMainActivityImp;
         mContext = abstractDialogBaseOnMainActivityImp.getPrivateContext();
     }

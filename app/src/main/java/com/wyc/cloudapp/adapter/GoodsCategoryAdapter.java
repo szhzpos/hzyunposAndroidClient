@@ -18,14 +18,14 @@ import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
-public class GoodsCategoryViewAdapter extends RecyclerView.Adapter<GoodsCategoryViewAdapter.MyViewHolder> implements View.OnClickListener{
+public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdapter.MyViewHolder> implements View.OnClickListener{
     private MainActivity mContext;
     private JSONArray mDatas;
     private View mCurrentItemView;//当前选择的类别item
-    private GoodsCategoryViewAdapter mChildGoodsCategoryAdpter;
+    private GoodsCategoryAdapter mChildGoodsCategoryAdpter;
     private RecyclerView mChildGoodsCategoryView;
     private boolean mChildShow = false,mFirstLoad = true;
-    public GoodsCategoryViewAdapter(MainActivity context, RecyclerView v){
+    public GoodsCategoryAdapter(MainActivity context, RecyclerView v){
         this.mContext = context;
         mChildGoodsCategoryView = v;
         laodChildShow();
@@ -126,7 +126,7 @@ public class GoodsCategoryViewAdapter extends RecyclerView.Adapter<GoodsCategory
                 final TextView tv = mCurrentItemView.findViewById(R.id.category_id);
                 try{
                     if (mChildGoodsCategoryAdpter == null){
-                        mChildGoodsCategoryAdpter = new GoodsCategoryViewAdapter(mContext,null);
+                        mChildGoodsCategoryAdpter = new GoodsCategoryAdapter(mContext,null);
                         mChildGoodsCategoryView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
                         mChildGoodsCategoryView.setAdapter(mChildGoodsCategoryAdpter);
                     }

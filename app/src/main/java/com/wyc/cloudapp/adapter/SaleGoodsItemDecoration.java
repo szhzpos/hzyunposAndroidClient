@@ -5,10 +5,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.wyc.cloudapp.R;
@@ -21,7 +19,7 @@ public class SaleGoodsItemDecoration extends SuperItemDecoration {
     @Override
     public void onDrawOver(@NonNull Canvas c,@NonNull RecyclerView parent,@NonNull RecyclerView.State state) {
         super.onDrawOver(c, parent, state);
-        final SaleGoodsViewAdapter adapter = (SaleGoodsViewAdapter) parent.getAdapter();
+        final SaleGoodsAdapter adapter = (SaleGoodsAdapter) parent.getAdapter();
         final Context context = parent.getContext();
         if (adapter != null && adapter.getSingle()){
             final Paint paint = new Paint();

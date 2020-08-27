@@ -13,7 +13,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
-import com.wyc.cloudapp.adapter.RetailOrderViewAdapter;
+import com.wyc.cloudapp.adapter.RetailOrderAdapter;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.text.SimpleDateFormat;
@@ -98,7 +98,7 @@ public class QuerySaleOrderDialog extends AbstractQuerySuperDialog {
 
     @Override
     protected AbstractQueryDataAdapter getAdapter() {
-        return new RetailOrderViewAdapter(this);
+        return new RetailOrderAdapter(this);
     }
 
     @Override

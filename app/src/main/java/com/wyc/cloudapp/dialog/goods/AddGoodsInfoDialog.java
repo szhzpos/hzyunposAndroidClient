@@ -33,6 +33,7 @@ public class AddGoodsInfoDialog extends AbstractDialogBaseOnMainActivityImp {
     private EditText mBarcodeEt,mNameEt,mPurPriceEt,mRetailPriceEt,mCategoryEt,mUnitEt,mGoodsAttrEt,mItemIdEt, mMeteringEt,mSupplierEt,mVipPriceEt;
     private JSONArray mUnitList,mCategoryList,mSupplierList;
     private OnFinishListener mFinishListener;
+    private JSONObject mCurrentCategory;
     public AddGoodsInfoDialog(@NonNull MainActivity context) {
         super(context, context.getString(R.string.a_goods_sz));
         mContext = context;
@@ -110,10 +111,19 @@ public class AddGoodsInfoDialog extends AbstractDialogBaseOnMainActivityImp {
             if (hasFocus)v.callOnClick();
             Utils.hideKeyBoard(category_et);
         });
-        category_et.setText("不定类");
-        category_et.setTag("7223");
+        if (mCurrentCategory == null){
+            category_et.setText("不定类");
+            category_et.setTag("7223");
+        }else{
+            category_et.setText(mCurrentCategory.getString("item_name"));
+            category_et.setTag(mCurrentCategory.getString("item_id"));
+        }
 
         mCategoryEt = category_et;
+    }
+
+    void setCurrentCategory(final JSONObject object){
+        mCurrentCategory = object;
     }
 
     private void initSupplier(){
@@ -225,10 +235,25 @@ public class AddGoodsInfoDialog extends AbstractDialogBaseOnMainActivityImp {
 
     private void initBarcode(){
         final EditText barcdoe_et = findViewById(R.id.a_barcode_et);
-        if (barcdoe_et != null){
-            barcdoe_et.setText(mBarcode);
-            barcdoe_et.requestFocus();
-        }
+        assert(barcdoe_et != null);
+        barcdoe_et.setText(mBarcode);
+        barcdoe_et.requestFocus();
+        barcdoe_et.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                mBarcode = s.toString();
+            }
+        });
         mBarcodeEt = barcdoe_et;
     }
     private void initCkml(){
@@ -402,8 +427,9 @@ public class AddGoodsInfoDialog extends AbstractDialogBaseOnMainActivityImp {
             if ("2".equals(Utils.getViewTagValue(mGoodsAttrEt,"1"))){
                 mBarcodeEt.setText(only_coding);
             }else{
-                if(mBarcode.isEmpty()){
+                if(mBarcode == null || mBarcode.isEmpty()){
                     mBarcodeEt.setText(data.getString("barcode"));
+                    mBarcodeEt.selectAll();
                 }
             }
         }
@@ -571,7 +597,7 @@ public class AddGoodsInfoDialog extends AbstractDialogBaseOnMainActivityImp {
         final JSONObject data = new JSONObject();
         final MainActivity activity = mContext;
         final String barcode = mBarcode,name = mNameEt.getText().toString(),category = mCategoryEt.getText().toString(),unit = mUnitEt.getText().toString(),only_coding = mItemIdEt.getText().toString();
-        if (barcode.isEmpty()){
+        if (barcode == null || barcode.isEmpty()){
             mBarcodeEt.requestFocus();
             MyDialog.ToastMessage(activity.getString(R.string.not_empty_hint_sz,activity.getString(R.string.barcode_sz)),activity,getWindow());
             return data;

@@ -42,9 +42,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.GoodsInfoItemDecoration;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
-import com.wyc.cloudapp.adapter.GoodsCategoryViewAdapter;
+import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
 import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
-import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
+import com.wyc.cloudapp.adapter.SaleGoodsAdapter;
 import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.goods.AddGoodsInfoDialog;
@@ -77,8 +77,8 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainActivity extends AppCompatActivity {
-    private SaleGoodsViewAdapter mSaleGoodsViewAdapter;
-    private GoodsCategoryViewAdapter mGoodsCategoryViewAdapter;
+    private SaleGoodsAdapter mSaleGoodsAdapter;
+    private GoodsCategoryAdapter mGoodsCategoryAdapter;
     private GoodsInfoViewAdapter mGoodsInfoViewAdapter;
     private EditText mSearch_content;
     private JSONObject mCashierInfo,mStoreInfo,mVipInfo;
@@ -252,11 +252,14 @@ public class MainActivity extends AppCompatActivity {
                 discount_btn = findViewById(R.id.discount),change_price_btn = findViewById(R.id.change_price),check_out_btn = findViewById(R.id.check_out),
                 vip_btn = findViewById(R.id.vip);
 
-        if (minus_num_btn != null)minus_num_btn.setOnClickListener(v -> mSaleGoodsViewAdapter.deleteSaleGoods(mSaleGoodsViewAdapter.getCurrentItemIndex(),1));//数量减
+        if (minus_num_btn != null)minus_num_btn.setOnClickListener(v -> mSaleGoodsAdapter.deleteSaleGoods(mSaleGoodsAdapter.getCurrentItemIndex(),1));//数量减
         if (add_num_btn != null)add_num_btn.setOnClickListener(v -> addOneSaleGoods());//数量加
-        if (num_btn != null)num_btn.setOnClickListener(view -> {if (verifyNumBtnPermissions())mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 0);});//数量
-        if (discount_btn != null)discount_btn.setOnClickListener(v-> {mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 2);});//打折
-        if (change_price_btn != null)change_price_btn.setOnClickListener(v-> {mSaleGoodsViewAdapter.updateSaleGoodsDialog((short) 1);});//改价
+        if (num_btn != null)num_btn.setOnClickListener(view -> {if (verifyNumBtnPermissions())
+            mSaleGoodsAdapter.updateSaleGoodsDialog((short) 0);});//数量
+        if (discount_btn != null)discount_btn.setOnClickListener(v-> {
+            mSaleGoodsAdapter.updateSaleGoodsDialog((short) 2);});//打折
+        if (change_price_btn != null)change_price_btn.setOnClickListener(v-> {
+            mSaleGoodsAdapter.updateSaleGoodsDialog((short) 1);});//改价
         if (check_out_btn != null)check_out_btn.setOnClickListener((View v)->{Utils.disableView(v,500);showPayDialog();});//结账
         if (vip_btn != null)vip_btn.setOnClickListener(v -> {
             final VipInfoDialog vipInfoDialog = new VipInfoDialog(this);
@@ -312,7 +315,7 @@ public class MainActivity extends AppCompatActivity {
         final Button clearBtn = findViewById(R.id.clear);
         if (null != clearBtn){
             clearBtn.setOnClickListener(v -> {
-                if (!mSaleGoodsViewAdapter.isEmpty()){
+                if (!mSaleGoodsAdapter.isEmpty()){
                     clearSaleGoods();
                 }else {
                     if (getSingle())resetOrderInfo();
@@ -443,18 +446,18 @@ public class MainActivity extends AppCompatActivity {
     }
     private void initGoodsCategoryAdapter(){
         final RecyclerView goods_type_view = findViewById(R.id.goods_type_list);
-        mGoodsCategoryViewAdapter = new GoodsCategoryViewAdapter(this,findViewById(R.id.goods_sec_l_type_list));
+        mGoodsCategoryAdapter = new GoodsCategoryAdapter(this,findViewById(R.id.goods_sec_l_type_list));
         goods_type_view.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false));
-        mGoodsCategoryViewAdapter.setDatas(0);
-        goods_type_view.setAdapter(mGoodsCategoryViewAdapter);
+        mGoodsCategoryAdapter.setDatas(0);
+        goods_type_view.setAdapter(mGoodsCategoryAdapter);
     }
     private void initSaleGoodsAdapter(){
         mSaleGoodsRecyclerView = findViewById(R.id.sale_goods_list);
-        mSaleGoodsViewAdapter = new SaleGoodsViewAdapter(this);
-        mSaleGoodsViewAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+        mSaleGoodsAdapter = new SaleGoodsAdapter(this);
+        mSaleGoodsAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged(){
-                final JSONArray datas = mSaleGoodsViewAdapter.getDatas();
+                final JSONArray datas = mSaleGoodsAdapter.getDatas();
                 double sale_sum_num = 0.0,sale_sum_amount = 0.0,dis_sum_amt = 0.0;
 
                 for (int i = 0,length = datas.size();i < length;i ++){
@@ -467,14 +470,14 @@ public class MainActivity extends AppCompatActivity {
                 mSaleSumAmtTv.setText(String.format(Locale.CANADA,"%.2f",sale_sum_amount));
                 mDisSumAmtTv.setText(String.format(Locale.CANADA,"%.2f",dis_sum_amt));
 
-                mSaleGoodsRecyclerView.scrollToPosition(mSaleGoodsViewAdapter.getCurrentItemIndex());
+                mSaleGoodsRecyclerView.scrollToPosition(mSaleGoodsAdapter.getCurrentItemIndex());
 
-                if (mSecondDisplay != null)mSecondDisplay.notifyChange(mSaleGoodsViewAdapter.getCurrentItemIndex());
+                if (mSecondDisplay != null)mSecondDisplay.notifyChange(mSaleGoodsAdapter.getCurrentItemIndex());
             }
         });
         SuperItemDecoration.registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray_subtransparent)));
         mSaleGoodsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
-        mSaleGoodsRecyclerView.setAdapter(mSaleGoodsViewAdapter);
+        mSaleGoodsRecyclerView.setAdapter(mSaleGoodsAdapter);
     }
     private void reSizeSaleGoodsView(){
         SuperItemDecoration.registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),null);
@@ -488,7 +491,7 @@ public class MainActivity extends AppCompatActivity {
                 final MainActivity context = MainActivity.this;
                 final String content = search.getText().toString();
                 if (content.length() == 0){
-                    mGoodsCategoryViewAdapter.trigger_preView();
+                    mGoodsCategoryAdapter.trigger_preView();
                 }else{
                     if (!mGoodsInfoViewAdapter.fuzzy_search_goods(content,true)) {
                         mHandler.post(()->{
@@ -554,7 +557,7 @@ public class MainActivity extends AppCompatActivity {
                             editable.delete(editable.length() - 1,editable.length());
                     }else if(v_id == R.id.enter){
                         if (editable.length() == 0){
-                            mGoodsCategoryViewAdapter.trigger_preView();
+                            mGoodsCategoryAdapter.trigger_preView();
                         }else{
                             mGoodsInfoViewAdapter.fuzzy_search_goods(editable.toString(),true);
                         }
@@ -626,7 +629,7 @@ public class MainActivity extends AppCompatActivity {
             if (isAdjustPriceMode()){
                 MyDialog.ToastMessage(mSaleGoodsRecyclerView,"调价模式不允许挂单操作!",activity,null);
             }else {
-                final JSONArray datas = mSaleGoodsViewAdapter.getDatas();
+                final JSONArray datas = mSaleGoodsAdapter.getDatas();
                 final HangBillDialog hangBillDialog = new HangBillDialog(activity);
                 if (Utils.JsonIsNotEmpty(datas)){
                     final StringBuilder err = new StringBuilder();
@@ -649,7 +652,7 @@ public class MainActivity extends AppCompatActivity {
                                     goods_info = new JSONObject();
                                     if (mGoodsInfoViewAdapter.getSingleGoods(goods_info,barcode_id_obj.getString(GoodsInfoViewAdapter.W_G_MARK),mGoodsInfoViewAdapter.getGoodsId(barcode_id_obj))){
                                         goods_info.put("xnum",barcode_id_obj.getDoubleValue("xnum"));//挂单取出重量
-                                        mSaleGoodsViewAdapter.addSaleGoods(goods_info);
+                                        mSaleGoodsAdapter.addSaleGoods(goods_info);
                                         hangBillDialog.dismiss();
                                     }else{
                                         if (!isAdjustPriceMode()) MyDialog.ToastMessage("选择商品错误：" + goods_info.getString("info"),this,null);
@@ -722,7 +725,7 @@ public class MainActivity extends AppCompatActivity {
         if (isAdjustPriceMode()){
             MyDialog.ToastMessage(mSaleGoodsRecyclerView,"调价模式不允许收款操作!",this,null);
         }else {
-            if (!mSaleGoodsViewAdapter.isEmpty()){
+            if (!mSaleGoodsAdapter.isEmpty()){
                 if (!getSingle()){
                     final PayDialog dialog = new PayDialog(this,getString(R.string.affirm_pay_sz));
                     dialog.initPayContent();
@@ -744,7 +747,7 @@ public class MainActivity extends AppCompatActivity {
     }
     public void resetOrderInfo(){
         mPermissionCashierId = "";
-        mSaleGoodsViewAdapter.clearGoods();
+        mSaleGoodsAdapter.clearGoods();
         clearVipInfo();
         setSingle(false);
         resetOrderCode();
@@ -759,8 +762,8 @@ public class MainActivity extends AppCompatActivity {
                 vip_name_tv.setText(getText(R.string.space_sz));
                 vip_phone_num_tv.setText(getText(R.string.space_sz));
             }
-            if (!mSaleGoodsViewAdapter.getDatas().isEmpty()){
-                mSaleGoodsViewAdapter.deleteVipDiscountRecord();
+            if (!mSaleGoodsAdapter.getDatas().isEmpty()){
+                mSaleGoodsAdapter.deleteVipDiscountRecord();
             }
             reSizeSaleGoodsView();
         }
@@ -776,48 +779,48 @@ public class MainActivity extends AppCompatActivity {
                 vip_name_tv.setText(vip.getString("name"));
                 vip_phone_num_tv.setText(vip.getString("mobile"));
             }
-            mSaleGoodsViewAdapter.updateGoodsInfoToVip(mVipInfo);
+            mSaleGoodsAdapter.updateGoodsInfoToVip(mVipInfo);
         }
         reSizeSaleGoodsView();
     }
 
     public void resetOrderCode(){
-        mOrderCodeTv.setText(mSaleGoodsViewAdapter.generateOrderCode(mCashierInfo.getString("pos_num"),1));
+        mOrderCodeTv.setText(mSaleGoodsAdapter.generateOrderCode(mCashierInfo.getString("pos_num"),1));
     }
     private void initSecondDisplay(){
         mSecondDisplay = SecondDisplay.getInstantiate(this);
         if (null != mSecondDisplay){
             if (isConnection())mSecondDisplay.loadAdImg(mUrl,mAppId, mAppSecret);
-            mSecondDisplay.setDatas(mSaleGoodsViewAdapter.getDatas()).setNavigationInfo(mStoreInfo).show();
+            mSecondDisplay.setDatas(mSaleGoodsAdapter.getDatas()).setNavigationInfo(mStoreInfo).show();
         }
     }
 
     public boolean allDiscount(double v){
-       return mSaleGoodsViewAdapter.allDiscount(v);
+       return mSaleGoodsAdapter.allDiscount(v);
     }
     public void deleteMolDiscountRecord(){
-        mSaleGoodsViewAdapter.deleteMolDiscountRecord();
+        mSaleGoodsAdapter.deleteMolDiscountRecord();
     }
     public void deleteAlldiscountRecord(){
-        mSaleGoodsViewAdapter.deleteAlldiscountRecord();
+        mSaleGoodsAdapter.deleteAlldiscountRecord();
     }
     public String discountRecordsToString(){
-        return mSaleGoodsViewAdapter.discountRecordsToString();
+        return mSaleGoodsAdapter.discountRecordsToString();
     }
     public void autoMol(double mol_amt){
-        mSaleGoodsViewAdapter.autoMol(mol_amt);
+        mSaleGoodsAdapter.autoMol(mol_amt);
     }
     public void manualMol(double mol_amt){
-        mSaleGoodsViewAdapter.manualMol(mol_amt);
+        mSaleGoodsAdapter.manualMol(mol_amt);
     }
     public void fullReduceDiscount(){
-        mSaleGoodsViewAdapter.fullReduceDiscount();
+        mSaleGoodsAdapter.fullReduceDiscount();
     }
     public void deleteFullReduce(){
-        mSaleGoodsViewAdapter.deleteFullReduceRecord();
+        mSaleGoodsAdapter.deleteFullReduceRecord();
     }
     public JSONObject getFullReduceRecord(){
-        return mSaleGoodsViewAdapter.getFullReduceRecord();
+        return mSaleGoodsAdapter.getFullReduceRecord();
     }
     public void manualSync(){
         if (mSyncManagement != null){
@@ -829,16 +832,16 @@ public class MainActivity extends AppCompatActivity {
         if (mSyncManagement != null) mSyncManagement.sync_refund_order();
     }
     public JSONArray getSaleData(){
-        return mSaleGoodsViewAdapter.getDatas();
+        return mSaleGoodsAdapter.getDatas();
     }
     public JSONArray getDiscountRecords(){
-        return mSaleGoodsViewAdapter.getDiscountRecords();
+        return mSaleGoodsAdapter.getDiscountRecords();
     }
     public boolean splitCombinationalGoods(final JSONArray combination_goods,int gp_id,double gp_price,double gp_num,StringBuilder err){
-        return mSaleGoodsViewAdapter.splitCombinationalGoods(combination_goods,gp_id,gp_price,gp_num,err);
+        return mSaleGoodsAdapter.splitCombinationalGoods(combination_goods,gp_id,gp_price,gp_num,err);
     }
     public double getSumAmt(int type){
-        return mSaleGoodsViewAdapter.getSumAmt(type);
+        return mSaleGoodsAdapter.getSumAmt(type);
     }
     public String getPosNum(){if (null == mCashierInfo)return "";return mCashierInfo.getString("pos_num");}
     public JSONObject getCashierInfo(){
@@ -874,7 +877,7 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
     public void disposeHangBill(){
-        if (mSaleGoodsViewAdapter.isEmpty()){
+        if (mSaleGoodsAdapter.isEmpty()){
             final Button tmp_order = findViewById(R.id.tmp_order);
             if (tmp_order != null)tmp_order.callOnClick();
         }
@@ -995,21 +998,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setSingle(boolean b){
-        if (mSaleGoodsViewAdapter != null)mSaleGoodsViewAdapter.setSingle(b);
+        if (mSaleGoodsAdapter != null) mSaleGoodsAdapter.setSingle(b);
         if (b)resetOrderCode();
     }
     public boolean getSingle(){
-        return mSaleGoodsViewAdapter != null && mSaleGoodsViewAdapter.getSingle();
+        return mSaleGoodsAdapter != null && mSaleGoodsAdapter.getSingle();
     }
     public boolean present(){
-        return null != mSaleGoodsViewAdapter && mSaleGoodsViewAdapter.present();
+        return null != mSaleGoodsAdapter && mSaleGoodsAdapter.present();
     }
     public void clearSearchEt(){
         if (null != mSearch_content){
             final Editable editable = mSearch_content.getText();
             if (editable.length() != 0){
                 editable.clear();
-                if (mKeyboard.getVisibility() == View.VISIBLE)mGoodsCategoryViewAdapter.trigger_preView();
+                if (mKeyboard.getVisibility() == View.VISIBLE) mGoodsCategoryAdapter.trigger_preView();
             }
         }
     }
@@ -1019,7 +1022,7 @@ public class MainActivity extends AppCompatActivity {
         final String weigh_barcode_info = (String) jsonObject.remove(GoodsInfoViewAdapter.W_G_MARK);//删除称重标志否则重新选择商品时不弹出称重界面
         if (mGoodsInfoViewAdapter.getSingleGoods(content,weigh_barcode_info,id)){
             hideLastOrderInfo();
-            mSaleGoodsViewAdapter.addSaleGoods(content);
+            mSaleGoodsAdapter.addSaleGoods(content);
         }else{
             if (!isAdjustPriceMode()) MyDialog.ToastMessage("选择商品错误：" + content.getString("info"),this,null);
         }
@@ -1031,10 +1034,10 @@ public class MainActivity extends AppCompatActivity {
         if(mGoodsInfoViewAdapter != null && null != array)mGoodsInfoViewAdapter.updateGoodsInfo(array);
     }
     public void addOneSaleGoods(){
-        final JSONObject object = Utils.JsondeepCopy(mSaleGoodsViewAdapter.getCurrentContent());
+        final JSONObject object = Utils.JsondeepCopy(mSaleGoodsAdapter.getCurrentContent());
         if (!object.isEmpty()){
             object.put("xnum",1.0);
-            mSaleGoodsViewAdapter.addSaleGoods(object);
+            mSaleGoodsAdapter.addSaleGoods(object);
         }
     }
     public void triggerPsClick(){

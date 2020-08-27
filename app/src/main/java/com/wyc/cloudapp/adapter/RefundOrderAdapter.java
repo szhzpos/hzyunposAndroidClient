@@ -19,8 +19,8 @@ import com.wyc.cloudapp.logger.Logger;
 
 import java.util.Locale;
 
-public final class RefundOrderViewAdapter extends AbstractQueryDataAdapter<RefundOrderViewAdapter.MyViewHolder> {
-    public RefundOrderViewAdapter(final MainActivity context){
+public final class RefundOrderAdapter extends AbstractQueryDataAdapter<RefundOrderAdapter.MyViewHolder> {
+    public RefundOrderAdapter(final MainActivity context){
         mContext = context;
     }
     static class MyViewHolder extends RecyclerView.ViewHolder {

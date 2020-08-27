@@ -21,7 +21,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.adapter.RefundGoodsInfoAdapter;
+import com.wyc.cloudapp.adapter.RefundDialogAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
@@ -41,7 +41,7 @@ import java.util.Locale;
 
 
 public final class RefundDialog extends AbstractShowPrinterICODialog {
-    private RefundGoodsInfoAdapter mRefundGoodsInfoAdapter;
+    private RefundDialogAdapter mRefundDialogAdapter;
     private String mOrderCode,mRefundCode;
     private CustomProgressDialog mProgressDialog;
     private EditText mRemarkEt,mOrderCodeEt;
@@ -72,7 +72,7 @@ public final class RefundDialog extends AbstractShowPrinterICODialog {
     @Override
     public void show(){
         super.show();
-        if (mRefundGoodsInfoAdapter.isSingleRefundStatus() && mRefundBtn != null){
+        if (mRefundDialogAdapter.isSingleRefundStatus() && mRefundBtn != null){
             mRefundBtn.callOnClick();
         }else {
             if (mQueryBtn != null && mOrderCode != null && mOrderCode.length() != 0)mQueryBtn.callOnClick();
@@ -101,9 +101,9 @@ public final class RefundDialog extends AbstractShowPrinterICODialog {
     private void initQueryBtn(){
         final LinearLayout query_condition_layout = findViewById(R.id.query_condition_layout);
         if (query_condition_layout != null){
-            if (mRefundGoodsInfoAdapter.isSingleRefundStatus()){
+            if (mRefundDialogAdapter.isSingleRefundStatus()){
                 query_condition_layout.setVisibility(View.GONE);
-                mRefundGoodsInfoAdapter.setData(mContext.getSaleData());
+                mRefundDialogAdapter.setData(mContext.getSaleData());
             }else {
                 final Button query_btn =  query_condition_layout.findViewById(R.id.query_btn);
                 if (query_btn != null){
@@ -113,12 +113,12 @@ public final class RefundDialog extends AbstractShowPrinterICODialog {
                                 mProgressDialog.setCancel(false).setMessage("正在查询订单信息...").refreshMessage().show();
                                 CustomApplication.execute(()->{
                                     final StringBuilder err = new StringBuilder();
-                                    mRefundGoodsInfoAdapter.setDatas(mOrderCode,err);
+                                    mRefundDialogAdapter.setDatas(mOrderCode,err);
                                     mContext.runOnUiThread(()->{
                                         if (err.length() == 0){
                                             err.append("操作成功！");
                                             initVipInfoLayout();
-                                            mRefundGoodsInfoAdapter.notifyDataSetChanged();
+                                            mRefundDialogAdapter.notifyDataSetChanged();
                                         }
                                         mProgressDialog.dismiss();
                                         MyDialog.ToastMessage(err.toString(),mContext,getWindow());
@@ -143,8 +143,8 @@ public final class RefundDialog extends AbstractShowPrinterICODialog {
         final RecyclerView goods_detail = findViewById(R.id.goods_details);
         final TextView refund_sum_num_tv = findViewById(R.id.r_num),refund_sum_amt_tv = findViewById(R.id.r_sum_amt);
         if (null != goods_detail && null != refund_sum_num_tv && null != refund_sum_amt_tv){
-            mRefundGoodsInfoAdapter = new RefundGoodsInfoAdapter(this);
-            mRefundGoodsInfoAdapter.setRefundDataChange(datas -> {
+            mRefundDialogAdapter = new RefundDialogAdapter(this);
+            mRefundDialogAdapter.setRefundDataChange(datas -> {
                 if (datas != null){
                     double refund_num = 0.0,refund_sum_num = 0.0,refund_sum_amt = 0.0,refund_price = 0.0,xnum = 0.0,returnable_sum_num = 0.0,returnable_num = 0.0;
                     JSONObject record;
@@ -170,7 +170,7 @@ public final class RefundDialog extends AbstractShowPrinterICODialog {
                     refund_sum_num_tv.setText(String.format(Locale.CHINA,"%.3f",refund_sum_num));
                     refund_sum_amt_tv.setText(String.format(Locale.CHINA,"%.2f",Utils.formatDouble(refund_sum_amt,2)));
 
-                    if (!mRefundGoodsInfoAdapter.isSingleRefundStatus()){
+                    if (!mRefundDialogAdapter.isSingleRefundStatus()){
                         if (Utils.equalDouble(refund_sum_num,0.0)){
                             refund_sum_num = xnum;
                         }
@@ -186,8 +186,8 @@ public final class RefundDialog extends AbstractShowPrinterICODialog {
                     updateRefundBtnStatusAndSetRefundType(refund_type);
                 }
             });
-            mRefundGoodsInfoAdapter.setmRefundPayDataChange(datas -> {
-                double pay_sum_amt = 0.0,refund_sum_amt = mRefundGoodsInfoAdapter.getRefundAmt();
+            mRefundDialogAdapter.setmRefundPayDataChange(datas -> {
+                double pay_sum_amt = 0.0,refund_sum_amt = mRefundDialogAdapter.getRefundAmt();
                 for (int i = 0,size = datas.size();i < size;i++){
                     pay_sum_amt += datas.getJSONObject(i).getDoubleValue("pay_money");
                 }
@@ -201,7 +201,7 @@ public final class RefundDialog extends AbstractShowPrinterICODialog {
 
             goods_detail.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
             goods_detail.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
-            goods_detail.setAdapter(mRefundGoodsInfoAdapter);
+            goods_detail.setAdapter(mRefundDialogAdapter);
 
             initQueryBtn();
 
@@ -225,7 +225,7 @@ public final class RefundDialog extends AbstractShowPrinterICODialog {
                 @Override
                 public void afterTextChanged(Editable s) {
                     mOrderCode = s.toString();
-                    mRefundGoodsInfoAdapter.clearOrderInfo();
+                    mRefundDialogAdapter.clearOrderInfo();
                 }
             });
         }
@@ -262,13 +262,13 @@ public final class RefundDialog extends AbstractShowPrinterICODialog {
             return_btn.setOnClickListener(v -> {
                 final int type = mRefundType;
                 if (type == 1){
-                    mRefundGoodsInfoAdapter.allRefund();
+                    mRefundDialogAdapter.allRefund();
                 }else if(type == 2 || type == 3){
-                    if (!Utils.equalDouble(mRefundGoodsInfoAdapter.getRefundAmt(),0.0)){
+                    if (!Utils.equalDouble(mRefundDialogAdapter.getRefundAmt(),0.0)){
                         final RefundPayDialogImp refundPayDialogImp = new RefundPayDialogImp(mContext);
-                        refundPayDialogImp.setPayAmt(mRefundGoodsInfoAdapter.getRefundAmt());
+                        refundPayDialogImp.setPayAmt(mRefundDialogAdapter.getRefundAmt());
                         refundPayDialogImp.setYesOnclickListener(dialog -> {
-                            mRefundGoodsInfoAdapter.addPayInfo(dialog.getContent());
+                            mRefundDialogAdapter.addPayInfo(dialog.getContent());
                             dialog.dismiss();
                         }).show();
                     }else
@@ -280,7 +280,7 @@ public final class RefundDialog extends AbstractShowPrinterICODialog {
 
     private void requestRefund(){
         final MyDialog myDialog = new MyDialog(mContext);
-        myDialog.setTitle("退款信息").setMessage(mRefundGoodsInfoAdapter.PayDatasToString()).setYesOnclickListener(mContext.getString(R.string.OK), myDialog1 -> {
+        myDialog.setTitle("退款信息").setMessage(mRefundDialogAdapter.PayDatasToString()).setYesOnclickListener(mContext.getString(R.string.OK), myDialog1 -> {
             myDialog1.dismiss();
             mProgressDialog.setCancel(false).setMessage("正在保存单据...").refreshMessage().show();
             CustomApplication.execute(()->{
@@ -313,9 +313,9 @@ public final class RefundDialog extends AbstractShowPrinterICODialog {
                     });
                 }else {
                     mContext.runOnUiThread(()->{
-                        if (mRefundGoodsInfoAdapter.isSingleRefundStatus()){
+                        if (mRefundDialogAdapter.isSingleRefundStatus()){
                             mProgressDialog.dismiss();
-                            mRefundGoodsInfoAdapter.clearOrderInfo();
+                            mRefundDialogAdapter.clearOrderInfo();
                             this.dismiss();
                         }
                         if (null != mRemarkEt){
@@ -332,8 +332,8 @@ public final class RefundDialog extends AbstractShowPrinterICODialog {
 
     private void refundWithNotCheck(final StringBuilder err){
         if (updateFromRefundResult(null,mOrderCode,mRefundCode,err)){
-            if (mRefundGoodsInfoAdapter.isSingleRefundStatus()){//单品退货允许离线操作,保存单据之后再发起上传单据消息启动异步上传
-                mRefundGoodsInfoAdapter.sync_refund_order();
+            if (mRefundDialogAdapter.isSingleRefundStatus()){//单品退货允许离线操作,保存单据之后再发起上传单据消息启动异步上传
+                mRefundDialogAdapter.sync_refund_order();
             }else {
                 if (uploadRefundOrder(mContext.getAppId(),mContext.getUrl(),mContext.getAppSecret(),mOrderCode, mRefundCode, err)) {
                     //部分在线退货需要获取服务器数据合并之后再显示已退货信息
@@ -383,7 +383,7 @@ public final class RefundDialog extends AbstractShowPrinterICODialog {
     private void initVipInfoLayout(){
         final LinearLayout vip_info_layout = findViewById(R.id.vip_info_layout);
         if (null != vip_info_layout){
-            final JSONObject vip_info = mVipInfo = mRefundGoodsInfoAdapter.getVipInfo();
+            final JSONObject vip_info = mVipInfo = mRefundDialogAdapter.getVipInfo();
             if (vip_info != null && !vip_info.isEmpty()){
                 vip_info_layout.setVisibility(View.VISIBLE);
                 final TextView vip_name = vip_info_layout.findViewById(R.id.vip_name),card_code = vip_info_layout.findViewById(R.id.card_code),
@@ -419,7 +419,7 @@ public final class RefundDialog extends AbstractShowPrinterICODialog {
         mRefundCode = refund_code;
 
         //处理退货商品
-        final JSONArray goods_datas = Utils.JsondeepCopy(mRefundGoodsInfoAdapter.getRefundGoods());
+        final JSONArray goods_datas = Utils.JsondeepCopy(mRefundDialogAdapter.getRefundGoods());
         double refund_num = 0.0d,order_sum_amt = 0.0,refund_sum_amt = 0.0;
         for (int i = 0;i < goods_datas.size();i++){
             tmp_record = goods_datas.getJSONObject(i);
@@ -436,7 +436,7 @@ public final class RefundDialog extends AbstractShowPrinterICODialog {
         }
 
         //处理支付信息
-        final JSONArray refund_pay_records = mRefundGoodsInfoAdapter.getPayDatas();
+        final JSONArray refund_pay_records = mRefundDialogAdapter.getPayDatas();
         if (refund_pay_records == null){
             refund_info.put("info","支付记录不能为空！");
             return false;
@@ -598,7 +598,7 @@ public final class RefundDialog extends AbstractShowPrinterICODialog {
             }
         }
         update_sqls_list.add("update refund_order set order_status = 2 where ifnull(order_code,'') = '"+ order_code +"' and ro_code = '"+ ro_code +"'");
-        if (!mRefundGoodsInfoAdapter.isSingleRefundStatus()){
+        if (!mRefundDialogAdapter.isSingleRefundStatus()){
             update_sqls_list.add("update retail_order set order_status = 4 where order_code = '"+ order_code +"'");
         }
         return SQLiteHelper.execBatchUpdateSql(update_sqls_list,err);

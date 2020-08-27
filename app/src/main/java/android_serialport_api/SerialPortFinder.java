@@ -98,7 +98,7 @@ public class SerialPortFinder {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return devices.toArray(new String[devices.size()]);
+		return devices.toArray(new String[0]);
 	}
 
 	public String[] getAllDevicesPath() {
@@ -117,6 +117,6 @@ public class SerialPortFinder {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return devices.toArray(new String[devices.size()]);
+		return devices.toArray(new String[0]);
 	}
 }

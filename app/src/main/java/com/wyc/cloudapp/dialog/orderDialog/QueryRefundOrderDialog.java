@@ -17,7 +17,7 @@ import androidx.annotation.NonNull;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
-import com.wyc.cloudapp.adapter.RefundOrderViewAdapter;
+import com.wyc.cloudapp.adapter.RefundOrderAdapter;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -87,7 +87,7 @@ public class QueryRefundOrderDialog extends AbstractQuerySuperDialog {
 
     @Override
     protected AbstractQueryDataAdapter getAdapter() {
-        return new RefundOrderViewAdapter(mContext);
+        return new RefundOrderAdapter(mContext);
     }
 
     @Override

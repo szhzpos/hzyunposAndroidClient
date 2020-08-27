@@ -30,7 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsViewAdapter.MyViewHolder> {
+public final class SaleGoodsAdapter extends RecyclerView.Adapter<SaleGoodsAdapter.MyViewHolder> {
     private MainActivity mContext;
     private JSONArray mDatas,mDiscountRecords;
     private View mCurrentItemView;
@@ -39,7 +39,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
     private boolean mSingleRefundStatus = false,d_discount = false;//d_discount是否折上折
     private JSONObject mFullReduceRecord;
     private GoodsWeighDialog mWeighDialog;
-    public SaleGoodsViewAdapter(MainActivity context){
+    public SaleGoodsAdapter(MainActivity context){
         this.mContext = context;
         mDatas = new JSONArray();
         mDiscountRecords = new JSONArray();
@@ -633,7 +633,7 @@ public final class SaleGoodsViewAdapter extends RecyclerView.Adapter<SaleGoodsVi
     public int getCurrentItemIndex(){
         return mCurrentItemIndex;
     }
-    public SaleGoodsViewAdapter setCurrentItemIndex(int index){mCurrentItemIndex = index;return this;}
+    public SaleGoodsAdapter setCurrentItemIndex(int index){mCurrentItemIndex = index;return this;}
     public JSONArray getDatas() {
         return mDatas;
     }

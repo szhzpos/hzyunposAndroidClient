@@ -101,9 +101,9 @@ public class PeripheralSettingFragment extends AbstractBaseFragment {
     }
 
     private void initSerialScale(){
-        Spinner pro_type = mRootView.findViewById(R.id.pro_type),ser_port = mRootView.findViewById(R.id.ser_port);
+        final Spinner pro_type = mRootView.findViewById(R.id.pro_type),ser_port = mRootView.findViewById(R.id.ser_port);
         mSerialPortAdaper = new ArrayAdapter<>(mContext,R.layout.drop_down_style);
-        ArrayAdapter<String> proTypeAdaper = new ArrayAdapter<>(mContext,R.layout.drop_down_style);
+        final ArrayAdapter<String> proTypeAdaper = new ArrayAdapter<>(mContext,R.layout.drop_down_style);
         mSerialPortAdaper.setDropDownViewResource(R.layout.drop_down_style);
         proTypeAdaper.setDropDownViewResource(R.layout.drop_down_style);
 
@@ -119,9 +119,9 @@ public class PeripheralSettingFragment extends AbstractBaseFragment {
         pro_type.setAdapter(proTypeAdaper);
 
         //端口
-        SerialPortFinder mSerialPortFinder = new SerialPortFinder();
+        final SerialPortFinder mSerialPortFinder = new SerialPortFinder();
 
-        String[] entryValues = mSerialPortFinder.getAllDevicesPath();
+        final String[] entryValues = mSerialPortFinder.getAllDevicesPath();
         mSerialPortAdaper.add("NONE");
         for(String value : entryValues){
             mSerialPortAdaper.add(value);
@@ -130,12 +130,13 @@ public class PeripheralSettingFragment extends AbstractBaseFragment {
 
     }
     private JSONObject get_or_show_serialScale_setting(boolean way){
-        JSONObject object = new JSONObject();
-        Spinner pro_type_s = mRootView.findViewById(R.id.pro_type),ser_port_s = mRootView.findViewById(R.id.ser_port);
+        JSONObject object;
+        final Spinner pro_type_s = mRootView.findViewById(R.id.pro_type),ser_port_s = mRootView.findViewById(R.id.ser_port);
         if (way){
             object = mProTypes.getJSONObject(pro_type_s.getSelectedItemPosition());
             object.put("ser_port",ser_port_s.getSelectedItem());
         }else{
+            object = new JSONObject();
             if (SQLiteHelper.getLocalParameter("serial_port_scale",object)){
                 final String cls_id = Utils.getNullStringAsEmpty(object,"cls_id"),name = Utils.getNullStringAsEmpty(object,"name"),
                         ser_port = Utils.getNullStringAsEmpty(object,"ser_port");

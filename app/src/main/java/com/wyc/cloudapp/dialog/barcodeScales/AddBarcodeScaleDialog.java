@@ -16,9 +16,8 @@ import androidx.annotation.NonNull;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.adapter.GoodsCategoryViewAdapter;
+import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomePopupWindow;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.TreeListDialog;
@@ -160,7 +159,7 @@ public class AddBarcodeScaleDialog extends AbstractDialogBaseOnContextImp {
         });
         editText.setOnClickListener(v -> {
             final TreeListDialog treeListDialog = new TreeListDialog(mContext,mContext.getString(R.string.d_category_sz));
-            treeListDialog.setDatas(GoodsCategoryViewAdapter.getCategoryAsTreeListData(mContext),mCategoryInfo,false);
+            treeListDialog.setDatas(GoodsCategoryAdapter.getCategoryAsTreeListData(mContext),mCategoryInfo,false);
             editText.post(()->{
                 if (treeListDialog.exec() == 1){
                     final StringBuilder names = new StringBuilder();

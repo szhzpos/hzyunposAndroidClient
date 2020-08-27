@@ -56,7 +56,7 @@ public abstract class AbstractSerialScaleImp implements ISerialScale {
         return this;
     }
    public static JSONArray generateProductType(){
-        JSONArray array = new JSONArray();
+        final JSONArray array = new JSONArray();
 
         JSONObject object = new JSONObject();
         object.put("cls_id","DhSerialScale");

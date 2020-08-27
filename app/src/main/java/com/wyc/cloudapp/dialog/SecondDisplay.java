@@ -27,7 +27,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.adapter.SaleGoodsViewAdapter;
+import com.wyc.cloudapp.adapter.SaleGoodsAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.logger.Logger;
@@ -44,7 +44,7 @@ import java.util.concurrent.TimeoutException;
 
 public class SecondDisplay extends Presentation implements SurfaceHolder.Callback {
     private final String mAdFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/ad_img/";
-    private SaleGoodsViewAdapter mSaleGoodsAdapter;
+    private SaleGoodsAdapter mSaleGoodsAdapter;
     private RecyclerView mSaleGoodsView;
     private MainActivity mContext;
     private JSONObject mStoreInfo;
@@ -65,7 +65,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
         super(outerContext, display);
         mContext = outerContext;
 
-        mSaleGoodsAdapter = new SaleGoodsViewAdapter(mContext);
+        mSaleGoodsAdapter = new SaleGoodsAdapter(mContext);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
