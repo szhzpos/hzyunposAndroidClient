@@ -58,17 +58,14 @@ public final class GoodsManageDialog extends AbstractDialogBaseOnMainActivityImp
     private void initAddBtn(){
         final Button btn = findViewById(R.id._add_goods_btn);
         assert (btn != null);
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (AddGoodsInfoDialog.verifyGoodsAddPermissions(mContext)){
-                    final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(mContext);
-                    addGoodsInfoDialog.setCurrentCategory(mCurrentCategory);
-                    addGoodsInfoDialog.setFinishListener(barcode -> {
-
-                    });
-                    addGoodsInfoDialog.show();
-                }
+        btn.setOnClickListener(v -> {
+            if (AddGoodsInfoDialog.verifyGoodsAddPermissions(mContext)){
+                final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(mContext);
+                addGoodsInfoDialog.setCurrentCategory(mCurrentCategory);
+                addGoodsInfoDialog.setFinishListener(barcode -> {
+                    addGoodsInfoDialog.dismiss();
+                });
+                addGoodsInfoDialog.show();
             }
         });
     }

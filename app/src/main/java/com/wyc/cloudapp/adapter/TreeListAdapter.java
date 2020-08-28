@@ -27,7 +27,7 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
     private boolean mSingleSel = true;
     private Drawable mUnfoldDb,mFoldDb;
     private OnItemClick mItemClick;//不为null的时候会隐藏单选、多选按钮，改变mCurrenttemView的背景色来表示选中；此种模式下只支持选中单个项目并触发事件。
-    private View mCurrenttemView;
+    private View mCurrentItemView;
 /*    Item{
         p_ref,level,unfold,isSel,item_id,item_name,kids; <p_ref , kids>存在上下级时必须存在
     }*/
@@ -121,7 +121,7 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
                     item_sel_cb.setOnCheckedChangeListener(checkedChangeListener);
                 }
             }else{
-                if (is_sel)setViewBackgroundColor(mCurrenttemView = holder.mCurrentLayoutItemView,true);
+                if (is_sel)setViewBackgroundColor(mCurrentItemView = holder.mCurrentLayoutItemView,true);
             }
             holder.item_id.setText(item.getString("item_id"));
             holder.item_name.setText(item.getString("item_name"));
@@ -137,7 +137,7 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
     }
     @Override
     public void onViewRecycled (@NonNull MyViewHolder holder){
-        if (mItemClick != null && mCurrenttemView == holder.mCurrentLayoutItemView)setViewBackgroundColor(mCurrenttemView,false);
+        if (mItemClick != null && mCurrentItemView == holder.mCurrentLayoutItemView)setViewBackgroundColor(mCurrentItemView,false);
     }
 
     public void setDatas(final JSONArray datas,final JSONArray items){
@@ -247,10 +247,10 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
             compoundButton.setChecked(!compoundButton.isChecked());
         }
         if (mItemClick != null){
-            if (mCurrenttemView != v){
+            if (mCurrentItemView != v){
                 clearSelected();
-                setViewBackgroundColor(mCurrenttemView,false);
-                mCurrenttemView = v;
+                setViewBackgroundColor(mCurrentItemView,false);
+                mCurrentItemView = v;
                 setViewBackgroundColor(v,true);
             }
             mItemClick.OnClick(getCurrentItem(v));

@@ -501,6 +501,7 @@ public class MainActivity extends AppCompatActivity {
                                     addGoodsInfoDialog.setBarcode(mSearch_content.getText().toString());
                                     addGoodsInfoDialog.setFinishListener(barcode -> {
                                         mGoodsInfoViewAdapter.fuzzy_search_goods(content,true);
+                                        addGoodsInfoDialog.dismiss();
                                     });
                                     addGoodsInfoDialog.show();
                                 }

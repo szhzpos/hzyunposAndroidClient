@@ -20,11 +20,10 @@ import com.wyc.cloudapp.utils.Utils;
 import java.util.Locale;
 
 public final class RetailDetailsPayInfoAdapter extends AbstractDetailsDataAdapter<RetailDetailsPayInfoAdapter.MyViewHolder>  {
-
+    private ItemClickCallBack mItemClickCallback;
     public RetailDetailsPayInfoAdapter(MainActivity context){
         mContext = context;
     }
-
     static class MyViewHolder extends RecyclerView.ViewHolder {
         TextView row_id_tv,pay_method_name_tv,pay_amt_tv,pay_status_tv,pay_time_tv,pay_code_tv;
         View mCurrentLayoutItemView;
@@ -64,6 +63,25 @@ public final class RetailDetailsPayInfoAdapter extends AbstractDetailsDataAdapte
                 holder.mCurrentLayoutItemView.setOnClickListener(mItemClickListener);
             }
         }
+    }
+
+    @Override
+    protected JSONObject getCurrentRecord(){
+        if (mCurrentItemView != null){
+            final TextView name = mCurrentItemView.findViewById(R.id.pay_method_name);
+            if (name != null){
+                int pay_method_id = Utils.getViewTagValue(name,-1);
+                if (pay_method_id != -1){
+                    for (int i = 0,size = mDatas.size();i < size; i++){
+                        final JSONObject pay_record = mDatas.getJSONObject(i);
+                        if (null != pay_record && pay_method_id == pay_record.getIntValue("pay_method")){
+                            return pay_record;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     private View.OnClickListener mItemClickListener = this::setCurrentItemView;

@@ -2,6 +2,7 @@ package com.wyc.cloudapp.adapter;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -33,7 +34,7 @@ public final class GoodsManageViewAdapter extends AbstractDetailsDataAdapter<Goo
             super(itemView);
             mCurrentLayoutItemView = itemView;
 
-            _row_id_tv = itemView.findViewById(R.id._row_id);
+            _row_id_tv = itemView.findViewById(R.id.row_id);
             _item_id_tv = itemView.findViewById(R.id._item_id);
             _barcode_tv = itemView.findViewById(R.id._barcode);
             _name_tv = itemView.findViewById(R.id._name);
@@ -52,31 +53,46 @@ public final class GoodsManageViewAdapter extends AbstractDetailsDataAdapter<Goo
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = View.inflate(mContext, R.layout.goods_manage_list_content_layout, null);
+        final View itemView = View.inflate(mContext, R.layout.goods_manage_list_content_layout, null);
         itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int) mContext.getResources().getDimension(R.dimen.table_row_height)));
         return new MyViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        final JSONObject sale_goods_info = mDatas.getJSONObject(position);
-        if (sale_goods_info != null){
+        final JSONObject goods_info = mDatas.getJSONObject(position);
+        if (goods_info != null){
             holder._row_id_tv.setText(String.valueOf(position+1));
-            holder._item_id_tv.setText(sale_goods_info.getString("item_no"));
-            holder._barcode_tv.setText(sale_goods_info.getString("barcode"));
-            holder._name_tv.setText(sale_goods_info.getString("goods_title"));
-            holder._mnemonic_code_tv.setText(sale_goods_info.getString("mnemonic_code"));
-            holder._unit_name_tv.setText(sale_goods_info.getString("unit_name"));
-            holder._specification_tv.setText(sale_goods_info.getString("specifi"));
-            holder._origin_tv.setText(sale_goods_info.getString("origin"));
+            holder._item_id_tv.setText(goods_info.getString("item_no"));
+            holder._barcode_tv.setText(goods_info.getString("barcode"));
+            holder._name_tv.setText(goods_info.getString("goods_title"));
+            holder._mnemonic_code_tv.setText(goods_info.getString("mnemonic_code"));
+            holder._unit_name_tv.setText(goods_info.getString("unit_name"));
+            holder._specification_tv.setText(goods_info.getString("specifi"));
+            holder._origin_tv.setText(goods_info.getString("origin"));
 
-            holder._retail_price_tv.setText(String.format(Locale.CHINA,"%.2f",sale_goods_info.getDoubleValue("retail_price")));
-            holder._vip_price_tv.setText(String.format(Locale.CHINA,"%.2f",sale_goods_info.getDoubleValue("yh_price")));
-            holder._attr_tv.setText(sale_goods_info.getString("attr"));
-            holder._category_tv.setText(sale_goods_info.getString("category_name"));
-            holder._status_tv.setText(sale_goods_info.getString("status"));
+            holder._retail_price_tv.setText(String.format(Locale.CHINA,"%.2f",goods_info.getDoubleValue("retail_price")));
+            holder._vip_price_tv.setText(String.format(Locale.CHINA,"%.2f",goods_info.getDoubleValue("yh_price")));
+            holder._attr_tv.setText(goods_info.getString("attr"));
+            holder._category_tv.setText(goods_info.getString("category_name"));
 
-            preload(position,holder._status_tv);
+            if (mCurrentItemIndex == position){
+                setViewBackgroundColor(holder.mCurrentLayoutItemView,true);
+            }else{
+                setViewBackgroundColor(mCurrentItemView,false);
+            }
+
+            final TextView _status_tv = holder._status_tv;
+            int code = goods_info.getIntValue("status_code");
+            _status_tv.setText(goods_info.getString("status"));
+            _status_tv.setTag(code);
+            if (mCurrentItemView != holder.mCurrentLayoutItemView){
+                if (code ==  1){
+                    setRowStatus(holder.mCurrentLayoutItemView,R.color.text_color);
+                }else
+                    setRowStatus(holder.mCurrentLayoutItemView,R.color.orange_1);
+            }
+            preload(position,_status_tv);
 
             holder.mCurrentLayoutItemView.setOnClickListener(mItemClickListener);
         }
@@ -96,7 +112,7 @@ public final class GoodsManageViewAdapter extends AbstractDetailsDataAdapter<Goo
         final String counts = SQLiteHelper.getString("select count(bi_id) counts from barcode_info" + where_condition,err);
 
         final String sql = " select only_coding item_no,barcode,goods_title,ifnull(mnemonic_code,'') mnemonic_code,unit_name,ifnull(specifi,'') specifi,ifnull(origin,'') as origin,retail_price,yh_price,category_name,\n" +
-                " case type when 1 then '普通商品' when 2 then '称重商品' when 3 then '服装' else '其他' end attr,\n" +
+                " case type when 1 then '普通商品' when 2 then '称重商品' when 3 then '服装' else '其他' end attr,barcode_status status_code,\n" +
                 " case when barcode_status = 1 then '正常在售' when barcode_status = 2 then '下架停售' else '已删除' end status  from barcode_info" + where_condition + " limit "+ per_page_rows +" offset " + start_row;
 
         Logger.d("sql:%s",sql);

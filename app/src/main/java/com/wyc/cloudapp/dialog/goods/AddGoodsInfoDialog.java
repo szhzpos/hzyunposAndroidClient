@@ -508,7 +508,6 @@ public class AddGoodsInfoDialog extends AbstractDialogBaseOnMainActivityImp {
                 final JSONObject data = generateParameter();
                 if (!data.isEmpty()){
                     if (addGoods(data) && mFinishListener != null){
-                        this.dismiss();
                         mFinishListener.onFinish(mBarcode);
                     }
                 }
