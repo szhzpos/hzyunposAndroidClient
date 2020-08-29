@@ -1,9 +1,7 @@
 package com.wyc.cloudapp.adapter;
 
-import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,19 +17,16 @@ import com.wyc.cloudapp.logger.Logger;
 
 import java.util.Locale;
 
-public final class RetailDetailsGoodsInfoAdapter extends AbstractDetailsDataAdapter<RetailDetailsGoodsInfoAdapter.MyViewHolder>  {
+public final class RetailDetailsGoodsInfoAdapter extends AbstractTableDataAdapter<RetailDetailsGoodsInfoAdapter.MyViewHolder> {
 
     public RetailDetailsGoodsInfoAdapter(MainActivity context){
         mContext = context;
     }
 
-    static class MyViewHolder extends RecyclerView.ViewHolder {
+    static class MyViewHolder extends AbstractTableDataAdapter.SuperViewHolder {
         TextView row_id_tv,item_no_tv,barcode_tv,goods_title_tv,xnum_tv,unit_name_tv,price_tv,sale_amt_tv;
-        View mCurrentLayoutItemView;
         MyViewHolder(View itemView) {
             super(itemView);
-            mCurrentLayoutItemView = itemView;
-
             row_id_tv = itemView.findViewById(R.id.row_id);
             item_no_tv = itemView.findViewById(R.id.item_no);
             barcode_tv = itemView.findViewById(R.id.barcode);
@@ -52,17 +47,19 @@ public final class RetailDetailsGoodsInfoAdapter extends AbstractDetailsDataAdap
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        if (null != mDatas){
+        super.onBindViewHolder(holder, position);
+
+        if (null != mDatas) {
             final JSONObject sale_goods_info = mDatas.getJSONObject(position);
-            if (sale_goods_info != null){
-                holder.row_id_tv.setText(String.valueOf(position+1));
+            if (sale_goods_info != null) {
+                holder.row_id_tv.setText(String.valueOf(position + 1));
                 holder.item_no_tv.setText(sale_goods_info.getString("item_no"));
                 holder.barcode_tv.setText(sale_goods_info.getString("barcode"));
                 holder.goods_title_tv.setText(sale_goods_info.getString("goods_title"));
-                holder.xnum_tv.setText(String.format(Locale.CHINA,"%.3f",sale_goods_info.getDoubleValue("xnum")));
+                holder.xnum_tv.setText(String.format(Locale.CHINA, "%.3f", sale_goods_info.getDoubleValue("xnum")));
                 holder.unit_name_tv.setText(sale_goods_info.getString("unit_name"));
-                holder.price_tv.setText(String.format(Locale.CHINA,"%.2f",sale_goods_info.getDoubleValue("price")));
-                holder.sale_amt_tv.setText(String.format(Locale.CHINA,"%.2f",sale_goods_info.getDoubleValue("sale_amt")));
+                holder.price_tv.setText(String.format(Locale.CHINA, "%.2f", sale_goods_info.getDoubleValue("price")));
+                holder.sale_amt_tv.setText(String.format(Locale.CHINA, "%.2f", sale_goods_info.getDoubleValue("sale_amt")));
 
                 holder.mCurrentLayoutItemView.setOnClickListener(mItemClickListener);
             }

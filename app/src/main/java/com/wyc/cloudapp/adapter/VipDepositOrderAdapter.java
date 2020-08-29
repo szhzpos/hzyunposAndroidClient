@@ -25,7 +25,7 @@ public class VipDepositOrderAdapter extends AbstractQueryDataAdapter<VipDepositO
         mContext = context;
     }
 
-    static class MyViewHolder extends RecyclerView.ViewHolder {
+    static class MyViewHolder extends AbstractQueryDataAdapter.SuperViewHolder {
         TextView row_id,card_code,mobile,vip_name,order_code,order_amt,give_amt,order_status,s_e_status,cas_name,oper_time;
         View mCurrentLayoutItemView;
         MyViewHolder(View itemView) {
@@ -58,14 +58,15 @@ public class VipDepositOrderAdapter extends AbstractQueryDataAdapter<VipDepositO
     }
 
     @Override
-    public void onBindViewHolder(@NonNull VipDepositOrderAdapter.MyViewHolder holder, int position) {
-        if (null != mDatas){
+    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+        super.onBindViewHolder(holder, position);
+        if (null != mDatas) {
             final JSONObject order_info = mDatas.getJSONObject(position);
-            if (order_info != null){
-                holder.row_id.setText(String.valueOf(position+1));
+            if (order_info != null) {
+                holder.row_id.setText(String.valueOf(position + 1));
                 holder.order_code.setText(order_info.getString("order_code"));
-                holder.order_amt.setText(String.format(Locale.CHINA,"%.2f",order_info.getDoubleValue("order_amt")));
-                holder.give_amt.setText(String.format(Locale.CHINA,"%.2f",order_info.getDoubleValue("give_amt")));
+                holder.order_amt.setText(String.format(Locale.CHINA, "%.2f", order_info.getDoubleValue("order_amt")));
+                holder.give_amt.setText(String.format(Locale.CHINA, "%.2f", order_info.getDoubleValue("give_amt")));
 
                 holder.card_code.setText(order_info.getString("card_code"));
                 holder.vip_name.setText(order_info.getString("name"));

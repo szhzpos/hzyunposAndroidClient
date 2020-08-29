@@ -17,19 +17,16 @@ import com.wyc.cloudapp.logger.Logger;
 
 import java.util.Locale;
 
-public final class RefundDetailsGoodsInfoAdapter extends AbstractDetailsDataAdapter<RefundDetailsGoodsInfoAdapter.MyViewHolder>  {
+public final class RefundDetailsGoodsInfoAdapter extends AbstractTableDataAdapter<RefundDetailsGoodsInfoAdapter.MyViewHolder> {
 
     public RefundDetailsGoodsInfoAdapter(MainActivity context){
         mContext = context;
     }
 
-    static class MyViewHolder extends RecyclerView.ViewHolder {
+    static class MyViewHolder extends AbstractTableDataAdapter.SuperViewHolder {
         TextView row_id_tv,item_no_tv,barcode_tv,goods_title_tv,refund_num_tv,unit_name_tv,refund_price_tv,refund_amt_tv;
-        View mCurrentLayoutItemView;
         MyViewHolder(View itemView) {
             super(itemView);
-            mCurrentLayoutItemView = itemView;
-
             row_id_tv = itemView.findViewById(R.id.row_id);
             item_no_tv = itemView.findViewById(R.id.item_no);
             barcode_tv = itemView.findViewById(R.id.barcode);
@@ -50,17 +47,18 @@ public final class RefundDetailsGoodsInfoAdapter extends AbstractDetailsDataAdap
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        if (null != mDatas){
+        super.onBindViewHolder(holder, position);
+        if (null != mDatas) {
             final JSONObject sale_goods_info = mDatas.getJSONObject(position);
-            if (sale_goods_info != null){
-                holder.row_id_tv.setText(String.valueOf(position+1));
+            if (sale_goods_info != null) {
+                holder.row_id_tv.setText(String.valueOf(position + 1));
                 holder.item_no_tv.setText(sale_goods_info.getString("item_no"));
                 holder.barcode_tv.setText(sale_goods_info.getString("barcode"));
                 holder.goods_title_tv.setText(sale_goods_info.getString("goods_title"));
-                holder.refund_num_tv.setText(String.format(Locale.CHINA,"%.2f",sale_goods_info.getDoubleValue("refund_num")));
+                holder.refund_num_tv.setText(String.format(Locale.CHINA, "%.2f", sale_goods_info.getDoubleValue("refund_num")));
                 holder.unit_name_tv.setText(sale_goods_info.getString("unit_name"));
-                holder.refund_price_tv.setText(String.format(Locale.CHINA,"%.2f",sale_goods_info.getDoubleValue("refund_price")));
-                holder.refund_amt_tv.setText(String.format(Locale.CHINA,"%.2f",sale_goods_info.getDoubleValue("refund_amt")));
+                holder.refund_price_tv.setText(String.format(Locale.CHINA, "%.2f", sale_goods_info.getDoubleValue("refund_price")));
+                holder.refund_amt_tv.setText(String.format(Locale.CHINA, "%.2f", sale_goods_info.getDoubleValue("refund_amt")));
 
                 holder.mCurrentLayoutItemView.setOnClickListener(mItemClickListener);
             }

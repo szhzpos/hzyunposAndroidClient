@@ -17,22 +17,18 @@ import com.wyc.cloudapp.logger.Logger;
 
 import java.util.Locale;
 
-import static com.wyc.cloudapp.adapter.GoodsManageViewAdapter.*;
-
-public final class GoodsManageViewAdapter extends AbstractDetailsDataAdapter<MyViewHolder>  {
+public final class GoodsManageViewAdapter extends AbstractTableDataAdapter<GoodsManageViewAdapter.MyViewHolder> {
     private String mWhereCondition;
     private int mCurrentPage,mAllRowsForQueryCondition,mDataSize,mPerPageRows = 50;
     public GoodsManageViewAdapter(MainActivity context){
         mContext = context;
         mDatas = new JSONArray();
     }
-    static class MyViewHolder extends RecyclerView.ViewHolder {
+    static class MyViewHolder extends AbstractTableDataAdapter.SuperViewHolder {
         TextView _row_id_tv,_item_id_tv,_barcode_tv,_name_tv,_mnemonic_code_tv,_unit_name_tv,_specification_tv,_origin_tv,
                 _retail_price_tv,_vip_price_tv,_category_tv,_attr_tv,_status_tv;
-        View mCurrentLayoutItemView;
         MyViewHolder(View itemView) {
             super(itemView);
-            mCurrentLayoutItemView = itemView;
             _row_id_tv = itemView.findViewById(R.id.row_id);
             _item_id_tv = itemView.findViewById(R.id._item_id);
             _barcode_tv = itemView.findViewById(R.id._barcode);
@@ -58,14 +54,9 @@ public final class GoodsManageViewAdapter extends AbstractDetailsDataAdapter<MyV
     }
 
     @Override
-    public void onViewRecycled (MyViewHolder holder){
-        if (holder.mCurrentLayoutItemView == mCurrentItemView){
-            setViewBackgroundColor(holder.mCurrentLayoutItemView,false);//当前行回收过后有可能用于显示未选中的行，需要重置颜色
-        }
-    }
-
-    @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+        super.onBindViewHolder(holder,position);
+
         final JSONObject goods_info = mDatas.getJSONObject(position);
         if (goods_info != null){
             holder._row_id_tv.setText(String.valueOf(position+1));
@@ -81,12 +72,6 @@ public final class GoodsManageViewAdapter extends AbstractDetailsDataAdapter<MyV
             holder._vip_price_tv.setText(String.format(Locale.CHINA,"%.2f",goods_info.getDoubleValue("yh_price")));
             holder._attr_tv.setText(goods_info.getString("attr"));
             holder._category_tv.setText(goods_info.getString("category_name"));
-
-            //设置当前已选择的行状态
-            if (mCurrentItemIndex == position + 1){
-                if (mCurrentItemView != holder.mCurrentLayoutItemView)mCurrentItemView = holder.mCurrentLayoutItemView;
-                setViewBackgroundColor(holder.mCurrentLayoutItemView,true);
-            }
 
             final TextView _status_tv = holder._status_tv;
             int code = goods_info.getIntValue("status_code");
@@ -104,7 +89,7 @@ public final class GoodsManageViewAdapter extends AbstractDetailsDataAdapter<MyV
         }
     }
 
-    private View.OnClickListener mItemClickListener = this::setCurrentItemView;
+
 
     private void preload(int position,final @NonNull View view){
         if (mDataSize < mAllRowsForQueryCondition && mAllRowsForQueryCondition > mPerPageRows && position + 5 == mDataSize){//提前5行加载

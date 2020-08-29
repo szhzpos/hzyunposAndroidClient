@@ -4,23 +4,16 @@ import android.graphics.Color;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.utils.Utils;
 
-public abstract class AbstractQueryDataAdapter<T extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<T> {
-    protected MainActivity mContext;
-    protected JSONArray mDatas;
-    View mCurrentItemView;
+public abstract class AbstractQueryDataAdapter<T extends AbstractTableDataAdapter.SuperViewHolder> extends AbstractTableDataAdapter<T> {
 
     public abstract void setDatas(final String sql);
 
-    private void setViewBackgroundColor(View view,boolean s){
+    @Override
+    protected void setViewBackgroundColor(View view,boolean s){
         if(view!= null) {
             View child;
             int selected_color, item_color,text_color;
@@ -69,17 +62,13 @@ public abstract class AbstractQueryDataAdapter<T extends RecyclerView.ViewHolder
     }
 
     @Override
-    public int getItemCount() {
-        return mDatas == null ? 0: mDatas.size();
-    }
-
     protected void setCurrentItemView(View v){
         if (mCurrentItemView == null){
-            mCurrentItemView = v;
+            setmCurrentItemViewAndIndex(v);
             setViewBackgroundColor(v,true);
         }else if(mCurrentItemView != v){
             setViewBackgroundColor(mCurrentItemView,false);
-            mCurrentItemView = v;
+            setmCurrentItemViewAndIndex(v);
             setViewBackgroundColor(v,true);
         }
     }

@@ -12,12 +12,45 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.utils.Utils;
 
-public abstract class AbstractDetailsDataAdapter <T extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<T>  {
+/*
+* 表格数据适配器父类。对表格行选择操作统一实现，如需定制可重写setCurrentItemView、setViewBackgroundColor方法，setItemClickListener可设置回调，回调返回用JSON对象表示的当前行的数据，
+* 重写getCurrentRecord可改变默认行为。
+* */
+public abstract class AbstractTableDataAdapter<T extends AbstractTableDataAdapter.SuperViewHolder> extends RecyclerView.Adapter<T>  {
     protected MainActivity mContext;
     protected JSONArray mDatas;
     protected View mCurrentItemView;
-    protected int mCurrentItemIndex = -1;
+    private int mCurrentItemIndex = -1;
     private ItemClickCallBack mItemClickCallback;
+
+    static class SuperViewHolder extends RecyclerView.ViewHolder {
+        View mCurrentLayoutItemView;
+        SuperViewHolder(View itemView) {
+            super(itemView);
+            mCurrentLayoutItemView = itemView;
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        return mDatas == null ? 0: mDatas.size();
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull T holder, int position) {
+        if (mCurrentItemIndex == position + 1){
+            if (mCurrentItemView != holder.mCurrentLayoutItemView)mCurrentItemView = holder.mCurrentLayoutItemView;
+            setViewBackgroundColor(holder.mCurrentLayoutItemView,true);
+        }
+    }
+
+    @Override
+    public void onViewRecycled (SuperViewHolder holder){
+        if (holder.mCurrentLayoutItemView == mCurrentItemView){
+            setViewBackgroundColor(holder.mCurrentLayoutItemView,false);//当前行回收过后有可能用于显示未选中的行，需要重置颜色
+        }
+    }
+
     protected void setCurrentItemView(View v){
         if (mCurrentItemView == null){
             setmCurrentItemViewAndIndex(v);
@@ -32,7 +65,9 @@ public abstract class AbstractDetailsDataAdapter <T extends RecyclerView.ViewHol
         }
         if (mItemClickCallback != null)mItemClickCallback.onClick(getCurrentRecord());
     }
-    protected void setViewBackgroundColor(final View view,boolean s){
+    View.OnClickListener mItemClickListener = this::setCurrentItemView;
+
+    protected void setViewBackgroundColor(final View view, boolean s){
         if(view!= null){
             int text_color,selected_color;
             if (s){
@@ -61,7 +96,7 @@ public abstract class AbstractDetailsDataAdapter <T extends RecyclerView.ViewHol
         }
     }
 
-    private void setmCurrentItemViewAndIndex(final View v){
+    void setmCurrentItemViewAndIndex(final View v){
         mCurrentItemView = v;
         if (v == null){
             mCurrentItemIndex = -1;
@@ -85,7 +120,7 @@ public abstract class AbstractDetailsDataAdapter <T extends RecyclerView.ViewHol
         return Utils.getViewTagValue(view.findViewById(R.id._status),1) == 1;
     }
 
-    protected void setRowTextColor(View view, int res_id){
+    void setRowTextColor(View view, int res_id){
         if(view!= null){
             int text_color;
             text_color = mContext.getColor(res_id);
@@ -104,12 +139,7 @@ public abstract class AbstractDetailsDataAdapter <T extends RecyclerView.ViewHol
     }
 
     protected JSONObject getCurrentRecord(){
-        return null;
-    }
-
-    @Override
-    public int getItemCount() {
-        return mDatas == null ? 0: mDatas.size();
+        return mDatas == null || mCurrentItemIndex == -1 ? null : mDatas.getJSONObject(mCurrentItemIndex);
     }
 
     public interface ItemClickCallBack{

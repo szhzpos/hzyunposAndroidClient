@@ -28,13 +28,10 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
         mContext = abstractDialogBaseOnMainActivityImp.getPrivateContext();
     }
 
-    static class MyViewHolder extends RecyclerView.ViewHolder {
+    static class MyViewHolder extends AbstractQueryDataAdapter.SuperViewHolder {
         TextView row_id,order_code,order_amt,reality_amt,order_status,pay_status,s_e_status,cas_name,upload_status,oper_time;
-        View mCurrentLayoutItemView;
         MyViewHolder(View itemView) {
             super(itemView);
-            mCurrentLayoutItemView = itemView;
-
             row_id = itemView.findViewById(R.id.row_id);
             order_code = itemView.findViewById(R.id.order_code);
             order_amt = itemView.findViewById(R.id.order_amt);
@@ -57,13 +54,14 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        if (null != mDatas){
+        super.onBindViewHolder(holder, position);
+        if (null != mDatas) {
             final JSONObject order_info = mDatas.getJSONObject(position);
-            if (order_info != null){
-                holder.row_id.setText(String.valueOf(position+1));
+            if (order_info != null) {
+                holder.row_id.setText(String.valueOf(position + 1));
                 holder.order_code.setText(order_info.getString("order_code"));
-                holder.order_amt.setText(String.format(Locale.CHINA,"%.2f",order_info.getDoubleValue("order_amt")));
-                holder.reality_amt.setText(String.format(Locale.CHINA,"%.2f",order_info.getDoubleValue("reality_amt")));
+                holder.order_amt.setText(String.format(Locale.CHINA, "%.2f", order_info.getDoubleValue("order_amt")));
+                holder.reality_amt.setText(String.format(Locale.CHINA, "%.2f", order_info.getDoubleValue("reality_amt")));
 
                 int order_status = order_info.getIntValue("order_status");
                 if (order_status == 4)
@@ -93,10 +91,10 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
     }
 
     private View.OnTouchListener touchListener = (v, event) -> {
-        if (event.getAction() == MotionEvent.ACTION_DOWN){
+        int action = event.getAction();
+        if (action == MotionEvent.ACTION_DOWN){
             setCurrentItemView(v);
             final TextView order_code_tv = v.findViewById(R.id.order_code),sale_refund_tv = v.findViewById(R.id.sale_refund);
-
             if (isClickView(order_code_tv,event.getX(),event.getY())){
                 final RetailOrderDetailsDialog retailOrderDetailsDialog = new RetailOrderDetailsDialog(mContext,getCurrentOrder());
                 retailOrderDetailsDialog.show();

@@ -2,7 +2,6 @@ package com.wyc.cloudapp.adapter;
 
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -25,7 +24,6 @@ import java.util.List;
 import java.util.Locale;
 
 public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<TransferDetailsAdapter.MyViewHolder>  {
-
     private JSONArray mTransferRetails,mTransferRefunds,mTransferDeposits,mTransferOrderCodes,mTransferCardsc;
     private JSONObject mTransferSumInfo;
     private boolean mTransferAmtNotVisible;
@@ -40,12 +38,10 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
             editTextReplacement = new PasswordEditTextReplacement();
     }
 
-    static class MyViewHolder extends RecyclerView.ViewHolder {
+    static class MyViewHolder extends AbstractQueryDataAdapter.SuperViewHolder {
         TextView pay_m_name_tv,retail_order_num_tv,retail_amt_tv,refund_order_num_tv,refund_amt_tv,deposit_order_num_tv,deposit_amt_tv;
-        View mCurrentLayoutItemView;
         MyViewHolder(View itemView) {
             super(itemView);
-            mCurrentLayoutItemView = itemView;
             pay_m_name_tv = itemView.findViewById(R.id.pay_m_name);
             retail_order_num_tv = itemView.findViewById(R.id.retail_order_num);
             retail_amt_tv = itemView.findViewById(R.id.retail_amt);
@@ -59,32 +55,32 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         final View itemView = View.inflate(mContext,R.layout.transfer_details_content_layout, null);
-        itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,40));
+        itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.height_40)));
         return new MyViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        if (null != mDatas){
+         if (null != mDatas) {
             final JSONObject pay_info = mDatas.getJSONObject(position);
-            if (pay_info != null){
+            if (pay_info != null) {
                 boolean visible = mTransferAmtNotVisible;
                 holder.pay_m_name_tv.setText(pay_info.getString("pay_m_name"));
 
                 holder.retail_order_num_tv.setText(String.valueOf(pay_info.getIntValue("retail_order_num")));
 
-                holder.retail_amt_tv.setText(String.format(Locale.CHINA,"%.2f",pay_info.getDoubleValue("retail_amt")));
-                if (visible)holder.retail_amt_tv.setTransformationMethod(editTextReplacement);
+                holder.retail_amt_tv.setText(String.format(Locale.CHINA, "%.2f", pay_info.getDoubleValue("retail_amt")));
+                if (visible) holder.retail_amt_tv.setTransformationMethod(editTextReplacement);
 
                 holder.refund_order_num_tv.setText(String.valueOf(pay_info.getIntValue("refund_order_num")));
 
-                holder.refund_amt_tv.setText(String.format(Locale.CHINA,"%.2f",pay_info.getDoubleValue("refund_amt")));
-                if (visible)holder.refund_amt_tv.setTransformationMethod(editTextReplacement);
+                holder.refund_amt_tv.setText(String.format(Locale.CHINA, "%.2f", pay_info.getDoubleValue("refund_amt")));
+                if (visible) holder.refund_amt_tv.setTransformationMethod(editTextReplacement);
 
                 holder.deposit_order_num_tv.setText(String.valueOf(pay_info.getIntValue("deposit_order_num")));
 
-                holder.deposit_amt_tv.setText(String.format(Locale.CHINA,"%.2f",pay_info.getDoubleValue("deposit_amt")));
-                if (visible)holder.deposit_amt_tv.setTransformationMethod(editTextReplacement);
+                holder.deposit_amt_tv.setText(String.format(Locale.CHINA, "%.2f", pay_info.getDoubleValue("deposit_amt")));
+                if (visible) holder.deposit_amt_tv.setTransformationMethod(editTextReplacement);
             }
         }
     }

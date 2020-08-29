@@ -23,13 +23,10 @@ public final class RefundOrderAdapter extends AbstractQueryDataAdapter<RefundOrd
     public RefundOrderAdapter(final MainActivity context){
         mContext = context;
     }
-    static class MyViewHolder extends RecyclerView.ViewHolder {
+    static class MyViewHolder extends AbstractTableDataAdapter.SuperViewHolder {
         TextView row_id,retail_order_code,refund_order_code,refund_order_amt,refund_amt,refund_type,refund_status,cas_name,upload_status,oper_time;
-        View mCurrentLayoutItemView;
         MyViewHolder(View itemView) {
             super(itemView);
-            mCurrentLayoutItemView = itemView;
-
             row_id = itemView.findViewById(R.id.row_id);
             retail_order_code = itemView.findViewById(R.id.retail_order_code);
             refund_order_code = itemView.findViewById(R.id.refund_order_code);
@@ -52,14 +49,16 @@ public final class RefundOrderAdapter extends AbstractQueryDataAdapter<RefundOrd
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        if (null != mDatas){
+        super.onBindViewHolder(holder, position);
+
+        if (null != mDatas) {
             final JSONObject order_info = mDatas.getJSONObject(position);
-            if (order_info != null){
-                holder.row_id.setText(String.valueOf(position+1));
+            if (order_info != null) {
+                holder.row_id.setText(String.valueOf(position + 1));
                 holder.retail_order_code.setText(order_info.getString("retail_order_code"));
                 holder.refund_order_code.setText(order_info.getString("refund_order_code"));
-                holder.refund_order_amt.setText(String.format(Locale.CHINA,"%.2f",order_info.getDoubleValue("refund_order_amt")));
-                holder.refund_amt.setText(String.format(Locale.CHINA,"%.2f",order_info.getDoubleValue("refund_amt")));
+                holder.refund_order_amt.setText(String.format(Locale.CHINA, "%.2f", order_info.getDoubleValue("refund_order_amt")));
+                holder.refund_amt.setText(String.format(Locale.CHINA, "%.2f", order_info.getDoubleValue("refund_amt")));
 
                 int order_status = order_info.getIntValue("refund_status");
                 if (order_status == 1)
