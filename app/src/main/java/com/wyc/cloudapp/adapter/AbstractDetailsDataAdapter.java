@@ -1,6 +1,4 @@
 package com.wyc.cloudapp.adapter;
-
-import android.content.Context;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -84,10 +82,10 @@ public abstract class AbstractDetailsDataAdapter <T extends RecyclerView.ViewHol
 
     private boolean isNormalStatus(final @NonNull View view){
         //判断数据行是否正常。数据行所在的view需存在id为_status的子view，将数据行的状态值存放在子veiw的tag中；
-        return Utils.getViewTagValue(view.findViewById(R.id._status),0) == 1;
+        return Utils.getViewTagValue(view.findViewById(R.id._status),1) == 1;
     }
 
-    protected void setRowStatus(View view,int res_id){
+    protected void setRowTextColor(View view, int res_id){
         if(view!= null){
             int text_color;
             text_color = mContext.getColor(res_id);

@@ -2,7 +2,6 @@ package com.wyc.cloudapp.adapter;
 
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,7 +17,9 @@ import com.wyc.cloudapp.logger.Logger;
 
 import java.util.Locale;
 
-public final class GoodsManageViewAdapter extends AbstractDetailsDataAdapter<GoodsManageViewAdapter.MyViewHolder>  {
+import static com.wyc.cloudapp.adapter.GoodsManageViewAdapter.*;
+
+public final class GoodsManageViewAdapter extends AbstractDetailsDataAdapter<MyViewHolder>  {
     private String mWhereCondition;
     private int mCurrentPage,mAllRowsForQueryCondition,mDataSize,mPerPageRows = 50;
     public GoodsManageViewAdapter(MainActivity context){
@@ -28,12 +29,10 @@ public final class GoodsManageViewAdapter extends AbstractDetailsDataAdapter<Goo
     static class MyViewHolder extends RecyclerView.ViewHolder {
         TextView _row_id_tv,_item_id_tv,_barcode_tv,_name_tv,_mnemonic_code_tv,_unit_name_tv,_specification_tv,_origin_tv,
                 _retail_price_tv,_vip_price_tv,_category_tv,_attr_tv,_status_tv;
-
         View mCurrentLayoutItemView;
         MyViewHolder(View itemView) {
             super(itemView);
             mCurrentLayoutItemView = itemView;
-
             _row_id_tv = itemView.findViewById(R.id.row_id);
             _item_id_tv = itemView.findViewById(R.id._item_id);
             _barcode_tv = itemView.findViewById(R.id._barcode);
@@ -59,6 +58,13 @@ public final class GoodsManageViewAdapter extends AbstractDetailsDataAdapter<Goo
     }
 
     @Override
+    public void onViewRecycled (MyViewHolder holder){
+        if (holder.mCurrentLayoutItemView == mCurrentItemView){
+            setViewBackgroundColor(holder.mCurrentLayoutItemView,false);//当前行回收过后有可能用于显示未选中的行，需要重置颜色
+        }
+    }
+
+    @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         final JSONObject goods_info = mDatas.getJSONObject(position);
         if (goods_info != null){
@@ -76,10 +82,10 @@ public final class GoodsManageViewAdapter extends AbstractDetailsDataAdapter<Goo
             holder._attr_tv.setText(goods_info.getString("attr"));
             holder._category_tv.setText(goods_info.getString("category_name"));
 
-            if (mCurrentItemIndex == position){
+            //设置当前已选择的行状态
+            if (mCurrentItemIndex == position + 1){
+                if (mCurrentItemView != holder.mCurrentLayoutItemView)mCurrentItemView = holder.mCurrentLayoutItemView;
                 setViewBackgroundColor(holder.mCurrentLayoutItemView,true);
-            }else{
-                setViewBackgroundColor(mCurrentItemView,false);
             }
 
             final TextView _status_tv = holder._status_tv;
@@ -88,9 +94,9 @@ public final class GoodsManageViewAdapter extends AbstractDetailsDataAdapter<Goo
             _status_tv.setTag(code);
             if (mCurrentItemView != holder.mCurrentLayoutItemView){
                 if (code ==  1){
-                    setRowStatus(holder.mCurrentLayoutItemView,R.color.text_color);
+                    setRowTextColor(holder.mCurrentLayoutItemView,R.color.text_color);
                 }else
-                    setRowStatus(holder.mCurrentLayoutItemView,R.color.orange_1);
+                    setRowTextColor(holder.mCurrentLayoutItemView,R.color.orange_1);
             }
             preload(position,_status_tv);
 
