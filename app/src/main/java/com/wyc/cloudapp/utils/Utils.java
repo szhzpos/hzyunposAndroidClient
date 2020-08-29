@@ -395,6 +395,17 @@ public final class Utils {
         }
         return default_V;
     }
+
+    public static JSONObject getViewTagValue(final View view){
+        Object tag;
+        if (view != null && (tag = view.getTag()) != null){
+            if (tag instanceof JSONObject){
+                return (JSONObject) tag;
+            }
+        }
+        return new JSONObject();
+    }
+
     public static String getUserIdAndPasswordCombinationOfMD5(final String content){
         return Utils.getMD5((content + "hzyunpos").getBytes());
     }

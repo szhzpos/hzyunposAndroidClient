@@ -128,6 +128,7 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
 
             holder.mCurrentLayoutItemView.setPadding( 25 * item.getIntValue("level"),0,0,0);
             holder.mCurrentLayoutItemView.setOnClickListener(itemListener);
+            holder.mCurrentLayoutItemView.setTag(item);
         }
     }
 
@@ -153,16 +154,15 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
         if (row_id_tv != null){
             int row_id = Integer.valueOf(row_id_tv.getText().toString());
             if (row_id >= 0 && row_id < mDatas.size()){
-                final JSONObject object = mDatas.getJSONObject(row_id);
+                final JSONObject object = Utils.getViewTagValue(v);
                 if (mSingleSel){
                     clearSelected();
                     object.put("isSel",isChecked);
                 }else
                     selectItem(object,row_id + 1,isChecked);
-
-                buttonView.post(this::notifyDataSetChanged);
             }
         }
+        buttonView.post(this::notifyDataSetChanged);
     };
 
     private void clearSelected(){
@@ -237,23 +237,31 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
     }
 
     private View.OnClickListener itemListener = (v)->{
-        CompoundButton compoundButton;
-        if (mSingleSel){
-            compoundButton = v.findViewById(R.id.single_rb);
-        }else {
-            compoundButton = v.findViewById(R.id.multiple_cb);
-        }
-        if (null != compoundButton){
-            compoundButton.setChecked(!compoundButton.isChecked());
-        }
         if (mItemClick != null){
+            JSONObject jsonObject;
             if (mCurrentItemView != v){
-                clearSelected();
+                jsonObject = Utils.getViewTagValue(mCurrentItemView);
+                if (!jsonObject.isEmpty())jsonObject.put("isSel",false);
+
                 setViewBackgroundColor(mCurrentItemView,false);
                 mCurrentItemView = v;
                 setViewBackgroundColor(v,true);
             }
-            mItemClick.OnClick(getCurrentItem(v));
+            jsonObject = Utils.getViewTagValue(v);
+            if (!jsonObject.isEmpty()){
+                jsonObject.put("isSel",true);
+                mItemClick.OnClick(jsonObject);
+            }
+        }else{
+            final CompoundButton compoundButton;
+            if (mSingleSel){
+                compoundButton = v.findViewById(R.id.single_rb);
+            }else {
+                compoundButton = v.findViewById(R.id.multiple_cb);
+            }
+            if (null != compoundButton){
+                compoundButton.setChecked(!compoundButton.isChecked());
+            }
         }
     };
 
