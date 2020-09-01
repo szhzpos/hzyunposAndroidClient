@@ -235,26 +235,27 @@ public class AddGoodsInfoDialog extends AbstractDialogBaseOnMainActivityImp {
 
     private void initBarcode(){
         final EditText barcdoe_et = findViewById(R.id.a_barcode_et);
-        assert(barcdoe_et != null);
-        barcdoe_et.setText(mBarcode);
-        barcdoe_et.requestFocus();
-        barcdoe_et.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        if (barcdoe_et != null){
+            barcdoe_et.setText(mBarcode);
+            barcdoe_et.requestFocus();
+            barcdoe_et.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-            }
+                }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-            }
+                }
 
-            @Override
-            public void afterTextChanged(Editable s) {
-                mBarcode = s.toString();
-            }
-        });
-        mBarcodeEt = barcdoe_et;
+                @Override
+                public void afterTextChanged(Editable s) {
+                    mBarcode = s.toString();
+                }
+            });
+            mBarcodeEt = barcdoe_et;
+        }
     }
     private void initCkml(){
         final EditText et = findViewById(R.id.a_ckml_et),pur_price_et = findViewById(R.id.a_pur_price_et);;
