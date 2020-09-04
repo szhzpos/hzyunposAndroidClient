@@ -235,6 +235,9 @@ public class LoginActivity extends AppCompatActivity {
                 case AppUpdateService.SUCCESS_STATUS:
                     login();
                     break;
+                case AppUpdateService.BAD_NETWORK_STATUS:
+                    offline_login();
+                    break;
                 case AppUpdateService.PROGRESS_STATUS:
                     mProgressDialog.setMessage(String.format(Locale.CHINA,"正在更新,请稍后...%d%s",(int)(intent.getDoubleExtra("Progress",0) * 100),"%")).refreshMessage().show();
                     break;
@@ -494,7 +497,7 @@ public class LoginActivity extends AppCompatActivity {
                 switch (retJson.getIntValue("flag")) {
                     case 0:
                         int rsCode = Utils.getNotKeyAsNumberDefault(retJson,"rsCode",-1);
-                        if (rsCode == 400 || rsCode == HttpURLConnection.HTTP_INTERNAL_ERROR){
+                        if (rsCode == HttpURLConnection.HTTP_BAD_REQUEST  || rsCode == HttpURLConnection.HTTP_INTERNAL_ERROR){
                             myHandler.obtainMessage(MessageID.OFF_LINE_LOGIN_ID).sendToTarget();
                         }else
                             myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, retJson.getString("info")).sendToTarget();

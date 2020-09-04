@@ -28,11 +28,12 @@ import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
 import java.io.File;
+import java.net.HttpURLConnection;
 import java.util.Locale;
 
 public class AppUpdateService extends Service {
     public static final String APP_PROGRESS_BROADCAST = "com.wyc.cloudapp.download_progress";
-    public static final int SUCCESS_STATUS = 1,ERROR_STATUS = 2,PROGRESS_STATUS = 3,INSTALL_STATUS = 4;
+    public static final int SUCCESS_STATUS = 1,ERROR_STATUS = 2,PROGRESS_STATUS = 3,INSTALL_STATUS = 4,BAD_NETWORK_STATUS = 5;
     private ServiceHandler mServiceHandler;
     private HandlerThread thread;
 
@@ -62,16 +63,21 @@ public class AppUpdateService extends Service {
         private void check_ver(final JSONObject json){
             final String base_url = Utils.getNullStringAsEmpty(json,"url"),appid = Utils.getNullStringAsEmpty(json,"appid"),
                     appSecret = Utils.getNullStringAsEmpty(json,"appSecret"),url = base_url + "/api/pos_upgrade/index";
+            final Intent check_ver_intent = new Intent(APP_PROGRESS_BROADCAST) ;
+            final HttpRequest httpRequest = new HttpRequest();
 
             final JSONObject object = new JSONObject();
             object.put("appid", appid);
             object.put("dir_name","pos_youren_an");
-
-            final HttpRequest httpRequest = new HttpRequest();
-            JSONObject retJson = httpRequest.setConnTimeOut(3000).setReadTimeOut(3000).sendPost(url,HttpRequest.generate_request_parm(object,appSecret), true);
+            final JSONObject retJson = httpRequest.setConnTimeOut(3000).setReadTimeOut(3000).sendPost(url,HttpRequest.generate_request_parm(object,appSecret), true);
             switch (retJson.getIntValue("flag")) {
                 case 0:
-                    update_error(retJson.getString("info"));
+                    int rsCode = Utils.getNotKeyAsNumberDefault(retJson,"rsCode",-1);
+                    if (rsCode == HttpURLConnection.HTTP_BAD_REQUEST || rsCode == HttpURLConnection.HTTP_INTERNAL_ERROR){
+                        check_ver_intent.putExtra("status",BAD_NETWORK_STATUS);
+                        sendBroadcast(check_ver_intent);
+                    }else
+                        update_error(retJson.getString("info"));
                     break;
                 case 1:
                     final JSONObject info_json = JSON.parseObject(retJson.getString("info"));
@@ -81,7 +87,6 @@ public class AppUpdateService extends Service {
                             break;
                         case "y":
                             final JSONArray file_list = JSON.parseArray(Utils.getNullOrEmptyStringAsDefault(info_json,"file_list","[]"));
-                            final Intent check_ver_intent = new Intent(APP_PROGRESS_BROADCAST) ;
                             if (file_list.isEmpty()){
                                 check_ver_intent.putExtra("status",SUCCESS_STATUS);
                                 sendBroadcast(check_ver_intent);
