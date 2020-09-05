@@ -1117,7 +1117,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
 
         final String store_name = Utils.getNullStringAsEmpty(format_info,"s_n"),pos_num = Utils.getNullOrEmptyStringAsDefault(order_info,"pos_num",""),
                 cas_name = Utils.getNullOrEmptyStringAsDefault(order_info,"cas_name",""),footer_c = Utils.getNullStringAsEmpty(format_info,"f_c"),
-                new_line = "\r\n",//Printer.commandToStr(Printer.NEW_LINE);
+                new_line = "\n",//Printer.commandToStr(Printer.NEW_LINE);
                 new_line_16 = Printer.commandToStr(Printer.LINE_SPACING_16),
                 new_line_2 = Printer.commandToStr(Printer.LINE_SPACING_2),new_line_d = Printer.commandToStr(Printer.LINE_SPACING_DEFAULT),
                 line = context.getString(R.string.line_58);

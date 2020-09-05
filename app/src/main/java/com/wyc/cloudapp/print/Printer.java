@@ -311,10 +311,10 @@ public final class Printer {
 
                                 bluetoothSocket.connect();
 
-                                outputStream.write(RESET);
+                                //outputStream.write(RESET);
 
                                 byte[] tmpBytes;
-                                int length = content.length,max_length = 512;
+                                int length = content.length,max_length = 64;
                                 int count = length / max_length,tmp_c = 0,mod_length = 0;
 
                                 if (count == 0){
