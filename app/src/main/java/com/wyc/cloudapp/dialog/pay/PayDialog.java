@@ -1160,7 +1160,8 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
 
                     info.append(Printer.commandToStr(Printer.BOLD)).append(Utils.getNullStringAsEmpty(info_obj,"goods_title")).append(new_line).append(Printer.commandToStr(Printer.BOLD_CANCEL));
                     info.append(Printer.printTwoData(1,Utils.getNullStringAsEmpty(info_obj,"barcode"),
-                            Printer.printThreeData(16,Utils.getNullStringAsEmpty(info_obj,"price"), type == 2 ? String.valueOf(xnum) : String.valueOf((int) xnum),Utils.getNullStringAsEmpty(info_obj,"sale_amt"))));
+                            Printer.printThreeData(16,String.format(Locale.CHINA, "%.2f", info_obj.getDoubleValue("price")),
+                                    type == 2 ? String.valueOf(xnum) : String.valueOf((int) xnum),String.format(Locale.CHINA, "%.2f", info_obj.getDoubleValue("sale_amt")))));
 
                     if (!Utils.equalDouble(discount_amt, 0.0)) {
 

@@ -651,7 +651,7 @@ public final class RefundDialog extends AbstractShowPrinterICODialog {
 
                     info.append(Printer.commandToStr(Printer.BOLD)).append(Utils.getNullStringAsEmpty(info_obj,"goods_title")).append(new_line).append(Printer.commandToStr(Printer.BOLD_CANCEL));
                     info.append(Printer.printTwoData(1,Utils.getNullStringAsEmpty(info_obj,"barcode"),
-                            Printer.printThreeData(16,String.valueOf(refund_price), type == 2 ? String.valueOf(refund_num) : String.valueOf((int) refund_num),String.format(Locale.CHINA,"%.2f",refund_amt))));
+                            Printer.printThreeData(16,String.format(Locale.CHINA,"%.2f",refund_price), type == 2 ? String.valueOf(refund_num) : String.valueOf((int) refund_num),String.format(Locale.CHINA,"%.2f",refund_amt))));
 
                     if (i + 1 != size)
                         info.append(new_line_16);
