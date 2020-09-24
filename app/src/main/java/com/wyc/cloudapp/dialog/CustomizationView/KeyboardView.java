@@ -16,13 +16,11 @@ public final class KeyboardView extends LinearLayout implements View.OnClickList
     private OnCurrentFocusListener mCurrentFocusListener;
     private Button mCancel,mOk;
     public KeyboardView(Context context) {
-        super(context);
-        mContext = context;
+        this(context,null);
     }
 
     public KeyboardView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        mContext = context;
+        this(context,attrs,0);
     }
 
     public KeyboardView(Context context, AttributeSet attrs, int defStyleAttr) {

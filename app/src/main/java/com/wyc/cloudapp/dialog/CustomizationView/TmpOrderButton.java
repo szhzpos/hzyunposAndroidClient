@@ -20,23 +20,19 @@ public final class TmpOrderButton extends AppCompatButton {
     private int mOrderNum;
     private Context mContext;
     public TmpOrderButton(Context context) {
-        super(context);
-        mPaint = new Paint();
+        this(context,null);
     }
 
     public TmpOrderButton(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        mContext = context;
-        mPaint = new Paint();
-        mPaint.setAntiAlias(true);
-
-        mPath = new Path();
-
+        this(context,attrs,0);
     }
 
     public TmpOrderButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        mContext = context;
         mPaint = new Paint();
+        mPaint.setAntiAlias(true);
+        mPath = new Path();
     }
 
     @Override

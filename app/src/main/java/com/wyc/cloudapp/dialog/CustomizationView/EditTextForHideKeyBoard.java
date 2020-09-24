@@ -14,12 +14,19 @@ import com.wyc.cloudapp.utils.Utils;
 public class EditTextForHideKeyBoard extends EditText {
     private int mOnFocusTime = 300;
     public EditTextForHideKeyBoard(Context context) {
-        super(context);
-        init();
+        this(context,null);
     }
 
     public EditTextForHideKeyBoard(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        this(context,attrs,R.attr.editTextStyle);
+    }
+
+    public EditTextForHideKeyBoard(Context context, AttributeSet attrs, int defStyleAttr) {
+        this(context,attrs,defStyleAttr,0);
+    }
+
+    public EditTextForHideKeyBoard(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
         final TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.EditTextForHideKeyBoard, 0, 0);
         int indexCount = typedArray.getIndexCount();
         for (int i = 0; i < indexCount; i++) {
@@ -29,16 +36,6 @@ public class EditTextForHideKeyBoard extends EditText {
             }
         }
         typedArray.recycle();
-        init();
-    }
-
-    public EditTextForHideKeyBoard(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init();
-    }
-
-    public EditTextForHideKeyBoard(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
         init();
     }
 

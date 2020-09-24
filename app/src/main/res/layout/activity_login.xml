@@ -80,13 +80,12 @@
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="@dimen/login_keybord_button_width"
                 android:layout_height="@dimen/login_keybord_button_height"
-                android:layout_marginTop="@dimen/margin_2"
                 android:background="@drawable/button_sub_blue"
                 android:text="@string/back"
                 android:textColor="@color/white"
                 android:textSize="@dimen/num_keyboard_font_size_18"
-                app:layout_constraintStart_toStartOf="@id/_one"
-                app:layout_constraintTop_toBottomOf="@id/_one" />
+                app:layout_constraintStart_toStartOf="@id/_two"
+                app:layout_constraintTop_toTopOf="@id/_zero" />
 
             <Button
                 android:id="@+id/_four"
@@ -190,17 +189,14 @@
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="@dimen/login_keybord_button_width"
                 android:layout_height="@dimen/login_keybord_button_height"
-                android:layout_marginStart="@dimen/margin_2"
                 android:layout_marginTop="@dimen/margin_2"
-                android:layout_marginEnd="@dimen/margin_2"
                 android:background="@drawable/button_sub_blue"
                 android:text="@string/zero_sz"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 android:textSize="@dimen/num_keyboard_font_size_24"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/_clear"
-                app:layout_constraintTop_toBottomOf="@id/_three" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/_one" />
 
             <Button
                 android:id="@+id/_clear"
@@ -208,13 +204,12 @@
                 android:layout_width="@dimen/login_keybord_button_width"
                 android:layout_height="@dimen/login_keybord_button_height"
                 android:layout_marginStart="@dimen/margin_2"
-                android:layout_marginTop="@dimen/margin_2"
                 android:background="@drawable/button_sub_blue"
                 android:text="@string/del"
                 android:textColor="@color/white"
                 android:textSize="@dimen/font_size_18"
                 app:layout_constraintStart_toEndOf="@id/_back"
-                app:layout_constraintTop_toBottomOf="@id/_two" />
+                app:layout_constraintTop_toTopOf="@id/_back" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageView
