@@ -74,15 +74,13 @@ public class ScaleView extends View {
 
     @Override
     public void onDraw(Canvas canvas){
-        canvas.save();
-        drawContent(canvas);
-        canvas.restore();
         drawDrawable(canvas);
+        drawContent(canvas);
     }
 
     private void drawDrawable(final Canvas canvas){
-        mPaint.setColor(Color.GRAY);
-        canvas.drawLine(0,getMeasuredHeight(),getMeasuredWidth(),getMeasuredHeight(),mPaint);
+        final Drawable bg = getBackground();
+        if (bg != null)bg.draw(canvas);
     }
 
     public void setCurrentValue(final float v){
@@ -92,28 +90,34 @@ public class ScaleView extends View {
     }
 
     public void updatePointerAngle(){
-        float step = 8.0f;
-        float diff = mStartPointerAngle - mEndPointerAngle;
         boolean isExist = false;
 
-        if (diff == 0.0)return;
+        if (mStartPointerAngle != 0.0){
+            float step = 8.0f;
+            float diff = mStartPointerAngle - mEndPointerAngle;
 
-        if (diff > 0){
-            mEndPointerAngle += step;
-            if (mEndPointerAngle > mStartPointerAngle){
-                if (Math.abs(mStartPointerAngle) % step > 0){
-                    mEndPointerAngle = mStartPointerAngle;
-                }else
-                    isExist =true;
+            if (diff == 0.0)return;
+
+            if (diff > 0){
+                mEndPointerAngle += step;
+                if (mEndPointerAngle > mStartPointerAngle){
+                    if (Math.abs(mStartPointerAngle) % step > 0){
+                        mEndPointerAngle = mStartPointerAngle;
+                    }else
+                        isExist =true;
+                }
+            }else{
+                mEndPointerAngle -= step;
+                if (mEndPointerAngle < mStartPointerAngle ){
+                    if (Math.abs(mStartPointerAngle) % step > 0){
+                        mEndPointerAngle = mStartPointerAngle;
+                    }else
+                        isExist =true;
+                }
             }
+
         }else{
-            mEndPointerAngle -= step;
-            if (mEndPointerAngle < mStartPointerAngle ){
-                if (Math.abs(mStartPointerAngle) % step > 0){
-                    mEndPointerAngle = mStartPointerAngle;
-                }else
-                    isExist =true;
-            }
+            isExist =true;
         }
 
         if (isExist){
@@ -121,18 +125,16 @@ public class ScaleView extends View {
             mStartPointerAngle = 0;
             removeCallbacks(null);
         }else{
-            invalidate();
             postDelayed(this::updatePointerAngle,5);
         }
+        invalidate();
     }
 
     private void drawContent(final Canvas canvas){
         canvas.translate(mCoordinateCenter.x,mCoordinateCenter.y);
-        canvas.drawColor(Color.WHITE);
         drawGraduation(canvas);
         drawInCircle(canvas);
         drawPointer(canvas);
-
         drawCurrentValue(canvas);
     }
 
@@ -290,6 +292,7 @@ public class ScaleView extends View {
         final Rect rect = new Rect();
 
         mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setColor(Color.RED);
         canvas.drawCircle(0,0, radius,mPaint);
 
         for (int i = 1; i <= step + 1;i++){

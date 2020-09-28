@@ -278,6 +278,7 @@
             android:id="@+id/scaleView"
             android:layout_width="match_parent"
             android:layout_height="@dimen/size_108"
+            android:background="@drawable/bottom_separator"
             android:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView
