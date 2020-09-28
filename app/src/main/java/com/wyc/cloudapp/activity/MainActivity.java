@@ -47,6 +47,7 @@ import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.adapter.SaleGoodsAdapter;
 import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.dialog.CustomizationView.ScaleView;
 import com.wyc.cloudapp.dialog.goods.AddGoodsInfoDialog;
 import com.wyc.cloudapp.dialog.orderDialog.HangBillDialog;
 import com.wyc.cloudapp.dialog.MoreFunDialog;
@@ -98,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
     private SecondDisplay mSecondDisplay;
     private ConstraintLayout mLastOrderInfo;
     private ImageView mPrinterStatusIv;
+    private ScaleView mScaleView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -143,6 +145,8 @@ public class MainActivity extends AppCompatActivity {
         //初始化副屏
         initSecondDisplay();
 
+        initScaleView();
+
     }
     private void initMemberVariable(){
         mHandler = new Myhandler(this);
@@ -177,6 +181,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void finalize(){
         Logger.d("MainActivity finalized");
+    }
+
+    private void initScaleView(){
+        mScaleView = findViewById(R.id.scaleView);
     }
 
     private void initLastOrderInfo(){
@@ -466,6 +474,9 @@ public class MainActivity extends AppCompatActivity {
                     sale_sum_amount += jsonObject.getDouble("sale_amt");
                     dis_sum_amt += jsonObject.getDouble("discount_amt");
                 }
+
+                setScaleCurrent((float) sale_sum_num * 1000);
+
                 mSaleSumNumTv.setText(String.format(Locale.CANADA,"%.3f",sale_sum_num));
                 mSaleSumAmtTv.setText(String.format(Locale.CANADA,"%.2f",sale_sum_amount));
                 mDisSumAmtTv.setText(String.format(Locale.CANADA,"%.2f",dis_sum_amt));
@@ -1049,6 +1060,9 @@ public class MainActivity extends AppCompatActivity {
     }
     public void showAdjustPriceDialog(){
         if (mGoodsInfoViewAdapter != null)mGoodsInfoViewAdapter.showAdjustPriceDialog(findViewById(R.id.goods_type_list));
+    }
+    public void setScaleCurrent(float v){
+        if (mScaleView != null)mScaleView.setCurrentValue(v);
     }
     private static class Myhandler extends Handler {
         private WeakReference<MainActivity> weakHandler;

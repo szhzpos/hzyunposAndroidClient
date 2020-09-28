@@ -274,6 +274,12 @@
 
         </LinearLayout>
 
+        <com.wyc.cloudapp.dialog.CustomizationView.ScaleView
+            android:id="@+id/scaleView"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/size_108"
+            android:visibility="gone" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/sale_goods_list"
             android:layout_width="match_parent"
