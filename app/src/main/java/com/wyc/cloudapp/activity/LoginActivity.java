@@ -1,12 +1,5 @@
 package com.wyc.cloudapp.activity;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-
 import android.Manifest;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -14,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
@@ -33,9 +27,15 @@ import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
-
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -53,8 +53,8 @@ import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.network.sync.SyncManagement;
 import com.wyc.cloudapp.service.AppUpdateService;
 import com.wyc.cloudapp.utils.MessageID;
-import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
+import com.wyc.cloudapp.utils.http.HttpRequest;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -65,7 +65,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 public class LoginActivity extends AppCompatActivity {
     public static final String IMG_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/goods_img/";
-
     private static final int REQUEST_STORAGE_PERMISSIONS  = 800;
     private EditText mUser_id,mPassword;
     private Handler myHandler;
@@ -77,11 +76,13 @@ public class LoginActivity extends AppCompatActivity {
     private String mPosNum,mOperId,mStoresId;
     private Future<?> mLoginTask;
     private JSONObject mConnParam;
+    private DisplayMetrics mDisplayMetrics;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+        loadView();
 
         //初始化成员变量
         myHandler = new Myhandler(this);
@@ -96,9 +97,23 @@ public class LoginActivity extends AppCompatActivity {
         initSetup();
 
         initKeyboard();
-        intitDisplayInfoAndVersion();
+        initDisplayInfoAndVersion();
 
         registerReceiver(receiver,new IntentFilter(AppUpdateService.APP_PROGRESS_BROADCAST));
+    }
+
+    private void loadView(){
+        mDisplayMetrics = new DisplayMetrics();
+        double diagonal = Utils.getDisplayMetrics((WindowManager)getSystemService(WINDOW_SERVICE),mDisplayMetrics);
+
+        Logger.d("diagonal:%f",diagonal);
+
+        if (diagonal < 7){
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            setContentView(R.layout.mobile_activity_login);
+        }else{
+            setContentView(R.layout.activity_login);
+        }
     }
 
     @Override
@@ -156,16 +171,12 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void intitDisplayInfoAndVersion(){
+    private void initDisplayInfoAndVersion(){
         final TextView tv = findViewById(R.id.display_info_tv);
-        final WindowManager wm = getWindowManager();
-        if (null != tv && wm != null){
+        if (null != tv && mDisplayMetrics != null){
             try {
                 final PackageInfo packageInfo = getPackageManager().getPackageInfo("com.wyc.cloudapp",0);
-                final Display display = wm.getDefaultDisplay();
-                final DisplayMetrics displayMetrics = new DisplayMetrics();
-                display.getRealMetrics(displayMetrics);
-                tv.setText(String.format(Locale.CHINA,"高:%d x 宽:%d DPI:%d 版本号:%s",displayMetrics.heightPixels,displayMetrics.widthPixels,displayMetrics.densityDpi,packageInfo.versionName));
+                tv.setText(String.format(Locale.CHINA,"高:%d x 宽:%d DPI:%d 版本号:%s",mDisplayMetrics.heightPixels,mDisplayMetrics.widthPixels,mDisplayMetrics.densityDpi,packageInfo.versionName));
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
                 MyDialog.ToastMessage(e.getMessage(),this,getWindow());
@@ -226,7 +237,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     //广播监听下载的进度
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             final LoginActivity activity = LoginActivity.this;
@@ -344,7 +355,7 @@ public class LoginActivity extends AppCompatActivity {
     private void initSoftKeyBoardListener(){
         final RelativeLayout main_window = findViewById(R.id.main);;
         SoftKeyBoardListener.setListener(this, new SoftKeyBoardListener.OnSoftKeyBoardChangeListener() {
-            ViewGroup.LayoutParams mLayoutParams = main_window.getLayoutParams();
+            final ViewGroup.LayoutParams mLayoutParams = main_window.getLayoutParams();
             @Override
             public void keyBoardShow(int height) {
                 WindowManager m = (WindowManager) mSelf.getSystemService(WINDOW_SERVICE);
@@ -414,7 +425,7 @@ public class LoginActivity extends AppCompatActivity {
                 tmp_v.setOnClickListener(mKeyboardListener);
             }
     }
-    private View.OnClickListener mKeyboardListener = new View.OnClickListener() {
+    private final View.OnClickListener mKeyboardListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             int v_id = view.getId();
@@ -663,7 +674,7 @@ public class LoginActivity extends AppCompatActivity {
                 Logger.d("SELECT count(cas_id) count FROM cashier_info where " +
                         "cas_account = '"+ user_id +"' and stores_id = '" + stroesid +"' and cas_pwd = '"+ local_password +"'");
 
-                if (Integer.valueOf(sz_count) > 0){
+                if (Integer.parseInt(sz_count) > 0){
                     launchLogin(false);
                 }else {
                     myHandler.obtainMessage(MessageID.LOGIN_ID_ERROR_ID, "不存在此用户！").sendToTarget();

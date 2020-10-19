@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/logobg"
+    tools:context=".activity.LoginActivity">
+
+    <LinearLayout
+        android:id="@+id/login_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/round_shape"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_8"
+            android:layout_marginBottom="@dimen/margin_8"
+            android:contentDescription="@string/space_sz"
+            app:srcCompat="@drawable/logo" />
+
+        <LinearLayout
+            android:id="@+id/userInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_2"
+            android:focusable="auto"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/shop_info_layout"
+                android:layout_width="@dimen/mobile_login_text_width"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/_url_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/height_35"
+                    android:layout_weight="1"
+                    android:background="@drawable/border_sub_gray"
+                    android:drawableStart="@drawable/shop"
+                    android:drawablePadding="@dimen/margin_5"
+                    android:ems="8"
+                    android:enabled="false"
+                    android:focusableInTouchMode="true"
+                    android:importantForAutofill="no"
+                    android:inputType="textUri"
+                    android:paddingStart="@dimen/margin_8"
+                    android:paddingEnd="@dimen/size_0"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_18" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/setup_ico"
+                    android:layout_width="@dimen/size_25"
+                    android:layout_height="@dimen/size_25"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/margin_2"
+                    android:background="@drawable/setup">
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/shop_name"
+                android:layout_width="@dimen/mobile_login_text_width"
+                android:layout_height="@dimen/height_30"
+                android:layout_marginStart="@dimen/margin_12"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/margin_12"
+                android:paddingEnd="0dp"
+                android:textColor="@color/appColor"
+                android:textSize="@dimen/font_size_16" />
+
+            <com.wyc.cloudapp.dialog.CustomizationView.EditTextForHideKeyBoard
+                android:id="@+id/user_id"
+                android:layout_width="@dimen/mobile_login_text_width"
+                android:layout_height="@dimen/login_text_height"
+                android:layout_marginTop="@dimen/margin_5"
+                android:background="@drawable/border_sub_gray"
+                android:drawableStart="@drawable/login_user"
+                android:drawablePadding="@dimen/margin_8"
+                android:ems="10"
+                android:focusable="auto"
+                android:hint="@string/user_name"
+                android:importantForAutofill="no"
+                android:inputType="textPersonName"
+                android:paddingStart="@dimen/margin_8"
+                android:paddingEnd="0dp"
+                android:singleLine="true"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <com.wyc.cloudapp.dialog.CustomizationView.EditTextForHideKeyBoard
+                android:id="@+id/password"
+                android:layout_width="@dimen/mobile_login_text_width"
+                android:layout_height="@dimen/login_text_height"
+                android:layout_marginTop="@dimen/margin_8"
+                android:autofillHints=""
+                android:background="@drawable/border_sub_gray"
+                android:drawableStart="@drawable/login_password"
+                android:drawablePadding="@dimen/margin_8"
+                android:ems="10"
+                android:focusable="auto"
+                android:hint="@string/password"
+                android:inputType="text|textPassword"
+                android:paddingStart="@dimen/margin_8"
+                android:paddingEnd="0dp"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/keyboard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_8"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:visibility="visible">
+
+                <Button
+                    android:id="@+id/_seven"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/mobile_login_keyboard_button_width"
+                    android:layout_height="@dimen/mobile_login_keyboard_button_height"
+                    android:layout_marginStart="@dimen/margin_2"
+                    android:background="@drawable/button_sub_blue"
+                    android:text="@string/seven_sz"
+                    android:textAlignment="center"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/num_keyboard_font_size_18"
+                    app:layout_constraintStart_toEndOf="@id/_six"
+                    app:layout_constraintTop_toTopOf="@id/_six" />
+
+                <Button
+                    android:id="@+id/_eight"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/mobile_login_keyboard_button_width"
+                    android:layout_height="@dimen/mobile_login_keyboard_button_height"
+                    android:layout_marginStart="@dimen/margin_2"
+                    android:layout_weight="2.5"
+                    android:background="@drawable/button_sub_blue"
+                    android:text="@string/eight_sz"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/num_keyboard_font_size_18"
+                    app:layout_constraintStart_toEndOf="@id/_seven"
+                    app:layout_constraintTop_toTopOf="@id/_seven" />
+
+                <Button
+                    android:id="@+id/_nine"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/mobile_login_keyboard_button_width"
+                    android:layout_height="@dimen/mobile_login_keyboard_button_height"
+                    android:layout_marginStart="@dimen/margin_2"
+                    android:background="@drawable/button_sub_blue"
+                    android:text="@string/nine_sz"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/num_keyboard_font_size_18"
+                    app:layout_constraintStart_toEndOf="@id/_eight"
+                    app:layout_constraintTop_toTopOf="@id/_eight" />
+
+                <Button
+                    android:id="@+id/_back"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/mobile_login_keyboard_button_width"
+                    android:layout_height="@dimen/mobile_login_keyboard_button_height"
+                    android:layout_marginStart="@dimen/margin_2"
+                    android:background="@drawable/button_sub_blue"
+                    android:text="@string/back"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_14"
+                    app:layout_constraintStart_toEndOf="@id/_nine"
+                    app:layout_constraintTop_toTopOf="@id/_nine" />
+
+                <Button
+                    android:id="@+id/_four"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/mobile_login_keyboard_button_width"
+                    android:layout_height="@dimen/mobile_login_keyboard_button_height"
+                    android:layout_marginStart="@dimen/margin_2"
+                    android:background="@drawable/button_sub_blue"
+                    android:focusable="auto"
+                    android:text="@string/four_sz"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/num_keyboard_font_size_18"
+                    app:layout_constraintStart_toEndOf="@id/_three"
+                    app:layout_constraintTop_toTopOf="@id/_three" />
+
+                <Button
+                    android:id="@+id/_five"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/mobile_login_keyboard_button_width"
+                    android:layout_height="@dimen/mobile_login_keyboard_button_height"
+                    android:layout_marginStart="@dimen/margin_2"
+                    android:layout_weight="2.5"
+                    android:background="@drawable/button_sub_blue"
+                    android:text="@string/five_sz"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/num_keyboard_font_size_18"
+                    app:layout_constraintStart_toEndOf="@+id/_four"
+                    app:layout_constraintTop_toTopOf="@id/_four" />
+
+                <Button
+                    android:id="@+id/_six"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/mobile_login_keyboard_button_width"
+                    android:layout_height="@dimen/mobile_login_keyboard_button_height"
+                    android:layout_marginTop="@dimen/margin_2"
+                    android:layout_weight="2.5"
+                    android:background="@drawable/button_sub_blue"
+                    android:text="@string/six_sz"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/num_keyboard_font_size_18"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/_zero" />
+
+                <Button
+                    android:id="@+id/_one"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/mobile_login_keyboard_button_width"
+                    android:layout_height="@dimen/mobile_login_keyboard_button_height"
+                    android:layout_marginStart="@dimen/margin_2"
+                    android:background="@drawable/button_sub_blue"
+                    android:text="@string/one_sz"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/num_keyboard_font_size_18"
+                    app:layout_constraintStart_toEndOf="@id/_zero"
+                    app:layout_constraintTop_toTopOf="@id/_zero" />
+
+                <Button
+                    android:id="@+id/_two"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/mobile_login_keyboard_button_width"
+                    android:layout_height="@dimen/mobile_login_keyboard_button_height"
+                    android:layout_marginStart="@dimen/margin_2"
+                    android:layout_weight="2.5"
+                    android:background="@drawable/button_sub_blue"
+                    android:text="@string/two_sz"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/num_keyboard_font_size_18"
+                    app:layout_constraintStart_toEndOf="@id/_one"
+                    app:layout_constraintTop_toTopOf="@id/_one" />
+
+                <Button
+                    android:id="@+id/_three"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/mobile_login_keyboard_button_width"
+                    android:layout_height="@dimen/mobile_login_keyboard_button_height"
+                    android:layout_marginStart="@dimen/margin_2"
+                    android:layout_weight="2.5"
+                    android:background="@drawable/button_sub_blue"
+                    android:text="@string/three_sz"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/num_keyboard_font_size_18"
+                    app:layout_constraintStart_toEndOf="@id/_two"
+                    app:layout_constraintTop_toTopOf="@id/_two" />
+
+                <Button
+                    android:id="@+id/_zero"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/mobile_login_keyboard_button_width"
+                    android:layout_height="@dimen/mobile_login_keyboard_button_height"
+                    android:background="@drawable/button_sub_blue"
+                    android:text="@string/zero_sz"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/num_keyboard_font_size_18"
+                    app:layout_constraintBottom_toTopOf="@id/_six"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <Button
+                    android:id="@+id/_clear"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/mobile_login_keyboard_button_width"
+                    android:layout_height="@dimen/mobile_login_keyboard_button_height"
+                    android:layout_marginStart="@dimen/margin_2"
+                    android:background="@drawable/button_sub_blue"
+                    android:text="@string/del"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_14"
+                    app:layout_constraintStart_toEndOf="@id/_back"
+                    app:layout_constraintTop_toTopOf="@id/_back" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/margin_8"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/b_login"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/mobile_login_btn_width"
+                    android:layout_height="@dimen/login_btn_height"
+                    android:background="@drawable/button_blue"
+                    android:text="@string/login"
+                    android:textColor="@color/blue_white"
+                    android:textSize="@dimen/font_size_18" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <Button
+                    android:id="@+id/cancel"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/mobile_login_btn_width"
+                    android:layout_height="@dimen/login_btn_height"
+                    android:background="@drawable/button_pink"
+                    android:text="@string/cancel"
+                    android:textColor="@color/pink_white"
+                    android:textSize="@dimen/font_size_18" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/display_info_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:padding="8dp"
+        android:textColor="@color/white" />
+
+</RelativeLayout>

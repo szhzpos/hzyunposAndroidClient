@@ -3,16 +3,9 @@ package com.wyc.cloudapp.dialog;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import com.google.android.material.snackbar.Snackbar;
-import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.callback.WindowCallback;
-import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.Utils;
-
 import android.text.method.ScrollingMovementMethod;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -24,12 +17,17 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.material.snackbar.Snackbar;
+import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.callback.WindowCallback;
+import com.wyc.cloudapp.utils.Utils;
+
 public final class MyDialog extends Dialog {
     private Button mYes,mNo;//mYes确定按钮、mNo取消按钮
     private TextView mTitle,mMessage;//mTitle标题文本、mMessage消息提示文本
     private String mTitleStr;//从外界设置的title文本
     private String mMessageStr;//从外界设置的消息文本
-    private Context mContext;
+    private final Context mContext;
     private IconType mContentIconType = IconType.INFO;
     private boolean mIsYes,mIsNo;
     //按钮文本的显示内容
@@ -179,9 +177,6 @@ public final class MyDialog extends Dialog {
     private void showIcon(){
         Drawable drawable = null;
         switch (mContentIconType){
-            case INFO:
-                drawable = mContext.getResources().getDrawable(R.drawable.infor,null);
-                break;
             case WARN:
                 drawable = mContext.getResources().getDrawable(R.drawable.warn,null);
                 break;
@@ -190,6 +185,9 @@ public final class MyDialog extends Dialog {
                 break;
             case ASK:
                 drawable = mContext.getResources().getDrawable(R.drawable.ask,null);
+                break;
+            default:
+                drawable = mContext.getResources().getDrawable(R.drawable.infor,null);
                 break;
         }
         drawable.setBounds(0,0,drawable.getIntrinsicWidth(),drawable.getIntrinsicHeight());

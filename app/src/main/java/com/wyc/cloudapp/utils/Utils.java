@@ -12,6 +12,8 @@ import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.util.Base64;
 
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -610,6 +612,14 @@ public final class Utils {
         if (n < 0)return 0;
         if (n == 0) return 1;
         return n * factorial(n - 1);
+    }
+
+    public static double getDisplayMetrics(@NonNull final WindowManager wm,DisplayMetrics displayMetrics){
+        final Display display = wm.getDefaultDisplay();
+        if (displayMetrics == null)displayMetrics = new DisplayMetrics();
+        display.getRealMetrics(displayMetrics);
+        float w = displayMetrics.widthPixels / displayMetrics.xdpi,h = displayMetrics.heightPixels / displayMetrics.ydpi;
+        return Math.sqrt(w * w + h * h);
     }
 
 }

@@ -42,6 +42,7 @@
     <dimen name="width_35">@dimen/size_35</dimen>
     <dimen name="width_88">@dimen/size_88</dimen>
     <dimen name="width_45">@dimen/size_45</dimen>
+    <dimen name="width_50">@dimen/size_50</dimen>
     <dimen name="width_85">@dimen/size_85</dimen>
     <dimen name="width_78">@dimen/size_78</dimen>
     <dimen name="width_68">@dimen/size_68</dimen>
@@ -114,12 +115,17 @@
     <dimen name="main_middle_left_width">@dimen/size_336</dimen>
     <dimen name="login_btn_height">@dimen/height_58</dimen>
     <dimen name="login_btn_width">@dimen/width_118</dimen>
+    <dimen name="mobile_login_btn_width">@dimen/width_88</dimen>
     <dimen name="login_text_width">@dimen/size_272</dimen>
+    <dimen name="mobile_login_text_width">-1</dimen>
     <dimen name="login_text_height">@dimen/height_45</dimen>
+    <dimen name="mobile_login_text_height">@dimen/height_40</dimen>
     <dimen name="pay_dialog_button_width">@dimen/width_75</dimen>
     <dimen name="pay_dialog_button_height">@dimen/size_60</dimen>
-    <dimen name="login_keybord_button_width">@dimen/width_80</dimen>
-    <dimen name="login_keybord_button_height">@dimen/size_65</dimen>
+    <dimen name="login_keyboard_button_width">@dimen/width_80</dimen>
+    <dimen name="login_keyboard_button_height">@dimen/size_65</dimen>
+    <dimen name="mobile_login_keyboard_button_width">@dimen/size_45</dimen>
+    <dimen name="mobile_login_keyboard_button_height">@dimen/size_50</dimen>
     <dimen name="pay_detail_height">@dimen/height_45</dimen>
     <dimen name="pay_method_width">@dimen/size_95</dimen>
     <dimen name="d_dialog_button_height">@dimen/height_122</dimen>

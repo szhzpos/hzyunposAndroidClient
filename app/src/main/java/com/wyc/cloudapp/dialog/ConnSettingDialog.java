@@ -1,24 +1,8 @@
 package com.wyc.cloudapp.dialog;
 
 import android.content.Context;
-
 import android.graphics.Point;
-import android.os.AsyncTask;
 import android.os.Bundle;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
-import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnContextImp;
-import com.wyc.cloudapp.utils.MessageID;
-import com.wyc.cloudapp.utils.http.HttpRequest;
-import com.wyc.cloudapp.utils.Utils;
-
-import android.os.Handler;
-import android.os.Message;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -28,9 +12,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnContextImp;
+import com.wyc.cloudapp.utils.Utils;
 
-import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -109,14 +99,18 @@ public class ConnSettingDialog extends AbstractDialogBaseOnContextImp {
     private void initWindowSize(){
         final WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
         if (m != null){
-            Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
-            Point point = new Point();
+            final Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+            final Point point = new Point();
             d.getSize(point);
-            Window dialogWindow = this.getWindow();
+            final Window dialogWindow = this.getWindow();
             if (dialogWindow != null){
-                WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+                final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
                 dialogWindow.setGravity(Gravity.CENTER);
-                lp.width = (int)(0.4 * point.x); // 宽度
+                double ratio = 0.4;
+                if (Utils.getDisplayMetrics(m,null) < 7) {
+                    ratio = 0.9;
+                }
+                lp.width = (int)(ratio * point.x); // 宽度
                 dialogWindow.setAttributes(lp);
             }
         }

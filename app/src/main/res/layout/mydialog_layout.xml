@@ -46,7 +46,7 @@
 
         <TextView
             android:id="@+id/content"
-            android:layout_width="@dimen/size_428"
+            android:layout_width="@dimen/size_368"
             android:layout_height="@dimen/size_108"
             android:background="@drawable/top_main_color_separator"
             android:drawableStart="@drawable/ask"
