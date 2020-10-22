@@ -1,19 +1,11 @@
 package com.wyc.cloudapp.activity;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,7 +13,6 @@ import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.ReplacementTransformationMethod;
-
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -36,41 +27,47 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
 import com.wyc.cloudapp.adapter.GoodsInfoItemDecoration;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
-import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
-import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.adapter.SaleGoodsAdapter;
+import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.CustomizationView.ScaleView;
+import com.wyc.cloudapp.dialog.CustomizationView.TmpOrderButton;
+import com.wyc.cloudapp.dialog.MoreFunDialog;
+import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.SecondDisplay;
+import com.wyc.cloudapp.dialog.VerifyPermissionDialog;
 import com.wyc.cloudapp.dialog.goods.AddGoodsInfoDialog;
 import com.wyc.cloudapp.dialog.orderDialog.HangBillDialog;
-import com.wyc.cloudapp.dialog.MoreFunDialog;
-import com.wyc.cloudapp.dialog.CustomizationView.TmpOrderButton;
-import com.wyc.cloudapp.dialog.VerifyPermissionDialog;
 import com.wyc.cloudapp.dialog.orderDialog.QuerySaleOrderDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.dialog.orderDialog.TransferDialog;
 import com.wyc.cloudapp.dialog.pay.PayDialog;
-import com.wyc.cloudapp.dialog.SecondDisplay;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.network.sync.SyncManagement;
-import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.dialog.CustomProgressDialog;
-import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.MessageID;
-import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.Utils;
-
-import com.alibaba.fastjson.JSONArray;
+import com.wyc.cloudapp.utils.http.HttpRequest;
 
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
@@ -496,7 +493,7 @@ public class MainActivity extends AppCompatActivity {
     }
     @SuppressLint("ClickableViewAccessibility")
     private void initSearch(){
-        final EditText search = findViewById(R.id.search_content);;
+        final EditText search = findViewById(R.id.search_content);
         search.setOnKeyListener((v, keyCode, event) -> {
             if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_DOWN){
                 final MainActivity context = MainActivity.this;
@@ -539,7 +536,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         search.setOnTouchListener(new View.OnTouchListener() {
-            private TextWatcher textWatcher = new TextWatcher() {
+            private final TextWatcher textWatcher = new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -557,7 +554,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             };
-            private View.OnClickListener mKeyboardListener = new View.OnClickListener() {
+            private final View.OnClickListener mKeyboardListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     int v_id = view.getId();
@@ -1065,7 +1062,7 @@ public class MainActivity extends AppCompatActivity {
         if (mScaleView != null)mScaleView.setCurrentValue(v);
     }
     private static class Myhandler extends Handler {
-        private WeakReference<MainActivity> weakHandler;
+        private final WeakReference<MainActivity> weakHandler;
         private Myhandler(MainActivity mainActivity){
             this.weakHandler = new WeakReference<>(mainActivity);
         }

@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.text.Html;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
@@ -21,7 +20,6 @@ import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.dialog.JEventLoop;
-import com.wyc.cloudapp.utils.FontSizeTagHandler;
 
 public abstract class AbstractDialog extends Dialog {
     protected Context mContext;
@@ -33,19 +31,16 @@ public abstract class AbstractDialog extends Dialog {
     private int mCode;
     private float mTouchX,mTouchY;
     private boolean isTitle;
-    private AbstractDialog(@NonNull Context context){
-        super(context);
-        init(context);
-    }
     AbstractDialog(@NonNull Context context, final String title, int style){
         super(context,style);
         init(context);
         mTitle = title;
     }
-    AbstractDialog(@NonNull Context context, final String title) {
-        this(context);
-        mTitle = title;
+
+    private AbstractDialog(@NonNull Context context){
+        this(context,null,0);
     }
+
     AbstractDialog(@NonNull Context context, final CharSequence title) {
         this(context);
         mTitle = title;

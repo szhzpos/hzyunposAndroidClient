@@ -117,7 +117,6 @@
     <dimen name="login_btn_width">@dimen/width_118</dimen>
     <dimen name="mobile_login_btn_width">@dimen/width_88</dimen>
     <dimen name="login_text_width">@dimen/size_272</dimen>
-    <dimen name="mobile_login_text_width">-1</dimen>
     <dimen name="login_text_height">@dimen/height_45</dimen>
     <dimen name="mobile_login_text_height">@dimen/height_40</dimen>
     <dimen name="pay_dialog_button_width">@dimen/width_75</dimen>
