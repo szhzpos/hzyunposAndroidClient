@@ -42,6 +42,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.mobile.MobileNavigationActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.callback.PasswordEditTextReplacement;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -77,11 +78,13 @@ public class LoginActivity extends AppCompatActivity {
     private Future<?> mLoginTask;
     private JSONObject mConnParam;
     private DisplayMetrics mDisplayMetrics;
+    private boolean isSmallScreen = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
+        //加载布局
         loadView();
 
         //初始化成员变量
@@ -108,7 +111,7 @@ public class LoginActivity extends AppCompatActivity {
 
         Logger.d("diagonal:%f",diagonal);
 
-        if (diagonal < 7){
+        if ((isSmallScreen = diagonal < 7)){
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             setContentView(R.layout.mobile_activity_login);
         }else{
@@ -652,6 +655,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void launchLogin(boolean isConnection){
         final Intent intent = new Intent(this,MainActivity.class);
+        if (isSmallScreen)intent.setClass(this, MobileNavigationActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("network",isConnection);
         startActivity(intent);

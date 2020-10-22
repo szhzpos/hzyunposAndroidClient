@@ -4,4 +4,7 @@
     <declare-styleable name="EditTextForHideKeyBoard">
         <attr name="onFocusTime" />
     </declare-styleable>
+    <declare-styleable name="DrawableTextViewTopMargin">
+        <attr name="verSpacing" format="integer" />
+    </declare-styleable>
 </resources>

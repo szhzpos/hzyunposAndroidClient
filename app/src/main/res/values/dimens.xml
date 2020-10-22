@@ -2,6 +2,7 @@
 <resources>
     <dimen name="fun_button_width_size">@dimen/width_85</dimen>
     <dimen name="fun_button_height_size">@dimen/height_50</dimen>
+    <dimen name="margin_0">@dimen/size_0</dimen>
     <dimen name="margin_2">@dimen/size_2</dimen>
     <dimen name="margin_1">@dimen/size_1</dimen>
     <dimen name="margin_5">@dimen/size_5</dimen>
@@ -160,4 +161,6 @@
     <dimen name="pay_dialog_left_w">@dimen/size_468</dimen>
     <dimen name="tree_list_h">400dp</dimen>
     <dimen name="tree_list_w">488dp</dimen>
+    <dimen name="activity_title_height">@dimen/height_58</dimen>
+    <dimen name="board_rect_size">@dimen/size_128</dimen>
 </resources>

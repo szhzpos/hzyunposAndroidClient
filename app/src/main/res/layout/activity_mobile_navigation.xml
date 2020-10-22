@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.mobile.MobileNavigationActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_2"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/board_rect_size"
+                android:layout_marginBottom="@dimen/margin_2"
+                android:orientation="horizontal">
+
+                <com.wyc.cloudapp.dialog.CustomizationView.DrawableTextView
+                    android:id="@+id/fg_casher_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="@dimen/margin_2"
+                    android:layout_weight="1"
+                    app:verSpacing="18"
+                    android:background="#FA987E"
+                    android:drawableTop="@drawable/m_cashier"
+                    android:gravity="center_horizontal"
+                    android:text="@string/fg_casher_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18"/>
+
+                <TextView
+                    android:id="@+id/trade_query_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="#1b81d6"
+                    android:gravity="center"
+                    android:text="@string/trade_query_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/board_rect_size"
+                android:layout_marginBottom="@dimen/margin_2"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/fg_refund_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="@dimen/margin_2"
+                    android:layout_weight="1"
+                    android:background="#17cfd7"
+                    android:gravity="center"
+                    android:text="@string/fg_refund_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+
+                <TextView
+                    android:id="@+id/refund_query_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="#a935b8"
+                    android:gravity="center"
+                    android:text="@string/refund_query_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/board_rect_size"
+                android:layout_marginBottom="@dimen/margin_2"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/vip_charge_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="@dimen/margin_2"
+                    android:layout_weight="1"
+                    android:background="#00da8d"
+                    android:gravity="center"
+                    android:text="@string/vip_charge_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+
+                <TextView
+                    android:id="@+id/charge_query_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="#fcc65a"
+                    android:gravity="center"
+                    android:text="@string/charge_query_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/board_rect_size"
+                android:layout_marginBottom="@dimen/margin_2"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/fd_shift_exchange_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="@dimen/margin_2"
+                    android:layout_weight="1"
+                    android:background="#bc3242"
+                    android:gravity="center"
+                    android:text="@string/fg_shift_ex_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+
+                <TextView
+                    android:id="@+id/data_exchange_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="#5a3fcb"
+                    android:gravity="center"
+                    android:text="@string/data_ex_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_18" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/fun_nav"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_78"
+        android:background="@color/mobile_navi_color"
+        android:foreground="@drawable/round_shape_blue_foreground"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/_mobile_board_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/board_sz"
+            android:textSize="@dimen/font_size_18" />
+
+        <TextView
+            android:id="@+id/_mobile_bg_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/mobile_bg_sz"
+            android:textSize="@dimen/font_size_18" />
+
+        <TextView
+            android:id="@+id/_mobile_cas_desk_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/casher_desk_sz"
+            android:textSize="@dimen/font_size_18" />
+
+        <TextView
+            android:id="@+id/_mobile_report_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/report_sz"
+            android:textSize="@dimen/font_size_18" />
+
+        <TextView
+            android:id="@+id/_mobile_my_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/my_sz"
+            android:textSize="@dimen/font_size_18" />
+    </LinearLayout>
+</LinearLayout>

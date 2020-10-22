@@ -4,6 +4,7 @@
     <string name="password">密码</string>
     <string name="login">登录</string>
     <string name="cancel">取消</string>
+    <string name="back">返回</string>
     <string name="OK">确定</string>
     <string name="yes">是</string>
     <string name="no">否</string>
@@ -32,8 +33,8 @@
     <string name="num_sz">数量：</string>
     <string name="amt_sz">金额：</string>
     <string name="b_z_sz">条码/助记码/货号</string>
-    <string name="back">回退</string>
-    <string name="del">清除</string>
+    <string name="del">回退</string>
+    <string name="clear">清除</string>
     <string name="shop_id_sz">商户号：</string>
     <string name="appId">appId：</string>
     <string name="appSecret">appSecret：</string>
@@ -337,6 +338,17 @@
     <string name="manage_category_sz">所属分类</string>
     <string name="manage_goods_attr_sz">商品属性</string>
     <string name="manage_goods_status_sz">商品状态</string>
-
+    <string name="board_sz">看板</string>
+    <string name="mobile_bg_sz">后台</string>
+    <string name="casher_desk_sz">收银台</string>
+    <string name="report_sz">报表</string>
+    <string name="my_sz">我的</string>
+    <string name="fg_casher_sz">前台收银</string>
+    <string name="trade_query_sz">交易查询</string>
+    <string name="fg_refund_sz">前台退货</string>
+    <string name="refund_query_sz">退货查询</string>
+    <string name="charge_query_sz">充值查询</string>
+    <string name="fg_shift_ex_sz">前台交班</string>
+    <string name="data_ex_sz">数据交换</string>
 
 </resources>

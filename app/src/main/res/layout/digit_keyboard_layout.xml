@@ -77,7 +77,7 @@
             android:layout_height="@dimen/keyboard_button_height"
             android:layout_marginStart="@dimen/margin_1"
             android:background="#FF5DA7F8"
-            android:text="@string/back"
+            android:text="@string/del"
             android:textColor="@color/white"
             android:textSize="@dimen/num_keyboard_font_size_18"
             app:layout_constraintStart_toEndOf="@id/_three"

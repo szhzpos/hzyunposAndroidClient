@@ -9,7 +9,7 @@
     <color name="pink">#F88C9F</color>
     <color name="gray_subtransparent">#4DA1A1A1</color>
     <color name="black_subtransparent">#80000000</color>
-    <color name="gray">#A1A1A1</color>
+    <color name="gray">#BCBABA</color>
     <color name="transparent">#00000000</color>
     <color name="white_subtransparent">#80FFFFFF</color>
     <color name="green">#41CAC0</color>
@@ -23,4 +23,6 @@
     <color name="table_header_color">@color/appColor</color>
     <color name="listSelected">#731883F7</color>
     <color name="abnormal_status_color">@color/orange_1</color>
+    <color name="activity_title_color">#53A3F3</color>
+    <color name="mobile_navi_color">#E6E2E2</color>
 </resources>
