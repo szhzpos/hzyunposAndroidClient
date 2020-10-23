@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_2"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/board_rect_size"
+            android:layout_marginBottom="@dimen/margin_2"
+            android:orientation="horizontal">
+
+            <com.wyc.cloudapp.dialog.CustomizationView.DrawableCenterTextView
+                android:id="@+id/fg_casher_tv"
+                app:verSpacing="28"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:layout_weight="1"
+                android:background="#FA987E"
+                android:drawableTop="@drawable/m_cashier"
+                android:gravity="center"
+                android:text="@string/fg_casher_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+            <com.wyc.cloudapp.dialog.CustomizationView.DrawableCenterTextView
+                android:id="@+id/trade_query_tv"
+                app:verSpacing="28"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#1b81d6"
+                android:drawableTop="@drawable/m_trade"
+                android:gravity="center"
+                android:text="@string/trade_query_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/board_rect_size"
+            android:layout_marginBottom="@dimen/margin_2"
+            android:orientation="horizontal">
+
+            <com.wyc.cloudapp.dialog.CustomizationView.DrawableCenterTextView
+                android:id="@+id/fg_refund_tv"
+                app:verSpacing="28"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:layout_weight="1"
+                android:background="#17cfd7"
+                android:drawableTop="@drawable/m_fg_refund"
+                android:gravity="center"
+                android:text="@string/fg_refund_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+            <com.wyc.cloudapp.dialog.CustomizationView.DrawableCenterTextView
+                android:id="@+id/refund_query_tv"
+                app:verSpacing="28"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#a935b8"
+                android:drawableTop="@drawable/m_refund_query"
+                android:gravity="center"
+                android:text="@string/refund_query_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/board_rect_size"
+            android:layout_marginBottom="@dimen/margin_2"
+            android:orientation="horizontal">
+
+            <com.wyc.cloudapp.dialog.CustomizationView.DrawableCenterTextView
+                android:id="@+id/vip_charge_tv"
+                app:verSpacing="28"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:layout_weight="1"
+                android:background="#00da8d"
+                android:drawableTop="@drawable/m_vip_charge"
+                android:gravity="center"
+                android:text="@string/vip_charge_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+            <com.wyc.cloudapp.dialog.CustomizationView.DrawableCenterTextView
+                android:id="@+id/charge_query_tv"
+                app:verSpacing="28"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#fcc65a"
+                android:drawableTop="@drawable/m_charge_query"
+                android:gravity="center"
+                android:text="@string/charge_query_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/board_rect_size"
+            android:layout_marginBottom="@dimen/margin_2"
+            android:orientation="horizontal">
+
+            <com.wyc.cloudapp.dialog.CustomizationView.DrawableCenterTextView
+                android:id="@+id/fd_shift_exchange_tv"
+                app:verSpacing="28"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:layout_weight="1"
+                android:background="#bc3242"
+                android:drawableTop="@drawable/m_shift_exchange"
+                android:gravity="center"
+                android:text="@string/fg_shift_ex_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+            <com.wyc.cloudapp.dialog.CustomizationView.DrawableCenterTextView
+                android:id="@+id/data_exchange_tv"
+                app:verSpacing="28"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#5a3fcb"
+                android:drawableTop="@drawable/m_data_exchange"
+                android:gravity="center"
+                android:text="@string/data_ex_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

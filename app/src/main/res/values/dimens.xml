@@ -125,7 +125,7 @@
     <dimen name="login_keyboard_button_width">@dimen/width_80</dimen>
     <dimen name="login_keyboard_button_height">@dimen/size_65</dimen>
     <dimen name="mobile_login_keyboard_button_width">@dimen/size_45</dimen>
-    <dimen name="mobile_login_keyboard_button_height">@dimen/size_50</dimen>
+    <dimen name="mobile_login_keyboard_button_height">@dimen/size_45</dimen>
     <dimen name="pay_detail_height">@dimen/height_45</dimen>
     <dimen name="pay_method_width">@dimen/size_95</dimen>
     <dimen name="d_dialog_button_height">@dimen/height_122</dimen>

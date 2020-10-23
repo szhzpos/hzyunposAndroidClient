@@ -112,6 +112,8 @@ public class LoginActivity extends AppCompatActivity {
         Logger.d("diagonal:%f",diagonal);
 
         if ((isSmallScreen = diagonal < 7)){
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN) ;//显示状态栏
+
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             setContentView(R.layout.mobile_activity_login);
         }else{
@@ -299,22 +301,17 @@ public class LoginActivity extends AppCompatActivity {
     private void initCloseMainWindow(){
         mCancelBtn = findViewById(R.id.cancel);
         if (null != mCancelBtn)
-            mCancelBtn.setOnClickListener((View V)->{
-                MyDialog.displayAskMessage(myDialog,"是否退出？", mSelf, myDialog -> {
-                    mSelf.finish();
-                    myDialog.dismiss();
-                }, Dialog::dismiss);
-
-            });
+            mCancelBtn.setOnClickListener((View V)-> MyDialog.displayAskMessage(myDialog,"是否退出？", mSelf, myDialog -> {
+                mSelf.finish();
+                myDialog.dismiss();
+            }, Dialog::dismiss));
     }
     private void initSetup(){
         View setup = findViewById(R.id.setup_ico);
         if (null != setup)
             setup.setOnClickListener((View v)->{
                 ConnSettingDialog connSettingDialog = new ConnSettingDialog(mSelf,mSelf.getString(R.string.conn_dialog_title_sz));
-                connSettingDialog.setOnDismissListener(dialog -> {
-                    show_shop_info(connSettingDialog.getShopInfo());
-                });
+                connSettingDialog.setOnDismissListener(dialog -> show_shop_info(connSettingDialog.getShopInfo()));
                 connSettingDialog.show();
             });
     }
@@ -356,7 +353,7 @@ public class LoginActivity extends AppCompatActivity {
     }
     @SuppressWarnings("unused")
     private void initSoftKeyBoardListener(){
-        final RelativeLayout main_window = findViewById(R.id.main);;
+        final RelativeLayout main_window = findViewById(R.id.main);
         SoftKeyBoardListener.setListener(this, new SoftKeyBoardListener.OnSoftKeyBoardChangeListener() {
             final ViewGroup.LayoutParams mLayoutParams = main_window.getLayoutParams();
             @Override
@@ -597,7 +594,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private static class Myhandler extends Handler {
-        private WeakReference<LoginActivity> weakHandler;
+        private final WeakReference<LoginActivity> weakHandler;
         private Myhandler(LoginActivity loginActivity){
             this.weakHandler = new WeakReference<>(loginActivity);
         }

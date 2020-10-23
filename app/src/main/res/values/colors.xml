@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorPrimary">@color/appColor</color>
+    <color name="colorPrimaryDark">@color/appColor</color>
     <color name="colorAccent">@color/appColor</color>
     <color name="appColor">#53A3F3</color><!--3F3F55-->
     <color name="blue">#0080ff</color>
@@ -25,4 +25,11 @@
     <color name="abnormal_status_color">@color/orange_1</color>
     <color name="activity_title_color">#53A3F3</color>
     <color name="mobile_navi_color">#E6E2E2</color>
+    <color name="light_blue_600">#FF039BE5</color>
+    <color name="light_blue_900">#FF01579B</color>
+    <color name="light_blue_A200">#FF40C4FF</color>
+    <color name="light_blue_A400">#FF00B0FF</color>
+    <color name="black_overlay">#66000000</color>
+    <color name="mobile_fun_view_no_click">@color/text_color</color>
+    <color name="mobile_fun_view_click">@color/blue</color>
 </resources>

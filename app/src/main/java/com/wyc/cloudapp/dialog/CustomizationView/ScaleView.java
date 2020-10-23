@@ -9,16 +9,10 @@ import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.util.AttributeSet;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-
-import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.logger.Logger;
 
 import java.util.List;
 import java.util.Locale;
@@ -123,12 +117,14 @@ public class ScaleView extends View {
         if (isExist){
             mEndPointerAngle = mStartPointerAngle;
             mStartPointerAngle = 0;
-            removeCallbacks(null);
+            removeCallbacks(update);
         }else{
-            postDelayed(this::updatePointerAngle,5);
+            postDelayed(update,5);
         }
         invalidate();
     }
+
+    private final Runnable update = this::updatePointerAngle;
 
     private void drawContent(final Canvas canvas){
         canvas.translate(mCoordinateCenter.x,mCoordinateCenter.y);
