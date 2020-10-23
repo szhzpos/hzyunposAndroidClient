@@ -163,4 +163,5 @@
     <dimen name="tree_list_w">488dp</dimen>
     <dimen name="activity_title_height">@dimen/height_58</dimen>
     <dimen name="board_rect_size">@dimen/size_128</dimen>
+    <dimen name="default_vertical">@dimen/size_12</dimen>
 </resources>

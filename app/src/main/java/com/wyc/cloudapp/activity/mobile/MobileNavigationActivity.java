@@ -52,15 +52,15 @@ public class MobileNavigationActivity extends AbstractMobileActivity {
             if (mCurrentNavView != null){
                 if (mCurrentNavView != textView){
                     mCurrentNavView.setTextColor(getColor(R.color.mobile_fun_view_no_click));
-                    mCurrentNavView.setClick(false);
+                    mCurrentNavView.triggerAnimation(false);
 
                     textView.setTextColor(getColor(R.color.mobile_fun_view_click));
-                    textView.setClick(true);
+                    textView.triggerAnimation(true);
                     mCurrentNavView = textView;
-                }
+                }else return;
             }else{
                 textView.setTextColor(getColor(R.color.mobile_fun_view_click));
-                textView.setClick(true);
+                textView.triggerAnimation(true);
                 mCurrentNavView = textView;
             }
 

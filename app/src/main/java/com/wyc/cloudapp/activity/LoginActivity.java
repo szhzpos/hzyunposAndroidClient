@@ -67,7 +67,7 @@ import java.util.concurrent.Future;
 public class LoginActivity extends AppCompatActivity {
     public static final String IMG_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/goods_img/";
     private static final int REQUEST_STORAGE_PERMISSIONS  = 800;
-    private EditText mUser_id,mPassword;
+    private EditText mUserId,mPassword;
     private Handler myHandler;
     private LoginActivity mSelf;
     private CustomProgressDialog mProgressDialog;
@@ -192,16 +192,21 @@ public class LoginActivity extends AppCompatActivity {
     private void saveLastUser(){
         final SharedPreferences preferences=getSharedPreferences("login_user", Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor= preferences.edit();
-        editor.putString("user",mUser_id.getText().toString());
+        editor.putString("user", mUserId.getText().toString());
         editor.apply();
     }
 
     private void setLastUser(){
         final SharedPreferences preferences=getSharedPreferences("login_user", Context.MODE_PRIVATE);
-        if (mUser_id != null){
+        if (mUserId != null){
             final String user = preferences.getString("user","");
-            mUser_id.setText(user);
-            if (!"".equals(user) && mPassword != null)mPassword.postDelayed(()-> mPassword.requestFocus(),300);
+            if ("".equals(user)){
+                mUserId.postDelayed(()-> mUserId.requestFocus(),400);
+            }else{
+                mUserId.setText(user);
+                if (mPassword != null)mPassword.postDelayed(()-> mPassword.requestFocus(),300);
+            }
+
         }
     }
 
@@ -349,7 +354,7 @@ public class LoginActivity extends AppCompatActivity {
             }
             return false;
         });
-        mUser_id = user_id;
+        mUserId = user_id;
     }
     @SuppressWarnings("unused")
     private void initSoftKeyBoardListener(){
@@ -431,8 +436,8 @@ public class LoginActivity extends AppCompatActivity {
             int v_id = view.getId();
             EditText et_view = (EditText) getCurrentFocus();
             if (null == et_view){
-                et_view = mUser_id;
-                mUser_id.requestFocus();
+                et_view = mUserId;
+                mUserId.requestFocus();
             }
             final Editable editable = et_view.getText();
             if (v_id == R.id._clear){
@@ -493,7 +498,7 @@ public class LoginActivity extends AppCompatActivity {
             String url, sz_param, err_info,base_url = Utils.getNullStringAsEmpty(conn_param,"server_url"),appid =  Utils.getNullStringAsEmpty(conn_param,"appId"),
                     appSecret = Utils.getNullStringAsEmpty(conn_param,"appSecret");
             try {
-                mOperId = mUser_id.getText().toString();
+                mOperId = mUserId.getText().toString();
 
                 object.put("appid",appid);
                 object.put("cas_account", mOperId);
@@ -627,11 +632,11 @@ public class LoginActivity extends AppCompatActivity {
                         activity.mSyncManagement.start_sync(true);
                     break;
                 case MessageID.LOGIN_ID_ERROR_ID://账号错误
-                    activity.mUser_id.requestFocus();
-                    activity.mUser_id.selectAll();
-                    activity.mUser_id.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake_x));
+                    activity.mUserId.requestFocus();
+                    activity.mUserId.selectAll();
+                    activity.mUserId.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake_x));
                     if (msg.obj instanceof String)
-                        MyDialog.ToastMessage(activity.mUser_id,msg.obj.toString(),activity,null);
+                        MyDialog.ToastMessage(activity.mUserId,msg.obj.toString(),activity,null);
                     break;
                 case MessageID.LOGIN_PW_ERROR_ID://密码错误
                     activity.mPassword.requestFocus();
@@ -662,7 +667,7 @@ public class LoginActivity extends AppCompatActivity {
     private void offline_login(){
         MyDialog.displayAskMessage(myDialog, "连接服务器失败，是否离线登录？", this, myDialog -> {
             myDialog.dismiss();
-            final String user_id = mUser_id.getText().toString(),password = mPassword.getText().toString();
+            final String user_id = mUserId.getText().toString(),password = mPassword.getText().toString();
             final String local_password = Utils.getUserIdAndPasswordCombinationOfMD5(user_id + password);
             final StringBuilder err = new StringBuilder();
             JSONObject param_obj = new JSONObject();

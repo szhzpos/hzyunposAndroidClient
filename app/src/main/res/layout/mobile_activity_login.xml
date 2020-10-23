@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/margin_2"
-            android:focusable="auto"
+            android:focusable="false"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -95,7 +95,7 @@
                 android:drawableStart="@drawable/login_user"
                 android:drawablePadding="@dimen/margin_8"
                 android:ems="10"
-                android:focusable="auto"
+                android:focusable="true"
                 android:hint="@string/user_name"
                 android:importantForAutofill="no"
                 android:inputType="textPersonName"

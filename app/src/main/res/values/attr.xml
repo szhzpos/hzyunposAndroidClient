@@ -5,6 +5,7 @@
         <attr name="onFocusTime" />
     </declare-styleable>
     <declare-styleable name="DrawableTextViewTopMargin">
-        <attr name="verSpacing" format="integer" />
+        <attr name="verSpacing" format="dimension" />
+        <attr name="animType" format="integer"/>
     </declare-styleable>
 </resources>

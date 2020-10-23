@@ -32,7 +32,8 @@
             android:text="@string/board_sz"
             android:textColor="@color/mobile_fun_view_no_click"
             android:textSize="@dimen/font_size_18"
-            app:verSpacing="28" />
+            app:animType = "1"
+            app:verSpacing="@dimen/default_vertical" />
 
         <com.wyc.cloudapp.dialog.CustomizationView.DrawableCenterTextView
             android:id="@+id/_mobile_bg_tv"
@@ -44,7 +45,7 @@
             android:text="@string/mobile_bg_sz"
             android:textColor="@color/mobile_fun_view_no_click"
             android:textSize="@dimen/font_size_18"
-            app:verSpacing="28" />
+            app:verSpacing="@dimen/default_vertical" />
 
         <com.wyc.cloudapp.dialog.CustomizationView.DrawableCenterTextView
             android:id="@+id/_mobile_cas_desk_tv"
@@ -56,7 +57,8 @@
             android:text="@string/casher_desk_sz"
             android:textColor="@color/mobile_fun_view_no_click"
             android:textSize="@dimen/font_size_18"
-            app:verSpacing="28" />
+            app:animType = "1"
+            app:verSpacing="@dimen/default_vertical" />
 
         <com.wyc.cloudapp.dialog.CustomizationView.DrawableCenterTextView
             android:id="@+id/_mobile_report_tv"
@@ -68,7 +70,7 @@
             android:text="@string/report_sz"
             android:textColor="@color/mobile_fun_view_no_click"
             android:textSize="@dimen/font_size_18"
-            app:verSpacing="28" />
+            app:verSpacing="@dimen/default_vertical" />
 
         <com.wyc.cloudapp.dialog.CustomizationView.DrawableCenterTextView
             android:id="@+id/_mobile_my_tv"
@@ -80,6 +82,6 @@
             android:text="@string/my_sz"
             android:textColor="@color/mobile_fun_view_no_click"
             android:textSize="@dimen/font_size_18"
-            app:verSpacing="28" />
+            app:verSpacing="@dimen/default_vertical" />
     </LinearLayout>
 </LinearLayout>
