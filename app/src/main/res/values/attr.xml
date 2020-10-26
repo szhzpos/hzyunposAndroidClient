@@ -7,5 +7,6 @@
     <declare-styleable name="DrawableTextViewTopMargin">
         <attr name="verSpacing" format="dimension" />
         <attr name="animType" format="integer"/>
+        <attr name="selectTextColor" format="color"/>
     </declare-styleable>
 </resources>

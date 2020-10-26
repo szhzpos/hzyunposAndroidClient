@@ -16,7 +16,7 @@
             android:layout_marginBottom="@dimen/margin_2"
             android:orientation="horizontal">
 
-            <com.wyc.cloudapp.dialog.CustomizationView.DrawableCenterTextView
+            <com.wyc.cloudapp.dialog.CustomizationView.TopDrawableTextView
                 android:id="@+id/fg_casher_tv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -30,7 +30,7 @@
                 android:textSize="@dimen/font_size_18"
                 app:verSpacing="@dimen/default_vertical" />
 
-            <com.wyc.cloudapp.dialog.CustomizationView.DrawableCenterTextView
+            <com.wyc.cloudapp.dialog.CustomizationView.TopDrawableTextView
                 android:id="@+id/trade_query_tv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -51,7 +51,7 @@
             android:layout_marginBottom="@dimen/margin_2"
             android:orientation="horizontal">
 
-            <com.wyc.cloudapp.dialog.CustomizationView.DrawableCenterTextView
+            <com.wyc.cloudapp.dialog.CustomizationView.TopDrawableTextView
                 android:id="@+id/fg_refund_tv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -65,7 +65,7 @@
                 android:textSize="@dimen/font_size_18"
                 app:verSpacing="@dimen/default_vertical" />
 
-            <com.wyc.cloudapp.dialog.CustomizationView.DrawableCenterTextView
+            <com.wyc.cloudapp.dialog.CustomizationView.TopDrawableTextView
                 android:id="@+id/refund_query_tv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -86,7 +86,7 @@
             android:layout_marginBottom="@dimen/margin_2"
             android:orientation="horizontal">
 
-            <com.wyc.cloudapp.dialog.CustomizationView.DrawableCenterTextView
+            <com.wyc.cloudapp.dialog.CustomizationView.TopDrawableTextView
                 android:id="@+id/vip_charge_tv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -100,7 +100,7 @@
                 android:textSize="@dimen/font_size_18"
                 app:verSpacing="@dimen/default_vertical" />
 
-            <com.wyc.cloudapp.dialog.CustomizationView.DrawableCenterTextView
+            <com.wyc.cloudapp.dialog.CustomizationView.TopDrawableTextView
                 android:id="@+id/charge_query_tv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -121,7 +121,7 @@
             android:layout_marginBottom="@dimen/margin_2"
             android:orientation="horizontal">
 
-            <com.wyc.cloudapp.dialog.CustomizationView.DrawableCenterTextView
+            <com.wyc.cloudapp.dialog.CustomizationView.TopDrawableTextView
                 android:id="@+id/fd_shift_exchange_tv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -135,7 +135,7 @@
                 android:textSize="@dimen/font_size_18"
                 app:verSpacing="@dimen/default_vertical" />
 
-            <com.wyc.cloudapp.dialog.CustomizationView.DrawableCenterTextView
+            <com.wyc.cloudapp.dialog.CustomizationView.TopDrawableTextView
                 android:id="@+id/data_exchange_tv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

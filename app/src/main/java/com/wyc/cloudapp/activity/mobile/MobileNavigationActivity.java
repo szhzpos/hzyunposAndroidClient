@@ -9,16 +9,14 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.dialog.CustomizationView.DrawableCenterTextView;
+import com.wyc.cloudapp.dialog.CustomizationView.TopDrawableTextView;
 import com.wyc.cloudapp.mobileFragemt.BackgroundFragment;
 import com.wyc.cloudapp.mobileFragemt.CashierDeskFragment;
 import com.wyc.cloudapp.mobileFragemt.MyFragment;
 import com.wyc.cloudapp.mobileFragemt.ReportFragment;
 
-public class MobileNavigationActivity extends AbstractMobileActivity {
+public final class MobileNavigationActivity extends AbstractMobileActivity {
     private FragmentManager mFragmentManager;
-    private DrawableCenterTextView mCurrentNavView;
-    private Fragment mCurrentFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,19 +34,20 @@ public class MobileNavigationActivity extends AbstractMobileActivity {
     private void initFunctionBtn(){
         final LinearLayout fun_nav = findViewById(R.id.fun_nav);
         for(int i = 0,count = fun_nav.getChildCount();i < count; i++){
-            final DrawableCenterTextView drawableCenterTextView = (DrawableCenterTextView) fun_nav.getChildAt(i);
-            drawableCenterTextView.setOnClickListener(mNavClick);
-            if (drawableCenterTextView.getId() == R.id._mobile_cas_desk_tv){
-                drawableCenterTextView.callOnClick();
+            final TopDrawableTextView topDrawableTextView = (TopDrawableTextView) fun_nav.getChildAt(i);
+            topDrawableTextView.setOnClickListener(mNavClick);
+            if (topDrawableTextView.getId() == R.id._mobile_cas_desk_tv){
+                topDrawableTextView.postDelayed(topDrawableTextView::callOnClick,300);
             }
         }
     }
 
     private final View.OnClickListener mNavClick = new View.OnClickListener() {
-
-        @Override
-        public void onClick(View v) {
-            final DrawableCenterTextView textView = (DrawableCenterTextView)v;
+        private TopDrawableTextView mCurrentNavView;
+        private Fragment mCurrentFragment;
+        private boolean setCurrentView(final View v){
+            final TopDrawableTextView textView = (TopDrawableTextView)v;
+            setMiddleText(textView.getText().toString());
             if (mCurrentNavView != null){
                 if (mCurrentNavView != textView){
                     mCurrentNavView.setTextColor(getColor(R.color.mobile_fun_view_no_click));
@@ -57,13 +56,15 @@ public class MobileNavigationActivity extends AbstractMobileActivity {
                     textView.setTextColor(getColor(R.color.mobile_fun_view_click));
                     textView.triggerAnimation(true);
                     mCurrentNavView = textView;
-                }else return;
+                }else return false;
             }else{
                 textView.setTextColor(getColor(R.color.mobile_fun_view_click));
                 textView.triggerAnimation(true);
                 mCurrentNavView = textView;
             }
-
+            return true;
+        }
+        private void showFragment(final View v){
             final FragmentTransaction ft = mFragmentManager.beginTransaction();
 
             Fragment current ;
@@ -90,6 +91,10 @@ public class MobileNavigationActivity extends AbstractMobileActivity {
             mCurrentFragment = current;
 
             ft.commit();
+        }
+        @Override
+        public void onClick(View v) {
+            if (setCurrentView(v))showFragment(v);
         }
     };
 

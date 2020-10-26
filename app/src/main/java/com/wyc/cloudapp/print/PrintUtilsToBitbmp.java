@@ -29,7 +29,7 @@ public final class PrintUtilsToBitbmp {
      * @return
      */
     public static byte[] draw2PxPoint(Bitmap bit) {
-        Bitmap newBit = compressPic(bit);
+        final Bitmap newBit = compressPic(bit);
         int w = newBit.getWidth();
         int h = newBit.getHeight();
         Logger.d("old_w:%d,old_height:%d,new_w:%d,new_h:%d",bit.getWidth(),bit.getHeight(),w,h);
@@ -65,7 +65,7 @@ public final class PrintUtilsToBitbmp {
      * @return
      */
     public static byte[] pic2PxPoint(Bitmap bit){
-        Bitmap newBit = compressBitmap(bit);
+        final Bitmap newBit = compressBitmap(bit);
         int w = newBit.getWidth();
         int h = newBit.getHeight();
         byte[] data = new byte[w * h + h / PER_POINT*6 + 8 ];//图片大小 + 指令字节 + 留空字节
@@ -138,8 +138,8 @@ public final class PrintUtilsToBitbmp {
         // 获取这个图片的宽和高
         int width = bitmapOrg.getWidth();
         int height = bitmapOrg.getHeight();
-        Bitmap targetBmp = Bitmap.createBitmap(alignToN(WIDTH,8), alignToN(HEIGHT,PER_POINT), Bitmap.Config.ARGB_8888);
-        Canvas targetCanvas = new Canvas(targetBmp);
+        final Bitmap targetBmp = Bitmap.createBitmap(alignToN(WIDTH,8), alignToN(HEIGHT,PER_POINT), Bitmap.Config.ARGB_8888);
+        final Canvas targetCanvas = new Canvas(targetBmp);
         targetCanvas.drawColor(0xffffffff);
         targetCanvas.drawBitmap(bitmapOrg, new Rect(0, 0, width, height), new Rect(0, 0,alignToN(WIDTH,8), alignToN(HEIGHT,PER_POINT)), null);
         return targetBmp;
@@ -234,7 +234,7 @@ public final class PrintUtilsToBitbmp {
         return  Bitmap.createBitmap(pixels,width,height,Bitmap.Config.ARGB_8888);
     }
     //从指定ARGB返回像素值
-    private static int getPixel(int a,int r,int g,int b){
+    public static int getPixel(int a,int r,int g,int b){
         int newPixel = 0;
         newPixel |= (a & 0xff);
         newPixel = newPixel << 8 | r & 0xff ;
