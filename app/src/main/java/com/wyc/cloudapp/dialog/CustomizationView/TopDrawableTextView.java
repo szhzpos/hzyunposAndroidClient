@@ -16,15 +16,16 @@ import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
 public final class TopDrawableTextView extends androidx.appcompat.widget.AppCompatTextView{
     private float mVerSpacing;
     private final Drawable[] mDrawables;
-    private Bitmap mBitmap;
+    private Drawable mTopDrawable;
     private final Paint mPaint = new Paint();;
-    private final Rect font_bounds = new Rect();
-    private int mViewH,mViewW;
     private float mDrawableStartScale = 1.0f,mScaleStep = 0.02f;
     float mDrawRotate = 0;
     private boolean mAnimationFlag = false;
     private int mAnimType = 0;//默认缩放动画
     private int mSelectTextColor;
+    private int mTopDrawablePosition,mTextPosition;
+    private CharSequence mText;
+
     public TopDrawableTextView(Context context) {
         this(context, null);
     }
@@ -70,62 +71,75 @@ public final class TopDrawableTextView extends androidx.appcompat.widget.AppComp
     @Override
     public void onMeasure(int widthMeaSpec, int heightMeaSpec) {
         super.onMeasure(widthMeaSpec, heightMeaSpec);
-        mViewH = getMeasuredHeight();
-        mViewW = getMeasuredWidth();
     }
 
     @Override
     public void onLayout(boolean change, int left, int top, int right, int bottom) {
         super.onLayout(change, left, top, right, bottom);
+        adjust();
     }
 
     @Override
     public void onDraw(Canvas canvas) {
+        final Drawable topDrawable = mTopDrawable;
+        if (topDrawable != null){
+            if (mAnimationFlag){
+                mPaint.setColor(mSelectTextColor);
+                final int dx = mTopDrawablePosition >> 16,dy = mTopDrawablePosition & 0x0000FFFF;
+                canvas.save();
+                canvas.translate(dx,dy);
+                if (mAnimType == 1) {
+                    canvas.rotate(mDrawRotate);
+                }else{
+                    canvas.scale(mDrawableStartScale, mDrawableStartScale);
+                }
+                canvas.translate(-dx,-dy);
+                topDrawable.draw(canvas);
+                canvas.restore();
+            }else {
+                mPaint.setColor(getCurrentTextColor());
+                topDrawable.draw(canvas);
+            }
+            canvas.drawText(mText.toString(),mTextPosition >> 16,mTextPosition & 0x0000FFFF,mPaint);
+        }else
+            super.onDraw(canvas);
+    }
+    private void adjust(){
         final Drawable topDrawable = getTopBitmapDrawable();
         if (topDrawable != null){
             final Rect rect = topDrawable.getBounds();
-            final int bound_height = rect.height(),bound_width = rect.width();
-
+            final int bound_height = rect.height(),bound_width = rect.width(),view_h = getMeasuredHeight(),view_w = getMeasuredWidth();
             final String text = getText().toString();
+
+            final Rect font_bounds = new Rect();
             mPaint.setTextSize(getTextSize());
             mPaint.getTextBounds(text,0,text.length(),font_bounds);
 
             int font_h = font_bounds.height(),font_w = font_bounds.width();
             int h = (int) (bound_height + mVerSpacing + font_h);
 
-            int top = (mViewH - h) >> 1,left = (mViewW - bound_width) >> 1;
+            int top = (view_h - h) >> 1,left = (view_w - bound_width) >> 1;
+            rect.set(rect.left + left,rect.top + top,rect.right + left,rect.bottom + top);
 
-            if (mAnimationFlag){
-                mPaint.setColor(mSelectTextColor);
-                final int dx = mViewW >> 1,dy = (bound_height + (top << 1)) >> 1;
+            final int dx = view_w >> 1,dy = (bound_height + (top << 1)) >> 1,t_dx = (view_w - font_w) >> 1,t_dy = h + (font_h >> 1);
 
-                canvas.save();
-                canvas.translate(dx,dy);
-                if (mAnimType == 0) {
-                    canvas.scale(mDrawableStartScale, mDrawableStartScale);
-                }else if (mAnimType == 1){
-                    canvas.rotate(mDrawRotate);
-                }
-                canvas.translate(-dx,-dy);
-                canvas.drawBitmap(mBitmap,dx - (mBitmap.getWidth() >> 1),dy- (mBitmap.getHeight() >> 1),mPaint);
-                canvas.restore();
-            }else {
-                mPaint.setColor(getCurrentTextColor());
-                rect.set(rect.left + left,rect.top + top,rect.right + left,rect.bottom + top);
-                topDrawable.draw(canvas);
-            }
-            canvas.drawText(text,(mViewW - font_w) >> 1,h + (font_bounds.height() >> 1),mPaint);
-        }else
-            super.onDraw(canvas);
+
+            mTopDrawablePosition |= dx << 16 ;
+            mTopDrawablePosition |= dy & 0x0000FFFF;
+            mTextPosition |= t_dx << 16 ;
+            mTextPosition |= t_dy & 0x0000FFFF;
+
+            mTopDrawable = topDrawable;
+            mText = text;
+        }
     }
     public void triggerAnimation(boolean b){
         final BitmapDrawable drawable = getTopBitmapDrawable();
         if (drawable != null){
-            final Bitmap bitmap = drawable.getBitmap();
             if (b) {
+                final Bitmap bitmap = drawable.getBitmap();
                 final int w = bitmap.getWidth(),h = bitmap.getHeight(),font_color = mSelectTextColor;
                 final int[] pixels = new int[w * h];
-
                 bitmap.getPixels(pixels,0,w,0,0,w,h);
                 for (int i = 0;i < h;i ++){
                     for (int j = 0;j < w;j ++){
@@ -136,10 +150,11 @@ public final class TopDrawableTextView extends androidx.appcompat.widget.AppComp
                         }
                     }
                 }
-                mBitmap = Bitmap.createBitmap(pixels,w,h,Bitmap.Config.ARGB_8888);
+                mTopDrawable = new BitmapDrawable(getResources(),Bitmap.createBitmap(pixels,w,h,Bitmap.Config.ARGB_8888));
+                mTopDrawable.setBounds(drawable.getBounds());
                 updateDrawableStartScale();
             }else{
-                mBitmap = null;
+                mTopDrawable = drawable;
                 mDrawableStartScale = 1.0f;
                 mDrawRotate = 0;
                 removeCallbacks(updateRunnable);
@@ -154,15 +169,10 @@ public final class TopDrawableTextView extends androidx.appcompat.widget.AppComp
         }else {
             if (mDrawableStartScale <=  0.5f)mScaleStep = 0.05f;
             if (mDrawableStartScale >=  1.0f)mScaleStep = -0.05f;
-
             mDrawableStartScale += mScaleStep;
-
-            if (mDrawableStartScale < 1.0f){
-                postDelayed(updateRunnable,5);
-            }
+            if (mDrawableStartScale < 1.0f)postDelayed(updateRunnable,5);
         }
         invalidate();
     }
-
     private final Runnable updateRunnable = this::updateDrawableStartScale;
 }

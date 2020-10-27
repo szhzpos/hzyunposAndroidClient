@@ -5,6 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
+        android:id="@+id/main_linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_2"
@@ -17,7 +18,7 @@
             android:orientation="horizontal">
 
             <com.wyc.cloudapp.dialog.CustomizationView.TopDrawableTextView
-                android:id="@+id/fg_casher_tv"
+                android:id="@+id/fg_cashier_tv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="@dimen/margin_2"
@@ -25,6 +26,7 @@
                 android:background="#FA987E"
                 android:drawableTop="@drawable/m_cashier"
                 android:gravity="center"
+                android:tag="activity.mobile.CashierDeskActivity"
                 android:text="@string/fg_casher_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/font_size_18"

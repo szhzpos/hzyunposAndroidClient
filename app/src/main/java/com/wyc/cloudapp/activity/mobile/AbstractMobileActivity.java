@@ -24,6 +24,8 @@ public abstract class AbstractMobileActivity extends AppCompatActivity {
         setContentLayout();
 
         initTitle();
+        initTitleText();
+        initTitleClickListener();
     }
 
     private void initTitle(){
@@ -45,6 +47,16 @@ public abstract class AbstractMobileActivity extends AppCompatActivity {
     }
 
     protected abstract int getContentLayoutId();
+
+
+    protected void initTitleText(){//子类重写
+
+    }
+
+    protected void initTitleClickListener(){
+
+    }
+
 
     protected void setLeftText(final String text){
         if (text != null && mLeft != null){

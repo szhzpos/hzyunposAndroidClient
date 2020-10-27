@@ -10,7 +10,9 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.dialog.CustomizationView.TopDrawableTextView;
+import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.mobileFragemt.BackgroundFragment;
+import com.wyc.cloudapp.mobileFragemt.BoardFragment;
 import com.wyc.cloudapp.mobileFragemt.CashierDeskFragment;
 import com.wyc.cloudapp.mobileFragemt.MyFragment;
 import com.wyc.cloudapp.mobileFragemt.ReportFragment;
@@ -67,10 +69,10 @@ public final class MobileNavigationActivity extends AbstractMobileActivity {
         private void showFragment(final View v){
             final FragmentTransaction ft = mFragmentManager.beginTransaction();
 
-            Fragment current ;
+            Fragment current = null ;
             final int id = v.getId();
             if (id == R.id._mobile_board_tv) {//first
-                current = new BackgroundFragment();
+                current = new BoardFragment();
             }else if(id == R.id._mobile_bg_tv){//second
                 current = new BackgroundFragment();
             }else if (id == R.id._mobile_report_tv){//fourth
@@ -82,19 +84,32 @@ public final class MobileNavigationActivity extends AbstractMobileActivity {
             }
 
             ft.add(R.id.mobile_fragment_container,current);
-
             if (mCurrentFragment != null)ft.remove(mCurrentFragment);
-
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             ft.show(current);
-
             mCurrentFragment = current;
-
             ft.commit();
         }
         @Override
         public void onClick(View v) {
-            if (setCurrentView(v))showFragment(v);
+            final int id = v.getId();
+            boolean support = false;
+            if (id == R.id._mobile_board_tv) {//first
+
+            }else if(id == R.id._mobile_bg_tv){//second
+
+            }else if (id == R.id._mobile_report_tv){//fourth
+
+            }else  if(id == R.id._mobile_my_tv){//fifth
+
+            }else{//third
+                support = true;
+            }
+            if(support){
+                if (setCurrentView(v))showFragment(v);
+            }else {
+                MyDialog.ToastMessage("暂不支持此功能!",MobileNavigationActivity.this,null);
+            }
         }
     };
 
