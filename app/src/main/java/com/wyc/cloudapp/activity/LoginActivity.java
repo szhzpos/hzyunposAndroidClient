@@ -625,8 +625,9 @@ public class LoginActivity extends AppCompatActivity {
                     activity.launchLogin(true);
                     break;
                 case MessageID.LOGIN_OK_ID://登录成功
-                    activity.mSyncManagement = new SyncManagement(this,Utils.getNullStringAsEmpty(activity.mConnParam,"server_url"),Utils.getNullStringAsEmpty(activity.mConnParam,"appId"),
+                    activity.mSyncManagement = new SyncManagement(Utils.getNullStringAsEmpty(activity.mConnParam,"server_url"),Utils.getNullStringAsEmpty(activity.mConnParam,"appId"),
                             Utils.getNullStringAsEmpty(activity.mConnParam,"appSecret"),activity.mStoresId,activity.mPosNum,activity.mOperId);
+                    activity.mSyncManagement.setNotifyHandlerAndStart(this);
                     if (SQLiteHelper.isNew()) {
                         activity.mProgressDialog.setMessage("准备重新同步...").refreshMessage().show();
                         activity.mSyncManagement.afresh_sync();
@@ -658,7 +659,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void launchLogin(boolean isConnection){
-        final Intent intent = new Intent(this,MainActivity.class);
+        final Intent intent = new Intent(this,NormalMainActivity.class);
         if (isSmallScreen)intent.setClass(this, MobileNavigationActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("network",isConnection);

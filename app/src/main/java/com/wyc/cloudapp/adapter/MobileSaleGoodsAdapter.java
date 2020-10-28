@@ -27,8 +27,4 @@ public class MobileSaleGoodsAdapter extends AbstractSaleGoodsAdapter {
         return mDatas.size();
     }
 
-    @Override
-    public void addSaleGoods(final JSONObject goods){
-        addSaleGoods(goods,1,false);
-    }
 }

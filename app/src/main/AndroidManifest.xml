@@ -39,7 +39,7 @@
         <activity android:name=".activity.mobile.CashierActivity" />
         <activity android:name=".activity.mobile.MobileNavigationActivity"/>
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".activity.NormalMainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="landscape">

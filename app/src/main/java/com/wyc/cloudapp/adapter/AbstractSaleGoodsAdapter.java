@@ -149,9 +149,9 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
         return num;
     }
 
-    abstract void addSaleGoods(final JSONObject goods);
-
-    ;
+    public void addSaleGoods(final JSONObject goods){
+        addSaleGoods(goods,1,false);
+    };
 
     protected void addSaleGoods(final @NonNull JSONObject goods,double num,boolean isBarcodeWeighingGoods){
         final JSONObject copy = verifyPromotion(goods,num);
@@ -737,7 +737,7 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
     }
 
     public String generateOrderCode(final String pos_num, int order_type){
-        String order_code;
+        final String order_code;
         if (mSingleRefundStatus){
             order_code = RefundDialog.generateRefundOrderCode(mContext,pos_num);
         }else {

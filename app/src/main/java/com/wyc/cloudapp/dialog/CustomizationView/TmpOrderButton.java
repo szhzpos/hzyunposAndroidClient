@@ -52,8 +52,6 @@ public final class TmpOrderButton extends AppCompatButton {
 
         int w = getMeasuredWidth(),h = getMeasuredHeight(),offset = Utils.dpToPx(mContext,30),arcAngle = Utils.dpToPx(mContext,5);
 
-        Logger.d("w:%d,h:%d",w,h);
-
         mPath.moveTo(w - offset, 0);
         mPath.arcTo(w - arcAngle,0,w,arcAngle,-90,90,false);
         mPath.lineTo(w, h - Utils.dpToPx(mContext,10));

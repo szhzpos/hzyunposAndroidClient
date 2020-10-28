@@ -3,6 +3,8 @@ package com.wyc.cloudapp.network.sync;
 import android.os.Handler;
 import android.os.Looper;
 
+import androidx.annotation.NonNull;
+
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.MessageID;
 
@@ -13,23 +15,26 @@ import java.util.concurrent.CountDownLatch;
 
 public class SyncManagement extends Thread {
     private CountDownLatch handlerInitLatch;
-    private Handler mMainActivityHandler;
+    private Handler mNotifyHandler;
     private SyncHandler mSyncHandler;
     private String mAppId, mAppSecret,mUrl,mPosNum,mOperId,mStoresId;
-    private SyncManagement(Handler handler){
-        this.mMainActivityHandler = handler;
+    private SyncManagement(){
         handlerInitLatch = new CountDownLatch(1);
     }
-    public SyncManagement(Handler handler, final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){
-        this(handler);
+    public SyncManagement(final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){
+        this();
         mUrl = url ;
         mAppId = appid;
         mAppSecret = appsecret;
         mPosNum = pos_num;
         mOperId = operid;
         mStoresId = stores_id;
-
-        start();
+    }
+    public void setNotifyHandlerAndStart(@NonNull final Handler handler){
+        if (mNotifyHandler == null && !isAlive()){
+            mNotifyHandler = handler;
+            start();
+        }
     }
     String getUrl(){
         return mUrl;
@@ -54,13 +59,15 @@ public class SyncManagement extends Thread {
 
     @Override
     public void run(){
-        Logger.i("SyncManagement<%s>启动:%s",getName(),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS",Locale.CHINA).format(new Date()));
-        if (mSyncHandler == null) {
-            Looper.prepare();
-            mSyncHandler = new SyncHandler(mMainActivityHandler,this);
-            handlerInitLatch.countDown();
+        if (null != mNotifyHandler){
+            Logger.i("SyncManagement<%s>启动:%s",getName(),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS",Locale.CHINA).format(new Date()));
+            if (mSyncHandler == null) {
+                Looper.prepare();
+                mSyncHandler = new SyncHandler(mNotifyHandler,this);
+                handlerInitLatch.countDown();
+            }
+            Looper.loop();
         }
-        Looper.loop();
     }
 
     public SyncHandler getHandler(){
@@ -81,7 +88,7 @@ public class SyncManagement extends Thread {
                 e.printStackTrace();
             }
             mSyncHandler = null;
-            mMainActivityHandler = null;
+            mNotifyHandler = null;
             handlerInitLatch = null;
         }
         Logger.i("SyncManagement<%s>退出:%s",getName(),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.CHINA).format(new Date()));
@@ -113,8 +120,8 @@ public class SyncManagement extends Thread {
 
         sync_retail_order();
 
-        if (mMainActivityHandler != null)mMainActivityHandler.sendMessageAtFrontOfQueue(mMainActivityHandler.obtainMessage(MessageID.START_SYNC_ORDER_INFO_ID));
-        if (mMainActivityHandler != null)mMainActivityHandler.obtainMessage(MessageID.FINISH_SYNC_ORDER_INFO_ID).sendToTarget();
+        if (mNotifyHandler != null) mNotifyHandler.sendMessageAtFrontOfQueue(mNotifyHandler.obtainMessage(MessageID.START_SYNC_ORDER_INFO_ID));
+        if (mNotifyHandler != null) mNotifyHandler.obtainMessage(MessageID.FINISH_SYNC_ORDER_INFO_ID).sendToTarget();
     }
 
     public void sync_retail_order(){
