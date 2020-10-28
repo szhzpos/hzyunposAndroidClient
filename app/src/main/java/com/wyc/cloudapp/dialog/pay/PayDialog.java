@@ -128,7 +128,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
         }
         if (!Utils.equalDouble(mDiscount_amt,0.0)){
             mContext.deleteFullReduce();
-            mContext.deleteAlldiscountRecord();
+            mContext.deleteAllDiscountRecord();
         }
     }
 

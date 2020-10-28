@@ -4,6 +4,122 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".activity.mobile.CashierActivity">
+
+    <com.wyc.cloudapp.dialog.CustomizationView.EditTextForHideKeyBoard
+        android:id="@+id/mobile_search_content"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_50"
+        android:layout_gravity="center"
+        android:background="@drawable/border_sub_gray"
+        android:drawableEnd="@drawable/keyboard_icon"
+        android:ems="10"
+        android:hint="@string/b_z_sz"
+        android:importantForAutofill="no"
+        android:inputType="textPersonName"
+        android:padding="@dimen/margin_5"
+        android:singleLine="true"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_18"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/mobile_sale_goods_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/mobile_bottom_btn_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mobile_search_content" />
+
+    <Button
+        android:id="@+id/mobile_other_fun_btn"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="@dimen/width_68"
+        android:layout_height="@dimen/height_68"
+        android:layout_marginEnd="@dimen/margin_8"
+        android:layout_marginBottom="@dimen/margin_8"
+        android:background="@drawable/selected"
+        app:layout_constraintBottom_toTopOf="@id/mobile_bottom_btn_layout"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/mobile_bottom_btn_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_58"
+        android:layout_marginBottom="@dimen/margin_5"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@id/mobile_bottom_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/mobile_vip_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/margin_5"
+            android:layout_marginEnd="@dimen/margin_5"
+            android:layout_weight="1"
+            android:background="@drawable/button_blue"
+            android:text="@string/vip_button_sz"
+            android:textColor="@color/blue_white"
+            android:textSize="@dimen/font_size_18" />
+
+        <Button
+            android:id="@+id/mobile_sale_man_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/margin_5"
+            android:layout_marginEnd="@dimen/margin_5"
+            android:layout_weight="1"
+            android:background="@drawable/button_blue"
+            android:text="@string/sale_man_sz"
+            android:textColor="@color/blue_white"
+            android:textSize="@dimen/font_size_18" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/mobile_bottom_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_78"
+        android:background="@drawable/square_shape"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageView
+            android:id="@+id/basket_ico"
+            android:layout_width="@dimen/width_78"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/space_sz"
+            tools:srcCompat="@drawable/shopping" />
+
+        <TextView
+            android:id="@+id/mobile_sale_amt"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/z_p_z_sz"
+            android:textColor="@color/orange_1"
+            android:textSize="@dimen/font_size_24" />
+
+        <Button
+            android:id="@+id/mobile_checkout_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/mobile_checkout_btn_width"
+            android:layout_height="match_parent"
+            android:background="@drawable/button_sub_blue"
+            android:text="@string/check_out_sz"
+            android:textColor="@color/orange_1"
+            android:textSize="@dimen/font_size_24" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -19,7 +19,7 @@ public class SaleGoodsItemDecoration extends SuperItemDecoration {
     @Override
     public void onDrawOver(@NonNull Canvas c,@NonNull RecyclerView parent,@NonNull RecyclerView.State state) {
         super.onDrawOver(c, parent, state);
-        final SaleGoodsAdapter adapter = (SaleGoodsAdapter) parent.getAdapter();
+        final NormalSaleGoodsAdapter adapter = (NormalSaleGoodsAdapter) parent.getAdapter();
         final Context context = parent.getContext();
         if (adapter != null && adapter.getSingle()){
             final Paint paint = new Paint();

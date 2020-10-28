@@ -153,6 +153,8 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onNewIntent(Intent intent){
         super.onNewIntent(intent);
+        setIntent(intent);
+
         Logger.d("onNewIntentAction:%s",intent.getAction());
         //if activity called finish method ,onNewIntent will not be called;
     }

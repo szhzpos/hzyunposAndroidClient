@@ -2,7 +2,6 @@ package com.wyc.cloudapp.application;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.IntentFilter;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,27 +9,22 @@ import androidx.annotation.Nullable;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.wyc.cloudapp.broadcast.GlobalBroadcast;
-
 import com.wyc.cloudapp.logger.AndroidLogAdapter;
 import com.wyc.cloudapp.logger.DiskLogAdapter;
 import com.wyc.cloudapp.logger.Logger;
 
-import java.util.Locale;
-import java.util.Stack;
 import java.util.Vector;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public final class CustomApplication extends Application {
     //使用无界限阻塞队列，不会触发拒绝策略；线程数最大等于核心线程数，如果所有线程都在运行则任务会进入队列等待执行<可能引发内存问题>，
     private static final ScheduledThreadPoolExecutor THREAD_POOL_EXECUTOR = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2);
     private volatile int netState = 1,netState_mobile = 1;//WiFi 连接状态 1 连接 0 其他
-    private Vector<Activity> mActivities;
+    private final Vector<Activity> mActivities;
     public CustomApplication(){
         super();
         mActivities = new Vector<>();
@@ -44,7 +38,7 @@ public final class CustomApplication extends Application {
         registerActivityLifecycleCallbacks(callbacks);
     }
 
-    private ActivityLifecycleCallbacks callbacks = new ActivityLifecycleCallbacks() {
+    private final ActivityLifecycleCallbacks callbacks = new ActivityLifecycleCallbacks() {
         @Override
         public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
             mActivities.add(activity);

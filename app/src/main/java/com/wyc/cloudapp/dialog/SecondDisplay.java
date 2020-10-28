@@ -27,7 +27,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.adapter.SaleGoodsAdapter;
+import com.wyc.cloudapp.adapter.NormalSaleGoodsAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.logger.Logger;
@@ -44,7 +44,7 @@ import java.util.concurrent.TimeoutException;
 
 public class SecondDisplay extends Presentation implements SurfaceHolder.Callback {
     private final String mAdFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/ad_img/";
-    private SaleGoodsAdapter mSaleGoodsAdapter;
+    private final NormalSaleGoodsAdapter mNormalSaleGoodsAdapter;
     private RecyclerView mSaleGoodsView;
     private MainActivity mContext;
     private JSONObject mStoreInfo;
@@ -65,7 +65,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
         super(outerContext, display);
         mContext = outerContext;
 
-        mSaleGoodsAdapter = new SaleGoodsAdapter(mContext);
+        mNormalSaleGoodsAdapter = new NormalSaleGoodsAdapter(mContext);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,11 +123,11 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
     }
 
     private void initSaleGoodsView(){
-        mSaleGoodsAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+        mNormalSaleGoodsAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
                 super.onChanged();
-                JSONArray datas = mSaleGoodsAdapter.getDatas();
+                JSONArray datas = mNormalSaleGoodsAdapter.getDatas();
                 double sale_sum_num = 0.0,sale_sum_amount = 0.0;
                 if (datas.size() != 0){
                     if (mShowBannerImg) mShowBannerImg = false;
@@ -138,7 +138,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
                     }
                     mSaleSumNum.setText(String.format(Locale.CANADA,"%.3f",sale_sum_num));
                     mSaleSumAmount.setText(String.format(Locale.CANADA,"%.2f",sale_sum_amount));
-                    mSaleGoodsView.scrollToPosition(mSaleGoodsAdapter.getCurrentItemIndex());
+                    mSaleGoodsView.scrollToPosition(mNormalSaleGoodsAdapter.getCurrentItemIndex());
                 }else{
                     mCurrentBarcodeId = 0;
                     if (!mShowBannerImg) mShowBannerImg = true;
@@ -148,17 +148,17 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
         });
         mSaleGoodsView = findViewById(R.id.sec_sale_goods_list);
         mSaleGoodsView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
-        mSaleGoodsView.setAdapter(mSaleGoodsAdapter);
+        mSaleGoodsView.setAdapter(mNormalSaleGoodsAdapter);
     }
     private void displayGoodsImg(){
-        final JSONObject sale = mSaleGoodsAdapter.getCurrentContent();
+        final JSONObject sale = mNormalSaleGoodsAdapter.getCurrentContent();
         if (sale != null){
             int barcode_id = sale.getIntValue("barcode_id");
             if ( 0 != barcode_id && barcode_id != mCurrentBarcodeId){//当前显示的图片和即将要显示的图片不相同时再显示
                 CustomApplication.execute(()->{
                     final String sql = "select ifnull(img_url,'') img_url from barcode_info where goods_status = '1' and barcode_id = " + barcode_id +
                             " UNION select ifnull(img_url,'') img_url from goods_group where status = '1' and gp_id =" + barcode_id;
-                    JSONObject object = new JSONObject();
+                    final JSONObject object = new JSONObject();
                     if (SQLiteHelper.execSql(object,sql)){
                         String img_url = object.getString("img_url");
                         if (!"".equals(img_url)){
@@ -190,7 +190,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
         if (array == null){
             array = new JSONArray();
         }
-        mSaleGoodsAdapter.setDatas(array);
+        mNormalSaleGoodsAdapter.setDatas(array);
         notifyChange(0);
         return this;
     }
@@ -200,7 +200,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
         }
     }
     public void notifyChange(int index){
-        mSaleGoodsAdapter.setCurrentItemIndex(index).notifyDataSetChanged();
+        mNormalSaleGoodsAdapter.setCurrentItemIndex(index).notifyDataSetChanged();
     }
 
     public void loadAdImg(final String url,final String appid,final String appSecret){
@@ -310,10 +310,10 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
 
 
 
-    private Runnable showAdImgRunnable = ()->{
+    private final Runnable showAdImgRunnable = ()->{
         if (mAdFileNames != null) {
-            Canvas canvas = mSurfaceHolder.lockCanvas();
-            Rect rect = new Rect(0,0,mSurface.getWidth(),mSurface.getHeight() - 32);
+            final Canvas canvas = mSurfaceHolder.lockCanvas();
+            final Rect rect = new Rect(0,0,mSurface.getWidth(),mSurface.getHeight() - 32);
             if (System.currentTimeMillis() - loseTime >= mShowInterval * 1000 && mShowBannerImg){
                 mBannerBitmap = BitmapFactory.decodeFile(mAdFilePath + mAdFileNames[mShowAdImgTimes++ % mAdFileNames.length]);
                 loseTime = System.currentTimeMillis();

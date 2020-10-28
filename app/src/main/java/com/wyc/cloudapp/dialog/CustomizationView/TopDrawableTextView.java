@@ -76,34 +76,9 @@ public final class TopDrawableTextView extends androidx.appcompat.widget.AppComp
     @Override
     public void onLayout(boolean change, int left, int top, int right, int bottom) {
         super.onLayout(change, left, top, right, bottom);
-        adjust();
+        if (change)adjust();
     }
 
-    @Override
-    public void onDraw(Canvas canvas) {
-        final Drawable topDrawable = mTopDrawable;
-        if (topDrawable != null){
-            if (mAnimationFlag){
-                mPaint.setColor(mSelectTextColor);
-                final int dx = mTopDrawablePosition >> 16,dy = mTopDrawablePosition & 0x0000FFFF;
-                canvas.save();
-                canvas.translate(dx,dy);
-                if (mAnimType == 1) {
-                    canvas.rotate(mDrawRotate);
-                }else{
-                    canvas.scale(mDrawableStartScale, mDrawableStartScale);
-                }
-                canvas.translate(-dx,-dy);
-                topDrawable.draw(canvas);
-                canvas.restore();
-            }else {
-                mPaint.setColor(getCurrentTextColor());
-                topDrawable.draw(canvas);
-            }
-            canvas.drawText(mText.toString(),mTextPosition >> 16,mTextPosition & 0x0000FFFF,mPaint);
-        }else
-            super.onDraw(canvas);
-    }
     private void adjust(){
         final Drawable topDrawable = getTopBitmapDrawable();
         if (topDrawable != null){
@@ -133,6 +108,33 @@ public final class TopDrawableTextView extends androidx.appcompat.widget.AppComp
             mText = text;
         }
     }
+
+    @Override
+    public void onDraw(Canvas canvas) {
+        final Drawable topDrawable = mTopDrawable;
+        if (topDrawable != null){
+            if (mAnimationFlag){
+                mPaint.setColor(mSelectTextColor);
+                final int dx = mTopDrawablePosition >> 16,dy = mTopDrawablePosition & 0x0000FFFF;
+                canvas.save();
+                canvas.translate(dx,dy);
+                if (mAnimType == 1) {
+                    canvas.rotate(mDrawRotate);
+                }else{
+                    canvas.scale(mDrawableStartScale, mDrawableStartScale);
+                }
+                canvas.translate(-dx,-dy);
+                topDrawable.draw(canvas);
+                canvas.restore();
+            }else {
+                mPaint.setColor(getCurrentTextColor());
+                topDrawable.draw(canvas);
+            }
+            canvas.drawText(mText.toString(),mTextPosition >> 16,mTextPosition & 0x0000FFFF,mPaint);
+        }else
+            super.onDraw(canvas);
+    }
+
     public void triggerAnimation(boolean b){
         final BitmapDrawable drawable = getTopBitmapDrawable();
         if (drawable != null){
