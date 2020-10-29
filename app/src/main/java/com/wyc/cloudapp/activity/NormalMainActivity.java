@@ -842,7 +842,7 @@ public final class NormalMainActivity extends MainActivity implements CustomAppl
                 if (msg.obj instanceof Boolean){
                     boolean code = (boolean)msg.obj;
                     imageView = findViewById(R.id.network_status);
-                    if (mApplication.getAndSetTransferStatus(code) != code){
+                    if (mApplication.getAndSetNetworkStatus(code) != code){
                         if (imageView != null){
                             if (code){
                                 imageView.setImageResource(R.drawable.network);

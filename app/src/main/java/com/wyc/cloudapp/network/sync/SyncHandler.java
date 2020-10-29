@@ -2,6 +2,7 @@ package com.wyc.cloudapp.network.sync;
 
 import android.content.ContentValues;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 
 import androidx.annotation.NonNull;
@@ -33,7 +34,9 @@ public final class SyncHandler extends Handler {
     private long mLoseTime = 0;
     private SyncManagement mSync;
     private JSONObject mHeartbeat;
-    SyncHandler(final Handler handler,final SyncManagement syncManagement){
+    SyncHandler(Looper looper, final Handler handler, final SyncManagement syncManagement){
+        super(looper);
+
         mMainActivityHandler = handler;
         mSync = syncManagement;
 

@@ -61,7 +61,14 @@ public class SyncManagement extends Thread {
         mOperId = operid;
         mStoresId = stores_id;
 
-        if (!isAlive())start();
+        if (!isAlive())
+            start();
+        else {
+            if (mSyncHandler != null){
+
+            }
+        }
+
     }
 
     @Override
@@ -69,7 +76,7 @@ public class SyncManagement extends Thread {
         Logger.i("SyncManagement<%s>启动:%s",getName(),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS",Locale.CHINA).format(new Date()));
         if (mSyncHandler == null) {
             Looper.prepare();
-            mSyncHandler = new SyncHandler(mNotifyHandler,this);
+            mSyncHandler = new SyncHandler(Looper.myLooper(),mNotifyHandler,this);
             handlerInitLatch.countDown();
         }
         Looper.loop();

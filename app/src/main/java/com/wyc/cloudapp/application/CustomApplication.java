@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 
 import androidx.annotation.NonNull;
@@ -29,7 +30,6 @@ public final class CustomApplication extends Application {
     //使用无界限阻塞队列，不会触发拒绝策略；线程数最大等于核心线程数，如果所有线程都在运行则任务会进入队列等待执行<可能引发内存问题>，
     private static final ScheduledThreadPoolExecutor THREAD_POOL_EXECUTOR = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2);
     private static CustomApplication mApplication;
-    private volatile int netState = 1,netState_mobile = 1;//WiFi 连接状态 1 连接 0 其他
     private final Vector<Activity> mActivities;
 
     private final SyncManagement mSyncManagement;
@@ -41,7 +41,7 @@ public final class CustomApplication extends Application {
         super();
         mApplication = this;
         mActivities = new Vector<>();
-        myhandler  = new Myhandler(this);
+        myhandler  = new Myhandler(Looper.myLooper(),this);
         mNetworkStatus = new AtomicBoolean(true);
         mTransferStatus = new AtomicBoolean(true);//传输状态
         mSyncManagement = new SyncManagement(myhandler);
@@ -109,18 +109,10 @@ public final class CustomApplication extends Application {
         JSON.DEFAULT_GENERATE_FEATURE |= SerializerFeature.WriteNullStringAsEmpty.getMask();
     }
 
-    public synchronized int getNetState(){
-        return netState|netState_mobile;
-    }
-    public synchronized int getNetState_mobile(){
-        return netState_mobile;
-    }
-
     public synchronized void setNetState_mobile(int state){
-        netState_mobile = state;
+        //WiFi 连接状态 1 连接 0 其他
     }
     public synchronized void setNetState(int state){
-        netState = state;
     }
 
     public static void execute(Runnable runnable){
@@ -162,6 +154,9 @@ public final class CustomApplication extends Application {
 
     public boolean getAndSetTransferStatus(boolean b){
         return mTransferStatus.getAndSet(b);
+    }
+    public boolean getAndSetNetworkStatus(boolean b){
+        return mNetworkStatus.getAndSet(b);
     }
 
     public void setSyncManagement(final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){
@@ -214,7 +209,8 @@ public final class CustomApplication extends Application {
 
     private static class Myhandler extends Handler {
         private final WeakReference<CustomApplication> weakHandler;
-        private Myhandler(final CustomApplication application){
+        private Myhandler(Looper looper, final CustomApplication application){
+            super(looper);
             this.weakHandler = new WeakReference<>(application);
         }
         public void handleMessage(@NonNull Message msg) {
