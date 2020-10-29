@@ -13,11 +13,10 @@ import com.wyc.cloudapp.activity.MainActivity;
 
 import com.wyc.cloudapp.callback.PasswordEditTextReplacement;
 import com.wyc.cloudapp.dialog.CustomizationView.KeyboardView;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnMainActivityImp;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.Utils;
 
-public final class VerifyPermissionDialog extends AbstractDialogBaseOnMainActivityImp {
+public final class VerifyPermissionDialog extends AbstractDialogMainActivity {
     private EditText mCasContent;
     private String mPerName;
     private Button mOkBtn;

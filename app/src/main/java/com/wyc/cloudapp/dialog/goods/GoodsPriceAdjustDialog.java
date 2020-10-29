@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -19,13 +18,12 @@ import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnMainActivityImp;
-import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
 
-public final class GoodsPriceAdjustDialog extends AbstractDialogBaseOnMainActivityImp {
+public final class GoodsPriceAdjustDialog extends AbstractDialogMainActivity {
     private JSONObject mGoods;
     private EditText mNewRetailPriceEt,mNewVipPriceEt;
     public GoodsPriceAdjustDialog(@NonNull MainActivity context,final JSONObject object) {

@@ -20,14 +20,13 @@ import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.TreeListDialog;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnMainActivityImp;
-import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
 import java.util.Locale;
 
-public class AddGoodsInfoDialog extends AbstractDialogBaseOnMainActivityImp {
+public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
     private MainActivity mContext;
     private String mBarcode;
     private EditText mBarcodeEt,mNameEt,mPurPriceEt,mRetailPriceEt,mCategoryEt,mUnitEt,mGoodsAttrEt,mItemIdEt, mMeteringEt,mSupplierEt,mVipPriceEt;

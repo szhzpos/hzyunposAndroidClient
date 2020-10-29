@@ -18,7 +18,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnContextImp;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogContext;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.text.SimpleDateFormat;
@@ -27,7 +27,7 @@ import java.util.Locale;
 
 import static android.content.Context.WINDOW_SERVICE;
 
-public class ConnSettingDialog extends AbstractDialogBaseOnContextImp {
+public class ConnSettingDialog extends AbstractDialogContext {
     private TextView mUrlTv, mAppIdTv, mAppSecretTv,mStore_nameTv;
     private EditText mShopIdEt;
 

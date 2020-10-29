@@ -15,7 +15,6 @@ import com.wyc.cloudapp.R;
 
 public abstract class AbstractMobileActivity extends AppCompatActivity {
     private TextView mLeft,mMiddle,mRight;
-
     @Override
     @CallSuper
     protected void onCreate(Bundle savedInstanceState) {

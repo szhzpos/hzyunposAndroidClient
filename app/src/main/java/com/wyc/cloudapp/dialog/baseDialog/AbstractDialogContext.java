@@ -4,12 +4,12 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-public abstract class AbstractDialogBaseOnContextImp extends AbstractDialog {
-
-    public AbstractDialogBaseOnContextImp(@NonNull Context context, final String title){
+public abstract class AbstractDialogContext extends AbstractDialog {
+    protected Context mContext;
+    public AbstractDialogContext(@NonNull Context context, final String title){
         this(context,title,0);
     }
-    public AbstractDialogBaseOnContextImp(@NonNull Context context, final String title, int style){
+    public AbstractDialogContext(@NonNull Context context, final String title, int style){
         super(context,title,style);
     }
 

@@ -3,8 +3,6 @@ package com.wyc.cloudapp.network.sync;
 import android.os.Handler;
 import android.os.Looper;
 
-import androidx.annotation.NonNull;
-
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.MessageID;
 
@@ -18,24 +16,22 @@ public class SyncManagement extends Thread {
     private Handler mNotifyHandler;
     private SyncHandler mSyncHandler;
     private String mAppId, mAppSecret,mUrl,mPosNum,mOperId,mStoresId;
-    private SyncManagement(){
+    public SyncManagement(final Handler handler){
+        mNotifyHandler = handler;
         handlerInitLatch = new CountDownLatch(1);
     }
-    public SyncManagement(final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){
-        this();
+/*    public SyncManagement(final Handler handler,final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){
+        this(handler);
         mUrl = url ;
         mAppId = appid;
         mAppSecret = appsecret;
         mPosNum = pos_num;
         mOperId = operid;
         mStoresId = stores_id;
-    }
-    public void setNotifyHandlerAndStart(@NonNull final Handler handler){
-        if (mNotifyHandler == null && !isAlive()){
-            mNotifyHandler = handler;
-            start();
-        }
-    }
+
+        start();
+    }*/
+
     String getUrl(){
         return mUrl;
     }
@@ -57,17 +53,26 @@ public class SyncManagement extends Thread {
         return mStoresId;
     }
 
+    public void setSyncInfo(final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){
+        mUrl = url ;
+        mAppId = appid;
+        mAppSecret = appsecret;
+        mPosNum = pos_num;
+        mOperId = operid;
+        mStoresId = stores_id;
+
+        if (!isAlive())start();
+    }
+
     @Override
     public void run(){
-        if (null != mNotifyHandler){
-            Logger.i("SyncManagement<%s>启动:%s",getName(),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS",Locale.CHINA).format(new Date()));
-            if (mSyncHandler == null) {
-                Looper.prepare();
-                mSyncHandler = new SyncHandler(mNotifyHandler,this);
-                handlerInitLatch.countDown();
-            }
-            Looper.loop();
+        Logger.i("SyncManagement<%s>启动:%s",getName(),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS",Locale.CHINA).format(new Date()));
+        if (mSyncHandler == null) {
+            Looper.prepare();
+            mSyncHandler = new SyncHandler(mNotifyHandler,this);
+            handlerInitLatch.countDown();
         }
+        Looper.loop();
     }
 
     public SyncHandler getHandler(){
@@ -88,7 +93,10 @@ public class SyncManagement extends Thread {
                 e.printStackTrace();
             }
             mSyncHandler = null;
-            mNotifyHandler = null;
+            if (mNotifyHandler != null){
+                mNotifyHandler.removeCallbacksAndMessages(null);
+                mNotifyHandler = null;
+            }
             handlerInitLatch = null;
         }
         Logger.i("SyncManagement<%s>退出:%s",getName(),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.CHINA).format(new Date()));

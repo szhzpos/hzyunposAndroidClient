@@ -3,7 +3,6 @@ package com.wyc.cloudapp.adapter;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,19 +12,18 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnMainActivityImp;
-import com.wyc.cloudapp.dialog.orderDialog.RetailOrderDetailsDialog;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
+import com.wyc.cloudapp.dialog.orderDialog.RetailOrderDetailsDialog;
 import com.wyc.cloudapp.logger.Logger;
-
 
 import java.util.Locale;
 
 public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrderAdapter.MyViewHolder> {
-    private AbstractDialogBaseOnMainActivityImp mDialog;
-    public RetailOrderAdapter(final AbstractDialogBaseOnMainActivityImp abstractDialogBaseOnMainActivityImp){
-        mDialog = abstractDialogBaseOnMainActivityImp;
-        mContext = abstractDialogBaseOnMainActivityImp.getPrivateContext();
+    private AbstractDialogMainActivity mDialog;
+    public RetailOrderAdapter(final AbstractDialogMainActivity abstractDialogSyncActivity){
+        mDialog = abstractDialogSyncActivity;
+        mContext = abstractDialogSyncActivity.getPrivateContext();
     }
 
     static class MyViewHolder extends AbstractQueryDataAdapter.SuperViewHolder {

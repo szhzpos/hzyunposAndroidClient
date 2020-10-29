@@ -14,12 +14,12 @@ import androidx.fragment.app.Fragment;
 
 import com.wyc.cloudapp.dialog.MyDialog;
 
-public abstract class AbstractMobileFragment extends Fragment {
 /*
-* 负责加载功能布局，每个布局的叶节点为TextView或其子类。
-* 叶节点的点击事件可以直接启动指定的Activity。
-* Activity 的类名保存在叶节点的tag属性中。
-* */
+ * 负责加载功能布局，每个布局的叶节点为TextView或其子类。
+ * 叶节点的点击事件可以直接启动指定的Activity。
+ * Activity 的类名保存在叶节点的tag属性中。
+ * */
+public abstract class AbstractMobileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

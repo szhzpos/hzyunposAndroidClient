@@ -1,36 +1,62 @@
 package com.wyc.cloudapp.activity.mobile;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.CustomizationView.TopDrawableTextView;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.mobileFragemt.BackgroundFragment;
 import com.wyc.cloudapp.mobileFragemt.BoardFragment;
 import com.wyc.cloudapp.mobileFragemt.CashierDeskFragment;
 import com.wyc.cloudapp.mobileFragemt.MyFragment;
 import com.wyc.cloudapp.mobileFragemt.ReportFragment;
+import com.wyc.cloudapp.utils.MessageID;
 
-public final class MobileNavigationActivity extends AbstractMobileActivity {
+public final class MobileNavigationActivity extends MainActivity implements CustomApplication.MessageCallback {
     private FragmentManager mFragmentManager;
+    private TextView mMiddle;
+    private CustomProgressDialog mProgressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_mobile_navigation);
 
         mFragmentManager = getSupportFragmentManager();
+        mProgressDialog = new CustomProgressDialog(this);
 
         initFunctionBtn();
+        initTitle();
     }
 
     @Override
-    protected int getContentLayoutId() {
-        return R.layout.activity_mobile_navigation;
+    public void finalize(){
+        super.finalize();
+        Logger.d("MobileNavigationActivity finalized");
+    }
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
+        finish();
+    }
+
+    private void initTitle(){
+        final TextView mLeft = findViewById(R.id.left_title_tv);
+        mMiddle = findViewById(R.id.middle_title_tv);
+        mLeft.setOnClickListener(v -> onBackPressed());
     }
 
     private void initFunctionBtn(){
@@ -49,7 +75,7 @@ public final class MobileNavigationActivity extends AbstractMobileActivity {
         private Fragment mCurrentFragment;
         private boolean setCurrentView(final View v){
             final TopDrawableTextView textView = (TopDrawableTextView)v;
-            setMiddleText(textView.getText().toString());
+            mMiddle.setText(textView.getText().toString());
             if (mCurrentNavView != null){
                 if (mCurrentNavView != textView){
                     mCurrentNavView.setTextColor(getColor(R.color.mobile_fun_view_no_click));
@@ -113,4 +139,39 @@ public final class MobileNavigationActivity extends AbstractMobileActivity {
         }
     };
 
+    @Override
+    public void handleMessage(Handler handler, Message msg) {
+        switch (msg.what){
+            case MessageID.DIS_ERR_INFO_ID:
+            case MessageID.SYNC_ERR_ID://资料同步错误
+                if (mProgressDialog != null && mProgressDialog.isShowing())mProgressDialog.dismiss();
+                if (msg.obj instanceof String)
+                    MyDialog.displayErrorMessage(null,msg.obj.toString(),this);
+                break;
+            case MessageID.SYNC_FINISH_ID:
+                if (mProgressDialog != null && mProgressDialog.isShowing())mProgressDialog.dismiss();
+                CustomApplication.self().start_sync(false);
+                break;
+            case MessageID.TRANSFERSTATUS_ID://传输状态
+            case MessageID.NETWORKSTATUS_ID://网络状态
+                if (msg.obj instanceof Boolean){
+
+                }
+                break;
+            case MessageID.SYNC_DIS_INFO_ID://资料同步进度信息
+                if (mProgressDialog != null){
+                    mProgressDialog.setMessage(msg.obj.toString()).refreshMessage();
+                    if (!mProgressDialog.isShowing()) {
+                        mProgressDialog.setCancel(false).show();
+                    }
+                }
+                break;
+            case MessageID.START_SYNC_ORDER_INFO_ID:
+                Toast.makeText(this,"开始上传数据",Toast.LENGTH_SHORT).show();
+                break;
+            case MessageID.FINISH_SYNC_ORDER_INFO_ID:
+                Toast.makeText(this,"数据上传完成",Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
 }

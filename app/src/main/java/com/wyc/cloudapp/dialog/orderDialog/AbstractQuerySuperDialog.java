@@ -24,11 +24,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
-import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnMainActivityImp;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.dialog.vip.VipDepositOrderDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
@@ -40,7 +39,7 @@ import java.util.Locale;
 
 import static android.content.Context.WINDOW_SERVICE;
 
-public abstract class AbstractQuerySuperDialog extends AbstractDialogBaseOnMainActivityImp {
+public abstract class AbstractQuerySuperDialog extends AbstractDialogMainActivity {
     private int mCurrentStatusIndex = 0;
     private String[] mCashierNames,mCashierIDs;
     protected EditText mStartDateEt,mStartTimeEt,mEndDateEt,mEndTimeEt,mPayStatusEt,mCashierEt,mS_ex_statusEt,mUploadStatusEt,mOrderStatusEt;

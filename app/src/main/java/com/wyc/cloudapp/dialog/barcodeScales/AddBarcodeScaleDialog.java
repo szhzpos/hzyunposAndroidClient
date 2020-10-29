@@ -21,12 +21,12 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.CustomePopupWindow;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.TreeListDialog;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnContextImp;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogContext;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.lang.reflect.InvocationTargetException;
 
-public class AddBarcodeScaleDialog extends AbstractDialogBaseOnContextImp {
+public class AddBarcodeScaleDialog extends AbstractDialogContext {
     private EditText mManufacturerEt,mProductType, mScaleName,mPort,mGCategoryEt;
     private LinearLayout mIP;
     private CustomePopupWindow mPopupWindow;

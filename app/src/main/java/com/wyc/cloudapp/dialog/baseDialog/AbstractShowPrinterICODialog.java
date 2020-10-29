@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.print.Printer;
 
-public abstract class AbstractShowPrinterICODialog extends AbstractDialogBaseOnMainActivityImp {
+public abstract class AbstractShowPrinterICODialog extends AbstractDialogMainActivity {
     public AbstractShowPrinterICODialog(@NonNull MainActivity context, String title) {
         super(context, title);
     }

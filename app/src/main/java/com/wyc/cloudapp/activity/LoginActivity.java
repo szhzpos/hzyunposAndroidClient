@@ -51,34 +51,31 @@ import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.keyboard.SoftKeyBoardListener;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.network.sync.SyncManagement;
 import com.wyc.cloudapp.service.AppUpdateService;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.util.Locale;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements CustomApplication.MessageCallback {
     public static final String IMG_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/goods_img/";
     private static final int REQUEST_STORAGE_PERMISSIONS  = 800;
     private EditText mUserId,mPassword;
-    private Handler myHandler;
     private LoginActivity mSelf;
     private CustomProgressDialog mProgressDialog;
     private MyDialog myDialog;
-    private SyncManagement mSyncManagement;
     private Button mCancelBtn,mLoginBtn;
     private String mPosNum,mOperId,mStoresId;
     private Future<?> mLoginTask;
     private JSONObject mConnParam;
     private DisplayMetrics mDisplayMetrics;
     private boolean isSmallScreen = false;
+    private Handler mHandler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,8 +85,8 @@ public class LoginActivity extends AppCompatActivity {
         loadView();
 
         //初始化成员变量
-        myHandler = new Myhandler(this);
         mSelf = this;
+        mHandler = CustomApplication.self().getHandler();
         mProgressDialog = new CustomProgressDialog(this);
         myDialog = new MyDialog(this);
 
@@ -101,6 +98,8 @@ public class LoginActivity extends AppCompatActivity {
 
         initKeyboard();
         initDisplayInfoAndVersion();
+
+        CustomApplication.self().setHandleMessage(this);
 
         registerReceiver(receiver,new IntentFilter(AppUpdateService.APP_PROGRESS_BROADCAST));
     }
@@ -383,8 +382,6 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
     private void clearResource(){
-        if (mSyncManagement != null) mSyncManagement.quit();
-        if (myHandler != null)myHandler.removeCallbacksAndMessages(null);
         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
         if (myDialog.isShowing())myDialog.dismiss();
     }
@@ -464,23 +461,22 @@ public class LoginActivity extends AppCompatActivity {
     private void login(){
         final HttpRequest httpRequest = new HttpRequest();
         mProgressDialog.setCancel(false).setMessage("正在登录...").refreshMessage().show();
-        myHandler.postDelayed(()->{
+        mLoginBtn.postDelayed(()->{
             if (mProgressDialog.isShowing())
                 mProgressDialog.setCancel(true).setOnCancelListener(dialog -> {
-                    if (mSyncManagement != null)mSyncManagement.pauseSync();
+                    final CustomApplication application = CustomApplication.self();
+                    application.pauseSync();
                     MyDialog.displayAskMessage(myDialog,"是否取消登录？",mSelf,(MyDialog mydialog)->{
                         mydialog.dismiss();
-                        if (mSyncManagement != null){
-                            mSyncManagement.continueSync();
-                            mSyncManagement.stop_sync();
-                        }
+                        application.continueSync();
+                        application.stop_sync();
                         httpRequest.clearConnection(HttpRequest.CLOSEMODE.POST);
                         mProgressDialog.setMessage("正在取消登录...").refreshMessage().show();
                         CustomApplication.execute(()->{
                             if (mLoginTask != null){
                                 try {
                                     mLoginTask.get();
-                                    myHandler.sendMessageAtFrontOfQueue(myHandler.obtainMessage(MessageID.CANCEL_LOGIN_ID));
+                                    if (mHandler != null)mHandler.sendMessageAtFrontOfQueue(mHandler.obtainMessage(MessageID.CANCEL_LOGIN_ID));
                                 } catch (ExecutionException | CancellationException | InterruptedException e) {
                                     e.printStackTrace();
                                 }
@@ -488,7 +484,7 @@ public class LoginActivity extends AppCompatActivity {
                         });
                     },(MyDialog myDialog)->{
                         myDialog.dismiss();
-                        if (mSyncManagement != null)mSyncManagement.continueSync();
+                        application.continueSync();
                         if (mProgressDialog != null && !mProgressDialog.isShowing()){
                             mProgressDialog.setRestShowTime(false).show();
                         }
@@ -516,9 +512,9 @@ public class LoginActivity extends AppCompatActivity {
                     case 0:
                         int rsCode = Utils.getNotKeyAsNumberDefault(retJson,"rsCode",-1);
                         if (rsCode == HttpURLConnection.HTTP_BAD_REQUEST  || rsCode == HttpURLConnection.HTTP_INTERNAL_ERROR){
-                            myHandler.obtainMessage(MessageID.OFF_LINE_LOGIN_ID).sendToTarget();
+                            if (mHandler != null)mHandler.obtainMessage(MessageID.OFF_LINE_LOGIN_ID).sendToTarget();
                         }else
-                            myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, retJson.getString("info")).sendToTarget();
+                        if (mHandler != null)mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, retJson.getString("info")).sendToTarget();
                         break;
                     case 1:
                         info_json = JSON.parseObject(retJson.getString("info"));
@@ -526,11 +522,11 @@ public class LoginActivity extends AppCompatActivity {
                             case "n":
                                 err_info = info_json.getString("info");
                                 if (err_info.contains("密码")) {
-                                    myHandler.obtainMessage(MessageID.LOGIN_PW_ERROR_ID, "登录失败：" + err_info).sendToTarget();
+                                    if (mHandler != null)mHandler.obtainMessage(MessageID.LOGIN_PW_ERROR_ID, "登录失败：" + err_info).sendToTarget();
                                 } else if (err_info.contains("账号") || err_info.contains("登录")) {
-                                    myHandler.obtainMessage(MessageID.LOGIN_ID_ERROR_ID, "登录失败：" + err_info).sendToTarget();
+                                    if (mHandler != null)mHandler.obtainMessage(MessageID.LOGIN_ID_ERROR_ID, "登录失败：" + err_info).sendToTarget();
                                 } else
-                                    myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "登录失败：" + err_info).sendToTarget();
+                                if (mHandler != null)mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "登录失败：" + err_info).sendToTarget();
                                 break;
                             case "y":
                                 store_info = JSON.parseObject(info_json.getString("shop_info"));
@@ -548,13 +544,13 @@ public class LoginActivity extends AppCompatActivity {
                                 retJson = httpRequest.sendPost(url, sz_param, true);
                                 switch (retJson.getIntValue("flag")) {
                                     case 0:
-                                        myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "设置收银终端错误：" + retJson.getString("info")).sendToTarget();
+                                        if (mHandler != null)mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "设置收银终端错误：" + retJson.getString("info")).sendToTarget();
                                         break;
                                     case 1:
                                         info_json = JSON.parseObject(retJson.getString("info"));
                                         switch (info_json.getString("status")) {
                                             case "n":
-                                                myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "设置收银终端错误：" + info_json.getString("info")).sendToTarget();
+                                                if (mHandler != null)mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "设置收银终端错误：" + info_json.getString("info")).sendToTarget();
                                                 break;
                                             case "y":
                                                 final StringBuilder err = new StringBuilder();
@@ -581,9 +577,9 @@ public class LoginActivity extends AppCompatActivity {
                                                 params.add(_json);
 
                                                 if (SQLiteHelper.execSQLByBatchFromJson(params,"local_parameter",null,err,1)){
-                                                    myHandler.obtainMessage(MessageID.LOGIN_OK_ID).sendToTarget();
+                                                    if (mHandler != null)mHandler.obtainMessage(MessageID.LOGIN_OK_ID).sendToTarget();
                                                 }else {
-                                                    myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "保存当前收银参数错误：" + err).sendToTarget();
+                                                    if (mHandler != null)mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "保存当前收银参数错误：" + err).sendToTarget();
                                                 }
                                                 break;
                                         }
@@ -594,75 +590,66 @@ public class LoginActivity extends AppCompatActivity {
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                myHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, e.getMessage()).sendToTarget();
+                if (mHandler != null)mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, e.getMessage()).sendToTarget();
             }
-
         });
     }
 
-    private static class Myhandler extends Handler {
-        private final WeakReference<LoginActivity> weakHandler;
-        private Myhandler(LoginActivity loginActivity){
-            this.weakHandler = new WeakReference<>(loginActivity);
-        }
-
-        public void handleMessage(@NonNull Message msg){
-            final LoginActivity activity = weakHandler.get();
-            if (null == activity)return;
-            if (activity.mProgressDialog.isShowing() && msg.what != MessageID.SYNC_DIS_INFO_ID)activity.mProgressDialog.dismiss();
-            switch (msg.what){
-                case MessageID.DIS_ERR_INFO_ID:
-                case MessageID.SYNC_ERR_ID://资料同步错误
-                    if (msg.obj != null){
-                        MyDialog.displayErrorMessage(activity.myDialog,msg.obj.toString(),activity);
-                    }
-                    break;
-                case MessageID.CANCEL_LOGIN_ID:
-                    removeCallbacksAndMessages(null);
-                    activity.finish();
-                    break;
-                case MessageID.SYNC_FINISH_ID://同步成功启动主界面
-                    activity.launchLogin(true);
-                    break;
-                case MessageID.LOGIN_OK_ID://登录成功
-                    activity.mSyncManagement = new SyncManagement(Utils.getNullStringAsEmpty(activity.mConnParam,"server_url"),Utils.getNullStringAsEmpty(activity.mConnParam,"appId"),
-                            Utils.getNullStringAsEmpty(activity.mConnParam,"appSecret"),activity.mStoresId,activity.mPosNum,activity.mOperId);
-                    activity.mSyncManagement.setNotifyHandlerAndStart(this);
-                    if (SQLiteHelper.isNew()) {
-                        activity.mProgressDialog.setMessage("准备重新同步...").refreshMessage().show();
-                        activity.mSyncManagement.afresh_sync();
-                    }else
-                        activity.mSyncManagement.start_sync(true);
-                    break;
-                case MessageID.LOGIN_ID_ERROR_ID://账号错误
-                    activity.mUserId.requestFocus();
-                    activity.mUserId.selectAll();
-                    activity.mUserId.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake_x));
-                    if (msg.obj instanceof String)
-                        MyDialog.ToastMessage(activity.mUserId,msg.obj.toString(),activity,null);
-                    break;
-                case MessageID.LOGIN_PW_ERROR_ID://密码错误
-                    activity.mPassword.requestFocus();
-                    activity.mPassword.selectAll();
-                    activity.mPassword.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake_x));
-                    if (msg.obj instanceof String)
-                        MyDialog.ToastMessage(activity.mPassword,msg.obj.toString(),activity,null);
-                    break;
-                case MessageID.SYNC_DIS_INFO_ID://资料同步进度信息
-                    activity.mProgressDialog.setMessage(msg.obj.toString()).refreshMessage().show();
-                    break;
-                case MessageID.OFF_LINE_LOGIN_ID:
-                    activity.offline_login();
-                    break;
-            }
+    @Override
+    public void handleMessage(final Handler handler, Message msg) {
+        if (mProgressDialog.isShowing() && msg.what != MessageID.SYNC_DIS_INFO_ID)mProgressDialog.dismiss();
+        switch (msg.what){
+            case MessageID.DIS_ERR_INFO_ID:
+            case MessageID.SYNC_ERR_ID://资料同步错误
+                if (msg.obj != null){
+                    MyDialog.displayErrorMessage(myDialog,msg.obj.toString(),this);
+                }
+                break;
+            case MessageID.CANCEL_LOGIN_ID:
+                handler.removeCallbacksAndMessages(null);
+                finish();
+                break;
+            case MessageID.SYNC_FINISH_ID://同步成功启动主界面
+                launchLogin(true);
+                break;
+            case MessageID.LOGIN_OK_ID://登录成功
+                CustomApplication.self().setSyncManagement(Utils.getNullStringAsEmpty(mConnParam,"server_url"),Utils.getNullStringAsEmpty(mConnParam,"appId"),
+                        Utils.getNullStringAsEmpty(mConnParam,"appSecret"),mStoresId,mPosNum,mOperId);
+                if (SQLiteHelper.isNew()) {
+                    mProgressDialog.setMessage("准备重新同步...").refreshMessage().show();
+                    CustomApplication.self().manualSync();
+                }else
+                    CustomApplication.self().start_sync(true);
+                break;
+            case MessageID.LOGIN_ID_ERROR_ID://账号错误
+                mUserId.requestFocus();
+                mUserId.selectAll();
+                mUserId.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake_x));
+                if (msg.obj instanceof String)
+                    MyDialog.ToastMessage(mUserId,msg.obj.toString(),this,null);
+                break;
+            case MessageID.LOGIN_PW_ERROR_ID://密码错误
+                mPassword.requestFocus();
+                mPassword.selectAll();
+                mPassword.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake_x));
+                if (msg.obj instanceof String)
+                    MyDialog.ToastMessage(mPassword,msg.obj.toString(),this,null);
+                break;
+            case MessageID.SYNC_DIS_INFO_ID://资料同步进度信息
+                mProgressDialog.setMessage(msg.obj.toString()).refreshMessage().show();
+                break;
+            case MessageID.OFF_LINE_LOGIN_ID:
+                offline_login();
+                break;
         }
     }
 
     private void launchLogin(boolean isConnection){
+        CustomApplication.self().setNetworkStatus(isConnection);
+
         final Intent intent = new Intent(this,NormalMainActivity.class);
         if (isSmallScreen)intent.setClass(this, MobileNavigationActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.putExtra("network",isConnection);
         startActivity(intent);
         finish();
     }
@@ -686,7 +673,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (Integer.parseInt(sz_count) > 0){
                     launchLogin(false);
                 }else {
-                    myHandler.obtainMessage(MessageID.LOGIN_ID_ERROR_ID, "不存在此用户！").sendToTarget();
+                    if (mHandler != null)mHandler.obtainMessage(MessageID.LOGIN_ID_ERROR_ID, "不存在此用户！").sendToTarget();
                 }
             }else {
                 MyDialog.displayErrorMessage(myDialog,"查询连接参数错误:" + param_obj.getString("info"),this);

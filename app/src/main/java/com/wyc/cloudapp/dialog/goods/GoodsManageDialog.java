@@ -4,7 +4,6 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.Gravity;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
@@ -26,12 +25,12 @@ import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
 import com.wyc.cloudapp.adapter.GoodsManageViewAdapter;
 import com.wyc.cloudapp.adapter.TreeListAdapter;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnMainActivityImp;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.utils.Utils;
 
 import static android.content.Context.WINDOW_SERVICE;
 
-public final class GoodsManageDialog extends AbstractDialogBaseOnMainActivityImp {
+public final class GoodsManageDialog extends AbstractDialogMainActivity {
     private Spinner mConditionSpinner;
     private JSONObject mCurrentCategory;
     private GoodsManageViewAdapter mViewAdapter;

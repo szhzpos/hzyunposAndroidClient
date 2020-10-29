@@ -26,7 +26,7 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractShowPrinterICODialog;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.Utils;
@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Locale;
 
 
-public final class RefundDialog extends AbstractShowPrinterICODialog {
+public final class RefundDialog extends AbstractDialogMainActivity {
     private RefundDialogAdapter mRefundDialogAdapter;
     private String mOrderCode,mRefundCode;
     private CustomProgressDialog mProgressDialog;
@@ -69,9 +69,15 @@ public final class RefundDialog extends AbstractShowPrinterICODialog {
         return R.layout.refund_dialog_layout;
     }
 
+    public void dismiss(){
+        super.dismiss();
+        Printer.showPrintIcon(mContext,false);
+    }
+
     @Override
     public void show(){
         super.show();
+        Printer.showPrintIcon(mContext,true);
         if (mRefundDialogAdapter.isSingleRefundStatus() && mRefundBtn != null){
             mRefundBtn.callOnClick();
         }else {
@@ -109,7 +115,7 @@ public final class RefundDialog extends AbstractShowPrinterICODialog {
                 if (query_btn != null){
                     query_btn.setOnClickListener(v -> {
                         if (mOrderCode != null && mOrderCode.length() != 0){
-                            if (mContext.isConnection()){
+                            if (CustomApplication.self().isConnection()){
                                 mProgressDialog.setCancel(false).setMessage("正在查询订单信息...").refreshMessage().show();
                                 CustomApplication.execute(()->{
                                     final StringBuilder err = new StringBuilder();

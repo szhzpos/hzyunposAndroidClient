@@ -29,9 +29,8 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnMainActivityImp;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
-import com.wyc.cloudapp.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,7 +39,7 @@ import java.util.Locale;
 
 import static android.content.Context.WINDOW_SERVICE;
 
-public class HangBillDialog extends AbstractDialogBaseOnMainActivityImp {
+public class HangBillDialog extends AbstractDialogMainActivity {
     private SimpleCursorAdapter mHbCursorAdapter,mHbDetailCursorAdapter;
     private View mVipInfoView;
     private String mCurrentHangId;

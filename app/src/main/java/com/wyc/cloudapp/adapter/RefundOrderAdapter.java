@@ -81,7 +81,7 @@ public final class RefundOrderAdapter extends AbstractQueryDataAdapter<RefundOrd
         }
     }
 
-    private View.OnTouchListener touchListener = (v, event) -> {
+    private final View.OnTouchListener touchListener = (v, event) -> {
         if (event.getAction() == MotionEvent.ACTION_DOWN){
             setCurrentItemView(v);
             final TextView order_code_tv = v.findViewById(R.id.retail_order_code),sale_refund_tv = v.findViewById(R.id.refund_order_code);

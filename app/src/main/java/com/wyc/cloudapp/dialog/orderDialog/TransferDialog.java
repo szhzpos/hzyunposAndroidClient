@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.TransferDetailsAdapter;
 import com.wyc.cloudapp.callback.PasswordEditTextReplacement;
@@ -31,7 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 public class TransferDialog extends AbstractShowPrinterICODialog {
-    private TransferDetailsAdapter mTransferDetailsAdapter;
+    private final TransferDetailsAdapter mTransferDetailsAdapter;
     private onFinishListener mFinishListener;
     public TransferDialog(@NonNull MainActivity context) {
         super(context, context.getString(R.string.s_e_sz));

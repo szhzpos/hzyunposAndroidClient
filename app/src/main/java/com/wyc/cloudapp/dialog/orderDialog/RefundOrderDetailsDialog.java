@@ -25,7 +25,7 @@ import java.util.Locale;
 
 
 public class RefundOrderDetailsDialog extends AbstractShowPrinterICODialog {
-    private JSONObject mRefundOrderInfo;
+    private final JSONObject mRefundOrderInfo;
     private String mRefundOrderCode;
     public RefundOrderDetailsDialog(@NonNull MainActivity context, final JSONObject info) {
         super(context, context.getString(R.string.refund_details_sz));

@@ -17,9 +17,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.DigitKeyboardPopup;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnMainActivityImp;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -27,7 +28,7 @@ import com.wyc.cloudapp.utils.http.HttpRequest;
 import java.util.Locale;
 
 public final class RefundDialogAdapter extends RecyclerView.Adapter<RefundDialogAdapter.MyViewHolder>  {
-    private AbstractDialogBaseOnMainActivityImp mDialog;
+    private AbstractDialogMainActivity mDialog;
     private MainActivity mContext;
     private JSONArray mGoodsDatas,mPayDatas,mOriPayDatas;;
     private onRefundGoodsDataChange mRefundGoodsDataChange;
@@ -35,7 +36,7 @@ public final class RefundDialogAdapter extends RecyclerView.Adapter<RefundDialog
     private JSONObject mVipInfo;
     private DigitKeyboardPopup mDigitKeyboardPopup;
     private boolean mSingleRefundStatus;
-    public RefundDialogAdapter(AbstractDialogBaseOnMainActivityImp dialog){
+    public RefundDialogAdapter(AbstractDialogMainActivity dialog){
         mDialog = dialog;
         mContext = dialog.getPrivateContext();
         mDigitKeyboardPopup = new DigitKeyboardPopup(mContext);
@@ -163,18 +164,18 @@ public final class RefundDialogAdapter extends RecyclerView.Adapter<RefundDialog
         return mGoodsDatas == null ? 0: mGoodsDatas.size();
     }
 
-    private View.OnFocusChangeListener cur_refund_num_focusChangeListener = (v, hasFocus) -> {
+    private final View.OnFocusChangeListener cur_refund_num_focusChangeListener = (v, hasFocus) -> {
         if (!hasFocus)
             mDigitKeyboardPopup.dismiss();
         else
             v.callOnClick();
     };
-    private View.OnClickListener cur_refund_num_click = (v)->{
+    private final View.OnClickListener cur_refund_num_click = (v)->{
         Utils.hideKeyBoard((EditText)v);
         mDigitKeyboardPopup.showAtLocation(v);
     };
 
-    private CompoundButton.OnCheckedChangeListener sel_status_CheckedChange = (buttonView, isChecked) -> {
+    private final CompoundButton.OnCheckedChangeListener sel_status_CheckedChange = (buttonView, isChecked) -> {
         final View parent = (View) buttonView.getParent();
         if (null != parent){
             final TextView returnable_num_tv = parent.findViewById(R.id.returnable_num),cur_refund_num_et = parent.findViewById(R.id.cur_refund_num);
@@ -419,7 +420,7 @@ public final class RefundDialogAdapter extends RecyclerView.Adapter<RefundDialog
         return mPayDatas;
     }
     public void sync_refund_order(){
-        mContext.sync_refund_order();
+        CustomApplication.self().sync_refund_order();
     }
     public void allRefund(){
         restoreRefundGOodsInfo();

@@ -13,9 +13,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.TreeListAdapter;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnContextImp;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogContext;
 
-public class TreeListDialog extends AbstractDialogBaseOnContextImp {
+public class TreeListDialog extends AbstractDialogContext {
     private TreeListAdapter mAdapter;
     private JSONArray mDatas,mSelectedItems;
     private boolean mSingle;

@@ -46,6 +46,7 @@ import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.CustomizationView.ScaleView;
 import com.wyc.cloudapp.dialog.CustomizationView.TmpOrderButton;
 import com.wyc.cloudapp.dialog.MoreFunDialog;
@@ -65,15 +66,13 @@ import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
-import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-public final class NormalMainActivity extends MainActivity {
+public final class NormalMainActivity extends MainActivity implements CustomApplication.MessageCallback {
+    private RecyclerView mSaleGoodsRecyclerView;
     private GoodsCategoryAdapter mGoodsCategoryAdapter;
     private GoodsInfoViewAdapter mGoodsInfoViewAdapter;
-    private AtomicBoolean mTransferStatus;
     private long mCurrentTimestamp = 0;
     private TextView mCurrentTimeViewTv, mSaleSumNumTv, mSaleSumAmtTv, mOrderCodeTv, mDisSumAmtTv;
     private ImageView mCloseBtn;
@@ -82,7 +81,7 @@ public final class NormalMainActivity extends MainActivity {
     private ConstraintLayout mLastOrderInfo;
     private ImageView mPrinterStatusIv;
     private ScaleView mScaleView;
-    private Handler mHandler;
+    private CustomProgressDialog mProgressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,19 +125,17 @@ public final class NormalMainActivity extends MainActivity {
 
         initScaleView();
 
-        //开始同步
-        setSyncManagementNotifyHandler(mHandler);
-        firstSync();
+        //初始化数据管理
+        initSyncManagement();
     }
     private void initMemberVariable(){
-        mHandler = new Myhandler(this);
+        mProgressDialog = new CustomProgressDialog(this);
         mCurrentTimeViewTv = findViewById(R.id.current_time);
         mSaleSumNumTv = findViewById(R.id.sale_sum_num);
         mSaleSumAmtTv = findViewById(R.id.sale_sum_amt);
         mKeyboard = findViewById(R.id.keyboard_layout);
         mOrderCodeTv = findViewById(R.id.order_code);
         mDisSumAmtTv = findViewById(R.id.dis_sum_amt);
-        mTransferStatus = new AtomicBoolean(true);//传输状态
     }
     @Override
     public void onResume(){
@@ -167,6 +164,12 @@ public final class NormalMainActivity extends MainActivity {
     public void onNewIntent(Intent intent){
         super.onNewIntent(intent);
         setIntent(intent);
+    }
+
+    private void initSyncManagement(){
+        mApplication.setHandleMessage(this);
+        mApplication.sync_order_info();
+        mApplication.start_sync(false);
     }
 
     private void showCashierInfoAndStoreInfo(){
@@ -224,7 +227,7 @@ public final class NormalMainActivity extends MainActivity {
     }
     private void initNetworkStatus(){
         final ImageView imageView = findViewById(R.id.network_status);
-        if (imageView != null && !mNetworkStatus.get()){
+        if (imageView != null && !mApplication.isConnection()){
             imageView.setImageResource(R.drawable.network_err);
             imageView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake_x));
         }
@@ -235,14 +238,14 @@ public final class NormalMainActivity extends MainActivity {
                 discount_btn = findViewById(R.id.discount),change_price_btn = findViewById(R.id.change_price),check_out_btn = findViewById(R.id.check_out),
                 vip_btn = findViewById(R.id.vip);
 
-        if (minus_num_btn != null)minus_num_btn.setOnClickListener(v -> mNormalSaleGoodsAdapter.deleteSaleGoods(mNormalSaleGoodsAdapter.getCurrentItemIndex(),1));//数量减
+        if (minus_num_btn != null)minus_num_btn.setOnClickListener(v -> mSaleGoodsAdapter.deleteSaleGoods(mSaleGoodsAdapter.getCurrentItemIndex(),1));//数量减
         if (add_num_btn != null)add_num_btn.setOnClickListener(v -> addOneSaleGoods());//数量加
         if (num_btn != null)num_btn.setOnClickListener(view -> {if (verifyNumBtnPermissions())
-            mNormalSaleGoodsAdapter.updateSaleGoodsDialog((short) 0);});//数量
+            mSaleGoodsAdapter.updateSaleGoodsDialog((short) 0);});//数量
         if (discount_btn != null)discount_btn.setOnClickListener(v-> {
-            mNormalSaleGoodsAdapter.updateSaleGoodsDialog((short) 2);});//打折
+            mSaleGoodsAdapter.updateSaleGoodsDialog((short) 2);});//打折
         if (change_price_btn != null)change_price_btn.setOnClickListener(v-> {
-            mNormalSaleGoodsAdapter.updateSaleGoodsDialog((short) 1);});//改价
+            mSaleGoodsAdapter.updateSaleGoodsDialog((short) 1);});//改价
         if (check_out_btn != null)check_out_btn.setOnClickListener((View v)->{
             Utils.disableView(v,500);showPayDialog();});//结账
         if (vip_btn != null)vip_btn.setOnClickListener(v -> {
@@ -276,11 +279,11 @@ public final class NormalMainActivity extends MainActivity {
         final LinearLayout shift_exchange_linearLayout = findViewById(R.id.shift_exchange_linearLayout);
         if (shift_exchange_linearLayout != null)
             shift_exchange_linearLayout.setOnClickListener(v -> {
-                final MainActivity activity = NormalMainActivity.this;
+                final NormalMainActivity activity = NormalMainActivity.this;
                 if (TransferDialog.verifyTransferPermissions(activity)){
                     final TransferDialog transferDialog = new TransferDialog(activity);
                     transferDialog.setFinishListener(() -> {
-                        sync_transfer_order();
+                        mApplication.sync_transfer_order();
                         MyDialog my_dialog = new MyDialog(activity);
                         my_dialog.setMessage("交班成功！").setYesOnclickListener(activity.getString(R.string.OK), myDialog -> {
                             transferDialog.dismiss();
@@ -299,7 +302,7 @@ public final class NormalMainActivity extends MainActivity {
         final Button clearBtn = findViewById(R.id.clear);
         if (null != clearBtn){
             clearBtn.setOnClickListener(v -> {
-                if (!mNormalSaleGoodsAdapter.isEmpty()){
+                if (!mSaleGoodsAdapter.isEmpty()){
                     clearSaleGoods();
                 }else {
                     if (getSingle())resetOrderInfo();
@@ -310,7 +313,7 @@ public final class NormalMainActivity extends MainActivity {
     private void initCloseMainWindow(){
         mCloseBtn = findViewById(R.id.close);
         mCloseBtn.setOnClickListener((View V)->{
-            MyDialog.displayAskMessage(mDialog,"是否退出收银？",this,(MyDialog myDialog)->{
+            MyDialog.displayAskMessage(null,"是否退出收银？",this,(MyDialog myDialog)->{
                 myDialog.dismiss();
                 /*Intent intent = new Intent(this,LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -326,8 +329,9 @@ public final class NormalMainActivity extends MainActivity {
     }
 
     private void startSyncCurrentTime(){
+        final View view = getWindow().getDecorView();
         if (mCurrentTimestamp == 0){
-            if (mNetworkStatus.get()){
+            if (mApplication.isConnection()){
                 CustomApplication.execute(()->{
                     long cur = System.currentTimeMillis();
                     try {
@@ -357,15 +361,15 @@ public final class NormalMainActivity extends MainActivity {
                         e.printStackTrace();
                         Logger.e("同步时间错误:%s",e.getMessage());
                     }
-                    mHandler.postDelayed(this::startSyncCurrentTime,0);
+                    view.postDelayed(this::startSyncCurrentTime,0);
                 });
             }else{
                 mCurrentTimestamp = System.currentTimeMillis();
-                mHandler.postDelayed(this::startSyncCurrentTime,1000);
+                view.postDelayed(this::startSyncCurrentTime,1000);
             }
         }else{
             mCurrentTimestamp += (1000 + System.currentTimeMillis() - mCurrentTimestamp);
-            mHandler.postDelayed(this::startSyncCurrentTime,1000);
+            view.postDelayed(this::startSyncCurrentTime,1000);
         }
         mCurrentTimeViewTv.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(mCurrentTimestamp));
     }
@@ -389,11 +393,11 @@ public final class NormalMainActivity extends MainActivity {
     }
     private void initSaleGoodsAdapter(){
         mSaleGoodsRecyclerView = findViewById(R.id.sale_goods_list);
-        mNormalSaleGoodsAdapter = new NormalSaleGoodsAdapter(this);
-        mNormalSaleGoodsAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+        mSaleGoodsAdapter = new NormalSaleGoodsAdapter(this);
+        mSaleGoodsAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged(){
-                final JSONArray datas = mNormalSaleGoodsAdapter.getDatas();
+                final JSONArray datas = mSaleGoodsAdapter.getDatas();
                 double sale_sum_num = 0.0,sale_sum_amount = 0.0,dis_sum_amt = 0.0;
 
                 for (int i = 0,length = datas.size();i < length;i ++){
@@ -409,14 +413,14 @@ public final class NormalMainActivity extends MainActivity {
                 mSaleSumAmtTv.setText(String.format(Locale.CANADA,"%.2f",sale_sum_amount));
                 mDisSumAmtTv.setText(String.format(Locale.CANADA,"%.2f",dis_sum_amt));
 
-                mSaleGoodsRecyclerView.scrollToPosition(mNormalSaleGoodsAdapter.getCurrentItemIndex());
+                mSaleGoodsRecyclerView.scrollToPosition(mSaleGoodsAdapter.getCurrentItemIndex());
 
-                if (mSecondDisplay != null)mSecondDisplay.notifyChange(mNormalSaleGoodsAdapter.getCurrentItemIndex());
+                if (mSecondDisplay != null)mSecondDisplay.notifyChange(mSaleGoodsAdapter.getCurrentItemIndex());
             }
         });
         SuperItemDecoration.registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray_subtransparent)));
         mSaleGoodsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
-        mSaleGoodsRecyclerView.setAdapter(mNormalSaleGoodsAdapter);
+        mSaleGoodsRecyclerView.setAdapter(mSaleGoodsAdapter);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -430,8 +434,8 @@ public final class NormalMainActivity extends MainActivity {
                     mGoodsCategoryAdapter.trigger_preView();
                 }else{
                     if (!mGoodsInfoViewAdapter.fuzzy_search_goods(content,true)) {
-                        mHandler.post(()->{
-                            if (mNetworkStatus.get() && AddGoodsInfoDialog.verifyGoodsAddPermissions(context)) {
+                        search.post(()->{
+                            if (mApplication.isConnection() && AddGoodsInfoDialog.verifyGoodsAddPermissions(context)) {
                                 if (1 == MyDialog.showMessageToModalDialog(context,"未找到匹配商品，是否新增?")){
                                     final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(context);
                                     addGoodsInfoDialog.setBarcode(mSearch_content.getText().toString());
@@ -565,7 +569,7 @@ public final class NormalMainActivity extends MainActivity {
             if (isAdjustPriceMode()){
                 MyDialog.ToastMessage(mSaleGoodsRecyclerView,"调价模式不允许挂单操作!",activity,null);
             }else {
-                final JSONArray datas = mNormalSaleGoodsAdapter.getDatas();
+                final JSONArray datas = mSaleGoodsAdapter.getDatas();
                 final HangBillDialog hangBillDialog = new HangBillDialog(activity);
                 if (Utils.JsonIsNotEmpty(datas)){
                     final StringBuilder err = new StringBuilder();
@@ -588,7 +592,7 @@ public final class NormalMainActivity extends MainActivity {
                                     goods_info = new JSONObject();
                                     if (mGoodsInfoViewAdapter.getSingleGoods(goods_info,barcode_id_obj.getString(GoodsInfoViewAdapter.W_G_MARK),mGoodsInfoViewAdapter.getGoodsId(barcode_id_obj))){
                                         goods_info.put("xnum",barcode_id_obj.getDoubleValue("xnum"));//挂单取出重量
-                                        mNormalSaleGoodsAdapter.addSaleGoods(goods_info);
+                                        mSaleGoodsAdapter.addSaleGoods(goods_info);
                                         hangBillDialog.dismiss();
                                     }else{
                                         if (!isAdjustPriceMode()) MyDialog.ToastMessage("选择商品错误：" + goods_info.getString("info"),this,null);
@@ -660,13 +664,13 @@ public final class NormalMainActivity extends MainActivity {
         if (isAdjustPriceMode()){
             MyDialog.ToastMessage(mSaleGoodsRecyclerView,"调价模式不允许收款操作!",this,null);
         }else {
-            if (!mNormalSaleGoodsAdapter.isEmpty()){
+            if (!mSaleGoodsAdapter.isEmpty()){
                 if (!getSingle()){
                     final PayDialog dialog = new PayDialog(this,getString(R.string.affirm_pay_sz));
                     dialog.initPayContent();
                     if (mVipInfo != null)dialog.setVipInfo(mVipInfo,true);
                     if (dialog.exec() == 1){
-                        sync_retail_order();
+                        mApplication.sync_retail_order();
                         showLastOrderInfo();
                         resetOrderInfo();
                         MyDialog.SnackbarMessage(getWindow(),"结账成功！", mOrderCodeTv);
@@ -690,8 +694,8 @@ public final class NormalMainActivity extends MainActivity {
             vip_name_tv.setText(getText(R.string.space_sz));
             vip_phone_num_tv.setText(getText(R.string.space_sz));
         }
-        if (!mNormalSaleGoodsAdapter.getDatas().isEmpty()){
-            mNormalSaleGoodsAdapter.deleteVipDiscountRecord();
+        if (!mSaleGoodsAdapter.getDatas().isEmpty()){
+            mSaleGoodsAdapter.deleteVipDiscountRecord();
         }
         reSizeSaleGoodsView();
     }
@@ -706,20 +710,24 @@ public final class NormalMainActivity extends MainActivity {
                 vip_name_tv.setText(vip.getString("name"));
                 vip_phone_num_tv.setText(vip.getString("mobile"));
             }
-            mNormalSaleGoodsAdapter.updateGoodsInfoToVip(vip);
+            mSaleGoodsAdapter.updateGoodsInfoToVip(vip);
         }
         reSizeSaleGoodsView();
+    }
+    protected void reSizeSaleGoodsView(){
+        SuperItemDecoration.registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),null);
+        mSaleGoodsRecyclerView.scrollToPosition(0);
     }
 
     @Override
     public void resetOrderCode(){
-        mOrderCodeTv.setText(mNormalSaleGoodsAdapter.generateOrderCode(mCashierInfo.getString("pos_num"),1));
+        mOrderCodeTv.setText(mSaleGoodsAdapter.generateOrderCode(mCashierInfo.getString("pos_num"),1));
     }
     private void initSecondDisplay(){
         mSecondDisplay = SecondDisplay.getInstantiate(this);
         if (null != mSecondDisplay){
-            if (isConnection())mSecondDisplay.loadAdImg(mUrl,mAppId, mAppSecret);
-            mSecondDisplay.setDatas(mNormalSaleGoodsAdapter.getDatas()).setNavigationInfo(mStoreInfo).show();
+            if (mApplication.isConnection())mSecondDisplay.loadAdImg(mUrl,mAppId, mAppSecret);
+            mSecondDisplay.setDatas(mSaleGoodsAdapter.getDatas()).setNavigationInfo(mStoreInfo).show();
         }
     }
     @Override
@@ -742,7 +750,7 @@ public final class NormalMainActivity extends MainActivity {
 
     @Override
     public void disposeHangBill(){
-        if (mNormalSaleGoodsAdapter.isEmpty()){
+        if (mSaleGoodsAdapter.isEmpty()){
             final Button tmp_order = findViewById(R.id.tmp_order);
             if (tmp_order != null)tmp_order.callOnClick();
         }
@@ -765,7 +773,7 @@ public final class NormalMainActivity extends MainActivity {
         final String weigh_barcode_info = (String) jsonObject.remove(GoodsInfoViewAdapter.W_G_MARK);//删除称重标志否则重新选择商品时不弹出称重界面
         if (mGoodsInfoViewAdapter.getSingleGoods(content,weigh_barcode_info,id)){
             hideLastOrderInfo();
-            mNormalSaleGoodsAdapter.addSaleGoods(content);
+            mSaleGoodsAdapter.addSaleGoods(content);
         }else{
             if (!isAdjustPriceMode()) MyDialog.ToastMessage("选择商品错误：" + content.getString("info"),this,null);
         }
@@ -778,10 +786,10 @@ public final class NormalMainActivity extends MainActivity {
         if(mGoodsInfoViewAdapter != null && null != array)mGoodsInfoViewAdapter.updateGoodsInfo(array);
     }
     public void addOneSaleGoods(){
-        final JSONObject object = Utils.JsondeepCopy(mNormalSaleGoodsAdapter.getCurrentContent());
+        final JSONObject object = Utils.JsondeepCopy(mSaleGoodsAdapter.getCurrentContent());
         if (!object.isEmpty()){
             object.put("xnum",1.0);
-            mNormalSaleGoodsAdapter.addSaleGoods(object);
+            mSaleGoodsAdapter.addSaleGoods(object);
         }
     }
 
@@ -796,76 +804,70 @@ public final class NormalMainActivity extends MainActivity {
     public void setScaleCurrent(float v){
         if (mScaleView != null)mScaleView.setCurrentValue(v);
     }
-    private static class Myhandler extends Handler {
-        private final WeakReference<NormalMainActivity> weakHandler;
-        private Myhandler(final NormalMainActivity mainActivity){
-            this.weakHandler = new WeakReference<>(mainActivity);
-        }
-        public void handleMessage(@NonNull Message msg){
-            ImageView imageView;
-            final NormalMainActivity activity = weakHandler.get();
-            if (null == activity)return;
-            switch (msg.what){
-                case MessageID.DIS_ERR_INFO_ID:
-                case MessageID.SYNC_ERR_ID://资料同步错误
-                    if (activity.mProgressDialog != null && activity.mProgressDialog.isShowing())activity.mProgressDialog.dismiss();
-                    if (msg.obj instanceof String)
-                        MyDialog.displayErrorMessage(activity.mDialog,msg.obj.toString(),activity);
-                    break;
-                case MessageID.SYNC_FINISH_ID:
-                    if (activity.mProgressDialog != null && activity.mProgressDialog.isShowing())activity.mProgressDialog.dismiss();
-                    activity.start_sync(false);
-                    break;
-                case MessageID.TRANSFERSTATUS_ID://传输状态
-                    if (msg.obj instanceof Boolean){
-                        imageView = activity.findViewById(R.id.upload_status);
-                        boolean code = (boolean)msg.obj;
-                        if (code && imageView.getAnimation() == null){
-                            imageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake_y));
-                        }
-                        if (activity.mTransferStatus.getAndSet(code) != code){
-                            if (imageView != null){
-                                if (code){
-                                    imageView.setImageResource(R.drawable.transfer);
-                                }else{
-                                    imageView.setImageResource(R.drawable.transfer_err);
-                                    imageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake_x));
-                                }
+
+    @Override
+    public void handleMessage(Handler handler, Message msg) {
+        ImageView imageView;
+        switch (msg.what){
+            case MessageID.DIS_ERR_INFO_ID:
+            case MessageID.SYNC_ERR_ID://资料同步错误
+                if (mProgressDialog != null && mProgressDialog.isShowing())mProgressDialog.dismiss();
+                if (msg.obj instanceof String)
+                    MyDialog.displayErrorMessage(null,msg.obj.toString(),this);
+                break;
+            case MessageID.SYNC_FINISH_ID:
+                if (mProgressDialog != null && mProgressDialog.isShowing())mProgressDialog.dismiss();
+                mApplication.start_sync(false);
+                break;
+            case MessageID.TRANSFERSTATUS_ID://传输状态
+                if (msg.obj instanceof Boolean){
+                    imageView = findViewById(R.id.upload_status);
+                    boolean code = (boolean)msg.obj;
+                    if (code && imageView.getAnimation() == null){
+                        imageView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake_y));
+                    }
+                    if (mApplication.getAndSetTransferStatus(code) != code){
+                        if (imageView != null){
+                            if (code){
+                                imageView.setImageResource(R.drawable.transfer);
+                            }else{
+                                imageView.setImageResource(R.drawable.transfer_err);
+                                imageView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake_x));
                             }
                         }
                     }
-                    break;
-                case MessageID.NETWORKSTATUS_ID://网络状态
-                    if (msg.obj instanceof Boolean){
-                        boolean code = (boolean)msg.obj;
-                        imageView = activity.findViewById(R.id.network_status);
-                        if (activity.mNetworkStatus.getAndSet(code) != code){
-                            if (imageView != null){
-                                if (code){
-                                    imageView.setImageResource(R.drawable.network);
-                                }else{
-                                    imageView.setImageResource(R.drawable.network_err);
-                                    imageView.startAnimation(AnimationUtils.loadAnimation(activity, R.anim.shake_x));
-                                }
+                }
+                break;
+            case MessageID.NETWORKSTATUS_ID://网络状态
+                if (msg.obj instanceof Boolean){
+                    boolean code = (boolean)msg.obj;
+                    imageView = findViewById(R.id.network_status);
+                    if (mApplication.getAndSetTransferStatus(code) != code){
+                        if (imageView != null){
+                            if (code){
+                                imageView.setImageResource(R.drawable.network);
+                            }else{
+                                imageView.setImageResource(R.drawable.network_err);
+                                imageView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake_x));
                             }
                         }
                     }
-                    break;
-                case MessageID.SYNC_DIS_INFO_ID://资料同步进度信息
-                    if (activity.mProgressDialog != null){
-                        activity.mProgressDialog.setMessage(msg.obj.toString()).refreshMessage();
-                        if (!activity.mProgressDialog.isShowing()) {
-                            activity.mProgressDialog.setCancel(false).show();
-                        }
+                }
+                break;
+            case MessageID.SYNC_DIS_INFO_ID://资料同步进度信息
+                if (mProgressDialog != null){
+                    mProgressDialog.setMessage(msg.obj.toString()).refreshMessage();
+                    if (!mProgressDialog.isShowing()) {
+                        mProgressDialog.setCancel(false).show();
                     }
-                    break;
-                case MessageID.START_SYNC_ORDER_INFO_ID:
-                    Toast.makeText(activity,"开始上传数据",Toast.LENGTH_SHORT).show();
-                    break;
-                case MessageID.FINISH_SYNC_ORDER_INFO_ID:
-                    Toast.makeText(activity,"数据上传完成",Toast.LENGTH_SHORT).show();
-                    break;
-            }
+                }
+                break;
+            case MessageID.START_SYNC_ORDER_INFO_ID:
+                Toast.makeText(this,"开始上传数据",Toast.LENGTH_SHORT).show();
+                break;
+            case MessageID.FINISH_SYNC_ORDER_INFO_ID:
+                Toast.makeText(this,"数据上传完成",Toast.LENGTH_SHORT).show();
+                break;
         }
     }
 }

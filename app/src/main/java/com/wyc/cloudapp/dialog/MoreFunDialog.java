@@ -1,25 +1,22 @@
 package com.wyc.cloudapp.dialog;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.barcodeScales.BarCodeScaleDownDialog;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnMainActivityImp;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.dialog.goods.GoodsManageDialog;
 import com.wyc.cloudapp.dialog.orderDialog.QueryRefundOrderDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.dialog.vip.VipDepositOrderDialog;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
 
-public final class MoreFunDialog extends AbstractDialogBaseOnMainActivityImp {
+public final class MoreFunDialog extends AbstractDialogMainActivity {
     public MoreFunDialog(@NonNull MainActivity context, final String title) {
         super(context,title);
     }

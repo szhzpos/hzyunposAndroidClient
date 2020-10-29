@@ -21,11 +21,11 @@ import com.wyc.cloudapp.logger.Logger;
 
 public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdapter.MyViewHolder> {
     public static final String CASH_METHOD_ID = "1";//现金支付方式id
-    private MainActivity mContext;
+    private final MainActivity mContext;
     private JSONArray mDatas;
     private OnItemClickListener mOnItemClickListener;
     private View mCurrentItemView,mDefaultPayMethodView;
-    private int mWidth;
+    private final int mWidth;
     public PayMethodViewAdapter(MainActivity context,int width){
         this.mContext = context;
         mWidth = width;

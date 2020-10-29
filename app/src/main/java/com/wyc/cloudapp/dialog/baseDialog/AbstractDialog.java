@@ -22,7 +22,6 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.dialog.JEventLoop;
 
 public abstract class AbstractDialog extends Dialog {
-    protected Context mContext;
     protected CharSequence mTitle;
     private WindowManager mWM;
     private WindowManager.LayoutParams mLayoutParams;
@@ -47,7 +46,6 @@ public abstract class AbstractDialog extends Dialog {
     }
 
     private void init(final Context context){
-        mContext = context;
         mWM = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
     }
 
@@ -134,7 +132,7 @@ public abstract class AbstractDialog extends Dialog {
         final LinearLayout main_layout = findViewById(R.id.dialog_main_layout);
         if (null != main_layout) {
             main_layout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            View.inflate(mContext,getContentLayoutId(), main_layout);
+            View.inflate(getContext(),getContentLayoutId(), main_layout);
         }
     }
 

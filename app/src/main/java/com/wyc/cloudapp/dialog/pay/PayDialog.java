@@ -61,8 +61,8 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
     private JSONObject mVip;
     private boolean mPayStatus = true;
     private Window mWindow;
-    private CustomProgressDialog mProgressDialog;
-    public PayDialog(MainActivity context, final String title){
+    private final CustomProgressDialog mProgressDialog;
+    public PayDialog(final MainActivity context, final String title){
         super(context,title);
         mProgressDialog = new CustomProgressDialog(context);
     }
@@ -273,7 +273,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
             }
         }
     }
-    private View.OnClickListener button_click = v -> {
+    private final View.OnClickListener button_click = v -> {
         final View view =  getCurrentFocus();
         if (view != null) {
             if (view.getId() == R.id.cash_amt) {

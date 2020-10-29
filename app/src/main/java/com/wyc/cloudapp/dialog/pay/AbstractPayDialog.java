@@ -15,13 +15,13 @@ import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnMainActivityImp;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.utils.Utils;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public abstract class AbstractPayDialog extends AbstractDialogBaseOnMainActivityImp implements IPay {
+public abstract class AbstractPayDialog extends AbstractDialogMainActivity implements IPay {
     protected EditText mPayAmtEt,mPayCode;
     protected Button mOk;
     protected CustomProgressDialog mProgressDialog;

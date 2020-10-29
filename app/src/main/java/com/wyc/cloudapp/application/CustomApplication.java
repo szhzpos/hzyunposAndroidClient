@@ -3,6 +3,8 @@ package com.wyc.cloudapp.application;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,22 +14,37 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.wyc.cloudapp.logger.AndroidLogAdapter;
 import com.wyc.cloudapp.logger.DiskLogAdapter;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.network.sync.SyncManagement;
 
+import java.lang.ref.WeakReference;
 import java.util.Vector;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class CustomApplication extends Application {
     //使用无界限阻塞队列，不会触发拒绝策略；线程数最大等于核心线程数，如果所有线程都在运行则任务会进入队列等待执行<可能引发内存问题>，
     private static final ScheduledThreadPoolExecutor THREAD_POOL_EXECUTOR = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2);
+    private static CustomApplication mApplication;
     private volatile int netState = 1,netState_mobile = 1;//WiFi 连接状态 1 连接 0 其他
     private final Vector<Activity> mActivities;
+
+    private final SyncManagement mSyncManagement;
+    private final AtomicBoolean mTransferStatus;
+    private final AtomicBoolean mNetworkStatus;
+    private MessageCallback mCallback;
+    private final Myhandler myhandler;
     public CustomApplication(){
         super();
+        mApplication = this;
         mActivities = new Vector<>();
+        myhandler  = new Myhandler(this);
+        mNetworkStatus = new AtomicBoolean(true);
+        mTransferStatus = new AtomicBoolean(true);//传输状态
+        mSyncManagement = new SyncManagement(myhandler);
     }
     @Override
     public  void  onCreate(){
@@ -70,10 +87,16 @@ public final class CustomApplication extends Application {
             if (mActivities.isEmpty()){
                 THREAD_POOL_EXECUTOR.shutdownNow();
                 Logger.d("THREAD_POOL_EXECUTOR shutdowned");
-                android.os.Process.killProcess(android.os.Process.myPid());
+                exit();
             }
         }
     };
+
+    private void exit(){
+        myhandler.removeCallbacksAndMessages(null);
+        mApplication = null;
+        android.os.Process.killProcess(android.os.Process.myPid());
+    }
 
     static {
         //是否输出值为null的字段,默认为false
@@ -120,5 +143,87 @@ public final class CustomApplication extends Application {
     }
     public static long getTaskCount(){
         return THREAD_POOL_EXECUTOR.getActiveCount();
+    }
+
+
+    public static CustomApplication self(){
+        return mApplication;
+    }
+
+    public void setNetworkStatus(boolean b){
+        mNetworkStatus.set(b);
+    }
+    public boolean isConnection(){
+        return mNetworkStatus.get();
+    }
+    public void setHandleMessage(final MessageCallback callback){
+        mCallback = callback;
+    }
+
+    public boolean getAndSetTransferStatus(boolean b){
+        return mTransferStatus.getAndSet(b);
+    }
+
+    public void setSyncManagement(final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){
+        mSyncManagement.setSyncInfo(url,appid,appsecret,stores_id,pos_num,operid);
+    }
+
+    public Handler getHandler(){
+        return myhandler;
+    }
+
+    public void data_upload(){
+        mSyncManagement.sync_order_info();
+    }
+
+    public void sync_order_info(){
+        mSyncManagement.sync_order_info();
+    }
+
+    public void sync_transfer_order(){
+        mSyncManagement.sync_transfer_order();
+    }
+
+    public void sync_retail_order(){
+        mSyncManagement.sync_retail_order();
+    }
+
+    public void start_sync(boolean b){
+        mSyncManagement.start_sync(b);
+    }
+
+    public void pauseSync(){
+        mSyncManagement.pauseSync();
+    }
+
+    public void continueSync(){
+        mSyncManagement.continueSync();
+    }
+
+    public void stop_sync(){
+        mSyncManagement.stop_sync();
+    }
+
+    public void manualSync(){
+        mSyncManagement.afresh_sync();
+    }
+    public void sync_refund_order(){
+        if (mSyncManagement != null) mSyncManagement.sync_refund_order();
+    }
+
+
+    private static class Myhandler extends Handler {
+        private final WeakReference<CustomApplication> weakHandler;
+        private Myhandler(final CustomApplication application){
+            this.weakHandler = new WeakReference<>(application);
+        }
+        public void handleMessage(@NonNull Message msg) {
+            final CustomApplication application = weakHandler.get();
+            if (null == application)return;
+            if (application.mCallback != null)application.mCallback.handleMessage(this,msg);
+        }
+    }
+    public interface MessageCallback{
+        void handleMessage(final Handler handler,final Message msg);
     }
 }

@@ -23,17 +23,16 @@ import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomizationView.KeyboardView;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnMainActivityImp;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.MessageID;
-import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 
-public final class VipInfoDialog extends AbstractDialogBaseOnMainActivityImp {
+public final class VipInfoDialog extends AbstractDialogMainActivity {
     private EditText mSearchContent;
     private CustomProgressDialog mProgressDialog;
     private Myhandler mHandler;

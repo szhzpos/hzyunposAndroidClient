@@ -1,20 +1,14 @@
 package com.wyc.cloudapp.dialog.baseDialog;
 
-import android.content.DialogInterface;
 import android.view.KeyEvent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 
-import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.logger.Logger;
 
-public abstract class AbstractDialogBaseOnMainActivityImp extends AbstractDialog {
+public abstract class AbstractDialogMainActivity extends AbstractDialog {
     protected MainActivity mContext;
-    public AbstractDialogBaseOnMainActivityImp(@NonNull MainActivity context,final String title) {
+    public AbstractDialogMainActivity(@NonNull MainActivity context, final String title) {
         super(context, title);
         mContext = context;
 
@@ -26,14 +20,14 @@ public abstract class AbstractDialogBaseOnMainActivityImp extends AbstractDialog
             return false;
         });
     }
-    public AbstractDialogBaseOnMainActivityImp(@NonNull MainActivity context,final CharSequence title) {
+    public AbstractDialogMainActivity(@NonNull MainActivity context, final CharSequence title) {
         super(context, title);
         mContext = context;
     }
 
     @Override
     public MainActivity getPrivateContext() {
-        return mContext;
+        return (MainActivity) mContext;
     }
 
     protected void keyListenerCallBack(){

@@ -21,14 +21,14 @@ import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogBaseOnMainActivityImp;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.FontSizeTagHandler;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
-public class GoodsWeighDialog extends AbstractDialogBaseOnMainActivityImp {
+public class GoodsWeighDialog extends AbstractDialogMainActivity {
     private int mBarcodeId;
     private OnYesOnclickListener mOnYesClick;
     private EditText mWvalueEt;
