@@ -13,16 +13,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.VipDepositDetailsPayInfoAdapter;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.Utils;
 
 
-public class VipDepositDetailsDialog extends AbstractDialogMainActivity {
-    private JSONObject mOrderInfo;
-    public VipDepositDetailsDialog(@NonNull MainActivity context, final JSONObject object) {
+public class VipDepositDetailsDialog extends AbstractDialogSaleActivity {
+    private final JSONObject mOrderInfo;
+    public VipDepositDetailsDialog(@NonNull SaleActivity context, final JSONObject object) {
         super(context, context.getString(R.string.order_detail_sz));
         mOrderInfo = object;
     }

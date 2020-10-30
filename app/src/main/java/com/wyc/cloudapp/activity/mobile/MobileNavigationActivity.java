@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -13,7 +12,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.CustomizationView.TopDrawableTextView;
@@ -26,25 +24,26 @@ import com.wyc.cloudapp.mobileFragemt.MyFragment;
 import com.wyc.cloudapp.mobileFragemt.ReportFragment;
 import com.wyc.cloudapp.utils.MessageID;
 
-public final class MobileNavigationActivity extends MainActivity implements CustomApplication.MessageCallback {
+public final class MobileNavigationActivity extends AbstractMobileActivity implements CustomApplication.MessageCallback {
     private FragmentManager mFragmentManager;
-    private TextView mMiddle;
     private CustomProgressDialog mProgressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_mobile_navigation);
-
         mFragmentManager = getSupportFragmentManager();
         mProgressDialog = new CustomProgressDialog(this);
 
         initFunctionBtn();
-        initTitle();
+        initSyncManagement();
+    }
+
+    @Override
+    protected int getContentLayoutId() {
+        return R.layout.activity_mobile_navigation;
     }
 
     @Override
     public void finalize(){
-        super.finalize();
         Logger.d("MobileNavigationActivity finalized");
     }
     @Override
@@ -53,10 +52,10 @@ public final class MobileNavigationActivity extends MainActivity implements Cust
         finish();
     }
 
-    private void initTitle(){
-        final TextView mLeft = findViewById(R.id.left_title_tv);
-        mMiddle = findViewById(R.id.middle_title_tv);
-        mLeft.setOnClickListener(v -> onBackPressed());
+    private void initSyncManagement(){
+        mApplication.registerHandleMessage(this);
+        mApplication.sync_order_info();
+        mApplication.start_sync(false);
     }
 
     private void initFunctionBtn(){
@@ -75,7 +74,7 @@ public final class MobileNavigationActivity extends MainActivity implements Cust
         private Fragment mCurrentFragment;
         private boolean setCurrentView(final View v){
             final TopDrawableTextView textView = (TopDrawableTextView)v;
-            mMiddle.setText(textView.getText().toString());
+            setMiddleText(textView.getText().toString());
             if (mCurrentNavView != null){
                 if (mCurrentNavView != textView){
                     mCurrentNavView.setTextColor(getColor(R.color.mobile_fun_view_no_click));

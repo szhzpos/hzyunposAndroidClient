@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.RetailDetailsGoodsInfoAdapter;
 import com.wyc.cloudapp.adapter.RetailDetailsPayInfoAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -38,11 +38,12 @@ import java.util.List;
 import java.util.Locale;
 
 public class RetailOrderDetailsDialog extends AbstractShowPrinterICODialog {
-    private JSONObject mOrderInfo, mPayRecord;
+    private final JSONObject mOrderInfo;
+    private JSONObject mPayRecord;
     private RetailDetailsPayInfoAdapter mRetailDetailsPayInfoAdapter;
     private String mRetailOrderCode;
     private CustomProgressDialog mProgressDialog;
-    public RetailOrderDetailsDialog(@NonNull MainActivity context, final JSONObject info) {
+    public RetailOrderDetailsDialog(@NonNull SaleActivity context, final JSONObject info) {
         super(context,context.getString(R.string.order_detail_sz));
         mOrderInfo = info;
     }

@@ -19,20 +19,20 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.dialog.CustomizationView.KeyboardView;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
+import com.wyc.cloudapp.dialog.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 
-public final class VipInfoDialog extends AbstractDialogMainActivity {
+public final class VipInfoDialog extends AbstractDialogSaleActivity {
     private EditText mSearchContent;
     private CustomProgressDialog mProgressDialog;
     private Myhandler mHandler;
@@ -41,7 +41,7 @@ public final class VipInfoDialog extends AbstractDialogMainActivity {
     private Button mSearchBtn;
     private onYesOnclickListener mYesOnclickListener;//确定按钮被点击了的监听器
     private Button mAddBtn;
-    public VipInfoDialog(@NonNull MainActivity context) {
+    public VipInfoDialog(@NonNull SaleActivity context) {
         super(context,context.getString(R.string.vip_dialog_title_sz));
     }
     @Override

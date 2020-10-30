@@ -18,6 +18,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.PayMethodItemDecoration;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -39,7 +40,7 @@ public final class VipChargeDialogImp extends AbstractPayDialog {
     private JSONObject mVip;
     private Myhandler mHandler;
     private PayMethodViewAdapter mPayMethodViewAdapter;
-    VipChargeDialogImp(@NonNull MainActivity context, final JSONObject vip) {
+    VipChargeDialogImp(@NonNull SaleActivity context, final JSONObject vip) {
         super(context,context.getString(R.string.vip_charge_sz));
         mVip = vip;
     }

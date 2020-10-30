@@ -21,11 +21,11 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -33,7 +33,7 @@ import com.wyc.cloudapp.utils.http.HttpRequest;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 
-public class AddVipInfoDialog extends AbstractDialogMainActivity {
+public class AddVipInfoDialog extends AbstractDialogSaleActivity {
     private EditText m_vip_p_num_et, m_card_id_et, m_vip_name_et, m_vip_birthday_et;
     private onYesOnclickListener mYesOnclickListener;//确定按钮被点击了的监听器
     private String mVipGradeId,mMemberId;
@@ -43,7 +43,7 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
     private Spinner m_vip_sex;
     private JSONObject mVip;
 
-    AddVipInfoDialog(@NonNull MainActivity context, final String title, final JSONObject vip) {//如果vip为null则新增会员，否则修改会员
+    AddVipInfoDialog(@NonNull SaleActivity context, final String title, final JSONObject vip) {//如果vip为null则新增会员，否则修改会员
         super(context,title);
         mVip = vip;
     }

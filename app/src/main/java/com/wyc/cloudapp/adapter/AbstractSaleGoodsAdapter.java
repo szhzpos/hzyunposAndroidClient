@@ -1,6 +1,5 @@
 package com.wyc.cloudapp.adapter;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.text.Html;
 import android.view.View;
@@ -15,7 +14,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.callback.ClickListener;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
@@ -30,7 +29,7 @@ import java.util.Date;
 import java.util.Locale;
 
 public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<AbstractSaleGoodsAdapter.MyViewHolder> {
-    protected final MainActivity mContext;
+    protected final SaleActivity mContext;
     protected JSONArray mDatas;
     private final JSONArray mDiscountRecords;
     private View mCurrentItemView;
@@ -39,8 +38,8 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
     private boolean mSingleRefundStatus = false,d_discount = false;//d_discount是否折上折
     private JSONObject mFullReduceRecord;
 
-    public AbstractSaleGoodsAdapter(final Activity context){
-        this.mContext = (MainActivity) context;
+    public AbstractSaleGoodsAdapter(final SaleActivity context){
+        mContext = context;
         mDatas = new JSONArray();
         mDiscountRecords = new JSONArray();
     }

@@ -8,13 +8,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.dialog.serialScales.GoodsWeighDialog;
 import com.wyc.cloudapp.utils.Utils;
 
 public final class NormalSaleGoodsAdapter extends AbstractSaleGoodsAdapter {
     private GoodsWeighDialog mWeighDialog;
-    public NormalSaleGoodsAdapter(final MainActivity context){
+    public NormalSaleGoodsAdapter(final SaleActivity context){
         super(context);
     }
     @NonNull

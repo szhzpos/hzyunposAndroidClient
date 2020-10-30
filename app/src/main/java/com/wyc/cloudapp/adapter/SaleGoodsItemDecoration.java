@@ -19,7 +19,7 @@ public class SaleGoodsItemDecoration extends SuperItemDecoration {
     @Override
     public void onDrawOver(@NonNull Canvas c,@NonNull RecyclerView parent,@NonNull RecyclerView.State state) {
         super.onDrawOver(c, parent, state);
-        final NormalSaleGoodsAdapter adapter = (NormalSaleGoodsAdapter) parent.getAdapter();
+        final AbstractSaleGoodsAdapter adapter = (AbstractSaleGoodsAdapter) parent.getAdapter();
         final Context context = parent.getContext();
         if (adapter != null && adapter.getSingle()){
             final Paint paint = new Paint();
@@ -34,7 +34,7 @@ public class SaleGoodsItemDecoration extends SuperItemDecoration {
             final String sz = "单品退货";
             float[] ints = new float[sz.length()];
             paint.getTextWidths(sz,ints);
-            c.drawText(sz,(rect.left  - ints[0] * (ints.length / 2)) + rect.width() / 2,rect.bottom - rect.height() / 3,paint);
+            c.drawText(sz,(rect.left  - ints[0] * (ints.length / 2.0f)) + rect.width() / 2.0f,rect.bottom - rect.height() / 3.0f,paint);
         }
     }
 }

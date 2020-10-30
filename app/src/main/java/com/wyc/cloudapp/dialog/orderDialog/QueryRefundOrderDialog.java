@@ -7,15 +7,13 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-
 import android.widget.EditText;
 import android.widget.LinearLayout;
-
 
 import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
 import com.wyc.cloudapp.adapter.RefundOrderAdapter;
 import com.wyc.cloudapp.logger.Logger;
@@ -24,7 +22,7 @@ import com.wyc.cloudapp.utils.Utils;
 import static android.content.Context.WINDOW_SERVICE;
 
 public class QueryRefundOrderDialog extends AbstractQuerySuperDialog {
-    public QueryRefundOrderDialog(@NonNull MainActivity context) {
+    public QueryRefundOrderDialog(@NonNull SaleActivity context) {
         super(context, context.getString(R.string.local_refund_order_sz));
     }
 

@@ -3,11 +3,11 @@ package com.wyc.cloudapp.dialog.baseDialog;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.print.Printer;
 
-public abstract class AbstractShowPrinterICODialog extends AbstractDialogMainActivity {
-    public AbstractShowPrinterICODialog(@NonNull MainActivity context, String title) {
+public abstract class AbstractShowPrinterICODialog extends AbstractDialogSaleActivity {
+    public AbstractShowPrinterICODialog(@NonNull SaleActivity context, String title) {
         super(context, title);
     }
     @CallSuper

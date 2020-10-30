@@ -16,30 +16,28 @@ import androidx.annotation.NonNull;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.LoginActivity;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.FontSizeTagHandler;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
-public class GoodsWeighDialog extends AbstractDialogMainActivity {
+public class GoodsWeighDialog extends AbstractDialogSaleActivity {
     private int mBarcodeId;
     private OnYesOnclickListener mOnYesClick;
     private EditText mWvalueEt;
     private TextView mPriceTv,mAmtTv;
     private AbstractSerialScaleImp mSerialScale;
     private double mValue;
-    private MainActivity mCotext;
     private boolean mContinuousWeighing = false;
-    public GoodsWeighDialog(@NonNull MainActivity context, final String title) {
+    public GoodsWeighDialog(@NonNull SaleActivity context, final String title) {
         super(context,title);
-        mCotext = context;
 
         read();
     }
@@ -204,7 +202,7 @@ public class GoodsWeighDialog extends AbstractDialogMainActivity {
                         }
                         @Override
                         public void onError(String err) {
-                            mCotext.runOnUiThread(()-> MyDialog.ToastMessage("读串口错误：" + err,mContext,getWindow()));
+                            mContext.runOnUiThread(()-> MyDialog.ToastMessage("读串口错误：" + err,mContext,getWindow()));
                         }
                     }).startRead();
                 }

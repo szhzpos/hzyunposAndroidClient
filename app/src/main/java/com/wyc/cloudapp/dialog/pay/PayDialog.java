@@ -24,7 +24,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.FullReduceRulesAdapter;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.PayDetailViewAdapter;
@@ -62,7 +62,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
     private boolean mPayStatus = true;
     private Window mWindow;
     private final CustomProgressDialog mProgressDialog;
-    public PayDialog(final MainActivity context, final String title){
+    public PayDialog(final SaleActivity context, final String title){
         super(context,title);
         mProgressDialog = new CustomProgressDialog(context);
     }
@@ -1240,7 +1240,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
 
         return info.toString();
     }
-    public static String get_print_content(final MainActivity context,final String order_code,boolean is_open_cash_box){
+    public static String get_print_content(final SaleActivity context,final String order_code,boolean is_open_cash_box){
         String content = "";
         if (context.getPrintStatus()){
             final JSONObject print_format_info = new JSONObject();

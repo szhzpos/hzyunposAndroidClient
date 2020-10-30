@@ -1,32 +1,32 @@
 package com.wyc.cloudapp.adapter;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdapter.MyViewHolder> implements View.OnClickListener{
-    private MainActivity mContext;
+    private SaleActivity mContext;
     private JSONArray mDatas;
     private View mCurrentItemView;//当前选择的类别item
     private GoodsCategoryAdapter mChildGoodsCategoryAdpter;
-    private RecyclerView mChildGoodsCategoryView;
+    private final RecyclerView mChildGoodsCategoryView;
     private boolean mChildShow = false,mFirstLoad = true;
-    public GoodsCategoryAdapter(MainActivity context, RecyclerView v){
-        this.mContext = context;
+    public GoodsCategoryAdapter(SaleActivity context, RecyclerView v){
+        mContext = context;
         mChildGoodsCategoryView = v;
         laodChildShow();
     }

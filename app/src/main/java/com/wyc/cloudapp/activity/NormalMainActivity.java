@@ -41,7 +41,6 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
 import com.wyc.cloudapp.adapter.GoodsInfoItemDecoration;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
-import com.wyc.cloudapp.adapter.NormalSaleGoodsAdapter;
 import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -69,7 +68,7 @@ import com.wyc.cloudapp.utils.http.HttpRequest;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-public final class NormalMainActivity extends MainActivity implements CustomApplication.MessageCallback {
+public final class NormalMainActivity extends SaleActivity implements CustomApplication.MessageCallback {
     private RecyclerView mSaleGoodsRecyclerView;
     private GoodsCategoryAdapter mGoodsCategoryAdapter;
     private GoodsInfoViewAdapter mGoodsInfoViewAdapter;
@@ -82,6 +81,7 @@ public final class NormalMainActivity extends MainActivity implements CustomAppl
     private ImageView mPrinterStatusIv;
     private ScaleView mScaleView;
     private CustomProgressDialog mProgressDialog;
+    private EditText mSearch_content;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -145,29 +145,23 @@ public final class NormalMainActivity extends MainActivity implements CustomAppl
     public void onPause(){
         super.onPause();
     }
-    @Override
-    public void onDestroy(){
-        super.onDestroy();
-        //清除资源
-        clearResource();
-    }
+
     @Override
     public void onBackPressed(){
         if (null != mCloseBtn)mCloseBtn.callOnClick();
     }
     @Override
     public void finalize(){
-        super.finalize();
-        Logger.d("MainActivity finalized");
+        Logger.d("NormalMainActivity finalized");
     }
     @Override
-    public void onNewIntent(Intent intent){
-        super.onNewIntent(intent);
-        setIntent(intent);
+    public void onDestroy(){
+        super.onDestroy();
+        clearResource();
     }
 
     private void initSyncManagement(){
-        mApplication.setHandleMessage(this);
+        mApplication.registerHandleMessage(this);
         mApplication.sync_order_info();
         mApplication.start_sync(false);
     }
@@ -322,9 +316,8 @@ public final class NormalMainActivity extends MainActivity implements CustomAppl
             }, Dialog::dismiss);
         });
     }
-    @Override
-    protected void clearResource(){
-        super.clearResource();
+
+    private void clearResource(){
         if (mSecondDisplay != null)mSecondDisplay.dismiss();
     }
 
@@ -393,7 +386,6 @@ public final class NormalMainActivity extends MainActivity implements CustomAppl
     }
     private void initSaleGoodsAdapter(){
         mSaleGoodsRecyclerView = findViewById(R.id.sale_goods_list);
-        mSaleGoodsAdapter = new NormalSaleGoodsAdapter(this);
         mSaleGoodsAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged(){
@@ -428,7 +420,7 @@ public final class NormalMainActivity extends MainActivity implements CustomAppl
         final EditText search = findViewById(R.id.search_content);
         search.setOnKeyListener((v, keyCode, event) -> {
             if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_DOWN){
-                final MainActivity context = this;
+                final SaleActivity context = this;
                 final String content = search.getText().toString();
                 if (content.length() == 0){
                     mGoodsCategoryAdapter.trigger_preView();
@@ -563,7 +555,7 @@ public final class NormalMainActivity extends MainActivity implements CustomAppl
     }
     private void initTmpOrder(){
         final TmpOrderButton tmp_order = findViewById(R.id.tmp_order);
-        final MainActivity activity = this;
+        final SaleActivity activity = this;
         tmp_order.setNum(HangBillDialog.getHangCounts(activity));
         tmp_order.setOnClickListener(v -> {
             if (isAdjustPriceMode()){

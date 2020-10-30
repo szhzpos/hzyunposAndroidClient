@@ -8,9 +8,11 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
+
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
 import com.wyc.cloudapp.adapter.VipDepositOrderAdapter;
 import com.wyc.cloudapp.dialog.orderDialog.AbstractQuerySuperDialog;
@@ -19,7 +21,7 @@ import com.wyc.cloudapp.utils.Utils;
 import static android.content.Context.WINDOW_SERVICE;
 
 public class VipDepositOrderDialog extends AbstractQuerySuperDialog {
-    public VipDepositOrderDialog(@NonNull MainActivity context) {
+    public VipDepositOrderDialog(@NonNull SaleActivity context) {
         super(context, context.getString(R.string.vip_deposit_o_sz));
 
     }

@@ -4,22 +4,21 @@ import android.view.KeyEvent;
 
 import androidx.annotation.NonNull;
 
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 
-public abstract class AbstractDialogMainActivity extends AbstractDialog {
-    protected MainActivity mContext;
-    public AbstractDialogMainActivity(@NonNull MainActivity context, final String title){
-        this(context,title,0);
-    }
-    public AbstractDialogMainActivity(@NonNull MainActivity context, final String title, int style){
-        super(context,title,style);
+public abstract class AbstractDialogSaleActivity extends AbstractDialog {
+    protected SaleActivity mContext;
+    public AbstractDialogSaleActivity(@NonNull SaleActivity context, final CharSequence title) {
+        super(context, title);
         mContext = context;
         initKeyListener();
     }
+
     @Override
-    public MainActivity getPrivateContext() {
+    public SaleActivity getPrivateContext() {
         return mContext;
     }
+
     protected void keyListenerCallBack(){
 
     }

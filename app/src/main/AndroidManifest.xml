@@ -36,8 +36,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
+        <activity android:name=".activity.SaleActivity"></activity>
         <activity android:name=".activity.mobile.CashierActivity" />
-        <activity android:name=".activity.mobile.MobileNavigationActivity"/>
+        <activity android:name=".activity.mobile.MobileNavigationActivity" />
         <activity
             android:name=".activity.NormalMainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -58,6 +59,7 @@
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>

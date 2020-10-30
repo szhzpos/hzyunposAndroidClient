@@ -94,6 +94,7 @@ public final class CustomApplication extends Application {
 
     private void exit(){
         myhandler.removeCallbacksAndMessages(null);
+        mSyncManagement.quit();
         mApplication = null;
         android.os.Process.killProcess(android.os.Process.myPid());
     }
@@ -148,7 +149,7 @@ public final class CustomApplication extends Application {
     public boolean isConnection(){
         return mNetworkStatus.get();
     }
-    public void setHandleMessage(final MessageCallback callback){
+    public void registerHandleMessage(final MessageCallback callback){
         mCallback = callback;
     }
 
@@ -159,11 +160,11 @@ public final class CustomApplication extends Application {
         return mNetworkStatus.getAndSet(b);
     }
 
-    public void setSyncManagement(final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){
-        mSyncManagement.setSyncInfo(url,appid,appsecret,stores_id,pos_num,operid);
+    public void initSyncManagement(final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){
+        mSyncManagement.initSync(url,appid,appsecret,stores_id,pos_num,operid);
     }
 
-    public Handler getHandler(){
+    public Handler getAppHandler(){
         return myhandler;
     }
 

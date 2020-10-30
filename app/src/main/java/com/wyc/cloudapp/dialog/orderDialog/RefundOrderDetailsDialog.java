@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.RefundDetailsGoodsInfoAdapter;
 import com.wyc.cloudapp.adapter.RefundDetailsPayInfoAdapter;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractShowPrinterICODialog;
@@ -27,7 +27,7 @@ import java.util.Locale;
 public class RefundOrderDetailsDialog extends AbstractShowPrinterICODialog {
     private final JSONObject mRefundOrderInfo;
     private String mRefundOrderCode;
-    public RefundOrderDetailsDialog(@NonNull MainActivity context, final JSONObject info) {
+    public RefundOrderDetailsDialog(@NonNull SaleActivity context, final JSONObject info) {
         super(context, context.getString(R.string.refund_details_sz));
         mRefundOrderInfo = info;
     }

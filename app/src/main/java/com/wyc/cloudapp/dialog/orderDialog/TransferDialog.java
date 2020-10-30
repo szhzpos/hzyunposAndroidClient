@@ -16,6 +16,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.TransferDetailsAdapter;
 import com.wyc.cloudapp.callback.PasswordEditTextReplacement;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -32,7 +33,7 @@ import java.util.Locale;
 public class TransferDialog extends AbstractShowPrinterICODialog {
     private final TransferDetailsAdapter mTransferDetailsAdapter;
     private onFinishListener mFinishListener;
-    public TransferDialog(@NonNull MainActivity context) {
+    public TransferDialog(@NonNull SaleActivity context) {
         super(context, context.getString(R.string.s_e_sz));
 
         mTransferDetailsAdapter = new TransferDetailsAdapter(mContext);

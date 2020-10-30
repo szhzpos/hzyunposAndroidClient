@@ -7,24 +7,17 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.callback.PasswordEditTextReplacement;
 import com.wyc.cloudapp.dialog.CustomizationView.KeyboardView;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
 
-public class ChangeNumOrPriceDialog extends AbstractDialogMainActivity {
+public class ChangeNumOrPriceDialog extends AbstractDialogSaleActivity {
     private EditText mNew_price_text;
-    private String mInitVal;
+    private final String mInitVal;
     private onNoOnclickListener noOnclickListener;//取消按钮被点击了的监听器
     private onYesOnclickListener yesOnclickListener;//确定按钮被点击了的监听器
-    private ChangeNumOrPriceDialog(MainActivity context, final String title){
-        super(context,title);
-    }
-    public ChangeNumOrPriceDialog(MainActivity context, final String title, final String initVal){
-        this(context,title);
-        mInitVal = initVal;
-    }
-    public ChangeNumOrPriceDialog(MainActivity context, final CharSequence title, final String initVal){
+    public ChangeNumOrPriceDialog(SaleActivity context, final CharSequence title, final String initVal){
         super(context,title);
         mInitVal = initVal;
     }

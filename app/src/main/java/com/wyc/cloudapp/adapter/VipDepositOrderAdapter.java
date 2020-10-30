@@ -3,7 +3,6 @@ package com.wyc.cloudapp.adapter;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -11,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.vip.VipDepositDetailsDialog;
@@ -21,7 +20,7 @@ import java.util.Locale;
 
 public class VipDepositOrderAdapter extends AbstractQueryDataAdapter<VipDepositOrderAdapter.MyViewHolder> {
 
-    public VipDepositOrderAdapter(MainActivity context){
+    public VipDepositOrderAdapter(SaleActivity context){
         mContext = context;
     }
 
@@ -96,7 +95,7 @@ public class VipDepositOrderAdapter extends AbstractQueryDataAdapter<VipDepositO
         return mDatas == null ? 0: mDatas.size();
     }
 
-    private View.OnTouchListener touchListener = (v, event) -> {
+    private final View.OnTouchListener touchListener = (v, event) -> {
         if (event.getAction() == MotionEvent.ACTION_DOWN){
             setCurrentItemView(v);
             final TextView order_code_tv = v.findViewById(R.id.order_code);

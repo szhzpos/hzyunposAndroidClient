@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundOrderDetailsDialog;
@@ -20,7 +20,7 @@ import com.wyc.cloudapp.logger.Logger;
 import java.util.Locale;
 
 public final class RefundOrderAdapter extends AbstractQueryDataAdapter<RefundOrderAdapter.MyViewHolder> {
-    public RefundOrderAdapter(final MainActivity context){
+    public RefundOrderAdapter(final SaleActivity context){
         mContext = context;
     }
     static class MyViewHolder extends AbstractTableDataAdapter.SuperViewHolder {

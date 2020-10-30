@@ -6,12 +6,11 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.mobile.CashierActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 
 public class MobileSaleGoodsAdapter extends AbstractSaleGoodsAdapter {
-    public MobileSaleGoodsAdapter(final CashierActivity context){
+    public MobileSaleGoodsAdapter(final SaleActivity context){
         super(context);
     }
     @NonNull

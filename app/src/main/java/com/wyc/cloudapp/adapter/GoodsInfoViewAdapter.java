@@ -1,10 +1,6 @@
 package com.wyc.cloudapp.adapter;
 
 import android.content.ContentValues;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.View;
@@ -14,16 +10,19 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.android.material.snackbar.Snackbar;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.LoginActivity;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.dialog.goods.GoodsPriceAdjustDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.goods.GoodsPriceAdjustDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -32,13 +31,13 @@ import java.util.Locale;
 public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdapter.MyViewHolder> implements View.OnClickListener {
     public static final int SPAN_COUNT = 5;
     public static final String W_G_MARK = "IWG";//计重、计份并且通过扫条码选择的商品标志
-    private MainActivity mContext;
+    private SaleActivity mContext;
     private JSONArray mDatas;
     private OnItemClickListener mOnItemClickListener;
     private boolean mShowPic = true;
     private View mCurrentItemView;
     private boolean mPriceAdjustMode;
-    public GoodsInfoViewAdapter(final MainActivity context){
+    public GoodsInfoViewAdapter(final SaleActivity context){
         this.mContext = context;
         final JSONObject jsonObject = new JSONObject();
         if (SQLiteHelper.getLocalParameter("g_i_show",jsonObject)){

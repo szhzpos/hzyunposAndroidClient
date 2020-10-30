@@ -9,13 +9,13 @@ import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 public class PayMethodDialogImp extends AbstractPayDialog {
-    PayMethodDialogImp(@NonNull MainActivity context, @NonNull final JSONObject pay_method) {
+    PayMethodDialogImp(@NonNull SaleActivity context, @NonNull final JSONObject pay_method) {
         super(context,Utils.getNullStringAsEmpty(pay_method,"name"));
         mPayMethod = pay_method;
     }

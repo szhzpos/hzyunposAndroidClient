@@ -24,12 +24,13 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 
 import java.util.ArrayList;
@@ -39,13 +40,13 @@ import java.util.Locale;
 
 import static android.content.Context.WINDOW_SERVICE;
 
-public class HangBillDialog extends AbstractDialogMainActivity {
+public class HangBillDialog extends AbstractDialogSaleActivity {
     private SimpleCursorAdapter mHbCursorAdapter,mHbDetailCursorAdapter;
     private View mVipInfoView;
     private String mCurrentHangId;
     private OnGetBillListener mGetListener;
 
-    public HangBillDialog(@NonNull MainActivity context) {
+    public HangBillDialog(@NonNull SaleActivity context) {
         super(context,context.getString(R.string.hangbill_sz));
     }
     @Override

@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.callback.PasswordEditTextReplacement;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -29,7 +29,7 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
     private boolean mTransferAmtNotVisible;
     private PasswordEditTextReplacement editTextReplacement;
     private String mTransferStartTime = "";
-    public TransferDetailsAdapter(MainActivity context){
+    public TransferDetailsAdapter(SaleActivity context){
         mContext = context;
         mTransferSumInfo = new JSONObject();
         mTransferAmtNotVisible = !verifyShowAmtPermissions();

@@ -26,7 +26,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.LoginActivity;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.NormalSaleGoodsAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -46,7 +46,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
     private final String mAdFilePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/ad_img/";
     private final NormalSaleGoodsAdapter mNormalSaleGoodsAdapter;
     private RecyclerView mSaleGoodsView;
-    private MainActivity mContext;
+    private SaleActivity mContext;
     private JSONObject mStoreInfo;
     private TextView mSaleSumNum,mSaleSumAmount;
     private int mShowAdImgTimes = 0,mShowInterval = 5;//mShowAdImgTimes显示图片次数
@@ -61,7 +61,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
     private Bitmap mBannerBitmap = null;
     private Rect mBottomRect;
     private volatile boolean mShowBannerImg = true;
-    private SecondDisplay(MainActivity outerContext, Display display) {
+    private SecondDisplay(SaleActivity outerContext, Display display) {
         super(outerContext, display);
         mContext = outerContext;
 
@@ -367,7 +367,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
         return presentationDisplay;
     }
 
-    public static SecondDisplay getInstantiate(final MainActivity context){
+    public static SecondDisplay getInstantiate(final SaleActivity context){
         final JSONObject object = new JSONObject();
         SecondDisplay secondDisplay = null;
         if (SQLiteHelper.getLocalParameter("dual_v",object)){

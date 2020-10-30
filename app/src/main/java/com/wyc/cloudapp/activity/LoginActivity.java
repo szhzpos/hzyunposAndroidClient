@@ -86,7 +86,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
 
         //初始化成员变量
         mSelf = this;
-        mHandler = CustomApplication.self().getHandler();
+        mHandler = CustomApplication.self().getAppHandler();
         mProgressDialog = new CustomProgressDialog(this);
         myDialog = new MyDialog(this);
 
@@ -99,7 +99,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
         initKeyboard();
         initDisplayInfoAndVersion();
 
-        CustomApplication.self().setHandleMessage(this);
+        CustomApplication.self().registerHandleMessage(this);
 
         registerReceiver(receiver,new IntentFilter(AppUpdateService.APP_PROGRESS_BROADCAST));
     }
@@ -613,7 +613,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                 launchLogin(true);
                 break;
             case MessageID.LOGIN_OK_ID://登录成功
-                CustomApplication.self().setSyncManagement(Utils.getNullStringAsEmpty(mConnParam,"server_url"),Utils.getNullStringAsEmpty(mConnParam,"appId"),
+                CustomApplication.self().initSyncManagement(Utils.getNullStringAsEmpty(mConnParam,"server_url"),Utils.getNullStringAsEmpty(mConnParam,"appId"),
                         Utils.getNullStringAsEmpty(mConnParam,"appSecret"),mStoresId,mPosNum,mOperId);
                 if (SQLiteHelper.isNew()) {
                     mProgressDialog.setMessage("准备重新同步...").refreshMessage().show();

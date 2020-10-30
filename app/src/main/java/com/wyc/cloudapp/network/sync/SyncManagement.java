@@ -20,17 +20,6 @@ public class SyncManagement extends Thread {
         mNotifyHandler = handler;
         handlerInitLatch = new CountDownLatch(1);
     }
-/*    public SyncManagement(final Handler handler,final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){
-        this(handler);
-        mUrl = url ;
-        mAppId = appid;
-        mAppSecret = appsecret;
-        mPosNum = pos_num;
-        mOperId = operid;
-        mStoresId = stores_id;
-
-        start();
-    }*/
 
     String getUrl(){
         return mUrl;
@@ -53,7 +42,7 @@ public class SyncManagement extends Thread {
         return mStoresId;
     }
 
-    public void setSyncInfo(final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){
+    public void initSync(final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){
         mUrl = url ;
         mAppId = appid;
         mAppSecret = appsecret;
@@ -61,14 +50,7 @@ public class SyncManagement extends Thread {
         mOperId = operid;
         mStoresId = stores_id;
 
-        if (!isAlive())
-            start();
-        else {
-            if (mSyncHandler != null){
-
-            }
-        }
-
+        if (!isAlive())start();
     }
 
     @Override

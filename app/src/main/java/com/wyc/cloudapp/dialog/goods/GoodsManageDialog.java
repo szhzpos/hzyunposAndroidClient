@@ -21,20 +21,20 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
 import com.wyc.cloudapp.adapter.GoodsManageViewAdapter;
 import com.wyc.cloudapp.adapter.TreeListAdapter;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
 import com.wyc.cloudapp.utils.Utils;
 
 import static android.content.Context.WINDOW_SERVICE;
 
-public final class GoodsManageDialog extends AbstractDialogMainActivity {
+public final class GoodsManageDialog extends AbstractDialogSaleActivity {
     private Spinner mConditionSpinner;
     private JSONObject mCurrentCategory;
     private GoodsManageViewAdapter mViewAdapter;
-    public GoodsManageDialog(@NonNull MainActivity context) {
+    public GoodsManageDialog(@NonNull SaleActivity context) {
         super(context, context.getString(R.string.manage_goods_sz));
     }
     @Override

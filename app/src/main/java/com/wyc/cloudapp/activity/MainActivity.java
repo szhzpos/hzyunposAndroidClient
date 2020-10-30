@@ -1,17 +1,14 @@
 package com.wyc.cloudapp.activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.EditText;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import com.wyc.cloudapp.adapter.AbstractSaleGoodsAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -23,40 +20,17 @@ import java.util.Locale;
 
 public abstract class MainActivity extends AppCompatActivity {
     protected final CustomApplication mApplication = CustomApplication.self();
-    protected AbstractSaleGoodsAdapter mSaleGoodsAdapter;
-    protected EditText mSearch_content;
-    protected JSONObject mCashierInfo,mStoreInfo,mVipInfo;
+    protected JSONObject mCashierInfo,mStoreInfo;
     protected String mAppId, mAppSecret,mUrl;
-    private String mPermissionCashierId = "";
+    protected String mPermissionCashierId = "";
     @CallSuper
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         //初始化收银员、仓库信息
         initCashierInfoAndStoreInfo();
     }
 
-    @Override
-    public void onResume(){
-        super.onResume();
-    }
-    @Override
-    public void onPause(){
-        super.onPause();
-    }
-
-    @CallSuper
-    @Override
-    public void onDestroy(){
-        super.onDestroy();
-        //清除资源
-        clearResource();
-    }
-    @Override
-    protected void finalize(){
-        Logger.d("MainActivity finalized");
-    }
     @Override
     public void onNewIntent(Intent intent){
         super.onNewIntent(intent);
@@ -74,19 +48,6 @@ public abstract class MainActivity extends AppCompatActivity {
         return verifyPermissions("2",null);
     }
 
-    public boolean clearSaleGoods(){
-        boolean code ;
-        if (code = verifyClearPermissions()){
-            if (code =(MyDialog.showMessageToModalDialog(this,"是否清除销售商品？") == 1)){
-                resetOrderInfo();
-            }
-        }
-        return code;
-    }
-
-    protected void clearResource(){
-
-    }
     private void initCashierInfoAndStoreInfo(){
         final JSONObject cas_info = mCashierInfo = new JSONObject();
         final JSONObject st_info = mStoreInfo = new JSONObject();
@@ -109,61 +70,7 @@ public abstract class MainActivity extends AppCompatActivity {
         }
     }
 
-    @CallSuper
-    public void resetOrderInfo(){
-        mPermissionCashierId = "";
-        if (mSaleGoodsAdapter != null) mSaleGoodsAdapter.clearGoods();
-        clearVipInfo();
-        setSingle(false);
-        resetOrderCode();
-    }
-
-    @CallSuper
-    public void clearVipInfo(){
-        if (mVipInfo != null)mVipInfo = null;
-    }
-
-    public boolean allDiscount(double v){
-        return mSaleGoodsAdapter.allDiscount(v);
-    }
-    public void deleteMolDiscountRecord(){
-        mSaleGoodsAdapter.deleteMolDiscountRecord();
-    }
-    public void deleteAllDiscountRecord(){
-        mSaleGoodsAdapter.deleteAllDiscountRecord();
-    }
-    public String discountRecordsToString(){
-        return mSaleGoodsAdapter.discountRecordsToString();
-    }
-    public void autoMol(double mol_amt){
-        mSaleGoodsAdapter.autoMol(mol_amt);
-    }
-    public void manualMol(double mol_amt){
-        mSaleGoodsAdapter.manualMol(mol_amt);
-    }
-    public void fullReduceDiscount(){
-        mSaleGoodsAdapter.fullReduceDiscount();
-    }
-    public void deleteFullReduce(){
-        mSaleGoodsAdapter.deleteFullReduceRecord();
-    }
-    public JSONObject getFullReduceRecord(){
-        return mSaleGoodsAdapter.getFullReduceRecord();
-    }
-
-    public JSONArray getSaleData(){
-        return mSaleGoodsAdapter.getDatas();
-    }
-    public JSONArray getDiscountRecords(){
-        return mSaleGoodsAdapter.getDiscountRecords();
-    }
-    public boolean splitCombinationalGoods(final JSONArray combination_goods,int gp_id,double gp_price,double gp_num,StringBuilder err){
-        return mSaleGoodsAdapter.splitCombinationalGoods(combination_goods,gp_id,gp_price,gp_num,err);
-    }
-    public double getSumAmt(int type){
-        return mSaleGoodsAdapter.getSumAmt(type);
-    }
-    public String getPosNum(){if (null == mCashierInfo)return "";return mCashierInfo.getString("pos_num");}
+    public String getPosNum(){return null == mCashierInfo ? "" : mCashierInfo.getString("pos_num");}
     public JSONObject getCashierInfo(){
         return mCashierInfo;
     }
@@ -308,39 +215,4 @@ public abstract class MainActivity extends AppCompatActivity {
         return code;
     }
 
-    public void setSingle(boolean b){
-        if (mSaleGoodsAdapter != null) mSaleGoodsAdapter.setSingle(b);
-        if (b)resetOrderCode();
-    }
-    public boolean getSingle(){
-        return mSaleGoodsAdapter != null && mSaleGoodsAdapter.getSingle();
-    }
-    public boolean present(){
-        return null != mSaleGoodsAdapter && mSaleGoodsAdapter.present();
-    }
-
-    public JSONObject getVipInfo(){
-        return mVipInfo;
-    }
-
-    //以下方法子类重写
-    public void clearSearchEt(){
-
-    }
-    public void loadGoods(final String id){}
-    public void addSaleGoods(final @NonNull JSONObject jsonObject){}
-    public void adjustPriceRefreshGoodsInfo(final JSONArray array){}
-    public void showAdjustPriceDialog(){}
-    public boolean getPrintStatus(){
-        return false;
-    }
-    public void disposeHangBill(){}
-    public String getOrderCode(){ return "";}
-    public void resetOrderCode(){}
-
-    @CallSuper
-    public void showVipInfo(final JSONObject vip){
-        mVipInfo = vip;
-    }
-    public void triggerPsClick(){}
 }

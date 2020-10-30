@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-
 import com.wyc.cloudapp.callback.PasswordEditTextReplacement;
 import com.wyc.cloudapp.dialog.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
@@ -45,7 +44,7 @@ public final class VerifyPermissionDialog extends AbstractDialogMainActivity {
         MyDialog.ToastMessage("您取消了授权！",mContext,getWindow());
         super.closeWindow();
     }
-    @Override
+
     public void keyListenerCallBack(){
         if (mOkBtn != null)mOkBtn.callOnClick();
     }

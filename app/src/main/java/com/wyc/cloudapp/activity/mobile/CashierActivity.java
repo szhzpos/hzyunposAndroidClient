@@ -3,6 +3,7 @@ package com.wyc.cloudapp.activity.mobile;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -10,33 +11,47 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.MobileSaleGoodsAdapter;
 import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.adapter.SuperItemDecoration;
+import com.wyc.cloudapp.dialog.CustomizationView.BasketView;
 import com.wyc.cloudapp.dialog.MyDialog;
 
-public class CashierActivity extends AbstractMobileActivity {
-
+public class CashierActivity extends SaleActivity {
+    private BasketView mBasketView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_cashier_desk);
+
+        initSaleGoodsAdapter();
+        initTitle();
+        initBasketView();
     }
 
-    @Override
-    protected int getContentLayoutId() {
-        return R.layout.activity_cashier_desk;
+    private void initBasketView(){
+        mBasketView = findViewById(R.id.basketView);
+        mBasketView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
-    @Override
-    protected void initTitleText(){
+    private void initTitle(){
+        final TextView left = findViewById(R.id.left_title_tv),middle = findViewById(R.id.middle_title_tv),right = findViewById(R.id.right_title_tv);
+
+        //默认退出
+        left.setOnClickListener(v -> onBackPressed());
+        left.setText(R.string.back);
+
         final Intent intent = getIntent();
-        setMiddleText(intent.getStringExtra("title"));
-        setRightText(getString(R.string.clear_sz));
-    }
+        middle.setText(intent.getStringExtra("title"));
 
-    @Override
-    protected void initTitleClickListener(){
-        setRightListener(new View.OnClickListener() {
+        right.setText(R.string.clear_sz);
+        right.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 MyDialog.ToastMessage("清空",v.getContext(),null);

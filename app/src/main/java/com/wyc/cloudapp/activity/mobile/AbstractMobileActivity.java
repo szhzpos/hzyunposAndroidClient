@@ -9,11 +9,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.MainActivity;
 
-public abstract class AbstractMobileActivity extends AppCompatActivity {
+public abstract class AbstractMobileActivity extends MainActivity {
     private TextView mLeft,mMiddle,mRight;
     @Override
     @CallSuper

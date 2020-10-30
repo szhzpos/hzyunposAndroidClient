@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.utils.Utils;
 
 /*
@@ -17,7 +17,7 @@ import com.wyc.cloudapp.utils.Utils;
 * 重写getCurrentRecord可改变默认行为。
 * */
 public abstract class AbstractTableDataAdapter<T extends AbstractTableDataAdapter.SuperViewHolder> extends RecyclerView.Adapter<T>  {
-    protected MainActivity mContext;
+    protected SaleActivity mContext;
     protected JSONArray mDatas;
     protected View mCurrentItemView;
     private int mCurrentItemIndex = -1;

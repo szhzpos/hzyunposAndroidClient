@@ -14,28 +14,27 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.TreeListDialog;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
 import java.util.Locale;
 
-public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
-    private MainActivity mContext;
+public class AddGoodsInfoDialog extends AbstractDialogSaleActivity {
     private String mBarcode;
     private EditText mBarcodeEt,mNameEt,mPurPriceEt,mRetailPriceEt,mCategoryEt,mUnitEt,mGoodsAttrEt,mItemIdEt, mMeteringEt,mSupplierEt,mVipPriceEt;
     private JSONArray mUnitList,mCategoryList,mSupplierList;
     private OnFinishListener mFinishListener;
     private JSONObject mCurrentCategory;
-    public AddGoodsInfoDialog(@NonNull MainActivity context) {
+    public AddGoodsInfoDialog(@NonNull SaleActivity context) {
         super(context, context.getString(R.string.a_goods_sz));
-        mContext = context;
     }
 
     @Override
