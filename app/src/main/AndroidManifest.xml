@@ -37,7 +37,7 @@
         android:theme="@style/AppTheme"
         tools:targetApi="n">
         <activity android:name=".activity.SaleActivity"></activity>
-        <activity android:name=".activity.mobile.CashierActivity" />
+        <activity android:name=".activity.mobile.MobileCashierActivity" />
         <activity android:name=".activity.mobile.MobileNavigationActivity" />
         <activity
             android:name=".activity.NormalMainActivity"

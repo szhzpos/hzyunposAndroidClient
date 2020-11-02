@@ -8,7 +8,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 
-import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
 import com.wyc.cloudapp.utils.Utils;
 
 public class BasketView extends androidx.appcompat.widget.AppCompatImageView {
@@ -17,7 +16,7 @@ public class BasketView extends androidx.appcompat.widget.AppCompatImageView {
     private final Paint mPaint;
     private float mDrawableStartScale = 1.0f,mScaleStep = 0.02f;
     private final Rect mTextBounds = new Rect();
-    private Bitmap mOldBitmap;
+    private final Context mContext;
     public BasketView(Context context) {
         this(context,null,0);
     }
@@ -28,6 +27,7 @@ public class BasketView extends androidx.appcompat.widget.AppCompatImageView {
 
     public BasketView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        mContext = context;
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
     }
@@ -42,14 +42,12 @@ public class BasketView extends androidx.appcompat.widget.AppCompatImageView {
     @Override
     public void onLayout(boolean changed, int left, int top, int right, int bottom){
         super.onLayout(changed, left, top, right, bottom);
-        setDrawingCacheEnabled(true);
-        mOldBitmap= getDrawingCache();
-        setDrawingCacheEnabled(false);
     }
 
     @Override
     public void onDraw(Canvas canvas){
         float dx = mWidth >> 1,dy = mHeight >> 1;
+
         canvas.save();
 
         canvas.translate(dx,dy);
@@ -64,26 +62,27 @@ public class BasketView extends androidx.appcompat.widget.AppCompatImageView {
 
         int w = mTextBounds.width(),h = mTextBounds.height();
 
-        float radius = Math.max(w,h) / 1.5f;
-        dx = mWidth - radius;
-        dy = radius;
+        float round = Utils.dpToPx(mContext,3),padding = Utils.dpToPx(mContext,8);
+        dx = mWidth - w - padding;
+        dy = 0;
 
         mPaint.setColor(Color.RED);
-        canvas.drawCircle(dx,dy,radius,mPaint);
+        canvas.drawRoundRect(dx,dy,dx + w + padding,dy + h + padding,round,round,mPaint);
 
         mPaint.setColor(Color.WHITE);
         mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-        mPaint.setStrokeWidth(2);
-        canvas.drawText(text,dx - (w >> 1),dy + (h >> 1),mPaint);
+        mPaint.setStrokeWidth(3);
+        padding /= 2 ;
+        canvas.drawText(text,dx + padding  ,dy + h + padding,mPaint);
         mPaint.setStyle(Paint.Style.FILL);
         canvas.restore();
     }
 
     public void update(float num){
         mNumber = num;
-        int font_color = Color.GRAY;
-        if (!Utils.equalDouble(num,0.0)){
-            font_color = Color.BLUE;
+        int _color = Color.BLUE;
+        if (Utils.equalDouble(num,0.0)){
+            _color = Color.GRAY;
         }
 
         setDrawingCacheEnabled(true);
@@ -95,10 +94,11 @@ public class BasketView extends androidx.appcompat.widget.AppCompatImageView {
         setDrawingCacheEnabled(false);
         for (int i = 0;i < h;i ++){
             for (int j = 0;j < w;j ++){
-                final int color = pixels[i * w + j];
-                if (color != 0 || color != Color.BLUE){
-                    final int a = (color >> 24) & 0xff,r = (font_color >> 16) & 0xff,g = (font_color >> 8) & 0xff,bc = font_color & 0xff;
-                    pixels[i * w + j] = PrintUtilsToBitbmp.getPixel(a,r,g,bc);
+                final int color = pixels[i * w + j],alpha = color & 0xFF000000;
+                if (color == ((Color.RED & 0x00FFFFFF) | alpha) || color == ((Color.WHITE & 0x00FFFFFF) | alpha)){
+                    pixels[i * w + j] = ((Color.WHITE & 0x00FFFFFF) | alpha);
+                }else{
+                    pixels[i * w + j] = ((_color & 0x00FFFFFF) | alpha);
                 }
             }
         }

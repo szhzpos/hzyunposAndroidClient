@@ -3,6 +3,7 @@ package com.wyc.cloudapp.activity.mobile;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,12 +19,13 @@ import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.dialog.CustomizationView.BasketView;
 import com.wyc.cloudapp.dialog.MyDialog;
 
-public class CashierActivity extends SaleActivity {
+public class MobileCashierActivity extends SaleActivity {
     private BasketView mBasketView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_cashier_desk);
+        setContentView(R.layout.activity_mobile_cashier);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN) ;//显示状态栏
 
         initSaleGoodsAdapter();
         initTitle();
@@ -33,9 +35,11 @@ public class CashierActivity extends SaleActivity {
     private void initBasketView(){
         mBasketView = findViewById(R.id.basketView);
         mBasketView.setOnClickListener(new View.OnClickListener() {
+            int num = 1;
             @Override
             public void onClick(View v) {
 
+                mBasketView.update(num++);
             }
         });
     }
