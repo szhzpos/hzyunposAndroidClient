@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/CloudApp.iml" filepath="$PROJECT_DIR$/.idea/modules/CloudApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/android/CloudApp.android.iml" filepath="$PROJECT_DIR$/.idea/modules/android/CloudApp.android.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/CloudApp.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/CloudApp.app.iml" />
     </modules>
   </component>

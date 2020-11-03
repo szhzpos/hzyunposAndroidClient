@@ -68,6 +68,7 @@ public abstract class AbstractMobileFragment extends Fragment {
                 if (v instanceof TextView)intent.putExtra("title",((TextView)v).getText());
                 startActivity(intent);
             }catch (ActivityNotFoundException e){
+                e.printStackTrace();
                 MyDialog.ToastMessage("暂不支持此功能!",context,null);
             }
         }

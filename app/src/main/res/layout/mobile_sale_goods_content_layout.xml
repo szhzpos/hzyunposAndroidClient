@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/sale_goods_height"
+    android:layout_height="@dimen/mobile_sale_goods_height"
     android:orientation="vertical">
 
     <TextView
@@ -27,7 +27,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/margin_2"
+        android:paddingBottom="@dimen/margin_2">
 
         <TextView
             android:id="@+id/row_id"
@@ -41,7 +43,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
 
-            android:maxHeight="@dimen/size_35"
+            android:maxHeight="@dimen/size_40"
             android:text="某某商品"
             android:textColor="@color/black"
             android:textSize="@dimen/font_size_16" />
@@ -55,7 +57,7 @@
 
         <TextView
             android:id="@+id/barcode"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/size_118"
             android:layout_height="wrap_content"
 
             android:textColor="@color/black"
@@ -69,25 +71,39 @@
             android:textColor="@color/orange_1"
             android:textSize="@dimen/font_size_14" />
 
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/mobile_minus_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/mobile_p_m_btn_size"
+            android:layout_height="@dimen/mobile_p_m_btn_size"
+            android:layout_marginStart="@dimen/size_35"
+            android:background="@drawable/minus" />
+
         <TextView
             android:id="@+id/sale_num"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
-            android:layout_marginStart="@dimen/size_35"
-
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_14" />
-
-        <TextView
-            android:id="@+id/unit_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
             android:layout_marginStart="@dimen/margin_8"
 
+            android:layout_marginEnd="@dimen/margin_8"
+            android:text="1.00"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_14" />
+
+        <Button
+            android:id="@+id/mobile_plus_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/mobile_p_m_btn_size"
+            android:layout_height="@dimen/mobile_p_m_btn_size"
+            android:layout_marginEnd="@dimen/margin_18"
+            android:background="@drawable/plus" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -114,7 +130,7 @@
 
         <TextView
             android:id="@+id/original_price"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/size_68"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/margin_5"
             android:text="88888888"

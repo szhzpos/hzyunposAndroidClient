@@ -1,11 +1,9 @@
 package com.wyc.cloudapp.service;
 
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
@@ -14,14 +12,11 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
-import android.widget.Toast;
-
-import androidx.core.content.FileProvider;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
@@ -56,11 +51,16 @@ public class AppUpdateService extends Service {
             if (msg.what == MessageID.APP_CHECK_VER_ID) {
                 startId = msg.arg1;
                 if (msg.obj instanceof JSONObject) {
-                    check_ver((JSONObject) msg.obj);
+                    try {
+                        check_ver((JSONObject) msg.obj);
+                    }catch (JSONException e){
+                        e.printStackTrace();
+                        update_error(e.getLocalizedMessage());
+                    }
                 }
             }
         }
-        private void check_ver(final JSONObject json){
+        private void check_ver(final JSONObject json) throws JSONException {
             final String base_url = Utils.getNullStringAsEmpty(json,"url"),appid = Utils.getNullStringAsEmpty(json,"appid"),
                     appSecret = Utils.getNullStringAsEmpty(json,"appSecret"),url = base_url + "/api/pos_upgrade/index";
             final Intent check_ver_intent = new Intent(APP_PROGRESS_BROADCAST) ;

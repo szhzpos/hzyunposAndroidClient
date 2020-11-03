@@ -19,7 +19,7 @@ import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.dialog.CustomizationView.KeyboardView;
+import com.wyc.cloudapp.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
 import com.wyc.cloudapp.logger.Logger;

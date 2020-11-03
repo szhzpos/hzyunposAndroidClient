@@ -7,9 +7,12 @@ import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.activity.mobile.MobileCashierActivity;
 import com.wyc.cloudapp.adapter.AbstractSaleGoodsAdapter;
+import com.wyc.cloudapp.adapter.MobileSaleGoodsAdapter;
 import com.wyc.cloudapp.adapter.NormalSaleGoodsAdapter;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.utils.Utils;
 
 public class SaleActivity extends MainActivity{
     protected AbstractSaleGoodsAdapter mSaleGoodsAdapter;
@@ -17,7 +20,10 @@ public class SaleActivity extends MainActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mSaleGoodsAdapter = new NormalSaleGoodsAdapter(this);
+        if (this instanceof MobileCashierActivity)
+            mSaleGoodsAdapter = new MobileSaleGoodsAdapter(this);
+        else
+            mSaleGoodsAdapter = new NormalSaleGoodsAdapter(this);
     }
 
     public boolean allDiscount(double v){
@@ -113,6 +119,20 @@ public class SaleActivity extends MainActivity{
     @CallSuper
     public void showVipInfo(final JSONObject vip){
         mVipInfo = vip;
+    }
+
+    @CallSuper
+    public void minusOneGoods(){
+        if (mSaleGoodsAdapter != null)mSaleGoodsAdapter.deleteSaleGoods(mSaleGoodsAdapter.getCurrentItemIndex(),1);
+    }
+
+    @CallSuper
+    public void addOneSaleGoods(){
+        final JSONObject object = Utils.JsondeepCopy(mSaleGoodsAdapter.getCurrentContent());
+        if (!object.isEmpty()){
+            object.put("xnum",1.0);
+            mSaleGoodsAdapter.addSaleGoods(object);
+        }
     }
 
     //以下方法子类重写

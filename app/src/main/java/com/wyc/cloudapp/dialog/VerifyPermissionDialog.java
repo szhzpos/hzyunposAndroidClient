@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.callback.PasswordEditTextReplacement;
-import com.wyc.cloudapp.dialog.CustomizationView.KeyboardView;
+import com.wyc.cloudapp.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.logger.Logger;
 

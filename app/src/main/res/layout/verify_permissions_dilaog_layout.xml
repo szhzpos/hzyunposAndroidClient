@@ -26,7 +26,7 @@
             android:textColor="@color/orange_1"
             android:textSize="@dimen/font_size_16" />
 
-        <com.wyc.cloudapp.dialog.CustomizationView.EditTextForHideKeyBoard
+        <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
             android:id="@+id/cas_content"
             android:layout_width="match_parent"
             android:layout_height="@dimen/height_50"
@@ -43,7 +43,7 @@
             android:textSize="@dimen/font_size_16" />
     </LinearLayout>
 
-    <com.wyc.cloudapp.dialog.CustomizationView.KeyboardView
+    <com.wyc.cloudapp.CustomizationView.KeyboardView
         android:id="@+id/keyboard_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

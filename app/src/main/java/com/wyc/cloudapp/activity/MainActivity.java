@@ -1,6 +1,8 @@
 package com.wyc.cloudapp.activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.WindowManager;
 
 import androidx.annotation.CallSuper;
 import androidx.appcompat.app.AppCompatActivity;
@@ -213,6 +215,11 @@ public abstract class MainActivity extends AppCompatActivity {
             }
         }
         return code;
+    }
+
+    public boolean lessThan7Inches(DisplayMetrics displayMetrics){
+        double diagonal = Utils.getDisplayMetrics((WindowManager)getSystemService(WINDOW_SERVICE),displayMetrics);
+        return diagonal < 7.0;
     }
 
 }

@@ -86,7 +86,7 @@
                 android:textColor="@color/appColor"
                 android:textSize="@dimen/font_size_16" />
 
-            <com.wyc.cloudapp.dialog.CustomizationView.EditTextForHideKeyBoard
+            <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
                 android:id="@+id/user_id"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/login_text_height"
@@ -105,7 +105,7 @@
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_16" />
 
-            <com.wyc.cloudapp.dialog.CustomizationView.EditTextForHideKeyBoard
+            <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
                 android:id="@+id/password"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/login_text_height"

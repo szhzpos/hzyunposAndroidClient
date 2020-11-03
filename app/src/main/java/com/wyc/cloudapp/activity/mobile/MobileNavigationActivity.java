@@ -14,7 +14,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
-import com.wyc.cloudapp.dialog.CustomizationView.TopDrawableTextView;
+import com.wyc.cloudapp.CustomizationView.TopDrawableTextView;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.mobileFragemt.BackgroundFragment;

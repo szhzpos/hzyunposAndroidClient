@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -56,7 +57,7 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
         static final int FULL_REDUCE = 1,PRESENT = 2,PROMOTION = 3,M_DISCOUNT = 4,V_DISCOUNT = 5,A_DISCOUNT = 6,AUTO_MOL =7,M_MOL = 8;
     }
 
-    static class MyViewHolder extends RecyclerView.ViewHolder {
+    protected static class MyViewHolder extends RecyclerView.ViewHolder {
         TextView row_id,gp_id,goods_id,goods_title,unit_name,barcode_id,barcode,sale_price,sale_num,sale_amt,discount_sign,original_price;
         View mCurrentLayoutItemView;
         MyViewHolder(View itemView) {
@@ -79,14 +80,14 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
 
     @NonNull
     @Override
-    public NormalSaleGoodsAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public AbstractSaleGoodsAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         final View itemView = View.inflate(mContext, R.layout.normal_sale_goods_content_layout, null);
         itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.sale_goods_height)));
-        return new NormalSaleGoodsAdapter.MyViewHolder(itemView);
+        return new AbstractSaleGoodsAdapter.MyViewHolder(itemView);
     }
-
+    @CallSuper
     @Override
-    public void onBindViewHolder(@NonNull NormalSaleGoodsAdapter.MyViewHolder myViewHolder, int i) {
+    public void onBindViewHolder(@NonNull AbstractSaleGoodsAdapter.MyViewHolder myViewHolder, int i) {
         final JSONObject goods_info = mDatas.getJSONObject(i);
         if (goods_info != null){
             final int discount_type = Utils.getNotKeyAsNumberDefault(goods_info,"discount_type",-1);
@@ -105,8 +106,14 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
             myViewHolder.row_id.setText(String.format(Locale.CHINA,"%s%s",i + 1,"、"));
             myViewHolder.goods_id.setText(goods_info.getString("goods_id"));
             myViewHolder.gp_id.setText(goods_info.getString("gp_id"));
-            myViewHolder.goods_title.setText(goods_info.getString("goods_title"));
-            myViewHolder.unit_name.setText(goods_info.getString("unit_name"));
+
+            if (myViewHolder.unit_name != null) {
+                myViewHolder.goods_title.setText(goods_info.getString("goods_title"));
+                myViewHolder.unit_name.setText(goods_info.getString("unit_name"));
+            }else{
+                myViewHolder.goods_title.setText(String.format(Locale.CHINA,"%s(%s)",goods_info.getString("goods_title"),goods_info.getString("unit_name")));
+            }
+
             myViewHolder.barcode_id.setText(goods_info.getString("barcode_id"));
             myViewHolder.barcode.setText(goods_info.getString("barcode"));
             myViewHolder.original_price.setText(String.format(Locale.CHINA,"%.2f",goods_info.getDoubleValue("original_price")));
@@ -777,7 +784,9 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
         }
         mCurrentItemIndex = -1;
     }
-    private void setSelectStatus(View v){
+
+    @CallSuper
+    protected void setSelectStatus(View v){
         TextView goods_name;
         if(null != mCurrentItemView){
             goods_name = mCurrentItemView.findViewById(R.id.goods_title);

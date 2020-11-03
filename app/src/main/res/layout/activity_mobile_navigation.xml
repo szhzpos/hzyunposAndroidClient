@@ -22,7 +22,7 @@
         android:foreground="@drawable/round_shape_blue_foreground"
         android:orientation="horizontal">
 
-        <com.wyc.cloudapp.dialog.CustomizationView.TopDrawableTextView
+        <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
             android:id="@+id/_mobile_board_tv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -35,7 +35,7 @@
             app:animType = "1"
             app:verSpacing="@dimen/default_vertical" />
 
-        <com.wyc.cloudapp.dialog.CustomizationView.TopDrawableTextView
+        <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
             android:id="@+id/_mobile_bg_tv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -47,7 +47,7 @@
             android:textSize="@dimen/font_size_18"
             app:verSpacing="@dimen/default_vertical" />
 
-        <com.wyc.cloudapp.dialog.CustomizationView.TopDrawableTextView
+        <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
             android:id="@+id/_mobile_cas_desk_tv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -61,7 +61,7 @@
             app:selectTextColor="@color/mobile_fun_view_click"
             app:verSpacing="@dimen/default_vertical" />
 
-        <com.wyc.cloudapp.dialog.CustomizationView.TopDrawableTextView
+        <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
             android:id="@+id/_mobile_report_tv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -73,7 +73,7 @@
             android:textSize="@dimen/font_size_18"
             app:verSpacing="@dimen/default_vertical" />
 
-        <com.wyc.cloudapp.dialog.CustomizationView.TopDrawableTextView
+        <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
             android:id="@+id/_mobile_my_tv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

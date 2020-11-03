@@ -19,16 +19,16 @@ import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdapter.MyViewHolder> implements View.OnClickListener{
-    private SaleActivity mContext;
+    private final SaleActivity mContext;
     private JSONArray mDatas;
     private View mCurrentItemView;//当前选择的类别item
-    private GoodsCategoryAdapter mChildGoodsCategoryAdpter;
-    private final RecyclerView mChildGoodsCategoryView;
+    private GoodsCategoryAdapter mChildGoodsCategoryAdapter;
+    private final RecyclerView mSecLevelGoodsCategoryView;
     private boolean mChildShow = false,mFirstLoad = true;
     public GoodsCategoryAdapter(SaleActivity context, RecyclerView v){
         mContext = context;
-        mChildGoodsCategoryView = v;
-        laodChildShow();
+        mSecLevelGoodsCategoryView = v;
+        loadChildShow();
     }
 
     @Override
@@ -60,8 +60,9 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
-        private TextView category_id,category_name;
-        private View mCurrentLayoutItemView;//当前布局的item
+        private final TextView category_id;
+        private final TextView category_name;
+        private final View mCurrentLayoutItemView;//当前布局的item
         MyViewHolder(View itemView) {
             super(itemView);
             mCurrentLayoutItemView = itemView;
@@ -74,8 +75,8 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View itemView = View.inflate(mContext, R.layout.goods_type_info_content_layout, null);
-         if (null == mChildGoodsCategoryView){
+        final View itemView = View.inflate(mContext, R.layout.goods_type_info_content_layout, null);
+        if (null == mSecLevelGoodsCategoryView){
              itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) mContext.getResources().getDimension(R.dimen.height_50)));
         }else{
             itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.MATCH_PARENT));
@@ -94,9 +95,7 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
                 myViewHolder.category_name.setText(goods_type_info.getString("name"));
                 if (i == 1 && mFirstLoad){//一级分类触发第二个类别查询
                     mFirstLoad = false;
-                    if (mChildGoodsCategoryView != null){
-                        myViewHolder.mCurrentLayoutItemView.callOnClick();
-                    }
+                    myViewHolder.mCurrentLayoutItemView.callOnClick();
                 }
             }
         }
@@ -108,7 +107,7 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
     }
 
     public void setDatas(int parent_id){
-        StringBuilder err = new StringBuilder();
+        final StringBuilder err = new StringBuilder();
         if (0 == parent_id)
             mDatas = SQLiteHelper.getListToJson("select category_id,name from shop_category where parent_id='0' union select -1 category_id,'组合商品' name ",0,0,false,err);
         else
@@ -122,22 +121,22 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
     }
 
     private void showSecGoodsType(){
-            if (mCurrentItemView != null && mChildGoodsCategoryView != null && mChildShow){
+            if (mCurrentItemView != null && mSecLevelGoodsCategoryView != null && mChildShow){
                 final TextView tv = mCurrentItemView.findViewById(R.id.category_id);
                 try{
-                    if (mChildGoodsCategoryAdpter == null){
-                        mChildGoodsCategoryAdpter = new GoodsCategoryAdapter(mContext,null);
-                        mChildGoodsCategoryView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
-                        mChildGoodsCategoryView.setAdapter(mChildGoodsCategoryAdpter);
+                    if (mChildGoodsCategoryAdapter == null){
+                        mChildGoodsCategoryAdapter = new GoodsCategoryAdapter(mContext,null);
+                        mSecLevelGoodsCategoryView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
+                        mSecLevelGoodsCategoryView.setAdapter(mChildGoodsCategoryAdapter);
                     }
-                    mChildGoodsCategoryAdpter.clearCurrentItemView();
-                    mChildGoodsCategoryAdpter.setDatas(Integer.valueOf(tv.getText().toString()));
-                    if (mChildGoodsCategoryAdpter.getItemCount() == 0){
-                        mChildGoodsCategoryView.setVisibility(View.GONE);
+                    mChildGoodsCategoryAdapter.clearCurrentItemView();
+                    mChildGoodsCategoryAdapter.setDatas(Integer.parseInt(tv.getText().toString()));
+                    if (mChildGoodsCategoryAdapter.getItemCount() == 0){
+                        mSecLevelGoodsCategoryView.setVisibility(View.GONE);
                     }else{
-                        mChildGoodsCategoryView.setVisibility(View.VISIBLE);
+                        mSecLevelGoodsCategoryView.setVisibility(View.VISIBLE);
                     }
-                    mChildGoodsCategoryAdpter.notifyDataSetChanged();
+                    mChildGoodsCategoryAdapter.notifyDataSetChanged();
                 }catch (NumberFormatException e){
                     e.printStackTrace();
                 }
@@ -151,8 +150,8 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
             mCurrentItemView = null;
         }
     }
-    private void laodChildShow(){
-        JSONObject jsonObject = new JSONObject();
+    private void loadChildShow(){
+        final JSONObject jsonObject = new JSONObject();
         if (SQLiteHelper.getLocalParameter("sec_l_c_show",jsonObject)){
             mChildShow = jsonObject.getIntValue("s") == 1;
         }else{
@@ -164,8 +163,8 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
         Logger.d("trigger_preView");
         if (mCurrentItemView != null){
             final String id;
-            if (mChildShow && mChildGoodsCategoryView != null && mChildGoodsCategoryAdpter.mCurrentItemView != null){
-                id = ((TextView) mChildGoodsCategoryAdpter.mCurrentItemView.findViewById(R.id.category_id)).getText().toString();
+            if (mChildShow && mSecLevelGoodsCategoryView != null && mChildGoodsCategoryAdapter.mCurrentItemView != null){
+                id = ((TextView) mChildGoodsCategoryAdapter.mCurrentItemView.findViewById(R.id.category_id)).getText().toString();
             }else{
                 id = ((TextView) mCurrentItemView.findViewById(R.id.category_id)).getText().toString();
             }

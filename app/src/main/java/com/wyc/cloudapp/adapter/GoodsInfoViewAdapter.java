@@ -29,9 +29,9 @@ import com.wyc.cloudapp.utils.Utils;
 import java.util.Locale;
 
 public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdapter.MyViewHolder> implements View.OnClickListener {
-    public static final int SPAN_COUNT = 5;
+    public static final int SPAN_COUNT = 5,MOBILE_SPAN_COUNT = 1;
     public static final String W_G_MARK = "IWG";//计重、计份并且通过扫条码选择的商品标志
-    private SaleActivity mContext;
+    private final SaleActivity mContext;
     private JSONArray mDatas;
     private OnItemClickListener mOnItemClickListener;
     private boolean mShowPic = true;

@@ -69,5 +69,6 @@ dependencies {
     implementation 'net.sourceforge.jexcelapi:jxl:2.6.12'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'com.google.android.material:material:1.1.0'
+    implementation project(path:':android')
     implementation 'com.alibaba:fastjson:1.2.9'
 }

@@ -274,7 +274,7 @@
 
         </LinearLayout>
 
-        <com.wyc.cloudapp.dialog.CustomizationView.ScaleView
+        <com.wyc.cloudapp.CustomizationView.ScaleView
             android:id="@+id/scaleView"
             android:layout_width="match_parent"
             android:layout_height="@dimen/size_108"
@@ -548,7 +548,7 @@
                     android:textColor="@color/black_white"
                     android:textSize="@dimen/fun_button_font_size_16" />
 
-                <com.wyc.cloudapp.dialog.CustomizationView.TmpOrderButton
+                <com.wyc.cloudapp.CustomizationView.TmpOrderButton
                     android:id="@+id/tmp_order"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="@dimen/fun_button_width_size"
@@ -1202,7 +1202,7 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/fun_button_font_size_18" />
 
-        <com.wyc.cloudapp.dialog.CustomizationView.EditTextForHideKeyBoard
+        <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
             android:id="@+id/search_content"
             android:layout_width="@dimen/size_248"
             android:layout_height="@dimen/height_40"

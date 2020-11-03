@@ -13,7 +13,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
-import com.wyc.cloudapp.dialog.CustomizationView.KeyboardView;
+import com.wyc.cloudapp.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
 import com.wyc.cloudapp.utils.Utils;

@@ -46,8 +46,8 @@ import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
-import com.wyc.cloudapp.dialog.CustomizationView.ScaleView;
-import com.wyc.cloudapp.dialog.CustomizationView.TmpOrderButton;
+import com.wyc.cloudapp.CustomizationView.ScaleView;
+import com.wyc.cloudapp.CustomizationView.TmpOrderButton;
 import com.wyc.cloudapp.dialog.MoreFunDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.SecondDisplay;
@@ -232,7 +232,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                 discount_btn = findViewById(R.id.discount),change_price_btn = findViewById(R.id.change_price),check_out_btn = findViewById(R.id.check_out),
                 vip_btn = findViewById(R.id.vip);
 
-        if (minus_num_btn != null)minus_num_btn.setOnClickListener(v -> mSaleGoodsAdapter.deleteSaleGoods(mSaleGoodsAdapter.getCurrentItemIndex(),1));//数量减
+        if (minus_num_btn != null)minus_num_btn.setOnClickListener(v -> minusOneGoods());//数量减
         if (add_num_btn != null)add_num_btn.setOnClickListener(v -> addOneSaleGoods());//数量加
         if (num_btn != null)num_btn.setOnClickListener(view -> {if (verifyNumBtnPermissions())
             mSaleGoodsAdapter.updateSaleGoodsDialog((short) 0);});//数量
@@ -776,13 +776,6 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     @Override
     public void adjustPriceRefreshGoodsInfo(final JSONArray array){
         if(mGoodsInfoViewAdapter != null && null != array)mGoodsInfoViewAdapter.updateGoodsInfo(array);
-    }
-    public void addOneSaleGoods(){
-        final JSONObject object = Utils.JsondeepCopy(mSaleGoodsAdapter.getCurrentContent());
-        if (!object.isEmpty()){
-            object.put("xnum",1.0);
-            mSaleGoodsAdapter.addSaleGoods(object);
-        }
     }
 
     @Override

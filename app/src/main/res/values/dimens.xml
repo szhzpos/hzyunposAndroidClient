@@ -112,6 +112,7 @@
     <dimen name="dialog_head_heigth">@dimen/height_45</dimen>
     <dimen name="goods_height">@dimen/size_82</dimen>
     <dimen name="sale_goods_height">@dimen/height_68</dimen>
+    <dimen name="mobile_sale_goods_height">@dimen/height_88</dimen>
     <dimen name="goods_img_width">@dimen/width_88</dimen>
     <dimen name="main_middle_left_width">@dimen/size_336</dimen>
     <dimen name="login_btn_height">@dimen/height_58</dimen>
@@ -165,5 +166,6 @@
     <dimen name="board_rect_size">@dimen/size_128</dimen>
     <dimen name="default_vertical">@dimen/size_12</dimen>
     <dimen name="mobile_checkout_btn_width">@dimen/size_88</dimen>
-    <dimen name="mobile_sale_goods_content_margin">@dimen/size_12</dimen>
+    <dimen name="mobile_sale_goods_content_margin">@dimen/size_28</dimen>
+    <dimen name="mobile_p_m_btn_size">22dp</dimen>
 </resources>

@@ -646,7 +646,6 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
 
     private void launchLogin(boolean isConnection){
         CustomApplication.self().setNetworkStatus(isConnection);
-
         final Intent intent = new Intent(this,NormalMainActivity.class);
         if (isSmallScreen)intent.setClass(this, MobileNavigationActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -657,28 +656,32 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
     private void offline_login(){
         MyDialog.displayAskMessage(myDialog, "连接服务器失败，是否离线登录？", this, myDialog -> {
             myDialog.dismiss();
-            final String user_id = mUserId.getText().toString(),password = mPassword.getText().toString();
+            final String user_id = mUserId.getText().toString(), password = mPassword.getText().toString();
             final String local_password = Utils.getUserIdAndPasswordCombinationOfMD5(user_id + password);
             final StringBuilder err = new StringBuilder();
             JSONObject param_obj = new JSONObject();
-            if (SQLiteHelper.getLocalParameter("connParam",param_obj)){
-                param_obj = Utils.getNullObjectAsEmptyJson(param_obj,"storeInfo");
+            if (SQLiteHelper.getLocalParameter("connParam", param_obj)) {
+                param_obj = Utils.getNullObjectAsEmptyJson(param_obj, "storeInfo");
                 final String stroesid = param_obj.getString("stores_id");
                 final String sz_count = SQLiteHelper.getString("SELECT count(cas_id) count FROM cashier_info where " +
-                        "cas_account = '"+ user_id +"' and stores_id = '" + stroesid +"' and cas_pwd = '"+ local_password +"'",err);
+                        "cas_account = '" + user_id + "' and stores_id = '" + stroesid + "' and cas_pwd = '" + local_password + "'", err);
 
                 Logger.d("SELECT count(cas_id) count FROM cashier_info where " +
-                        "cas_account = '"+ user_id +"' and stores_id = '" + stroesid +"' and cas_pwd = '"+ local_password +"'");
+                        "cas_account = '" + user_id + "' and stores_id = '" + stroesid + "' and cas_pwd = '" + local_password + "'");
 
-                if (Integer.parseInt(sz_count) > 0){
+                if (Integer.parseInt(sz_count) > 0) {
                     launchLogin(false);
-                }else {
-                    if (mHandler != null)mHandler.obtainMessage(MessageID.LOGIN_ID_ERROR_ID, "不存在此用户！").sendToTarget();
+                } else {
+                    if (mHandler != null)
+                        mHandler.obtainMessage(MessageID.LOGIN_ID_ERROR_ID, "不存在此用户！").sendToTarget();
                 }
-            }else {
-                MyDialog.displayErrorMessage(myDialog,"查询连接参数错误:" + param_obj.getString("info"),this);
+            } else {
+                MyDialog.displayErrorMessage(myDialog, "查询连接参数错误:" + param_obj.getString("info"), this);
             }
-        }, MyDialog::dismiss);
+        }, myDialog -> {
+            myDialog.dismiss();
+            finish();
+        });
     }
 
 
