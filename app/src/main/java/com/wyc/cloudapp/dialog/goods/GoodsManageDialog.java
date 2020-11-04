@@ -127,12 +127,12 @@ public final class GoodsManageDialog extends AbstractDialogSaleActivity {
     private void initWindowSize(){//初始化窗口尺寸
         WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
         if (m != null){
-            Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
-            Point point = new Point();
+            final Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+            final Point point = new Point();
             d.getSize(point);
-            Window dialogWindow = this.getWindow();
+            final Window dialogWindow = this.getWindow();
             if (dialogWindow != null){
-                WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+                final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
                 dialogWindow.setGravity(Gravity.CENTER);
                 lp.height = (int)(0.98 * point.y);
                 dialogWindow.setAttributes(lp);

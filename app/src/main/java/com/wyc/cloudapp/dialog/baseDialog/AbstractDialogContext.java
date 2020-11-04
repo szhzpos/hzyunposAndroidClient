@@ -11,6 +11,7 @@ public abstract class AbstractDialogContext extends AbstractDialog {
     }
     public AbstractDialogContext(@NonNull Context context, final String title, int style){
         super(context,title,style);
+        mContext = context;
     }
 
     @Override

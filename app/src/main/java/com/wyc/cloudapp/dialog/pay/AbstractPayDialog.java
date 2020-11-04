@@ -1,9 +1,13 @@
 package com.wyc.cloudapp.dialog.pay;
 
+import android.graphics.Point;
 import android.os.Bundle;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -21,6 +25,8 @@ import com.wyc.cloudapp.utils.Utils;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import static android.content.Context.WINDOW_SERVICE;
 
 public abstract class AbstractPayDialog extends AbstractDialogSaleActivity implements IPay {
     protected EditText mPayAmtEt,mPayCode;
@@ -49,7 +55,6 @@ public abstract class AbstractPayDialog extends AbstractDialogSaleActivity imple
 
         //初始化数字键盘
         initKeyboardView();
-
     }
     @Override
     protected int getContentLayoutId(){
@@ -183,7 +188,11 @@ public abstract class AbstractPayDialog extends AbstractDialogSaleActivity imple
 
     private void initKeyboardView(){
         final KeyboardView view = findViewById(R.id.keyboard_view);
-        view.layout(R.layout.pay_method_keyboard_layout);
+        if (mContext.lessThan7Inches(null)){
+            view.layout(R.layout.mobile_pay_method_keyboard_layout);
+            initWindowSize();
+        }else
+            view.layout(R.layout.pay_method_keyboard_layout);
         view.setCurrentFocusListenner(() -> {
             final View focus = getCurrentFocus();
             if (focus instanceof EditText){
@@ -197,4 +206,21 @@ public abstract class AbstractPayDialog extends AbstractDialogSaleActivity imple
         });
         mOk = view.getOkBtn();
     }
+
+    private void initWindowSize(){//初始化窗口尺寸
+        WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
+        if (m != null){
+            final Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+            final Point point = new Point();
+            d.getSize(point);
+            final Window dialogWindow = this.getWindow();
+            if (dialogWindow != null){
+                final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+                dialogWindow.setGravity(Gravity.CENTER);
+                lp.width = (int)(0.98 * point.x);
+                dialogWindow.setAttributes(lp);
+            }
+        }
+    }
+
 }

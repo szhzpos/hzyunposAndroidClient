@@ -11,10 +11,11 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
 
 public final class TopDrawableTextView extends androidx.appcompat.widget.AppCompatTextView{
-    private float mVerSpacing;
+    private float mVerSpacing,mBottomSpacing;
     private final Drawable[] mDrawables;
     private Drawable mTopDrawable;
     private final Paint mPaint = new Paint();;
@@ -48,6 +49,8 @@ public final class TopDrawableTextView extends androidx.appcompat.widget.AppComp
                 mAnimType = typedArray.getInt(index, 0);
             }else if (index == R.styleable.DrawableTextViewTopMargin_selectTextColor){
                 mSelectTextColor = typedArray.getColor(index,default_color);
+            }else if (index == R.styleable.DrawableTextViewTopMargin_bottomSpacing){
+                mBottomSpacing = typedArray.getDimension(index, 0);
             }
         }
         if (mSelectTextColor == 0)mSelectTextColor = default_color;
@@ -96,7 +99,7 @@ public final class TopDrawableTextView extends androidx.appcompat.widget.AppComp
             int top = (view_h - h) >> 1,left = (view_w - bound_width) >> 1;
             rect.set(rect.left + left,rect.top + top,rect.right + left,rect.bottom + top);
 
-            final int dx = view_w >> 1,dy = (bound_height + (top << 1)) >> 1,t_dx = (view_w - font_w) >> 1,t_dy = h + (font_h >> 1);
+            final int dx = view_w >> 1,dy = (bound_height + (top << 1)) >> 1,t_dx = (view_w - font_w) >> 1,t_dy = (int) (h + (font_h >> 1) - mBottomSpacing);
 
 
             mTopDrawablePosition |= dx << 16 ;

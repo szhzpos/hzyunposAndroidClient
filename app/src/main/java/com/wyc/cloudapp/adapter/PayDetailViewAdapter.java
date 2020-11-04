@@ -1,18 +1,17 @@
 package com.wyc.cloudapp.adapter;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.callback.ClickListener;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -123,21 +122,27 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
         return mDatas;
     }
 
-    public void addPayDetail(JSONObject pay_detail_info){
+    public double addPayDetail(JSONObject pay_detail_info){
+        double amt = 0.0;
         if (pay_detail_info != null){
-            JSONObject object = findPayDetailById(pay_detail_info.getString("pay_method_id"));
+            amt = pay_detail_info.getDouble("pamt");
+            final JSONObject object = findPayDetailById(pay_detail_info.getString("pay_method_id"));
             if (object != null){
                 double payed_amt = object.getDouble("pamt"),
                         zl_amt = object.getDouble("pzl");
 
-                object.put("pamt",Utils.formatDouble(payed_amt + pay_detail_info.getDouble("pamt"),2));
+                amt += payed_amt;
+
+                object.put("pamt",Utils.formatDouble(amt,2));
                 object.put("pzl",Utils.formatDouble(zl_amt + pay_detail_info.getDouble("pzl"),2));
                 object.put("v_num",pay_detail_info.getString("v_num"));
+
             }else{
                 mDatas.add(pay_detail_info);
             }
             notifyDataSetChanged();
         }
+        return amt;
     }
 
     private void deletePayDetail(int index){

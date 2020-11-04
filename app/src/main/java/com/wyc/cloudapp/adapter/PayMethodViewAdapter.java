@@ -1,14 +1,13 @@
 package com.wyc.cloudapp.adapter;
 
-import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -17,7 +16,6 @@ import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.logger.Logger;
 
 public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdapter.MyViewHolder> {
     public static final String CASH_METHOD_ID = "1";//现金支付方式id
@@ -31,12 +29,13 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
         mWidth = width;
     }
     static class MyViewHolder extends RecyclerView.ViewHolder {
-        private TextView pay_method_id,pay_method_name;
-        private View mCurrentLayoutItemView;//当前布局的item
+        private final TextView pay_method_id,pay_method_name,pay_amt_tv;
+        private final View mCurrentLayoutItemView;//当前布局的item
         MyViewHolder(View itemView) {
             super(itemView);
             pay_method_id = itemView.findViewById(R.id.pay_method_id);
             pay_method_name =  itemView.findViewById(R.id.pay_method_name);
+            pay_amt_tv = itemView.findViewById(R.id._amt_tv);
 
             mCurrentLayoutItemView = itemView;
 
@@ -46,7 +45,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View itemView = View.inflate(mContext, R.layout.pay_method_content_layout, null);
+        final View itemView = View.inflate(mContext, R.layout.pay_method_content_layout, null);
         itemView.setLayoutParams( new RecyclerView.LayoutParams(mWidth, ViewGroup.LayoutParams.MATCH_PARENT));
         return new MyViewHolder(itemView);
     }
@@ -72,6 +71,11 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
                 pay_method_id = pay_method_info.getString("pay_method_id");
                 myViewHolder.pay_method_id.setText(pay_method_id);
                 myViewHolder.pay_method_name.setText(pay_method_info.getString("name"));
+
+                if (myViewHolder.pay_amt_tv.getText().length() != 0)
+                    myViewHolder.pay_amt_tv.setVisibility(View.VISIBLE);
+                else
+                    myViewHolder.pay_amt_tv.setVisibility(View.GONE);
 
                 if(PayMethodViewAdapter.CASH_METHOD_ID.equals(pay_method_id)){//默认现金
                     showDefaultPayMethod(myViewHolder.mCurrentLayoutItemView);
@@ -114,7 +118,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
         return mDatas == null ? 0 : mDatas.size();
     }
 
-    private View.OnHoverListener hoverListener = new View.OnHoverListener() {
+    private final View.OnHoverListener hoverListener = new View.OnHoverListener() {
         @Override
         public boolean onHover(View v, MotionEvent event) {
             final TextView view = v.findViewById(R.id.pay_method_name);
@@ -155,7 +159,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     }
 
     public void loadRefundPayMeothd(){
-        StringBuilder err = new StringBuilder();
+        final StringBuilder err = new StringBuilder();
         mDatas = SQLiteHelper.getListToJson("select *  from pay_method where status = '1' and is_check = 2 order by sort",err);
         if (mDatas != null){
             this.notifyDataSetChanged();
@@ -166,7 +170,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
 
     public JSONObject get_pay_method(final String pay_method_id){
         if (mDatas != null && pay_method_id != null){
-            for (int i = 0,lengh = mDatas.size();i < lengh;i++){
+            for (int i = 0,length = mDatas.size();i < length;i++){
                 JSONObject jsonObject = mDatas.getJSONObject(i);
                 if (pay_method_id.equals(jsonObject.getString("pay_method_id"))){
                     return jsonObject;
@@ -207,6 +211,16 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
                 if (sign != null)sign.setVisibility(View.VISIBLE);
             }
             mCurrentItemView = mDefaultPayMethodView;
+        }
+    }
+
+    public void showCurrentPayMethodAmt(double amt){
+        if (mCurrentItemView != null){
+            final TextView tv = mCurrentItemView.findViewById(R.id._amt_tv);
+            tv.setVisibility(View.VISIBLE);
+            tv.setText(String.valueOf(amt));
+
+            notifyDataSetChanged();
         }
     }
 

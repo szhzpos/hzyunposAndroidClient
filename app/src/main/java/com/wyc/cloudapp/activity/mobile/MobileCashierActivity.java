@@ -1,16 +1,16 @@
 package com.wyc.cloudapp.activity.mobile;
 
 import android.annotation.SuppressLint;
-import android.app.Instrumentation;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ReplacementTransformationMethod;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -28,22 +28,33 @@ import com.wyc.cloudapp.adapter.GoodsInfoItemDecoration;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.adapter.SuperItemDecoration;
-import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.goods.AddGoodsInfoDialog;
-import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
+import com.wyc.cloudapp.dialog.pay.PayDialog;
+import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
+import com.wyc.cloudapp.utils.Utils;
+
+import java.util.Locale;
 
 public class MobileCashierActivity extends SaleActivity {
+    public static final int PAY_REQUEST_CODE = 0x000000aa;
     private static final int CODE_REQUEST_CODE = 0x000000bb;
     private BasketView mBasketView;
     private EditText mSearchContent;
     private GoodsInfoViewAdapter mGoodsInfoViewAdapter;
     private GoodsCategoryAdapter mGoodsCategoryAdapter;
+    private String mOrderCode = "";
+    private ScanCallback mScanCallback;
+    private TextView mSaleSumAmtTv;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mobile_cashier);
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN) ;//显示状态栏
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+        mSaleSumAmtTv = findViewById(R.id.mobile_sale_amt);
 
         initGoodsInfoAdapter();
         initGoodsCategoryAdapter();
@@ -52,6 +63,49 @@ public class MobileCashierActivity extends SaleActivity {
         initTitle();
         initBasketView();
         initSearchContent();
+        initCheckout();
+        initVipBtn();
+
+        //重置订单信息
+        resetOrderInfo();
+    }
+
+    private void initVipBtn(){
+        final Button btn = findViewById(R.id.mobile_vip_btn);
+        if (btn != null)
+            btn.setOnClickListener(v -> {
+            final VipInfoDialog vipInfoDialog = new VipInfoDialog(this);
+            if (mVipInfo != null){
+                if (1 == MyDialog.showMessageToModalDialog(this,"已存在会员信息,是否清除？")){
+                    clearVipInfo();
+                }
+            }else
+                vipInfoDialog.setYesOnclickListener(dialog -> {showVipInfo(dialog.getVip());dialog.dismiss(); }).show();
+        });
+    }
+
+    private void initCheckout(){
+        final Button btn = findViewById(R.id.mobile_checkout_btn);
+        btn.setOnClickListener(v -> {
+            Utils.disableView(v,500);
+            if (!mSaleGoodsAdapter.isEmpty()){
+                if (!getSingle()){
+                    final PayDialog dialog = new PayDialog(this,getString(R.string.affirm_pay_sz));
+                    dialog.initPayContent();
+                    if (mVipInfo != null)dialog.setVipInfo(mVipInfo,true);
+                    if (dialog.exec() == 1){
+                        mApplication.sync_retail_order();
+                        resetOrderInfo();
+                        MyDialog.ToastMessage("结账成功!",this,null);
+                    }
+                }else {
+                    final RefundDialog refundDialog = new RefundDialog(this,"");
+                    refundDialog.show();
+                }
+            }else{
+                MyDialog.ToastMessage("已选商品为空!",this,null);
+            }
+        });
     }
 
     private void initGoodsInfoAdapter(){
@@ -61,7 +115,10 @@ public class MobileCashierActivity extends SaleActivity {
         goods_info_view.setLayoutManager(gridLayoutManager);
         SuperItemDecoration.registerGlobalLayoutToRecyclerView(goods_info_view,getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration(-1));
         mGoodsInfoViewAdapter.setOnItemClickListener(object -> {
-            if (object != null)addSaleGoods(object);
+            if (object != null){
+                addSaleGoods(object);
+                switchView();
+            }
         });
         goods_info_view.setAdapter(mGoodsInfoViewAdapter);
     }
@@ -77,35 +134,6 @@ public class MobileCashierActivity extends SaleActivity {
     @SuppressLint("ClickableViewAccessibility")
     private void initSearchContent(){
         final EditText search = findViewById(R.id.mobile_search_content);
-        search.setOnKeyListener((v, keyCode, event) -> {
-            Logger.d("keyCode:%d,action:%d",keyCode,event.getAction());
-            if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_DOWN){
-                final SaleActivity context = this;
-                final String content = search.getText().toString();
-                if (content.length() == 0){
-                    mGoodsCategoryAdapter.trigger_preView();
-                }else{
-                    if (!mGoodsInfoViewAdapter.fuzzy_search_goods(content,true)) {
-                        search.post(()->{
-                            if (mApplication.isConnection() && AddGoodsInfoDialog.verifyGoodsAddPermissions(context)) {
-                                if (1 == MyDialog.showMessageToModalDialog(context,"未找到匹配商品，是否新增?")){
-                                    final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(context);
-                                    addGoodsInfoDialog.setBarcode(search.getText().toString());
-                                    addGoodsInfoDialog.setFinishListener(barcode -> {
-                                        mGoodsInfoViewAdapter.fuzzy_search_goods(content,true);
-                                        addGoodsInfoDialog.dismiss();
-                                    });
-                                    addGoodsInfoDialog.show();
-                                }
-                            } else
-                                MyDialog.ToastMessage("无此商品!", context, getWindow());
-                        });
-                    }
-                }
-                return true;
-            }
-            return false;
-        });
         search.setTransformationMethod(new ReplacementTransformationMethod() {
             @Override
             protected char[] getOriginal() {
@@ -127,12 +155,14 @@ public class MobileCashierActivity extends SaleActivity {
                     mSearchContent.requestFocus();
                     final Intent intent = new Intent("com.google.zxing.client.android.SCAN");
                     startActivityForResult(intent, CODE_REQUEST_CODE);
-                }else if(dx < w - mSearchContent.getCompoundPaddingLeft()){
+                }else if(dx < mSearchContent.getCompoundPaddingLeft()){
                     switchView();
                 }
+                return true;
             }
             return false;
         });
+        search.postDelayed(search::requestFocus,500);
         mSearchContent = search;
     }
 
@@ -140,6 +170,7 @@ public class MobileCashierActivity extends SaleActivity {
         final ViewGroup sale_info_layout = findViewById(R.id.sale_info_layout),
                 goods_info_layout = findViewById(R.id.goods_info_layout);
         if (sale_info_layout.getVisibility() == View.GONE){
+            mSearchContent.postDelayed(mSearchContent::requestFocus,500);
             sale_info_layout.setVisibility(View.VISIBLE);
             goods_info_layout.setVisibility(View.GONE);
         }else {
@@ -151,17 +182,40 @@ public class MobileCashierActivity extends SaleActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent){//条码回调
         if (resultCode == RESULT_OK ){
+            final String _code = intent.getStringExtra("auth_code");
             if (requestCode == CODE_REQUEST_CODE) {
                 if (mSearchContent != null){
-                    mSearchContent.setText(intent.getStringExtra("auth_code"));
-                    CustomApplication.execute(()->{
-                        final Instrumentation inst = new Instrumentation();
-                        inst.sendKeyDownUpSync(KeyEvent.KEYCODE_ENTER);
-                    });
+                    selectGoods(_code);
                 }
+            }else if (requestCode == PAY_REQUEST_CODE){
+                if (mScanCallback != null)mScanCallback.callback(_code);
             }
         }
         super.onActivityResult(requestCode,resultCode,intent);
+    }
+
+    private void selectGoods(final String content){
+        final EditText search = mSearchContent;
+        if (null != content && content.length() != 0){
+            mSearchContent.setText(content);
+            mSearchContent.selectAll();
+            if (!mGoodsInfoViewAdapter.fuzzy_search_goods(content,true)) {
+                search.post(()->{
+                    if (mApplication.isConnection() && AddGoodsInfoDialog.verifyGoodsAddPermissions(this)) {
+                        if (1 == MyDialog.showMessageToModalDialog(this,"未找到匹配商品，是否新增?")){
+                            final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(this);
+                            addGoodsInfoDialog.setBarcode(search.getText().toString());
+                            addGoodsInfoDialog.setFinishListener(barcode -> {
+                                mGoodsInfoViewAdapter.fuzzy_search_goods(content,true);
+                                addGoodsInfoDialog.dismiss();
+                            });
+                            addGoodsInfoDialog.show();
+                        }
+                    } else
+                        MyDialog.ToastMessage("无此商品!", this, getWindow());
+                });
+            }
+        }
     }
 
     private void initBasketView(){
@@ -179,12 +233,14 @@ public class MobileCashierActivity extends SaleActivity {
         middle.setText(intent.getStringExtra("title"));
 
         right.setText(R.string.clear_sz);
-        right.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MyDialog.ToastMessage("清空",v.getContext(),null);
-            }
-        });
+        right.setOnClickListener(v -> clear());
+    }
+    private void clear(){
+        if (!mSaleGoodsAdapter.isEmpty()){
+            clearSaleGoods();
+        }else {
+            if (getSingle())resetOrderInfo();
+        }
     }
 
     @Override
@@ -210,6 +266,7 @@ public class MobileCashierActivity extends SaleActivity {
                     sale_sum_amount += jsonObject.getDouble("sale_amt");
                     dis_sum_amt += jsonObject.getDouble("discount_amt");
                 }
+                mSaleSumAmtTv.setText(String.format(Locale.CANADA,"%.2f",sale_sum_amount));
                 if (mBasketView != null)mBasketView.update(sale_sum_num);
                 mSaleGoodsRecyclerView.scrollToPosition(mSaleGoodsAdapter.getCurrentItemIndex());
             }
@@ -232,5 +289,54 @@ public class MobileCashierActivity extends SaleActivity {
         }else{
             MyDialog.ToastMessage("选择商品错误：" + content.getString("info"),this,null);
         }
+    }
+    @Override
+    public void resetOrderCode(){
+        mOrderCode = mSaleGoodsAdapter.generateOrderCode(mCashierInfo.getString("pos_num"),1);
+    }
+    @Override
+    public String getOrderCode(){ return mOrderCode;}
+
+    @Override
+    public void showVipInfo(final JSONObject vip){
+        super.showVipInfo(vip);
+        final LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
+        if (vip_info_linearLayout != null && vip != null){
+            vip_info_linearLayout.setVisibility(View.VISIBLE);
+            final TextView vip_name_tv = vip_info_linearLayout.findViewById(R.id.vip_name),vip_phone_num_tv = vip_info_linearLayout.findViewById(R.id.vip_phone_num);
+            if (null != vip_name_tv && vip_phone_num_tv != null){
+                vip_name_tv.setText(vip.getString("name"));
+                vip_phone_num_tv.setText(vip.getString("mobile"));
+            }
+            mSaleGoodsAdapter.updateGoodsInfoToVip(vip);
+        }
+    }
+    @Override
+    public void clearVipInfo(){
+        super.clearVipInfo();
+        final LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
+        vip_info_linearLayout.setVisibility(View.GONE);
+        final TextView vip_name_tv = vip_info_linearLayout.findViewById(R.id.vip_name),vip_phone_num_tv = vip_info_linearLayout.findViewById(R.id.vip_phone_num);
+        if (null != vip_name_tv && vip_phone_num_tv != null){
+            vip_name_tv.setText(getText(R.string.space_sz));
+            vip_phone_num_tv.setText(getText(R.string.space_sz));
+        }
+        if (!mSaleGoodsAdapter.getDatas().isEmpty()){
+            mSaleGoodsAdapter.deleteVipDiscountRecord();
+        }
+    }
+
+    @Override
+    public void clearSearchEt(){
+        if (mSearchContent != null)mSearchContent.getText().clear();
+    }
+
+    @Override
+    public void setScanCallback(final ScanCallback callback){
+        mScanCallback = callback;
+    }
+    @Override
+    public void clearScanCallback(){
+        if (mScanCallback != null)mScanCallback = null;
     }
 }

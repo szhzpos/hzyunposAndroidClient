@@ -685,7 +685,7 @@
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 android:textSize="@dimen/num_keyboard_font_size_24"
-                app:layout_constraintStart_toEndOf="@id/_nine"
+                app:layout_constraintStart_toEndOf="@id/_three"
                 app:layout_constraintTop_toTopOf="@id/_three" />
 
             <Button

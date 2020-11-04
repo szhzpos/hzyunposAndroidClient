@@ -104,7 +104,10 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
     }
     @Override
     protected int getContentLayoutId(){
-        return R.layout.pay_dialog_content_layout;
+        if (mContext.lessThan7Inches(null)){
+            return R.layout.mobile_pay_dialog_content_layout;
+        }else
+            return R.layout.pay_dialog_content_layout;
     }
 
     @Override
@@ -332,7 +335,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
                                 payMethodDialogImp.setYesOnclickListener(dialog -> {
                                     final JSONObject jsonObject = dialog.getContent();
                                     if (jsonObject != null) {
-                                        mPayDetailViewAdapter.addPayDetail(jsonObject);
+                                        mPayMethodViewAdapter.showCurrentPayMethodAmt(mPayDetailViewAdapter.addPayDetail(jsonObject));
                                         dialog.dismiss();
                                     }
                                 }).setCancelListener(dialog -> {
@@ -555,7 +558,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
                     pay_method_json.put("pamt",mCashAmt);
                     pay_method_json.put("pzl",String.format(Locale.CHINA,"%.2f",mZlAmt));
                     pay_method_json.put("v_num","");
-                    mPayDetailViewAdapter.addPayDetail(pay_method_json);
+                    mPayMethodViewAdapter.showCurrentPayMethodAmt(mPayDetailViewAdapter.addPayDetail(pay_method_json));
                 }else{
                     MyDialog.ToastMessage("现金付款方式不存在！", mContext,null);
                 }
@@ -1012,6 +1015,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
                     paySuccess();
                 }
             } else{
+                mPayStatus = false;
                 final String sz_err = String.format(Locale.CHINA,"数据表,%s未更新，value:%s,whereClause:%s,whereArgs:%s",tables.get(index),valueList.get(index),whereClauseList.get(index),Arrays.toString(whereArgsList.get(index)));
                 Logger.e(sz_err);
                 err.append(sz_err);

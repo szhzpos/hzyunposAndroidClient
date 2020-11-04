@@ -13,12 +13,14 @@
     <dimen name="font_size_14">14sp</dimen>
     <dimen name="font_size_16">16sp</dimen>
     <dimen name="font_size_18">18sp</dimen>
+    <dimen name="font_size_20">20sp</dimen>
     <dimen name="font_size_22">22sp</dimen>
     <dimen name="font_size_24">24sp</dimen>
     <dimen name="fun_button_font_size_18">@dimen/font_size_18</dimen>
     <dimen name="fun_button_font_size_24">@dimen/font_size_24</dimen>
     <dimen name="fun_button_font_size_16">@dimen/font_size_16</dimen>
     <dimen name="num_keyboard_font_size_18">@dimen/font_size_18</dimen>
+    <dimen name="num_keyboard_font_size_20">@dimen/font_size_20</dimen>
     <dimen name="num_keyboard_font_size_24">@dimen/font_size_24</dimen>
     <dimen name="pay_detail_head_font_size">@dimen/font_size_16</dimen>
     <dimen name="keyboard_button_width">@dimen/width_68</dimen>
@@ -62,6 +64,7 @@
     <dimen name="size_8">8dp</dimen>
     <dimen name="size_12">12dp</dimen>
     <dimen name="size_18">18dp</dimen>
+    <dimen name="size_20">20dp</dimen>
     <dimen name="size_35">35dp</dimen>
     <dimen name="size_32">32dp</dimen>
     <dimen name="size_30">30dp</dimen>
@@ -112,7 +115,7 @@
     <dimen name="dialog_head_heigth">@dimen/height_45</dimen>
     <dimen name="goods_height">@dimen/size_82</dimen>
     <dimen name="sale_goods_height">@dimen/height_68</dimen>
-    <dimen name="mobile_sale_goods_height">@dimen/height_88</dimen>
+    <dimen name="mobile_sale_goods_height">@dimen/height_78</dimen>
     <dimen name="goods_img_width">@dimen/width_88</dimen>
     <dimen name="main_middle_left_width">@dimen/size_336</dimen>
     <dimen name="login_btn_height">@dimen/height_58</dimen>
@@ -123,6 +126,10 @@
     <dimen name="mobile_login_text_height">@dimen/height_40</dimen>
     <dimen name="pay_dialog_button_width">@dimen/width_75</dimen>
     <dimen name="pay_dialog_button_height">@dimen/size_60</dimen>
+
+    <dimen name="mobile_pay_dialog_button_width">@dimen/size_0</dimen>
+    <dimen name="mobile_pay_dialog_button_height">@dimen/size_50</dimen>
+
     <dimen name="login_keyboard_button_width">@dimen/width_80</dimen>
     <dimen name="login_keyboard_button_height">@dimen/size_65</dimen>
     <dimen name="mobile_login_keyboard_button_width">@dimen/size_45</dimen>

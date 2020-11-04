@@ -59,29 +59,42 @@
             android:textSize="@dimen/font_size_18" />
     </LinearLayout>
 
-    <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
-        android:id="@+id/mobile_search_content"
+    <TextView
+        android:id="@+id/mobile_order_code"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/height_50"
-        android:layout_gravity="center"
-        android:background="@drawable/border_sub_gray"
-        android:drawableStart="@drawable/r_card"
-        android:drawableEnd="@drawable/scan"
-        android:drawablePadding="@dimen/margin_8"
-        android:ems="10"
-        android:hint="@string/b_z_sz"
-        android:importantForAutofill="no"
-        android:inputType="textPersonName"
-        android:padding="@dimen/margin_5"
-        android:singleLine="true"
-        android:textColor="@color/text_color"
-        android:textSize="@dimen/font_size_18" />
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/sale_info_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:focusable="auto"
+        android:focusableInTouchMode="true"
         android:visibility="visible">
+
+        <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+            android:id="@+id/mobile_search_content"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_50"
+            android:layout_gravity="center"
+            android:background="@drawable/border_sub_gray"
+            android:drawableStart="@drawable/sel"
+            android:drawableEnd="@drawable/scan"
+            android:drawablePadding="@dimen/margin_8"
+            android:ems="10"
+            android:focusableInTouchMode="true"
+            android:hint="@string/barcode_sz"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            android:padding="@dimen/margin_5"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_18"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/mobile_sale_goods_list"
@@ -90,7 +103,7 @@
             app:layout_constraintBottom_toTopOf="@id/mobile_bottom_btn_layout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/mobile_search_content" />
 
         <Button
             android:id="@+id/mobile_other_fun_btn"
@@ -99,7 +112,8 @@
             android:layout_height="@dimen/height_58"
             android:layout_marginEnd="@dimen/margin_8"
             android:layout_marginBottom="@dimen/margin_8"
-            android:background="@drawable/selected"
+            android:background="@drawable/more"
+            android:focusable="false"
             app:layout_constraintBottom_toTopOf="@+id/mobile_bottom_btn_layout"
             app:layout_constraintEnd_toEndOf="parent" />
 
@@ -109,7 +123,7 @@
             android:layout_height="@dimen/height_58"
             android:layout_marginBottom="@dimen/margin_5"
             android:orientation="horizontal"
-            app:layout_constraintBottom_toTopOf="@+id/mobile_bottom_layout"
+            app:layout_constraintBottom_toTopOf="@id/vip_info_linearLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
@@ -122,6 +136,7 @@
                 android:layout_marginEnd="@dimen/margin_5"
                 android:layout_weight="1"
                 android:background="@drawable/button_blue"
+                android:focusable="false"
                 android:text="@string/vip_button_sz"
                 android:textColor="@color/blue_white"
                 android:textSize="@dimen/font_size_18" />
@@ -135,9 +150,57 @@
                 android:layout_marginEnd="@dimen/margin_5"
                 android:layout_weight="1"
                 android:background="@drawable/button_blue"
+                android:focusable="false"
                 android:text="@string/sale_man_sz"
                 android:textColor="@color/blue_white"
                 android:textSize="@dimen/font_size_18" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/vip_info_linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/mobile_bottom_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/vip_info_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/fun_button_font_size_16" />
+
+            <TextView
+                android:id="@+id/vip_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/fun_button_font_size_16" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/vip_ph_num_sz"
+                android:textAlignment="center"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/fun_button_font_size_16" />
+
+            <TextView
+                android:id="@+id/vip_phone_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/fun_button_font_size_16" />
         </LinearLayout>
 
         <LinearLayout
@@ -165,7 +228,8 @@
                 android:gravity="center"
                 android:text="@string/z_p_z_sz"
                 android:textColor="@color/orange_1"
-                android:textSize="@dimen/font_size_24" />
+                android:textSize="@dimen/font_size_24"
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/mobile_checkout_btn"
@@ -173,6 +237,7 @@
                 android:layout_width="@dimen/mobile_checkout_btn_width"
                 android:layout_height="match_parent"
                 android:background="@drawable/button_sub_blue"
+                android:focusable="false"
                 android:text="@string/check_out_sz"
                 android:textColor="@color/orange_1"
                 android:textSize="@dimen/font_size_24" />
@@ -184,18 +249,46 @@
         android:id="@+id/goods_info_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:visibility="gone">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/mobile_goods_type_list"
-            android:layout_width="@dimen/width_88"
-            android:layout_height="match_parent" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/mobile_goods_info_list"
+        <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+            android:id="@+id/mobile_search_goods"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="@dimen/height_50"
+            android:layout_gravity="center"
+            android:background="@drawable/border_sub_gray"
+            android:drawableEnd="@drawable/search"
+            android:drawablePadding="@dimen/margin_8"
+            android:ems="10"
+            android:hint="@string/b_z_sz"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            android:padding="@dimen/margin_5"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_18" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/mobile_goods_type_list"
+                android:layout_width="@dimen/width_88"
+                android:layout_height="match_parent">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/mobile_goods_info_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>

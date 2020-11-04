@@ -150,4 +150,13 @@ public class SaleActivity extends MainActivity{
     public String getOrderCode(){ return "";}
     public void resetOrderCode(){}
     public void triggerPsClick(){}
+
+
+    public interface ScanCallback{
+        void callback(final String code);
+    }
+    public void setScanCallback(final ScanCallback callback){
+    }
+    public void clearScanCallback(){
+    }
 }

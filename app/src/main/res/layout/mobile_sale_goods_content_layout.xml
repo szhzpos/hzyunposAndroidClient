@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingTop="@dimen/margin_2"
-        android:paddingBottom="@dimen/margin_2">
+        android:paddingBottom="@dimen/margin_5">
 
         <TextView
             android:id="@+id/row_id"
@@ -41,9 +41,8 @@
         <TextView
             android:id="@+id/goods_title"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/size_20"
 
-            android:maxHeight="@dimen/size_40"
             android:text="某某商品"
             android:textColor="@color/black"
             android:textSize="@dimen/font_size_16" />
@@ -53,6 +52,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/mobile_sale_goods_content_margin"
+        android:layout_marginBottom="@dimen/margin_5"
         android:orientation="horizontal">
 
         <TextView
