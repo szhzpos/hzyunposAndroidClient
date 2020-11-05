@@ -17,8 +17,8 @@ import com.wyc.cloudapp.utils.Utils;
 public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int HEADER = -1;
     private static final int CONTENT = -2;
-    private Context mContext;
-    private JSONArray mDatas;
+    private final Context mContext;
+    private final JSONArray mDatas;
     private View mCurrentItemView;
     private int mCurrentItemIndex;
     public PayDetailViewAdapter(Context context){
@@ -26,8 +26,8 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
         mDatas = new JSONArray();
     }
     static class ContentHolder extends RecyclerView.ViewHolder {
-        private TextView row_id,pay_method_id,pay_method_name,pay_detail_amt,pay_detail_zl,pay_detail_v_num;
-        private View mCurrentLayoutItemView;//当前布局的item
+        private final TextView row_id,pay_method_id,pay_method_name,pay_detail_amt,pay_detail_zl,pay_detail_v_num;
+        private final View mCurrentLayoutItemView;//当前布局的item
         ContentHolder(View itemView) {
             super(itemView);
             mCurrentLayoutItemView = itemView;
@@ -66,7 +66,7 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder myViewHolder, int i) {
         if (myViewHolder instanceof ContentHolder){
-            JSONObject pay_detail = mDatas.getJSONObject(i - 1);
+            final JSONObject pay_detail = mDatas.getJSONObject(i - 1);
             if (pay_detail != null){
                 ContentHolder contentHolder = (ContentHolder)myViewHolder;
                 contentHolder.row_id.setText(String.valueOf(i));
@@ -91,7 +91,7 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public int getItemCount() {
-        return mDatas == null ? 1 : mDatas.size() + 1;
+        return mDatas.size() + 1;
     }
 
     @Override
@@ -103,7 +103,7 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     private void setCurrentItemIndexAndItemView(View v){
-        TextView tv_id;
+        final TextView tv_id;
         mCurrentItemView = v;
         if (null != mCurrentItemView && (tv_id = mCurrentItemView.findViewById(R.id.pay_method_id)) != null){
             final String id = tv_id.getText().toString();
@@ -122,7 +122,7 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
         return mDatas;
     }
 
-    public double addPayDetail(JSONObject pay_detail_info){
+    public void addPayDetail(JSONObject pay_detail_info){
         double amt = 0.0;
         if (pay_detail_info != null){
             amt = pay_detail_info.getDouble("pamt");
@@ -142,7 +142,6 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
             }
             notifyDataSetChanged();
         }
-        return amt;
     }
 
     private void deletePayDetail(int index){
@@ -170,10 +169,12 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     public JSONObject findPayDetailById(final String id){
-        for (int i = 0,length = mDatas.size();i < length;i ++){//0为表头
-            JSONObject jsonObject = mDatas.getJSONObject(i);
-            if (id != null && id.equals(jsonObject.getString("pay_method_id"))){
-                return jsonObject;
+        if (id != null){
+            for (int i = 0,length = mDatas.size();i < length;i ++){
+                final JSONObject jsonObject = mDatas.getJSONObject(i);
+                if (id.equals(jsonObject.getString("pay_method_id"))){
+                    return jsonObject;
+                }
             }
         }
         return null;
@@ -182,7 +183,7 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
     public double getPaySumAmt(){
         double amt = 0.0;
         for (int i = 0,size = mDatas.size();i < size;i++){
-            JSONObject object = mDatas.getJSONObject(i);
+            final JSONObject object = mDatas.getJSONObject(i);
             if (null != object)
                 amt += object.getDoubleValue("pamt") - object.getDoubleValue("pzl");
         }

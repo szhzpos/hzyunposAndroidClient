@@ -58,7 +58,6 @@ public class PayMethodDialogImp extends AbstractPayDialog implements MobileCashi
                                 final Intent intent = new Intent("com.google.zxing.client.android.SCAN");
                                 mContext.startActivityForResult(intent, MobileCashierActivity.PAY_REQUEST_CODE);
                             }
-                            return true;
                         }
                         return false;
                     });

@@ -73,7 +73,10 @@ public final class VipInfoDialog extends AbstractDialogSaleActivity {
     }
     @Override
     protected int getContentLayoutId(){
-        return R.layout.vip_info_dialog_layout;
+        if (mContext.lessThan7Inches(null)){
+            return R.layout.mobile_vip_info_dialog_layout;
+        }else
+            return R.layout.vip_info_dialog_layout;
     }
     @Override
     public void onAttachedToWindow(){

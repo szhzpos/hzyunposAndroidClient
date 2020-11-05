@@ -28,7 +28,7 @@ public class ClickListener implements View.OnTouchListener {
         mView = v;
         long secClick = 0;
         int interval = 200;
-        if (MotionEvent.ACTION_DOWN == event.getAction()) {
+        if (MotionEvent.ACTION_UP == event.getAction()) {
             count++;
             if (1 == count) {
                 firClick = System.currentTimeMillis();
@@ -51,7 +51,7 @@ public class ClickListener implements View.OnTouchListener {
         v.performClick();
         return true;
     }
-    private Runnable SingleClick = ()->{
+    private final Runnable SingleClick = ()->{
             if (mSingleListener != null){
                 mSingleListener.onClick(mView);
             }

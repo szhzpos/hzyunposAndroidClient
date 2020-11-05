@@ -83,6 +83,7 @@
             android:drawableEnd="@drawable/scan"
             android:drawablePadding="@dimen/margin_8"
             android:ems="10"
+            android:focusable="true"
             android:focusableInTouchMode="true"
             android:hint="@string/barcode_sz"
             android:importantForAutofill="no"
@@ -105,23 +106,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/mobile_search_content" />
 
-        <Button
-            android:id="@+id/mobile_other_fun_btn"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/size_58"
-            android:layout_height="@dimen/height_58"
-            android:layout_marginEnd="@dimen/margin_8"
-            android:layout_marginBottom="@dimen/margin_8"
-            android:background="@drawable/more"
-            android:focusable="false"
-            app:layout_constraintBottom_toTopOf="@+id/mobile_bottom_btn_layout"
-            app:layout_constraintEnd_toEndOf="parent" />
 
         <LinearLayout
             android:id="@+id/mobile_bottom_btn_layout"
             android:layout_width="match_parent"
             android:layout_height="@dimen/height_58"
             android:layout_marginBottom="@dimen/margin_5"
+            android:background="@color/transparent"
             android:orientation="horizontal"
             app:layout_constraintBottom_toTopOf="@id/vip_info_linearLayout"
             app:layout_constraintEnd_toEndOf="parent"
@@ -147,13 +138,84 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginStart="@dimen/margin_5"
-                android:layout_marginEnd="@dimen/margin_5"
+                android:layout_marginEnd="@dimen/size_68"
                 android:layout_weight="1"
                 android:background="@drawable/button_blue"
                 android:focusable="false"
                 android:text="@string/sale_man_sz"
                 android:textColor="@color/blue_white"
                 android:textSize="@dimen/font_size_18" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/mobile_other_fun_btn_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/margin_8"
+            android:layout_marginBottom="@dimen/margin_8"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="@id/mobile_bottom_btn_layout"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:id="@+id/mobile_other_fun_hide_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <Button
+                    android:id="@+id/mobile_hang_orderl_btn"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/float_circle_button_size"
+                    android:layout_height="@dimen/float_circle_button_size"
+                    android:layout_marginBottom="@dimen/margin_5"
+                    android:background="@drawable/circle_shape_button"
+                    android:text="@string/hangbill_sz"
+                    android:textColor="@color/blue"
+                    android:textSize="@dimen/font_size_14" />
+
+                <Button
+                    android:id="@+id/mobile_clear_btn"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/float_circle_button_size"
+                    android:layout_height="@dimen/float_circle_button_size"
+                    android:layout_marginBottom="@dimen/margin_5"
+                    android:background="@drawable/circle_shape_button"
+                    android:text="@string/clear_sz"
+                    android:textColor="@color/blue"
+                    android:textSize="@dimen/font_size_14" />
+
+                <Button
+                    android:id="@+id/mobile_present_btn"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/float_circle_button_size"
+                    android:layout_height="@dimen/float_circle_button_size"
+                    android:layout_marginBottom="@dimen/margin_5"
+                    android:background="@drawable/circle_shape_button"
+                    android:text="@string/present_sz"
+                    android:textColor="@color/blue"
+                    android:textSize="@dimen/font_size_14" />
+
+                <Button
+                    android:id="@+id/mobile_refund_btn"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/float_circle_button_size"
+                    android:layout_height="@dimen/float_circle_button_size"
+                    android:layout_marginBottom="@dimen/margin_5"
+                    android:background="@drawable/circle_shape_button"
+                    android:text="@string/o_back_sz"
+                    android:textColor="@color/blue"
+                    android:textSize="@dimen/font_size_14" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/mobile_other_fun_btn"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/float_circle_button_size"
+                android:layout_height="@dimen/float_circle_button_size"
+                android:background="@drawable/more"
+                android:focusable="false" />
         </LinearLayout>
 
         <LinearLayout
@@ -236,10 +298,10 @@
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="@dimen/mobile_checkout_btn_width"
                 android:layout_height="match_parent"
-                android:background="@drawable/button_sub_blue"
+                android:background="@drawable/button_sub_green"
                 android:focusable="false"
                 android:text="@string/check_out_sz"
-                android:textColor="@color/orange_1"
+                android:textColor="@color/blue"
                 android:textSize="@dimen/font_size_24" />
 
         </LinearLayout>
@@ -252,7 +314,7 @@
         android:orientation="vertical"
         android:visibility="gone">
 
-        <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+        <EditText
             android:id="@+id/mobile_search_goods"
             android:layout_width="match_parent"
             android:layout_height="@dimen/height_50"

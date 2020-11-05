@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ReplacementTransformationMethod;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,9 +42,8 @@ public class MobileCashierActivity extends SaleActivity {
     public static final int PAY_REQUEST_CODE = 0x000000aa;
     private static final int CODE_REQUEST_CODE = 0x000000bb;
     private BasketView mBasketView;
-    private EditText mSearchContent;
+    private EditText mSearchContent,mMobileSearchGoods;
     private GoodsInfoViewAdapter mGoodsInfoViewAdapter;
-    private GoodsCategoryAdapter mGoodsCategoryAdapter;
     private String mOrderCode = "";
     private ScanCallback mScanCallback;
     private TextView mSaleSumAmtTv;
@@ -52,7 +52,6 @@ public class MobileCashierActivity extends SaleActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mobile_cashier);
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN) ;//显示状态栏
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         mSaleSumAmtTv = findViewById(R.id.mobile_sale_amt);
 
@@ -68,6 +67,18 @@ public class MobileCashierActivity extends SaleActivity {
 
         //重置订单信息
         resetOrderInfo();
+
+        initOtherFunction();
+    }
+
+    private void initOtherFunction(){
+        final Button mobile_other_fun_btn = findViewById(R.id.mobile_other_fun_btn);
+        mobile_other_fun_btn.setOnClickListener(v -> {
+            final LinearLayout mobile_other_fun_hide_layout = findViewById(R.id.mobile_other_fun_hide_layout);
+            if (mobile_other_fun_hide_layout != null){
+                mobile_other_fun_hide_layout.setVisibility(mobile_other_fun_hide_layout.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
+            }
+        });
     }
 
     private void initVipBtn(){
@@ -115,17 +126,14 @@ public class MobileCashierActivity extends SaleActivity {
         goods_info_view.setLayoutManager(gridLayoutManager);
         SuperItemDecoration.registerGlobalLayoutToRecyclerView(goods_info_view,getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration(-1));
         mGoodsInfoViewAdapter.setOnItemClickListener(object -> {
-            if (object != null){
-                addSaleGoods(object);
-                switchView();
-            }
+            if (object != null)addSaleGoods(object);
         });
         goods_info_view.setAdapter(mGoodsInfoViewAdapter);
     }
 
     private void initGoodsCategoryAdapter(){
         final RecyclerView goods_type_view = findViewById(R.id.mobile_goods_type_list);
-        mGoodsCategoryAdapter = new GoodsCategoryAdapter(this,null);
+        final GoodsCategoryAdapter mGoodsCategoryAdapter = new GoodsCategoryAdapter(this, null);
         goods_type_view.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
         mGoodsCategoryAdapter.setDatas(0);
         goods_type_view.setAdapter(mGoodsCategoryAdapter);
@@ -147,6 +155,13 @@ public class MobileCashierActivity extends SaleActivity {
                         'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
             }
         });
+        search.setOnKeyListener((v, keyCode, event) -> {
+            if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_UP){
+                selectGoods(search.getText().toString());
+                return true;
+            }
+            return false;
+        });
         search.setOnTouchListener((view, motionEvent) -> {
             if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                 final float dx = motionEvent.getX();
@@ -158,7 +173,6 @@ public class MobileCashierActivity extends SaleActivity {
                 }else if(dx < mSearchContent.getCompoundPaddingLeft()){
                     switchView();
                 }
-                return true;
             }
             return false;
         });
@@ -166,16 +180,33 @@ public class MobileCashierActivity extends SaleActivity {
         mSearchContent = search;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void switchView(){
         final ViewGroup sale_info_layout = findViewById(R.id.sale_info_layout),
                 goods_info_layout = findViewById(R.id.goods_info_layout);
         if (sale_info_layout.getVisibility() == View.GONE){
-            mSearchContent.postDelayed(mSearchContent::requestFocus,500);
             sale_info_layout.setVisibility(View.VISIBLE);
             goods_info_layout.setVisibility(View.GONE);
+            if (mMobileSearchGoods != null)mMobileSearchGoods.setVisibility(View.GONE);
+            mSearchContent.requestFocus();
         }else {
             sale_info_layout.setVisibility(View.GONE);
             goods_info_layout.setVisibility(View.VISIBLE);
+            if (mMobileSearchGoods == null){
+                final EditText mobile_search_goods = goods_info_layout.findViewById(R.id.mobile_search_goods);
+                mobile_search_goods.setOnTouchListener((v, motionEvent) -> {
+                    if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                        final float dx = motionEvent.getX();
+                        final int w = mobile_search_goods.getWidth();
+                        if (dx > (w - mobile_search_goods.getCompoundPaddingRight())) {
+                            selectGoods(mobile_search_goods.getText().toString());
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+                mMobileSearchGoods = mobile_search_goods;
+            }else mMobileSearchGoods.setVisibility(View.VISIBLE);
         }
     }
 
@@ -184,9 +215,7 @@ public class MobileCashierActivity extends SaleActivity {
         if (resultCode == RESULT_OK ){
             final String _code = intent.getStringExtra("auth_code");
             if (requestCode == CODE_REQUEST_CODE) {
-                if (mSearchContent != null){
-                    selectGoods(_code);
-                }
+                if (mSearchContent != null)selectGoods(_code);
             }else if (requestCode == PAY_REQUEST_CODE){
                 if (mScanCallback != null)mScanCallback.callback(_code);
             }
@@ -233,7 +262,7 @@ public class MobileCashierActivity extends SaleActivity {
         middle.setText(intent.getStringExtra("title"));
 
         right.setText(R.string.clear_sz);
-        right.setOnClickListener(v -> clear());
+        right.setVisibility(View.INVISIBLE);
     }
     private void clear(){
         if (!mSaleGoodsAdapter.isEmpty()){
@@ -285,6 +314,10 @@ public class MobileCashierActivity extends SaleActivity {
         final JSONObject content = new JSONObject();
         final String id = mGoodsInfoViewAdapter.getGoodsId(jsonObject);
         if (mGoodsInfoViewAdapter.getSingleGoods(content,null,id)){
+            if (mMobileSearchGoods != null && mMobileSearchGoods.getVisibility() == View.VISIBLE){
+                mMobileSearchGoods.getText().clear();
+                switchView();
+            }
             mSaleGoodsAdapter.addSaleGoods(content);
         }else{
             MyDialog.ToastMessage("选择商品错误：" + content.getString("info"),this,null);

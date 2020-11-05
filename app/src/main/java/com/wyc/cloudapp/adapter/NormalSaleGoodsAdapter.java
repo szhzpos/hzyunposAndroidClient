@@ -1,8 +1,11 @@
 package com.wyc.cloudapp.adapter;
 
+import androidx.annotation.NonNull;
+
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.SaleActivity;
+import com.wyc.cloudapp.callback.ClickListener;
 import com.wyc.cloudapp.dialog.serialScales.GoodsWeighDialog;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -13,9 +16,15 @@ public final class NormalSaleGoodsAdapter extends AbstractSaleGoodsAdapter {
     }
 
     @Override
-    public int getItemCount() {
-        return mDatas.size();
+    public void onBindViewHolder(@NonNull AbstractSaleGoodsAdapter.MyViewHolder myViewHolder, int i) {
+        super.onBindViewHolder(myViewHolder,i);
+        myViewHolder.mCurrentLayoutItemView.setOnTouchListener(onTouchListener);
     }
+
+    private final ClickListener onTouchListener = new ClickListener(v -> {
+        setCurrentItemIndexAndItemView(v);
+        deleteSaleGoods(mCurrentItemIndex,0);
+    }, this::setSelectStatus);
 
     @Override
     public void addSaleGoods(final JSONObject goods){

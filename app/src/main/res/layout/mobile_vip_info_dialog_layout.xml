@@ -5,7 +5,23 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/round_shape"
-    android:orientation="horizontal">
+    android:orientation="vertical">
+
+    <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+        android:id="@+id/search_content"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_45"
+        android:layout_marginBottom="@dimen/margin_2"
+        android:background="@drawable/border_sub_gray"
+        android:drawableEnd="@drawable/r_card"
+        android:ems="10"
+        android:focusable="auto"
+        android:hint="@string/vip_search_hint_sz"
+        android:importantForAutofill="no"
+        android:inputType="textPersonName"
+        android:padding="@dimen/margin_5"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_18" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="@dimen/width_328"
@@ -17,6 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/margin_8"
             android:orientation="horizontal"
+            android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@id/constraintLayout"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -216,6 +233,7 @@
             android:layout_marginStart="@dimen/margin_2"
             android:layout_marginBottom="@dimen/margin_1"
             android:orientation="horizontal"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
@@ -265,37 +283,10 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <LinearLayout
-        android:id="@+id/v_right"
-        android:layout_width="@dimen/width_328"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_2"
-        android:layout_marginTop="@dimen/margin_2"
-        android:layout_marginEnd="@dimen/margin_2"
-        android:layout_marginBottom="@dimen/margin_2"
-        android:background="@drawable/round_shape"
-        android:orientation="vertical">
-
-        <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
-            android:id="@+id/search_content"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/height_45"
-            android:layout_marginBottom="@dimen/margin_2"
-            android:background="@drawable/border_sub_gray"
-            android:drawableEnd="@drawable/r_card"
-            android:ems="10"
-            android:focusable="auto"
-            android:hint="@string/vip_search_hint_sz"
-            android:importantForAutofill="no"
-            android:inputType="textPersonName"
-            android:padding="@dimen/margin_5"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_18" />
-
-        <com.wyc.cloudapp.CustomizationView.KeyboardView
-            android:id="@+id/keyboard_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+    <com.wyc.cloudapp.CustomizationView.KeyboardView
+        android:id="@+id/keyboard_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/margin_2" />
 
 </LinearLayout>

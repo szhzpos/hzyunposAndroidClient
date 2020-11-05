@@ -16,7 +16,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.SaleActivity;
-import com.wyc.cloudapp.callback.ClickListener;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -32,9 +31,10 @@ import java.util.Locale;
 public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<AbstractSaleGoodsAdapter.MyViewHolder> {
     protected final SaleActivity mContext;
     protected JSONArray mDatas;
-    private final JSONArray mDiscountRecords;
-    private View mCurrentItemView;
+    protected View mCurrentItemView;
     protected int mCurrentItemIndex;
+
+    private final JSONArray mDiscountRecords;
     private int mOrderType = 1;//订单类型 1线下 2线上
     private boolean mSingleRefundStatus = false,d_discount = false;//d_discount是否折上折
     private JSONObject mFullReduceRecord;
@@ -125,8 +125,6 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
                 myViewHolder.goods_title.setTextColor(mContext.getColor(R.color.black));//需要重新设置颜色；不然重用之后内容颜色为重用之前的。
             }
 
-            myViewHolder.mCurrentLayoutItemView.setOnTouchListener(onTouchListener);
-
             if (mCurrentItemIndex == i){
                 setSelectStatus(myViewHolder.mCurrentLayoutItemView);
             }
@@ -137,11 +135,6 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
     public int getItemCount() {
         return mDatas.size();
     }
-
-    private final ClickListener onTouchListener = new ClickListener(v -> {
-        setCurrentItemIndexAndItemView(v);
-        deleteSaleGoods(mCurrentItemIndex,0);
-    }, this::setSelectStatus);
 
     protected boolean isScalesWeighingGoods(final JSONObject object){
         return object != null && Utils.getNullStringAsEmpty(object,GoodsInfoViewAdapter.W_G_MARK).isEmpty() && (object.getIntValue("type") == 2);
@@ -764,7 +757,7 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
         }
         return order_code;
     }
-    private void setCurrentItemIndexAndItemView(View v){
+    protected void setCurrentItemIndexAndItemView(View v){
         final TextView tv_id,tv_barcode_id,tv_gp_id,sale_type_tv;
         mCurrentItemView = v;
         if (null != v && (tv_id = v.findViewById(R.id.goods_id)) != null && (sale_type_tv = v.findViewById(R.id.discount_sign)) != null &&
@@ -785,7 +778,6 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
         mCurrentItemIndex = -1;
     }
 
-    @CallSuper
     protected void setSelectStatus(View v){
         TextView goods_name;
         if(null != mCurrentItemView){

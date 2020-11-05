@@ -81,8 +81,6 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
         mRemarkEt = findViewById(R.id.et_remark);//备注
         mDiscountDescriptionTv = findViewById(R.id.discount_description);//折扣信息
 
-
-
         //初始化支付明细
         initPayDetailViewAdapter();
 
@@ -115,7 +113,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
         super.show();
         refreshContent();
         showVipInfo();
-        showFullReducDes();
+        showFullReduceDes();
     }
     @Override
     public void onAttachedToWindow(){
@@ -311,14 +309,14 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
     };
 
     private void initPayMethod(){
-        mPayMethodViewAdapter = new PayMethodViewAdapter(mContext,(int) mContext.getResources().getDimension(R.dimen.pay_method_width));
+        mPayMethodViewAdapter = new PayMethodViewAdapter(mContext,mPayDetailViewAdapter,(int) mContext.getResources().getDimension(R.dimen.pay_method_width));
         mPayMethodViewAdapter.setDatas("1");
         mPayMethodViewAdapter.setOnItemClickListener((v, pos) -> {
-            JSONObject pay_method = mPayMethodViewAdapter.getItem(pos);
+            final JSONObject pay_method = mPayMethodViewAdapter.getItem(pos);
             if (pay_method != null){
                 try {
-                    pay_method = Utils.JsondeepCopy(pay_method);
-                    final String pay_method_id = pay_method.getString("pay_method_id");
+                    final JSONObject pay_method_copy = Utils.JsondeepCopy(pay_method);
+                    final String pay_method_id = pay_method_copy.getString("pay_method_id");
                     if (PayMethodViewAdapter.CASH_METHOD_ID.equals(pay_method_id)) {
                         mOK.callOnClick();
                     } else {
@@ -327,15 +325,15 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
                                 MyDialog.SnackbarMessage(mWindow, "剩余金额为零！", getCurrentFocus());
                             } else {
                                 if (mVip != null){
-                                    pay_method.put("card_code",mVip.getString("card_code"));
+                                    pay_method_copy.put("card_code",mVip.getString("card_code"));
                                 }
-                                final PayMethodDialogImp payMethodDialogImp = new PayMethodDialogImp(mContext, pay_method);
+                                final PayMethodDialogImp payMethodDialogImp = new PayMethodDialogImp(mContext, pay_method_copy);
                                 deleteMolDiscountRecord();//现金之外的付款需要删除抹零金额
                                 payMethodDialogImp.setPayAmt(mPay_balance);
                                 payMethodDialogImp.setYesOnclickListener(dialog -> {
                                     final JSONObject jsonObject = dialog.getContent();
                                     if (jsonObject != null) {
-                                        mPayMethodViewAdapter.showCurrentPayMethodAmt(mPayDetailViewAdapter.addPayDetail(jsonObject));
+                                        mPayDetailViewAdapter.addPayDetail(jsonObject);
                                         dialog.dismiss();
                                     }
                                 }).setCancelListener(dialog -> {
@@ -368,6 +366,8 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
             @Override
             public void onChanged() {
                 super.onChanged();
+                if (mPayMethodViewAdapter != null)mPayMethodViewAdapter.notifyDataSetChanged();
+
                 final JSONArray jsonArray = getContent();
                 double pay_amt = 0.0,zl_amt = 0.0;
                 JSONObject object;
@@ -439,19 +439,19 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
     private void deleteFullReduceDiscount(){
         mContext.deleteFullReduce();
     }
-    private void showFullReducDes(){
+    private void showFullReduceDes(){
         final JSONObject object = mContext.getFullReduceRecord();
         if (null != object){
-            final LinearLayout fullreduce_des_layout = findViewById(R.id.fullreduce_des_layout);
-            if (null != fullreduce_des_layout){
-                fullreduce_des_layout.setVisibility(View.VISIBLE);
-                final RecyclerView recyclerView = fullreduce_des_layout.findViewById(R.id.fullreduce_list);
+            final LinearLayout fullReduce_des_layout = findViewById(R.id.fullreduce_des_layout);
+            if (null != fullReduce_des_layout){
+                fullReduce_des_layout.setVisibility(View.VISIBLE);
+                final RecyclerView recyclerView = fullReduce_des_layout.findViewById(R.id.fullreduce_list);
                 if (null != recyclerView){
                     recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
                     recyclerView.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
                     recyclerView.setAdapter(new FullReduceRulesAdapter(mContext,object.getJSONArray("rules_des")));
                 }
-                final TextView name = fullreduce_des_layout.findViewById(R.id.fullreduce_name_tv),time = fullreduce_des_layout.findViewById(R.id.fullreduce_time_tv);
+                final TextView name = fullReduce_des_layout.findViewById(R.id.fullreduce_name_tv),time = fullReduce_des_layout.findViewById(R.id.fullreduce_time_tv);
                 if (null != name && time != null){
                     name.setText(object.getString("name"));
                     time.setText(object.getString("time"));
@@ -471,7 +471,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
                 int v = object.getIntValue("v");
                 switch (v){
                     case 1://四舍五入到元
-                        mMolAmt =sale_sum_amt - Double.valueOf(String.format(Locale.CHINA,"%.0f",sale_sum_amt));
+                        mMolAmt =sale_sum_amt - Double.parseDouble(String.format(Locale.CHINA,"%.0f",sale_sum_amt));
                         break;
                     case 2://四舍五入到角
                         mMolAmt =sale_sum_amt - Double.valueOf(String.format(Locale.CHINA,"%.1f",sale_sum_amt));
@@ -558,7 +558,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
                     pay_method_json.put("pamt",mCashAmt);
                     pay_method_json.put("pzl",String.format(Locale.CHINA,"%.2f",mZlAmt));
                     pay_method_json.put("v_num","");
-                    mPayMethodViewAdapter.showCurrentPayMethodAmt(mPayDetailViewAdapter.addPayDetail(pay_method_json));
+                    mPayDetailViewAdapter.addPayDetail(pay_method_json);
                 }else{
                     MyDialog.ToastMessage("现金付款方式不存在！", mContext,null);
                 }
@@ -1103,8 +1103,8 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
         }
     }
     private void showVipInfo(){
-        final LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
-        if (vip_info_linearLayout != null && mVip != null){
+        if (mVip != null){
+            final LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
             vip_info_linearLayout.setVisibility(View.VISIBLE);
             final TextView vip_name_tv = vip_info_linearLayout.findViewById(R.id.vip_name),vip_phone_num_tv = vip_info_linearLayout.findViewById(R.id.vip_phone_num);
             if (null != vip_name_tv && vip_phone_num_tv != null){

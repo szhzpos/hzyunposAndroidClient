@@ -175,4 +175,5 @@
     <dimen name="mobile_checkout_btn_width">@dimen/size_88</dimen>
     <dimen name="mobile_sale_goods_content_margin">@dimen/size_28</dimen>
     <dimen name="mobile_p_m_btn_size">22dp</dimen>
+    <dimen name="float_circle_button_size">@dimen/size_45</dimen>
 </resources>

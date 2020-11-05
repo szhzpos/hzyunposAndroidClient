@@ -16,6 +16,9 @@ import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.utils.Utils;
+
+import java.util.Locale;
 
 public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdapter.MyViewHolder> {
     public static final String CASH_METHOD_ID = "1";//现金支付方式id
@@ -24,10 +27,17 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     private OnItemClickListener mOnItemClickListener;
     private View mCurrentItemView,mDefaultPayMethodView;
     private final int mWidth;
+    private final PayDetailViewAdapter mPayDetailViewAdapter;
     public PayMethodViewAdapter(MainActivity context,int width){
-        this.mContext = context;
-        mWidth = width;
+        this(context,null,width);
     }
+
+    public PayMethodViewAdapter(MainActivity context,final PayDetailViewAdapter payDetailViewAdapter,int width){
+        mContext = context;
+        mWidth = width;
+        mPayDetailViewAdapter = payDetailViewAdapter;
+    }
+
     static class MyViewHolder extends RecyclerView.ViewHolder {
         private final TextView pay_method_id,pay_method_name,pay_amt_tv;
         private final View mCurrentLayoutItemView;//当前布局的item
@@ -38,7 +48,6 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
             pay_amt_tv = itemView.findViewById(R.id._amt_tv);
 
             mCurrentLayoutItemView = itemView;
-
         }
     }
 
@@ -53,7 +62,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
         if (mDatas != null){
-            JSONObject pay_method_info = mDatas.getJSONObject(i);
+            final JSONObject pay_method_info = mDatas.getJSONObject(i);
             String szImage,pay_method_id;
             Drawable drawable = null;
             if (pay_method_info != null){
@@ -72,10 +81,15 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
                 myViewHolder.pay_method_id.setText(pay_method_id);
                 myViewHolder.pay_method_name.setText(pay_method_info.getString("name"));
 
-                if (myViewHolder.pay_amt_tv.getText().length() != 0)
-                    myViewHolder.pay_amt_tv.setVisibility(View.VISIBLE);
-                else
-                    myViewHolder.pay_amt_tv.setVisibility(View.GONE);
+                if (mPayDetailViewAdapter != null){
+                    final double pay_amt = Utils.getNotKeyAsNumberDefault(mPayDetailViewAdapter.findPayDetailById(pay_method_id),"pamt",0.0);
+                    if (Utils.equalDouble(pay_amt,0.0))
+                        myViewHolder.pay_amt_tv.setVisibility(View.GONE);
+                    else {
+                        myViewHolder.pay_amt_tv.setText(String.format(Locale.CHINA,"%.2f",pay_amt));
+                        myViewHolder.pay_amt_tv.setVisibility(View.VISIBLE);
+                    }
+                }
 
                 if(PayMethodViewAdapter.CASH_METHOD_ID.equals(pay_method_id)){//默认现金
                     showDefaultPayMethod(myViewHolder.mCurrentLayoutItemView);
@@ -171,7 +185,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     public JSONObject get_pay_method(final String pay_method_id){
         if (mDatas != null && pay_method_id != null){
             for (int i = 0,length = mDatas.size();i < length;i++){
-                JSONObject jsonObject = mDatas.getJSONObject(i);
+                final JSONObject jsonObject = mDatas.getJSONObject(i);
                 if (pay_method_id.equals(jsonObject.getString("pay_method_id"))){
                     return jsonObject;
                 }
@@ -213,15 +227,4 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
             mCurrentItemView = mDefaultPayMethodView;
         }
     }
-
-    public void showCurrentPayMethodAmt(double amt){
-        if (mCurrentItemView != null){
-            final TextView tv = mCurrentItemView.findViewById(R.id._amt_tv);
-            tv.setVisibility(View.VISIBLE);
-            tv.setText(String.valueOf(amt));
-
-            notifyDataSetChanged();
-        }
-    }
-
 }

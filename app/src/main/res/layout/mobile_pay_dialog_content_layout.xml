@@ -157,7 +157,7 @@
         android:background="@drawable/bottom_separator"
         android:gravity="center"
         android:textColor="@color/orange"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/fullreduce_des_layout"
@@ -328,6 +328,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/height_45"
         android:layout_marginStart="@dimen/margin_2"
+        android:layout_marginTop="@dimen/margin_8"
         android:layout_marginEnd="@dimen/margin_2"
         android:layout_marginBottom="@dimen/margin_8"
         android:orientation="horizontal">

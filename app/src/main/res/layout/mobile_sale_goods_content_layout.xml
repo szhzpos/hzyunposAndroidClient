@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/mobile_sale_goods_height"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <TextView
@@ -108,7 +108,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/mobile_sale_goods_content_margin"
         android:orientation="horizontal">
 
@@ -169,6 +169,74 @@
             android:layout_marginEnd="@dimen/margin_2"
             android:textColor="@color/orange_1"
             android:textSize="@dimen/font_size_18" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/mobile_float_fun_btn"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:visibility="visible">
+
+        <Button
+            android:id="@+id/mobile_alter_price_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_5"
+            android:layout_marginTop="@dimen/margin_5"
+            android:layout_marginEnd="@dimen/margin_5"
+            android:layout_marginBottom="@dimen/margin_2"
+            android:layout_weight="1"
+            android:background="@drawable/button_sub_green"
+            android:text="@string/change_price_sz"
+            android:textColor="@color/gray_7"
+            android:textSize="@dimen/font_size_16" />
+
+        <Button
+            android:id="@+id/mobile_discount_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_5"
+            android:layout_marginTop="@dimen/margin_5"
+            android:layout_marginEnd="@dimen/margin_5"
+            android:layout_marginBottom="@dimen/margin_2"
+            android:layout_weight="1"
+            android:background="@drawable/button_sub_green"
+            android:text="@string/discount_sz"
+            android:textColor="@color/gray_7"
+            android:textSize="@dimen/font_size_16" />
+
+        <Button
+            android:id="@+id/mobile_alter_num_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_5"
+            android:layout_marginTop="@dimen/margin_5"
+            android:layout_marginEnd="@dimen/margin_5"
+            android:layout_marginBottom="@dimen/margin_2"
+            android:layout_weight="1"
+            android:background="@drawable/button_sub_green"
+            android:text="@string/num_not_colon_sz"
+            android:textColor="@color/gray_7"
+            android:textSize="@dimen/font_size_16" />
+
+        <Button
+            android:id="@+id/mobile_del_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_5"
+            android:layout_marginTop="@dimen/margin_5"
+            android:layout_marginEnd="@dimen/margin_5"
+            android:layout_marginBottom="@dimen/margin_2"
+            android:layout_weight="1"
+            android:background="@drawable/button_sub_green"
+            android:text="@string/delete_sz"
+            android:textColor="@color/gray_7"
+            android:textSize="@dimen/font_size_14" />
     </LinearLayout>
 
 </LinearLayout>

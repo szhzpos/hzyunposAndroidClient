@@ -89,8 +89,7 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
     }
 
     private final View.OnTouchListener touchListener = (v, event) -> {
-        int action = event.getAction();
-        if (action == MotionEvent.ACTION_DOWN){
+        if (event.getAction() == MotionEvent.ACTION_DOWN){
             setCurrentItemView(v);
             final TextView order_code_tv = v.findViewById(R.id.order_code),sale_refund_tv = v.findViewById(R.id.sale_refund);
             if (isClickView(order_code_tv,event.getX(),event.getY())){
@@ -106,8 +105,7 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
                 });
             }
         }
-        v.performClick();
-        return false;
+        return v.performClick();
     };
 
     @Override
