@@ -10,4 +10,7 @@
         <attr name="animType" format="integer"/>
         <attr name="selectTextColor" format="color"/>
     </declare-styleable>
+    <declare-styleable name="TmpOrderButton">
+        <attr name="shape" format="integer"/>
+    </declare-styleable>
 </resources>

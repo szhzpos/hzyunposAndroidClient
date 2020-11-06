@@ -171,7 +171,7 @@
             android:textSize="@dimen/font_size_18" />
     </LinearLayout>
 
-    <LinearLayout
+    <com.wyc.cloudapp.CustomizationView.InterceptLinearLayout
         android:id="@+id/mobile_float_fun_btn"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -237,6 +237,6 @@
             android:text="@string/delete_sz"
             android:textColor="@color/gray_7"
             android:textSize="@dimen/font_size_14" />
-    </LinearLayout>
+    </com.wyc.cloudapp.CustomizationView.InterceptLinearLayout>
 
 </LinearLayout>

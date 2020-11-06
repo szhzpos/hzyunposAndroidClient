@@ -11,10 +11,10 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,6 +22,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.CustomizationView.BasketView;
+import com.wyc.cloudapp.CustomizationView.InterceptLinearLayout;
+import com.wyc.cloudapp.CustomizationView.TmpOrderButton;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
@@ -31,6 +33,7 @@ import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.goods.AddGoodsInfoDialog;
+import com.wyc.cloudapp.dialog.orderDialog.HangBillDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.dialog.pay.PayDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
@@ -38,7 +41,7 @@ import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
-public class MobileCashierActivity extends SaleActivity {
+public class MobileCashierActivity extends SaleActivity implements View.OnClickListener {
     public static final int PAY_REQUEST_CODE = 0x000000aa;
     private static final int CODE_REQUEST_CODE = 0x000000bb;
     private BasketView mBasketView;
@@ -74,11 +77,73 @@ public class MobileCashierActivity extends SaleActivity {
     private void initOtherFunction(){
         final Button mobile_other_fun_btn = findViewById(R.id.mobile_other_fun_btn);
         mobile_other_fun_btn.setOnClickListener(v -> {
-            final LinearLayout mobile_other_fun_hide_layout = findViewById(R.id.mobile_other_fun_hide_layout);
+            final InterceptLinearLayout mobile_other_fun_hide_layout = findViewById(R.id.mobile_other_fun_hide_layout);
             if (mobile_other_fun_hide_layout != null){
-                mobile_other_fun_hide_layout.setVisibility(mobile_other_fun_hide_layout.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
+                final TmpOrderButton tmp_order = mobile_other_fun_hide_layout.findViewById(R.id.mobile_hang_orderl_btn);
+                boolean isHide = mobile_other_fun_hide_layout.getVisibility() == View.GONE;
+                if (isHide){
+                    tmp_order.setNum(HangBillDialog.getHangCounts(this));
+                    mobile_other_fun_hide_layout.setClickListener(this);
+                    mobile_other_fun_hide_layout.setVisibility(View.VISIBLE);
+                }else {
+                    mobile_other_fun_hide_layout.setClickListener(null);
+                    mobile_other_fun_hide_layout.setVisibility(View.GONE);
+                }
             }
         });
+    }
+    @Override
+    public void onClick(View v) {
+        final int id = v.getId();
+        if (id == R.id.mobile_hang_orderl_btn){
+            hangOrder(v);
+        }else if(id == R.id.mobile_clear_btn){
+            clear();
+        }else if (id == R.id.mobile_present_btn){
+            present();
+        }else if (id == R.id.mobile_refund_btn){
+            setSingle(true);
+        }
+    }
+    private void hangOrder(final View btn){
+        final TmpOrderButton tmp_order = (TmpOrderButton)btn;
+        final JSONArray datas = mSaleGoodsAdapter.getDatas();
+        final HangBillDialog hangBillDialog = new HangBillDialog(this);
+        if (Utils.JsonIsNotEmpty(datas)){
+            final StringBuilder err = new StringBuilder();
+            if (hangBillDialog.save(datas,mVipInfo,err)){
+                tmp_order.setNum(HangBillDialog.getHangCounts(this));
+                resetOrderInfo();
+                MyDialog.ToastMessage("挂单成功！",this,null);
+            }else{
+                MyDialog.ToastMessage("保存挂单错误：" + err,this,null);
+            }
+        }else{
+            if (HangBillDialog.getHangCounts(this) > 0){
+                hangBillDialog.setGetBillDetailListener((array, vip) -> {
+                    if (null != vip)showVipInfo(vip);
+                    JSONObject barcode_id_obj,goods_info;
+                    for (int i = 0,length = array.size();i < length;i ++){
+                        barcode_id_obj = array.getJSONObject(i);
+                        if (barcode_id_obj != null){
+                            goods_info = new JSONObject();
+                            if (mGoodsInfoViewAdapter.getSingleGoods(goods_info,barcode_id_obj.getString(GoodsInfoViewAdapter.W_G_MARK),mGoodsInfoViewAdapter.getGoodsId(barcode_id_obj))){
+                                goods_info.put("xnum",barcode_id_obj.getDoubleValue("xnum"));//挂单取出重量
+                                mSaleGoodsAdapter.addSaleGoods(goods_info);
+                                hangBillDialog.dismiss();
+                            }else{
+                                MyDialog.ToastMessage("选择商品错误：" + goods_info.getString("info"),this,null);
+                                return;
+                            }
+                        }
+                    }
+                });
+                hangBillDialog.setOnDismissListener(dialog -> tmp_order.setNum(HangBillDialog.getHangCounts(this)));
+                hangBillDialog.show();
+            }else{
+                MyDialog.ToastMessage("无挂单信息！",this,null);
+            }
+        }
     }
 
     private void initVipBtn(){
@@ -200,8 +265,10 @@ public class MobileCashierActivity extends SaleActivity {
                         final int w = mobile_search_goods.getWidth();
                         if (dx > (w - mobile_search_goods.getCompoundPaddingRight())) {
                             selectGoods(mobile_search_goods.getText().toString());
-                            return true;
+                        }else if(dx < mSearchContent.getCompoundPaddingLeft()){
+                            switchView();
                         }
+                        return true;
                     }
                     return false;
                 });
@@ -333,13 +400,11 @@ public class MobileCashierActivity extends SaleActivity {
     @Override
     public void showVipInfo(final JSONObject vip){
         super.showVipInfo(vip);
-        final LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
-        if (vip_info_linearLayout != null && vip != null){
-            vip_info_linearLayout.setVisibility(View.VISIBLE);
-            final TextView vip_name_tv = vip_info_linearLayout.findViewById(R.id.vip_name),vip_phone_num_tv = vip_info_linearLayout.findViewById(R.id.vip_phone_num);
-            if (null != vip_name_tv && vip_phone_num_tv != null){
+        final ConstraintLayout mobile_bottom_btn_layout = findViewById(R.id.mobile_bottom_btn_layout);
+        if ( vip != null && mobile_bottom_btn_layout != null){
+            final TextView vip_name_tv = mobile_bottom_btn_layout.findViewById(R.id.vip_name);
+            if (null != vip_name_tv){
                 vip_name_tv.setText(vip.getString("name"));
-                vip_phone_num_tv.setText(vip.getString("mobile"));
             }
             mSaleGoodsAdapter.updateGoodsInfoToVip(vip);
         }
@@ -347,12 +412,10 @@ public class MobileCashierActivity extends SaleActivity {
     @Override
     public void clearVipInfo(){
         super.clearVipInfo();
-        final LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
-        vip_info_linearLayout.setVisibility(View.GONE);
-        final TextView vip_name_tv = vip_info_linearLayout.findViewById(R.id.vip_name),vip_phone_num_tv = vip_info_linearLayout.findViewById(R.id.vip_phone_num);
-        if (null != vip_name_tv && vip_phone_num_tv != null){
+        final ConstraintLayout mobile_bottom_btn_layout = findViewById(R.id.mobile_bottom_btn_layout);
+        final TextView vip_name_tv = mobile_bottom_btn_layout.findViewById(R.id.vip_name);
+        if (null != vip_name_tv){
             vip_name_tv.setText(getText(R.string.space_sz));
-            vip_phone_num_tv.setText(getText(R.string.space_sz));
         }
         if (!mSaleGoodsAdapter.getDatas().isEmpty()){
             mSaleGoodsAdapter.deleteVipDiscountRecord();
