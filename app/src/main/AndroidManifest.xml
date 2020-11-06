@@ -26,6 +26,7 @@
     <uses-feature android:name="android.hardware.usb.host" />
 
     <application
+        android:requestLegacyExternalStorage="true"
         android:name=".application.CustomApplication"
         android:allowBackup="true"
         android:fullBackupContent="false"
@@ -36,7 +37,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
-        <activity android:name=".activity.SaleActivity"></activity>
+        <activity android:name=".activity.SaleActivity" />
         <activity android:name=".activity.mobile.MobileCashierActivity" />
         <activity android:name=".activity.mobile.MobileNavigationActivity" />
         <activity
