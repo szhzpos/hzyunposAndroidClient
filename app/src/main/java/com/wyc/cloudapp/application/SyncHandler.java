@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.network.sync;
+package com.wyc.cloudapp.application;
 
 import android.content.ContentValues;
 import android.os.Handler;

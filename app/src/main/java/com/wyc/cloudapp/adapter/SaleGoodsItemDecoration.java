@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.utils.Utils;
 
 public class SaleGoodsItemDecoration extends SuperItemDecoration {
     public SaleGoodsItemDecoration(int color){
@@ -25,16 +24,24 @@ public class SaleGoodsItemDecoration extends SuperItemDecoration {
             final Paint paint = new Paint();
             paint.setAntiAlias(true);
             paint.setColor(Color.RED);
-            paint.setTextSize(context.getResources().getDimension(R.dimen.font_size_18));
-            paint.setStyle(Paint.Style.STROKE);
-            final Rect rect = new Rect();
-            rect.set(parent.getWidth() /2,parent.getHeight() / 2, Utils.dpToPx(context,48),parent.getHeight() / 2 + Utils.dpToPx(context,48));
-            c.drawRect(rect,paint);
+
+            final int p_w = parent.getMeasuredWidth(),p_h = parent.getMeasuredHeight();
 
             final String sz = "单品退货";
-            float[] ints = new float[sz.length()];
-            paint.getTextWidths(sz,ints);
-            c.drawText(sz,(rect.left  - ints[0] * (ints.length / 2.0f)) + rect.width() / 2.0f,rect.bottom - rect.height() / 3.0f,paint);
+            final Rect bounds = new Rect();
+            paint.setTextSize(context.getResources().getDimension(R.dimen.font_size_18));
+            paint.getTextBounds(sz,0,sz.length(),bounds);
+            final int t_w = bounds.width(),t_h = bounds.height();
+
+            final int w = t_w << 1,h = t_h * 3;
+
+            final int left = (p_w - w) / 2,top = (p_h - h) / 2;
+            final Rect rect = new Rect(left,top,w + left ,h + top);
+
+            c.drawText(sz,rect.left + ((w - t_w) >> 1),rect.top + h - t_h,paint);
+
+            paint.setStyle(Paint.Style.STROKE);
+            c.drawRect(rect,paint);
         }
     }
 }

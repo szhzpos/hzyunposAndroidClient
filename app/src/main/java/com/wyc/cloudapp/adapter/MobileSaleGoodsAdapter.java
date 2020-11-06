@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.wyc.cloudapp.CustomizationView.InterceptLinearLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.SaleActivity;
 
@@ -20,16 +21,25 @@ public final class MobileSaleGoodsAdapter extends AbstractSaleGoodsAdapter imple
     @Override
     public void onClick(View v) {
         btn(v);
-        if (v.getId() == R.id.mobile_minus_btn){
+        final int id= v.getId();
+        if (id == R.id.mobile_minus_btn){
             mContext.minusOneGoods();
-        }else {
+        }else if(id == R.id.mobile_plus_btn) {
             mContext.addOneSaleGoods();
+        }else if(id == R.id.mobile_alter_price_btn){
+            mContext.alterGoodsPrice();
+        }else if (id == R.id.mobile_discount_btn){
+            mContext.discount();
+        }else if (id == R.id.mobile_alter_num_btn){
+            mContext.alterGoodsNumber();
+        }else if (id == R.id.mobile_del_btn){
+            mContext.deleteGoodsRecord();
         }
     }
 
     private static class MyViewHolder extends AbstractSaleGoodsAdapter.MyViewHolder {
         Button plus_btn,minus_btn;
-        ViewGroup mobile_float_fun_btn;
+        InterceptLinearLayout mobile_float_fun_btn;
         MyViewHolder(View itemView) {
             super(itemView);
             plus_btn = itemView.findViewById(R.id.mobile_plus_btn);
@@ -53,8 +63,10 @@ public final class MobileSaleGoodsAdapter extends AbstractSaleGoodsAdapter imple
 
         holder.minus_btn.setTag(i);
         holder.plus_btn.setTag(i);
-        if (mCurrentItemIndex != i)holder.mobile_float_fun_btn.setVisibility(View.GONE);
-
+        if (mCurrentItemIndex != i){
+            holder.mobile_float_fun_btn.setClickListener(null);
+            holder.mobile_float_fun_btn.setVisibility(View.GONE);
+        }
         myViewHolder.mCurrentLayoutItemView.setOnClickListener(onClickListener);
     }
 
@@ -65,7 +77,7 @@ public final class MobileSaleGoodsAdapter extends AbstractSaleGoodsAdapter imple
     @Override
     protected void setSelectStatus(View v){
         TextView goods_name;
-        ViewGroup mobile_float_fun_btn;
+        InterceptLinearLayout mobile_float_fun_btn;
         if (mCurrentItemView != v){
             if(null != mCurrentItemView){
                 goods_name = mCurrentItemView.findViewById(R.id.goods_title);
@@ -83,7 +95,10 @@ public final class MobileSaleGoodsAdapter extends AbstractSaleGoodsAdapter imple
         goods_name.setTextColor(mContext.getColor(R.color.blue));
 
         mobile_float_fun_btn = v.findViewById(R.id.mobile_float_fun_btn);
-        if (mobile_float_fun_btn != null)mobile_float_fun_btn.setVisibility(View.VISIBLE);
+        if (mobile_float_fun_btn != null){
+            mobile_float_fun_btn.setVisibility(View.VISIBLE);
+            mobile_float_fun_btn.setClickListener(this);
+        }
     }
 
     private void btn(View v){
@@ -91,4 +106,6 @@ public final class MobileSaleGoodsAdapter extends AbstractSaleGoodsAdapter imple
         if (p != null)p = (View) p.getParent();
         if (p != null)setSelectStatus(p);
     }
+
+
 }

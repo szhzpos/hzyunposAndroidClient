@@ -234,12 +234,9 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
 
         if (minus_num_btn != null)minus_num_btn.setOnClickListener(v -> minusOneGoods());//数量减
         if (add_num_btn != null)add_num_btn.setOnClickListener(v -> addOneSaleGoods());//数量加
-        if (num_btn != null)num_btn.setOnClickListener(view -> {if (verifyNumBtnPermissions())
-            mSaleGoodsAdapter.updateSaleGoodsDialog((short) 0);});//数量
-        if (discount_btn != null)discount_btn.setOnClickListener(v-> {
-            mSaleGoodsAdapter.updateSaleGoodsDialog((short) 2);});//打折
-        if (change_price_btn != null)change_price_btn.setOnClickListener(v-> {
-            mSaleGoodsAdapter.updateSaleGoodsDialog((short) 1);});//改价
+        if (num_btn != null)num_btn.setOnClickListener(view -> alterGoodsNumber());//数量
+        if (discount_btn != null)discount_btn.setOnClickListener(v-> discount());//打折
+        if (change_price_btn != null)change_price_btn.setOnClickListener(v-> alterGoodsPrice());//改价
         if (check_out_btn != null)check_out_btn.setOnClickListener((View v)->{
             Utils.disableView(v,500);showPayDialog();});//结账
         if (vip_btn != null)vip_btn.setOnClickListener(v -> {

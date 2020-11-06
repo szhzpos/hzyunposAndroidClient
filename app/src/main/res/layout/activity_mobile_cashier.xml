@@ -101,51 +101,69 @@
             android:id="@+id/mobile_sale_goods_list"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:background="@android:color/white"
             app:layout_constraintBottom_toTopOf="@id/mobile_bottom_btn_layout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/mobile_search_content" />
 
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/mobile_bottom_btn_layout"
             android:layout_width="match_parent"
             android:layout_height="@dimen/height_58"
             android:layout_marginBottom="@dimen/margin_5"
-            android:background="@color/transparent"
+            android:background="@color/white"
             android:orientation="horizontal"
-            app:layout_constraintBottom_toTopOf="@id/vip_info_linearLayout"
+            app:layout_constraintBottom_toTopOf="@+id/mobile_bottom_layout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
             <Button
                 android:id="@+id/mobile_vip_btn"
                 style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="wrap_content"
+                android:layout_width="@dimen/width_208"
                 android:layout_height="match_parent"
-                android:layout_marginStart="@dimen/margin_5"
-                android:layout_marginEnd="@dimen/margin_5"
+                android:layout_marginStart="@dimen/margin_2"
                 android:layout_weight="1"
                 android:background="@drawable/button_blue"
+                android:drawableEnd="@drawable/fold"
                 android:focusable="false"
+                android:gravity="start|center_vertical"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/size_0"
                 android:text="@string/vip_button_sz"
                 android:textColor="@color/blue_white"
-                android:textSize="@dimen/font_size_18" />
+                android:textSize="@dimen/font_size_16"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/vip_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/size_32"
+                android:textColor="@color/orange_1"
+                android:textSize="@dimen/fun_button_font_size_16"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/mobile_vip_btn"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <Button
                 android:id="@+id/mobile_sale_man_btn"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_marginStart="@dimen/margin_5"
-                android:layout_marginEnd="@dimen/size_68"
                 android:layout_weight="1"
                 android:background="@drawable/button_blue"
                 android:focusable="false"
                 android:text="@string/sale_man_sz"
                 android:textColor="@color/blue_white"
-                android:textSize="@dimen/font_size_18" />
-        </LinearLayout>
+                android:textSize="@dimen/font_size_18"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
             android:id="@+id/mobile_other_fun_btn_layout"
@@ -157,14 +175,14 @@
             app:layout_constraintBottom_toBottomOf="@id/mobile_bottom_btn_layout"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <LinearLayout
+            <com.wyc.cloudapp.CustomizationView.InterceptLinearLayout
                 android:id="@+id/mobile_other_fun_hide_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:visibility="gone">
 
-                <Button
+                <com.wyc.cloudapp.CustomizationView.TmpOrderButton
                     android:id="@+id/mobile_hang_orderl_btn"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="@dimen/float_circle_button_size"
@@ -172,8 +190,9 @@
                     android:layout_marginBottom="@dimen/margin_5"
                     android:background="@drawable/circle_shape_button"
                     android:text="@string/hangbill_sz"
-                    android:textColor="@color/blue"
-                    android:textSize="@dimen/font_size_14" />
+                    android:textColor="@color/blue_white"
+                    android:textSize="@dimen/font_size_14"
+                    app:shape="1" />
 
                 <Button
                     android:id="@+id/mobile_clear_btn"
@@ -183,7 +202,7 @@
                     android:layout_marginBottom="@dimen/margin_5"
                     android:background="@drawable/circle_shape_button"
                     android:text="@string/clear_sz"
-                    android:textColor="@color/blue"
+                    android:textColor="@color/blue_white"
                     android:textSize="@dimen/font_size_14" />
 
                 <Button
@@ -194,7 +213,7 @@
                     android:layout_marginBottom="@dimen/margin_5"
                     android:background="@drawable/circle_shape_button"
                     android:text="@string/present_sz"
-                    android:textColor="@color/blue"
+                    android:textColor="@color/blue_white"
                     android:textSize="@dimen/font_size_14" />
 
                 <Button
@@ -205,9 +224,9 @@
                     android:layout_marginBottom="@dimen/margin_5"
                     android:background="@drawable/circle_shape_button"
                     android:text="@string/o_back_sz"
-                    android:textColor="@color/blue"
+                    android:textColor="@color/blue_white"
                     android:textSize="@dimen/font_size_14" />
-            </LinearLayout>
+            </com.wyc.cloudapp.CustomizationView.InterceptLinearLayout>
 
             <Button
                 android:id="@+id/mobile_other_fun_btn"
@@ -216,53 +235,6 @@
                 android:layout_height="@dimen/float_circle_button_size"
                 android:background="@drawable/more"
                 android:focusable="false" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/vip_info_linearLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:orientation="horizontal"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@id/mobile_bottom_layout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/vip_info_sz"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/fun_button_font_size_16" />
-
-            <TextView
-                android:id="@+id/vip_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/fun_button_font_size_16" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/vip_ph_num_sz"
-                android:textAlignment="center"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/fun_button_font_size_16" />
-
-            <TextView
-                android:id="@+id/vip_phone_num"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/fun_button_font_size_16" />
         </LinearLayout>
 
         <LinearLayout
@@ -320,6 +292,7 @@
             android:layout_height="@dimen/height_50"
             android:layout_gravity="center"
             android:background="@drawable/border_sub_gray"
+            android:drawableStart="@drawable/back"
             android:drawableEnd="@drawable/search"
             android:drawablePadding="@dimen/margin_8"
             android:ems="10"

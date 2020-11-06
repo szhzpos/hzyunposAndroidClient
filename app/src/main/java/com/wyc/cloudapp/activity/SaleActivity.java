@@ -74,6 +74,22 @@ public class SaleActivity extends MainActivity{
         return mSaleGoodsAdapter.splitCombinationalGoods(combination_goods,gp_id,gp_price,gp_num,err);
     }
 
+    public void alterGoodsNumber(){
+        if (verifyNumBtnPermissions())mSaleGoodsAdapter.updateSaleGoodsDialog((short) 0);
+    }
+
+    public void discount(){
+        mSaleGoodsAdapter.updateSaleGoodsDialog((short) 2);
+    }
+
+    public void deleteGoodsRecord(){
+        mSaleGoodsAdapter.deleteSaleGoods(mSaleGoodsAdapter.getCurrentItemIndex(),0);
+    }
+
+    public void alterGoodsPrice(){
+        mSaleGoodsAdapter.updateSaleGoodsDialog((short) 1);
+    }
+
     public double getSumAmt(int type){
         return mSaleGoodsAdapter.getSumAmt(type);
     }

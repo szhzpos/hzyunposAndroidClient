@@ -12,10 +12,10 @@ import androidx.annotation.Nullable;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.logger.AndroidLogAdapter;
 import com.wyc.cloudapp.logger.DiskLogAdapter;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.network.sync.SyncManagement;
 
 import java.lang.ref.WeakReference;
 import java.util.Vector;
@@ -96,6 +96,7 @@ public final class CustomApplication extends Application {
         myhandler.removeCallbacksAndMessages(null);
         mSyncManagement.quit();
         mApplication = null;
+        SQLiteHelper.closeDB();
         android.os.Process.killProcess(android.os.Process.myPid());
     }
 

@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.network.sync;
+package com.wyc.cloudapp.application;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -16,7 +16,7 @@ public class SyncManagement extends Thread {
     private Handler mNotifyHandler;
     private SyncHandler mSyncHandler;
     private String mAppId, mAppSecret,mUrl,mPosNum,mOperId,mStoresId;
-    public SyncManagement(final Handler handler){
+    SyncManagement(final Handler handler){
         mNotifyHandler = handler;
         handlerInitLatch = new CountDownLatch(1);
     }
@@ -42,7 +42,7 @@ public class SyncManagement extends Thread {
         return mStoresId;
     }
 
-    public void initSync(final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){
+    void initSync(final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){
         mUrl = url ;
         mAppId = appid;
         mAppSecret = appsecret;
@@ -64,7 +64,7 @@ public class SyncManagement extends Thread {
         Looper.loop();
     }
 
-    public SyncHandler getHandler(){
+    SyncHandler getHandler(){
         try{
             handlerInitLatch.await();//必须确保Handler初始化
         }catch (InterruptedException e){
@@ -73,7 +73,7 @@ public class SyncManagement extends Thread {
         return this.mSyncHandler;
     }
 
-    public void quit(){
+    void quit(){
         if (mSyncHandler != null){
             mSyncHandler.stop();
             try {//等待线程退出
@@ -90,12 +90,12 @@ public class SyncManagement extends Thread {
         }
         Logger.i("SyncManagement<%s>退出:%s",getName(),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.CHINA).format(new Date()));
     }
-    public void afresh_sync(){
+    void afresh_sync(){
         acquireHandler();
         mSyncHandler.sign_downloaded();
         start_sync(true);
     }
-    public void start_sync(boolean b){
+    void start_sync(boolean b){
         acquireHandler();
         if (b){
             mSyncHandler.modifyReportProgressStatus(true);
@@ -106,11 +106,11 @@ public class SyncManagement extends Thread {
         }
     }
 
-    public void stop_sync(){
+    void stop_sync(){
         mSyncHandler.stopSync();
     }
 
-    public void sync_order_info(){
+    void sync_order_info(){
         sync_refund_order();
 
         sync_transfer_order();
@@ -121,26 +121,26 @@ public class SyncManagement extends Thread {
         if (mNotifyHandler != null) mNotifyHandler.obtainMessage(MessageID.FINISH_SYNC_ORDER_INFO_ID).sendToTarget();
     }
 
-    public void sync_retail_order(){
+    void sync_retail_order(){
         acquireHandler();
         mSyncHandler.startUploadRetailOrder();
     }
 
-    public void sync_transfer_order(){
+    void sync_transfer_order(){
         acquireHandler();
         mSyncHandler.startUploadTransferOrder();
     }
 
-    public void sync_refund_order(){
+    void sync_refund_order(){
         acquireHandler();
         mSyncHandler.startUploadRefundOrder();
     }
 
-    public void pauseSync(){
+    void pauseSync(){
         acquireHandler();
         mSyncHandler.pause();
     }
-    public void continueSync(){
+    void continueSync(){
         acquireHandler();
         mSyncHandler._continue();
     }
