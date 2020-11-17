@@ -222,7 +222,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
         });
         search.setOnKeyListener((v, keyCode, event) -> {
             if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_UP){
-                selectGoods(search.getText().toString());
+                selectGoodsWithSearchContent(search.getText().toString());
                 return true;
             }
             return false;
@@ -257,18 +257,21 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
         }else {
             sale_info_layout.setVisibility(View.GONE);
             goods_info_layout.setVisibility(View.VISIBLE);
+
             if (mMobileSearchGoods == null){
                 final EditText mobile_search_goods = goods_info_layout.findViewById(R.id.mobile_search_goods);
+                mobile_search_goods.setVisibility(View.VISIBLE);
                 mobile_search_goods.setOnTouchListener((v, motionEvent) -> {
                     if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                         final float dx = motionEvent.getX();
                         final int w = mobile_search_goods.getWidth();
                         if (dx > (w - mobile_search_goods.getCompoundPaddingRight())) {
-                            selectGoods(mobile_search_goods.getText().toString());
+                            selectGoodsWithMobileSearchGoods();
+                            return true;
                         }else if(dx < mSearchContent.getCompoundPaddingLeft()){
                             switchView();
+                            return true;
                         }
-                        return true;
                     }
                     return false;
                 });
@@ -282,7 +285,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
         if (resultCode == RESULT_OK ){
             final String _code = intent.getStringExtra("auth_code");
             if (requestCode == CODE_REQUEST_CODE) {
-                if (mSearchContent != null)selectGoods(_code);
+                if (mSearchContent != null)selectGoodsWithSearchContent(_code);
             }else if (requestCode == PAY_REQUEST_CODE){
                 if (mScanCallback != null)mScanCallback.callback(_code);
             }
@@ -290,11 +293,39 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
         super.onActivityResult(requestCode,resultCode,intent);
     }
 
-    private void selectGoods(final String content){
-        final EditText search = mSearchContent;
+    private void selectGoodsWithSearchContent(final String content){
         if (null != content && content.length() != 0){
-            mSearchContent.setText(content);
-            mSearchContent.selectAll();
+            final EditText search = mSearchContent;
+            search.setText(content);
+            search.selectAll();
+            if (!mGoodsInfoViewAdapter.fuzzy_search_goods(content,true)) {
+                search.post(()->{
+                    if (mApplication.isConnection() && AddGoodsInfoDialog.verifyGoodsAddPermissions(this)) {
+                        if (1 == MyDialog.showMessageToModalDialog(this,"未找到匹配商品，是否新增?")){
+                            final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(this);
+                            addGoodsInfoDialog.setBarcode(search.getText().toString());
+                            addGoodsInfoDialog.setFinishListener(barcode -> {
+                                mGoodsInfoViewAdapter.fuzzy_search_goods(content,true);
+                                addGoodsInfoDialog.dismiss();
+                            });
+                            addGoodsInfoDialog.show();
+                        }
+                    } else
+                        MyDialog.ToastMessage("无此商品!", this, getWindow());
+                });
+            } else if (mGoodsInfoViewAdapter.getItemCount() > 1){
+                switchView();
+                mMobileSearchGoods.setText(content);
+                mMobileSearchGoods.requestFocus();
+            }
+        }
+    }
+
+    private void selectGoodsWithMobileSearchGoods(){
+        final EditText search = mMobileSearchGoods;
+        final String content = search.getText().toString();
+        if (content.length() != 0){
+            search.selectAll();
             if (!mGoodsInfoViewAdapter.fuzzy_search_goods(content,true)) {
                 search.post(()->{
                     if (mApplication.isConnection() && AddGoodsInfoDialog.verifyGoodsAddPermissions(this)) {
@@ -373,8 +404,13 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
     }
 
     @Override
+    public boolean containGoods(){
+        return mGoodsInfoViewAdapter != null && mGoodsInfoViewAdapter.getItemCount() != 0;
+    }
+
+    @Override
     public void loadGoods(final String id){
-        if (mGoodsInfoViewAdapter != null)mGoodsInfoViewAdapter.loadGoodsByCategoryId(id);
+        mGoodsInfoViewAdapter.loadGoodsByCategoryId(id);
     }
     @Override
     public void addSaleGoods(final @NonNull JSONObject jsonObject){

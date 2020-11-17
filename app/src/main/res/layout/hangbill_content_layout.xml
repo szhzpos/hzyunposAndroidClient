@@ -8,21 +8,18 @@
         android:id="@+id/card_code"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:visibility="gone" />
 
     <TextView
         android:id="@+id/vip_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:visibility="gone" />
 
     <TextView
         android:id="@+id/vip_mobile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:visibility="gone" />
 
     <TextView
@@ -73,4 +70,5 @@
         android:text="@string/time_sz"
         android:textColor="@color/black_white"
         android:textSize="@dimen/font_size_16" />
+
 </LinearLayout>

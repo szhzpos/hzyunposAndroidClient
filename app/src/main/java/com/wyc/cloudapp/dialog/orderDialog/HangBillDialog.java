@@ -4,14 +4,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 import android.graphics.Point;
 import android.os.Bundle;
-
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -22,6 +23,7 @@ import androidx.annotation.NonNull;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.CustomizationView.InterceptLinearLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.activity.SaleActivity;
@@ -45,6 +47,7 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
     private View mVipInfoView;
     private String mCurrentHangId;
     private OnGetBillListener mGetListener;
+    private boolean lessThan7Inches = false;
 
     public HangBillDialog(@NonNull SaleActivity context) {
         super(context,context.getString(R.string.hangbill_sz));
@@ -58,16 +61,24 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
         initHangBillList();
 
         //初始化按钮事件
-        initDelHangBill();
-        findViewById(R.id.to_checkout).setOnClickListener(v -> {
-            to_checkout();
-        });
+        initBtn();
 
         //初始化窗口尺寸
         initWindowSize();
     }
+
+    private void initBtn(){
+        if (!lessThan7Inches){
+            initDelHangBill();
+            initCheckoutBtn();
+        }
+    }
+
     @Override
     protected int getContentLayoutId(){
+        if (lessThan7Inches = mContext.lessThan7Inches(null)){
+            return R.layout.mobile_hangbill_dialog_layout;
+        }
         return R.layout.hangbill_dialog_layout;
     }
     @Override
@@ -81,34 +92,43 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
         }
     }
 
+    private void initCheckoutBtn(){
+        final Button btn = findViewById(R.id.to_checkout);
+        btn.setOnClickListener(v -> to_checkout());
+    }
+
     private void initDelHangBill(){
         final Button del_hang_b = findViewById(R.id.del_hang_b);
         if (null != del_hang_b)
-            del_hang_b.setOnClickListener(v -> {
-                if (null != mCurrentHangId && !"".equals(mCurrentHangId)) {
-                    if (1 == MyDialog.showMessageToModalDialog(mContext,"是否删除挂单?")){
-                        if (verifyDeleteBillPermissions()){
-                            final StringBuilder err = new StringBuilder();
-                            if (!deleteBill(mCurrentHangId,err)){
-                                MyDialog.ToastMessage("删除挂单信息错误：" + err, mContext, getWindow());
-                            }
-                        }
-                    }
-                } else {
-                    MyDialog.ToastMessage("请选择需要删除的记录！", mContext, getWindow());
-                }
-            });
+            del_hang_b.setOnClickListener(v -> deleteOrder());
     }
+
+    private void deleteOrder(){
+        if (null != mCurrentHangId && !"".equals(mCurrentHangId)) {
+            if (1 == MyDialog.showMessageToModalDialog(mContext,"是否删除挂单?")){
+                if (verifyDeleteBillPermissions()){
+                    final StringBuilder err = new StringBuilder();
+                    if (!deleteBill(mCurrentHangId,err)){
+                        MyDialog.ToastMessage("删除挂单信息错误：" + err, mContext, getWindow());
+                    }
+                }
+            }
+        } else {
+            MyDialog.ToastMessage("请选择需要删除的记录！", mContext, getWindow());
+        }
+    }
+
     private void initWindowSize(){
-        WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
+        final WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
         if (m != null){
             Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
             Point point = new Point();
             d.getSize(point);
-            Window dialogWindow = this.getWindow();
+            final Window dialogWindow = this.getWindow();
             if (dialogWindow != null){
                 WindowManager.LayoutParams lp = dialogWindow.getAttributes();
                 dialogWindow.setGravity(Gravity.CENTER);
+                if (lessThan7Inches)lp.width = (int)(point.x);
                 lp.height = (int)(0.9 * point.y);
                 dialogWindow.setAttributes(lp);
             }
@@ -116,46 +136,12 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
     }
 
     private void initHangBillList(){
-        //表中区
-        mHbCursorAdapter = new SimpleCursorAdapter(mContext,R.layout.hangbill_content_layout,null,new String[]{"_id","hang_id","h_amt","oper_date"},new int[]{R.id.row_id,R.id.hang_id,R.id.h_amt,R.id.h_time},1);
-        mHbCursorAdapter.setViewBinder(((view, cursor, columnIndex) -> {
-            if (view.getId() == R.id.hang_id ){
-                TextView hang_id_v = (TextView)view;
-                View view_tmp = (View)hang_id_v.getParent();
-
-                if (mCurrentHangId == null){
-                    mCurrentHangId = hang_id_v.getText().toString();
-                    setViewBackgroundColor(view_tmp,true);
-                }else{
-                    if (mCurrentHangId.equals(cursor.getString(columnIndex))){
-                        setViewBackgroundColor(view_tmp,true);
-                    }else{
-                        setViewBackgroundColor(view_tmp,false);
-                    }
-                }
-                return false;
-            }
-            if ("h_amt".equals(cursor.getColumnName(columnIndex))){
-                if (view instanceof TextView){
-                    ((TextView) view).setText(String.format(Locale.CHINA,"%.2f",cursor.getDouble(columnIndex)));
-                }
-                return true;
-            }
-            return false;
-        }));
+        mHbCursorAdapter = new SimpleCursorAdapter(mContext,getOrderListLayoutId(),null,new String[]{"_id","hang_id","h_amt","vip_name","oper_date"},new int[]{R.id.row_id,R.id.hang_id,R.id.h_amt,R.id.vip_name,R.id.h_time},1);
+        mHbCursorAdapter.setViewBinder(viewBinder);
 
         final ListView hang_bill_list = findViewById(R.id.hangbill_list);
         if (null != hang_bill_list){
-            hang_bill_list.setOnItemClickListener((parent, view, position, id) -> {
-                if (view == null)return;
-                TextView hang_id_v = view.findViewById(R.id.hang_id);
-                if (hang_id_v != null){
-                    mCurrentHangId = hang_id_v.getText().toString();
-                    showVipInfo();
-                    loadHangBillDetail(mCurrentHangId);
-                    mHbCursorAdapter.notifyDataSetChanged();
-                }
-            });
+            hang_bill_list.setOnItemClickListener(mItemClickListener);
             hang_bill_list.setAdapter(mHbCursorAdapter);
             loadHangBill(null);
             if (mHbCursorAdapter.getCount() != 0){
@@ -163,6 +149,89 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
             }
         }
     }
+
+    private int getOrderListLayoutId(){
+        if (lessThan7Inches)return R.layout.mobile_hangbill_content_layout;
+        return R.layout.hangbill_content_layout;
+    }
+
+    private final AdapterView.OnItemClickListener mItemClickListener = new AdapterView.OnItemClickListener() {
+        private View mCurrentItemView;
+        private HorizontalScrollView mOrderDetailsView;
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            if (view == null)return;
+            final TextView hang_id_v = view.findViewById(R.id.hang_id);
+            if (hang_id_v != null){
+                mCurrentHangId = hang_id_v.getText().toString();
+                showVipInfo();
+                loadHangBillDetail(mCurrentHangId);
+                mHbCursorAdapter.notifyDataSetChanged();
+            }
+            if (lessThan7Inches)setSelectStatus(view);
+        }
+
+        private void setSelectStatus(View v){
+            InterceptLinearLayout mobile_float_fun_btn;
+            if (mCurrentItemView != v){
+                if(null != mCurrentItemView){
+                    mobile_float_fun_btn = mCurrentItemView.findViewById(R.id.mobile_float_fun_btn);
+                    if (mobile_float_fun_btn != null)mobile_float_fun_btn.setVisibility(View.GONE);
+                }
+                mCurrentItemView = v;
+                showOrderDetails(View.GONE);
+            }
+            mobile_float_fun_btn = v.findViewById(R.id.mobile_float_fun_btn);
+            if (mobile_float_fun_btn != null){
+                mobile_float_fun_btn.setVisibility(View.VISIBLE);
+                mobile_float_fun_btn.setClickListener(listener);
+            }
+        }
+        private final View.OnClickListener listener = v -> {
+            final int id= v.getId();
+            if (id == R.id.checkout_btn){
+                to_checkout();
+            }else if (id == R.id.order_details_btn){
+                showOrderDetails(View.VISIBLE);
+            }else if (id == R.id.hang_del_btn){
+                deleteOrder();
+            }
+        };
+
+        private void showOrderDetails(final int v){
+            if (mOrderDetailsView == null)mOrderDetailsView = findViewById(R.id.goods_details_scrollView);
+            mOrderDetailsView.setVisibility(v);
+        }
+    };
+
+    private final SimpleCursorAdapter.ViewBinder viewBinder = new SimpleCursorAdapter.ViewBinder() {
+        @Override
+        public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+            if (view.getId() == R.id.hang_id ){
+                final TextView hang_id_v = (TextView)view;
+                final View view_tmp = (View)hang_id_v.getParent();
+
+                if (mCurrentHangId == null){
+                    mCurrentHangId = hang_id_v.getText().toString();
+                    setViewBackgroundColor(view_tmp,true);
+                }else{
+                    setViewBackgroundColor(view_tmp, mCurrentHangId.equals(cursor.getString(columnIndex)));
+                }
+                return false;
+            }
+            final String name = cursor.getColumnName(columnIndex);
+            if ("h_amt".equals(name)){
+                if (view instanceof TextView){
+                    ((TextView) view).setText(String.format(Locale.CHINA,"%.2f",cursor.getDouble(columnIndex)));
+                }
+                return true;
+            }
+            if (!lessThan7Inches && view.getId() == R.id.vip_name){
+                return true;
+            }
+            return false;
+        }
+    };
 
     private void setViewBackgroundColor(View view,boolean s){
         if(view!= null){
@@ -190,15 +259,19 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
     private void initHangBillDetail(){
         //表中区
         final ListView mHangBillDetails = findViewById(R.id.hangbill_details_list);
+
         mHbDetailCursorAdapter = new SimpleCursorAdapter(mContext,R.layout.hangbill_detail_content_layout,null,new String[]{"_id","barcode","goods_title","xnum","sale_price","discount","sale_amt"},
                 new int[]{R.id.row_id,R.id.barcode,R.id.goods_title,R.id.xnum,R.id.h_sale_price,R.id.h_discount,R.id.h_sale_amt},1);
         mHbDetailCursorAdapter.setViewBinder((view, cursor, columnIndex) -> {
-            String col_name = cursor.getColumnName(columnIndex);
+            final String col_name = cursor.getColumnName(columnIndex);
             if ("sale_price".equals(col_name) || "sale_amt".equals(col_name)){
                 if (view instanceof TextView){
                     ((TextView) view).setText(String.format(Locale.CHINA,"%.2f",cursor.getDouble(columnIndex)));
                 }
                 return true;
+            }
+            if (lessThan7Inches && "discount".equals(col_name)){
+                view.setVisibility(View.GONE);
             }
             return false;
         });
@@ -208,7 +281,7 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
 
     private void loadHangBill(final String hang_id){
         if (mHbCursorAdapter != null){
-            String sql = "SELECT _id,hang_id,amt h_amt,oper_date FROM hangbill";
+            String sql = "SELECT _id,hang_id,amt h_amt,ifnull(vip_name,'') vip_name,oper_date FROM hangbill";
             if (hang_id != null){
                 sql = sql + " where cas_id = "+ mContext.getCashierInfo().getIntValue("cas_id") +" and hang_id like '" + hang_id +"%'";
             }
@@ -246,7 +319,7 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
 
     private boolean deleteBill(final String id,@NonNull final StringBuilder err){
         boolean code = true;
-        String sql = "delete from hangbill where hang_id = " + id,sql_detail = "delete from hangbill_detail where hang_id = " + id;
+        final String sql = "delete from hangbill where hang_id = " + id,sql_detail = "delete from hangbill_detail where hang_id = " + id;
         List<String> sqls = new ArrayList<>();
         sqls.add(sql);
         sqls.add(sql_detail);
@@ -265,9 +338,10 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
 
     private void showVipInfo(){
         if (mCurrentHangId != null){
-            JSONObject object = new JSONObject();
+            final JSONObject object = new JSONObject();
             if (SQLiteHelper.execSql(object,"SELECT ifnull(vip_name,'') vip_name,ifnull(vip_mobile,'') vip_mobile FROM hangbill where hang_id = " + mCurrentHangId)){
-                String sz_name = object.getString("vip_name"),sz_mobile = object.getString("vip_mobile");
+
+                final String sz_name = object.getString("vip_name"),sz_mobile = object.getString("vip_mobile");
                 if (null == mVipInfoView){
                     mVipInfoView = findViewById(R.id.vip_info_linearLayout);
                 }
@@ -275,7 +349,7 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
                     if (mVipInfoView.getVisibility() == View.GONE){
                         mVipInfoView.setVisibility(View.VISIBLE);
                     }
-                    TextView t_name = mVipInfoView.findViewById(R.id.vip_name),t_mobile = mVipInfoView.findViewById(R.id.vip_phone_num);
+                    final TextView t_name = mVipInfoView.findViewById(R.id.vip_name),t_mobile = mVipInfoView.findViewById(R.id.vip_phone_num);
                     if (null != t_name && null != t_mobile){
                         t_name.setText(sz_name);
                         t_mobile.setText(sz_mobile);
@@ -297,9 +371,9 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
                 final StringBuilder err = new StringBuilder();
                 final JSONArray barcode_ids = SQLiteHelper.getListToJson("SELECT barcode_id,only_coding,gp_id,"+ GoodsInfoViewAdapter.W_G_MARK +",sale_price price,xnum,sale_amt FROM hangbill_detail where hang_id = " + mCurrentHangId, err);
                 if (null != barcode_ids) {
-                    JSONObject object = new JSONObject();
+                    final JSONObject object = new JSONObject();
                     if (SQLiteHelper.execSql(object,"SELECT ifnull(card_code,'') card_code FROM hangbill where hang_id = " + mCurrentHangId)){
-                        String card_code = object.getString("card_code");
+                        final String card_code = object.getString("card_code");
                         if (!"".equals(card_code)) {
                             final CustomProgressDialog progressDialog = new CustomProgressDialog(mContext);
                             progressDialog.setCancel(false).setMessage("正在查询会员信息...").show();
@@ -342,7 +416,7 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
             int hang_id = 0;
             double amt = 0.0;
             JSONObject data,tmp_obj;
-            JSONArray orders = new JSONArray(),details = new JSONArray();
+            final JSONArray orders = new JSONArray(),details = new JSONArray();
 
             try {
                 final String stores_id = mContext.getStoreInfo().getString("stores_id"),

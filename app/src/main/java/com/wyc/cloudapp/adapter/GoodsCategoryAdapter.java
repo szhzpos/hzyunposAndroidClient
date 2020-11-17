@@ -90,13 +90,11 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
         if (mDatas != null){
             final JSONObject goods_type_info = mDatas.getJSONObject(i);
-            if (goods_type_info != null){
-                myViewHolder.category_id.setText(goods_type_info.getString("category_id"));
-                myViewHolder.category_name.setText(goods_type_info.getString("name"));
-                if (i == 1 && mFirstLoad){//一级分类触发第二个类别查询
-                    mFirstLoad = false;
-                    myViewHolder.mCurrentLayoutItemView.callOnClick();
-                }
+            myViewHolder.category_id.setText(goods_type_info.getString("category_id"));
+            myViewHolder.category_name.setText(goods_type_info.getString("name"));
+            if (i == 1 && mFirstLoad && !mContext.containGoods()){//一级分类触发第二个类别查询
+                mFirstLoad = false;
+                myViewHolder.mCurrentLayoutItemView.callOnClick();
             }
         }
     }

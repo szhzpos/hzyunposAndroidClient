@@ -83,7 +83,7 @@ public final class TmpOrderButton extends AppCompatButton {
         int w = getMeasuredWidth(),h = getMeasuredHeight();
         mPaint.setColor(context.getColor(R.color.orange));
         final int border = Utils.dpToPx(context,1);
-        canvas.drawArc(border,border,w ,h ,-20,-140,false,mPaint);
+        canvas.drawArc(border,border,w - border ,h - border ,-20,-140,false,mPaint);
         mPaint.setColor(context.getColor(R.color.white));
         mPaint.setTextSize(context.getResources().getDimension(R.dimen.font_size_12));
         final String num = String.valueOf(mOrderNum);
