@@ -314,9 +314,11 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
                         MyDialog.ToastMessage("无此商品!", this, getWindow());
                 });
             } else if (mGoodsInfoViewAdapter.getItemCount() > 1){
-                switchView();
-                mMobileSearchGoods.setText(content);
-                mMobileSearchGoods.requestFocus();
+                if (!mGoodsInfoViewAdapter.isAutoSelect()){
+                    switchView();
+                    mMobileSearchGoods.setText(content);
+                    mMobileSearchGoods.requestFocus();
+                }
             }
         }
     }

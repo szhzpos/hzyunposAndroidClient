@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
+import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -43,7 +44,7 @@ public abstract class AbstractQuerySuperDialog extends AbstractDialogSaleActivit
     private int mCurrentStatusIndex = 0;
     private String[] mCashierNames,mCashierIDs;
     protected EditText mStartDateEt,mStartTimeEt,mEndDateEt,mEndTimeEt,mPayStatusEt,mCashierEt,mS_ex_statusEt,mUploadStatusEt,mOrderStatusEt;
-    private AbstractQueryDataAdapter mAdapter;
+    private AbstractQueryDataAdapter<AbstractTableDataAdapter.SuperViewHolder> mAdapter;
     private Button mQueryBtn;
     protected AbstractQuerySuperDialog(@NonNull SaleActivity context, final String title) {
         super(context, title);
@@ -67,17 +68,17 @@ public abstract class AbstractQuerySuperDialog extends AbstractDialogSaleActivit
 
     protected abstract int getTableLayoutId();
     protected abstract String query();
-    protected abstract AbstractQueryDataAdapter getAdapter();
+    protected abstract AbstractQueryDataAdapter<AbstractTableDataAdapter.SuperViewHolder> getAdapter();
 
     protected void initWindowSize(){//初始化窗口尺寸
-        WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
+        final WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
         if (m != null){
-            Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
-            Point point = new Point();
+            final Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+            final Point point = new Point();
             d.getSize(point);
-            Window dialogWindow = this.getWindow();
+            final Window dialogWindow = this.getWindow();
             if (dialogWindow != null){
-                WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+                final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
                 dialogWindow.setGravity(Gravity.CENTER);
                 lp.height = (int)(0.9 * point.y);
                 lp.width = (int)(0.85 * point.x) - 4;

@@ -23,7 +23,7 @@ public abstract class AbstractTableDataAdapter<T extends AbstractTableDataAdapte
     private int mCurrentItemIndex = -1;
     private ItemClickCallBack mItemClickCallback;
 
-    static class SuperViewHolder extends RecyclerView.ViewHolder {
+    public static class SuperViewHolder extends RecyclerView.ViewHolder {
         View mCurrentLayoutItemView;
         SuperViewHolder(View itemView) {
             super(itemView);

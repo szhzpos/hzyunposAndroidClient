@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
 
 /*
@@ -60,13 +62,20 @@ public abstract class AbstractMobileFragment extends Fragment {
     abstract protected int getMainLayoutId();
 
     private final View.OnClickListener mClickListener = v -> {
-        final Intent intent = new Intent();
         final Context context = getContext();
         if (null != context){
+            final int v_id = v.getId();
             try {
-                intent.setClassName(context,context.getPackageName().concat(".") + v.getTag());
-                if (v instanceof TextView)intent.putExtra("title",((TextView)v).getText());
-                startActivity(intent);
+                if (v_id == R.id.data_exchange_tv){
+                    CustomApplication.self().manualSync();
+                }else if (v_id ==R.id.fd_shift_exchange_tv){
+                    //((MobileNavigationActivity)getActivity()).tr
+                }else{
+                    final Intent intent = new Intent();
+                    intent.setClassName(context,context.getPackageName().concat(".") + v.getTag());
+                    if (v instanceof TextView)intent.putExtra("title",((TextView)v).getText());
+                    startActivity(intent);
+                }
             }catch (ActivityNotFoundException e){
                 e.printStackTrace();
                 MyDialog.ToastMessage("暂不支持此功能!",context,null);

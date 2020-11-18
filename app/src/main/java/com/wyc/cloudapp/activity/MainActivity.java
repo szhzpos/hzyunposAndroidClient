@@ -221,5 +221,4 @@ public abstract class MainActivity extends AppCompatActivity {
         double diagonal = Utils.getDisplayMetrics((WindowManager)getSystemService(WINDOW_SERVICE),displayMetrics);
         return diagonal < 7.0;
     }
-
 }

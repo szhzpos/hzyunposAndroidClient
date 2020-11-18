@@ -36,7 +36,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     private OnItemClickListener mOnItemClickListener;
     private boolean mShowPic = true;
     private View mCurrentItemView;
-    private boolean mPriceAdjustMode;
+    private boolean mPriceAdjustMode, mFuzzySearchAutoSelected = false;
     public GoodsInfoViewAdapter(final SaleActivity context){
         this.mContext = context;
         final JSONObject jsonObject = new JSONObject();
@@ -202,6 +202,8 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     }
 
     public boolean fuzzy_search_goods(@NonNull final String search_content,boolean autoSelect){
+        mFuzzySearchAutoSelected = false;
+
         boolean code = false;
         final StringBuilder err = new StringBuilder();
         final ContentValues barcodeRuleObj = new ContentValues();
@@ -237,6 +239,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
             if (code = !array.isEmpty()){
                 if (autoSelect && array.size() == 1){
                     mContext.addSaleGoods(array.getJSONObject(0));
+                    mFuzzySearchAutoSelected = true;
                 }else {
                     mDatas = array;
                     notifyDataSetChanged();
@@ -246,6 +249,10 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
             MyDialog.ToastMessage("搜索商品错误：" + err,mContext,null);
         }
         return code;
+    }
+
+    public boolean isAutoSelect(){
+        return mFuzzySearchAutoSelected;
     }
 
     public boolean getSingleGoods(@NonNull JSONObject object, final String weigh_barcode_info, final String id){

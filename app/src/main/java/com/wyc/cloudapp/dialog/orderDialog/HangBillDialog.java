@@ -8,12 +8,12 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -164,11 +164,16 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
             final TextView hang_id_v = view.findViewById(R.id.hang_id);
             if (hang_id_v != null){
                 mCurrentHangId = hang_id_v.getText().toString();
-                showVipInfo();
+
                 loadHangBillDetail(mCurrentHangId);
+
+                if (lessThan7Inches)
+                    setSelectStatus(view);
+                else
+                    showVipInfo();
+
                 mHbCursorAdapter.notifyDataSetChanged();
             }
-            if (lessThan7Inches)setSelectStatus(view);
         }
 
         private void setSelectStatus(View v){
@@ -210,10 +215,8 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
             if (view.getId() == R.id.hang_id ){
                 final TextView hang_id_v = (TextView)view;
                 final View view_tmp = (View)hang_id_v.getParent();
-
                 if (mCurrentHangId == null){
                     mCurrentHangId = hang_id_v.getText().toString();
-                    setViewBackgroundColor(view_tmp,true);
                 }else{
                     setViewBackgroundColor(view_tmp, mCurrentHangId.equals(cursor.getString(columnIndex)));
                 }
@@ -226,30 +229,30 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
                 }
                 return true;
             }
-            if (!lessThan7Inches && view.getId() == R.id.vip_name){
-                return true;
-            }
-            return false;
+
+            return !lessThan7Inches && view.getId() == R.id.vip_name;
         }
     };
 
     private void setViewBackgroundColor(View view,boolean s){
         if(view!= null){
-            int color;
+            int b_color,t_color,white = mContext.getColor(R.color.white);
             if (s){
-                color = mContext.getColor(R.color.listSelected);
+                t_color = white;
+                b_color = mContext.getColor(R.color.listSelected);
             }else{
-                color = mContext.getColor(R.color.white);
+                t_color = mContext.getColor(R.color.text_color);
+                b_color = white;
             }
-            view.setBackgroundColor(color);
-            if (view instanceof LinearLayout){
-                LinearLayout linearLayout = (LinearLayout)view;
-                int count = linearLayout.getChildCount();
+            view.setBackgroundColor(b_color);
+            if (view instanceof ViewGroup){
+                final ViewGroup viewGroup = (ViewGroup)view;
+                int count = viewGroup.getChildCount();
                 View ch;
                 for (int i = 0;i < count;i++){
-                    ch = linearLayout.getChildAt(i);
+                    ch = viewGroup.getChildAt(i);
                     if (ch instanceof TextView){
-                        ((TextView) ch).setTextColor(mContext.getColor(R.color.text_color));
+                        ((TextView) ch).setTextColor(t_color);
                     }
                 }
             }
@@ -281,7 +284,7 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
 
     private void loadHangBill(final String hang_id){
         if (mHbCursorAdapter != null){
-            String sql = "SELECT _id,hang_id,amt h_amt,ifnull(vip_name,'') vip_name,oper_date FROM hangbill";
+            String sql = "SELECT _id,hang_id,amt h_amt,ifnull(vip_name,'无') vip_name,oper_date FROM hangbill";
             if (hang_id != null){
                 sql = sql + " where cas_id = "+ mContext.getCashierInfo().getIntValue("cas_id") +" and hang_id like '" + hang_id +"%'";
             }

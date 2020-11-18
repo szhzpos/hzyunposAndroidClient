@@ -1,7 +1,12 @@
 package com.wyc.cloudapp.dialog;
 
+import android.graphics.Point;
 import android.os.Bundle;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -15,11 +20,14 @@ import com.wyc.cloudapp.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.logger.Logger;
 
+import static android.content.Context.WINDOW_SERVICE;
+
 public final class VerifyPermissionDialog extends AbstractDialogMainActivity {
     private EditText mCasContent;
     private String mPerName;
     private Button mOkBtn;
     private OnFinishListener mFinishListener;
+    private boolean lessThan7Inches = false;
     public VerifyPermissionDialog(@NonNull MainActivity context) {
         super(context, context.getString(R.string.per_dialog_sz));
     }
@@ -31,10 +39,16 @@ public final class VerifyPermissionDialog extends AbstractDialogMainActivity {
         initCasIdEt();
         initInfoTv();
         initKeyboardView();
+
+        if (lessThan7Inches){
+            initWindowSize();
+        }
+
     }
 
     @Override
     protected int getContentLayoutId() {
+        if (lessThan7Inches = mContext.lessThan7Inches(null))return R.layout.mobile_verify_permissions_dilaog_layout;
         return R.layout.verify_permissions_dilaog_layout;
     }
 
@@ -87,6 +101,23 @@ public final class VerifyPermissionDialog extends AbstractDialogMainActivity {
             mOkBtn = btn;
         }
     }
+
+    private void initWindowSize(){//初始化窗口尺寸
+        final WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
+        if (m != null){
+            Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+            Point point = new Point();
+            d.getSize(point);
+            final Window dialogWindow = this.getWindow();
+            if (dialogWindow != null){
+                final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+                dialogWindow.setGravity(Gravity.CENTER);
+                lp.width = (int)point.x;
+                dialogWindow.setAttributes(lp);
+            }
+        }
+    }
+
     public interface OnFinishListener{
         void onFinish(VerifyPermissionDialog dialog);
     }
