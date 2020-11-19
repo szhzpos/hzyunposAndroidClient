@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.activity.mobile;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -11,11 +12,14 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.wyc.cloudapp.CustomizationView.TopDrawableTextView;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
-import com.wyc.cloudapp.CustomizationView.TopDrawableTextView;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.orderDialog.AbstractTransferDialog;
+import com.wyc.cloudapp.dialog.orderDialog.MobileTransferDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.mobileFragemt.BackgroundFragment;
 import com.wyc.cloudapp.mobileFragemt.BoardFragment;
@@ -50,6 +54,32 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
     public void onBackPressed(){
         super.onBackPressed();
         finish();
+    }
+
+    @Override
+    public void disposeHangBill(){
+        final Intent intent = new Intent(this, MobileCashierActivity.class);
+        intent.putExtra("disposeHang",true);
+        startActivity(intent);
+    }
+
+    public void transfer(){
+        if (AbstractTransferDialog.verifyTransferPermissions(this)){
+            final AbstractTransferDialog transferDialog = new MobileTransferDialog(this);
+            transferDialog.setFinishListener(() -> {
+                mApplication.sync_transfer_order();
+                MyDialog my_dialog = new MyDialog(this);
+                my_dialog.setMessage("交班成功！").setYesOnclickListener(getString(R.string.OK), myDialog -> {
+                    transferDialog.dismiss();
+                    myDialog.dismiss();
+                    final Intent intent = new Intent(this, LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    finish();
+                }).show();
+            });
+            transferDialog.verifyTransfer();
+        }
     }
 
     private void initSyncManagement(){

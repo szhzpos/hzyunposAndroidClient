@@ -21,13 +21,12 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.RefundDialogAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.Utils;
@@ -41,7 +40,7 @@ import java.util.List;
 import java.util.Locale;
 
 
-public final class RefundDialog extends AbstractDialogSaleActivity {
+public final class RefundDialog extends AbstractDialogMainActivity {
     private RefundDialogAdapter mRefundDialogAdapter;
     private String mOrderCode,mRefundCode;
     private CustomProgressDialog mProgressDialog;
@@ -50,7 +49,7 @@ public final class RefundDialog extends AbstractDialogSaleActivity {
     private Button mQueryBtn, mRefundBtn,mRemarkBtn;
     private boolean isRefundCheck;
     private int mRefundType = 1;//退货类型（1全部退货，2部分退货,3 单品退货,4 无货可退，用于隐藏按钮）
-    public RefundDialog(@NonNull SaleActivity context, final String order_code) {
+    public RefundDialog(@NonNull MainActivity context, final String order_code) {
         super(context, context.getString(R.string.refund_dialog_title_sz));
         mOrderCode = order_code;
     }
@@ -709,7 +708,7 @@ public final class RefundDialog extends AbstractDialogSaleActivity {
 
         return info.toString();
     }
-    static String get_print_content(final SaleActivity context,final String refund_code,boolean is_open_cash_box){
+    static String get_print_content(final MainActivity context,final String refund_code,boolean is_open_cash_box){
         String content = "";
         if (context.getPrintStatus()){
             final JSONObject print_format_info = new JSONObject(),order_info = new JSONObject();

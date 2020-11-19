@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.PayMethodItemDecoration;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
@@ -20,7 +21,7 @@ public class RefundPayDialogImp extends AbstractPayDialog {
 
     private PayMethodViewAdapter mPayMethodViewAdapter;
 
-    RefundPayDialogImp(@NonNull SaleActivity context) {
+    RefundPayDialogImp(@NonNull MainActivity context) {
         super(context, "请选择退款方式");
     }
 

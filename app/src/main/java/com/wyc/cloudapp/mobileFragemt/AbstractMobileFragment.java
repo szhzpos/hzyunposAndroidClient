@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.mobileFragemt;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.mobile.MobileNavigationActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
 
@@ -69,7 +71,10 @@ public abstract class AbstractMobileFragment extends Fragment {
                 if (v_id == R.id.data_exchange_tv){
                     CustomApplication.self().manualSync();
                 }else if (v_id ==R.id.fd_shift_exchange_tv){
-                    //((MobileNavigationActivity)getActivity()).tr
+                    final Activity activity = getActivity();
+                    if (activity instanceof MobileNavigationActivity){
+                        ((MobileNavigationActivity)activity).transfer();
+                    }
                 }else{
                     final Intent intent = new Intent();
                     intent.setClassName(context,context.getPackageName().concat(".") + v.getTag());

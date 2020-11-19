@@ -1,16 +1,10 @@
 package com.wyc.cloudapp.adapter;
 
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.SaleActivity;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.callback.PasswordEditTextReplacement;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -23,13 +17,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<TransferDetailsAdapter.MyViewHolder>  {
-    private JSONArray mTransferRetails,mTransferRefunds,mTransferDeposits,mTransferOrderCodes,mTransferCardsc;
-    private JSONObject mTransferSumInfo;
-    private boolean mTransferAmtNotVisible;
-    private PasswordEditTextReplacement editTextReplacement;
-    private String mTransferStartTime = "";
-    public TransferDetailsAdapter(SaleActivity context){
+public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAdapter<AbstractTransferDetailsAdapter.MyViewHolder>  {
+    protected JSONArray mTransferRetails,mTransferRefunds,mTransferDeposits,mTransferOrderCodes,mTransferCardsc;
+    protected final JSONObject mTransferSumInfo;
+    protected final boolean mTransferAmtNotVisible;
+    protected PasswordEditTextReplacement editTextReplacement;
+    protected String mTransferStartTime = "";
+    public AbstractTransferDetailsAdapter(MainActivity context){
         mContext = context;
         mTransferSumInfo = new JSONObject();
         mTransferAmtNotVisible = !verifyShowAmtPermissions();
@@ -38,54 +32,71 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
             editTextReplacement = new PasswordEditTextReplacement();
     }
 
-    static class MyViewHolder extends AbstractQueryDataAdapter.SuperViewHolder {
-        TextView pay_m_name_tv,retail_order_num_tv,retail_amt_tv,refund_order_num_tv,refund_amt_tv,deposit_order_num_tv,deposit_amt_tv;
+    protected static class MyViewHolder extends AbstractQueryDataAdapter.SuperViewHolder {
         MyViewHolder(View itemView) {
             super(itemView);
-            pay_m_name_tv = itemView.findViewById(R.id.pay_m_name);
-            retail_order_num_tv = itemView.findViewById(R.id.retail_order_num);
-            retail_amt_tv = itemView.findViewById(R.id.retail_amt);
-            refund_order_num_tv = itemView.findViewById(R.id.refund_order_num);
-            refund_amt_tv = itemView.findViewById(R.id.refund_amt);
-            deposit_order_num_tv = itemView.findViewById(R.id.deposit_order_num);
-            deposit_amt_tv = itemView.findViewById(R.id.deposit_amt);
         }
     }
-    @NonNull
-    @Override
-    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        final View itemView = View.inflate(mContext,R.layout.transfer_details_content_layout, null);
-        itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.height_40)));
-        return new MyViewHolder(itemView);
-    }
 
-    @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-         if (null != mDatas) {
-            final JSONObject pay_info = mDatas.getJSONObject(position);
-            if (pay_info != null) {
-                boolean visible = mTransferAmtNotVisible;
-                holder.pay_m_name_tv.setText(pay_info.getString("pay_m_name"));
+    public JSONArray getTransferRetails(){
+        if (null != mTransferRetails){
+            double amt = mTransferSumInfo.getDoubleValue("order_money");
+            int num = mTransferSumInfo.getIntValue("retail_total_orders");
 
-                holder.retail_order_num_tv.setText(String.valueOf(pay_info.getIntValue("retail_order_num")));
-
-                holder.retail_amt_tv.setText(String.format(Locale.CHINA, "%.2f", pay_info.getDoubleValue("retail_amt")));
-                if (visible) holder.retail_amt_tv.setTransformationMethod(editTextReplacement);
-
-                holder.refund_order_num_tv.setText(String.valueOf(pay_info.getIntValue("refund_order_num")));
-
-                holder.refund_amt_tv.setText(String.format(Locale.CHINA, "%.2f", pay_info.getDoubleValue("refund_amt")));
-                if (visible) holder.refund_amt_tv.setTransformationMethod(editTextReplacement);
-
-                holder.deposit_order_num_tv.setText(String.valueOf(pay_info.getIntValue("deposit_order_num")));
-
-                holder.deposit_amt_tv.setText(String.format(Locale.CHINA, "%.2f", pay_info.getDoubleValue("deposit_amt")));
-                if (visible) holder.deposit_amt_tv.setTransformationMethod(editTextReplacement);
+            final JSONObject object = new JSONObject();
+            if (!Utils.equalDouble(amt,0.0) || num != 0){
+                object.put("pay_name","合计");
+            }else{
+                object.put("pay_name","暂无数据");
             }
+            object.put("order_num",num);
+            object.put("pay_money",amt);
+
+            mTransferRetails.add(object);
         }
+
+        return mTransferRetails;
     }
 
-    @Override
+    public JSONArray getTransferRefunds(){
+        if (mTransferRefunds != null){
+            double amt = mTransferSumInfo.getDoubleValue("refund_money");
+            int num = mTransferSumInfo.getIntValue("refund_total_orders");
+
+            final JSONObject object = new JSONObject();
+            if (!Utils.equalDouble(amt,0.0) || num != 0){
+                object.put("pay_name","合计");
+            }else{
+                object.put("pay_name","暂无数据");
+            }
+            object.put("order_num",num);
+            object.put("pay_money",amt);
+
+            mTransferRefunds.add(object);
+        }
+        return mTransferRefunds;
+    }
+
+    public JSONArray getTransferDeposits(){
+        if (mTransferDeposits != null){
+            double amt = mTransferSumInfo.getDoubleValue("recharge_money");
+            int num = mTransferSumInfo.getIntValue("deposits_total_orders");
+
+            final JSONObject object = new JSONObject();
+            if (!Utils.equalDouble(amt,0.0) || num != 0){
+                object.put("pay_name","合计");
+            }else{
+                object.put("pay_name","暂无数据");
+            }
+            object.put("order_num",num);
+            object.put("pay_money",amt);
+
+            mTransferDeposits.add(object);
+        }
+
+        return mTransferDeposits;
+    }
+
     public void setDatas(final String cas_id){
         final StringBuilder err = new StringBuilder();
         int stores_id = mContext.getStoreInfo().getIntValue("stores_id");
@@ -123,8 +134,6 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
                 mTransferSumInfo.put("transfer_time",start_time);
                 mTransferSumInfo.put("stores_id",mContext.getStoreInfo().getIntValue("stores_id"));
                 mTransferSumInfo.put("ti_code",ti_code);
-
-                Logger.d_json(mTransferSumInfo.toJSONString());
             }
         }
         if (err.length() != 0)mContext.runOnUiThread(()->MyDialog.ToastMessage(err.toString(),mContext,null));
@@ -141,9 +150,9 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
         return SQLiteHelper.getString(start_time_sql,err);
     }
 
-    private double disposeTransferRetails(final String ti_code){
+    protected double disposeTransferRetails(final String ti_code){
         JSONObject object,pay_obj;
-        int pay_method_id,num = 0;
+        int pay_method_id,num = 0,total_orders = 0;
         double amt = 0.0,total_amt = 0.0,cash_sum_amt = 0.0;
         //零售
         for (int j = 0,jsize = mTransferRetails.size();j < jsize;j++){
@@ -153,6 +162,7 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
             amt = object.getDoubleValue("pay_money");
             num = object.getIntValue("order_num");
 
+            total_orders += num;
             total_amt += amt;
 
             if (PayMethodViewAdapter.CASH_METHOD_ID.equals(String.valueOf(pay_method_id))){
@@ -166,13 +176,15 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
                 }
             }
         }
+
+        mTransferSumInfo.put("retail_total_orders",total_orders);
         mTransferSumInfo.put("order_money",total_amt);
 
         return cash_sum_amt;
     }
-    private double disposeTransferRefunds(final String ti_code){
+    protected double disposeTransferRefunds(final String ti_code){
         JSONObject object,pay_obj;
-        int pay_method_id,num = 0;
+        int pay_method_id,num = 0,total_num = 0;
         double amt = 0.0,total_amt = 0.0,cash_sum_amt = 0.0;
         //退单
         for (int j = 0,jsize = mTransferRefunds.size();j < jsize;j++){
@@ -182,6 +194,7 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
             amt = object.getDoubleValue("pay_money");
             num = object.getIntValue("order_num");
 
+            total_num += num;
             total_amt += amt;
 
             if (PayMethodViewAdapter.CASH_METHOD_ID.equals(String.valueOf(pay_method_id))){//退单现金要减
@@ -196,13 +209,14 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
                 }
             }
         }
+        mTransferSumInfo.put("refund_total_orders",total_num);
         mTransferSumInfo.put("refund_money",total_amt);
 
         return cash_sum_amt;
     }
-    private double disposeTransferDeposits(final String ti_code){
+    protected double disposeTransferDeposits(final String ti_code){
         JSONObject object,pay_obj;
-        int pay_method_id,num = 0;
+        int pay_method_id,num = 0,total_num = 0;
         double amt = 0.0,total_amt = 0.0,cash_sum_amt = 0.0;
         //充值
         for (int j = 0,jsize = mTransferDeposits.size();j < jsize;j++){
@@ -213,6 +227,7 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
             amt = object.getDoubleValue("pay_money");
             num = object.getIntValue("order_num");
 
+            total_num += num;
             total_amt += amt;
 
             if (PayMethodViewAdapter.CASH_METHOD_ID.equals(String.valueOf(pay_method_id))){
@@ -227,14 +242,16 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
                 }
             }
         }
+        mTransferSumInfo.put("deposits_total_orders",total_num);
         mTransferSumInfo.put("recharge_money",total_amt);
 
         return cash_sum_amt;
     }
-    private double disposeTransferCardsc(final String ti_code){
+    protected double disposeTransferCardsc(final String ti_code){
         JSONObject object,pay_obj;
-        int pay_method_id,num = 0;
+        int pay_method_id,num = 0,total_num = 0;
         double amt = 0.0,total_amt = 0.0,cash_sum_amt = 0.0;
+
         //次卡
         for (int j = 0,jsize = mTransferCardsc.size();j < jsize;j++){
             object = mTransferCardsc.getJSONObject(j);
@@ -244,6 +261,7 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
             amt = object.getDoubleValue("pay_money");
             num = object.getIntValue("order_num");
 
+            total_num += num;
             total_amt += amt;
 
             if (PayMethodViewAdapter.CASH_METHOD_ID.equals(String.valueOf(pay_method_id))){
@@ -258,12 +276,14 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
                 }
             }
         }
+
+        mTransferSumInfo.put("cardsc_total_orders",total_num);
         mTransferSumInfo.put("cards_money",total_amt);
 
         return cash_sum_amt;
     }
 
-    private String generateTransferIdOrderCode(){
+    protected String generateTransferIdOrderCode(){
         String prefix = "J" + mContext.getPosNum() + "-" + new SimpleDateFormat("yyMMddHHmmss",Locale.CHINA).format(new Date()) + "-",order_code ;
         JSONObject orders= new JSONObject();
         if (SQLiteHelper.execSql(orders,"SELECT count(ti_code) + 1 ti_code from transfer_info where date(transfer_time,'unixepoch' ) = date('now')")){
@@ -276,7 +296,7 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
         return order_code;
     }
 
-    private boolean getTransferOrderCodes(final String ti_code,final String cas_id,int stores_id,final String start_time,final StringBuilder err){
+    protected boolean getTransferOrderCodes(final String ti_code,final String cas_id,int stores_id,final String start_time,final StringBuilder err){
         boolean code = false;
          final String retail_code_sql = "select cashier_id cas_id,order_code from retail_order where transfer_status = 1 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +"  and (order_status = 2  or order_status = 4) and "+ start_time +" <= addtime and addtime <= strftime('%s','now') group by order_code,cashier_id",
                  refund_code_sql = "select cashier_id cas_id,ro_code order_code from refund_order where transfer_status = 1 and order_status = 2 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +" and "+ start_time +" <= addtime and addtime <= strftime('%s','now') group by ro_code,cashier_id",
@@ -298,8 +318,6 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
              mTransferOrderCodes.addAll(transfer_refund_codes);
              mTransferOrderCodes.addAll(transfer_deposit_codes);
 
-             Logger.d_json(mTransferOrderCodes.toJSONString());
-
              if (mTransferOrderCodes.isEmpty()){
                  mTransferSumInfo.clear();
                  err.append("无交班信息!");
@@ -316,13 +334,13 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
          return code;
      }
 
-     private boolean getTransferDetailsInfo(final String cas_id,int stores_id,final String start_time,final StringBuilder err){
-         final String retail_sql = "SELECT pay_method ,count(1) order_num,sum(pay_money) pay_money FROM retail_order_pays a inner join \n" +
+    protected boolean getTransferDetailsInfo(final String cas_id,int stores_id,final String start_time,final StringBuilder err){
+         final String retail_sql = "SELECT pay_method,c.name pay_name ,count(1) order_num,sum(pay_money) pay_money FROM retail_order_pays a left join pay_method c on a.pay_method = c.pay_method_id inner join \n" +
                  "retail_order b on a.order_code = b.order_code where b.transfer_status = 1 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +"  and (b.order_status = 2  or b.order_status = 4) and a.pay_status = 2 and "+ start_time +" <= b.addtime and b.addtime <= strftime('%s','now') group by pay_method",
-                 refund_sql = "SELECT pay_method ,count(1) order_num,sum(pay_money) pay_money FROM refund_order_pays a inner join refund_order b \n" +
+                 refund_sql = "SELECT pay_method,c.name pay_name,count(1) order_num,sum(pay_money) pay_money FROM refund_order_pays a left join pay_method c on a.pay_method = c.pay_method_id inner join refund_order b \n" +
                          "on a.ro_code = b.ro_code where b.transfer_status = 1 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +"  and b.order_status = 2 and a.pay_status = 2 and " + start_time +" <= b.addtime and b.addtime <= strftime('%s','now') group by pay_method",
-                 deposit_sql = "SELECT pay_method_id pay_method,count(1) order_num,sum(order_money) pay_money FROM member_order_info where transfer_status = 1 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +"  and status = 3 and " + start_time +" <= addtime and " +
-                         "addtime <= strftime('%s','now') group by pay_method_id";
+                 deposit_sql = "SELECT a.pay_method_id pay_method,c.name pay_name ,count(1) order_num,sum(order_money) pay_money FROM member_order_info a left join pay_method c on a.pay_method_id = c.pay_method_id where transfer_status = 1 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +"  and a.status = 3 and " + start_time +" <= addtime and " +
+                         "addtime <= strftime('%s','now') group by a.pay_method_id";
 
          final JSONArray transfer_retails = mTransferRetails = SQLiteHelper.getListToJson(retail_sql,err);
          final JSONArray transfer_refunds = mTransferRefunds = SQLiteHelper.getListToJson(refund_sql,err);
@@ -407,5 +425,8 @@ public final class TransferDetailsAdapter extends AbstractQueryDataAdapter<Trans
     }
     public boolean isTransferAmtNotVisible(){
         return mTransferAmtNotVisible;
+    }
+    public boolean isEmpty(){
+        return mTransferSumInfo.isEmpty();
     }
 }

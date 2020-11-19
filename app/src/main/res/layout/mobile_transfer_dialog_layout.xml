@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/size_25"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/margin_5"
+        android:paddingEnd="0dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cashier_sz"
+            android:textSize="@dimen/font_size_16" />
+
+        <TextView
+            android:id="@+id/cas_name_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:textSize="@dimen/font_size_16" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/size_25"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/margin_5"
+        android:paddingEnd="0dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/transfer_id_sz_colon"
+            android:textSize="@dimen/font_size_16" />
+
+        <TextView
+            android:id="@+id/ti_code_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="18dp"
+            android:gravity="center_vertical"
+            android:text="J0145-200811152726-0001"
+            android:textSize="@dimen/font_size_16" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/size_25"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/margin_5"
+        android:paddingEnd="0dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/t_f_s_time_sz"
+            android:textSize="@dimen/font_size_16" />
+
+        <TextView
+            android:id="@+id/ti_start_time_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:textSize="@dimen/font_size_16" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/size_25"
+        android:background="@drawable/bottom_separator"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/margin_5"
+        android:paddingEnd="0dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/t_f_e_time_sz"
+            android:textSize="@dimen/font_size_16" />
+
+        <TextView
+            android:id="@+id/ti_end_time_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:textSize="@dimen/font_size_16" />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/bottom_separator">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/bottom_separator"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:background="@drawable/bottom_separator"
+                    android:gravity="center_vertical"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="0dp"
+                    android:text="@string/deal_sz"
+                    android:textColor="@color/blue"
+                    android:textSize="18sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/height_45"
+                        android:background="@drawable/bottom_separator_green"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="@dimen/mobile_transfer_details_col01_width"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="@string/pay_way_sz"
+                            android:textSize="@dimen/font_size_16" />
+
+                        <TextView
+                            android:layout_width="@dimen/width_188"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="@string/pay_amt_sz"
+                            android:textColor="@color/gray_7"
+                            android:textSize="@dimen/font_size_16" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/order_num_sz"
+                            android:textSize="@dimen/font_size_16" />
+                    </LinearLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/retail_details_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/bottom_separator"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:background="@drawable/bottom_separator"
+                    android:gravity="center_vertical"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="0dp"
+                    android:text="@string/r_b_title_sz"
+                    android:textColor="@color/blue"
+                    android:textSize="18sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/height_45"
+                        android:background="@drawable/bottom_separator_green"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="@dimen/mobile_transfer_details_col01_width"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="@string/refund_way_sz"
+                            android:textSize="@dimen/font_size_16" />
+
+                        <TextView
+                            android:layout_width="@dimen/width_188"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="@string/refund_money_sz"
+                            android:textSize="@dimen/font_size_16" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/order_num_sz"
+                            android:textSize="@dimen/font_size_16" />
+                    </LinearLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/refund_details_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/bottom_separator"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:background="@drawable/bottom_separator"
+                    android:gravity="center_vertical"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="0dp"
+                    android:text="@string/charge_order_sz"
+                    android:textColor="@color/blue"
+                    android:textSize="@dimen/font_size_18" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/height_45"
+                        android:background="@drawable/bottom_separator_green"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="@dimen/mobile_transfer_details_col01_width"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="@string/pay_way_sz"
+                            android:textSize="@dimen/font_size_16" />
+
+                        <TextView
+                            android:layout_width="@dimen/width_188"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="@string/pay_amt_sz"
+                            android:textSize="@dimen/font_size_16" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/order_num_sz"
+                            android:textSize="@dimen/font_size_16" />
+                    </LinearLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recharge_details_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/bottom_separator"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:background="@drawable/bottom_separator"
+                    android:gravity="center_vertical"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="0dp"
+                    android:text="次卡订单"
+                    android:textColor="@color/contents_text"
+                    android:textSize="18sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp"
+                        android:background="@drawable/bottom_separator"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="88dp"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="收款方式"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:layout_width="188dp"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="收款金额(元)"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/order_num_sz"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/cik_pay_details"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_2"
+            android:text="@string/payable_cash_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_18" />
+
+        <TextView
+            android:id="@+id/payable_amt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/left_separator"
+            android:gravity="center_vertical|end"
+            android:paddingStart="@dimen/margin_2"
+            android:paddingEnd="@dimen/margin_18"
+            android:text="@string/z_p_z_sz"
+            android:textColor="@color/orange_1"
+            android:textSize="@dimen/font_size_24" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/ok_"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/width_128"
+            android:layout_height="@dimen/height_58"
+            android:layout_margin="@dimen/margin_5"
+            android:background="@drawable/button_blue"
+            android:text="@string/s_e_sz"
+            android:textColor="@color/blue_white"
+            android:textSize="@dimen/font_size_24" />
+    </LinearLayout>
+
+</LinearLayout>

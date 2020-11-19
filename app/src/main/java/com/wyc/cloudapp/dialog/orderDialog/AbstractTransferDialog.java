@@ -2,112 +2,58 @@ package com.wyc.cloudapp.dialog.orderDialog;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.text.Editable;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.activity.SaleActivity;
-import com.wyc.cloudapp.adapter.TransferDetailsAdapter;
-import com.wyc.cloudapp.callback.PasswordEditTextReplacement;
+import com.wyc.cloudapp.adapter.AbstractTransferDetailsAdapter;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractShowPrinterICODialog;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.Utils;
 
-import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-public class TransferDialog extends AbstractShowPrinterICODialog {
-    private final TransferDetailsAdapter mTransferDetailsAdapter;
+public abstract class AbstractTransferDialog extends AbstractDialogMainActivity {
+    protected AbstractTransferDetailsAdapter mTransferDetailsAdapter;
     private onFinishListener mFinishListener;
-    public TransferDialog(@NonNull SaleActivity context) {
+    public AbstractTransferDialog(@NonNull MainActivity context) {
         super(context, context.getString(R.string.s_e_sz));
-
-        mTransferDetailsAdapter = new TransferDetailsAdapter(mContext);
     }
+
+    @CallSuper
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        initTransferInfoList();
-    }
-
-    @Override
-    protected int getContentLayoutId() {
-        return R.layout.transfer_dialog_layout;
-    }
-
-    private void initTransferInfoList(){
-        final RecyclerView transfer_list = findViewById(R.id.transfer_info_list);
-        mTransferDetailsAdapter.setDatas(mContext.getCashierInfo().getString("cas_id"));
-        transfer_list.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
-        transfer_list.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
-        transfer_list.setAdapter(mTransferDetailsAdapter);
-
-        setFooterInfo();
         initTransferBtn();
     }
 
-    private void setFooterInfo(){
-        final JSONObject object = mTransferDetailsAdapter.getTransferSumInfo();
-        final TextView cas_name = findViewById(R.id.cas_name);
-        cas_name.setText(mContext.getCashierInfo().getString("cas_name"));
 
-        if (!object.isEmpty()){
-            final TextView retail_sum_order_num_tv = findViewById(R.id.retail_sum_order_num),retail_sum_amt_tv = findViewById(R.id.retail_sum_amt),
-                    refund_sum_order_num_tv = findViewById(R.id.refund_sum_order_num),refund_sum_amt_tv = findViewById(R.id.refund_sum_amt),
-                    deposit_sum_order_num_tv = findViewById(R.id.deposit_sum_order_num),rdeposit_sum_amt_tv = findViewById(R.id.rdeposit_sum_amt),
-                    transfer_time = findViewById(R.id.transfer_time),payable_amt = findViewById(R.id.payable_amt);
-
-            boolean visible = mTransferDetailsAdapter.isTransferAmtNotVisible();
-            if (visible){
-                final PasswordEditTextReplacement editTextReplacement = new PasswordEditTextReplacement();
-                retail_sum_amt_tv.setTransformationMethod(editTextReplacement);
-
-                refund_sum_amt_tv.setTransformationMethod(editTextReplacement);
-
-                rdeposit_sum_amt_tv.setTransformationMethod(editTextReplacement);
-
-                payable_amt.setTransformationMethod(editTextReplacement);
-            }
-
-            retail_sum_order_num_tv.setText(object.getString("order_num"));
-
-            retail_sum_amt_tv.setText(String.format(Locale.CHINA,"%.2f",object.getDoubleValue("order_money")));
-
-            refund_sum_order_num_tv.setText(object.getString("refund_num"));
-            refund_sum_amt_tv.setText(String.format(Locale.CHINA,"%.2f",object.getDoubleValue("refund_money")));
-
-            deposit_sum_order_num_tv.setText(object.getString("recharge_num"));
-            rdeposit_sum_amt_tv.setText(String.format(Locale.CHINA,"%.2f",object.getDoubleValue("recharge_money")));
-
-            final Editable editable = transfer_time.getEditableText();
-            editable.append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(object.getLongValue("order_b_date") * 1000)).append(" ").append(mContext.getString(R.string.to_sz)).append(" ").
-                    append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(object.getLongValue("order_e_date") * 1000));
-
-            payable_amt.setText(String.format(Locale.CHINA,"%.2f",object.getDoubleValue("sj_money")));
-        }
+    @Override
+    public void dismiss(){
+        super.dismiss();
+        Printer.showPrintIcon(mContext,false);
+    }
+    @Override
+    public void show(){
+        super.show();
+        Printer.showPrintIcon(mContext,true);
     }
 
     private void initTransferBtn(){
         final Button btn = findViewById(R.id.ok_);
         if (btn != null){
             btn.setOnClickListener(v -> {
-                final EditText transfer_time = findViewById(R.id.transfer_time);
-                if (mTransferDetailsAdapter != null && transfer_time.getText().length() != 0){
+                if (mTransferDetailsAdapter != null && !mTransferDetailsAdapter.isEmpty()){
                     final ChangeNumOrPriceDialog dialog = new ChangeNumOrPriceDialog(mContext,"钱箱现金",String.valueOf(0.0));
                     dialog.setYesOnclickListener(myDialog -> {
                         final StringBuilder err  = new StringBuilder();
@@ -303,7 +249,7 @@ public class TransferDialog extends AbstractShowPrinterICODialog {
     }
     private static boolean getPrintOrderInfo(final String ti_code,final JSONObject order_info) {
         boolean code = false;
-        String details_where_sql = " where ti_code = '"+ ti_code +"'",
+        final String details_where_sql = " where ti_code = '"+ ti_code +"'",
                 transfer_sum_sql = "SELECT a.sj_money,a.cards_num,a.cards_money,a.order_money,datetime(a.order_e_date, 'unixepoch', 'localtime') order_e_date,datetime(a.order_b_date, 'unixepoch', 'localtime') order_b_date" +
                 ",a.recharge_num,a.recharge_money,a.refund_num, a.refund_money,a.cashbox_money,a.sum_money,a.ti_code,datetime(a.transfer_time, 'unixepoch', 'localtime') transfer_time,a.order_num," +
                 "a.cas_id,a.stores_id,b.stores_name,b.telphone,b.region,c.cas_name FROM transfer_info a inner join shop_stores b on a.stores_id = b.stores_id inner join cashier_info c on a.cas_id = c.cas_id" + details_where_sql,

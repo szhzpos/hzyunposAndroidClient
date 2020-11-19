@@ -62,6 +62,7 @@ public class SaleActivity extends MainActivity{
         return mSaleGoodsAdapter.getFullReduceRecord();
     }
 
+    @Override
     public JSONArray getSaleData(){
         return mSaleGoodsAdapter.getDatas();
     }
@@ -103,6 +104,7 @@ public class SaleActivity extends MainActivity{
         if (b)resetOrderCode();
     }
 
+    @Override
     public boolean getSingle(){
         return mSaleGoodsAdapter != null && mSaleGoodsAdapter.getSingle();
     }
@@ -116,6 +118,7 @@ public class SaleActivity extends MainActivity{
     }
 
     @CallSuper
+    @Override
     public void resetOrderInfo(){
         if (mSaleGoodsAdapter != null) mSaleGoodsAdapter.clearGoods();
         mPermissionCashierId = "";
@@ -159,22 +162,10 @@ public class SaleActivity extends MainActivity{
     public void addSaleGoods(final @NonNull JSONObject jsonObject){}
     public void adjustPriceRefreshGoodsInfo(final JSONArray array){}
     public void showAdjustPriceDialog(){}
-    public boolean getPrintStatus(){
-        return false;
-    }
-    public void disposeHangBill(){}
     public String getOrderCode(){ return "";}
     public void resetOrderCode(){}
-    public void triggerPsClick(){}
+
     public boolean containGoods(){
         return false;
     };
-
-    public interface ScanCallback{
-        void callback(final String code);
-    }
-    public void setScanCallback(final ScanCallback callback){
-    }
-    public void clearScanCallback(){
-    }
 }

@@ -49,6 +49,12 @@ public abstract class AbstractDialog extends Dialog {
         mWM = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
     }
 
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
+        dismiss();
+    }
+
     @CallSuper
     @Override
     public void onAttachedToWindow() {

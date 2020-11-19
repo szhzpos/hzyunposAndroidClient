@@ -28,7 +28,7 @@ import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.SaleActivity;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -428,7 +428,7 @@ public final class Printer {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    public static void showPrintIcon(final SaleActivity activity, boolean b){
+    public static void showPrintIcon(final MainActivity activity, boolean b){
         if (b && !Settings.canDrawOverlays(activity))return;
 
         final WindowManager wm = (WindowManager)activity.getSystemService(WINDOW_SERVICE);

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/height_45"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/pay_m_name"
+        android:layout_width="@dimen/mobile_transfer_details_col01_width"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:textColor="@color/gray_7"
+        android:textSize="@dimen/font_size_16" />
+
+    <TextView
+        android:id="@+id/_amt"
+        android:layout_width="@dimen/width_188"
+        android:layout_height="match_parent"
+        android:background="@drawable/left_separator"
+        android:gravity="center"
+        android:textColor="@color/gray_7"
+        android:textSize="@dimen/font_size_16" />
+
+    <TextView
+        android:id="@+id/_order_num"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="@dimen/margin_1"
+        android:layout_weight="1"
+        android:background="@drawable/left_separator"
+        android:gravity="center"
+        android:textColor="@color/gray_7"
+        android:textSize="@dimen/font_size_16" />
+
+</LinearLayout>

@@ -15,14 +15,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.SaleActivity;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.RetailDetailsGoodsInfoAdapter;
 import com.wyc.cloudapp.adapter.RetailDetailsPayInfoAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractShowPrinterICODialog;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.dialog.pay.PayDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
@@ -37,13 +37,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class RetailOrderDetailsDialog extends AbstractShowPrinterICODialog {
+public class RetailOrderDetailsDialog extends AbstractDialogMainActivity {
     private final JSONObject mOrderInfo;
     private JSONObject mPayRecord;
     private RetailDetailsPayInfoAdapter mRetailDetailsPayInfoAdapter;
     private String mRetailOrderCode;
     private CustomProgressDialog mProgressDialog;
-    public RetailOrderDetailsDialog(@NonNull SaleActivity context, final JSONObject info) {
+    public RetailOrderDetailsDialog(@NonNull MainActivity context, final JSONObject info) {
         super(context,context.getString(R.string.order_detail_sz));
         mOrderInfo = info;
     }
@@ -61,6 +61,18 @@ public class RetailOrderDetailsDialog extends AbstractShowPrinterICODialog {
     @Override
     protected int getContentLayoutId(){
         return R.layout.retail_details_dialog_layout;
+    }
+
+    @Override
+    public void dismiss(){
+        super.dismiss();
+        Printer.showPrintIcon(mContext,false);
+    }
+
+    @Override
+    public void show(){
+        super.show();
+        Printer.showPrintIcon(mContext,true);
     }
 
     private void showOrderInfo(){

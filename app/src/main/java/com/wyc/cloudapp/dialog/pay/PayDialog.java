@@ -24,6 +24,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.FullReduceRulesAdapter;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
@@ -35,7 +36,7 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractShowPrinterICODialog;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
@@ -50,7 +51,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public final class PayDialog extends AbstractShowPrinterICODialog {
+public final class PayDialog extends AbstractDialogSaleActivity {
     private EditText mCashMoneyEt,mZlAmtEt,mRemarkEt;
     private PayMethodViewAdapter mPayMethodViewAdapter;
     private PayDetailViewAdapter mPayDetailViewAdapter;
@@ -111,10 +112,19 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
     @Override
     public void show(){
         super.show();
+        Printer.showPrintIcon(mContext,true);
+
         refreshContent();
         showVipInfo();
         showFullReduceDes();
     }
+
+    @Override
+    public void dismiss(){
+        super.dismiss();
+        Printer.showPrintIcon(mContext,false);
+    }
+
     @Override
     public void onAttachedToWindow(){
         super.onAttachedToWindow();
@@ -1244,7 +1254,7 @@ public final class PayDialog extends AbstractShowPrinterICODialog {
 
         return info.toString();
     }
-    public static String get_print_content(final SaleActivity context,final String order_code,boolean is_open_cash_box){
+    public static String get_print_content(final MainActivity context, final String order_code, boolean is_open_cash_box){
         String content = "";
         if (context.getPrintStatus()){
             final JSONObject print_format_info = new JSONObject();

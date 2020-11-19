@@ -10,7 +10,7 @@
     <LinearLayout
         android:id="@+id/title_layout"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dialog_head_heigth"
+        android:layout_height="@dimen/dialog_head_height"
         android:background="@drawable/dialog_top_round_shap"
         android:orientation="horizontal">
 

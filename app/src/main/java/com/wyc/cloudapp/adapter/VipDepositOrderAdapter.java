@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.SaleActivity;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.vip.VipDepositDetailsDialog;
@@ -20,7 +20,7 @@ import java.util.Locale;
 
 public class VipDepositOrderAdapter extends AbstractQueryDataAdapter<VipDepositOrderAdapter.MyViewHolder> {
 
-    public VipDepositOrderAdapter(SaleActivity context){
+    public VipDepositOrderAdapter(MainActivity context){
         mContext = context;
     }
 

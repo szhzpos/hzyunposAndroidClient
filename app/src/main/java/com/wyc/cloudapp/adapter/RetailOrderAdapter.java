@@ -12,7 +12,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RetailOrderDetailsDialog;
 import com.wyc.cloudapp.logger.Logger;
@@ -20,10 +20,10 @@ import com.wyc.cloudapp.logger.Logger;
 import java.util.Locale;
 
 public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrderAdapter.MyViewHolder> {
-    private AbstractDialogSaleActivity mDialog;
-    public RetailOrderAdapter(final AbstractDialogSaleActivity abstractDialogSyncActivity){
-        mDialog = abstractDialogSyncActivity;
-        mContext = abstractDialogSyncActivity.getPrivateContext();
+    private AbstractDialogMainActivity mDialog;
+    public RetailOrderAdapter(final AbstractDialogMainActivity dialogMainActivity){
+        mDialog = dialogMainActivity;
+        mContext = dialogMainActivity.getPrivateContext();
     }
 
     static class MyViewHolder extends AbstractQueryDataAdapter.SuperViewHolder {

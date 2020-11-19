@@ -32,7 +32,7 @@
             android:autofillHints=""
             android:background="@drawable/edit_text_style"
             android:focusable="auto"
-            android:hint="@string/pay_amt_sz"
+            android:hint="@string/pay_amt_hint_sz"
             android:inputType="numberDecimal"
             android:paddingStart="@dimen/margin_5"
             android:paddingEnd="0dp"

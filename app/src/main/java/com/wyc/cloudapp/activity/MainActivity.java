@@ -42,7 +42,7 @@ public abstract class MainActivity extends AppCompatActivity {
     protected boolean verifyNumBtnPermissions(){
         return verifyPermissions("25",null);
     }
-    protected boolean verifyQueryBtnBtnPermissions(){
+    protected boolean verifyQueryBtnPermissions(){
         return verifyPermissions("26",null);
     }
 
@@ -220,5 +220,29 @@ public abstract class MainActivity extends AppCompatActivity {
     public boolean lessThan7Inches(DisplayMetrics displayMetrics){
         double diagonal = Utils.getDisplayMetrics((WindowManager)getSystemService(WINDOW_SERVICE),displayMetrics);
         return diagonal < 7.0;
+    }
+
+    //业务公共方法
+    public boolean getPrintStatus(){
+        return false;
+    }
+    public void disposeHangBill(){}
+
+    public void triggerPsClick(){}
+
+    public JSONArray getSaleData(){
+        return new JSONArray();
+    }
+    public boolean getSingle(){
+        return false;
+    }
+    public void resetOrderInfo(){};
+
+    public interface ScanCallback{
+        void callback(final String code);
+    }
+    public void setScanCallback(final ScanCallback callback){
+    }
+    public void clearScanCallback(){
     }
 }

@@ -53,9 +53,10 @@ import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.SecondDisplay;
 import com.wyc.cloudapp.dialog.goods.AddGoodsInfoDialog;
 import com.wyc.cloudapp.dialog.orderDialog.HangBillDialog;
+import com.wyc.cloudapp.dialog.orderDialog.NormalTransferDialog;
 import com.wyc.cloudapp.dialog.orderDialog.QuerySaleOrderDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
-import com.wyc.cloudapp.dialog.orderDialog.TransferDialog;
+import com.wyc.cloudapp.dialog.orderDialog.AbstractTransferDialog;
 import com.wyc.cloudapp.dialog.pay.PayDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
@@ -251,7 +252,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
 
         final LinearLayout q_deal_linerLayout = findViewById(R.id.q_deal_linerLayout),other_linearLayout = findViewById(R.id.other_linearLayout),cloud_background_layout = findViewById(R.id.cloud_background_layout);
         if (q_deal_linerLayout != null)q_deal_linerLayout.setOnClickListener(v -> {
-            if (verifyQueryBtnBtnPermissions()){
+            if (verifyQueryBtnPermissions()){
                 final QuerySaleOrderDialog querySaleOrderDialog = new QuerySaleOrderDialog(this);
                 querySaleOrderDialog.show();
                 querySaleOrderDialog.triggerQuery();
@@ -271,8 +272,8 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         if (shift_exchange_linearLayout != null)
             shift_exchange_linearLayout.setOnClickListener(v -> {
                 final NormalMainActivity activity = NormalMainActivity.this;
-                if (TransferDialog.verifyTransferPermissions(activity)){
-                    final TransferDialog transferDialog = new TransferDialog(activity);
+                if (AbstractTransferDialog.verifyTransferPermissions(activity)){
+                    final AbstractTransferDialog transferDialog = new NormalTransferDialog(activity);
                     transferDialog.setFinishListener(() -> {
                         mApplication.sync_transfer_order();
                         MyDialog my_dialog = new MyDialog(activity);

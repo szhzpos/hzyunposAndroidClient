@@ -169,7 +169,7 @@
                     android:textSize="@dimen/font_size_18" />
 
                 <TextView
-                    android:layout_width="@dimen/table_bacode_width"
+                    android:layout_width="@dimen/table_barcode_width"
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:paddingTop="@dimen/margin_8"

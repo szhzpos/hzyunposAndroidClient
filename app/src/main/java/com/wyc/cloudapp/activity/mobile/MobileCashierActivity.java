@@ -76,10 +76,10 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
 
     private void initOtherFunction(){
         final Button mobile_other_fun_btn = findViewById(R.id.mobile_other_fun_btn);
+        final InterceptLinearLayout mobile_other_fun_hide_layout = findViewById(R.id.mobile_other_fun_hide_layout);
+        final TmpOrderButton tmp_order = mobile_other_fun_hide_layout.findViewById(R.id.mobile_hang_orderl_btn);
         mobile_other_fun_btn.setOnClickListener(v -> {
-            final InterceptLinearLayout mobile_other_fun_hide_layout = findViewById(R.id.mobile_other_fun_hide_layout);
             if (mobile_other_fun_hide_layout != null){
-                final TmpOrderButton tmp_order = mobile_other_fun_hide_layout.findViewById(R.id.mobile_hang_orderl_btn);
                 boolean isHide = mobile_other_fun_hide_layout.getVisibility() == View.GONE;
                 if (isHide){
                     tmp_order.setNum(HangBillDialog.getHangCounts(this));
@@ -91,6 +91,14 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
                 }
             }
         });
+
+        //是否自动取单
+        final Intent intent = getIntent();
+        boolean disposeHang = intent.getBooleanExtra("disposeHang",false);
+        if (disposeHang){
+            mobile_other_fun_btn.callOnClick();
+            tmp_order.callOnClick();
+        }
     }
     @Override
     public void onClick(View v) {
