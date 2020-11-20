@@ -3,6 +3,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import androidx.annotation.CallSuper;
 import androidx.appcompat.app.AppCompatActivity;
@@ -223,12 +224,34 @@ public abstract class MainActivity extends AppCompatActivity {
     }
 
     //业务公共方法
+    public void switchPrintStatus(){
+        final StringBuilder err = new StringBuilder();
+        final JSONObject object = new JSONObject();
+        if (SQLiteHelper.getLocalParameter("print_s",object)){
+
+            boolean print_s = object.getBooleanValue("v");
+            if (print_s){
+                Toast.makeText(this,"打印功能已关闭！",Toast.LENGTH_SHORT).show();
+            }else
+                Toast.makeText(this,"打印功能已开启！",Toast.LENGTH_SHORT).show();
+
+            object.put("v",!print_s);
+            if (!SQLiteHelper.saveLocalParameter("print_s",object,"打印开关",err)){
+                MyDialog.ToastMessage("保存打印状态错误:" + err,this,getWindow());
+            }
+        }
+    }
+
     public boolean getPrintStatus(){
+        final JSONObject object = new JSONObject();
+        if (SQLiteHelper.getLocalParameter("print_s",object)){
+            return object.getBooleanValue("v");
+        }
         return false;
     }
-    public void disposeHangBill(){}
 
-    public void triggerPsClick(){}
+
+    public void disposeHangBill(){}
 
     public JSONArray getSaleData(){
         return new JSONArray();

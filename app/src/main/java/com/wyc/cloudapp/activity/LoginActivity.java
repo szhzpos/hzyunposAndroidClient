@@ -65,7 +65,7 @@ import java.util.concurrent.Future;
 public class LoginActivity extends AppCompatActivity implements CustomApplication.MessageCallback {
     public static final String IMG_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/goods_img/";
     private static final int REQUEST_STORAGE_PERMISSIONS  = 800;
-    private EditText mUserId,mPassword;
+    private EditText mUserIdEt, mPasswordEt;
     private LoginActivity mSelf;
     private CustomProgressDialog mProgressDialog;
     private MyDialog myDialog;
@@ -76,6 +76,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
     private DisplayMetrics mDisplayMetrics;
     private boolean isSmallScreen = false;
     private Handler mHandler;
+    private final CustomApplication mApplication = CustomApplication.self();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,9 +100,9 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
         initKeyboard();
         initDisplayInfoAndVersion();
 
-        CustomApplication.self().registerHandleMessage(this);
+        mApplication.registerHandleMessage(this);
 
-        registerReceiver(receiver,new IntentFilter(AppUpdateService.APP_PROGRESS_BROADCAST));
+        registerReceiver(updateReceiver,new IntentFilter(AppUpdateService.APP_PROGRESS_BROADCAST));
     }
 
     private void loadView(){
@@ -129,7 +130,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
     public void onDestroy(){
         super.onDestroy();
         clearResource();
-        unregisterReceiver(receiver);
+        unregisterReceiver(updateReceiver);
     }
 
     @Override
@@ -193,19 +194,19 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
     private void saveLastUser(){
         final SharedPreferences preferences=getSharedPreferences("login_user", Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor= preferences.edit();
-        editor.putString("user", mUserId.getText().toString());
+        editor.putString("user", mUserIdEt.getText().toString());
         editor.apply();
     }
 
     private void setLastUser(){
         final SharedPreferences preferences=getSharedPreferences("login_user", Context.MODE_PRIVATE);
-        if (mUserId != null){
+        if (mUserIdEt != null){
             final String user = preferences.getString("user","");
             if ("".equals(user)){
-                mUserId.postDelayed(()-> mUserId.requestFocus(),400);
+                mUserIdEt.postDelayed(()-> mUserIdEt.requestFocus(),400);
             }else{
-                mUserId.setText(user);
-                if (mPassword != null)mPassword.postDelayed(()-> mPassword.requestFocus(),300);
+                mUserIdEt.setText(user);
+                if (mPasswordEt != null) mPasswordEt.postDelayed(()-> mPasswordEt.requestFocus(),300);
             }
 
         }
@@ -218,23 +219,25 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
 
                 saveLastUser();
 
-                //login();
                 check_ver();
             });
         mLoginBtn = login_btn;
     }
     private void check_ver(){
         mProgressDialog.setCancel(false).setMessage("正在检查更新...").refreshMessage().show();
-
         final JSONObject conn_param = new JSONObject();
         if (SQLiteHelper.getLocalParameter("connParam", conn_param)) {
             if (Utils.JsonIsNotEmpty(conn_param)) {
+                final String url = Utils.getNullStringAsEmpty(conn_param,"server_url"),appid = Utils.getNullStringAsEmpty(conn_param,"appId"),
+                        appSecret = Utils.getNullStringAsEmpty(conn_param,"appSecret");
+
                 final Intent intentService = new Intent(this, AppUpdateService.class);
-                intentService.putExtra("url",Utils.getNullStringAsEmpty(conn_param,"server_url"));
-                intentService.putExtra("appid",Utils.getNullStringAsEmpty(conn_param,"appId"));
-                intentService.putExtra("appSecret",Utils.getNullStringAsEmpty(conn_param,"appSecret"));
+                intentService.putExtra("url",url);
+                intentService.putExtra("appid",appid);
+                intentService.putExtra("appSecret",appSecret);
                 startService(intentService);
                 mConnParam = conn_param;
+
             } else {
                 mProgressDialog.dismiss();
                 MyDialog.ToastMessage("连接参数不能为空!",this,getWindow());
@@ -247,8 +250,8 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
         }
     }
 
-    //广播监听下载的进度
-    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+    //广播监听App更新的进度
+    private final BroadcastReceiver updateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             final LoginActivity activity = LoginActivity.this;
@@ -339,7 +342,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
             }
             return false;
         });
-        mPassword = password;
+        mPasswordEt = password;
     }
     private void initUserId(){
         final EditText user_id = findViewById(R.id.user_id);
@@ -350,12 +353,12 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                 return false;
             }
             if (keyCode == KeyEvent.KEYCODE_TAB){
-                if (mPassword != null)mPassword.requestFocus();
+                if (mPasswordEt != null) mPasswordEt.requestFocus();
                 return true;
             }
             return false;
         });
-        mUserId = user_id;
+        mUserIdEt = user_id;
     }
     @SuppressWarnings("unused")
     private void initSoftKeyBoardListener(){
@@ -435,8 +438,8 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
             int v_id = view.getId();
             EditText et_view = (EditText) getCurrentFocus();
             if (null == et_view){
-                et_view = mUserId;
-                mUserId.requestFocus();
+                et_view = mUserIdEt;
+                mUserIdEt.requestFocus();
             }
             final Editable editable = et_view.getText();
             if (v_id == R.id._clear){
@@ -496,11 +499,11 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
             String url, sz_param, err_info,base_url = Utils.getNullStringAsEmpty(conn_param,"server_url"),appid =  Utils.getNullStringAsEmpty(conn_param,"appId"),
                     appSecret = Utils.getNullStringAsEmpty(conn_param,"appSecret");
             try {
-                mOperId = mUserId.getText().toString();
+                mOperId = mUserIdEt.getText().toString();
 
                 object.put("appid",appid);
                 object.put("cas_account", mOperId);
-                object.put("cas_pwd", mPassword.getText());
+                object.put("cas_pwd", mPasswordEt.getText());
 
                 sz_param = HttpRequest.generate_request_parm(object,appSecret);
 
@@ -555,8 +558,11 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                                             case "y":
                                                 final StringBuilder err = new StringBuilder();
                                                 final JSONArray params = new JSONArray();
+                                                mPosNum = info_json.getString("pos_num");
 
+                                                conn_param.put("pos_num",mPosNum);
                                                 conn_param.put("storeInfo",store_info);
+
                                                 JSONObject _json = new JSONObject();
                                                 _json.put("parameter_id","connParam");
                                                 _json.put("parameter_content",conn_param);
@@ -569,7 +575,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                                                 _json.put("parameter_desc","条码秤参数信息");
                                                 params.add(_json);
 
-                                                cashier_json.put("pos_num", (mPosNum = info_json.getString("pos_num")));
+                                                cashier_json.put("pos_num",mPosNum);
                                                 _json = new JSONObject();
                                                 _json.put("parameter_id","cashierInfo");
                                                 _json.put("parameter_content",cashier_json);
@@ -613,27 +619,29 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                 launchLogin(true);
                 break;
             case MessageID.LOGIN_OK_ID://登录成功
-                CustomApplication.self().initSyncManagement(Utils.getNullStringAsEmpty(mConnParam,"server_url"),Utils.getNullStringAsEmpty(mConnParam,"appId"),
+                //无论联网与否同步服务都要进行初始化，否则在后续获取handler时将导致死锁。
+                mApplication.initSyncManagement(Utils.getNullStringAsEmpty(mConnParam,"server_url"),Utils.getNullStringAsEmpty(mConnParam,"appId"),
                         Utils.getNullStringAsEmpty(mConnParam,"appSecret"),mStoresId,mPosNum,mOperId);
+
                 if (SQLiteHelper.isNew()) {
                     mProgressDialog.setMessage("准备重新同步...").refreshMessage().show();
-                    CustomApplication.self().manualSync();
+                    mApplication.manualSync();
                 }else
-                    CustomApplication.self().start_sync(true);
+                    mApplication.start_sync(true);
                 break;
             case MessageID.LOGIN_ID_ERROR_ID://账号错误
-                mUserId.requestFocus();
-                mUserId.selectAll();
-                mUserId.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake_x));
+                mUserIdEt.requestFocus();
+                mUserIdEt.selectAll();
+                mUserIdEt.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake_x));
                 if (msg.obj instanceof String)
-                    MyDialog.ToastMessage(mUserId,msg.obj.toString(),this,null);
+                    MyDialog.ToastMessage(mUserIdEt,msg.obj.toString(),this,null);
                 break;
             case MessageID.LOGIN_PW_ERROR_ID://密码错误
-                mPassword.requestFocus();
-                mPassword.selectAll();
-                mPassword.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake_x));
+                mPasswordEt.requestFocus();
+                mPasswordEt.selectAll();
+                mPasswordEt.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake_x));
                 if (msg.obj instanceof String)
-                    MyDialog.ToastMessage(mPassword,msg.obj.toString(),this,null);
+                    MyDialog.ToastMessage(mPasswordEt,msg.obj.toString(),this,null);
                 break;
             case MessageID.SYNC_DIS_INFO_ID://资料同步进度信息
                 mProgressDialog.setMessage(msg.obj.toString()).refreshMessage().show();
@@ -656,27 +664,30 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
     private void offline_login(){
         MyDialog.displayAskMessage(myDialog, "连接服务器失败，是否离线登录？", this, myDialog -> {
             myDialog.dismiss();
-            final String user_id = mUserId.getText().toString(), password = mPassword.getText().toString();
-            final String local_password = Utils.getUserIdAndPasswordCombinationOfMD5(user_id + password);
+
+            mOperId = mUserIdEt.getText().toString();
+
+            final String password = mPasswordEt.getText().toString();
+            final String local_password = Utils.getUserIdAndPasswordCombinationOfMD5(mOperId + password);
             final StringBuilder err = new StringBuilder();
-            JSONObject param_obj = new JSONObject();
-            if (SQLiteHelper.getLocalParameter("connParam", param_obj)) {
-                param_obj = Utils.getNullObjectAsEmptyJson(param_obj, "storeInfo");
-                final String stroesid = param_obj.getString("stores_id");
-                final String sz_count = SQLiteHelper.getString("SELECT count(cas_id) count FROM cashier_info where " +
-                        "cas_account = '" + user_id + "' and stores_id = '" + stroesid + "' and cas_pwd = '" + local_password + "'", err);
+            final JSONObject connParam = mConnParam;
 
-                Logger.d("SELECT count(cas_id) count FROM cashier_info where " +
-                        "cas_account = '" + user_id + "' and stores_id = '" + stroesid + "' and cas_pwd = '" + local_password + "'");
+            mPosNum = Utils.getNullStringAsEmpty(connParam, "pos_num");
+            mStoresId = Utils.getNullObjectAsEmptyJson(connParam, "storeInfo").getString("stores_id");
 
-                if (Integer.parseInt(sz_count) > 0) {
-                    launchLogin(false);
-                } else {
-                    if (mHandler != null)
-                        mHandler.obtainMessage(MessageID.LOGIN_ID_ERROR_ID, "不存在此用户！").sendToTarget();
-                }
+            final String sz_count = SQLiteHelper.getString("SELECT count(cas_id) count FROM cashier_info where " +
+                    "cas_account = '" + mOperId + "' and stores_id = '" + mStoresId + "' and cas_pwd = '" + local_password + "'", err);
+
+
+            //无论联网与否同步服务都要进行初始化，否则在后续获取handler时将导致死锁。
+            mApplication.initSyncManagement(Utils.getNullStringAsEmpty(mConnParam,"server_url"),Utils.getNullStringAsEmpty(mConnParam,"appId"),
+                    Utils.getNullStringAsEmpty(mConnParam,"appSecret"),mStoresId,mPosNum,mOperId);
+
+            if (Integer.parseInt(sz_count) > 0) {
+                launchLogin(false);
             } else {
-                MyDialog.displayErrorMessage(myDialog, "查询连接参数错误:" + param_obj.getString("info"), this);
+                if (mHandler != null)
+                    mHandler.obtainMessage(MessageID.LOGIN_ID_ERROR_ID, "不存在此用户！").sendToTarget();
             }
         }, myDialog -> {
             myDialog.dismiss();

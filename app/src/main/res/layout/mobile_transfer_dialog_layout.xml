@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@drawable/bottom_round_shape"
     android:orientation="vertical">
 
     <LinearLayout
@@ -16,7 +16,9 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/size_16"
             android:text="@string/cashier_sz"
+            android:textColor="@color/label_text_color"
             android:textSize="@dimen/font_size_16" />
 
         <TextView
@@ -24,6 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
+            android:textColor="@color/label_text_color"
             android:textSize="@dimen/font_size_16" />
     </LinearLayout>
 
@@ -38,6 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/transfer_id_sz_colon"
+            android:textColor="@color/label_text_color"
             android:textSize="@dimen/font_size_16" />
 
         <TextView
@@ -46,7 +50,7 @@
             android:layout_height="match_parent"
             android:layout_marginEnd="18dp"
             android:gravity="center_vertical"
-            android:text="J0145-200811152726-0001"
+            android:textColor="@color/label_text_color"
             android:textSize="@dimen/font_size_16" />
 
     </LinearLayout>
@@ -63,6 +67,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/t_f_s_time_sz"
+            android:textColor="@color/label_text_color"
             android:textSize="@dimen/font_size_16" />
 
         <TextView
@@ -71,6 +76,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center_vertical"
+            android:textColor="@color/label_text_color"
             android:textSize="@dimen/font_size_16" />
 
     </LinearLayout>
@@ -88,6 +94,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/t_f_e_time_sz"
+            android:textColor="@color/label_text_color"
             android:textSize="@dimen/font_size_16" />
 
         <TextView
@@ -96,6 +103,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center_vertical"
+            android:textColor="@color/label_text_color"
             android:textSize="@dimen/font_size_16" />
 
     </LinearLayout>
@@ -145,6 +153,7 @@
                             android:layout_height="match_parent"
                             android:gravity="center"
                             android:text="@string/pay_way_sz"
+                            android:textColor="@color/text_color"
                             android:textSize="@dimen/font_size_16" />
 
                         <TextView
@@ -152,7 +161,7 @@
                             android:layout_height="match_parent"
                             android:gravity="center"
                             android:text="@string/pay_amt_sz"
-                            android:textColor="@color/gray_7"
+                            android:textColor="@color/text_color"
                             android:textSize="@dimen/font_size_16" />
 
                         <TextView
@@ -161,6 +170,7 @@
                             android:layout_weight="1"
                             android:gravity="center"
                             android:text="@string/order_num_sz"
+                            android:textColor="@color/text_color"
                             android:textSize="@dimen/font_size_16" />
                     </LinearLayout>
 
@@ -205,6 +215,7 @@
                             android:layout_height="match_parent"
                             android:gravity="center"
                             android:text="@string/refund_way_sz"
+                            android:textColor="@color/label_text_color"
                             android:textSize="@dimen/font_size_16" />
 
                         <TextView
@@ -212,6 +223,7 @@
                             android:layout_height="match_parent"
                             android:gravity="center"
                             android:text="@string/refund_money_sz"
+                            android:textColor="@color/label_text_color"
                             android:textSize="@dimen/font_size_16" />
 
                         <TextView
@@ -220,6 +232,7 @@
                             android:layout_weight="1"
                             android:gravity="center"
                             android:text="@string/order_num_sz"
+                            android:textColor="@color/label_text_color"
                             android:textSize="@dimen/font_size_16" />
                     </LinearLayout>
 
@@ -264,6 +277,7 @@
                             android:layout_height="match_parent"
                             android:gravity="center"
                             android:text="@string/pay_way_sz"
+                            android:textColor="@color/label_text_color"
                             android:textSize="@dimen/font_size_16" />
 
                         <TextView
@@ -271,6 +285,7 @@
                             android:layout_height="match_parent"
                             android:gravity="center"
                             android:text="@string/pay_amt_sz"
+                            android:textColor="@color/label_text_color"
                             android:textSize="@dimen/font_size_16" />
 
                         <TextView
@@ -279,6 +294,7 @@
                             android:layout_weight="1"
                             android:gravity="center"
                             android:text="@string/order_num_sz"
+                            android:textColor="@color/label_text_color"
                             android:textSize="@dimen/font_size_16" />
                     </LinearLayout>
 

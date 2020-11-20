@@ -1,6 +1,7 @@
 package com.wyc.cloudapp.dialog.orderDialog;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 
@@ -10,8 +11,10 @@ import androidx.annotation.NonNull;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractTransferDetailsAdapter;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -61,6 +64,7 @@ public abstract class AbstractTransferDialog extends AbstractDialogMainActivity 
                             Printer.print(mContext,get_print_content(mContext,mTransferDetailsAdapter.getTransferSumInfo().getString("ti_code"),mTransferDetailsAdapter.isTransferAmtNotVisible()));
                             mContext.runOnUiThread(()-> {
                                 if (mFinishListener != null)mFinishListener.onFinish();
+                                transferSuccess();
                             });
                         }else {
                             mContext.runOnUiThread(()-> MyDialog.displayErrorMessage(null,"保存交班信息错误：" +err,mContext));
@@ -70,6 +74,19 @@ public abstract class AbstractTransferDialog extends AbstractDialogMainActivity 
                 }
             });
         }
+    }
+    private void transferSuccess(){
+        CustomApplication.self().sync_transfer_order();
+        MyDialog dialog = new MyDialog(mContext);
+        dialog.setMessage("交班成功！").setYesOnclickListener(mContext.getString(R.string.OK), myDialog -> {
+            dismiss();
+            myDialog.dismiss();
+
+            final Intent intent = new Intent(mContext, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            mContext.startActivity(intent);
+            mContext.finish();
+        }).show();
     }
 
     public interface onFinishListener{

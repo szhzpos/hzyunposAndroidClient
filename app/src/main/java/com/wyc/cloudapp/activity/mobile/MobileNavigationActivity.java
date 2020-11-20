@@ -14,7 +14,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.wyc.cloudapp.CustomizationView.TopDrawableTextView;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -66,18 +65,6 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
     public void transfer(){
         if (AbstractTransferDialog.verifyTransferPermissions(this)){
             final AbstractTransferDialog transferDialog = new MobileTransferDialog(this);
-            transferDialog.setFinishListener(() -> {
-                mApplication.sync_transfer_order();
-                MyDialog my_dialog = new MyDialog(this);
-                my_dialog.setMessage("交班成功！").setYesOnclickListener(getString(R.string.OK), myDialog -> {
-                    transferDialog.dismiss();
-                    myDialog.dismiss();
-                    final Intent intent = new Intent(this, LoginActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                    finish();
-                }).show();
-            });
             transferDialog.verifyTransfer();
         }
     }

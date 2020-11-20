@@ -16,6 +16,7 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
+import android.os.Build;
 import android.provider.Settings;
 import android.view.Display;
 import android.view.Gravity;
@@ -427,6 +428,7 @@ public final class Printer {
         });
     }
 
+    //@RequiresApi(api = Build.VERSION_CODES.O)
     @SuppressLint("ClickableViewAccessibility")
     public static void showPrintIcon(final MainActivity activity, boolean b){
         if (b && !Settings.canDrawOverlays(activity))return;
@@ -444,7 +446,7 @@ public final class Printer {
             display.getSize(point);
 
             final WindowManager.LayoutParams wLayou = new WindowManager.LayoutParams();
-            wLayou.type = WindowManager.LayoutParams.TYPE_PHONE;
+            wLayou.type = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY : WindowManager.LayoutParams.TYPE_PHONE;
             wLayou.format= PixelFormat.RGBA_8888;
             wLayou.gravity= Gravity.LEFT|Gravity.TOP;
             wLayou.flags= WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL| WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;;
@@ -470,12 +472,12 @@ public final class Printer {
                     switch (event.getAction()){
                         case MotionEvent.ACTION_DOWN:
                             mIsMove = false;
-                            touchX = event.getX();
-                            touchY = event.getY();
+                            touchX = event.getRawX() - wLayou.x;
+                            touchY = event.getRawY() - wLayou.y;
                             break;
                         case MotionEvent.ACTION_UP:
                             if (!mIsMove){
-                                activity.triggerPsClick();
+                                activity.switchPrintStatus();
                                 if (null != mICO && null != printer){
                                     if (activity.getPrintStatus()){
                                         mICO.setImageBitmap(printer);
@@ -484,7 +486,6 @@ public final class Printer {
                                     }
                                 }
                             }
-                            wm.updateViewLayout(mICO,wLayou);
                             break;
                         case MotionEvent.ACTION_MOVE:
                             if (!mIsMove)mIsMove = true;

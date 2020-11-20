@@ -38,6 +38,12 @@ public class EditTextForHideKeyBoard extends EditText {
         init();
     }
 
+    @Override
+    public void onLayout(boolean changed, int left, int top, int right, int bottom){
+        super.onLayout(changed, left, top, right, bottom);
+        Utils.hideKeyBoard(this);
+    }
+
     private void init(){
         setSelectAllOnFocus(true);
         setOnFocusChangeListener((v, hasFocus) -> Utils.hideKeyBoard(this));

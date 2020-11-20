@@ -358,7 +358,7 @@
     <string name="hang_id_colon">挂单单号：</string>
     <string name="hang_time_sz">挂单时间：</string>
     <string name="vip_info_sz_colon">会员信息：</string>
-    <string name="transfer_id_sz_colon">交班单号:</string>
+    <string name="transfer_id_sz_colon">交班单号：</string>
     <string name="charge_order_sz">充值单</string>
     <string name="pay_way_sz">收款方式</string>
     <string name="pay_amt_sz">收款金额(元)</string>

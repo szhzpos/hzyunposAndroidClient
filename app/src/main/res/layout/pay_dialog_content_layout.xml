@@ -54,7 +54,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:text="@string/vip_ph_num_sz"
-                android:textAlignment="center"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_16" />
 
@@ -89,6 +88,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/order_amt_sz"
                     android:textAlignment="center"
+                    android:textColor="@color/label_text_color"
                     android:textSize="@dimen/font_size_14" />
 
                 <TextView
@@ -114,6 +114,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/discount_amt_sz"
                     android:textAlignment="center"
+                    android:textColor="@color/label_text_color"
                     android:textSize="@dimen/font_size_14" />
 
                 <TextView
@@ -140,6 +141,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/rec_amt_sz"
                     android:textAlignment="center"
+                    android:textColor="@color/label_text_color"
                     android:textSize="@dimen/font_size_14" />
 
                 <TextView
@@ -223,6 +225,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/unpay_amt_sz"
                     android:textAlignment="center"
+                    android:textColor="@color/label_text_color"
                     android:textSize="@dimen/font_size_14" />
 
                 <TextView
@@ -236,12 +239,10 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/textView36"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:text="@string/minus"
-                android:textAlignment="center"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <LinearLayout
@@ -256,6 +257,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/amt_received_sz"
                     android:textAlignment="center"
+                    android:textColor="@color/label_text_color"
                     android:textSize="@dimen/font_size_14" />
 
                 <TextView
@@ -274,7 +276,6 @@
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:text="@string/equal_sign_sz"
-                android:textAlignment="center"
                 android:textSize="@dimen/fun_button_font_size_24" />
 
             <LinearLayout
@@ -289,6 +290,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/balance_sz"
                     android:textAlignment="center"
+                    android:textColor="@color/label_text_color"
                     android:textSize="@dimen/font_size_14" />
 
                 <TextView

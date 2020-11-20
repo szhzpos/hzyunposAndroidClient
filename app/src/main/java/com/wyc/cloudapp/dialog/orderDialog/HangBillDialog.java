@@ -121,15 +121,18 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
     private void initWindowSize(){
         final WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
         if (m != null){
-            Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
-            Point point = new Point();
+            final Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+            final Point point = new Point();
             d.getSize(point);
             final Window dialogWindow = this.getWindow();
             if (dialogWindow != null){
-                WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+                final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
                 dialogWindow.setGravity(Gravity.CENTER);
-                if (lessThan7Inches)lp.width = (int)(point.x);
-                lp.height = (int)(0.9 * point.y);
+                if (lessThan7Inches){
+                    lp.width = point.x;
+                    lp.height = point.y;
+                }else
+                    lp.height = (int)(0.9 * point.y);
                 dialogWindow.setAttributes(lp);
             }
         }

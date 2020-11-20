@@ -39,61 +39,14 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
     }
 
     public JSONArray getTransferRetails(){
-        if (null != mTransferRetails){
-            double amt = mTransferSumInfo.getDoubleValue("order_money");
-            int num = mTransferSumInfo.getIntValue("retail_total_orders");
-
-            final JSONObject object = new JSONObject();
-            if (!Utils.equalDouble(amt,0.0) || num != 0){
-                object.put("pay_name","合计");
-            }else{
-                object.put("pay_name","暂无数据");
-            }
-            object.put("order_num",num);
-            object.put("pay_money",amt);
-
-            mTransferRetails.add(object);
-        }
-
         return mTransferRetails;
     }
 
     public JSONArray getTransferRefunds(){
-        if (mTransferRefunds != null){
-            double amt = mTransferSumInfo.getDoubleValue("refund_money");
-            int num = mTransferSumInfo.getIntValue("refund_total_orders");
-
-            final JSONObject object = new JSONObject();
-            if (!Utils.equalDouble(amt,0.0) || num != 0){
-                object.put("pay_name","合计");
-            }else{
-                object.put("pay_name","暂无数据");
-            }
-            object.put("order_num",num);
-            object.put("pay_money",amt);
-
-            mTransferRefunds.add(object);
-        }
         return mTransferRefunds;
     }
 
     public JSONArray getTransferDeposits(){
-        if (mTransferDeposits != null){
-            double amt = mTransferSumInfo.getDoubleValue("recharge_money");
-            int num = mTransferSumInfo.getIntValue("deposits_total_orders");
-
-            final JSONObject object = new JSONObject();
-            if (!Utils.equalDouble(amt,0.0) || num != 0){
-                object.put("pay_name","合计");
-            }else{
-                object.put("pay_name","暂无数据");
-            }
-            object.put("order_num",num);
-            object.put("pay_money",amt);
-
-            mTransferDeposits.add(object);
-        }
-
         return mTransferDeposits;
     }
 

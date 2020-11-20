@@ -84,6 +84,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/order_amt_sz"
                         android:textAlignment="center"
+                        android:textColor="@color/label_text_color"
                         android:textSize="@dimen/font_size_14" />
 
                     <TextView
@@ -109,6 +110,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/discount_amt_sz"
                         android:textAlignment="center"
+                        android:textColor="@color/label_text_color"
                         android:textSize="@dimen/font_size_14" />
 
                     <TextView
@@ -135,6 +137,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/rec_amt_sz"
                         android:textAlignment="center"
+                        android:textColor="@color/label_text_color"
                         android:textSize="@dimen/font_size_14" />
 
                     <TextView
@@ -275,6 +278,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/unpay_amt_sz"
                         android:textAlignment="center"
+                        android:textColor="@color/label_text_color"
                         android:textSize="@dimen/font_size_14" />
 
                     <TextView
@@ -306,6 +310,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/amt_received_sz"
                         android:textAlignment="center"
+                        android:textColor="@color/label_text_color"
                         android:textSize="@dimen/font_size_14" />
 
                     <TextView
@@ -337,6 +342,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/balance_sz"
                         android:textAlignment="center"
+                        android:textColor="@color/label_text_color"
                         android:textSize="@dimen/font_size_14" />
 
                     <TextView

@@ -10,7 +10,6 @@
     tools:layout_editor_absoluteY="152dp">
 
     <LinearLayout
-        android:id="@+id/linearLayout8"
         android:layout_width="match_parent"
         android:layout_height="@dimen/dialog_head_height"
         android:background="@color/transparent"

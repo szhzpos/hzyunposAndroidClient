@@ -100,7 +100,6 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/margin_2"
             android:layout_marginBottom="@dimen/margin_2"
             android:background="@drawable/border_sub_gray"
             android:focusable="true"
@@ -280,7 +279,7 @@
                 android:id="@+id/hangbill_details_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="@dimen/margin_2"
+                android:layout_marginEnd="@dimen/margin_1"
                 android:layout_marginBottom="@dimen/margin_2"
                 android:background="@drawable/border_sub_gray"
                 android:divider="@null">

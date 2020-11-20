@@ -4,13 +4,16 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +24,8 @@ import com.google.android.material.snackbar.Snackbar;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.callback.WindowCallback;
 import com.wyc.cloudapp.utils.Utils;
+
+import static android.content.Context.WINDOW_SERVICE;
 
 public final class MyDialog extends Dialog {
     private Button mYes,mNo;//mYes确定按钮、mNo取消按钮
@@ -90,6 +95,25 @@ public final class MyDialog extends Dialog {
         //初始化界面控件的事件
         initEvent();
 
+        initWindowSize();
+    }
+
+    private void initWindowSize(){
+        final WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
+        if (m != null){
+            if (Utils.getDisplayMetrics(m,null) < 7){
+                final Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+                final Point point = new Point();
+                d.getSize(point);
+                final Window dialogWindow = this.getWindow();
+                if (dialogWindow != null){
+                    final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+                    dialogWindow.setGravity(Gravity.CENTER);
+                    lp.width = (int) (point.x * 0.95);
+                    dialogWindow.setAttributes(lp);
+                }
+            }
+        }
     }
 
     /**

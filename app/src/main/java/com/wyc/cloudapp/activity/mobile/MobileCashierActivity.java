@@ -79,16 +79,14 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
         final InterceptLinearLayout mobile_other_fun_hide_layout = findViewById(R.id.mobile_other_fun_hide_layout);
         final TmpOrderButton tmp_order = mobile_other_fun_hide_layout.findViewById(R.id.mobile_hang_orderl_btn);
         mobile_other_fun_btn.setOnClickListener(v -> {
-            if (mobile_other_fun_hide_layout != null){
-                boolean isHide = mobile_other_fun_hide_layout.getVisibility() == View.GONE;
-                if (isHide){
-                    tmp_order.setNum(HangBillDialog.getHangCounts(this));
-                    mobile_other_fun_hide_layout.setClickListener(this);
-                    mobile_other_fun_hide_layout.setVisibility(View.VISIBLE);
-                }else {
-                    mobile_other_fun_hide_layout.setClickListener(null);
-                    mobile_other_fun_hide_layout.setVisibility(View.GONE);
-                }
+            boolean isHide = mobile_other_fun_hide_layout.getVisibility() == View.GONE;
+            if (isHide){
+                tmp_order.setNum(HangBillDialog.getHangCounts(this));
+                mobile_other_fun_hide_layout.setClickListener(this);
+                mobile_other_fun_hide_layout.setVisibility(View.VISIBLE);
+            }else {
+                mobile_other_fun_hide_layout.setClickListener(null);
+                mobile_other_fun_hide_layout.setVisibility(View.GONE);
             }
         });
 
@@ -100,6 +98,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
             tmp_order.callOnClick();
         }
     }
+
     @Override
     public void onClick(View v) {
         final int id = v.getId();
@@ -249,7 +248,6 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
             }
             return false;
         });
-        search.postDelayed(search::requestFocus,500);
         mSearchContent = search;
     }
 
@@ -385,8 +383,13 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
         final ViewGroup goods_info_layout = findViewById(R.id.goods_info_layout);
         if (goods_info_layout.getVisibility() == View.VISIBLE){
             switchView();
-        }else
-            super.onBackPressed();
+        }else{
+            if (mSaleGoodsAdapter.isEmpty()){
+                super.onBackPressed();
+            }else{
+                MyDialog.ToastMessage("已存在销售商品!",this,null);
+            }
+        }
     }
 
     private void initSaleGoodsAdapter(){

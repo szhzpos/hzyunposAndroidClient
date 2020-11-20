@@ -57,7 +57,6 @@
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/margin_2"
         android:layout_marginBottom="@dimen/margin_2"
-        android:background="@drawable/border_sub_gray"
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:orientation="vertical"

@@ -9,7 +9,7 @@ import com.wyc.cloudapp.activity.SaleActivity;
 public abstract class AbstractDialogSaleActivity extends AbstractDialog {
     protected SaleActivity mContext;
     public AbstractDialogSaleActivity(@NonNull SaleActivity context, final CharSequence title) {
-        super(context, title);
+        super(context, title,0);
         mContext = context;
         initKeyListener();
     }

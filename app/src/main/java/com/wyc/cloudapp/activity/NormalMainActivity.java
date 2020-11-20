@@ -274,18 +274,6 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                 final NormalMainActivity activity = NormalMainActivity.this;
                 if (AbstractTransferDialog.verifyTransferPermissions(activity)){
                     final AbstractTransferDialog transferDialog = new NormalTransferDialog(activity);
-                    transferDialog.setFinishListener(() -> {
-                        mApplication.sync_transfer_order();
-                        MyDialog my_dialog = new MyDialog(activity);
-                        my_dialog.setMessage("交班成功！").setYesOnclickListener(activity.getString(R.string.OK), myDialog -> {
-                            transferDialog.dismiss();
-                            myDialog.dismiss();
-                            final Intent intent = new Intent(activity, LoginActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            activity.startActivity(intent);
-                            activity.finish();
-                        }).show();
-                    });
                     transferDialog.verifyTransfer();
                 }
             });
@@ -777,7 +765,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     }
 
     @Override
-    public void triggerPsClick(){
+    public void switchPrintStatus(){
         if (null != mPrinterStatusIv)mPrinterStatusIv.callOnClick();
     }
     @Override

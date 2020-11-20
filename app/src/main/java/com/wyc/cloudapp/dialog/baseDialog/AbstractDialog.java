@@ -30,19 +30,14 @@ public abstract class AbstractDialog extends Dialog {
     private int mCode;
     private float mTouchX,mTouchY;
     private boolean isTitle;
-    AbstractDialog(@NonNull Context context, final String title, int style){
-        super(context,style);
+    AbstractDialog(@NonNull Context context, final CharSequence title, int style){
+        super(context,(style == 0 ? R.style.MyDialog : style));
         init(context);
         mTitle = title;
     }
 
     private AbstractDialog(@NonNull Context context){
         this(context,null,0);
-    }
-
-    AbstractDialog(@NonNull Context context, final CharSequence title) {
-        this(context);
-        mTitle = title;
     }
 
     private void init(final Context context){

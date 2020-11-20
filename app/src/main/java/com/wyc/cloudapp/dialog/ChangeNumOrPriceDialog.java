@@ -18,7 +18,7 @@ public class ChangeNumOrPriceDialog extends AbstractDialogMainActivity {
     private onNoOnclickListener noOnclickListener;//取消按钮被点击了的监听器
     private onYesOnclickListener yesOnclickListener;//确定按钮被点击了的监听器
     public ChangeNumOrPriceDialog(MainActivity context, final CharSequence title, final String initVal){
-        super(context,title.toString());
+        super(context,title);
         mInitVal = initVal;
     }
     @Override

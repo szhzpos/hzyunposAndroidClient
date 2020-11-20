@@ -19,6 +19,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.MobileTransferDetailsAdapter;
 import com.wyc.cloudapp.callback.PasswordEditTextReplacement;
+import com.wyc.cloudapp.utils.Utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -55,7 +56,7 @@ public final class MobileTransferDialog extends AbstractTransferDialog {
                 final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
                 dialogWindow.setGravity(Gravity.CENTER);
                 lp.width =  point.x;
-                lp.height = (int) (0.98 * point.y);
+                lp.height = WindowManager.LayoutParams.MATCH_PARENT;
                 dialogWindow.setAttributes(lp);
             }
         }
@@ -74,14 +75,88 @@ public final class MobileTransferDialog extends AbstractTransferDialog {
         refund_details_list.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
         recharge_details_list.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
 
-        retail_details_list.setAdapter(new MobileTransferDetailsAdapter(mContext,mTransferDetailsAdapter.getTransferRetails()));
-        refund_details_list.setAdapter(new MobileTransferDetailsAdapter(mContext,mTransferDetailsAdapter.getTransferRefunds()));
-        recharge_details_list.setAdapter(new MobileTransferDetailsAdapter(mContext,mTransferDetailsAdapter.getTransferDeposits()));
+        retail_details_list.setAdapter(new MobileTransferDetailsAdapter(mContext,aggregateRetails()));
+        refund_details_list.setAdapter(new MobileTransferDetailsAdapter(mContext,aggregateRefunds()));
+        recharge_details_list.setAdapter(new MobileTransferDetailsAdapter(mContext,aggregateDeposits()));
 
         setFooterInfo();
     }
 
+    private JSONArray aggregateRetails(){
+        JSONArray retails = mTransferDetailsAdapter.getTransferRetails();
+        final JSONObject object = new JSONObject();
+        if (null != retails){
+            final JSONObject transfer_sum = mTransferDetailsAdapter.getTransferSumInfo();
+            double amt = transfer_sum.getDoubleValue("order_money");
+            int num = transfer_sum.getIntValue("retail_total_orders");
 
+            if (!Utils.equalDouble(amt,0.0) || num != 0){
+                object.put("pay_name","合计");
+            }else{
+                object.put("pay_name","暂无数据");
+            }
+            object.put("order_num",num);
+            object.put("pay_money",amt);
+        }else{
+            retails = new JSONArray();
+            object.put("pay_name","暂无数据");
+            object.put("order_num",0.0);
+            object.put("pay_money",0.0);
+        }
+        retails.add(object);
+
+        return retails;
+    }
+    private JSONArray aggregateRefunds(){
+        JSONArray refunds = mTransferDetailsAdapter.getTransferRefunds();
+        final JSONObject object = new JSONObject();
+        if (null != refunds){
+            final JSONObject transfer_sum = mTransferDetailsAdapter.getTransferSumInfo();
+            double amt = transfer_sum.getDoubleValue("refund_money");
+            int num = transfer_sum.getIntValue("refund_total_orders");
+
+            if (!Utils.equalDouble(amt,0.0) || num != 0){
+                object.put("pay_name","合计");
+            }else{
+                object.put("pay_name","暂无数据");
+            }
+            object.put("order_num",num);
+            object.put("pay_money",amt);
+        }else{
+            refunds = new JSONArray();
+            object.put("pay_name","暂无数据");
+            object.put("order_num",0.0);
+            object.put("pay_money",0.0);
+        }
+        refunds.add(object);
+
+        return refunds;
+    }
+    private JSONArray aggregateDeposits(){
+        JSONArray deposits = mTransferDetailsAdapter.getTransferDeposits();
+        final JSONObject object = new JSONObject();
+        if (null != deposits){
+            final JSONObject transfer_sum = mTransferDetailsAdapter.getTransferSumInfo();
+            double amt = transfer_sum.getDoubleValue("recharge_money");
+            int num = transfer_sum.getIntValue("deposits_total_orders");
+
+            if (!Utils.equalDouble(amt,0.0) || num != 0){
+                object.put("pay_name","合计");
+            }else{
+                object.put("pay_name","暂无数据");
+            }
+            object.put("order_num",num);
+            object.put("pay_money",amt);
+        }else{
+            deposits = new JSONArray();
+            object.put("pay_name","暂无数据");
+            object.put("order_num",0.0);
+            object.put("pay_money",0.0);
+        }
+        deposits.add(object);
+
+        return deposits;
+    }
 
     private void setFooterInfo(){
         final JSONObject object = mTransferDetailsAdapter.getTransferSumInfo();
