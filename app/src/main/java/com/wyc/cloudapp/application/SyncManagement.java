@@ -145,6 +145,11 @@ public class SyncManagement extends Thread {
         mSyncHandler._continue();
     }
 
+    void rest(){
+        acquireHandler();
+        mSyncHandler.removeCallbacksAndMessages(null);
+    }
+
     private void acquireHandler(){
         if (mSyncHandler == null)mSyncHandler = getHandler();
     }

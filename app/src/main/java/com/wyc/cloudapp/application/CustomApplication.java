@@ -208,6 +208,10 @@ public final class CustomApplication extends Application {
         if (mSyncManagement != null) mSyncManagement.sync_refund_order();
     }
 
+    public void resetSync(){
+        mSyncManagement.rest();
+    }
+
 
     private static class Myhandler extends Handler {
         private final WeakReference<CustomApplication> weakHandler;

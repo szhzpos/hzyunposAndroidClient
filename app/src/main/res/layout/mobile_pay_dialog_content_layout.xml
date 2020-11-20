@@ -198,65 +198,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/func_btn_layout"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/height_45"
-                android:layout_marginStart="@dimen/margin_2"
-                android:layout_marginTop="@dimen/margin_8"
-                android:layout_marginEnd="@dimen/margin_2"
-                android:layout_marginBottom="@dimen/margin_8"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/vip"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_margin="@dimen/margin_2"
-                    android:layout_weight="1"
-                    android:background="@drawable/button_blue"
-                    android:text="@string/vip_button_sz"
-                    android:textColor="@color/blue_white"
-                    android:textSize="@dimen/font_size_14" />
-
-                <Button
-                    android:id="@+id/all_discount"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_margin="@dimen/margin_2"
-                    android:layout_weight="1"
-                    android:background="@drawable/button_blue"
-                    android:text="@string/all_discount_sz"
-                    android:textColor="@color/blue_white"
-                    android:textSize="@dimen/font_size_14" />
-
-                <Button
-                    android:id="@+id/mo_l"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_margin="@dimen/margin_2"
-                    android:layout_weight="1"
-                    android:background="@drawable/button_blue"
-                    android:text="@string/mo_l_sz"
-                    android:textColor="@color/blue_white"
-                    android:textSize="@dimen/font_size_14" />
-
-                <Button
-                    android:id="@+id/remark"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_margin="@dimen/margin_2"
-                    android:layout_weight="1"
-                    android:background="@drawable/button_blue"
-                    android:text="@string/remark_sz"
-                    android:textColor="@color/blue_white"
-                    android:textSize="@dimen/font_size_14" />
-            </LinearLayout>
-
-            <LinearLayout
                 android:id="@+id/payed_amt_info"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/height_58"
@@ -384,6 +325,65 @@
                 android:textSize="@dimen/font_size_14"
                 android:visibility="gone" />
 
+            <LinearLayout
+                android:id="@+id/func_btn_layout"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/height_45"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_marginTop="@dimen/margin_8"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:layout_marginBottom="@dimen/margin_8"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/vip"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/margin_2"
+                    android:layout_weight="1"
+                    android:background="@drawable/button_blue"
+                    android:text="@string/vip_button_sz"
+                    android:textColor="@color/blue_white"
+                    android:textSize="@dimen/font_size_14" />
+
+                <Button
+                    android:id="@+id/all_discount"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/margin_2"
+                    android:layout_weight="1"
+                    android:background="@drawable/button_blue"
+                    android:text="@string/all_discount_sz"
+                    android:textColor="@color/blue_white"
+                    android:textSize="@dimen/font_size_14" />
+
+                <Button
+                    android:id="@+id/mo_l"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/margin_2"
+                    android:layout_weight="1"
+                    android:background="@drawable/button_blue"
+                    android:text="@string/mo_l_sz"
+                    android:textColor="@color/blue_white"
+                    android:textSize="@dimen/font_size_14" />
+
+                <Button
+                    android:id="@+id/remark"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/margin_2"
+                    android:layout_weight="1"
+                    android:background="@drawable/button_blue"
+                    android:text="@string/remark_sz"
+                    android:textColor="@color/blue_white"
+                    android:textSize="@dimen/font_size_14" />
+            </LinearLayout>
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/pay_method_list"
                 android:layout_width="match_parent"
@@ -395,7 +395,8 @@
                 android:layout_height="@dimen/height_45"
                 android:layout_margin="@dimen/margin_2"
                 android:background="@drawable/border_sub_gray"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="visible">
 
                 <TextView
                     android:layout_width="wrap_content"

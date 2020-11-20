@@ -1,6 +1,7 @@
 package com.wyc.cloudapp.activity.mobile;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ReplacementTransformationMethod;
@@ -145,7 +146,10 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
                         }
                     }
                 });
-                hangBillDialog.setOnDismissListener(dialog -> tmp_order.setNum(HangBillDialog.getHangCounts(this)));
+                hangBillDialog.setOnDismissListener(dialog -> {
+                    tmp_order.setNum(HangBillDialog.getHangCounts(MobileCashierActivity.this));
+                    mSearchContent.clearFocus();
+                });
                 hangBillDialog.show();
             }else{
                 MyDialog.ToastMessage("无挂单信息！",this,null);

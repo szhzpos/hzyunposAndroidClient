@@ -125,7 +125,7 @@ public final class GoodsManageDialog extends AbstractDialogSaleActivity {
     }
 
     private void initWindowSize(){//初始化窗口尺寸
-        WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
+        final WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
         if (m != null){
             final Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
             final Point point = new Point();

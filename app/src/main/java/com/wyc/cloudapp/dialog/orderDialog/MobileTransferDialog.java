@@ -46,19 +46,13 @@ public final class MobileTransferDialog extends AbstractTransferDialog {
     }
 
     private void initWindowSize(){//初始化窗口尺寸
-        final WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
-        if (m != null){
-            Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
-            Point point = new Point();
-            d.getSize(point);
-            final Window dialogWindow = this.getWindow();
-            if (dialogWindow != null){
-                final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-                dialogWindow.setGravity(Gravity.CENTER);
-                lp.width =  point.x;
-                lp.height = WindowManager.LayoutParams.MATCH_PARENT;
-                dialogWindow.setAttributes(lp);
-            }
+        final Window dialogWindow = this.getWindow();
+        if (dialogWindow != null){
+            final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+            dialogWindow.setGravity(Gravity.CENTER);
+            lp.width =  WindowManager.LayoutParams.MATCH_PARENT;
+            lp.height = WindowManager.LayoutParams.MATCH_PARENT;
+            dialogWindow.setAttributes(lp);
         }
     }
 

@@ -452,7 +452,7 @@ public final class Printer {
             wLayou.flags= WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL| WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;;
             wLayou.height = Utils.dpToPx(activity,32);
             wLayou.width = Utils.dpToPx(activity,32);
-            wLayou.x = point.x;
+            wLayou.x = point.x - 128;
             wLayou.y = point.y / 2;
 
             final Bitmap printer = BitmapFactory.decodeResource(activity.getResources(),R.drawable.printer);
@@ -464,31 +464,26 @@ public final class Printer {
                 mICO.setImageDrawable(activity.getDrawable(R.drawable.printer));
 
             mICO.setBackgroundColor(activity.getColor(R.color.appColor));
+            mICO.setOnClickListener(v -> {
+                activity.switchPrintStatus();
+                if (null != mICO && null != printer){
+                    if (activity.getPrintStatus()){
+                        mICO.setImageBitmap(printer);
+                    }else {
+                        mICO.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(activity,printer,Utils.dpToPx(activity,15),Utils.dpToPx(activity,15)));
+                    }
+                }
+            });
             mICO.setOnTouchListener(new View.OnTouchListener() {
                 private double touchX,touchY;
-                private boolean mIsMove;
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     switch (event.getAction()){
                         case MotionEvent.ACTION_DOWN:
-                            mIsMove = false;
                             touchX = event.getRawX() - wLayou.x;
                             touchY = event.getRawY() - wLayou.y;
                             break;
-                        case MotionEvent.ACTION_UP:
-                            if (!mIsMove){
-                                activity.switchPrintStatus();
-                                if (null != mICO && null != printer){
-                                    if (activity.getPrintStatus()){
-                                        mICO.setImageBitmap(printer);
-                                    }else {
-                                        mICO.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(activity,printer,Utils.dpToPx(activity,15),Utils.dpToPx(activity,15)));
-                                    }
-                                }
-                            }
-                            break;
                         case MotionEvent.ACTION_MOVE:
-                            if (!mIsMove)mIsMove = true;
                             wLayou.x = (int) (event.getRawX() - touchX);
                             wLayou.y = (int) (event.getRawY() - touchY);
                             wm.updateViewLayout(mICO,wLayou);

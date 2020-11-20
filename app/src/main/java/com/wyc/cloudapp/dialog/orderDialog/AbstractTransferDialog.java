@@ -82,6 +82,8 @@ public abstract class AbstractTransferDialog extends AbstractDialogMainActivity 
             dismiss();
             myDialog.dismiss();
 
+            CustomApplication.self().resetSync();
+
             final Intent intent = new Intent(mContext, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             mContext.startActivity(intent);

@@ -55,10 +55,6 @@ public abstract class AbstractDialog extends Dialog {
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        final Display display = mWM.getDefaultDisplay();
-        final Point point = new Point();
-        display.getSize(point);
-
         final Window window = getWindow();
         mRootView =  window.getDecorView();
         mLayoutParams = (WindowManager.LayoutParams)mRootView.getLayoutParams();
