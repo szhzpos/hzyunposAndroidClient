@@ -41,7 +41,6 @@ public class BarCodeScaleDownDialog extends AbstractDialogContext {
         initDelBtn();
         initDownloadToScaleBtn();
         initModifyBtn();
-        initWindowSize();
     }
 
     @Override
@@ -103,7 +102,9 @@ public class BarCodeScaleDownDialog extends AbstractDialogContext {
                 }
             });
     }
-    private void initWindowSize(){
+
+    @Override
+    protected void initWindowSize(){
         final WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
         if (m != null){
             Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用

@@ -1,11 +1,7 @@
 package com.wyc.cloudapp.dialog.orderDialog;
 
-import android.graphics.Point;
 import android.os.Bundle;
-import android.view.Display;
-import android.view.Gravity;
-import android.view.Window;
-import android.view.WindowManager;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -24,8 +20,6 @@ import com.wyc.cloudapp.utils.Utils;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-import static android.content.Context.WINDOW_SERVICE;
-
 public final class MobileTransferDialog extends AbstractTransferDialog {
     public MobileTransferDialog(@NonNull MainActivity context) {
         super(context);
@@ -36,8 +30,6 @@ public final class MobileTransferDialog extends AbstractTransferDialog {
         super.onCreate(savedInstanceState);
 
         initTransferInfoList();
-
-        initWindowSize();
     }
 
     @Override
@@ -45,15 +37,9 @@ public final class MobileTransferDialog extends AbstractTransferDialog {
         return R.layout.mobile_transfer_dialog_layout;
     }
 
-    private void initWindowSize(){//初始化窗口尺寸
-        final Window dialogWindow = this.getWindow();
-        if (dialogWindow != null){
-            final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-            dialogWindow.setGravity(Gravity.CENTER);
-            lp.width =  WindowManager.LayoutParams.MATCH_PARENT;
-            lp.height = WindowManager.LayoutParams.MATCH_PARENT;
-            dialogWindow.setAttributes(lp);
-        }
+    @Override
+    protected void initWindowSize(){//初始化窗口尺寸
+        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
     }
 
     private void initTransferInfoList(){

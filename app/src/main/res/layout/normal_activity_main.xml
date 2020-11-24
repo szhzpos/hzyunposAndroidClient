@@ -409,14 +409,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/z_p_z_sz"
+                    android:text="@string/zero_p_z_sz"
                     android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/sale_sum_num"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/z_p_z_sz"
+                    android:text="@string/zero_p_z_sz"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/font_size_18" />
 
@@ -444,7 +444,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/margin_2"
-                    android:text="@string/z_p_z_sz"
+                    android:text="@string/zero_p_z_sz"
                     android:textColor="@color/orange_1"
                     android:textSize="@dimen/font_size_18" />
             </LinearLayout>
@@ -1316,7 +1316,7 @@
                 android:background="@drawable/left_separator"
                 android:paddingStart="@dimen/margin_2"
                 android:paddingEnd="@dimen/margin_2"
-                android:text="@string/z_p_z_sz"
+                android:text="@string/zero_p_z_sz"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_16" />
         </LinearLayout>
@@ -1345,7 +1345,7 @@
                 android:background="@drawable/left_separator"
                 android:paddingStart="@dimen/margin_2"
                 android:paddingEnd="@dimen/margin_2"
-                android:text="@string/z_p_z_sz"
+                android:text="@string/zero_p_z_sz"
                 android:textColor="@color/orange_1"
                 android:textSize="@dimen/font_size_18" />
         </LinearLayout>
@@ -1387,7 +1387,7 @@
                 android:background="@drawable/left_separator"
                 android:paddingStart="@dimen/margin_2"
                 android:paddingEnd="@dimen/margin_2"
-                android:text="@string/z_p_z_sz"
+                android:text="@string/zero_p_z_sz"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_16" />
         </LinearLayout>

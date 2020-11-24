@@ -10,7 +10,6 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,15 +18,12 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -49,7 +45,6 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.ConnSettingDialog;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.keyboard.SoftKeyBoardListener;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.service.AppUpdateService;
 import com.wyc.cloudapp.utils.MessageID;
@@ -360,30 +355,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
         });
         mUserIdEt = user_id;
     }
-    @SuppressWarnings("unused")
-    private void initSoftKeyBoardListener(){
-        final RelativeLayout main_window = findViewById(R.id.main);
-        SoftKeyBoardListener.setListener(this, new SoftKeyBoardListener.OnSoftKeyBoardChangeListener() {
-            final ViewGroup.LayoutParams mLayoutParams = main_window.getLayoutParams();
-            @Override
-            public void keyBoardShow(int height) {
-                WindowManager m = (WindowManager) mSelf.getSystemService(WINDOW_SERVICE);
-                if (m != null){
-                    Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
-                    Point point = new Point();
-                    d.getSize(point);
-                    mLayoutParams.height = point.y - height;
-                    main_window.setLayoutParams(mLayoutParams);
-                }
-            }
 
-            @Override
-            public void keyBoardHide(int height) {
-                mLayoutParams.height = mLayoutParams.height + height;
-                main_window.setLayoutParams(mLayoutParams);
-            }
-        });
-    }
     private void clearResource(){
         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
         if (myDialog.isShowing())myDialog.dismiss();

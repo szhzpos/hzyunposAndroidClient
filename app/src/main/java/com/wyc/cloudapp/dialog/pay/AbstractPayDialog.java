@@ -1,13 +1,10 @@
 package com.wyc.cloudapp.dialog.pay;
 
-import android.graphics.Point;
 import android.os.Bundle;
-import android.view.Display;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -25,8 +22,6 @@ import com.wyc.cloudapp.utils.Utils;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-
-import static android.content.Context.WINDOW_SERVICE;
 
 public abstract class AbstractPayDialog extends AbstractDialogMainActivity implements IPay {
     protected EditText mPayAmtEt,mPayCode;
@@ -207,19 +202,10 @@ public abstract class AbstractPayDialog extends AbstractDialogMainActivity imple
         mOk = view.getOkBtn();
     }
 
-    private void initWindowSize(){//初始化窗口尺寸
-        WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
-        if (m != null){
-            final Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
-            final Point point = new Point();
-            d.getSize(point);
-            final Window dialogWindow = this.getWindow();
-            if (dialogWindow != null){
-                final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-                dialogWindow.setGravity(Gravity.CENTER);
-                lp.width = (int)(0.98 * point.x);
-                dialogWindow.setAttributes(lp);
-            }
+    @Override
+    protected void initWindowSize(){
+        if (mContext.lessThan7Inches(null)){
+            getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
     }
 

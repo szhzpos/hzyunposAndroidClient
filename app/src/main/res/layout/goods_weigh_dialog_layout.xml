@@ -135,7 +135,7 @@
                 android:gravity="start|center_vertical"
                 android:paddingStart="@dimen/margin_8"
                 android:paddingEnd="@dimen/size_0"
-                android:text="@string/z_p_z_sz"
+                android:text="@string/zero_p_z_sz"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_18" />
         </LinearLayout>

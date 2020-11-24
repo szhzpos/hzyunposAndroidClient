@@ -260,7 +260,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@string/z_p_z_sz"
+                android:text="@string/zero_p_z_sz"
                 android:textColor="@color/orange_1"
                 android:textSize="@dimen/font_size_24"
                 android:textStyle="bold" />

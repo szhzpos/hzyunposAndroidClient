@@ -258,7 +258,7 @@
                 android:gravity="center"
                 android:paddingStart="0dp"
                 android:paddingEnd="@dimen/margin_5"
-                android:text="@string/z_p_z_sz"
+                android:text="@string/zero_p_z_sz"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_18" />
 
@@ -282,7 +282,7 @@
                 android:gravity="center"
                 android:paddingStart="0dp"
                 android:paddingEnd="@dimen/margin_5"
-                android:text="@string/z_p_z_sz"
+                android:text="@string/zero_p_z_sz"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_18" />
 
@@ -307,7 +307,7 @@
                 android:gravity="center"
                 android:paddingStart="0dp"
                 android:paddingEnd="@dimen/margin_5"
-                android:text="@string/z_p_z_sz"
+                android:text="@string/zero_p_z_sz"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_18" />
         </LinearLayout>
@@ -338,7 +338,7 @@
             android:gravity="center_vertical|end"
             android:paddingStart="@dimen/margin_2"
             android:paddingEnd="@dimen/margin_18"
-            android:text="@string/z_p_z_sz"
+            android:text="@string/zero_p_z_sz"
             android:textColor="@color/orange_1"
             android:textSize="@dimen/font_size_24" />
 

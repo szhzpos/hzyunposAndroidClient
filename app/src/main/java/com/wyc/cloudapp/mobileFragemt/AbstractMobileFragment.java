@@ -14,13 +14,15 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.activity.mobile.MobileNavigationActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.vip.MobileVipChargeDialog;
 
 /*
  * 负责加载功能布局，每个布局的叶节点为TextView或其子类。
- * 叶节点的点击事件可以直接启动指定的Activity。
+ * 叶节点的点击事件可以直接启动指定的Activity或完成某项功能。
  * Activity 的类名保存在叶节点的tag属性中。
  * */
 public abstract class AbstractMobileFragment extends Fragment {
@@ -75,6 +77,9 @@ public abstract class AbstractMobileFragment extends Fragment {
                     if (activity instanceof MobileNavigationActivity){
                         ((MobileNavigationActivity)activity).transfer();
                     }
+                }else if(v_id == R.id.vip_charge_tv){
+                    final MobileVipChargeDialog dialog = new MobileVipChargeDialog((MainActivity) getActivity());
+                    dialog.show();
                 }else{
                     final Intent intent = new Intent();
                     intent.setClassName(context,context.getPackageName().concat(".") + v.getTag());

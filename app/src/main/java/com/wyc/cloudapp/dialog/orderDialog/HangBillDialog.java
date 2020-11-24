@@ -62,9 +62,6 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
 
         //初始化按钮事件
         initBtn();
-
-        //初始化窗口尺寸
-        initWindowSize();
     }
 
     private void initBtn(){
@@ -118,7 +115,8 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
         }
     }
 
-    private void initWindowSize(){
+    @Override
+    protected void initWindowSize(){
         final WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
         if (m != null){
             final Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用

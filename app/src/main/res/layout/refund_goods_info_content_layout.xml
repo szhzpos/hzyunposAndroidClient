@@ -115,7 +115,7 @@
         android:paddingTop="@dimen/margin_8"
         android:paddingBottom="@dimen/margin_8"
         android:selectAllOnFocus="true"
-        android:text="@string/z_p_z_sz"
+        android:text="@string/zero_p_z_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16" />
 
@@ -134,7 +134,7 @@
         android:inputType="none"
         android:padding="@dimen/margin_8"
         android:selectAllOnFocus="true"
-        android:text="@string/z_p_z_sz"
+        android:text="@string/zero_p_z_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16" />
 

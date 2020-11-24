@@ -258,7 +258,7 @@
             android:paddingStart="@dimen/margin_5"
             android:paddingEnd="@dimen/margin_5"
             android:selectAllOnFocus="true"
-            android:text="@string/z_p_z_sz"
+            android:text="@string/zero_p_z_sz"
             android:textColor="@color/text_color" />
 
         <TextView
@@ -279,7 +279,7 @@
             android:hint="@string/space_sz"
             android:importantForAutofill="no"
             android:inputType="none"
-            android:text="@string/z_p_z_sz"
+            android:text="@string/zero_p_z_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16" />
     </LinearLayout>
@@ -310,7 +310,7 @@
             android:paddingStart="@dimen/margin_5"
             android:paddingEnd="@dimen/margin_5"
             android:selectAllOnFocus="true"
-            android:text="@string/z_p_z_sz"
+            android:text="@string/zero_p_z_sz"
             android:textColor="@color/text_color" />
 
         <TextView
@@ -333,7 +333,7 @@
             android:paddingStart="@dimen/margin_5"
             android:paddingEnd="@dimen/margin_5"
             android:selectAllOnFocus="true"
-            android:text="@string/z_p_z_sz"
+            android:text="@string/zero_p_z_sz"
             android:textColor="@color/text_color" />
     </LinearLayout>
 

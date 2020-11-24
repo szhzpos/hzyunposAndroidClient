@@ -71,8 +71,6 @@ public class ConnSettingDialog extends AbstractDialogContext {
         initUrlTv();
         initCancelBtn();
         initSaveBtn();
-        initWindowSize();
-
     }
 
     private void initUrlTv(){
@@ -96,7 +94,8 @@ public class ConnSettingDialog extends AbstractDialogContext {
         });
     }
 
-    private void initWindowSize(){
+    @Override
+    protected void initWindowSize(){
         final WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
         if (m != null){
             final Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用

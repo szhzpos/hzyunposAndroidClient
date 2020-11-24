@@ -1081,7 +1081,7 @@ public final class PayDialog extends AbstractDialogSaleActivity {
                     }
                 }else{
                     mZlAmt = 0.00;
-                    mZlAmtEt.setText(mContext.getText(R.string.z_p_z_sz));
+                    mZlAmtEt.setText(mContext.getText(R.string.zero_p_z_sz));
                 }
             }
         });

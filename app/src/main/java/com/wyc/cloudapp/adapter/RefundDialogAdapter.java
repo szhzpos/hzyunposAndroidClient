@@ -17,12 +17,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.DigitKeyboardPopup;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -190,7 +188,7 @@ public final class RefundDialogAdapter extends RecyclerView.Adapter<RefundDialog
                     cur_refund_num_et.setText(sz_returnable_num);
                 }
                 else
-                    cur_refund_num_et.setText(mContext.getString(R.string.z_p_z_sz));
+                    cur_refund_num_et.setText(mContext.getString(R.string.zero_p_z_sz));
             }
         }
     };

@@ -46,7 +46,6 @@ public final class GoodsManageDialog extends AbstractDialogSaleActivity {
         initGoodsDetail();
         initQueryBtn();
         initAddBtn();
-        initWindowSize();
     }
 
     @Override
@@ -124,7 +123,8 @@ public final class GoodsManageDialog extends AbstractDialogSaleActivity {
         }
     }
 
-    private void initWindowSize(){//初始化窗口尺寸
+    @Override
+    protected void initWindowSize(){
         final WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
         if (m != null){
             final Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
@@ -134,6 +134,7 @@ public final class GoodsManageDialog extends AbstractDialogSaleActivity {
             if (dialogWindow != null){
                 final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
                 dialogWindow.setGravity(Gravity.CENTER);
+                lp.width = (int)(0.98 * point.x);
                 lp.height = (int)(0.98 * point.y);
                 dialogWindow.setAttributes(lp);
             }
@@ -207,6 +208,6 @@ public final class GoodsManageDialog extends AbstractDialogSaleActivity {
 
         return condition_sb.toString();
     }
-    private CompoundButton.OnCheckedChangeListener opt_change_listener = (buttonView, isChecked) -> query();
+    private final CompoundButton.OnCheckedChangeListener opt_change_listener = (buttonView, isChecked) -> query();
 
 }

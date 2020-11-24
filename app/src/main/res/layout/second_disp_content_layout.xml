@@ -185,7 +185,7 @@
                     android:id="@+id/sale_sum_num"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/z_p_z_sz"
+                    android:text="@string/zero_p_z_sz"
                     android:textColor="@color/white"
                     android:textSize="@dimen/font_size_16" />
 
@@ -214,7 +214,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/margin_2"
-                    android:text="@string/z_p_z_sz"
+                    android:text="@string/zero_p_z_sz"
                     android:textColor="@color/white"
                     android:textSize="@dimen/font_size_16" />
             </LinearLayout>

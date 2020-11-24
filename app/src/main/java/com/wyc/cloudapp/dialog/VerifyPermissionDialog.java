@@ -1,26 +1,20 @@
 package com.wyc.cloudapp.dialog;
 
-import android.graphics.Point;
 import android.os.Bundle;
-import android.view.Display;
-import android.view.Gravity;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.wyc.cloudapp.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.callback.PasswordEditTextReplacement;
-import com.wyc.cloudapp.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.logger.Logger;
-
-import static android.content.Context.WINDOW_SERVICE;
 
 public final class VerifyPermissionDialog extends AbstractDialogMainActivity {
     private EditText mCasContent;
@@ -39,11 +33,6 @@ public final class VerifyPermissionDialog extends AbstractDialogMainActivity {
         initCasIdEt();
         initInfoTv();
         initKeyboardView();
-
-        if (lessThan7Inches){
-            initWindowSize();
-        }
-
     }
 
     @Override
@@ -102,19 +91,10 @@ public final class VerifyPermissionDialog extends AbstractDialogMainActivity {
         }
     }
 
-    private void initWindowSize(){//初始化窗口尺寸
-        final WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
-        if (m != null){
-            Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
-            Point point = new Point();
-            d.getSize(point);
-            final Window dialogWindow = this.getWindow();
-            if (dialogWindow != null){
-                final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-                dialogWindow.setGravity(Gravity.CENTER);
-                lp.width = (int)point.x;
-                dialogWindow.setAttributes(lp);
-            }
+    @Override
+    protected void initWindowSize(){//初始化窗口尺寸
+        if (lessThan7Inches){
+            getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
     }
 

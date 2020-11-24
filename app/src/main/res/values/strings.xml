@@ -70,7 +70,7 @@
     <string name="d_zero_sz">00</string>
     <string name="point_sz">.</string>
     <string name="d_zero_point_sz">.00</string>
-    <string name="z_p_z_sz">0.00</string>
+    <string name="zero_p_z_sz">0.00</string>
     <string name="pay_detail_row_id_sz">@string/row_id_sz</string>
     <string name="pay_method_name_sz">支付方式</string>
     <string name="pay_detail_amt_sz">@string/amt_not_colon_sz</string>
@@ -364,5 +364,13 @@
     <string name="pay_amt_sz">收款金额(元)</string>
     <string name="refund_way_sz">退款方式</string>
     <string name="refund_money_sz">退款金额(元)</string>
+    <string name="vip_charge_remark_sz">充值备注：</string>
+    <string name="charge_plan_sz">充值方案：</string>
+    <string name="charge_amt__colon_sz">充值金额：</string>
+    <string name="present_amt_colon_sz">赠送金额：</string>
+    <string name="sale_man_colon_sz">营业员：</string>
+    <string name="pay_method_name_colon_sz">支付方式：</string>
+    <string name="print_switch_sz">打印开关</string>
+    <string name="affirm_charge_sz">确认充值</string>
 
 </resources>

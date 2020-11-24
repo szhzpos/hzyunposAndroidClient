@@ -1,25 +1,23 @@
 package com.wyc.cloudapp.keyboard;
 
-import android.app.Activity;
 import android.graphics.Rect;
 import android.view.View;
-import android.view.ViewTreeObserver;
 
 public class SoftKeyBoardListener {
-    private View rootView;//activity的根视图
-    private int rootViewVisibleHeight;//纪录根视图的显示高度
+    private final View mRootView;
+    private int rootViewVisibleHeight;
     private OnSoftKeyBoardChangeListener onSoftKeyBoardChangeListener;
 
-    public SoftKeyBoardListener(Activity activity) {
+    public SoftKeyBoardListener(final View rootView) {
         //获取activity的根视图
-        rootView = activity.getWindow().getDecorView();
+        mRootView = rootView;
 
         //监听视图树中全局布局发生改变或者视图树中的某个视图的可视状态发生改变
-        rootView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+        mRootView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
             //获取当前根视图在屏幕上显示的大小
             Rect r = new Rect();
              //获取rootView在窗体的可视区域
-            rootView.getWindowVisibleDisplayFrame(r);
+            mRootView.getWindowVisibleDisplayFrame(r);
             int visibleHeight = r.height();
             if (rootViewVisibleHeight == 0) {
                 rootViewVisibleHeight = visibleHeight;
@@ -61,8 +59,8 @@ public class SoftKeyBoardListener {
         void keyBoardHide(int height);
     }
 
-    public static void setListener(Activity activity, OnSoftKeyBoardChangeListener onSoftKeyBoardChangeListener) {
-        SoftKeyBoardListener softKeyBoardListener = new SoftKeyBoardListener(activity);
+    public static void setListener(final View view, OnSoftKeyBoardChangeListener onSoftKeyBoardChangeListener) {
+        SoftKeyBoardListener softKeyBoardListener = new SoftKeyBoardListener(view);
         softKeyBoardListener.setOnSoftKeyBoardChangeListener(onSoftKeyBoardChangeListener);
     }
 }

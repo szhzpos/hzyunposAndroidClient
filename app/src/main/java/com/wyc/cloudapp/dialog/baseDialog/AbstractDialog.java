@@ -2,9 +2,7 @@ package com.wyc.cloudapp.dialog.baseDialog;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.Point;
 import android.os.Bundle;
-import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +40,9 @@ public abstract class AbstractDialog extends Dialog {
 
     private void init(final Context context){
         mWM = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        final Window window = getWindow();
+        mRootView =  window.getDecorView();
+        mLayoutParams = window.getAttributes();
     }
 
     @Override
@@ -55,9 +56,8 @@ public abstract class AbstractDialog extends Dialog {
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        final Window window = getWindow();
-        mRootView =  window.getDecorView();
-        mLayoutParams = (WindowManager.LayoutParams)mRootView.getLayoutParams();
+        //初始化窗口尺寸
+        initWindowSize();
     }
 
     @Override
@@ -68,6 +68,10 @@ public abstract class AbstractDialog extends Dialog {
         setCancelable(false);
         setTitle();
         initCloseBtn();
+    }
+
+    protected void initWindowSize(){
+
     }
 
     @Override
