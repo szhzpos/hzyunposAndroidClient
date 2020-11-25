@@ -36,4 +36,6 @@ public final  class MessageID {
             START_SYNC_ORDER_INFO_ID = 37,
             FINISH_SYNC_ORDER_INFO_ID = 38,
             APP_CHECK_VER_ID = 39, SYNC_FULLREDUCE_ID = 40,SYNC_PROMOTION_ID = 41;
+
+    public static final int PAY_REQUEST_CODE = 0x000000aa;
 }

@@ -17,15 +17,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 
 public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyViewHolder> {
     private JSONArray mDatas;
-    private Context mContext;
+    private final Context mContext;
     private boolean mSingleSel = true;
-    private Drawable mUnfoldDb,mFoldDb;
+    private final Drawable mUnfoldDb,mFoldDb;
     private OnItemClick mItemClick;//不为null的时候会隐藏单选、多选按钮，改变mCurrenttemView的背景色来表示选中；此种模式下只支持选中单个项目并触发事件。
     private View mCurrentItemView;
 /*    Item{

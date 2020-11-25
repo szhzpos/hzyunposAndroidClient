@@ -16,6 +16,7 @@ import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.activity.mobile.MobileCashierActivity;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 
 public class PayMethodDialogImp extends AbstractPayDialog implements MobileCashierActivity.ScanCallback {
@@ -56,7 +57,7 @@ public class PayMethodDialogImp extends AbstractPayDialog implements MobileCashi
                             if (dx > (w - mPayCode.getCompoundPaddingRight())) {
                                 mPayCode.requestFocus();
                                 final Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-                                mContext.startActivityForResult(intent, MobileCashierActivity.PAY_REQUEST_CODE);
+                                mContext.startActivityForResult(intent, MessageID.PAY_REQUEST_CODE);
                             }
                         }
                         return false;

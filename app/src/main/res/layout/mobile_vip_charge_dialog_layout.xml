@@ -264,6 +264,7 @@
                     android:autofillHints=""
                     android:background="@drawable/edit_text_style"
                     android:ems="10"
+                    app:onFocusTime = "0"
                     android:inputType="none|textPersonName"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/font_size_16" />
@@ -295,6 +296,8 @@
                     android:background="@drawable/edit_text_style"
                     android:ems="10"
                     android:inputType="textPersonName|numberDecimal"
+                    android:selectAllOnFocus="true"
+                    android:text="@string/zero_p_z_sz"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/font_size_16" />
             </LinearLayout>
@@ -316,7 +319,7 @@
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/font_size_16" />
 
-                <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+                <EditText
                     android:id="@+id/mobile_present_amt"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -385,6 +388,7 @@
                     android:autofillHints=""
                     android:background="@drawable/edit_text_style"
                     android:ems="10"
+                    app:onFocusTime="0"
                     android:inputType="none|textPersonName"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/font_size_16" />
@@ -415,13 +419,14 @@
                     android:autofillHints=""
                     android:background="@drawable/edit_text_style"
                     android:ems="10"
+                    app:onFocusTime="0"
                     android:inputType="none|textPersonName"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/font_size_16" />
             </LinearLayout>
 
             <Switch
-                android:id="@+id/switch1"
+                android:id="@+id/mobile_print_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"

@@ -1,7 +1,6 @@
 package com.wyc.cloudapp.activity.mobile;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ReplacementTransformationMethod;
@@ -42,8 +41,9 @@ import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
+import static com.wyc.cloudapp.utils.MessageID.PAY_REQUEST_CODE;
+
 public class MobileCashierActivity extends SaleActivity implements View.OnClickListener {
-    public static final int PAY_REQUEST_CODE = 0x000000aa;
     private static final int CODE_REQUEST_CODE = 0x000000bb;
     private BasketView mBasketView;
     private EditText mSearchContent,mMobileSearchGoods;

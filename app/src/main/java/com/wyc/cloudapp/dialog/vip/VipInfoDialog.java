@@ -218,7 +218,7 @@ public final class VipInfoDialog extends AbstractDialogSaleActivity {
 
     public static JSONArray searchVip(final String mobile) throws JSONException {
         JSONObject object = new JSONObject(),ret_json;
-        HttpRequest httpRequest = new HttpRequest();
+        final HttpRequest httpRequest = new HttpRequest();
         JSONArray vips = null;
         if (SQLiteHelper.getLocalParameter("connParam",object)){
             object.put("appid",object.getString("appId"));

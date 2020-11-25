@@ -27,9 +27,12 @@ import com.wyc.cloudapp.mobileFragemt.MyFragment;
 import com.wyc.cloudapp.mobileFragemt.ReportFragment;
 import com.wyc.cloudapp.utils.MessageID;
 
+import static com.wyc.cloudapp.utils.MessageID.PAY_REQUEST_CODE;
+
 public final class MobileNavigationActivity extends AbstractMobileActivity implements CustomApplication.MessageCallback {
     private FragmentManager mFragmentManager;
     private CustomProgressDialog mProgressDialog;
+    private ScanCallback mScanCallback;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,11 +58,28 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
         finish();
     }
 
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent){//条码回调
+        if (resultCode == RESULT_OK ){
+            final String _code = intent.getStringExtra("auth_code");
+             if (requestCode == PAY_REQUEST_CODE){
+                if (mScanCallback != null)mScanCallback.callback(_code);
+            }
+        }
+        super.onActivityResult(requestCode,resultCode,intent);
+    }
+
     @Override
     public void disposeHangBill(){
         final Intent intent = new Intent(this, MobileCashierActivity.class);
         intent.putExtra("disposeHang",true);
         startActivity(intent);
+    }
+
+    @Override
+    public void setScanCallback(final ScanCallback callback){
+        mScanCallback = callback;
     }
 
     public void transfer(){

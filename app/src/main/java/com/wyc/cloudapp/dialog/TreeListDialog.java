@@ -18,7 +18,7 @@ import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogContext;
 public class TreeListDialog extends AbstractDialogContext {
     private TreeListAdapter mAdapter;
     private JSONArray mDatas,mSelectedItems;
-    private boolean mSingle;
+    private boolean mSingleSelection;
 
     public TreeListDialog(@NonNull Context context, String title) {
         super(context, title);
@@ -38,7 +38,7 @@ public class TreeListDialog extends AbstractDialogContext {
 
     private void initList(){
         final RecyclerView item_list = findViewById(R.id.item_list);
-        final TreeListAdapter listAdapter = new TreeListAdapter(mContext,mSingle);
+        final TreeListAdapter listAdapter = new TreeListAdapter(mContext,mSingleSelection);
         listAdapter.setDatas(mDatas,mSelectedItems);
         item_list.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
         item_list.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
@@ -46,8 +46,8 @@ public class TreeListDialog extends AbstractDialogContext {
         mAdapter = listAdapter;
     }
 
-    public TreeListDialog setDatas(final JSONArray obj, final JSONArray selectItems, boolean b){
-        mSingle = b;
+    public TreeListDialog setDatas(final JSONArray obj, final JSONArray selectItems, boolean singleSelection){
+        mSingleSelection = singleSelection;
         mDatas = obj;
         mSelectedItems = selectItems;
         return this;
