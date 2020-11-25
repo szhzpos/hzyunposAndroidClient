@@ -108,7 +108,7 @@ public final class VipInfoDialog extends AbstractDialogSaleActivity {
                             dialog.dismiss();
                         }).show();
                     }else{
-                        serchVip(mSearchContent.getText().toString(),chargeBtn.getId());
+                        searchVip(mSearchContent.getText().toString(),chargeBtn.getId());
                     }
                 }
             });
@@ -131,7 +131,7 @@ public final class VipInfoDialog extends AbstractDialogSaleActivity {
                             dialog14.dismiss();
                         }).show();
                     }else{
-                        serchVip(mSearchContent.getText().toString(),modifiyBtn.getId());
+                        searchVip(mSearchContent.getText().toString(),modifiyBtn.getId());
                     }
                 }
             });
@@ -172,7 +172,7 @@ public final class VipInfoDialog extends AbstractDialogSaleActivity {
         view.setCancelListener(v -> closeWindow());
         view.setOkListener(v -> {
             if (mVip == null)
-                serchVip(mSearchContent.getText().toString(), 0);
+                searchVip(mSearchContent.getText().toString(), 0);
             else {
                 if (mYesOnclickListener != null)
                     mYesOnclickListener.onYesClick(VipInfoDialog.this);
@@ -216,7 +216,7 @@ public final class VipInfoDialog extends AbstractDialogSaleActivity {
         });
     }
 
-    public static JSONArray serchVip(final String mobile) throws JSONException {
+    public static JSONArray searchVip(final String mobile) throws JSONException {
         JSONObject object = new JSONObject(),ret_json;
         HttpRequest httpRequest = new HttpRequest();
         JSONArray vips = null;
@@ -244,12 +244,12 @@ public final class VipInfoDialog extends AbstractDialogSaleActivity {
         return vips;
     }
 
-    private void serchVip(final String ph_num, int btn_id){
+    private void searchVip(final String ph_num, int btn_id){
         if(ph_num != null && ph_num.length() != 0){
             mProgressDialog.setMessage("正在查询会员...").show();
              CustomApplication.execute(()->{
                 try {
-                    mHandler.obtainMessage(MessageID.QUERY_VIP_INFO_ID,btn_id,0,serchVip(ph_num)).sendToTarget();
+                    mHandler.obtainMessage(MessageID.QUERY_VIP_INFO_ID,btn_id,0, searchVip(ph_num)).sendToTarget();
                 } catch (JSONException e) {
                     e.printStackTrace();
                     mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"查询会员信息错误：" + e.getMessage()).sendToTarget();
@@ -321,7 +321,7 @@ public final class VipInfoDialog extends AbstractDialogSaleActivity {
     }
 
     private static class Myhandler extends Handler {
-        private WeakReference<VipInfoDialog> weakHandler;
+        private final WeakReference<VipInfoDialog> weakHandler;
         private Myhandler(VipInfoDialog dialog){
             this.weakHandler = new WeakReference<>(dialog);
         }
@@ -336,7 +336,7 @@ public final class VipInfoDialog extends AbstractDialogSaleActivity {
                     break;
                 case MessageID.QUERY_VIP_INFO_ID:
                     if (msg.obj instanceof JSONArray){
-                        JSONArray array = (JSONArray)msg.obj;
+                        final JSONArray array = (JSONArray)msg.obj;
                         if (array.size() == 1){
                             dialog.showVipInfo(array.getJSONObject(0));
 

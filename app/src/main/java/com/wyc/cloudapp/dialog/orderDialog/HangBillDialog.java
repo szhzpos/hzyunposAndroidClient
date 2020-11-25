@@ -383,7 +383,7 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
                             progressDialog.setCancel(false).setMessage("正在查询会员信息...").show();
                             CustomApplication.execute(() -> {
                                 try {
-                                    final JSONArray vips = VipInfoDialog.serchVip(card_code);
+                                    final JSONArray vips = VipInfoDialog.searchVip(card_code);
                                     mContext.runOnUiThread(() -> {
                                         if (deleteBill(mCurrentHangId, err)) {
                                             mGetListener.onGet(barcode_ids, vips.getJSONObject(0));

@@ -8,7 +8,7 @@
     android:orientation="vertical">
 
     <EditText
-        android:id="@+id/vip_mobile_cardno"
+        android:id="@+id/m_search_content"
         android:layout_width="match_parent"
         android:layout_height="@dimen/height_45"
         android:layout_marginBottom="@dimen/margin_2"
@@ -230,215 +230,217 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:padding="@dimen/margin_5">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/mobile_vip_charge_item_height"
-            android:background="@drawable/shape_border_gray"
-            android:orientation="horizontal"
-            android:paddingStart="@dimen/margin_5"
-            android:paddingEnd="@dimen/size_0">
-
-            <TextView
-                android:layout_width="@dimen/size_82"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:text="@string/vip_charge_remark_sz"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16" />
-
-            <EditText
-                android:id="@+id/mobile_charge_remark"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:autofillHints=""
-                android:background="@drawable/edit_text_style"
-                android:ems="10"
-                android:inputType="textPersonName"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/mobile_vip_charge_item_height"
-            android:layout_marginTop="@dimen/margin_5"
-            android:background="@drawable/shape_border_gray"
-            android:orientation="horizontal"
-            android:paddingStart="@dimen/margin_5"
-            android:paddingEnd="@dimen/size_0">
-
-            <TextView
-                android:layout_width="@dimen/size_82"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:text="@string/charge_plan_sz"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16" />
-
-            <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
-                android:id="@+id/mobile_charge_plan"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:autofillHints=""
-                android:background="@drawable/edit_text_style"
-                android:ems="10"
-                android:inputType="none|textPersonName"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/mobile_vip_charge_item_height"
-            android:layout_marginTop="@dimen/margin_5"
-            android:background="@drawable/shape_border_gray"
-            android:orientation="horizontal"
-            android:paddingStart="@dimen/margin_5"
-            android:paddingEnd="@dimen/size_0">
-
-            <TextView
-                android:layout_width="@dimen/size_82"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:text="@string/charge_amt__colon_sz"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16" />
-
-            <EditText
-                android:id="@+id/mobile_charge_amt"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:autofillHints=""
-                android:background="@drawable/edit_text_style"
-                android:ems="10"
-                android:inputType="textPersonName|numberDecimal"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/mobile_vip_charge_item_height"
-            android:layout_marginTop="@dimen/margin_5"
-            android:background="@drawable/shape_border_gray"
-            android:orientation="horizontal"
-            android:paddingStart="@dimen/margin_5"
-            android:paddingEnd="@dimen/size_0">
-
-            <TextView
-                android:layout_width="@dimen/size_82"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:text="@string/present_amt_colon_sz"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16" />
-
-            <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
-                android:id="@+id/mobile_present_amt"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:autofillHints=""
-                android:background="@drawable/edit_text_style"
-                android:ems="10"
-                android:enabled="false"
-                android:inputType="none"
-                android:text="@string/zero_p_z_sz"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/mobile_vip_charge_item_height"
-            android:layout_marginTop="@dimen/margin_5"
-            android:background="@drawable/shape_border_gray"
-            android:orientation="horizontal"
-            android:paddingStart="@dimen/margin_5"
-            android:paddingEnd="@dimen/size_0">
-
-            <TextView
-                android:layout_width="@dimen/size_82"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical|end"
-                android:text="@string/sale_man_colon_sz"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16" />
-
-            <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
-                android:id="@+id/mobile_sale_man"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:autofillHints=""
-                android:background="@drawable/edit_text_style"
-                android:ems="10"
-                android:inputType="none|textPersonName"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/mobile_vip_charge_item_height"
-            android:layout_marginTop="@dimen/margin_5"
-            android:background="@drawable/shape_border_gray"
-            android:orientation="horizontal"
-            android:paddingStart="@dimen/margin_5"
-            android:paddingEnd="0dp">
-
-            <TextView
-                android:layout_width="@dimen/size_82"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical|end"
-                android:text="@string/pay_method_name_colon_sz"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16" />
-
-            <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
-                android:id="@+id/mobile_pay_method"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:autofillHints=""
-                android:background="@drawable/edit_text_style"
-                android:ems="10"
-                android:inputType="none|textPersonName"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16" />
-        </LinearLayout>
-
-        <Switch
-            android:id="@+id/switch1"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/margin_18"
-            android:text="@string/print_switch_sz"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16" />
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/mobile_charge_btn"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/height_50"
-            android:layout_margin="@dimen/margin_8"
-            android:background="@drawable/button_blue"
-            android:text="@string/affirm_charge_sz"
-            android:textColor="@color/blue_white"
-            android:textSize="@dimen/font_size_18" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/mobile_vip_charge_item_height"
+                android:layout_marginTop="@dimen/margin_5"
+                android:background="@drawable/shape_border_gray"
+                android:orientation="horizontal"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/size_0">
 
-    </LinearLayout>
+                <TextView
+                    android:layout_width="@dimen/size_82"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="@string/charge_plan_sz"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16" />
+
+                <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+                    android:id="@+id/mobile_charge_plan"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:autofillHints=""
+                    android:background="@drawable/edit_text_style"
+                    android:ems="10"
+                    android:inputType="none|textPersonName"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/mobile_vip_charge_item_height"
+                android:layout_marginTop="@dimen/margin_5"
+                android:background="@drawable/shape_border_gray"
+                android:orientation="horizontal"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/size_0">
+
+                <TextView
+                    android:layout_width="@dimen/size_82"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="@string/charge_amt__colon_sz"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16" />
+
+                <EditText
+                    android:id="@+id/mobile_charge_amt"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:autofillHints=""
+                    android:background="@drawable/edit_text_style"
+                    android:ems="10"
+                    android:inputType="textPersonName|numberDecimal"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/mobile_vip_charge_item_height"
+                android:layout_marginTop="@dimen/margin_5"
+                android:background="@drawable/shape_border_gray"
+                android:orientation="horizontal"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/size_0">
+
+                <TextView
+                    android:layout_width="@dimen/size_82"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="@string/present_amt_colon_sz"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16" />
+
+                <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+                    android:id="@+id/mobile_present_amt"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:autofillHints=""
+                    android:background="@drawable/edit_text_style"
+                    android:ems="10"
+                    android:enabled="false"
+                    android:inputType="none"
+                    android:text="@string/zero_p_z_sz"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/mobile_vip_charge_item_height"
+                android:background="@drawable/shape_border_gray"
+                android:orientation="horizontal"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/size_0">
+
+                <TextView
+                    android:layout_width="@dimen/size_82"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="@string/vip_charge_remark_sz"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16" />
+
+                <EditText
+                    android:id="@+id/mobile_charge_remark"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:autofillHints=""
+                    android:background="@drawable/edit_text_style"
+                    android:ems="10"
+                    android:inputType="textPersonName"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/mobile_vip_charge_item_height"
+                android:layout_marginTop="@dimen/margin_5"
+                android:background="@drawable/shape_border_gray"
+                android:orientation="horizontal"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/size_0">
+
+                <TextView
+                    android:layout_width="@dimen/size_82"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical|end"
+                    android:text="@string/sale_man_colon_sz"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16" />
+
+                <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+                    android:id="@+id/mobile_sale_man"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:autofillHints=""
+                    android:background="@drawable/edit_text_style"
+                    android:ems="10"
+                    android:inputType="none|textPersonName"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/mobile_vip_charge_item_height"
+                android:layout_marginTop="@dimen/margin_5"
+                android:background="@drawable/shape_border_gray"
+                android:orientation="horizontal"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="0dp">
+
+                <TextView
+                    android:layout_width="@dimen/size_82"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical|end"
+                    android:text="@string/pay_method_name_colon_sz"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16" />
+
+                <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+                    android:id="@+id/mobile_pay_method"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:autofillHints=""
+                    android:background="@drawable/edit_text_style"
+                    android:ems="10"
+                    android:inputType="none|textPersonName"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16" />
+            </LinearLayout>
+
+            <Switch
+                android:id="@+id/switch1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/margin_18"
+                android:text="@string/print_switch_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <Button
+                android:id="@+id/mobile_charge_btn"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/height_50"
+                android:layout_margin="@dimen/margin_8"
+                android:background="@drawable/button_blue"
+                android:text="@string/affirm_charge_sz"
+                android:textColor="@color/blue_white"
+                android:textSize="@dimen/font_size_18" />
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

@@ -107,9 +107,9 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
     public void setDatas(int parent_id){
         final StringBuilder err = new StringBuilder();
         if (0 == parent_id)
-            mDatas = SQLiteHelper.getListToJson("select category_id,name from shop_category where parent_id='0' union select -1 category_id,'组合商品' name ",0,0,false,err);
+            mDatas = SQLiteHelper.getListToJson("select category_id,name from shop_category where parent_id='0' and status = 1 union select -1 category_id,'组合商品' name ",0,0,false,err);
         else
-            mDatas = SQLiteHelper.getListToJson("select category_id,name from shop_category where depth = 2 and parent_id=" + parent_id,0,0,false,err);
+            mDatas = SQLiteHelper.getListToJson("select category_id,name from shop_category where depth = 2 and status = 1 and parent_id=" + parent_id,0,0,false,err);
 
         if (mDatas != null){
             this.notifyDataSetChanged();
