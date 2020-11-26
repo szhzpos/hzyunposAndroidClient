@@ -17,7 +17,6 @@ import com.wyc.cloudapp.logger.AndroidLogAdapter;
 import com.wyc.cloudapp.logger.DiskLogAdapter;
 import com.wyc.cloudapp.logger.Logger;
 
-import java.lang.ref.WeakReference;
 import java.util.Vector;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
@@ -214,15 +213,14 @@ public final class CustomApplication extends Application {
 
 
     private static class Myhandler extends Handler {
-        private final WeakReference<CustomApplication> weakHandler;
+        private final CustomApplication app;
         private Myhandler(Looper looper, final CustomApplication application){
             super(looper);
-            this.weakHandler = new WeakReference<>(application);
+            app = application;
         }
+        @Override
         public void handleMessage(@NonNull Message msg) {
-            final CustomApplication application = weakHandler.get();
-            if (null == application)return;
-            if (application.mCallback != null)application.mCallback.handleMessage(this,msg);
+            if (app.mCallback != null)app.mCallback.handleMessage(this,msg);
         }
     }
     public interface MessageCallback{

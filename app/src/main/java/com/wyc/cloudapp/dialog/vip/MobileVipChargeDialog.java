@@ -4,14 +4,12 @@ import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -46,10 +44,9 @@ import java.util.Date;
 import java.util.Locale;
 
 public class MobileVipChargeDialog extends AbstractDialogMainActivity implements MobileCashierActivity.ScanCallback {
-    private View mRoot;
     private JSONObject mVip,mPayMethodSelected;
-    private EditText mSearchContent,mChargeAmtEt,mRemarkEt,mChargePlanEt,mPresentAmtEt,mPayMethodEt;
-    private TextView mVip_name,mVip_sex,mVip_p_num,mVip_card_id,mVip_balance,mVip_integral,mVipGrade,mVipDiscount;
+    private EditText mSearchContent,mChargeAmtEt,mRemarkEt,mPresentAmtEt;
+    private TextView mVip_name,mVip_sex,mVip_p_num,mVip_card_id,mVip_balance,mVip_integral,mVipGrade,mVipDiscount,mChargePlanTv,mSaleManTv;
     private CustomProgressDialog mProgressDialog;
     private JSONArray mChargePlans,mPayMethods;
     private String mPayCode = "";
@@ -67,11 +64,13 @@ public class MobileVipChargeDialog extends AbstractDialogMainActivity implements
         initVipInfoFields();
         initSearchContent();
         initChargeAmt();
+        initPresentAmt();
         initRemark();
         initChargePlan();
         initPayMethod();
         initPrintSwitch();
         initChargeBtn();
+        initSaleMan();
     }
 
     @Override
@@ -82,9 +81,7 @@ public class MobileVipChargeDialog extends AbstractDialogMainActivity implements
     @Override
     protected void initWindowSize(){
         final Window window = getWindow();
-        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        mRoot = window.getDecorView();
-        //mRoot.getViewTreeObserver().addOnGlobalLayoutListener(globalLayoutListener);
+        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
     }
 
 
@@ -92,6 +89,57 @@ public class MobileVipChargeDialog extends AbstractDialogMainActivity implements
     public void callback(String code) {
         mPayCode = code;
         mChargeBtn.callOnClick();
+    }
+
+    private void initSaleMan(){
+        final TextView mobile_sale_man = findViewById(R.id.mobile_sale_man);
+        mobile_sale_man.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final TreeListDialog treeListDialog = new TreeListDialog(mContext,mContext.getString(R.string.sale_man_sz));
+                treeListDialog.setDatas(parse_sale_man(),null,true);
+                mobile_sale_man.post(()->{
+                    if (treeListDialog.exec() == 1){
+                        final JSONObject object = treeListDialog.getSingleContent();
+                        mobile_sale_man.setTag(object.getString("item_id"));
+                        mobile_sale_man.setText(object.getString("item_name"));
+                    }
+                });
+            }
+        });
+        mSaleManTv = mobile_sale_man;
+    }
+
+    private JSONArray parse_sale_man(){
+        final StringBuilder err = new StringBuilder();
+        final JSONArray array = new JSONArray(),
+                sales = SQLiteHelper.getListToJson("SELECT sc_id,sc_name FROM sales_info where stores_id = '" + Utils.getNullStringAsEmpty(mContext.getStoreInfo(),"stores_id") +"' and sc_status = 1",err);
+        JSONObject object = new JSONObject(),tmp;
+
+        object.put("level",0);
+        object.put("unfold",false);
+        object.put("isSel",false);
+        object.put("item_id","-1");
+        object.put("item_name","无营业员");
+
+        array.add(object);
+        if (sales != null){
+            for (int i = 0,size = sales.size();i < size;i++){
+                tmp = sales.getJSONObject(i);
+                final String id = tmp.getString("sc_id");
+                object = new JSONObject();
+                object.put("level",0);
+                object.put("unfold",false);
+                object.put("isSel",false);
+                object.put("item_id",id);
+                object.put("item_name",tmp.getString("sc_name"));
+
+                array.add(object);
+            }
+        }else {
+            MyDialog.ToastMessage("查询营业员错误:" + err,mContext,getWindow());
+        }
+        return array;
     }
 
     private void initVipInfoFields(){
@@ -108,14 +156,10 @@ public class MobileVipChargeDialog extends AbstractDialogMainActivity implements
     @SuppressLint("ClickableViewAccessibility")
     private void initSearchContent(){
         final EditText _search_content = findViewById(R.id.m_search_content);
-        _search_content.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                if (!hasFocus){
-                    final InputMethodManager imm = (InputMethodManager)mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.showSoftInput(view, InputMethodManager.SHOW_FORCED);
-                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                }
+        _search_content.setOnFocusChangeListener((view, hasFocus) -> {
+            if (hasFocus){
+                final InputMethodManager imm = (InputMethodManager)mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(view, InputMethodManager.HIDE_NOT_ALWAYS);
             }
         });
         _search_content.addTextChangedListener(new TextWatcher() {
@@ -148,25 +192,24 @@ public class MobileVipChargeDialog extends AbstractDialogMainActivity implements
             }
             return false;
         });
+        _search_content.postDelayed(_search_content::requestFocus,300);
         mSearchContent = _search_content;
     }
 
     private void searchVip(final String mobile){
         if(mobile != null && mobile.length() != 0){
-            mProgressDialog.setMessage("正在查询会员...").show();
+            mProgressDialog.setMessage("正在查询会员...").refreshMessage().show();
             CustomApplication.execute(()->{
                 try {
                     final JSONArray array = VipInfoDialog.searchVip(mobile);
                     final JSONObject vip = array.getJSONObject(0);
                     loadChargePlan(Utils.getNullStringAsEmpty(vip,"openid"));
-                    mRoot.post(()-> showVipInfo(vip));
+                    mSearchContent.post(()-> showVipInfo(vip));
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    mRoot.post(()->{
-                        MyDialog.ToastMessage(e.getMessage(),mContext,getWindow());
-                    });
+                    mSearchContent.post(()-> MyDialog.ToastMessage(e.getMessage(),mContext,getWindow()));
                 }
-                mRoot.post(()->mProgressDialog.dismiss());
+                mSearchContent.post(()->mProgressDialog.dismiss());
             });
         }else{
             MyDialog.ToastMessage(mSearchContent,mSearchContent.getHint().toString(),mContext,getWindow());
@@ -176,33 +219,28 @@ public class MobileVipChargeDialog extends AbstractDialogMainActivity implements
     private void loadChargePlan(final String openid){
         JSONObject object = new JSONObject(),ret_json;
         final HttpRequest httpRequest = new HttpRequest();
-        if (SQLiteHelper.getLocalParameter("connParam",object)){
-            object.put("appid",object.getString("appId"));
-            object.put("openid",openid);
-            object.put("origin",1);
-            ret_json = httpRequest.sendPost(object.getString("server_url") + "/api/member_recharge/member_recharge", HttpRequest.generate_request_parm(object,object.getString("appSecret")),true);
-            switch (ret_json.getIntValue("flag")){
-                case 0:
-                    throw new JSONException(ret_json.getString("info"));
-                case 1:
-                    ret_json = JSON.parseObject(ret_json.getString("info"));
-                    switch (ret_json.getString("status")){
-                        case "n":
-                            throw new JSONException(ret_json.getString("info"));
-                        case "y":
-                            final JSONObject data = JSON.parseObject(ret_json.getString("data"));
-                            Logger.d_json(data.toString());
-                            mChargePlans = parse_charge_plan_and_set_default(data.getJSONArray("money_list"));
-                            break;
-                    }
-                    break;
-            }
-        }else
-            throw new JSONException(object.getString("info"));
+        object.put("appid",mContext.getAppId());
+        object.put("openid",openid);
+        object.put("origin",1);
+        ret_json = httpRequest.sendPost(mContext.getUrl() + "/api/member_recharge/member_recharge", HttpRequest.generate_request_parm(object,mContext.getAppSecret()),true);
+        switch (ret_json.getIntValue("flag")){
+            case 0:
+                throw new JSONException(ret_json.getString("info"));
+            case 1:
+                ret_json = JSON.parseObject(ret_json.getString("info"));
+                switch (ret_json.getString("status")){
+                    case "n":
+                        throw new JSONException(ret_json.getString("info"));
+                    case "y":
+                        final JSONObject data = JSON.parseObject(ret_json.getString("data"));
+                        mChargePlans = parse_charge_plan_and_set_default(data.getJSONArray("money_list"));
+                        break;
+                }
+                break;
+        }
     }
 
     private void showVipInfo(JSONObject object){
-        Logger.d(object);
         if (null != object){
             mVip = object;
 
@@ -232,17 +270,26 @@ public class MobileVipChargeDialog extends AbstractDialogMainActivity implements
             mVip_balance.setText(space);
             mVip_integral.setText(space);
 
-            clearChargePlan();
+            restChargeInfo();
 
         }
     }
 
-    private void clearChargePlan(){
+    private void restChargeInfo(){
         final CharSequence space = mContext.getText(R.string.space_sz);
-        mChargePlanEt.setText(space);
-        mChargePlanEt.setTag(null);
+
+        mChargePlanTv.setText("自由充值");
+        mChargePlanTv.setTag(-1);
         mChargeAmtEt.setText(R.string.zero_p_z_sz);
+        mChargeAmtEt.setEnabled(true);
+
+        mPresentAmtEt.setEnabled(true);
         mPresentAmtEt.setText(R.string.zero_p_z_sz);
+
+        mSaleManTv.setText(space);
+        mSaleManTv.setTag("-1");
+
+        mRemarkEt.setText(space);
 
         mPayCode = space.toString();
     }
@@ -254,9 +301,12 @@ public class MobileVipChargeDialog extends AbstractDialogMainActivity implements
     private void initRemark(){
         mRemarkEt = findViewById(R.id.mobile_charge_remark);
     }
+    private void initPresentAmt(){
+        mPresentAmtEt = findViewById(R.id.mobile_present_amt);
+    }
 
     private void initChargePlan(){
-        final EditText mobile_charge_plan = findViewById(R.id.mobile_charge_plan);
+        final TextView mobile_charge_plan = findViewById(R.id.mobile_charge_plan);
         mobile_charge_plan.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus){
                 v.callOnClick();
@@ -272,26 +322,28 @@ public class MobileVipChargeDialog extends AbstractDialogMainActivity implements
                 }
             });
         });
-        mChargePlanEt = mobile_charge_plan;
+        mChargePlanTv = mobile_charge_plan;
     }
 
-    private void showChargePlan(@NonNull final JSONObject object,final EditText mobile_charge_plan){
+    private void showChargePlan(@NonNull final JSONObject object,final TextView mobile_charge_plan){
         int item_id = object.getIntValue("item_id");
         final String item_name = object.getString("item_name");
 
         mobile_charge_plan.setText(item_name);
         mobile_charge_plan.setTag(item_id);
 
-        mPresentAmtEt = findViewById(R.id.mobile_present_amt);
         if (item_id != -1){
             mChargeAmtEt.setText(object.getString("money"));
             mChargeAmtEt.setEnabled(false);
+            mPresentAmtEt.setEnabled(false);
             mPresentAmtEt.setText(object.getString("give_money"));
         }else {
             mobile_charge_plan.setText(item_name);
 
             final String zero_p_z_sz = mContext.getString(R.string.zero_p_z_sz);
+            mPresentAmtEt.setEnabled(true);
             mPresentAmtEt.setText(zero_p_z_sz);
+
             mChargeAmtEt.setEnabled(true);
             mChargeAmtEt.setText(zero_p_z_sz);
         }
@@ -308,9 +360,9 @@ public class MobileVipChargeDialog extends AbstractDialogMainActivity implements
         object.put("item_name",default_item_name);
         array.add(object);
 
-        mChargePlanEt.post(()->{
-            mChargePlanEt.setText(default_item_name);
-            mChargeAmtEt.setTag(-1);;
+        mChargePlanTv.post(()->{
+            mChargePlanTv.setText(default_item_name);
+            mChargePlanTv.setTag(-1);;
         });
 
         if (plans != null){
@@ -334,7 +386,7 @@ public class MobileVipChargeDialog extends AbstractDialogMainActivity implements
 
 
     private void initPayMethod(){
-        final EditText mobile_pay_method = findViewById(R.id.mobile_pay_method);
+        final TextView mobile_pay_method = findViewById(R.id.mobile_pay_method);
         final StringBuilder err = new StringBuilder();
         if (mContext.isConnection())
             mPayMethods = SQLiteHelper.getListToJson("select *  from pay_method where status = '1' and support like '%3%' order by sort",err);
@@ -350,17 +402,10 @@ public class MobileVipChargeDialog extends AbstractDialogMainActivity implements
             mobile_pay_method.setOnClickListener(v -> {
                 final String pay_method_name_colon_sz = mContext.getString(R.string.pay_method_name_colon_sz);
                 final TreeListDialog treeListDialog = new TreeListDialog(mContext,pay_method_name_colon_sz.substring(0,pay_method_name_colon_sz.length() - 1));
-                treeListDialog.setDatas(parse_pay_method_and_set_default(mPayMethods),null,true);
+                treeListDialog.setDatas(parse_pay_method(mPayMethods),null,true);
                 mobile_pay_method.post(()->{
                     if (treeListDialog.exec() == 1){
-                        final JSONObject object = treeListDialog.getSingleContent();
-                        final String _id = Utils.getNullStringAsEmpty(object,"item_id");
-                        mobile_pay_method.setTag(_id);
-                        mobile_pay_method.setText(Utils.getNullStringAsEmpty(object,"item_name"));
-
-                        mPayMethodSelected = get_pay_method(_id);
-
-                        launchScan();
+                        set_pay_method_and_check_scan(treeListDialog.getSingleContent(),mobile_pay_method);
                     }
                 });
             });
@@ -373,20 +418,25 @@ public class MobileVipChargeDialog extends AbstractDialogMainActivity implements
         }else{
             MyDialog.ToastMessage(err.toString(),mContext,getWindow());
         }
-
-        mPayMethodEt = mobile_pay_method;
     }
 
-    private void launchScan(){
-        int is_check = mPayMethodSelected.getIntValue("is_check");
-        if (is_check != 2){
-            final Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-            mContext.startActivityForResult(intent, MessageID.PAY_REQUEST_CODE);
-            mContext.setScanCallback(this);
+    private void set_pay_method_and_check_scan(@NonNull final JSONObject object,final TextView mobile_pay_method){
+        final String _id = Utils.getNullStringAsEmpty(object,"item_id");
+        mPayMethodSelected = get_pay_method(_id);
+        if (mPayMethodSelected != null){
+            mobile_pay_method.setTag(_id);
+            mobile_pay_method.setText(Utils.getNullStringAsEmpty(object,"item_name"));
+
+            int is_check = mPayMethodSelected.getIntValue("is_check");
+            if (is_check != 2){
+                final Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+                mContext.startActivityForResult(intent, MessageID.PAY_REQUEST_CODE);
+                mContext.setScanCallback(this);
+            }
         }
     }
 
-    private JSONArray parse_pay_method_and_set_default(final JSONArray methods){
+    private JSONArray parse_pay_method(final JSONArray methods){
         final JSONArray array  = new JSONArray();
         JSONObject object,method;
         if (methods != null){
@@ -428,17 +478,14 @@ public class MobileVipChargeDialog extends AbstractDialogMainActivity implements
 
     private void initChargeBtn(){
         final Button mobile_charge_btn = findViewById(R.id.mobile_charge_btn);
-        mobile_charge_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int is_check = mPayMethodSelected.getIntValue("is_check");
-                if ("".equals(mPayCode) && is_check != 2){
-                    final Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-                    mContext.startActivityForResult(intent, MessageID.PAY_REQUEST_CODE);
-                    mContext.setScanCallback(MobileVipChargeDialog.this);
-                }else
-                    vip_charge();
-            }
+        mobile_charge_btn.setOnClickListener(v -> {
+            int is_check = mPayMethodSelected.getIntValue("is_check");
+            if (is_check != 2 && "".equals(mPayCode)){
+                final Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+                mContext.startActivityForResult(intent, MessageID.PAY_REQUEST_CODE);
+                mContext.setScanCallback(MobileVipChargeDialog.this);
+            }else
+                vip_charge();
         });
 
         mChargeBtn = mobile_charge_btn;
@@ -449,11 +496,39 @@ public class MobileVipChargeDialog extends AbstractDialogMainActivity implements
     }
 
     private boolean verify(){
-        return MyDialog.ToastMessage(null,"会员信息不能为空！",mContext,getWindow(),mVip != null);
+        if (mVip == null){
+            MyDialog.ToastMessage(mVip_card_id,"会员信息不能为空!",mContext,getWindow());
+            return false;
+        }
+        if (checkChargeAmt()){
+            MyDialog.ToastMessage(mChargeAmtEt,"充值金额不能为零!",mContext,getWindow());
+            return false;
+        }
+
+        if (mPayMethodSelected == null){
+            MyDialog.ToastMessage("请选择付款方式!",mContext,getWindow());
+            return false;
+        }
+
+        return true;
     }
+
+    private boolean checkChargeAmt(){
+        double amt = 0.0;
+        if (mChargeAmtEt != null){
+            try {
+                amt =Double.parseDouble(mChargeAmtEt.getText().toString());
+            }catch (NumberFormatException e){
+                e.printStackTrace();
+            }
+        }
+        return Utils.equalDouble(amt,0.0);
+    }
+
     private void showPayError(final String message){
         mChargeAmtEt.post(()-> {
             mProgressDialog.dismiss();
+            if (!"".equals(mPayCode))mPayCode = "";
             MyDialog.displayErrorMessage(null,message,mContext);
         });
     }
@@ -462,14 +537,28 @@ public class MobileVipChargeDialog extends AbstractDialogMainActivity implements
         mChargeAmtEt.post(()->{
             mProgressDialog.dismiss();
             MyDialog.ToastMessage("充值成功！",mContext,getWindow());
-            clearChargePlan();
+            restChargeInfo();
             showVipInfo(member);
         });
     }
 
+    private double getPresentAmt(){
+        double amt = 0.0;
+        try {
+            amt = Double.parseDouble(mPresentAmtEt.getText().toString());
+        }catch (NumberFormatException e){
+            e.printStackTrace();
+        }
+        return amt;
+    }
+
     private void vip_charge(){
         if (verify()){
-            mProgressDialog.setCancel(false).setMessage("正在生成充值订单...").show();
+            mProgressDialog.setCancel(false).setMessage("正在生成充值订单...").refreshMessage().show();
+
+            final String sale_man_id = Utils.getViewTagValue(mSaleManTv,"-1");//获取营业员id
+            final double present_amt = getPresentAmt();
+
             CustomApplication.execute(()->{
                 final HttpRequest httpRequest = new HttpRequest();
                 final JSONObject member_order_info = new JSONObject();
@@ -506,12 +595,18 @@ public class MobileVipChargeDialog extends AbstractDialogMainActivity implements
                     data_.put("stores_id",stores_id);
                     data_.put("member_id",member_id);
                     data_.put("cashier_id",cashier_info.getString("cas_id"));
+                    data_.put("hand_give_money",present_amt);
                     data_.put("order_money",sz_moeny);
+
+                    if (!"-1".equals(sale_man_id))
+                            data_.put("sc_id",sale_man_id);
+
+                    data_.put("xnote","手机充值;" + mRemarkEt.getText().toString());
 
                     String sz_param = HttpRequest.generate_request_parm(data_,appSecret);
 
-                    Logger.i("生成充值订单参数:url:%s%s,param:%s",url ,"/api/member/mk_money_order" ,sz_param);
-                    retJson = httpRequest.sendPost(url + "/api/member/mk_money_order",sz_param,true);
+                    Logger.i("生成充值订单参数:url:%s%s,param:%s",url ,"/api_v2/member/mk_money_order" ,sz_param);
+                    retJson = httpRequest.sendPost(url + "/api_v2/member/mk_money_order",sz_param,true);
                     Logger.i("生成充值订单返回:%s",retJson.toString());
 
                     switch (retJson.getIntValue("flag")) {
@@ -712,46 +807,4 @@ public class MobileVipChargeDialog extends AbstractDialogMainActivity implements
             });
         }
     }
-
-    private final ViewTreeObserver.OnGlobalLayoutListener globalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
-        private int rootViewVisibleHeight;
-        private boolean isShow = true;
-        @Override
-        public void onGlobalLayout() {
-            //获取当前根视图在屏幕上显示的大小
-            final Rect r = new Rect();
-            //获取rootView在窗体的可视区域
-            mRoot.getWindowVisibleDisplayFrame(r);
-            int visibleHeight = r.height();
-            if (rootViewVisibleHeight == 0) {
-                rootViewVisibleHeight = visibleHeight;
-                return;
-            }
-
-            //根视图显示高度没有变化，可以看作软键盘显示／隐藏状态没有改变
-            if (rootViewVisibleHeight == visibleHeight) {
-                return;
-            }
-
-            //根视图显示高度变小超过200，可以看作软键盘显示了
-            if (rootViewVisibleHeight - visibleHeight > 200) {
-                if (mSearchContent != getCurrentFocus()){
-                    mRoot.scrollBy(0,rootViewVisibleHeight - visibleHeight);
-                    isShow = true;
-                }
-                rootViewVisibleHeight = visibleHeight;
-                return;
-            }
-
-            //根视图显示高度变大超过200，可以看作软键盘隐藏了
-            if (visibleHeight - rootViewVisibleHeight > 200) {
-                if (isShow){
-                    mRoot.scrollBy(0,-(visibleHeight - rootViewVisibleHeight));
-                    isShow = false;
-                }
-                rootViewVisibleHeight = visibleHeight;
-            }
-        }
-    };
-
 }

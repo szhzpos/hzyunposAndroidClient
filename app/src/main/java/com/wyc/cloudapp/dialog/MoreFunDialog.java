@@ -137,6 +137,9 @@ public final class MoreFunDialog extends AbstractDialogSaleActivity {
             if (SQLiteHelper.execDelete("goods_group_info",null,null,err) < 0){
                 MyDialog.ToastMessage(err.toString(),mContext,getWindow());
             }
+            if (SQLiteHelper.execDelete("sales_info",null,null,err) < 0){
+                MyDialog.ToastMessage(err.toString(),mContext,getWindow());
+            }
             if (SQLiteHelper.execDelete("promotion_info",null,null,err) < 0){
                 MyDialog.ToastMessage(err.toString(),mContext,getWindow());
             }

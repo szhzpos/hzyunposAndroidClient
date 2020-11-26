@@ -84,6 +84,7 @@ public abstract class AbstractPayDialog extends AbstractDialogMainActivity imple
         return null;
     }
 
+
     @Override
     public MainActivity getPrivateContext() {
         return mContext;
@@ -206,7 +207,8 @@ public abstract class AbstractPayDialog extends AbstractDialogMainActivity imple
     protected void initWindowSize(){
         if (mContext.lessThan7Inches(null)){
             getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        }
+        }else
+            getWindow().setLayout((int) mContext.getResources().getDimension(R.dimen.size_382), ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
 }

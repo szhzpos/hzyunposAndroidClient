@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -36,6 +37,8 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
         mFragmentManager = getSupportFragmentManager();
         mProgressDialog = new CustomProgressDialog(this);
 
@@ -180,26 +183,21 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
         switch (msg.what){
             case MessageID.DIS_ERR_INFO_ID:
             case MessageID.SYNC_ERR_ID://资料同步错误
-                if (mProgressDialog != null && mProgressDialog.isShowing())mProgressDialog.dismiss();
+                if (mProgressDialog.isShowing())mProgressDialog.dismiss();
                 if (msg.obj instanceof String)
                     MyDialog.displayErrorMessage(null,msg.obj.toString(),this);
                 break;
             case MessageID.SYNC_FINISH_ID:
-                if (mProgressDialog != null && mProgressDialog.isShowing())mProgressDialog.dismiss();
+                if (mProgressDialog.isShowing())mProgressDialog.dismiss();
                 CustomApplication.self().start_sync(false);
                 break;
-            case MessageID.TRANSFERSTATUS_ID://传输状态
             case MessageID.NETWORKSTATUS_ID://网络状态
-                if (msg.obj instanceof Boolean){
-
-                }
+                if (msg.obj instanceof Boolean)mApplication.setNetworkStatus((boolean) msg.obj);
                 break;
             case MessageID.SYNC_DIS_INFO_ID://资料同步进度信息
-                if (mProgressDialog != null){
-                    mProgressDialog.setMessage(msg.obj.toString()).refreshMessage();
-                    if (!mProgressDialog.isShowing()) {
-                        mProgressDialog.setCancel(false).show();
-                    }
+                mProgressDialog.setMessage(msg.obj.toString()).refreshMessage();
+                if (!mProgressDialog.isShowing()) {
+                    mProgressDialog.setCancel(false).show();
                 }
                 break;
             case MessageID.START_SYNC_ORDER_INFO_ID:

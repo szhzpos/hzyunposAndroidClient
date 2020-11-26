@@ -782,12 +782,12 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         switch (msg.what){
             case MessageID.DIS_ERR_INFO_ID:
             case MessageID.SYNC_ERR_ID://资料同步错误
-                if (mProgressDialog != null && mProgressDialog.isShowing())mProgressDialog.dismiss();
+                if (mProgressDialog.isShowing())mProgressDialog.dismiss();
                 if (msg.obj instanceof String)
                     MyDialog.displayErrorMessage(null,msg.obj.toString(),this);
                 break;
             case MessageID.SYNC_FINISH_ID:
-                if (mProgressDialog != null && mProgressDialog.isShowing())mProgressDialog.dismiss();
+                if (mProgressDialog.isShowing())mProgressDialog.dismiss();
                 mApplication.start_sync(false);
                 break;
             case MessageID.TRANSFERSTATUS_ID://传输状态
@@ -826,11 +826,9 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                 }
                 break;
             case MessageID.SYNC_DIS_INFO_ID://资料同步进度信息
-                if (mProgressDialog != null){
-                    mProgressDialog.setMessage(msg.obj.toString()).refreshMessage();
-                    if (!mProgressDialog.isShowing()) {
-                        mProgressDialog.setCancel(false).show();
-                    }
+                mProgressDialog.setMessage(msg.obj.toString()).refreshMessage();
+                if (!mProgressDialog.isShowing()) {
+                    mProgressDialog.setCancel(false).show();
                 }
                 break;
             case MessageID.START_SYNC_ORDER_INFO_ID:

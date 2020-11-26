@@ -71,7 +71,12 @@ public abstract class AbstractMobileFragment extends Fragment {
             final int v_id = v.getId();
             try {
                 if (v_id == R.id.data_exchange_tv){
-                    CustomApplication.self().manualSync();
+                    final CustomApplication app = CustomApplication.self();
+                    if (app.isConnection()){
+                        app.manualSync();
+                    }else {
+                        MyDialog.ToastMessage("网络异常不允许同步!",context,null);
+                    }
                 }else if (v_id ==R.id.fd_shift_exchange_tv){
                     final Activity activity = getActivity();
                     if (activity instanceof MobileNavigationActivity){

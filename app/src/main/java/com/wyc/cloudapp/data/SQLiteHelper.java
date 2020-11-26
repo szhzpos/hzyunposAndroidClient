@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.os.Environment;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -18,23 +19,18 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -52,9 +48,9 @@ import static android.database.Cursor.FIELD_TYPE_STRING;
 
 public final class SQLiteHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/order.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static SQLiteDatabase mDb;
-    private Context mContext;
+    private final Context mContext;
     private SQLiteHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         Logger.d("DATABASE_NAME:%s",DATABASE_NAME);
@@ -71,8 +67,31 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         onUpgrade(db,0,0);
     }
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase,int oldVersion, int newVersion) {
+    public void onUpgrade(SQLiteDatabase db,int oldVersion, int newVersion) {
+        final List<String> update = new ArrayList<>();
+        final String sales_info_sql = "CREATE TABLE IF NOT EXISTS sales_info (\n" +
+                "    sc_id      VARCHAR PRIMARY KEY,\n" +
+                "    sc_name    VARCHAR,\n" +
+                "    sc_phone   VARCHAR,\n" +
+                "    stores_id  INTEGER,\n" +
+                "    tc_mode    INTEGER,\n" +
+                "    is_tc      CHAR,\n" +
+                "    tc_rate    NUMERIC,\n" +
+                "    sc_status  INTEGER,\n" +
+                "    appids     VARCHAR,\n" +
+                "    sc_addtime INTEGER\n" +
+                ");";
 
+        update.add(sales_info_sql);
+        try {
+            db.beginTransaction();
+            for (String sql : update) {
+                db.execSQL(sql);
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
     }
 
     @Override

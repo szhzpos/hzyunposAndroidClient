@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@drawable/round_shape"
     android:orientation="vertical">
 
     <EditText
@@ -15,11 +15,12 @@
         android:background="@drawable/border_sub_gray"
         android:drawableEnd="@drawable/r_card"
         android:ems="10"
-        android:focusable="auto"
+        android:focusable="true"
         android:hint="@string/vip_search_hint_sz"
         android:importantForAutofill="no"
         android:inputType="textPersonName"
         android:padding="@dimen/margin_5"
+        android:selectAllOnFocus="true"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_18" />
 
@@ -232,7 +233,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -256,7 +258,7 @@
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/font_size_16" />
 
-                <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+                <TextView
                     android:id="@+id/mobile_charge_plan"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -264,8 +266,7 @@
                     android:autofillHints=""
                     android:background="@drawable/edit_text_style"
                     android:ems="10"
-                    app:onFocusTime = "0"
-                    android:inputType="none|textPersonName"
+                    android:gravity="center_vertical"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/font_size_16" />
             </LinearLayout>
@@ -327,8 +328,8 @@
                     android:autofillHints=""
                     android:background="@drawable/edit_text_style"
                     android:ems="10"
-                    android:enabled="false"
-                    android:inputType="none"
+                    android:inputType="numberDecimal"
+                    android:selectAllOnFocus="true"
                     android:text="@string/zero_p_z_sz"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/font_size_16" />
@@ -337,6 +338,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/mobile_vip_charge_item_height"
+                android:layout_marginTop="@dimen/margin_5"
                 android:background="@drawable/shape_border_gray"
                 android:orientation="horizontal"
                 android:paddingStart="@dimen/margin_5"
@@ -380,16 +382,14 @@
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/font_size_16" />
 
-                <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+                <TextView
                     android:id="@+id/mobile_sale_man"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:autofillHints=""
                     android:background="@drawable/edit_text_style"
-                    android:ems="10"
-                    app:onFocusTime="0"
-                    android:inputType="none|textPersonName"
+                    android:gravity="center_vertical"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/font_size_16" />
             </LinearLayout>
@@ -411,7 +411,7 @@
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/font_size_16" />
 
-                <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+                <TextView
                     android:id="@+id/mobile_pay_method"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
@@ -419,7 +419,7 @@
                     android:autofillHints=""
                     android:background="@drawable/edit_text_style"
                     android:ems="10"
-                    app:onFocusTime="0"
+                    android:gravity="center_vertical"
                     android:inputType="none|textPersonName"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/font_size_16" />
@@ -435,17 +435,18 @@
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_16" />
 
-            <Button
-                android:id="@+id/mobile_charge_btn"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/height_50"
-                android:layout_margin="@dimen/margin_8"
-                android:background="@drawable/button_blue"
-                android:text="@string/affirm_charge_sz"
-                android:textColor="@color/blue_white"
-                android:textSize="@dimen/font_size_18" />
         </LinearLayout>
     </ScrollView>
+
+    <Button
+        android:id="@+id/mobile_charge_btn"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_50"
+        android:layout_margin="@dimen/margin_8"
+        android:background="@drawable/button_blue"
+        android:text="@string/affirm_charge_sz"
+        android:textColor="@color/blue_white"
+        android:textSize="@dimen/font_size_18" />
 
 </LinearLayout>
