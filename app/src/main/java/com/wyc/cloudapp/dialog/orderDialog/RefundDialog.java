@@ -47,11 +47,12 @@ public final class RefundDialog extends AbstractDialogMainActivity {
     private EditText mRemarkEt,mOrderCodeEt;
     private JSONObject mVipInfo;
     private Button mQueryBtn, mRefundBtn,mRemarkBtn;
-    private boolean isRefundCheck;
+    private boolean isRefundCheck,lessThan7Inches;
     private int mRefundType = 1;//退货类型（1全部退货，2部分退货,3 单品退货,4 无货可退，用于隐藏按钮）
     public RefundDialog(@NonNull MainActivity context, final String order_code) {
         super(context, context.getString(R.string.refund_dialog_title_sz));
         mOrderCode = order_code;
+        lessThan7Inches = context.lessThan7Inches(null);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -192,7 +193,7 @@ public final class RefundDialog extends AbstractDialogMainActivity {
                     updateRefundBtnStatusAndSetRefundType(refund_type);
                 }
             });
-            mRefundDialogAdapter.setmRefundPayDataChange(datas -> {
+            mRefundDialogAdapter.setRefundPayDataChange(datas -> {
                 double pay_sum_amt = 0.0,refund_sum_amt = mRefundDialogAdapter.getRefundAmt();
                 for (int i = 0,size = datas.size();i < size;i++){
                     pay_sum_amt += datas.getJSONObject(i).getDoubleValue("pay_money");

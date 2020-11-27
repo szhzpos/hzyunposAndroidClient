@@ -26,6 +26,8 @@ public class SaleActivity extends MainActivity{
             mSaleGoodsAdapter = new NormalSaleGoodsAdapter(this);
     }
 
+    protected void addSaleGoods(final @NonNull JSONObject jsonObject){}
+
     public boolean allDiscount(double v){
         return mSaleGoodsAdapter.allDiscount(v);
     }
@@ -99,14 +101,15 @@ public class SaleActivity extends MainActivity{
         if (mVipInfo != null)mVipInfo = null;
     }
 
-    public void setSingle(boolean b){
-        if (mSaleGoodsAdapter != null) mSaleGoodsAdapter.setSingle(b);
+    @Override
+    public void setSingleRefundStatus(boolean b){
+        if (mSaleGoodsAdapter != null) mSaleGoodsAdapter.setSingleRefundStatus(b);
         if (b)resetOrderCode();
     }
 
     @Override
-    public boolean getSingle(){
-        return mSaleGoodsAdapter != null && mSaleGoodsAdapter.getSingle();
+    public boolean getSingleRefundStatus(){
+        return mSaleGoodsAdapter != null && mSaleGoodsAdapter.getSingleRefundStatus();
     }
 
     public boolean present(){
@@ -123,7 +126,7 @@ public class SaleActivity extends MainActivity{
         if (mSaleGoodsAdapter != null) mSaleGoodsAdapter.clearGoods();
         mPermissionCashierId = "";
         clearVipInfo();
-        setSingle(false);
+        setSingleRefundStatus(false);
         resetOrderCode();
     }
     public boolean clearSaleGoods(){
@@ -159,7 +162,6 @@ public class SaleActivity extends MainActivity{
 
     }
     public void loadGoods(final String id){}
-    public void addSaleGoods(final @NonNull JSONObject jsonObject){}
     public void adjustPriceRefreshGoodsInfo(final JSONArray array){}
     public void showAdjustPriceDialog(){}
     public String getOrderCode(){ return "";}

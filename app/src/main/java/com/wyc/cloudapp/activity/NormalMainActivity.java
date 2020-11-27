@@ -285,7 +285,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                 if (!mSaleGoodsAdapter.isEmpty()){
                     clearSaleGoods();
                 }else {
-                    if (getSingle())resetOrderInfo();
+                    if (getSingleRefundStatus())resetOrderInfo();
                 }
             });
         }
@@ -358,9 +358,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(this,GoodsInfoViewAdapter.SPAN_COUNT);
         goods_info_view.setLayoutManager(gridLayoutManager);
         SuperItemDecoration.registerGlobalLayoutToRecyclerView(goods_info_view,getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration(-1));
-        mGoodsInfoViewAdapter.setOnItemClickListener(object -> {
-            if (object != null)addSaleGoods(object);
-        });
+        mGoodsInfoViewAdapter.setOnGoodsSelectListener(this::addSaleGoods);
         goods_info_view.setAdapter(mGoodsInfoViewAdapter);
     }
     private void initGoodsCategoryAdapter(){
@@ -643,7 +641,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
             MyDialog.ToastMessage(mSaleGoodsRecyclerView,"调价模式不允许收款操作!",this,null);
         }else {
             if (!mSaleGoodsAdapter.isEmpty()){
-                if (!getSingle()){
+                if (!getSingleRefundStatus()){
                     final PayDialog dialog = new PayDialog(this,getString(R.string.affirm_pay_sz));
                     dialog.initPayContent();
                     if (mVipInfo != null)dialog.setVipInfo(mVipInfo,true);
@@ -744,12 +742,12 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
             }
         }
     }
+
     @Override
-    public void addSaleGoods(final @NonNull JSONObject jsonObject){
+    protected void addSaleGoods(final @NonNull JSONObject jsonObject){
         final JSONObject content = new JSONObject();
-        final String id = mGoodsInfoViewAdapter.getGoodsId(jsonObject);
         final String weigh_barcode_info = (String) jsonObject.remove(GoodsInfoViewAdapter.W_G_MARK);//删除称重标志否则重新选择商品时不弹出称重界面
-        if (mGoodsInfoViewAdapter.getSingleGoods(content,weigh_barcode_info,id)){
+        if (mGoodsInfoViewAdapter.getSingleGoods(content,weigh_barcode_info,mGoodsInfoViewAdapter.getGoodsId(jsonObject))){
             hideLastOrderInfo();
             mSaleGoodsAdapter.addSaleGoods(content);
         }else{

@@ -98,6 +98,7 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
             }else if (isClickView(sale_refund_tv,event.getX(),event.getY())){
                 sale_refund_tv.post(()->{
                     if (RefundDialog.verifyRefundPermission(mContext)){
+                        if (mContext.getSingleRefundStatus())mContext.setSingleRefundStatus(false);
                         final RefundDialog refundDialog = new RefundDialog(mContext,order_code_tv.getText().toString());
                         refundDialog.show();
                         mDialog.dismiss();

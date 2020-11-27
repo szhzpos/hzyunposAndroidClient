@@ -35,18 +35,18 @@ public final class RefundDialogAdapter extends RecyclerView.Adapter<RefundDialog
     private onRefundPayDataChange mRefundPayDataChange;
     private JSONObject mVipInfo;
     private DigitKeyboardPopup mDigitKeyboardPopup;
-    private boolean mSingleRefundStatus;
+    private final boolean mSingleRefundStatus;
     public RefundDialogAdapter(AbstractDialogMainActivity dialog){
         mDialog = dialog;
         mContext = dialog.getPrivateContext();
         mDigitKeyboardPopup = new DigitKeyboardPopup(mContext);
-        mSingleRefundStatus = mContext.getSingle();
+        mSingleRefundStatus = mContext.getSingleRefundStatus();
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
-        private TextView row_id,rog_id_tv,barcode_id_tv,barcode_tv,goods_title_tv,unit_name_tv,price_tv,num_tv,returnable_num_tv;
-        private EditText cur_refund_num_et,cur_refund_amt_et;
-        private CheckBox sel_status_cb;
+        private final TextView row_id,rog_id_tv,barcode_id_tv,barcode_tv,goods_title_tv,unit_name_tv,price_tv,num_tv,returnable_num_tv;
+        private final EditText cur_refund_num_et,cur_refund_amt_et;
+        private final CheckBox sel_status_cb;
         View mCurrentLayoutItemView;
         private TextWatcher mTextWatcher;
         MyViewHolder(View itemView) {
@@ -203,7 +203,7 @@ public final class RefundDialogAdapter extends RecyclerView.Adapter<RefundDialog
                     if (null != record){
                         if (barcode_id.equals(record.getString("barcode_id")) && rog_id.equals(record.getString("rog_id"))){
                             record.put("refund_num",num);
-                            if (mRefundGoodsDataChange != null && mGoodsDatas != null){
+                            if (mRefundGoodsDataChange != null){
                                 mRefundGoodsDataChange.onChange(mGoodsDatas);
                             }
                             break;
@@ -223,7 +223,7 @@ public final class RefundDialogAdapter extends RecyclerView.Adapter<RefundDialog
     public void setRefundDataChange(onRefundGoodsDataChange dataChange){
         mRefundGoodsDataChange = dataChange;
     }
-    public void setmRefundPayDataChange(onRefundPayDataChange dataChange){
+    public void setRefundPayDataChange(onRefundPayDataChange dataChange){
         mRefundPayDataChange = dataChange;
     }
 

@@ -64,7 +64,7 @@ public final class MoreFunDialog extends AbstractDialogSaleActivity {
         final Button btn = findViewById(R.id.single_refund_btn);
         btn.setOnClickListener(v -> {
             if (RefundDialog.verifyRefundPermission(mContext)){
-                mContext.setSingle(true);
+                mContext.setSingleRefundStatus(true);
                 this.dismiss();
             }
         });
@@ -73,7 +73,7 @@ public final class MoreFunDialog extends AbstractDialogSaleActivity {
     private void initAllRefundBtn(){
         final Button btn = findViewById(R.id.all_refund_btn);
         btn.setOnClickListener(v -> {
-            mContext.setSingle(false);
+            mContext.setSingleRefundStatus(false);
             final RefundDialog dialog = new RefundDialog(mContext,null);
             dialog.show();
             this.dismiss();

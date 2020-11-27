@@ -1189,11 +1189,11 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
             mDatas = new JSONArray();
     }
 
-    public void setSingle(final boolean b){
+    public void setSingleRefundStatus(final boolean b){
         mSingleRefundStatus = b;
         notifyDataSetChanged();
     }
-    public boolean getSingle(){
+    public boolean getSingleRefundStatus(){
         return mSingleRefundStatus;
     }
     public boolean isEmpty(){

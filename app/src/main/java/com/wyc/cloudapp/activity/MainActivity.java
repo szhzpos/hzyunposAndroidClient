@@ -256,9 +256,11 @@ public abstract class MainActivity extends AppCompatActivity {
     public JSONArray getSaleData(){
         return new JSONArray();
     }
-    public boolean getSingle(){
+    public boolean getSingleRefundStatus(){
         return false;
     }
+    public void setSingleRefundStatus(boolean b){};
+
     public void resetOrderInfo(){};
 
     public interface ScanCallback{

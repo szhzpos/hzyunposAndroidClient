@@ -203,6 +203,7 @@ public class MobileVipChargeDialog extends AbstractDialogMainActivity implements
                 try {
                     final JSONArray array = VipInfoDialog.searchVip(mobile);
                     final JSONObject vip = array.getJSONObject(0);
+                    Logger.d(vip);
                     loadChargePlan(Utils.getNullStringAsEmpty(vip,"openid"));
                     mSearchContent.post(()-> showVipInfo(vip));
                 } catch (JSONException e) {
@@ -500,8 +501,11 @@ public class MobileVipChargeDialog extends AbstractDialogMainActivity implements
             MyDialog.ToastMessage(mVip_card_id,"会员信息不能为空!",mContext,getWindow());
             return false;
         }
-        if (checkChargeAmt()){
+        if (checkChargeAmtEqualZero()){
             MyDialog.ToastMessage(mChargeAmtEt,"充值金额不能为零!",mContext,getWindow());
+            return false;
+        }else if (checkMinChargeAmt()){
+            MyDialog.ToastMessage(mChargeAmtEt,String.format(Locale.CHINA,"本会员级别最小充值金额:%.2f",Utils.getNotKeyAsNumberDefault(mVip,"min_recharge_money",0.0)),mContext,getWindow());
             return false;
         }
 
@@ -513,7 +517,7 @@ public class MobileVipChargeDialog extends AbstractDialogMainActivity implements
         return true;
     }
 
-    private boolean checkChargeAmt(){
+    private boolean checkChargeAmtEqualZero(){
         double amt = 0.0;
         if (mChargeAmtEt != null){
             try {
@@ -524,6 +528,20 @@ public class MobileVipChargeDialog extends AbstractDialogMainActivity implements
         }
         return Utils.equalDouble(amt,0.0);
     }
+
+    private boolean checkMinChargeAmt(){
+        double amt = 0.0,min_recharge_money = 0.0;
+        if (mChargeAmtEt != null){
+            try {
+                amt =Double.parseDouble(mChargeAmtEt.getText().toString());
+                min_recharge_money = Utils.getNotKeyAsNumberDefault(mVip,"min_recharge_money",0.0);
+            }catch (NumberFormatException e){
+                e.printStackTrace();
+            }
+        }
+        return amt < min_recharge_money;
+    }
+
 
     private void showPayError(final String message){
         mChargeAmtEt.post(()-> {

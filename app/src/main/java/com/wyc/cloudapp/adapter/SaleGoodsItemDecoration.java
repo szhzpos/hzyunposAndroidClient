@@ -20,7 +20,7 @@ public class SaleGoodsItemDecoration extends SuperItemDecoration {
         super.onDrawOver(c, parent, state);
         final AbstractSaleGoodsAdapter adapter = (AbstractSaleGoodsAdapter) parent.getAdapter();
         final Context context = parent.getContext();
-        if (adapter != null && adapter.getSingle()){
+        if (adapter != null && adapter.getSingleRefundStatus()){
             final Paint paint = new Paint();
             paint.setAntiAlias(true);
             paint.setColor(Color.RED);

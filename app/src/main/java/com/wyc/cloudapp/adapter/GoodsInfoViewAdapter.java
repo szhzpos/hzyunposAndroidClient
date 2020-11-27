@@ -33,10 +33,10 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     public static final String W_G_MARK = "IWG";//计重、计份并且通过扫条码选择的商品标志
     private final SaleActivity mContext;
     private JSONArray mDatas;
-    private OnItemClickListener mOnItemClickListener;
+    private OnGoodsSelectListener mSelectListener;
     private boolean mShowPic = true;
     private View mCurrentItemView;
-    private boolean mPriceAdjustMode, mFuzzySearchAutoSelected = false;
+    private boolean mPriceAdjustMode;
     public GoodsInfoViewAdapter(final SaleActivity context){
         this.mContext = context;
         final JSONObject jsonObject = new JSONObject();
@@ -51,7 +51,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     public void onClick(View v) {
         set_selected_status(v);
         Utils.disableView(v,300);
-        mOnItemClickListener.onClick(getSelectGoodsByIndex());
+        if (mSelectListener != null)mSelectListener.onSelect(getSelectGoodsByIndex());
     }
 
     final static class SALE_TYPE{
@@ -80,8 +80,8 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View itemView = View.inflate(mContext, R.layout.goods_info_content_layout, null);
-        RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.goods_height));
+        final View itemView = View.inflate(mContext, R.layout.goods_info_content_layout, null);
+        final RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.goods_height));
         itemView.setLayoutParams(lp);
         return new MyViewHolder(itemView);
     }
@@ -104,7 +104,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
                     goods_img.setImageDrawable(mContext.getDrawable(R.drawable.nodish));
                 }
             }else{
-                if (goods_img.isShown())goods_img.setVisibility(View.GONE);
+                 if (goods_img.getVisibility() != View.GONE)goods_img.setVisibility(View.GONE);
             }
             myViewHolder.goods_id.setText(goods_info.getString("goods_id"));
             myViewHolder.gp_id.setText(goods_info.getString("gp_id"));
@@ -120,9 +120,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
                 goods_title.setTextColor(mContext.getColor(R.color.good_name_color));//需要重新设置颜色；不然重用之后内容颜色为重用之前的。
             }
 
-            if (mOnItemClickListener != null){
-                myViewHolder.mCurrentItemView.setOnClickListener(this);
-            }
+            myViewHolder.mCurrentItemView.setOnClickListener(this);
         }
     }
 
@@ -202,8 +200,6 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     }
 
     public boolean fuzzy_search_goods(@NonNull final String search_content,boolean autoSelect){
-        mFuzzySearchAutoSelected = false;
-
         boolean code = false;
         final StringBuilder err = new StringBuilder();
         final ContentValues barcodeRuleObj = new ContentValues();
@@ -238,8 +234,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         if (array != null){
             if (code = !array.isEmpty()){
                 if (autoSelect && array.size() == 1){
-                    mContext.addSaleGoods(array.getJSONObject(0));
-                    mFuzzySearchAutoSelected = true;
+                    if (mSelectListener != null)mSelectListener.onSelect(array.getJSONObject(0));
                 }else {
                     mDatas = array;
                     notifyDataSetChanged();
@@ -251,8 +246,12 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         return code;
     }
 
-    public boolean isAutoSelect(){
-        return mFuzzySearchAutoSelected;
+    public interface OnGoodsSelectListener {
+        void onSelect(final JSONObject object);
+    }
+
+    public void setOnGoodsSelectListener(OnGoodsSelectListener listener) {
+        mSelectListener = listener;
     }
 
     public boolean getSingleGoods(@NonNull JSONObject object, final String weigh_barcode_info, final String id){
@@ -377,14 +376,6 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
             object.put("info",barcodeRuleObj.getAsString("info"));
         }
         return code;
-    }
-
-    public interface OnItemClickListener{
-        void onClick(final JSONObject object);
-    }
-
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener){
-        this.mOnItemClickListener = onItemClickListener;
     }
 
     public String getGoodsId(final JSONObject jsonObject){

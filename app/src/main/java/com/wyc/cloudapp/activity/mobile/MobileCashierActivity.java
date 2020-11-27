@@ -51,6 +51,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
     private String mOrderCode = "";
     private ScanCallback mScanCallback;
     private TextView mSaleSumAmtTv;
+    private boolean isScan,isSelected;//协助完成界面切换，当isScan为true，isSelected为false的时候需要切换。
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,7 +111,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
         }else if (id == R.id.mobile_present_btn){
             present();
         }else if (id == R.id.mobile_refund_btn){
-            setSingle(true);
+            setSingleRefundStatus(true);
         }
     }
     private void hangOrder(final View btn){
@@ -176,7 +177,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
         btn.setOnClickListener(v -> {
             Utils.disableView(v,500);
             if (!mSaleGoodsAdapter.isEmpty()){
-                if (!getSingle()){
+                if (!getSingleRefundStatus()){
                     final PayDialog dialog = new PayDialog(this,getString(R.string.affirm_pay_sz));
                     dialog.initPayContent();
                     if (mVipInfo != null)dialog.setVipInfo(mVipInfo,true);
@@ -201,9 +202,15 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(this,GoodsInfoViewAdapter.MOBILE_SPAN_COUNT);
         goods_info_view.setLayoutManager(gridLayoutManager);
         SuperItemDecoration.registerGlobalLayoutToRecyclerView(goods_info_view,getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration(-1));
-        mGoodsInfoViewAdapter.setOnItemClickListener(object -> {
-            if (object != null)addSaleGoods(object);
+        mGoodsInfoViewAdapter.setOnGoodsSelectListener(object -> {
+            if (mMobileSearchGoods != null && mMobileSearchGoods.getVisibility() == View.VISIBLE){
+                mMobileSearchGoods.getText().clear();
+                switchView();
+            }
+            if (isScan)isSelected = true;
+            addSaleGoods(object);
         });
+
         goods_info_view.setAdapter(mGoodsInfoViewAdapter);
     }
 
@@ -305,30 +312,16 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
 
     private void selectGoodsWithSearchContent(final String content){
         if (null != content && content.length() != 0){
+            isScan = true;
+
             final EditText search = mSearchContent;
             search.setText(content);
             search.selectAll();
-            if (!mGoodsInfoViewAdapter.fuzzy_search_goods(content,true)) {
-                search.post(()->{
-                    if (mApplication.isConnection() && AddGoodsInfoDialog.verifyGoodsAddPermissions(this)) {
-                        if (1 == MyDialog.showMessageToModalDialog(this,"未找到匹配商品，是否新增?")){
-                            final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(this);
-                            addGoodsInfoDialog.setBarcode(search.getText().toString());
-                            addGoodsInfoDialog.setFinishListener(barcode -> {
-                                mGoodsInfoViewAdapter.fuzzy_search_goods(content,true);
-                                addGoodsInfoDialog.dismiss();
-                            });
-                            addGoodsInfoDialog.show();
-                        }
-                    } else
-                        MyDialog.ToastMessage("无此商品!", this, getWindow());
-                });
-            } else if (mGoodsInfoViewAdapter.getItemCount() > 1){
-                if (!mGoodsInfoViewAdapter.isAutoSelect()){
+            if (_search_goods(content)){
+                if (isScan && !isSelected){
+                    isScan = false;
                     switchView();
-                    mMobileSearchGoods.setText(content);
-                    mMobileSearchGoods.requestFocus();
-                }
+                }else isSelected = false;
             }
         }
     }
@@ -338,23 +331,29 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
         final String content = search.getText().toString();
         if (content.length() != 0){
             search.selectAll();
-            if (!mGoodsInfoViewAdapter.fuzzy_search_goods(content,true)) {
-                search.post(()->{
-                    if (mApplication.isConnection() && AddGoodsInfoDialog.verifyGoodsAddPermissions(this)) {
-                        if (1 == MyDialog.showMessageToModalDialog(this,"未找到匹配商品，是否新增?")){
-                            final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(this);
-                            addGoodsInfoDialog.setBarcode(search.getText().toString());
-                            addGoodsInfoDialog.setFinishListener(barcode -> {
-                                mGoodsInfoViewAdapter.fuzzy_search_goods(content,true);
-                                addGoodsInfoDialog.dismiss();
-                            });
-                            addGoodsInfoDialog.show();
-                        }
-                    } else
-                        MyDialog.ToastMessage("无此商品!", this, getWindow());
-                });
-            }
+            _search_goods(content);
         }
+    }
+
+    private boolean _search_goods(final String content){
+        if (!mGoodsInfoViewAdapter.fuzzy_search_goods(content,true)) {
+            mSearchContent.post(()->{
+                if (mApplication.isConnection() && AddGoodsInfoDialog.verifyGoodsAddPermissions(this)) {
+                    if (1 == MyDialog.showMessageToModalDialog(this,"未找到匹配商品，是否新增?")){
+                        final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(this);
+                        addGoodsInfoDialog.setBarcode(content);
+                        addGoodsInfoDialog.setFinishListener(barcode -> {
+                            mGoodsInfoViewAdapter.fuzzy_search_goods(content,true);
+                            addGoodsInfoDialog.dismiss();
+                        });
+                        addGoodsInfoDialog.show();
+                    }
+                } else
+                    MyDialog.ToastMessage("无此商品!", this, getWindow());
+            });
+            return false;
+        }
+        return true;
     }
 
     private void initBasketView(){
@@ -378,7 +377,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
         if (!mSaleGoodsAdapter.isEmpty()){
             clearSaleGoods();
         }else {
-            if (getSingle())resetOrderInfo();
+            if (getSingleRefundStatus())resetOrderInfo();
         }
     }
 
@@ -429,15 +428,11 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
     public void loadGoods(final String id){
         mGoodsInfoViewAdapter.loadGoodsByCategoryId(id);
     }
+
     @Override
-    public void addSaleGoods(final @NonNull JSONObject jsonObject){
+    protected void addSaleGoods(final @NonNull JSONObject jsonObject){
         final JSONObject content = new JSONObject();
-        final String id = mGoodsInfoViewAdapter.getGoodsId(jsonObject);
-        if (mGoodsInfoViewAdapter.getSingleGoods(content,null,id)){
-            if (mMobileSearchGoods != null && mMobileSearchGoods.getVisibility() == View.VISIBLE){
-                mMobileSearchGoods.getText().clear();
-                switchView();
-            }
+        if (mGoodsInfoViewAdapter.getSingleGoods(content,null,mGoodsInfoViewAdapter.getGoodsId(jsonObject))){
             mSaleGoodsAdapter.addSaleGoods(content);
         }else{
             MyDialog.ToastMessage("选择商品错误：" + content.getString("info"),this,null);
