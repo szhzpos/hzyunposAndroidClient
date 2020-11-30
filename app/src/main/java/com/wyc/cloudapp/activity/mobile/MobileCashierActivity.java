@@ -1,6 +1,7 @@
 package com.wyc.cloudapp.activity.mobile;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ReplacementTransformationMethod;
@@ -64,7 +65,6 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
         initGoodsCategoryAdapter();
         initSaleGoodsAdapter();
 
-        initTitle();
         initBasketView();
         initSearchContent();
         initCheckout();
@@ -74,6 +74,8 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
         resetOrderInfo();
 
         initOtherFunction();
+
+        initTitle();
     }
 
     private void initOtherFunction(){
@@ -111,7 +113,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
         }else if (id == R.id.mobile_present_btn){
             present();
         }else if (id == R.id.mobile_refund_btn){
-            setSingleRefundStatus(true);
+            setAllRefundStatusView(null,true);
         }
     }
     private void hangOrder(final View btn){
@@ -370,15 +372,52 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
         final Intent intent = getIntent();
         middle.setText(intent.getStringExtra("title"));
 
-        right.setText(R.string.clear_sz);
-        right.setVisibility(View.INVISIBLE);
+        boolean singleRefundStatus = intent.getBooleanExtra("singleRefundStatus",false);
+        if (singleRefundStatus){
+            setAllRefundStatusView(right,true);
+        }else {
+            right.setText(R.string.clear_sz);
+            right.setVisibility(View.INVISIBLE);
+        }
     }
+
+    public void setAllRefundStatusView(TextView view,boolean b){
+        setSingleRefundStatus(b);
+        if (null == view)view = findViewById(R.id.right_title_tv);
+        if (b){
+            view.setVisibility(View.VISIBLE);
+            view.setText(R.string.all_refund_sz);
+            view.setOnClickListener(v -> {
+                setSingleRefundStatus(false);
+                final RefundDialog refundDialog = new RefundDialog(this,null);
+                refundDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        setSingleRefundStatus(true);
+                        mSearchContent.postDelayed(()->{mSearchContent.clearFocus();mSearchContent.requestFocus();},100);
+                    }
+                });
+                refundDialog.show();
+            });
+        }else {
+            view.setVisibility(View.INVISIBLE);
+            view.setText(R.string.space_sz);
+            view.setOnClickListener(null);
+        }
+    }
+
     private void clear(){
         if (!mSaleGoodsAdapter.isEmpty()){
             clearSaleGoods();
         }else {
             if (getSingleRefundStatus())resetOrderInfo();
         }
+    }
+
+    @Override
+    public void resetOrderInfo(){
+        super.resetOrderInfo();
+        setAllRefundStatusView(null,false);
     }
 
     @Override

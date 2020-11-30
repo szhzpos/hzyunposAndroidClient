@@ -265,6 +265,7 @@
                     android:layout_weight="1"
                     android:autofillHints=""
                     android:background="@drawable/edit_text_style"
+                    android:drawableEnd="@drawable/content"
                     android:ems="10"
                     android:gravity="center_vertical"
                     android:textColor="@color/text_color"
@@ -389,6 +390,7 @@
                     android:layout_weight="1"
                     android:autofillHints=""
                     android:background="@drawable/edit_text_style"
+                    android:drawableEnd="@drawable/content"
                     android:gravity="center_vertical"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/font_size_16" />
@@ -418,6 +420,7 @@
                     android:layout_weight="1"
                     android:autofillHints=""
                     android:background="@drawable/edit_text_style"
+                    android:drawableEnd="@drawable/content"
                     android:ems="10"
                     android:gravity="center_vertical"
                     android:inputType="none|textPersonName"

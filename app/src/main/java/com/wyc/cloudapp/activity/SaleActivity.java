@@ -101,6 +101,7 @@ public class SaleActivity extends MainActivity{
         if (mVipInfo != null)mVipInfo = null;
     }
 
+    @CallSuper
     @Override
     public void setSingleRefundStatus(boolean b){
         if (mSaleGoodsAdapter != null) mSaleGoodsAdapter.setSingleRefundStatus(b);

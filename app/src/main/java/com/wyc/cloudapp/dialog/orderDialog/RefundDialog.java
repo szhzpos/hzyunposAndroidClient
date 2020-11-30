@@ -67,6 +67,7 @@ public final class RefundDialog extends AbstractDialogMainActivity {
     }
     @Override
     protected int getContentLayoutId(){
+        if (lessThan7Inches)return R.layout.mobile_refund_dialog_layout;
         return R.layout.refund_dialog_layout;
     }
 

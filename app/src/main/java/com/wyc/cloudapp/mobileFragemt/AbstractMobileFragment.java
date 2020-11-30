@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.mobile.MobileCashierActivity;
 import com.wyc.cloudapp.activity.mobile.MobileNavigationActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -85,7 +86,15 @@ public abstract class AbstractMobileFragment extends Fragment {
                 }else if(v_id == R.id.vip_charge_tv){
                     final MobileVipChargeDialog dialog = new MobileVipChargeDialog((MainActivity) getActivity());
                     dialog.show();
-                }else{
+                }else if (v_id == R.id.fg_refund_tv){
+                    final Intent intent = new Intent();
+                    intent.setClass(context, MobileCashierActivity.class);
+                    intent.putExtra("title",context.getString(R.string.fg_casher_sz));
+                    intent.putExtra("singleRefundStatus",true);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                }
+                else {
                     final Intent intent = new Intent();
                     intent.setClassName(context,context.getPackageName().concat(".") + v.getTag());
                     if (v instanceof TextView)intent.putExtra("title",((TextView)v).getText());
