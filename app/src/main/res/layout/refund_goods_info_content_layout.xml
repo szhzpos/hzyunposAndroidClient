@@ -109,7 +109,7 @@
         android:layout_height="match_parent"
         android:layout_margin="@dimen/margin_5"
         android:autofillHints=""
-        android:background="@drawable/border_sub_gray"
+        android:background="@drawable/round_border_sub_gray"
         android:gravity="center"
         android:inputType="numberDecimal"
         android:paddingTop="@dimen/margin_8"

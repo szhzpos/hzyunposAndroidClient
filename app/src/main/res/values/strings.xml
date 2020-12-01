@@ -30,7 +30,7 @@
     <string name="order_sz">单号：</string>
     <string name="jh_sz">机号：</string>
     <string name="order_time_sz">时间：</string>
-    <string name="num_sz">数量：</string>
+    <string name="num_colon_sz">数量：</string>
     <string name="amt_sz">金额：</string>
     <string name="b_z_sz">条码/助记码/货号</string>
     <string name="del">回退</string>
@@ -373,4 +373,22 @@
     <string name="print_switch_sz">打印开关</string>
     <string name="affirm_charge_sz">确认充值</string>
 
+    <!-- 手机单据明细窗口-->
+    <string name="m_search_hint">销售单号/会员卡号</string>
+    <string name="m_order_head_sz">单头信息</string>
+    <string name="m_order_details_sz">单据明细</string>
+    <string name="m_pay_details_sz">付款信息</string>
+    <string name="m_sale_order_id_sz">销售单号：</string>
+    <string name="m_order_time_sz">订单时间：</string>
+    <string name="m_vip_no_sz">会员卡号：</string>
+    <string name="m_sale_sz">@string/sale_man_colon_sz</string>
+    <string name="m_order_amt_colon_sz">单据金额：</string>
+    <string name="m_disc_amt_colon_sz">优惠金额：</string>
+    <string name="m_num_sz">@string/num_colon_sz</string>
+    <string name="m_price_colon_sz">单价：</string>
+    <string name="m_pre_order_sz">上一单</string>
+    <string name="m_next_order_sz">下一单</string>
+    <string name="m_refund_sz">@string/o_back_sz</string>
+    <string name="m_print_sz">打印</string>
+    <string name="m_sale_query_sz">销售查询</string>
 </resources>

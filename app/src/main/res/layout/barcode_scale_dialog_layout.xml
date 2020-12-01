@@ -173,7 +173,7 @@
             android:id="@+id/b_scalse_r_v"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/border_sub_gray"
+            android:background="@drawable/round_border_sub_gray"
             android:padding="@dimen/margin_1" />
     </LinearLayout>
 

@@ -87,7 +87,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_margin="@dimen/margin_2"
-            android:background="@drawable/border_sub_gray"
+            android:background="@drawable/round_border_sub_gray"
             android:orientation="vertical">
 
             <LinearLayout
@@ -177,7 +177,7 @@
                     android:id="@+id/textView16"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/num_sz"
+                    android:text="@string/num_colon_sz"
                     android:textColor="@color/white"
                     android:textSize="@dimen/font_size_16" />
 

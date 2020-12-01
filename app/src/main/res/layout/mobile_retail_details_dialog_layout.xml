@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_40"
+        android:layout_margin="@dimen/margin_5"
+        android:background="@drawable/round_border_sub_gray"
+        android:orientation="horizontal"
+        android:padding="@dimen/margin_1">
+
+        <TextView
+            android:id="@+id/switch_condition"
+            android:layout_width="@dimen/size_108"
+            android:layout_height="match_parent"
+            android:drawableEnd="@drawable/content"
+            android:gravity="center"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_18" />
+
+        <EditText
+            android:id="@+id/order_vip__search"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="@drawable/left_separator"
+            android:drawableEnd="@drawable/search"
+            android:drawablePadding="@dimen/margin_8"
+            android:ems="10"
+            android:hint="@string/m_search_hint"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            android:padding="@dimen/margin_5"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_18" />
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/margin_1"
+        android:paddingRight="@dimen/margin_1">
+
+        <TextView
+            android:id="@+id/order_head_info_label"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/height_35"
+            android:background="@drawable/border_gray"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="0dp"
+            android:text="@string/m_order_head_sz"
+            android:textColor="@color/blue"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/sale_id_label"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center"
+            android:paddingStart="@dimen/margin_12"
+            android:paddingEnd="0dp"
+            android:text="@string/m_sale_order_id_sz"
+            android:textColor="@color/label_text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toStartOf="@id/order_head_info_label"
+            app:layout_constraintTop_toBottomOf="@id/order_head_info_label" />
+
+        <TextView
+            android:id="@+id/m_order_id_tv"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center_vertical"
+            android:text="N0214-201201034426-0001"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/sale_id_label"
+            app:layout_constraintTop_toTopOf="@id/sale_id_label" />
+
+        <TextView
+            android:id="@+id/order_time_label"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center"
+            android:paddingStart="@dimen/margin_12"
+            android:paddingEnd="0dp"
+            android:text="@string/m_order_time_sz"
+            android:textColor="@color/label_text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toStartOf="@id/sale_id_label"
+            app:layout_constraintTop_toBottomOf="@id/sale_id_label" />
+
+        <TextView
+            android:id="@+id/m_order_time_tv"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center_vertical"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/order_time_label"
+            app:layout_constraintTop_toTopOf="@id/order_time_label" />
+
+        <TextView
+            android:id="@+id/vip_no_label"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center"
+            android:paddingStart="@dimen/margin_12"
+            android:paddingEnd="0dp"
+            android:text="@string/m_vip_no_sz"
+            android:textColor="@color/label_text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toStartOf="@id/order_time_label"
+            app:layout_constraintTop_toBottomOf="@id/order_time_label" />
+
+        <TextView
+            android:id="@+id/m_vip_no_tv"
+            android:layout_width="@dimen/width_118"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center_vertical"
+            android:text="18174358548"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toEndOf="@id/vip_no_label"
+            app:layout_constraintTop_toTopOf="@id/vip_no_label" />
+
+        <TextView
+            android:id="@+id/sale_man_label"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center"
+            android:paddingStart="@dimen/margin_12"
+            android:paddingEnd="0dp"
+            android:text="@string/m_sale_sz"
+            android:textColor="@color/label_text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toEndOf="@id/m_vip_no_tv"
+            app:layout_constraintTop_toTopOf="@id/m_vip_no_tv" />
+
+        <TextView
+            android:id="@+id/m_sale_man_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center_vertical"
+            android:text="营业员1"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toEndOf="@id/sale_man_label"
+            app:layout_constraintTop_toTopOf="@id/sale_man_label" />
+
+        <TextView
+            android:id="@+id/order_amt_label"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center"
+            android:paddingStart="@dimen/margin_12"
+            android:paddingEnd="0dp"
+            android:text="@string/m_order_amt_colon_sz"
+            android:textColor="@color/label_text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toStartOf="@id/order_time_label"
+            app:layout_constraintTop_toBottomOf="@id/vip_no_label" />
+
+        <TextView
+            android:id="@+id/m_order_amt_tv"
+            android:layout_width="@dimen/width_118"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center_vertical"
+            android:text="@string/zero_p_z_sz"
+            android:textColor="@color/orange_1"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toEndOf="@id/order_amt_label"
+            app:layout_constraintTop_toTopOf="@id/order_amt_label" />
+
+        <TextView
+            android:id="@+id/disc_amt_label"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center"
+            android:paddingStart="@dimen/margin_12"
+            android:paddingEnd="0dp"
+            android:text="@string/m_disc_amt_colon_sz"
+            android:textColor="@color/label_text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toEndOf="@id/m_order_amt_tv"
+            app:layout_constraintTop_toTopOf="@id/m_order_amt_tv" />
+
+        <TextView
+            android:id="@+id/m_disc_amt_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center_vertical"
+            android:text="@string/zero_p_z_sz"
+            android:textColor="@color/orange_1"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toEndOf="@id/disc_amt_label"
+            app:layout_constraintTop_toTopOf="@id/disc_amt_label" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingLeft="@dimen/margin_1"
+        android:paddingRight="@dimen/margin_1">
+
+        <TextView
+            android:id="@+id/order_details_label"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/height_35"
+            android:background="@drawable/border_gray"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="0dp"
+            android:text="@string/m_order_details_sz"
+            android:textColor="@color/blue"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/m_order_details_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_1"
+            app:layout_constraintStart_toStartOf="@id/order_details_label"
+            app:layout_constraintTop_toBottomOf="@id/order_details_label" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingLeft="@dimen/margin_1"
+        android:paddingRight="@dimen/margin_1">
+
+        <TextView
+            android:id="@+id/pay_details_label"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/height_35"
+            android:background="@drawable/border_gray"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="0dp"
+            android:text="@string/m_pay_details_sz"
+            android:textColor="@color/blue"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/m_pay_details_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_1"
+            app:layout_constraintStart_toStartOf="@id/pay_details_label"
+            app:layout_constraintTop_toBottomOf="@id/pay_details_label" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_58"
+        android:orientation="horizontal"
+        android:padding="@dimen/margin_5">
+
+        <Button
+            android:id="@+id/m_pre_order_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/button_sub_blue"
+            android:text="@string/m_pre_order_sz"
+            android:textColor="@color/white"
+            android:textSize="@dimen/font_size_16" />
+
+        <Button
+            android:id="@+id/m_next_order_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/margin_5"
+            android:layout_weight="1"
+            android:background="@drawable/button_sub_blue"
+            android:text="@string/m_next_order_sz"
+            android:textColor="@color/white"
+            android:textSize="@dimen/font_size_16" />
+
+        <Button
+            android:id="@+id/m_refund_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_5"
+            android:layout_weight="1"
+            android:background="@drawable/button_sub_blue"
+            android:text="@string/m_refund_sz"
+            android:textColor="@color/white"
+            android:textSize="@dimen/font_size_16" />
+
+        <Button
+            android:id="@+id/m_print_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_5"
+            android:layout_weight="1"
+            android:background="@drawable/button_sub_blue"
+            android:text="@string/m_print_sz"
+            android:textColor="@color/white"
+            android:textSize="@dimen/font_size_16" />
+    </LinearLayout>
+
+</LinearLayout>

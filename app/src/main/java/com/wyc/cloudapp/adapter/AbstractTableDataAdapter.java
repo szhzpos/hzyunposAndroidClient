@@ -1,6 +1,6 @@
 package com.wyc.cloudapp.adapter;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -82,8 +82,8 @@ public abstract class AbstractTableDataAdapter<T extends AbstractTableDataAdapte
                 selected_color = mContext.getColor(R.color.white);
             }
             view.setBackgroundColor(selected_color);
-            if (view instanceof LinearLayout){
-                LinearLayout linearLayout = (LinearLayout)view;
+            if (view instanceof ViewGroup){
+                final ViewGroup linearLayout = (ViewGroup)view;
                 int count = linearLayout.getChildCount();
                 View ch;
                 for (int i = 0;i < count;i++){
@@ -124,8 +124,8 @@ public abstract class AbstractTableDataAdapter<T extends AbstractTableDataAdapte
         if(view!= null){
             int text_color;
             text_color = mContext.getColor(res_id);
-            if (view instanceof LinearLayout){
-                LinearLayout linearLayout = (LinearLayout)view;
+            if (view instanceof ViewGroup){
+                final ViewGroup linearLayout = (ViewGroup)view;
                 int count = linearLayout.getChildCount();
                 View ch;
                 for (int i = 0;i < count;i++){

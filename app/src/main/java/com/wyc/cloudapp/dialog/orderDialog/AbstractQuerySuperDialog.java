@@ -291,7 +291,7 @@ public abstract class AbstractQuerySuperDialog extends AbstractDialogMainActivit
         final ListView listView = alertDialog.getListView();
         listView.setDivider(mContext.getDrawable(R.color.gray_subtransparent));
         listView.setDividerHeight(1);
-        listView.setBackground(mContext.getDrawable(R.drawable.border_sub_gray));
+        listView.setBackground(mContext.getDrawable(R.drawable.round_border_sub_gray));
 
         float btn_font_size = Utils.px2sp(mContext,resources.getDimension(R.dimen.font_size_16));
         final Button cancel = alertDialog.getButton(BUTTON_NEGATIVE), ok = alertDialog.getButton(BUTTON_POSITIVE);

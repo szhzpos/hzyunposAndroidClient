@@ -250,12 +250,12 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
         search.setOnTouchListener((view, motionEvent) -> {
             if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                 final float dx = motionEvent.getX();
-                final int w = mSearchContent.getWidth();
-                if (dx > (w - mSearchContent.getCompoundPaddingRight())) {
-                    mSearchContent.requestFocus();
+                final int w = search.getWidth();
+                if (dx > (w - search.getCompoundPaddingRight())) {
+                    search.requestFocus();
                     final Intent intent = new Intent("com.google.zxing.client.android.SCAN");
                     startActivityForResult(intent, CODE_REQUEST_CODE);
-                }else if(dx < mSearchContent.getCompoundPaddingLeft()){
+                }else if(dx < search.getCompoundPaddingLeft()){
                     switchView();
                 }
             }

@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.Gravity;
 import android.view.View;
@@ -18,7 +16,6 @@ import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.wyc.cloudapp.adapter.TreeListAdapter;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.R;
@@ -39,7 +36,7 @@ public class CustomePopupWindow extends PopupWindow {
         mContext = context;
         setOutsideTouchable(true);
         this.setInputMethodMode(PopupWindow.INPUT_METHOD_NEEDED);
-        this.setBackgroundDrawable(mContext.getDrawable(R.drawable.border_sub_gray));
+        this.setBackgroundDrawable(mContext.getDrawable(R.drawable.round_border_sub_gray));
         mListView = new ListView(context);
         mListView.setPadding(2,2,2,2);
         mArrayAdapter = new ArrayAdapter(context,R.layout.drop_down_style);//由于要重复显示 在构造中直接新建对象，并且在取消显示的时候只是清空内容没有清除对象，这样不会导致系统重复分配释放内存

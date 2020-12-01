@@ -14,7 +14,7 @@
         android:layout_marginTop="@dimen/height_40"
         android:layout_marginEnd="@dimen/margin_5"
         android:layout_marginBottom="@dimen/margin_8"
-        android:background="@drawable/border_sub_gray"
+        android:background="@drawable/round_border_sub_gray"
         android:gravity="center"
         android:textColor="@color/orange_1"
         android:textSize="@dimen/font_size_16" />
@@ -27,7 +27,7 @@
         android:layout_marginTop="@dimen/height_58"
         android:layout_marginEnd="@dimen/margin_5"
         android:autofillHints=""
-        android:background="@drawable/border_sub_gray"
+        android:background="@drawable/round_border_sub_gray"
         android:ems="10"
         android:hint="@string/per_hint_sz"
         android:inputType="textPassword"

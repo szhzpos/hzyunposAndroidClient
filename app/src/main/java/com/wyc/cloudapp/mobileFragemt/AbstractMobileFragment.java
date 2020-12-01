@@ -19,6 +19,7 @@ import com.wyc.cloudapp.activity.mobile.MobileCashierActivity;
 import com.wyc.cloudapp.activity.mobile.MobileNavigationActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.orderDialog.MobileRetailOrderDetailsDialog;
 import com.wyc.cloudapp.dialog.vip.MobileVipChargeDialog;
 
 /*
@@ -93,8 +94,10 @@ public abstract class AbstractMobileFragment extends Fragment {
                     intent.putExtra("singleRefundStatus",true);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
-                }
-                else {
+                }else if (v_id == R.id.trade_query_tv){
+                    final MobileRetailOrderDetailsDialog detailsDialog = new MobileRetailOrderDetailsDialog((MainActivity) getActivity());
+                    detailsDialog.show();
+                }else {
                     final Intent intent = new Intent();
                     intent.setClassName(context,context.getPackageName().concat(".") + v.getTag());
                     if (v instanceof TextView)intent.putExtra("title",((TextView)v).getText());
