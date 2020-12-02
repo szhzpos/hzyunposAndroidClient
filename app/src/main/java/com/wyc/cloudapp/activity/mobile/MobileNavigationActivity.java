@@ -145,7 +145,7 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
             }else  if(id == R.id._mobile_my_tv){//fifth
                 current = new MyFragment();
             }else{//third
-                current = new CashierDeskFragment();
+                current = new CashierDeskFragment(MobileNavigationActivity.this);
             }
 
             ft.add(R.id.mobile_fragment_container,current);

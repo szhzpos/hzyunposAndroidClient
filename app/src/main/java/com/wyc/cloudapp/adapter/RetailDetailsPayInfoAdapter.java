@@ -38,7 +38,7 @@ public final class RetailDetailsPayInfoAdapter extends AbstractTableDataAdapter<
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = View.inflate(mContext, R.layout.retail_details_pay_info_content_layout, null);
+        View itemView = View.inflate(mContext, mContext.lessThan7Inches(null) ? R.layout.mobile_retail_details_pay_info_content_layout  : R.layout.retail_details_pay_info_content_layout, null);
         itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int) mContext.getResources().getDimension(R.dimen.table_row_height)));
         return new MyViewHolder(itemView);
     }
@@ -81,8 +81,9 @@ public final class RetailDetailsPayInfoAdapter extends AbstractTableDataAdapter<
         return null;
     }
 
-    private View.OnClickListener mItemClickListener = this::setCurrentItemView;
+    private final View.OnClickListener mItemClickListener = this::setCurrentItemView;
 
+    @Override
     public void setDatas(final String order_code){
         final StringBuilder err = new StringBuilder();
         final String sql = "SELECT b.name,a.pay_code order_code_son,a.pay_serial_no pay_code,a.pay_status,case a.pay_status when 1 then '未支付' when 2 then '已支付' else '支付中' end pay_status_name," +
@@ -99,6 +100,7 @@ public final class RetailDetailsPayInfoAdapter extends AbstractTableDataAdapter<
         }
 
     }
+    @Override
     public boolean isPaySuccess(){
         boolean success  = true;
         for (Object o : mDatas){

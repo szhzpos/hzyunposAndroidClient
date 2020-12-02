@@ -49,8 +49,8 @@ public final class MobileRetailDetailsGoodsInfoAdapter extends AbstractTableData
         if (null != mDatas) {
             final JSONObject sale_goods_info = mDatas.getJSONObject(position);
             if (sale_goods_info != null) {
-                holder.row_id_tv.setText(String.format(Locale.CHINA,"%d",position + 1));
-                holder.goods_title_tv.setText(sale_goods_info.getString("goods_title"));
+                holder.row_id_tv.setText(String.valueOf(position + 1));
+                holder.goods_title_tv.setText(String.format(Locale.CHINA,".%s",sale_goods_info.getString("goods_title")));
                 holder.xnum_tv.setText(String.format(Locale.CHINA, "%.3f", sale_goods_info.getDoubleValue("xnum")));
                 holder.price_tv.setText(String.format(Locale.CHINA, "%.2f", sale_goods_info.getDoubleValue("price")));
                 holder.sale_amt_tv.setText(String.format(Locale.CHINA, "%.2f", sale_goods_info.getDoubleValue("sale_amt")));

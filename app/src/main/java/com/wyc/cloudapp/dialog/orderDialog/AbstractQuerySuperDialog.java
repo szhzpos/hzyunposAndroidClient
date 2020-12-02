@@ -44,7 +44,7 @@ public abstract class AbstractQuerySuperDialog extends AbstractDialogMainActivit
     private int mCurrentStatusIndex = 0;
     private String[] mCashierNames,mCashierIDs;
     protected EditText mStartDateEt,mStartTimeEt,mEndDateEt,mEndTimeEt,mPayStatusEt,mCashierEt,mS_ex_statusEt,mUploadStatusEt,mOrderStatusEt;
-    private AbstractQueryDataAdapter<AbstractTableDataAdapter.SuperViewHolder> mAdapter;
+    private AbstractQueryDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> mAdapter;
     private Button mQueryBtn;
     protected AbstractQuerySuperDialog(@NonNull MainActivity context, final String title) {
         super(context, title);
@@ -68,7 +68,7 @@ public abstract class AbstractQuerySuperDialog extends AbstractDialogMainActivit
 
     protected abstract int getTableLayoutId();
     protected abstract String query();
-    protected abstract AbstractQueryDataAdapter<AbstractTableDataAdapter.SuperViewHolder> getAdapter();
+    protected abstract AbstractQueryDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> getAdapter();
 
     protected void initWindowSize(){//初始化窗口尺寸
         final WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
@@ -333,7 +333,7 @@ public abstract class AbstractQuerySuperDialog extends AbstractDialogMainActivit
             start_time.setOnClickListener(v -> Utils.showTimePickerDialog(mContext, (TextView) v, Calendar.getInstance()));
         }
     }
-    private View.OnFocusChangeListener etFocusChangeListener = (v, b)->{
+    private final View.OnFocusChangeListener etFocusChangeListener = (v, b)->{
         if (b)v.callOnClick();
         Utils.hideKeyBoard((EditText) v);
     };

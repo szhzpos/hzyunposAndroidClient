@@ -106,9 +106,9 @@ public abstract class AbstractTransferDialog extends AbstractDialogMainActivity 
                 break;
             case 1://有正在支付的订单
                 MyDialog.displayAskMessage(null, "有正在支付订单，是否现在处理?", mContext, myDialog -> {
-                    final QuerySaleOrderDialog querySaleOrderDialog = new QuerySaleOrderDialog(mContext);
-                    querySaleOrderDialog.show();
-                    querySaleOrderDialog.setQueryCondition(info.toString());
+                    final QueryRetailOrderDialog queryRetailOrderDialog = new QueryRetailOrderDialog(mContext);
+                    queryRetailOrderDialog.show();
+                    queryRetailOrderDialog.setQueryCondition(info.toString());
                     myDialog.dismiss();
                 }, MyDialog::dismiss);
                 break;

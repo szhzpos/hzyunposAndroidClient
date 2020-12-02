@@ -13,8 +13,9 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.orderDialog.AbstractRetailOrderDetailsDialog;
+import com.wyc.cloudapp.dialog.orderDialog.NormalRetailOrderDetailsDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundOrderDetailsDialog;
-import com.wyc.cloudapp.dialog.orderDialog.RetailOrderDetailsDialog;
 import com.wyc.cloudapp.logger.Logger;
 
 import java.util.Locale;
@@ -88,7 +89,7 @@ public final class RefundOrderAdapter extends AbstractQueryDataAdapter<RefundOrd
             if (isClickView(order_code_tv,event.getX(),event.getY())){
                 final JSONObject order_info = getCurrentRetailOrder();
                 if (!order_info.isEmpty()){
-                    final RetailOrderDetailsDialog retailOrderDetailsDialog = new RetailOrderDetailsDialog(mContext,order_info);
+                    final AbstractRetailOrderDetailsDialog retailOrderDetailsDialog = new NormalRetailOrderDetailsDialog(mContext,order_info);
                     retailOrderDetailsDialog.show();
                 }
             }else if (isClickView(sale_refund_tv,event.getX(),event.getY())){

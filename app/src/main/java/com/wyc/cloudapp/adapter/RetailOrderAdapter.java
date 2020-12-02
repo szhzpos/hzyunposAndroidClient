@@ -13,8 +13,9 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
+import com.wyc.cloudapp.dialog.orderDialog.AbstractRetailOrderDetailsDialog;
+import com.wyc.cloudapp.dialog.orderDialog.NormalRetailOrderDetailsDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
-import com.wyc.cloudapp.dialog.orderDialog.RetailOrderDetailsDialog;
 import com.wyc.cloudapp.logger.Logger;
 
 import java.util.Locale;
@@ -93,7 +94,7 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
             setCurrentItemView(v);
             final TextView order_code_tv = v.findViewById(R.id.order_code),sale_refund_tv = v.findViewById(R.id.sale_refund);
             if (isClickView(order_code_tv,event.getX(),event.getY())){
-                final RetailOrderDetailsDialog retailOrderDetailsDialog = new RetailOrderDetailsDialog(mContext,getCurrentOrder());
+                final AbstractRetailOrderDetailsDialog retailOrderDetailsDialog = new NormalRetailOrderDetailsDialog(mContext,getCurrentOrder());
                 retailOrderDetailsDialog.show();
             }else if (isClickView(sale_refund_tv,event.getX(),event.getY())){
                 sale_refund_tv.post(()->{

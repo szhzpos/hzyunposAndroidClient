@@ -51,6 +51,12 @@ public abstract class AbstractTableDataAdapter<T extends AbstractTableDataAdapte
         }
     }
 
+    public void setDatas(final String order_code) {
+
+    }
+
+    public boolean isPaySuccess(){return false;}
+
     protected void setCurrentItemView(View v){
         if (mCurrentItemView == null){
             setmCurrentItemViewAndIndex(v);

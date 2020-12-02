@@ -374,7 +374,6 @@
     <string name="affirm_charge_sz">确认充值</string>
 
     <!-- 手机单据明细窗口-->
-    <string name="m_search_hint">销售单号/会员卡号</string>
     <string name="m_order_head_sz">单头信息</string>
     <string name="m_order_details_sz">单据明细</string>
     <string name="m_pay_details_sz">付款信息</string>
@@ -386,9 +385,12 @@
     <string name="m_disc_amt_colon_sz">优惠金额：</string>
     <string name="m_num_sz">@string/num_colon_sz</string>
     <string name="m_price_colon_sz">单价：</string>
-    <string name="m_pre_order_sz">上一单</string>
-    <string name="m_next_order_sz">下一单</string>
     <string name="m_refund_sz">@string/o_back_sz</string>
     <string name="m_print_sz">打印</string>
     <string name="m_sale_query_sz">销售查询</string>
+    <!-- 手机零售单据窗口-->
+    <string name="m_search_hint">销售单号/会员卡号</string>
+    <string name="today_sz">今天</string>
+    <string name="yesterday_sz">昨天</string>
+
 </resources>

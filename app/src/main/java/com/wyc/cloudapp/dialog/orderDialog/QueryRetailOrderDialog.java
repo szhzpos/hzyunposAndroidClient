@@ -14,6 +14,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
+import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.adapter.RetailOrderAdapter;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -23,8 +24,8 @@ import java.util.Locale;
 
 import static android.content.Context.WINDOW_SERVICE;
 
-public class QuerySaleOrderDialog extends AbstractQuerySuperDialog {
-    public QuerySaleOrderDialog(@NonNull MainActivity context) {
+public class QueryRetailOrderDialog extends AbstractQuerySuperDialog {
+    public QueryRetailOrderDialog(@NonNull MainActivity context) {
         super(context,context.getString(R.string.deal_sz));
     }
 
@@ -98,7 +99,7 @@ public class QuerySaleOrderDialog extends AbstractQuerySuperDialog {
     }
 
     @Override
-    protected AbstractQueryDataAdapter getAdapter() {
+    protected AbstractQueryDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> getAdapter() {
         return new RetailOrderAdapter(this);
     }
 
