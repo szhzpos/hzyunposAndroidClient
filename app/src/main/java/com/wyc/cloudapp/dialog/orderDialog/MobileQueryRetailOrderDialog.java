@@ -40,7 +40,7 @@ import java.util.TimeZone;
 
 public class MobileQueryRetailOrderDialog extends AbstractDialogMainActivity {
     private long mStartTime,mEndTime;
-    private Button mCurrentDateBtn,mToday;
+    private Button mCurrentDateBtn;
     private EditText mSearchContent;
     private TextView mStartDateTv,mEndDateTv;
     private AbstractQueryDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> mAdapter;
@@ -66,8 +66,14 @@ public class MobileQueryRetailOrderDialog extends AbstractDialogMainActivity {
 
     @Override
     protected void initWindowSize(){
-        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        mToday.post(()-> mToday.callOnClick());
+        fullScreen();
+        initTodayBtn();
+    }
+
+    private void initTodayBtn(){
+        final Button today = findViewById(R.id.m_today_btn);
+        today.setOnClickListener(mClickListener);
+        today.post(()-> today.callOnClick());
     }
 
     private void initOrderList(){
@@ -98,20 +104,15 @@ public class MobileQueryRetailOrderDialog extends AbstractDialogMainActivity {
     }
 
     private void initQueryTimeBtn(){
-        final Button today = findViewById(R.id.m_today_btn),yesterday = findViewById(R.id.m_yesterday_btn),other = findViewById(R.id.m_other_btn);
-
         final LinearLayout query_time_btn_layout = findViewById(R.id.query_time_btn_layout);
+        final Button yesterday = query_time_btn_layout.findViewById(R.id.m_yesterday_btn),
+                other = query_time_btn_layout.findViewById(R.id.m_other_btn);
         query_time_btn_layout.post(()->{
             float corner_size = (float) (query_time_btn_layout.getHeight() / 2.0);
             query_time_btn_layout.setForeground(DrawableUtil.createDrawable(new float[]{corner_size,corner_size,corner_size,corner_size,corner_size,corner_size,corner_size,corner_size}
             ,mContext.getColor(R.color.transparent),Utils.dpToPx(mContext,1),mContext.getColor(R.color.blue)));
         });
-
-        today.setOnClickListener(mClickListener);
-        mToday = today;
-
         yesterday.setOnClickListener(mClickListener);
-
         other.setOnClickListener(mClickListener);
     }
 

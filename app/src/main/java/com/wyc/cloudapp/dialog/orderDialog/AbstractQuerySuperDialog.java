@@ -59,7 +59,6 @@ public abstract class AbstractQuerySuperDialog extends AbstractDialogMainActivit
         initCashierEt();
         initTable();
         initQueryBtn();
-        initWindowSize();
     }
     @Override
     protected int getContentLayoutId(){

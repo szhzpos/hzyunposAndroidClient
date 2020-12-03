@@ -186,7 +186,6 @@ public abstract class AbstractPayDialog extends AbstractDialogMainActivity imple
         final KeyboardView view = findViewById(R.id.keyboard_view);
         if (mContext.lessThan7Inches(null)){
             view.layout(R.layout.mobile_pay_method_keyboard_layout);
-            initWindowSize();
         }else
             view.layout(R.layout.pay_method_keyboard_layout);
         view.setCurrentFocusListenner(() -> {
@@ -206,7 +205,7 @@ public abstract class AbstractPayDialog extends AbstractDialogMainActivity imple
     @Override
     protected void initWindowSize(){
         if (mContext.lessThan7Inches(null)){
-            getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            widthFullScreen();
         }else
             getWindow().setLayout((int) mContext.getResources().getDimension(R.dimen.size_382), ViewGroup.LayoutParams.WRAP_CONTENT);
     }

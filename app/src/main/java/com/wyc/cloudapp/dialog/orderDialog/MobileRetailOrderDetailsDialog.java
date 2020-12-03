@@ -54,7 +54,7 @@ public class MobileRetailOrderDetailsDialog extends AbstractRetailOrderDetailsDi
 
     @Override
     protected void initWindowSize(){
-        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        fullScreen();
     }
 
     @Override

@@ -75,7 +75,7 @@ public final class RefundDialog extends AbstractDialogMainActivity {
 
     @Override
     protected void initWindowSize(){
-        if (lessThan7Inches)getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        if (lessThan7Inches)fullScreen();
     }
 
     public void dismiss(){

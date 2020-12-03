@@ -80,8 +80,7 @@ public class MobileVipChargeDialog extends AbstractDialogMainActivity implements
 
     @Override
     protected void initWindowSize(){
-        final Window window = getWindow();
-        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        fullScreen();
     }
 
 

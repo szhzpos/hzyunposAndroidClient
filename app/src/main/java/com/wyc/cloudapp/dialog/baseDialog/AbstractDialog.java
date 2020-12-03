@@ -74,6 +74,14 @@ public abstract class AbstractDialog extends Dialog {
 
     }
 
+    protected final void fullScreen(){
+        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+    }
+
+    protected final void widthFullScreen(){
+        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+    }
+
     @Override
     @CallSuper
     public void dismiss(){

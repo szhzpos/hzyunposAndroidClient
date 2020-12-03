@@ -39,7 +39,7 @@ public final class MobileTransferDialog extends AbstractTransferDialog {
 
     @Override
     protected void initWindowSize(){//初始化窗口尺寸
-        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        fullScreen();
     }
 
     private void initTransferInfoList(){

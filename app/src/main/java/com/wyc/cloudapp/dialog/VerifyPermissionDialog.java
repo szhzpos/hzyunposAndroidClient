@@ -94,7 +94,7 @@ public final class VerifyPermissionDialog extends AbstractDialogMainActivity {
     @Override
     protected void initWindowSize(){//初始化窗口尺寸
         if (lessThan7Inches){
-            getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            widthFullScreen();
         }
     }
 
