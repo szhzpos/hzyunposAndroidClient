@@ -1,7 +1,6 @@
 package com.wyc.cloudapp.activity.mobile;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ReplacementTransformationMethod;
@@ -35,6 +34,7 @@ import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.goods.AddGoodsInfoDialog;
 import com.wyc.cloudapp.dialog.orderDialog.HangBillDialog;
+import com.wyc.cloudapp.dialog.orderDialog.MobileQueryRetailOrderDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.dialog.pay.PayDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
@@ -388,16 +388,8 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
             view.setVisibility(View.VISIBLE);
             view.setText(R.string.all_refund_sz);
             view.setOnClickListener(v -> {
-                setSingleRefundStatus(false);
-                final RefundDialog refundDialog = new RefundDialog(this,null);
-                refundDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        setSingleRefundStatus(true);
-                        mSearchContent.postDelayed(()->{mSearchContent.clearFocus();mSearchContent.requestFocus();},100);
-                    }
-                });
-                refundDialog.show();
+                final MobileQueryRetailOrderDialog dialog = new MobileQueryRetailOrderDialog(this);
+                dialog.show();
             });
         }else {
             view.setVisibility(View.INVISIBLE);

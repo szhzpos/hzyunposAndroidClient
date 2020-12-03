@@ -9,6 +9,7 @@
     <string name="yes">是</string>
     <string name="no">否</string>
     <string name="dialog_title">对话框</string>
+    <string name="not_vip_sz">散客</string>
     <string name="cashier_desk_sz">云店POS收银客户端</string>
     <string name="deal_sz">零售单</string>
     <string name="shift_exchange_sz">交 班</string>
@@ -392,5 +393,6 @@
     <string name="m_search_hint">销售单号/会员卡号</string>
     <string name="today_sz">今天</string>
     <string name="yesterday_sz">昨天</string>
+    <string name="m_refund_order_sz">退单</string>
 
 </resources>

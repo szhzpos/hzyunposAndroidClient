@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -47,7 +48,8 @@ public final class RefundDialog extends AbstractDialogMainActivity {
     private EditText mRemarkEt,mOrderCodeEt;
     private JSONObject mVipInfo;
     private Button mQueryBtn, mRefundBtn,mRemarkBtn;
-    private boolean isRefundCheck,lessThan7Inches;
+    private boolean isRefundCheck;
+    private final boolean lessThan7Inches;
     private int mRefundType = 1;//退货类型（1全部退货，2部分退货,3 单品退货,4 无货可退，用于隐藏按钮）
     public RefundDialog(@NonNull MainActivity context, final String order_code) {
         super(context, context.getString(R.string.refund_dialog_title_sz));
@@ -69,6 +71,11 @@ public final class RefundDialog extends AbstractDialogMainActivity {
     protected int getContentLayoutId(){
         if (lessThan7Inches)return R.layout.mobile_refund_dialog_layout;
         return R.layout.refund_dialog_layout;
+    }
+
+    @Override
+    protected void initWindowSize(){
+        if (lessThan7Inches)getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
     }
 
     public void dismiss(){

@@ -35,4 +35,5 @@
     <color name="black_overlay">#66000000</color>
     <color name="mobile_fun_view_no_click">@color/text_color</color>
     <color name="mobile_fun_view_click">@color/blue</color>
+    <color name="mobile_order_status">#8C7452</color>
 </resources>

@@ -47,7 +47,7 @@ public class NormalRetailOrderDetailsDialog extends AbstractRetailOrderDetailsDi
                     cas_name_tv = findViewById(R.id.cas_name);
             if (oper_time_tv != null)oper_time_tv.setText(Utils.getNullStringAsEmpty(object,"oper_time"));
 
-            if (order_code_tv != null)order_code_tv.setText(mRetailOrderCode = Utils.getNullStringAsEmpty(object,"order_code"));
+            if (order_code_tv != null)order_code_tv.setText(Utils.getNullStringAsEmpty(object,"order_code"));
 
             if (order_amt_tv != null)order_amt_tv.setText(String.format(Locale.CHINA,"%.2f",object.getDoubleValue("order_amt")));
             if (reality_amt_tv != null)reality_amt_tv.setText(String.format(Locale.CHINA,"%.2f",object.getDoubleValue("reality_amt")));
@@ -112,7 +112,7 @@ public class NormalRetailOrderDetailsDialog extends AbstractRetailOrderDetailsDi
     protected void initReprint(){
         final Button reprint_btn = findViewById(R.id.reprint_btn);
         if (null != reprint_btn){
-            reprint_btn.setOnClickListener(v -> Printer.print(mContext, PayDialog.get_print_content(mContext, mRetailOrderCode,false)));
+            reprint_btn.setOnClickListener(v -> Printer.print(mContext, PayDialog.get_print_content(mContext, Utils.getNullStringAsEmpty(mOrderInfo,"order_code"),false)));
         }
     }
     @Override

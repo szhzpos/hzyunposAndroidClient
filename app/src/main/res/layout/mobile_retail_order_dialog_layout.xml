@@ -9,20 +9,20 @@
 
     <LinearLayout
         android:id="@+id/query_time_btn_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/height_45"
+        android:layout_gravity="center_horizontal"
         android:layout_marginStart="@dimen/margin_18"
         android:layout_marginTop="@dimen/margin_12"
         android:layout_marginEnd="@dimen/margin_18"
         android:orientation="horizontal"
-        android:paddingStart="@dimen/margin_18"
-        android:paddingEnd="@dimen/margin_18">
+        android:padding="@dimen/margin_1">
 
         <Button
             android:id="@+id/m_today_btn"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/height_40"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="@string/today_sz"
             android:textSize="@dimen/font_size_16" />
@@ -31,7 +31,7 @@
             android:id="@+id/m_yesterday_btn"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/height_40"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="@string/yesterday_sz"
             android:textSize="@dimen/font_size_16" />
@@ -40,7 +40,7 @@
             android:id="@+id/m_other_btn"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/height_40"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="@string/other_sz"
             android:textSize="@dimen/font_size_16" />
@@ -53,7 +53,6 @@
         android:layout_marginStart="@dimen/margin_18"
         android:layout_marginTop="@dimen/margin_12"
         android:layout_marginEnd="@dimen/margin_18"
-        android:layout_marginBottom="@dimen/margin_8"
         android:orientation="horizontal"
         android:visibility="gone">
 
@@ -95,7 +94,9 @@
         android:id="@+id/m_query_condition_layout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/height_45"
-        android:layout_margin="@dimen/margin_5"
+        android:layout_marginStart="@dimen/margin_5"
+        android:layout_marginTop="@dimen/margin_12"
+        android:layout_marginEnd="@dimen/margin_5"
         android:layout_marginBottom="@dimen/margin_8"
         android:background="@drawable/round_border_sub_gray"
         android:orientation="horizontal"
@@ -133,5 +134,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/m_order_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="@dimen/margin_5" />
 </LinearLayout>

@@ -1,25 +1,21 @@
 package com.wyc.cloudapp.adapter;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
 import androidx.annotation.NonNull;
-import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 public class SuperItemDecoration extends RecyclerView.ItemDecoration {
-    int mSpace;
-    private Paint mPaint;
+    int mSpace = 5;
+    private final Paint mPaint;
     public SuperItemDecoration(int color){
         mPaint = new Paint();
         mPaint.setAntiAlias(true);

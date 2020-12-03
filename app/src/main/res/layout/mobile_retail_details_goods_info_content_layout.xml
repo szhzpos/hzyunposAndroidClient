@@ -12,7 +12,7 @@
         android:layout_height="@dimen/height_30"
         android:gravity="center"
         android:textColor="@color/text_color"
-        android:textSize="@dimen/font_size_12"
+        android:textSize="@dimen/font_size_14"
         android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

@@ -2,13 +2,11 @@ package com.wyc.cloudapp.dialog.orderDialog;
 
 import android.content.ContentValues;
 import android.os.Bundle;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -33,7 +31,6 @@ public abstract class AbstractRetailOrderDetailsDialog extends AbstractDialogMai
     protected final JSONObject mOrderInfo;
     protected JSONObject mPayRecord;
     protected AbstractTableDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> mRetailDetailsPayInfoAdapter;
-    protected String mRetailOrderCode;
     protected CustomProgressDialog mProgressDialog;
     public AbstractRetailOrderDetailsDialog(@NonNull MainActivity context, final CharSequence title, final JSONObject info) {
         super(context,title);
@@ -72,7 +69,13 @@ public abstract class AbstractRetailOrderDetailsDialog extends AbstractDialogMai
     protected void verify_pay(){
         mProgressDialog = new CustomProgressDialog(mContext);
         mProgressDialog.setCancel(false).setMessage("正在查询支付结果...").refreshMessage().show();
-        CustomApplication.execute(this::verify);
+        CustomApplication.execute(()->{
+            try {
+                verify();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        });
     }
 
     private void verify(){
@@ -89,9 +92,8 @@ public abstract class AbstractRetailOrderDetailsDialog extends AbstractDialogMai
             final String pay_code = Utils.getNullStringAsEmpty(pay_record,"pay_code");
             if (2 == pay_record.getIntValue("is_check")){
                 final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.CANADA);
-                final TextView oper_time_tv = findViewById(R.id.oper_time) ;
                 try {
-                    final Date date = simpleDateFormat.parse(oper_time_tv.getText().toString());
+                    final Date date = simpleDateFormat.parse(Utils.getNullStringAsEmpty(mOrderInfo,"oper_time"));
                     if (date != null)
                         pay_time = date.getTime() / 1000; ;
                 } catch (ParseException e) {
@@ -149,7 +151,7 @@ public abstract class AbstractRetailOrderDetailsDialog extends AbstractDialogMai
                 }
             }
 
-            final String sz_order_code = mRetailOrderCode;
+            final String sz_order_code = Utils.getNullStringAsEmpty(mOrderInfo,"order_code");;
             if (!query_status){
                 final ContentValues values = new ContentValues();
 

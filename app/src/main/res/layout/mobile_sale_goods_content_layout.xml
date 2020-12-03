@@ -117,6 +117,7 @@
             android:layout_height="wrap_content"
 
             android:text="@string/b_f_ori_price_sz"
+            android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_14" />
 
         <TextView
@@ -134,6 +135,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/margin_5"
             android:text="88888888"
+            android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_14" />
 
         <TextView
