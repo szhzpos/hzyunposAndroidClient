@@ -1,7 +1,6 @@
 package com.wyc.cloudapp.dialog.orderDialog;
 
 import android.os.Bundle;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -29,6 +28,8 @@ public class MobileRetailOrderDetailsDialog extends AbstractRetailOrderDetailsDi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        initRefund();
     }
 
     @Override

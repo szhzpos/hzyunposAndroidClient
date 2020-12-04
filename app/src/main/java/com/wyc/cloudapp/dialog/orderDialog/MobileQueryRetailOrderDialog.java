@@ -6,7 +6,6 @@ import android.text.method.ReplacementTransformationMethod;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -73,7 +72,7 @@ public class MobileQueryRetailOrderDialog extends AbstractDialogMainActivity {
     private void initTodayBtn(){
         final Button today = findViewById(R.id.m_today_btn);
         today.setOnClickListener(mClickListener);
-        today.post(()-> today.callOnClick());
+        today.post(today::callOnClick);
     }
 
     private void initOrderList(){

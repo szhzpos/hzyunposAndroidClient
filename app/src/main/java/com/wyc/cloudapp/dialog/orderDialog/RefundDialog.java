@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -80,6 +79,7 @@ public final class RefundDialog extends AbstractDialogMainActivity {
 
     public void dismiss(){
         super.dismiss();
+        if (mProgressDialog != null && mProgressDialog.isShowing())mProgressDialog.dismiss();
         Printer.showPrintIcon(mContext,false);
     }
 
@@ -351,8 +351,7 @@ public final class RefundDialog extends AbstractDialogMainActivity {
                 mRefundDialogAdapter.sync_refund_order();
             }else {
                 if (uploadRefundOrder(mContext.getAppId(),mContext.getUrl(),mContext.getAppSecret(),mOrderCode, mRefundCode, err)) {
-                    //部分在线退货需要获取服务器数据合并之后再显示已退货信息
-                    if (mQueryBtn != null)mQueryBtn.callOnClick();
+                    mContext.runOnUiThread(this::dismiss);
                 }
             }
         }
@@ -383,8 +382,7 @@ public final class RefundDialog extends AbstractDialogMainActivity {
                                 mProgressDialog.setMessage("正在上传退单信息...").refreshMessage();
                                 //上传本地订单
                                 if (uploadRefundOrder(mContext.getAppId(),mContext.getUrl(),mContext.getAppSecret(),mOrderCode, mRefundCode, err)) {
-                                    //重新获取退单信息
-                                    if (mQueryBtn != null)mQueryBtn.callOnClick();
+                                    mContext.runOnUiThread(this::dismiss);
                                 }
                             }
                         }else {
