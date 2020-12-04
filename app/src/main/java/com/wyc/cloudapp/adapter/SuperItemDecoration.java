@@ -10,11 +10,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 public class SuperItemDecoration extends RecyclerView.ItemDecoration {
-    int mSpace = 5;
+    int mSpace = -1;
     private final Paint mPaint;
     public SuperItemDecoration(int color){
         mPaint = new Paint();
@@ -44,6 +45,7 @@ public class SuperItemDecoration extends RecyclerView.ItemDecoration {
         super.getItemOffsets(outRect, view, parent, state);
         final RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
         if (layoutManager instanceof LinearLayoutManager) {
+            if (mSpace == -1)mSpace = Utils.dpToPx(view.getContext(),5);
             if (((LinearLayoutManager) layoutManager).getOrientation() == LinearLayoutManager.HORIZONTAL) {
                 outRect.set(0, 0,mSpace, 0);
             } else {

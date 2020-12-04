@@ -1,9 +1,16 @@
 package com.wyc.cloudapp.utils;
 
 import android.content.res.ColorStateList;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.StateListDrawable;
+import android.graphics.drawable.shapes.Shape;
+
+import com.wyc.cloudapp.logger.Logger;
 
 public class DrawableUtil {
     public static GradientDrawable createDrawable(final float[] corners,int color,int borderWidth,int borderColor){
@@ -21,6 +28,19 @@ public class DrawableUtil {
         //正常
         drawable.addState(new int[]{}, normal);
         return drawable;
+    }
+
+    public static LayerDrawable createLayerDrawable(int color,int left,int top,int right,int bottom){
+        final ShapeDrawable[] shapeDrawables = new ShapeDrawable[2];
+        final ShapeDrawable shapeDrawable = new ShapeDrawable(),shapeDrawable1 = new ShapeDrawable();
+        shapeDrawable.getPaint().setColor(0xffffffff);
+        shapeDrawable1.setPadding(left,top,right,bottom);
+        shapeDrawable1.getPaint().setColor(color);
+
+        shapeDrawables[0] = shapeDrawable1;
+        shapeDrawables[1] = shapeDrawable;
+
+        return new LayerDrawable(shapeDrawables);
     }
 
     public static ColorStateList createColorStateList(int normal_color, int pressed_color, int focused_color, int unable_color) {
