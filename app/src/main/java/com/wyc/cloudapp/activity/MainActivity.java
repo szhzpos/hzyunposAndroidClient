@@ -268,6 +268,4 @@ public abstract class MainActivity extends AppCompatActivity {
     }
     public void setScanCallback(final ScanCallback callback){
     }
-    public void clearScanCallback(){
-    }
 }

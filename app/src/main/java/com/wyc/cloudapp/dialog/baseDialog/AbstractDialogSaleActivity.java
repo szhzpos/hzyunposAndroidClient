@@ -1,7 +1,5 @@
 package com.wyc.cloudapp.dialog.baseDialog;
 
-import android.view.KeyEvent;
-
 import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.activity.SaleActivity;
@@ -11,7 +9,6 @@ public abstract class AbstractDialogSaleActivity extends AbstractDialog {
     public AbstractDialogSaleActivity(@NonNull SaleActivity context, final CharSequence title) {
         super(context, title,0);
         mContext = context;
-        initKeyListener();
     }
 
     @Override
@@ -19,16 +16,9 @@ public abstract class AbstractDialogSaleActivity extends AbstractDialog {
         return mContext;
     }
 
-    protected void keyListenerCallBack(){
-
-    }
-    private void initKeyListener(){
-        setOnKeyListener((v, keyCode, event) -> {
-            if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_UP){
-                keyListenerCallBack();
-                return true;
-            }
-            return false;
-        });
+    @Override
+    public void dismiss(){
+        super.dismiss();
+        mContext.setScanCallback(null);//一定要清空，否则对象无法被回收
     }
 }

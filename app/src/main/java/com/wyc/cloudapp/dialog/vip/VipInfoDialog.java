@@ -88,11 +88,6 @@ public final class VipInfoDialog extends AbstractDialogSaleActivity {
         super.onDetachedFromWindow();
     }
 
-    @Override
-    public void keyListenerCallBack(){
-        if (mSearchBtn != null)mSearchBtn.callOnClick();
-    }
-
     private boolean verifyVipDepositPermissions(){
         return mContext.verifyPermissions("23",null);
     }

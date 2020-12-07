@@ -90,11 +90,6 @@ public abstract class AbstractPayDialog extends AbstractDialogMainActivity imple
         return mContext;
     }
 
-    @Override
-    protected void keyListenerCallBack(){
-        if (mOk != null)mOk.callOnClick();
-    }
-
     protected String getTitle(){
         return mTitle.toString();
     }
@@ -164,7 +159,6 @@ public abstract class AbstractPayDialog extends AbstractDialogMainActivity imple
         mPayAmtEt.setText(String.format(Locale.CHINA,"%.2f",mOriginalPayAmt));
         mPayAmtEt.setOnKeyListener((dialog, keyCode, event) -> {
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_UP){
-                keyListenerCallBack();
                 return true;
             }
             return false;
@@ -175,7 +169,6 @@ public abstract class AbstractPayDialog extends AbstractDialogMainActivity imple
         mPayCode = findViewById(R.id.pay_code);
         mPayCode.setOnKeyListener((dialog, keyCode, event) -> {
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_UP){
-                keyListenerCallBack();
                 return true;
             }
             return false;

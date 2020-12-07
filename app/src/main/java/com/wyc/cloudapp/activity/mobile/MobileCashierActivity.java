@@ -510,8 +510,4 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
     public void setScanCallback(final ScanCallback callback){
         mScanCallback = callback;
     }
-    @Override
-    public void clearScanCallback(){
-        if (mScanCallback != null)mScanCallback = null;
-    }
 }

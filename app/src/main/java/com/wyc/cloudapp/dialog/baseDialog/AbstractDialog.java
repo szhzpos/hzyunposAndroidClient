@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.dialog.JEventLoop;
+import com.wyc.cloudapp.logger.Logger;
 
 public abstract class AbstractDialog extends Dialog {
     protected CharSequence mTitle;
@@ -43,6 +44,11 @@ public abstract class AbstractDialog extends Dialog {
         final Window window = getWindow();
         mRootView =  window.getDecorView();
         mLayoutParams = window.getAttributes();
+    }
+
+    @Override
+    protected void finalize(){
+        Logger.d(getClass().getSimpleName() + " finalized");
     }
 
     @Override

@@ -82,7 +82,7 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
 
     @Override
     public void setScanCallback(final ScanCallback callback){
-        mScanCallback = callback;
+        if (callback != mScanCallback)mScanCallback = callback;
     }
 
     public void transfer(){
