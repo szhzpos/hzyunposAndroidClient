@@ -36,7 +36,7 @@ public class MobileRetailOrderDetailsDialog extends AbstractRetailOrderDetailsDi
     protected void showOrderInfo() {
         final JSONObject object = mOrderInfo;
         if (null != object){
-            final TextView m_order_id_tv = findViewById(R.id.m_order_id_tv),m_order_time_tv = findViewById(R.id.m_order_time_tv),m_vip_no_tv = findViewById(R.id.m_vip_no_tv),
+            final TextView m_order_id_tv = findViewById(R.id.m_sale_id_tv),m_order_time_tv = findViewById(R.id.m_order_time_tv),m_vip_no_tv = findViewById(R.id.m_vip_no_tv),
                     m_sale_man_tv = findViewById(R.id.m_sale_man_tv),m_order_amt_tv = findViewById(R.id.m_order_amt_tv),m_disc_amt_tv = findViewById(R.id.m_disc_amt_tv);
 
             if (m_order_id_tv != null)m_order_id_tv.setText(Utils.getNullStringAsEmpty(object,"order_code"));

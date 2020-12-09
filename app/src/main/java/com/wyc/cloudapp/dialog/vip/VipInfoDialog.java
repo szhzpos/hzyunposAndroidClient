@@ -18,15 +18,16 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
-import com.wyc.cloudapp.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
 import com.wyc.cloudapp.utils.MessageID;
+import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
 import java.lang.ref.WeakReference;
@@ -88,20 +89,15 @@ public final class VipInfoDialog extends AbstractDialogSaleActivity {
         super.onDetachedFromWindow();
     }
 
-    private boolean verifyVipDepositPermissions(){
-        return mContext.verifyPermissions("23",null);
-    }
     private void initChargeBtn(){
         final Button chargeBtn = findViewById(R.id.vip_charge);
         if (null != chargeBtn)
             chargeBtn.setOnClickListener(view -> {
-                if (verifyVipDepositPermissions()){
+                if (AbstractVipChargeDialog.verifyVipDepositPermissions(mContext)){
                     if (mVip != null){
-                        final VipChargeDialogImp vipChargeDialogImp = new VipChargeDialogImp(mContext,mVip);
-                        vipChargeDialogImp.setYesOnclickListener(dialog -> {
-                            showVipInfo(dialog.getContent());
-                            dialog.dismiss();
-                        }).show();
+                        final AbstractVipChargeDialog chargeDialog = new NormalVipChargeDialog(mContext,mVip);
+                        chargeDialog.exec();
+                        showVipInfo(chargeDialog.getVip());
                     }else{
                         searchVip(mSearchContent.getText().toString(),chargeBtn.getId());
                     }
@@ -260,8 +256,7 @@ public final class VipInfoDialog extends AbstractDialogSaleActivity {
         if (null != object){
             mVip = object;
 
-            final String grade_name = object.getString("grade_name");
-            if (grade_name != null)mVipGrade.setText(grade_name);
+            mVipGrade.setText(Utils.getNullStringAsEmpty(object,"grade_name"));
 
             mSearchBtn.setText(mContext.getString(R.string.OK));
             mVip_name.setText(object.getString("name"));

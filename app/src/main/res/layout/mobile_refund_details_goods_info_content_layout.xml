@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/row_id"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/height_30"
+        android:gravity="center"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_14"
+        android:visibility="visible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/goods_title"
+        android:layout_width="@dimen/table_goods_title_width"
+        android:layout_height="@dimen/height_30"
+        android:gravity="center_vertical"
+        android:paddingTop="@dimen/margin_5"
+        android:paddingBottom="@dimen/margin_5"
+        android:text="@string/g_name_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toEndOf="@id/row_id"
+        app:layout_constraintTop_toTopOf="@id/row_id" />
+
+    <TextView
+        android:id="@+id/xnum_label"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/height_30"
+        android:layout_marginStart="@dimen/margin_8"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_5"
+        android:paddingBottom="@dimen/margin_5"
+        android:text="@string/m_num_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toStartOf="@id/goods_title"
+        app:layout_constraintTop_toBottomOf="@id/goods_title" />
+
+    <TextView
+        android:id="@+id/xnum"
+        android:layout_width="@dimen/width_88"
+        android:layout_height="@dimen/height_30"
+        android:gravity="center_vertical"
+        android:paddingTop="@dimen/margin_5"
+        android:paddingBottom="@dimen/margin_5"
+        android:text="@string/zero_p_z_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toEndOf="@id/xnum_label"
+        app:layout_constraintTop_toTopOf="@id/xnum_label" />
+
+    <TextView
+        android:id="@+id/price_label"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/height_30"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_5"
+        android:paddingBottom="@dimen/margin_5"
+        android:text="@string/m_price_colon_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toEndOf="@id/xnum"
+        app:layout_constraintTop_toTopOf="@id/xnum" />
+
+    <TextView
+        android:id="@+id/price"
+        android:layout_width="@dimen/width_88"
+        android:layout_height="@dimen/height_30"
+        android:gravity="center_vertical"
+        android:paddingTop="@dimen/margin_5"
+        android:paddingBottom="@dimen/margin_5"
+        android:text="@string/zero_p_z_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toEndOf="@id/price_label"
+        app:layout_constraintTop_toTopOf="@id/price_label" />
+
+    <TextView
+        android:id="@+id/refund_amt"
+        android:layout_width="@dimen/width_88"
+        android:layout_height="@dimen/height_30"
+        android:gravity="center"
+        android:paddingTop="@dimen/margin_5"
+        android:paddingBottom="@dimen/margin_5"
+        android:text="@string/sec_sum_sz"
+        android:textColor="@color/orange_1"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toEndOf="@id/price"
+        app:layout_constraintTop_toTopOf="@id/price" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -95,7 +95,7 @@ public class VipDepositDetailsDialog extends AbstractDialogMainActivity {
         final Button reprint_btn = findViewById(R.id.reprint_btn);
         if (null != reprint_btn){
             reprint_btn.setOnClickListener(v -> {
-                Printer.print(mContext, VipChargeDialogImp.get_print_content(mContext,mOrderInfo.getString("order_code")));
+                Printer.print(mContext, AbstractVipChargeDialog.get_print_content(mContext,mOrderInfo.getString("order_code")));
             });
         }
     }

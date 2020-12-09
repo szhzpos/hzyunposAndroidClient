@@ -19,7 +19,9 @@ import com.wyc.cloudapp.activity.mobile.MobileCashierActivity;
 import com.wyc.cloudapp.activity.mobile.MobileNavigationActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.orderDialog.MobileQueryRefundOrderDialog;
 import com.wyc.cloudapp.dialog.orderDialog.MobileQueryRetailOrderDialog;
+import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.MobileVipChargeDialog;
 
 /*
@@ -89,8 +91,10 @@ public abstract class AbstractMobileFragment extends Fragment {
                         ((MobileNavigationActivity)activity).transfer();
                     }
                 }else if(v_id == R.id.vip_charge_tv){
-                    final MobileVipChargeDialog dialog = new MobileVipChargeDialog(mContext);
-                    dialog.show();
+                    if (AbstractVipChargeDialog.verifyVipDepositPermissions(mContext)){
+                        final AbstractVipChargeDialog dialog = new MobileVipChargeDialog(mContext);
+                        dialog.show();
+                    }
                 }else if (v_id == R.id.fg_refund_tv){
                     final Intent intent = new Intent();
                     intent.setClass(context, MobileCashierActivity.class);
@@ -100,6 +104,9 @@ public abstract class AbstractMobileFragment extends Fragment {
                     startActivity(intent);
                 }else if (v_id == R.id.trade_query_tv){
                     final MobileQueryRetailOrderDialog dialog = new MobileQueryRetailOrderDialog(mContext);
+                    dialog.show();
+                }else if (v_id == R.id.refund_query_tv){
+                    final MobileQueryRefundOrderDialog dialog = new MobileQueryRefundOrderDialog(mContext);
                     dialog.show();
                 }else {
                     final Intent intent = new Intent();

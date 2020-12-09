@@ -18,9 +18,8 @@ import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
-public final class RefundDetailsPayInfoAdapter extends AbstractTableDataAdapter<RefundDetailsPayInfoAdapter.MyViewHolder> {
-
-    public RefundDetailsPayInfoAdapter(MainActivity context){
+public final class MobileRefundDetailsPayInfoAdapter extends AbstractTableDataAdapter<MobileRefundDetailsPayInfoAdapter.MyViewHolder> {
+    public MobileRefundDetailsPayInfoAdapter(MainActivity context){
         mContext = context;
     }
 
@@ -39,7 +38,7 @@ public final class RefundDetailsPayInfoAdapter extends AbstractTableDataAdapter<
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = View.inflate(mContext, R.layout.refund_details_pay_info_content_layout, null);
+        View itemView = View.inflate(mContext,R.layout.mobile_refund_details_pay_info_content_layout, null);
         itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int) mContext.getResources().getDimension(R.dimen.table_row_height)));
         return new MyViewHolder(itemView);
     }
@@ -52,21 +51,21 @@ public final class RefundDetailsPayInfoAdapter extends AbstractTableDataAdapter<
             if (pay_info != null) {
                 holder.row_id_tv.setText(String.valueOf(position + 1));
                 holder.pay_method_name_tv.setTag(pay_info.getIntValue("pay_method"));
-                holder.pay_method_name_tv.setText(pay_info.getString("pay_method_name"));
-                holder.pay_amt_tv.setText(String.format(Locale.CHINA, "%.2f", pay_info.getDoubleValue("pay_money")));
+                holder.pay_method_name_tv.setText(pay_info.getString("name"));
+                holder.pay_amt_tv.setText(String.format(Locale.CHINA, "%.2f", pay_info.getDoubleValue("pamt")));
                 holder.pay_status_tv.setText(pay_info.getString("pay_status_name"));
                 holder.pay_time_tv.setText(pay_info.getString("pay_time"));
                 holder.pay_code_tv.setText(Utils.getNullStringAsEmpty(pay_info, "order_code_son"));
-
-                holder.mCurrentLayoutItemView.setOnClickListener(mItemClickListener);
             }
         }
     }
 
-    public void setDatas(final String ro_code){
+    @Override
+    public void setDatas(final String order_code){
         final StringBuilder err = new StringBuilder();
-        final String sql = "SELECT a.pay_method_name ,a.pay_code order_code_son,a.pay_serial_no pay_code,a.pay_status,case a.pay_status when 1 then '未支付' when 2 then '已支付' else '支付中' end pay_status_name," +
-                "datetime(a.pay_time, 'unixepoch', 'localtime') pay_time,a.is_check,a.pay_money FROM refund_order_pays a  where ro_code = '" + ro_code + "'";
+        final String sql = "SELECT b.name,a.pay_code order_code_son,a.pay_serial_no pay_code,a.pay_status,case a.pay_status when 1 then '未支付' when 2 then '已支付' else '支付中' end pay_status_name," +
+                "datetime(a.pay_time, 'unixepoch', 'localtime') pay_time,a.is_check,a.pay_money pamt,a.pay_method," +
+                "b.unified_pay_query FROM refund_order_pays a left join pay_method b on a.pay_method = b.pay_method_id where ro_code = '" + order_code + "'";
 
         Logger.d("sql:%s",sql);
         mDatas = SQLiteHelper.getListToJson(sql,err);

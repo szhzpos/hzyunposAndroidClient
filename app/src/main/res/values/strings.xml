@@ -379,6 +379,7 @@
     <string name="m_order_details_sz">单据明细</string>
     <string name="m_pay_details_sz">付款信息</string>
     <string name="m_sale_order_id_sz">销售单号：</string>
+    <string name="m_refund_order_id_sz">退货单号：</string>
     <string name="m_order_time_sz">订单时间：</string>
     <string name="m_vip_no_sz">会员卡号：</string>
     <string name="m_sale_sz">@string/sale_man_colon_sz</string>
@@ -388,11 +389,16 @@
     <string name="m_price_colon_sz">单价：</string>
     <string name="m_refund_sz">@string/o_back_sz</string>
     <string name="m_print_sz">打印</string>
-    <string name="m_sale_query_sz">销售查询</string>
+
     <!-- 手机零售单据窗口-->
+    <string name="m_sale_query_sz">销售查询</string>
     <string name="m_search_hint">销售单号/会员卡号</string>
     <string name="today_sz">今天</string>
     <string name="yesterday_sz">昨天</string>
     <string name="m_refund_order_sz">退单</string>
+    <string name="query_way_sz">查询方式</string>
+    <!-- 手机退货单据窗口-->
+    <string name="m_refund_query_sz">退货查询</string>
+    <string name="m_refund_search_hint">退货单号/会员卡号</string>
 
 </resources>

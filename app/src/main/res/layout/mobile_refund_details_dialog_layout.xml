@@ -30,6 +30,31 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            android:id="@+id/refund_id_label"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center"
+            android:paddingStart="@dimen/margin_12"
+            android:paddingEnd="0dp"
+            android:text="@string/m_refund_order_id_sz"
+            android:textColor="@color/label_text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toStartOf="@id/order_head_info_label"
+            app:layout_constraintTop_toBottomOf="@id/order_head_info_label" />
+
+        <TextView
+            android:id="@+id/m_refund_id_tv"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center_vertical"
+            android:text="T0214-201201034426-0001"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/refund_id_label"
+            app:layout_constraintTop_toTopOf="@id/refund_id_label" />
+
+        <TextView
             android:id="@+id/sale_id_label"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/height_30"
@@ -40,7 +65,7 @@
             android:textColor="@color/label_text_color"
             android:textSize="@dimen/font_size_16"
             app:layout_constraintStart_toStartOf="@id/order_head_info_label"
-            app:layout_constraintTop_toBottomOf="@id/order_head_info_label" />
+            app:layout_constraintTop_toBottomOf="@id/m_refund_id_tv" />
 
         <TextView
             android:id="@+id/m_sale_id_tv"
@@ -245,29 +270,6 @@
         android:layout_height="@dimen/height_58"
         android:orientation="horizontal"
         android:padding="@dimen/margin_5">
-
-        <Button
-            android:id="@+id/m_pay_verify_btn"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/button_sub_blue"
-            android:text="@string/verify_pay_sz"
-            android:textColor="@color/white"
-            android:textSize="@dimen/font_size_16" />
-
-        <Button
-            android:id="@+id/m_refund_btn"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_5"
-            android:layout_weight="1"
-            android:background="@drawable/button_sub_blue"
-            android:text="@string/m_refund_sz"
-            android:textColor="@color/white"
-            android:textSize="@dimen/font_size_16" />
 
         <Button
             android:id="@+id/m_print_btn"

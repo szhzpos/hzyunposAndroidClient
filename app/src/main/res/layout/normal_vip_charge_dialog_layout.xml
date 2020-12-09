@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:background="@drawable/round_shape"
     android:orientation="vertical">
@@ -25,7 +25,7 @@
         android:textSize="@dimen/font_size_18" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
         <LinearLayout
@@ -59,16 +59,17 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout"
-            android:layout_width="match_parent"
+            android:layout_width="@dimen/size_428"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/margin_2"
+            android:layout_marginEnd="1dp"
             android:background="@drawable/dot_round_shape"
             android:padding="@dimen/margin_5"
             android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/status_layout"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:layout_editor_absoluteX="2dp">
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/name_text"
@@ -231,229 +232,197 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="@dimen/mobile_vip_charge_item_height"
+        android:layout_marginTop="@dimen/margin_5"
+        android:background="@drawable/shape_border_gray"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/margin_5"
+        android:paddingEnd="@dimen/size_0">
 
-        <LinearLayout
+        <TextView
+            android:layout_width="@dimen/size_82"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@string/charge_plan_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <TextView
+            android:id="@+id/mobile_charge_plan"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.5"
+            android:autofillHints=""
+            android:background="@drawable/edit_text_style"
+            android:drawableEnd="@drawable/content"
+            android:ems="10"
+            android:gravity="center_vertical"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <TextView
+            android:layout_width="@dimen/size_82"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|end"
+            android:text="@string/sale_man_colon_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <TextView
+            android:id="@+id/mobile_sale_man"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:autofillHints=""
+            android:background="@drawable/edit_text_style"
+            android:drawableEnd="@drawable/content"
+            android:gravity="center_vertical"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/mobile_vip_charge_item_height"
+        android:layout_marginTop="@dimen/margin_5"
+        android:background="@drawable/shape_border_gray"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/margin_5"
+        android:paddingEnd="@dimen/size_0">
+
+        <TextView
+            android:layout_width="@dimen/size_82"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@string/charge_amt__colon_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <EditText
+            android:id="@+id/mobile_charge_amt"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:autofillHints=""
+            android:background="@drawable/edit_text_style"
+            android:ems="10"
+            android:inputType="textPersonName|numberDecimal"
+            android:selectAllOnFocus="true"
+            android:text="@string/zero_p_z_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <TextView
+            android:layout_width="@dimen/size_82"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@string/present_amt_colon_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <EditText
+            android:id="@+id/mobile_present_amt"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:autofillHints=""
+            android:background="@drawable/edit_text_style"
+            android:ems="10"
+            android:inputType="numberDecimal"
+            android:selectAllOnFocus="true"
+            android:text="@string/zero_p_z_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/mobile_vip_charge_item_height"
+        android:layout_marginTop="@dimen/margin_5"
+        android:background="@drawable/shape_border_gray"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/margin_5"
+        android:paddingEnd="0dp">
+
+        <TextView
+            android:layout_width="@dimen/size_82"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical|end"
+            android:text="@string/pay_method_name_colon_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <TextView
+            android:id="@+id/mobile_pay_method"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:layout_weight="1.1"
+            android:autofillHints=""
+            android:background="@drawable/edit_text_style"
+            android:drawableEnd="@drawable/content"
+            android:ems="10"
+            android:gravity="center_vertical"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/mobile_vip_charge_item_height"
-                android:layout_marginTop="@dimen/margin_5"
-                android:background="@drawable/shape_border_gray"
-                android:orientation="horizontal"
-                android:paddingStart="@dimen/margin_5"
-                android:paddingEnd="@dimen/size_0">
+        <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+            android:id="@+id/pay_code"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/margin_2"
+            android:layout_weight="1"
+            android:background="@drawable/left_separator"
+            android:hint="@string/space_sz"
+            android:inputType="number"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="0dp"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            android:visibility="gone" />
 
-                <TextView
-                    android:layout_width="@dimen/size_82"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:text="@string/charge_plan_sz"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16" />
+    </LinearLayout>
 
-                <TextView
-                    android:id="@+id/mobile_charge_plan"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:autofillHints=""
-                    android:background="@drawable/edit_text_style"
-                    android:drawableEnd="@drawable/content"
-                    android:ems="10"
-                    android:gravity="center_vertical"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16" />
-            </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/mobile_vip_charge_item_height"
+        android:layout_marginTop="@dimen/margin_5"
+        android:background="@drawable/shape_border_gray"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/margin_5"
+        android:paddingEnd="@dimen/size_0">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/mobile_vip_charge_item_height"
-                android:layout_marginTop="@dimen/margin_5"
-                android:background="@drawable/shape_border_gray"
-                android:orientation="horizontal"
-                android:paddingStart="@dimen/margin_5"
-                android:paddingEnd="@dimen/size_0">
+        <TextView
+            android:layout_width="@dimen/size_82"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@string/vip_charge_remark_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
 
-                <TextView
-                    android:layout_width="@dimen/size_82"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:text="@string/charge_amt__colon_sz"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16" />
+        <EditText
+            android:id="@+id/mobile_charge_remark"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:autofillHints=""
+            android:background="@drawable/edit_text_style"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+    </LinearLayout>
 
-                <EditText
-                    android:id="@+id/mobile_charge_amt"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:autofillHints=""
-                    android:background="@drawable/edit_text_style"
-                    android:ems="10"
-                    android:inputType="textPersonName|numberDecimal"
-                    android:selectAllOnFocus="true"
-                    android:text="@string/zero_p_z_sz"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/mobile_vip_charge_item_height"
-                android:layout_marginTop="@dimen/margin_5"
-                android:background="@drawable/shape_border_gray"
-                android:orientation="horizontal"
-                android:paddingStart="@dimen/margin_5"
-                android:paddingEnd="@dimen/size_0">
-
-                <TextView
-                    android:layout_width="@dimen/size_82"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:text="@string/present_amt_colon_sz"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16" />
-
-                <EditText
-                    android:id="@+id/mobile_present_amt"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:autofillHints=""
-                    android:background="@drawable/edit_text_style"
-                    android:ems="10"
-                    android:inputType="numberDecimal"
-                    android:selectAllOnFocus="true"
-                    android:text="@string/zero_p_z_sz"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/mobile_vip_charge_item_height"
-                android:layout_marginTop="@dimen/margin_5"
-                android:background="@drawable/shape_border_gray"
-                android:orientation="horizontal"
-                android:paddingStart="@dimen/margin_5"
-                android:paddingEnd="@dimen/size_0">
-
-                <TextView
-                    android:layout_width="@dimen/size_82"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:text="@string/vip_charge_remark_sz"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16" />
-
-                <EditText
-                    android:id="@+id/mobile_charge_remark"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:autofillHints=""
-                    android:background="@drawable/edit_text_style"
-                    android:ems="10"
-                    android:inputType="textPersonName"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/mobile_vip_charge_item_height"
-                android:layout_marginTop="@dimen/margin_5"
-                android:background="@drawable/shape_border_gray"
-                android:orientation="horizontal"
-                android:paddingStart="@dimen/margin_5"
-                android:paddingEnd="@dimen/size_0">
-
-                <TextView
-                    android:layout_width="@dimen/size_82"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical|end"
-                    android:text="@string/sale_man_colon_sz"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16" />
-
-                <TextView
-                    android:id="@+id/mobile_sale_man"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:autofillHints=""
-                    android:background="@drawable/edit_text_style"
-                    android:drawableEnd="@drawable/content"
-                    android:gravity="center_vertical"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/mobile_vip_charge_item_height"
-                android:layout_marginTop="@dimen/margin_5"
-                android:background="@drawable/shape_border_gray"
-                android:orientation="horizontal"
-                android:paddingStart="@dimen/margin_5"
-                android:paddingEnd="0dp">
-
-                <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
-                    android:id="@+id/pay_code"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="@dimen/margin_2"
-                    android:layout_weight="1"
-                    android:background="@drawable/left_separator"
-                    android:hint="@string/space_sz"
-                    android:inputType="number"
-                    android:paddingStart="@dimen/margin_5"
-                    android:paddingEnd="0dp"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16"
-                    android:visibility="gone" />
-
-                <TextView
-                    android:layout_width="@dimen/size_82"
-                    android:layout_height="match_parent"
-                    android:gravity="center_vertical|end"
-                    android:text="@string/pay_method_name_colon_sz"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16" />
-
-                <TextView
-                    android:id="@+id/mobile_pay_method"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:autofillHints=""
-                    android:background="@drawable/edit_text_style"
-                    android:drawableEnd="@drawable/content"
-                    android:ems="10"
-                    android:gravity="center_vertical"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16" />
-            </LinearLayout>
-
-            <Switch
-                android:id="@+id/mobile_print_switch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/margin_18"
-                android:text="@string/print_switch_sz"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_16" />
-
-        </LinearLayout>
-    </ScrollView>
+    <Switch
+        android:id="@+id/mobile_print_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/margin_18"
+        android:text="@string/print_switch_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
 
     <Button
         android:id="@+id/mobile_charge_btn"
