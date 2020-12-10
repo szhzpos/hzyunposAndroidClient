@@ -76,19 +76,17 @@ public final class VipChargeDialogImp extends AbstractPayDialog {
     protected void initPayMethod(){
         mPayMethodViewAdapter = new PayMethodViewAdapter(mContext,(int) mContext.getResources().getDimension(R.dimen.pay_method_width));
         mPayMethodViewAdapter.setDatas("3");
-        mPayMethodViewAdapter.setOnItemClickListener((v, pos) -> {
-            mPayMethod = mPayMethodViewAdapter.getItem(pos);
-            if (mPayMethod != null) {
-                if (mPayMethod.getIntValue("is_check") != 2){ //显示付款码输入框
-                    mPayCode.setVisibility(View.VISIBLE);
-                    mPayCode.requestFocus();
-                    mPayCode.setHint(mPayMethod.getString("xtype"));
-                }else{
-                    mPayCode.callOnClick();
-                    mPayCode.getText().clear();
-                    mPayCode.setVisibility(View.GONE);
-                    mPayAmtEt.requestFocus();
-                }
+        mPayMethodViewAdapter.setOnItemClickListener((object) -> {
+            mPayMethod = object;
+            if (mPayMethod.getIntValue("is_check") != 2){ //显示付款码输入框
+                mPayCode.setVisibility(View.VISIBLE);
+                mPayCode.requestFocus();
+                mPayCode.setHint(mPayMethod.getString("xtype"));
+            }else{
+                mPayCode.callOnClick();
+                mPayCode.getText().clear();
+                mPayCode.setVisibility(View.GONE);
+                mPayAmtEt.requestFocus();
             }
         });
         final RecyclerView recyclerView = findViewById(R.id.pay_method_list);
@@ -378,7 +376,7 @@ public final class VipChargeDialogImp extends AbstractPayDialog {
 
     @Override
     public boolean verify(){
-       if (mPayMethod == null)mPayMethodViewAdapter.setCurrentPayMethod();
+       if (mPayMethod == null)mPayMethod = mPayMethodViewAdapter.getDefaultPayMethod();
        return MyDialog.ToastMessage(null,"会员信息不能为空！",mContext,mDialogWindow,mVip != null) && super.verify();
     }
 

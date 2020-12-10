@@ -11,11 +11,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.PayMethodItemDecoration;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
 import com.wyc.cloudapp.dialog.pay.AbstractPayDialog;
-import com.wyc.cloudapp.logger.Logger;
 
 public class RefundPayDialogImp extends AbstractPayDialog {
 
@@ -28,7 +26,6 @@ public class RefundPayDialogImp extends AbstractPayDialog {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         mPayAmtEt.setEnabled(false);
         initPayMethod();
     }
@@ -36,7 +33,7 @@ public class RefundPayDialogImp extends AbstractPayDialog {
     @Override
     public JSONObject getContent() {
         final JSONObject pay_info = new JSONObject();
-        if (mPayMethod == null)mPayMethodViewAdapter.setCurrentPayMethod();
+        if (mPayMethod == null)mPayMethod = mPayMethodViewAdapter.getDefaultPayMethod();
 
         pay_info.put("pay_method",mPayMethod.getIntValue("pay_method_id"));
         pay_info.put("pay_method_name",mPayMethod.getString("name"));
@@ -49,23 +46,20 @@ public class RefundPayDialogImp extends AbstractPayDialog {
 
     @Override
     protected void initPayMethod(){
-        final PayMethodViewAdapter payMethodViewAdapter = mPayMethodViewAdapter = new PayMethodViewAdapter(mContext,(int) mContext.getResources().getDimension(R.dimen.pay_method_width));
-        payMethodViewAdapter.loadRefundPayMeothd();
-        payMethodViewAdapter.setOnItemClickListener((v, pos) -> {
-            mPayMethod = payMethodViewAdapter.getItem(pos);
-            if (mPayMethod != null) {
-                Logger.d_json(mPayMethod.toString());
-                final EditText pay_code = mPayCode;
-                if (mPayMethod.getIntValue("is_check") != 2){ //显示付款码输入框
-                    pay_code.setVisibility(View.VISIBLE);
-                    pay_code.requestFocus();
-                    pay_code.setHint(mPayMethod.getString("xtype"));
-                }else{
-                    pay_code.callOnClick();
-                    pay_code.getText().clear();
-                    pay_code.setVisibility(View.GONE);
-                    mPayAmtEt.requestFocus();
-                }
+        final PayMethodViewAdapter payMethodViewAdapter = new PayMethodViewAdapter(mContext,(int) mContext.getResources().getDimension(R.dimen.pay_method_width));
+        payMethodViewAdapter.loadRefundPayMethod();
+        payMethodViewAdapter.setOnItemClickListener((object) -> {
+            mPayMethod = object;
+            final EditText pay_code = mPayCode;
+            if (mPayMethod.getIntValue("is_check") != 2){ //显示付款码输入框
+                pay_code.setVisibility(View.VISIBLE);
+                pay_code.requestFocus();
+                pay_code.setHint(mPayMethod.getString("xtype"));
+            }else{
+                pay_code.callOnClick();
+                pay_code.getText().clear();
+                pay_code.setVisibility(View.GONE);
+                mPayAmtEt.requestFocus();
             }
         });
         final RecyclerView recyclerView = findViewById(R.id.pay_method_list);
@@ -73,6 +67,8 @@ public class RefundPayDialogImp extends AbstractPayDialog {
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL,false));
         recyclerView.addItemDecoration(new PayMethodItemDecoration(2));
         recyclerView.setAdapter(payMethodViewAdapter);
+
+        mPayMethodViewAdapter = payMethodViewAdapter;
     }
 
 }

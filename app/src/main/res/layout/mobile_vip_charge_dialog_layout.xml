@@ -405,21 +405,6 @@
                 android:paddingStart="@dimen/margin_5"
                 android:paddingEnd="0dp">
 
-                <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
-                    android:id="@+id/pay_code"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="@dimen/margin_2"
-                    android:layout_weight="1"
-                    android:background="@drawable/left_separator"
-                    android:hint="@string/space_sz"
-                    android:inputType="number"
-                    android:paddingStart="@dimen/margin_5"
-                    android:paddingEnd="0dp"
-                    android:textColor="@color/text_color"
-                    android:textSize="@dimen/font_size_16"
-                    android:visibility="gone" />
-
                 <TextView
                     android:layout_width="@dimen/size_82"
                     android:layout_height="match_parent"

@@ -321,47 +321,44 @@ public final class PayDialog extends AbstractDialogSaleActivity {
     private void initPayMethod(){
         mPayMethodViewAdapter = new PayMethodViewAdapter(mContext,mPayDetailViewAdapter,(int) mContext.getResources().getDimension(R.dimen.pay_method_width));
         mPayMethodViewAdapter.setDatas("1");
-        mPayMethodViewAdapter.setOnItemClickListener((v, pos) -> {
-            final JSONObject pay_method = mPayMethodViewAdapter.getItem(pos);
-            if (pay_method != null){
-                try {
-                    final JSONObject pay_method_copy = Utils.JsondeepCopy(pay_method);
-                    final String pay_method_id = pay_method_copy.getString("pay_method_id");
-                    if (PayMethodViewAdapter.CASH_METHOD_ID.equals(pay_method_id)) {
-                        mOK.callOnClick();
-                    } else {
-                        if (verifyPayBalance()) {
-                            if (Utils.equalDouble(mPay_balance, 0) && mPayDetailViewAdapter.findPayDetailById(pay_method_id) == null) {//剩余金额为零，同时不存在此付款方式的记录。
-                                MyDialog.SnackbarMessage(mWindow, "剩余金额为零！", getCurrentFocus());
-                            } else {
-                                if (mVip != null){
-                                    pay_method_copy.put("card_code",mVip.getString("card_code"));
-                                }
-                                final PayMethodDialogImp payMethodDialogImp = new PayMethodDialogImp(mContext, pay_method_copy);
-                                deleteMolDiscountRecord();//现金之外的付款需要删除抹零金额
-                                payMethodDialogImp.setPayAmt(mPay_balance);
-                                payMethodDialogImp.setYesOnclickListener(dialog -> {
-                                    final JSONObject jsonObject = dialog.getContent();
-                                    if (jsonObject != null) {
-                                        mPayDetailViewAdapter.addPayDetail(jsonObject);
-                                        dialog.dismiss();
-                                    }
-                                }).setCancelListener(dialog -> {
-                                    mPayMethodViewAdapter.showDefaultPayMethod(null);
-                                    antoMol();
-                                    calculatePayContent();
-                                    refreshContent();
-                                    dialog.dismiss();
-                                }).show();
+        mPayMethodViewAdapter.setOnItemClickListener((object) -> {
+            try {
+                final JSONObject pay_method_copy = Utils.JsondeepCopy(object);
+                final String pay_method_id = pay_method_copy.getString("pay_method_id");
+                if (PayMethodViewAdapter.CASH_METHOD_ID.equals(pay_method_id)) {
+                    mOK.callOnClick();
+                } else {
+                    if (verifyPayBalance()) {
+                        if (Utils.equalDouble(mPay_balance, 0) && mPayDetailViewAdapter.findPayDetailById(pay_method_id) == null) {//剩余金额为零，同时不存在此付款方式的记录。
+                            MyDialog.SnackbarMessage(mWindow, "剩余金额为零！", getCurrentFocus());
+                        } else {
+                            if (mVip != null){
+                                pay_method_copy.put("card_code",mVip.getString("card_code"));
                             }
-                        }else{
-                            MyDialog.SnackbarMessage(mWindow,"剩余付款金额不能小于零！",mPayBalanceTv);
+                            final PayMethodDialogImp payMethodDialogImp = new PayMethodDialogImp(mContext, pay_method_copy);
+                            deleteMolDiscountRecord();//现金之外的付款需要删除抹零金额
+                            payMethodDialogImp.setPayAmt(mPay_balance);
+                            payMethodDialogImp.setYesOnclickListener(dialog -> {
+                                final JSONObject jsonObject = dialog.getContent();
+                                if (jsonObject != null) {
+                                    mPayDetailViewAdapter.addPayDetail(jsonObject);
+                                    dialog.dismiss();
+                                }
+                            }).setCancelListener(dialog -> {
+                                mPayMethodViewAdapter.showDefaultPayMethod();
+                                antoMol();
+                                calculatePayContent();
+                                refreshContent();
+                                dialog.dismiss();
+                            }).show();
                         }
+                    }else{
+                        MyDialog.SnackbarMessage(mWindow,"剩余付款金额不能小于零！",mPayBalanceTv);
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    MyDialog.ToastMessage("付款错误：" + e.getMessage(), mContext,null);
                 }
+            } catch (JSONException e) {
+                e.printStackTrace();
+                MyDialog.ToastMessage("付款错误：" + e.getMessage(), mContext,null);
             }
         });
         final RecyclerView recyclerView = findViewById(R.id.pay_method_list);

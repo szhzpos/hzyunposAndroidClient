@@ -17,6 +17,7 @@ import com.wyc.cloudapp.dialog.orderDialog.AbstractRetailOrderDetailsDialog;
 import com.wyc.cloudapp.dialog.orderDialog.NormalRetailOrderDetailsDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
@@ -63,11 +64,11 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
                 holder.reality_amt.setText(String.format(Locale.CHINA, "%.2f", order_info.getDoubleValue("reality_amt")));
 
                 int order_status = order_info.getIntValue("order_status");
-                if (order_status == 4)
+                if (order_status != 2)
                     holder.order_status.setTextColor(mContext.getColor(R.color.orange_1));
 
                 holder.order_status.setText(order_info.getString("order_status_name"));
-                holder.order_status.setTag(order_info.getIntValue("order_status"));
+                holder.order_status.setTag(order_status);
 
                 holder.pay_status.setText(order_info.getString("pay_status_name"));
 
@@ -84,6 +85,8 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
         }
     }
 
+
+
     @Override
     public int getItemCount() {
         return mDatas == null ? 0: mDatas.size();
@@ -92,19 +95,23 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
     private final View.OnTouchListener touchListener = (v, event) -> {
         if (event.getAction() == MotionEvent.ACTION_DOWN){
             setCurrentItemView(v);
-            final TextView order_code_tv = v.findViewById(R.id.order_code),sale_refund_tv = v.findViewById(R.id.sale_refund);
+            final TextView order_code_tv = v.findViewById(R.id.order_code),sale_refund_tv = v.findViewById(R.id.sale_refund),order_status = v.findViewById(R.id.order_status);
             if (isClickView(order_code_tv,event.getX(),event.getY())){
                 final AbstractRetailOrderDetailsDialog retailOrderDetailsDialog = new NormalRetailOrderDetailsDialog(mContext,getCurrentOrder());
                 retailOrderDetailsDialog.show();
             }else if (isClickView(sale_refund_tv,event.getX(),event.getY())){
-                sale_refund_tv.post(()->{
-                    if (RefundDialog.verifyRefundPermission(mContext)){
-                        if (mContext.getSingleRefundStatus())mContext.setSingleRefundStatus(false);
-                        final RefundDialog refundDialog = new RefundDialog(mContext,order_code_tv.getText().toString());
-                        refundDialog.show();
-                        mDialog.dismiss();
-                    }
-                });
+                if (Utils.getViewTagValue(order_status,2) == 2){
+                    sale_refund_tv.post(()->{
+                        if (RefundDialog.verifyRefundPermission(mContext)){
+                            if (mContext.getSingleRefundStatus())mContext.setSingleRefundStatus(false);
+                            final RefundDialog refundDialog = new RefundDialog(mContext,order_code_tv.getText().toString());
+                            refundDialog.show();
+                            mDialog.dismiss();
+                        }
+                    });
+                }else{
+                    order_status.postDelayed(()-> MyDialog.ToastMessage(order_status,"订单状态不正常不能退款!",mContext,mDialog.getWindow()),100);
+                }
             }
         }
         return v.performClick();

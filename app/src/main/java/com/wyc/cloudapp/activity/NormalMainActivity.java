@@ -358,6 +358,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(this,GoodsInfoViewAdapter.SPAN_COUNT);
         goods_info_view.setLayoutManager(gridLayoutManager);
         mGoodsInfoViewAdapter.setOnGoodsSelectListener(this::addSaleGoods);
+        SuperItemDecoration.registerGlobalLayoutToRecyclerView(goods_info_view,getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration(-1));
         goods_info_view.setAdapter(mGoodsInfoViewAdapter);
     }
     private void initGoodsCategoryAdapter(){

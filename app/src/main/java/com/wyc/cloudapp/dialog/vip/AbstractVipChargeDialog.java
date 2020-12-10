@@ -37,7 +37,7 @@ import java.util.Locale;
 
 public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity {
     protected JSONObject mPayMethodSelected;
-    protected EditText mPayCodeEt;
+    protected static final String PAY_CODE_LABEL = "payCode";
 
     private JSONObject mVip;
     private EditText mSearchContent,mChargeAmtEt,mRemarkEt,mPresentAmtEt;
@@ -72,13 +72,8 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
         initPrintSwitch();
         initChargeBtn();
         initSaleMan();
-        initPayCode();
 
         showVipInfo();
-    }
-
-    private void initPayCode(){
-        mPayCodeEt = findViewById(R.id.pay_code);
     }
 
     protected void triggerCharge(){
@@ -284,7 +279,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
 
         mRemarkEt.setText(space);
 
-        if (mPayCodeEt != null)mPayCodeEt.setText(space.toString());
+        clearPayCode(true);
     }
 
     private void initChargeAmt(){
@@ -418,6 +413,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
     }
 
     public abstract boolean checkPayMethod();
+    public abstract void clearPayCode(boolean clearView);
 
     private void set_pay_method_and_check_scan(@NonNull final JSONObject object,final TextView mobile_pay_method){
         final String _id = Utils.getNullStringAsEmpty(object,"item_id");
@@ -537,7 +533,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
     private void showPayError(final String message){
         mChargeAmtEt.post(()-> {
             mProgressDialog.dismiss();
-            if (mPayCodeEt != null)mPayCodeEt.setText(R.string.space_sz);
+            clearPayCode(false);
             MyDialog.displayErrorMessage(null,message,mContext);
         });
     }
@@ -565,8 +561,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
         if (verify()){
             mProgressDialog.setCancel(false).setMessage("正在生成充值订单...").refreshMessage().show();
 
-            final String sale_man_id = Utils.getViewTagValue(mSaleManTv,"-1"),//获取营业员id
-                    mPayCode = mPayCodeEt == null ? "" : mPayCodeEt.getText().toString();
+            final String sale_man_id = Utils.getViewTagValue(mSaleManTv,"-1");
             final double present_amt = getPresentAmt();
 
             CustomApplication.execute(()->{
@@ -650,7 +645,8 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                                     //发起支付请求
                                     if (is_check != 2){
                                         String unified_pay_order = mPayMethodSelected.getString("unified_pay_order"),
-                                                unified_pay_query = mPayMethodSelected.getString("unified_pay_query");
+                                                unified_pay_query = mPayMethodSelected.getString("unified_pay_query"),
+                                                pay_code = mPayMethodSelected.getString(PAY_CODE_LABEL);
 
                                         if ("null".equals(unified_pay_order) || "".equals(unified_pay_order)){
                                             unified_pay_order = "/api/pay2/index";
@@ -669,7 +665,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                                         data_.put("order_code_son",third_order_id);
                                         data_.put("pay_money",sz_moeny);
                                         data_.put("pay_method",pay_method_id);
-                                        data_.put("pay_code_str",mPayCode);
+                                        data_.put("pay_code_str",pay_code);
 
                                         sz_param = HttpRequest.generate_request_parm(data_,appSecret);
 

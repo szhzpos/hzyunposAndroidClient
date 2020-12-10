@@ -78,10 +78,7 @@ public final class GoodsManageViewAdapter extends AbstractTableDataAdapter<Goods
             _status_tv.setText(goods_info.getString("status"));
             _status_tv.setTag(code);
             if (mCurrentItemView != holder.mCurrentLayoutItemView){
-                if (code ==  1){
-                    setRowTextColor(holder.mCurrentLayoutItemView,R.color.text_color);
-                }else
-                    setRowTextColor(holder.mCurrentLayoutItemView,R.color.orange_1);
+                setViewBackgroundColor(holder.mCurrentLayoutItemView,false);
             }
             preload(position,_status_tv);
 
@@ -113,7 +110,7 @@ public final class GoodsManageViewAdapter extends AbstractTableDataAdapter<Goods
             mCurrentPage = page;
             if (page == 0) {
                 mDatas = array;
-                mAllRowsForQueryCondition = Integer.valueOf(counts);
+                mAllRowsForQueryCondition = Integer.parseInt(counts);
                 mDataSize = array.size();
             }else{
                 mDataSize += array.size();

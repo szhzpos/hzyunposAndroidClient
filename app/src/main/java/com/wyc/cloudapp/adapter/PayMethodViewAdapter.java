@@ -22,12 +22,13 @@ import java.util.Locale;
 
 public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdapter.MyViewHolder> {
     public static final String CASH_METHOD_ID = "1";//现金支付方式id
+    private static final String CUR_PAY_METHOD_LABEL = "isCur";
     private final MainActivity mContext;
     private JSONArray mDatas;
     private OnItemClickListener mOnItemClickListener;
-    private View mCurrentItemView,mDefaultPayMethodView;
     private final int mWidth;
     private final PayDetailViewAdapter mPayDetailViewAdapter;
+    private JSONObject mDefaultPayMethod,mCurrentPayMethod;
     public PayMethodViewAdapter(MainActivity context,int width){
         this(context,null,width);
     }
@@ -60,13 +61,21 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     }
 
     @Override
+    public void onViewDetachedFromWindow(@NonNull MyViewHolder holder) {
+    }
+
+    @Override
+    public void onViewAttachedToWindow (@NonNull MyViewHolder holder){
+    }
+
+
+    @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
         if (mDatas != null){
             final JSONObject pay_method_info = mDatas.getJSONObject(i);
-            String szImage,pay_method_id;
-            Drawable drawable = null;
             if (pay_method_info != null){
-                szImage = (String) pay_method_info.remove("pay_img");
+                Drawable drawable = null;
+                String szImage = pay_method_info.getString("pay_img");
                 if (!"".equals(szImage) && szImage != null){
                     szImage = szImage.substring(szImage.lastIndexOf("/") + 1);
                     drawable = Drawable.createFromPath(LoginActivity.IMG_PATH + szImage);
@@ -77,7 +86,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
                     drawable.setBounds(0, 0, 32,32);
                     myViewHolder.pay_method_name.setCompoundDrawables(null,drawable,null,null);
                 }
-                pay_method_id = pay_method_info.getString("pay_method_id");
+                final String pay_method_id = pay_method_info.getString("pay_method_id");
                 myViewHolder.pay_method_id.setText(pay_method_id);
                 myViewHolder.pay_method_name.setText(pay_method_info.getString("name"));
 
@@ -91,40 +100,50 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
                     }
                 }
 
-                if(PayMethodViewAdapter.CASH_METHOD_ID.equals(pay_method_id)){//默认现金
-                    showDefaultPayMethod(myViewHolder.mCurrentLayoutItemView);
+                if (pay_method_info.getBooleanValue(CUR_PAY_METHOD_LABEL)){
+                    setSelectedSignVisibility(myViewHolder.mCurrentLayoutItemView,View.VISIBLE);
+                }else {
+                    setSelectedSignVisibility(myViewHolder.mCurrentLayoutItemView,View.GONE);
                 }
 
+                myViewHolder.mCurrentLayoutItemView.setTag(pay_method_id);
                 if (mOnItemClickListener != null){
-                    myViewHolder.mCurrentLayoutItemView.setOnClickListener(view -> {
-                        View sign;
-                        if (null != mCurrentItemView){
-                            if (mCurrentItemView != view){
-                                sign = view.findViewById(R.id.sel_sign);
-                                if (sign != null)sign.setVisibility(View.VISIBLE);
-
-                                sign = mCurrentItemView.findViewById(R.id.sel_sign);
-                                if (sign != null)sign.setVisibility(View.GONE);
-
-                                mCurrentItemView = view;
-                            }
-                        }else{
-                            sign = view.findViewById(R.id.sel_sign);
-                            if (sign != null)sign.setVisibility(View.VISIBLE);
-                            mCurrentItemView = view;
-                        }
-                        mOnItemClickListener.onClick(view,i);
-                    });
+                    myViewHolder.mCurrentLayoutItemView.setOnClickListener(mClickListener);
                 }
-
                 myViewHolder.mCurrentLayoutItemView.setOnHoverListener(hoverListener);
             }
         }
     }
 
-    @Override
-    public void onViewAttachedToWindow (@NonNull MyViewHolder holder){
+    private final View.OnClickListener mClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            final JSONObject object = get_pay_method(Utils.getViewTagValue(v,""));
+            if (object != null && mOnItemClickListener != null){
+                if (object != mCurrentPayMethod){
+                    if (null != mCurrentPayMethod)
+                        mCurrentPayMethod.put(CUR_PAY_METHOD_LABEL,false);
 
+                    mCurrentPayMethod = object;
+                }
+
+                if (object != mDefaultPayMethod){
+                    if (null != mDefaultPayMethod)
+                        mDefaultPayMethod.put(CUR_PAY_METHOD_LABEL,false);
+                }
+
+                object.put(CUR_PAY_METHOD_LABEL,true);
+                mOnItemClickListener.onClick(object);
+            }
+            notifyDataSetChanged();
+        }
+    };
+
+    private void setSelectedSignVisibility(final View view,int v){
+        final View sign = view.findViewById(R.id.sel_sign);
+        if (sign != null && sign.getVisibility() != v){
+            sign.setVisibility(v);
+        }
     }
 
     @Override
@@ -147,15 +166,11 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     };
 
     public interface OnItemClickListener{
-        void onClick(View v,int pos);
+        void onClick(@NonNull final JSONObject object);
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener){
         this.mOnItemClickListener = onItemClickListener;
-    }
-
-    public JSONObject getItem(int i){
-        return mDatas == null ? null : mDatas.getJSONObject(i);
     }
 
     public void setDatas(final String support_code){
@@ -166,26 +181,34 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
             mDatas = SQLiteHelper.getListToJson("select *  from pay_method where is_check = 2 and status = '1' and support like '%" + support_code +"%' order by sort",err);
 
         if (mDatas != null){
+            setDefaultPayMethod();
             this.notifyDataSetChanged();
         }else{
             MyDialog.ToastMessage("加载支付方式错误：" + err,mContext,null);
         }
     }
 
-    public void loadRefundPayMeothd(){
+    public void loadRefundPayMethod(){
         final StringBuilder err = new StringBuilder();
         mDatas = SQLiteHelper.getListToJson("select *  from pay_method where status = '1' and is_check = 2 order by sort",err);
         if (mDatas != null){
+            setDefaultPayMethod();
             this.notifyDataSetChanged();
         }else{
             MyDialog.ToastMessage("加载支付方式错误：" + err,mContext,null);
         }
     }
 
+    private void setDefaultPayMethod(){
+        mDefaultPayMethod = get_pay_method(CASH_METHOD_ID);
+        mDefaultPayMethod.put(CUR_PAY_METHOD_LABEL,true);
+    }
+
     public JSONObject get_pay_method(final String pay_method_id){
-        if (mDatas != null && pay_method_id != null){
-            for (int i = 0,length = mDatas.size();i < length;i++){
-                final JSONObject jsonObject = mDatas.getJSONObject(i);
+        final JSONArray array = mDatas;
+        if (array != null && pay_method_id != null){
+            for (int i = 0,length = array.size();i < length;i++){
+                final JSONObject jsonObject = array.getJSONObject(i);
                 if (pay_method_id.equals(jsonObject.getString("pay_method_id"))){
                     return jsonObject;
                 }
@@ -194,37 +217,15 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
         return null;
     }
 
-    public void setCurrentPayMethod(){
-        if (mCurrentItemView != null)mCurrentItemView.callOnClick();
+    public void showDefaultPayMethod(){
+         mDefaultPayMethod.put(CUR_PAY_METHOD_LABEL,true);
+         if (mDefaultPayMethod != mCurrentPayMethod){
+             mCurrentPayMethod.put(CUR_PAY_METHOD_LABEL,false);
+         }
+        notifyDataSetChanged();
     }
 
-    public String getDefaultPayMethodId(){
-        if (null != mDefaultPayMethodView){
-           final TextView idTv = mDefaultPayMethodView.findViewById(R.id.pay_method_id);
-           if (null != idTv){
-               return idTv.getText().toString();
-           }
-        }
-        return "";
-    }
-
-    public void showDefaultPayMethod(View view){
-        View sign;
-        if (view != null)mDefaultPayMethodView = view;
-        if (mDefaultPayMethodView != null){
-            if (null != mCurrentItemView){
-                if (mCurrentItemView != mDefaultPayMethodView){
-                    sign = mDefaultPayMethodView.findViewById(R.id.sel_sign);
-                    if (sign != null)sign.setVisibility(View.VISIBLE);
-
-                    sign = mCurrentItemView.findViewById(R.id.sel_sign);
-                    if (sign != null)sign.setVisibility(View.GONE);
-                }
-            }else{
-                sign = mDefaultPayMethodView.findViewById(R.id.sel_sign);
-                if (sign != null)sign.setVisibility(View.VISIBLE);
-            }
-            mCurrentItemView = mDefaultPayMethodView;
-        }
+    public JSONObject getDefaultPayMethod(){
+        return mDefaultPayMethod;
     }
 }

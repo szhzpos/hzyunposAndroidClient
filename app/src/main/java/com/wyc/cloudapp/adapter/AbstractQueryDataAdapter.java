@@ -2,8 +2,9 @@ package com.wyc.cloudapp.adapter;
 
 import android.graphics.Color;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.view.ViewGroup;
 import android.widget.TextView;
+
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.utils.Utils;
@@ -27,11 +28,11 @@ public abstract class AbstractQueryDataAdapter<T extends AbstractTableDataAdapte
                 text_color = mContext.getColor(R.color.text_color);
             }
             view.setBackgroundColor(selected_color);
-            if (view instanceof LinearLayout){
-                final LinearLayout linearLayout = (LinearLayout)view;
-                int count = linearLayout.getChildCount();
+            if (view instanceof ViewGroup){
+                final ViewGroup viewGroup = (ViewGroup)view;
+                int count = viewGroup.getChildCount();
                 for (int i = 0;i < count;i++){
-                    child = linearLayout.getChildAt(i);
+                    child = viewGroup.getChildAt(i);
                     if (child instanceof TextView){
                         final TextView tv = ((TextView) child);
                         switch (tv.getId()) {
@@ -64,11 +65,11 @@ public abstract class AbstractQueryDataAdapter<T extends AbstractTableDataAdapte
     @Override
     protected void setCurrentItemView(View v){
         if (mCurrentItemView == null){
-            setmCurrentItemViewAndIndex(v);
+            setCurrentItemViewAndIndex(v);
             setViewBackgroundColor(v,true);
         }else if(mCurrentItemView != v){
             setViewBackgroundColor(mCurrentItemView,false);
-            setmCurrentItemViewAndIndex(v);
+            setCurrentItemViewAndIndex(v);
             setViewBackgroundColor(v,true);
         }
     }
@@ -88,7 +89,6 @@ public abstract class AbstractQueryDataAdapter<T extends AbstractTableDataAdapte
         }
         return new JSONObject();
     }
-
 
     boolean isClickView(final View view, float x, float y){
         if (view == null)return false;

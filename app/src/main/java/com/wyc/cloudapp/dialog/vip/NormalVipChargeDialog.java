@@ -1,7 +1,9 @@
 package com.wyc.cloudapp.dialog.vip;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 
@@ -13,6 +15,7 @@ import com.wyc.cloudapp.utils.Utils;
 
 
 public class NormalVipChargeDialog extends AbstractVipChargeDialog {
+    private EditText mPayCodeEt;
     public NormalVipChargeDialog(@NonNull MainActivity context, final JSONObject vip) {
         super(context,vip);
     }
@@ -20,29 +23,59 @@ public class NormalVipChargeDialog extends AbstractVipChargeDialog {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initPayCode();
+    }
+
+    private void initPayCode(){
+        mPayCodeEt = findViewById(R.id.pay_code);
+        if (null != mPayCodeEt)
+            mPayCodeEt.setOnKeyListener((dialog, keyCode, event) -> {
+                if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_UP){
+                    triggerCharge();
+                    return true;
+                }
+                return false;
+            });
     }
 
     @Override
     public boolean checkPayMethod() {
-        if (mPayCodeEt != null){
+        if (null != mPayMethodSelected){
             int is_check = mPayMethodSelected.getIntValue("is_check");
             if (is_check != 2){
-                if (mPayCodeEt.getText().length() == 0){
-                    mPayCodeEt.setVisibility(View.VISIBLE);
-                    mPayCodeEt.requestFocus();
-                    final String xtype = Utils.getNullStringAsEmpty(mPayMethodSelected,"xtype");
-                    mPayCodeEt.setHint(xtype);
-                    MyDialog.ToastMessage(mPayCodeEt,xtype,mContext,getWindow());
-
-                    return false;
+                if (mPayCodeEt != null){
+                    final String pay_code = mPayCodeEt.getText().toString();
+                    if (pay_code.isEmpty()){
+                        mPayCodeEt.setVisibility(View.VISIBLE);
+                        mPayCodeEt.requestFocus();
+                        final String xtype = Utils.getNullStringAsEmpty(mPayMethodSelected,"xtype");
+                        mPayCodeEt.setHint(xtype);
+                        mPayCodeEt.postDelayed(()-> MyDialog.ToastMessage(mPayCodeEt,xtype,mContext,getWindow()),300);
+                        return false;
+                    }else {
+                        mPayMethodSelected.put(PAY_CODE_LABEL,pay_code);
+                    }
+                }else {
+                    MyDialog.ToastMessage(mContext.getString(R.string.pay_m_hint_sz),mContext,getWindow());
                 }
             }else {
-                mPayCodeEt.setVisibility(View.GONE);
-                mPayCodeEt.clearFocus();
-                mPayCodeEt.setText(mContext.getString(R.string.space_sz));
+                if (null != mPayCodeEt){
+                    mPayCodeEt.setVisibility(View.GONE);
+                    mPayCodeEt.clearFocus();
+                    mPayCodeEt.setText(mContext.getString(R.string.space_sz));
+                }
             }
+        }else {
+            MyDialog.ToastMessage(mContext.getString(R.string.pay_m_hint_sz),mContext,getWindow());
+            return false;
         }
         return true;
+    }
+
+    @Override
+    public void clearPayCode(boolean b) {
+        if (b)if (mPayCodeEt != null)mPayCodeEt.getText().clear();
+        if (mPayMethodSelected != null)mPayMethodSelected.remove(PAY_CODE_LABEL);
     }
 
     @Override

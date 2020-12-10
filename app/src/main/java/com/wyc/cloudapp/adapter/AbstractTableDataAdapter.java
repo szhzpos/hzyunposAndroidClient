@@ -40,7 +40,6 @@ public abstract class AbstractTableDataAdapter<T extends AbstractTableDataAdapte
     public void onBindViewHolder(@NonNull T holder, int position) {
         if (mCurrentItemIndex == position + 1){
             if (mCurrentItemView != holder.mCurrentLayoutItemView)mCurrentItemView = holder.mCurrentLayoutItemView;
-            setViewBackgroundColor(holder.mCurrentLayoutItemView,true);
         }
     }
 
@@ -59,26 +58,29 @@ public abstract class AbstractTableDataAdapter<T extends AbstractTableDataAdapte
 
     protected void setCurrentItemView(View v){
         if (mCurrentItemView == null){
-            setmCurrentItemViewAndIndex(v);
+            setCurrentItemViewAndIndex(v);
             setViewBackgroundColor(v,true);
         }else if(mCurrentItemView != v){
             setViewBackgroundColor(mCurrentItemView,false);
-            setmCurrentItemViewAndIndex(v);
+            setCurrentItemViewAndIndex(v);
             setViewBackgroundColor(v,true);
         }else {
             setViewBackgroundColor(v,false);
-            setmCurrentItemViewAndIndex(null);
+            setCurrentItemViewAndIndex(null);
         }
         if (mItemClickCallback != null)mItemClickCallback.onClick(getCurrentRecord());
     }
     View.OnClickListener mItemClickListener = this::setCurrentItemView;
 
     protected void setViewBackgroundColor(final View view, boolean s){
-        if(view!= null){
+        if(view != null){
             int text_color,selected_color;
             if (s){
                 selected_color = mContext.getColor(R.color.listSelected);
-                text_color = mContext.getColor(R.color.white);
+                if (isNormalStatus(view))
+                    text_color = mContext.getColor(R.color.white);
+                else
+                    text_color = mContext.getColor(R.color.orange_1);
             } else {
                 if (isNormalStatus(view))
                     text_color = mContext.getColor(R.color.text_color);
@@ -102,7 +104,7 @@ public abstract class AbstractTableDataAdapter<T extends AbstractTableDataAdapte
         }
     }
 
-    void setmCurrentItemViewAndIndex(final View v){
+    void setCurrentItemViewAndIndex(final View v){
         mCurrentItemView = v;
         if (v == null){
             mCurrentItemIndex = -1;
@@ -122,26 +124,15 @@ public abstract class AbstractTableDataAdapter<T extends AbstractTableDataAdapte
     }
 
     private boolean isNormalStatus(final @NonNull View view){
-        //判断数据行是否正常。数据行所在的view需存在id为_status的子view，将数据行的状态值存放在子veiw的tag中；
-        return Utils.getViewTagValue(view.findViewById(R.id._status),1) == 1;
+        //判断数据行是否正常。数据行所在的view需存在id为getStatusViewId的返回值的子view，将数据行的状态值存放在子view的tag中,子类可重写getNormalStatus定制状态值,重写getStatusViewId定制子view；
+        return Utils.getViewTagValue(view.findViewById(getStatusViewId()),1) == getNormalStatus();
     }
 
-    void setRowTextColor(View view, int res_id){
-        if(view!= null){
-            int text_color;
-            text_color = mContext.getColor(res_id);
-            if (view instanceof ViewGroup){
-                final ViewGroup linearLayout = (ViewGroup)view;
-                int count = linearLayout.getChildCount();
-                View ch;
-                for (int i = 0;i < count;i++){
-                    ch = linearLayout.getChildAt(i);
-                    if (ch instanceof TextView){
-                        ((TextView) ch).setTextColor(text_color);
-                    }
-                }
-            }
-        }
+    protected int getNormalStatus(){//
+        return 1;
+    }
+    protected int getStatusViewId(){
+        return R.id._status;
     }
 
     protected JSONObject getCurrentRecord(){

@@ -57,14 +57,14 @@ public final class MobileRefundOrderAdapter extends AbstractQueryDataAdapter<Mob
 
                 holder.goods_num.setText(String.format(Locale.CHINA, "%.2f", order_info.getDoubleValue("xnum")));
 
-                int order_status = order_info.getIntValue("order_status");
+                int order_status = order_info.getIntValue("refund_status");
                 if (order_status == 4)
                     holder.order_status.setTextColor(mContext.getColor(R.color.orange_1));
                 else
                     holder.order_status.setTextColor(mContext.getColor(R.color.mobile_order_status));
 
-                holder.order_status.setText(order_info.getString("order_status_name"));
-                holder.order_status.setTag(order_info.getIntValue("order_status"));
+                holder.order_status.setText(order_info.getString("refund_status_name"));
+                holder.order_status.setTag(order_info.getIntValue("refund_status"));
 
                 holder.cas_name.setText(order_info.getString("cas_name"));
 
@@ -90,7 +90,7 @@ public final class MobileRefundOrderAdapter extends AbstractQueryDataAdapter<Mob
 
     private final View.OnTouchListener touchListener = (v, event) -> {
         if (event.getAction() == MotionEvent.ACTION_DOWN){
-            setmCurrentItemViewAndIndex(v);
+            setCurrentItemViewAndIndex(v);
             final TextView details_btn = v.findViewById(R.id.m_refund_order_detail);
             if (isClickView(details_btn,event.getX(),event.getY())){
                 final MobileRefundOrderDetailsDialog detailsDialog = new MobileRefundOrderDetailsDialog(mContext,getCurrentOrder());
@@ -99,6 +99,15 @@ public final class MobileRefundOrderAdapter extends AbstractQueryDataAdapter<Mob
         }
         return v.performClick();
     };
+
+    protected int getStatusViewId(){
+        return R.id.m_refund_order_status;
+    }
+
+    @Override
+    protected void setViewBackgroundColor(View view,boolean s){
+
+    }
 
     @Override
     protected JSONObject getCurrentOrder(){

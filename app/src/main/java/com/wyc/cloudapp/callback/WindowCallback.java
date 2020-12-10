@@ -43,7 +43,8 @@ public class WindowCallback implements Window.Callback {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        if (event.getAction() == KeyEvent.ACTION_DOWN){
+        int action = event.getAction();
+        if (action == KeyEvent.ACTION_DOWN || action == KeyEvent.ACTION_UP){
             if (mObj instanceof Toast){
                 ((Toast)mObj).cancel();
             }else if (mObj instanceof Snackbar){

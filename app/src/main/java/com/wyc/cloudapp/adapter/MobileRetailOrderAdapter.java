@@ -17,9 +17,9 @@ import com.wyc.cloudapp.dialog.orderDialog.AbstractRetailOrderDetailsDialog;
 import com.wyc.cloudapp.dialog.orderDialog.MobileRetailOrderDetailsDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
-
 public final class MobileRetailOrderAdapter extends AbstractQueryDataAdapter<MobileRetailOrderAdapter.MyViewHolder> {
     public MobileRetailOrderAdapter(final MainActivity activity){
         mContext = activity;
@@ -61,7 +61,7 @@ public final class MobileRetailOrderAdapter extends AbstractQueryDataAdapter<Mob
                 holder.goods_num.setText(String.format(Locale.CHINA, "%.2f", order_info.getDoubleValue("xnum")));
 
                 int order_status = order_info.getIntValue("order_status");
-                if (order_status == 4)
+                if (order_status != 2)
                     holder.order_status.setTextColor(mContext.getColor(R.color.orange_1));
                 else
                     holder.order_status.setTextColor(mContext.getColor(R.color.mobile_order_status));
@@ -91,26 +91,41 @@ public final class MobileRetailOrderAdapter extends AbstractQueryDataAdapter<Mob
         return mDatas == null ? 0: mDatas.size();
     }
 
+
+    @Override
+    protected void setViewBackgroundColor(View view,boolean s){
+
+    }
+
     private final View.OnTouchListener touchListener = (v, event) -> {
         if (event.getAction() == MotionEvent.ACTION_DOWN){
-            setmCurrentItemViewAndIndex(v);
+            setCurrentItemViewAndIndex(v);
             final TextView details_btn = v.findViewById(R.id.m_retail_order_detail),refund_btn = v.findViewById(R.id.m_refund_retail_order);
+
             if (isClickView(details_btn,event.getX(),event.getY())){
                 final AbstractRetailOrderDetailsDialog retailOrderDetailsDialog = new MobileRetailOrderDetailsDialog(mContext,getCurrentOrder());
                 retailOrderDetailsDialog.show();
             }else if (isClickView(refund_btn,event.getX(),event.getY())){
-                refund_btn.post(()->{
-                    if (RefundDialog.verifyRefundPermission(mContext)){
-                        if (mContext.getSingleRefundStatus())mContext.setSingleRefundStatus(false);
-                        final TextView order_code_tv = v.findViewById(R.id.order_code);
-                        final RefundDialog refundDialog = new RefundDialog(mContext,order_code_tv.getText().toString());
-                        refundDialog.show();
-                    }
-                });
+                if (Utils.getNotKeyAsNumberDefault(getCurrentOrder(),"order_status",2) == 2){
+                    refund_btn.post(()->{
+                        if (RefundDialog.verifyRefundPermission(mContext)){
+                            if (mContext.getSingleRefundStatus())mContext.setSingleRefundStatus(false);
+                            final TextView order_code_tv = v.findViewById(R.id.order_code);
+                            final RefundDialog refundDialog = new RefundDialog(mContext,order_code_tv.getText().toString());
+                            refundDialog.show();
+                        }
+                    });
+                }else{
+                    MyDialog.ToastMessage(v,"订单状态不正常不能退款!",mContext,null);
+                }
             }
         }
         return v.performClick();
     };
+
+    protected int getStatusViewId(){
+        return R.id.m_retail_order_status;
+    }
 
     @Override
     public void setDatas(final String where_sql){

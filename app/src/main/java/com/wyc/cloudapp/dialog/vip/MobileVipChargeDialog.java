@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.activity.mobile.MobileCashierActivity;
+import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.MessageID;
 
 public class MobileVipChargeDialog extends AbstractVipChargeDialog implements MobileCashierActivity.ScanCallback  {
@@ -16,16 +17,24 @@ public class MobileVipChargeDialog extends AbstractVipChargeDialog implements Mo
 
     @Override
     public boolean checkPayMethod() {
-        int is_check = mPayMethodSelected.getIntValue("is_check");
-        if (is_check != 2){
-            final Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-            mContext.startActivityForResult(intent, MessageID.PAY_REQUEST_CODE);
-            mContext.setScanCallback(this);
-
+        if (mPayMethodSelected != null){
+            int is_check = mPayMethodSelected.getIntValue("is_check");
+            if (is_check != 2){
+                final Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+                mContext.startActivityForResult(intent, MessageID.PAY_REQUEST_CODE);
+                mContext.setScanCallback(this);
+                return false;
+            }
+        }else {
+            MyDialog.ToastMessage(mContext.getString(R.string.pay_m_hint_sz),mContext,getWindow());
             return false;
         }
-
         return true;
+    }
+
+    @Override
+    public void clearPayCode(boolean b) {
+        if (mPayMethodSelected != null)mPayMethodSelected.remove(PAY_CODE_LABEL);
     }
 
     @Override
@@ -40,7 +49,7 @@ public class MobileVipChargeDialog extends AbstractVipChargeDialog implements Mo
 
     @Override
     public void callback(String code) {
-        if (mPayCodeEt != null)mPayCodeEt.setText(code);
+        if (mPayMethodSelected != null)mPayMethodSelected.put(PAY_CODE_LABEL,code);
         triggerCharge();
     }
 }
