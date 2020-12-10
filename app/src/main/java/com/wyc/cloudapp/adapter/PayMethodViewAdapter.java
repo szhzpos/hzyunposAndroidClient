@@ -26,16 +26,10 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     private final MainActivity mContext;
     private JSONArray mDatas;
     private OnItemClickListener mOnItemClickListener;
-    private final int mWidth;
     private final PayDetailViewAdapter mPayDetailViewAdapter;
     private JSONObject mDefaultPayMethod,mCurrentPayMethod;
-    public PayMethodViewAdapter(MainActivity context,int width){
-        this(context,null,width);
-    }
-
-    public PayMethodViewAdapter(MainActivity context,final PayDetailViewAdapter payDetailViewAdapter,int width){
+    public PayMethodViewAdapter(MainActivity context,final PayDetailViewAdapter payDetailViewAdapter){
         mContext = context;
-        mWidth = width;
         mPayDetailViewAdapter = payDetailViewAdapter;
     }
 
@@ -56,7 +50,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         final View itemView = View.inflate(mContext, R.layout.pay_method_content_layout, null);
-        itemView.setLayoutParams( new RecyclerView.LayoutParams(mWidth, ViewGroup.LayoutParams.MATCH_PARENT));
+        itemView.setLayoutParams( new RecyclerView.LayoutParams((int) mContext.getResources().getDimension(R.dimen.pay_method_width), ViewGroup.LayoutParams.MATCH_PARENT));
         return new MyViewHolder(itemView);
     }
 

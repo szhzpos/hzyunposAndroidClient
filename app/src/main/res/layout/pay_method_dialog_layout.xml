@@ -46,13 +46,14 @@
             android:layout_margin="@dimen/margin_2"
             android:layout_weight="1"
             android:background="@drawable/left_separator"
+            android:drawableEnd="@drawable/scan"
             android:hint="@string/space_sz"
             android:inputType="number"
             android:paddingStart="@dimen/margin_5"
             android:paddingEnd="0dp"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
-            android:visibility="gone" />
+            android:visibility="visible" />
 
     </LinearLayout>
 

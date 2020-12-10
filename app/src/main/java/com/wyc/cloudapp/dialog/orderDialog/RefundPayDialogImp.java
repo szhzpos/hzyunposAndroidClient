@@ -46,7 +46,7 @@ public class RefundPayDialogImp extends AbstractPayDialog {
 
     @Override
     protected void initPayMethod(){
-        final PayMethodViewAdapter payMethodViewAdapter = new PayMethodViewAdapter(mContext,(int) mContext.getResources().getDimension(R.dimen.pay_method_width));
+        final PayMethodViewAdapter payMethodViewAdapter = new PayMethodViewAdapter(mContext,null);
         payMethodViewAdapter.loadRefundPayMethod();
         payMethodViewAdapter.setOnItemClickListener((object) -> {
             mPayMethod = object;

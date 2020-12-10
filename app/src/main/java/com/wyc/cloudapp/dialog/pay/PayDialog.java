@@ -319,7 +319,7 @@ public final class PayDialog extends AbstractDialogSaleActivity {
     };
 
     private void initPayMethod(){
-        mPayMethodViewAdapter = new PayMethodViewAdapter(mContext,mPayDetailViewAdapter,(int) mContext.getResources().getDimension(R.dimen.pay_method_width));
+        mPayMethodViewAdapter = new PayMethodViewAdapter(mContext,mPayDetailViewAdapter);
         mPayMethodViewAdapter.setDatas("1");
         mPayMethodViewAdapter.setOnItemClickListener((object) -> {
             try {
