@@ -1,7 +1,6 @@
 package com.wyc.cloudapp.dialog.orderDialog;
 
 import android.content.ContentValues;
-import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
@@ -13,7 +12,6 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.Utils;
@@ -27,24 +25,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public abstract class AbstractRetailOrderDetailsDialog extends AbstractDialogMainActivity {
-    protected final JSONObject mOrderInfo;
-    protected JSONObject mPayRecord;
+public abstract class AbstractRetailOrderDetailsDialog extends AbstractOrderDetailsDialog {
     protected AbstractTableDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> mRetailDetailsPayInfoAdapter;
     public AbstractRetailOrderDetailsDialog(@NonNull MainActivity context, final CharSequence title, final JSONObject info) {
-        super(context,title);
-        mOrderInfo = info;
+        super(context,title,info);
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        showOrderInfo();
-        initGoodsDetail();
-        initPayDetail();
-        initReprint();
-        initVerifyPay();
-    }
 
     @Override
     public void dismiss(){
@@ -57,13 +43,6 @@ public abstract class AbstractRetailOrderDetailsDialog extends AbstractDialogMai
         super.show();
         Printer.showPrintIcon(mContext,true);
     }
-
-
-    protected abstract void showOrderInfo();
-    protected abstract void initGoodsDetail();
-    protected abstract void initPayDetail();
-    protected abstract void initReprint();
-    protected abstract void initVerifyPay();
 
     protected void verify_pay(){
         if (null != mPayRecord){

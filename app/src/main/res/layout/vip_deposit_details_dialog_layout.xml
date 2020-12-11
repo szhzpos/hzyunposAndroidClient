@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
@@ -381,6 +381,18 @@
             android:layout_weight="1" />
 
         <Button
+            android:id="@+id/verify_pay_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/width_128"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/margin_5"
+            android:background="@drawable/button_blue"
+            android:text="@string/verify_pay_sz"
+            android:textColor="@color/blue_white"
+            android:textSize="@dimen/font_size_18"
+            android:visibility="visible" />
+
+        <Button
             android:id="@+id/reprint_btn"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/width_128"
@@ -399,18 +411,6 @@
             android:layout_margin="@dimen/margin_5"
             android:background="@drawable/button_blue"
             android:text="@string/abnormal_back_order_sz"
-            android:textColor="@color/blue_white"
-            android:textSize="@dimen/font_size_18"
-            android:visibility="gone" />
-
-        <Button
-            android:id="@+id/verify_pay_btn"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/width_128"
-            android:layout_height="match_parent"
-            android:layout_margin="@dimen/margin_5"
-            android:background="@drawable/button_blue"
-            android:text="@string/verify_pay_sz"
             android:textColor="@color/blue_white"
             android:textSize="@dimen/font_size_18"
             android:visibility="gone" />

@@ -1,6 +1,5 @@
 package com.wyc.cloudapp.dialog.vip;
 
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -15,24 +14,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.VipDepositDetailsPayInfoAdapter;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.Utils;
 
 
-public class VipDepositDetailsDialog extends AbstractDialogMainActivity {
-    private final JSONObject mOrderInfo;
+public class VipDepositDetailsDialog extends AbstractChargeOrderDetailsDialog {
     public VipDepositDetailsDialog(@NonNull MainActivity context, final JSONObject object) {
-        super(context, context.getString(R.string.order_detail_sz));
-        mOrderInfo = object;
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        showOrderInfo();
-        initReprint();
+        super(context, context.getString(R.string.order_detail_sz),object);
     }
 
     @Override
@@ -40,7 +28,8 @@ public class VipDepositDetailsDialog extends AbstractDialogMainActivity {
         return R.layout.vip_deposit_details_dialog_layout;
     }
 
-    private void showOrderInfo(){
+    @Override
+    protected void showOrderInfo(){
         final JSONObject object = mOrderInfo;
         if (null != object){
             final TextView oper_time_tv = findViewById(R.id.oper_time),order_code_tv = findViewById(R.id.order_code),order_amt_tv = findViewById(R.id.order_amt),
@@ -81,22 +70,41 @@ public class VipDepositDetailsDialog extends AbstractDialogMainActivity {
             initPayDetail();
         }
     }
-    private void initPayDetail(){
+
+    @Override
+    protected void initGoodsDetail() {
+
+    }
+
+    @Override
+    protected void initPayDetail(){
         final RecyclerView pay_detail = findViewById(R.id.pay_details);
         if (null != pay_detail){
             final VipDepositDetailsPayInfoAdapter vipDepositDetailsPayInfoAdapter = new VipDepositDetailsPayInfoAdapter(mContext);
             pay_detail.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
             pay_detail.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
+
+            vipDepositDetailsPayInfoAdapter.setItemClickListener(record -> mPayRecord = record);
+
             pay_detail.setAdapter(vipDepositDetailsPayInfoAdapter);
             vipDepositDetailsPayInfoAdapter.setDatas(mOrderInfo.getString("order_code"));
+
+            mChargeDetailsPayInfoAdapter = vipDepositDetailsPayInfoAdapter;
         }
     }
-    private void initReprint(){
+    @Override
+    protected void initReprint(){
         final Button reprint_btn = findViewById(R.id.reprint_btn);
         if (null != reprint_btn){
             reprint_btn.setOnClickListener(v -> {
                 Printer.print(mContext, AbstractVipChargeDialog.get_print_content(mContext,mOrderInfo.getString("order_code")));
             });
         }
+    }
+
+    @Override
+    protected void initVerifyPay() {
+        final Button m_pay_verify_btn = findViewById(R.id.verify_pay_btn);
+        if (m_pay_verify_btn != null)m_pay_verify_btn.setOnClickListener(v -> verify_pay());
     }
 }

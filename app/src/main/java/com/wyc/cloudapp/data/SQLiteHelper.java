@@ -48,7 +48,7 @@ import static android.database.Cursor.FIELD_TYPE_STRING;
 
 public final class SQLiteHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/order.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     private static SQLiteDatabase mDb;
     private final Context mContext;
     private SQLiteHelper(Context context){
@@ -68,7 +68,10 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
     }
     @Override
     public void onUpgrade(SQLiteDatabase db,int oldVersion, int newVersion) {
-        final List<String> update = new ArrayList<>();
+
+        Logger.d("db onUpgrade");
+
+        final List<String> update_list = new ArrayList<>(),modify_list = new ArrayList<>();
         final String sales_info_sql = "CREATE TABLE IF NOT EXISTS sales_info (\n" +
                 "    sc_id      VARCHAR PRIMARY KEY,\n" +
                 "    sc_name    VARCHAR,\n" +
@@ -81,11 +84,26 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    appids     VARCHAR,\n" +
                 "    sc_addtime INTEGER\n" +
                 ");";
+        update_list.add(sales_info_sql);
 
-        update.add(sales_info_sql);
+        //修改
+        if(!checkColumnExists(db,"member_order_info","sc_id")){
+            modify_list.add("ALTER TABLE member_order_info ADD COLUMN sc_id  VARCHAR");
+        }
+
         try {
             db.beginTransaction();
-            for (String sql : update) {
+            for (String sql : update_list) {
+                db.execSQL(sql);
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+
+        try {
+            db.beginTransaction();
+            for (String sql : modify_list) {
                 db.execSQL(sql);
             }
             db.setTransactionSuccessful();
@@ -176,11 +194,11 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
     }
 
 
-    private static boolean checkColumnExists(String tableName, String columnName) throws SQLiteException {
+    private static boolean checkColumnExists(SQLiteDatabase db,String tableName, String columnName) throws SQLiteException {
         boolean result = false ;
         Cursor cursor = null ;
         try{
-            cursor = mDb.rawQuery( "select 1 from sqlite_master where name = ? and sql like ?"
+            cursor = db.rawQuery( "select 1 from sqlite_master where name = ? and sql like ?"
                     , new String[]{tableName , "%" + columnName + "%"} );
             result = null != cursor && cursor.moveToFirst() ;
         }finally{
@@ -537,6 +555,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             }
         }catch (SQLiteException e){
             e.printStackTrace();
+            code = -1;
             if (err != null)err.append(e.getMessage());
         }
         return code;

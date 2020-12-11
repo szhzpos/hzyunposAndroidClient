@@ -23,6 +23,7 @@ import com.wyc.cloudapp.dialog.orderDialog.MobileQueryRefundOrderDialog;
 import com.wyc.cloudapp.dialog.orderDialog.MobileQueryRetailOrderDialog;
 import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.MobileVipChargeDialog;
+import com.wyc.cloudapp.dialog.vip.MobileVipDepositOrderDialog;
 
 /*
  * 负责加载功能布局，每个布局的叶节点为TextView或其子类。
@@ -108,7 +109,10 @@ public abstract class AbstractMobileFragment extends Fragment {
                 }else if (v_id == R.id.refund_query_tv){
                     final MobileQueryRefundOrderDialog dialog = new MobileQueryRefundOrderDialog(mContext);
                     dialog.show();
-                }else {
+                }else if (v_id == R.id.charge_query_tv){
+                    final MobileVipDepositOrderDialog depositOrderDialog = new MobileVipDepositOrderDialog(mContext);
+                    depositOrderDialog.show();
+                }else{
                     final Intent intent = new Intent();
                     intent.setClassName(context,context.getPackageName().concat(".") + v.getTag());
                     if (v instanceof TextView)intent.putExtra("title",((TextView)v).getText());

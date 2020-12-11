@@ -57,7 +57,7 @@ public final class RetailDetailsPayInfoAdapter extends AbstractTableDataAdapter<
                 holder.pay_time_tv.setText(pay_info.getString("pay_time"));
                 holder.pay_code_tv.setText(Utils.getNullStringAsEmpty(pay_info, "order_code_son"));
 
-                holder.mCurrentLayoutItemView.setOnClickListener(mItemClickListener);
+                holder.mCurrentLayoutItemView.setOnClickListener(this::setCurrentItemView);
             }
         }
     }
@@ -80,8 +80,6 @@ public final class RetailDetailsPayInfoAdapter extends AbstractTableDataAdapter<
         }
         return null;
     }
-
-    private final View.OnClickListener mItemClickListener = this::setCurrentItemView;
 
     @Override
     public void setDatas(final String order_code){

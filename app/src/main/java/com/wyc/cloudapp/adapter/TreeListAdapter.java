@@ -25,7 +25,7 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
     private final Context mContext;
     private boolean mSingleSel = true;
     private final Drawable mUnfoldDb,mFoldDb;
-    private OnItemClick mItemClick;//不为null的时候会隐藏单选、多选按钮，改变mCurrenttemView的背景色来表示选中；此种模式下只支持选中单个项目并触发事件。
+    private OnItemClick mItemClick;//不为null的时候会隐藏单选、多选按钮，改变mCurrentItemView的背景色来表示选中；此种模式下只支持选中单个项目并触发事件。
     private View mCurrentItemView;
 /*    Item{
         p_ref,level,unfold,isSel,item_id,item_name,kids; <p_ref , kids>存在上下级时必须存在

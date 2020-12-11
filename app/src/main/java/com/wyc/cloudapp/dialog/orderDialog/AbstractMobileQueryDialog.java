@@ -48,6 +48,7 @@ public abstract class AbstractMobileQueryDialog extends AbstractDialogMainActivi
 
     public abstract AbstractQueryDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> getAdapter();
     public abstract String generateQueryCondition();
+    public abstract JSONArray getConditionSwitchContent();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -250,32 +251,11 @@ public abstract class AbstractMobileQueryDialog extends AbstractDialogMainActivi
         });
     }
     private JSONArray createSwitchConditionContentAndSetDefaultValue(@NonNull final TextView view){
-        final JSONArray array = new JSONArray();
-        final String search_hint = this instanceof MobileQueryRetailOrderDialog ? mContext.getString(R.string.m_search_hint) : mContext.getString(R.string.m_refund_search_hint);
-        if (search_hint != null){
-            final String[] sz = search_hint.split("/");
-            if (sz.length > 1){
-                JSONObject object = new JSONObject();
-                object.put("level",0);
-                object.put("unfold",false);
-                object.put("isSel",false);
-                object.put("item_id",1);
-                object.put("item_name",sz[0]);
-
-                array.add(object);
-
-                view.setTag(1);
-                view.setText(sz[0]);
-
-                object = new JSONObject();
-                object.put("level",0);
-                object.put("unfold",false);
-                object.put("isSel",false);
-                object.put("item_id",2);
-                object.put("item_name",sz[1]);
-
-                array.add(object);
-            }
+        final JSONArray array = getConditionSwitchContent();
+        if (!array.isEmpty()){
+            final JSONObject object = array.getJSONObject(0);
+            view.setTag(object.getIntValue("item_id"));
+            view.setText(object.getString("item_name"));
         }
         return array;
     }

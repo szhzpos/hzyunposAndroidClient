@@ -14,15 +14,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.FontSizeTagHandler;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -54,10 +53,7 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
         //初始化数字键盘
         initKeyboardView();
     }
-    @Override
-    public void finalize(){
-        Logger.d("GoodsWeighDialog finalized");
-    }
+
     @Override
     protected int getContentLayoutId(){
         return R.layout.goods_weigh_dialog_layout;

@@ -20,7 +20,6 @@ import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.orderDialog.AbstractTransferDialog;
 import com.wyc.cloudapp.dialog.orderDialog.MobileTransferDialog;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.mobileFragemt.BackgroundFragment;
 import com.wyc.cloudapp.mobileFragemt.BoardFragment;
 import com.wyc.cloudapp.mobileFragemt.CashierDeskFragment;
@@ -51,10 +50,6 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
         return R.layout.activity_mobile_navigation;
     }
 
-    @Override
-    public void finalize(){
-        Logger.d("MobileNavigationActivity finalized");
-    }
     @Override
     public void onBackPressed(){
         super.onBackPressed();

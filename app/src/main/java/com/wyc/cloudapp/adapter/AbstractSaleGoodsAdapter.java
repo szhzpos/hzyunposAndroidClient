@@ -76,6 +76,11 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
             sale_amt = itemView.findViewById(R.id.sale_amt);
             original_price = itemView.findViewById(R.id.original_price);
         }
+
+        @Override
+        protected void finalize(){
+            Logger.d(getClass().getSimpleName() + " finalized");
+        }
     }
 
     @NonNull

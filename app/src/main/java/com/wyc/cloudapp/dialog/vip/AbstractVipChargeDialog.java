@@ -76,10 +76,6 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
         showVipInfo();
     }
 
-    protected void triggerCharge(){
-        if (mChargeBtn != null)mChargeBtn.callOnClick();
-    }
-
     private void initSaleMan(){
         final TextView mobile_sale_man = findViewById(R.id.mobile_sale_man);
         mobile_sale_man.setOnClickListener(v -> {
@@ -436,7 +432,9 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
 
         mChargeBtn = mobile_charge_btn;
     }
-
+    protected void triggerCharge(){
+        if (mChargeBtn != null)mChargeBtn.callOnClick();
+    }
 
     private JSONArray parse_pay_method(final JSONArray methods){
         final JSONArray array  = new JSONArray();
@@ -561,7 +559,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
         if (verify()){
             mProgressDialog.setCancel(false).setMessage("正在生成充值订单...").refreshMessage().show();
 
-            final String sale_man_id = Utils.getViewTagValue(mSaleManTv,"-1");
+            final String sale_man_id = Utils.getViewTagValue(mSaleManTv,"-1"),charge_moeny =  mChargeAmtEt.getText().toString();
             final double present_amt = getPresentAmt();
 
             CustomApplication.execute(()->{
@@ -570,8 +568,8 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                 final StringBuilder err = new StringBuilder();
 
                 JSONObject cashier_info = mContext.getCashierInfo(),store_info = mContext.getStoreInfo(),data_ = new JSONObject(),retJson,info_json;
-                final String url = mContext.getUrl(),appId = mContext.getAppId(),appSecret = mContext.getAppSecret(),stores_id = store_info.getString("stores_id"),sz_moeny =  mChargeAmtEt.getText().toString(),
-                        member_id = mVip.getString("member_id"),third_order_id = generate_pay_son_order_id();
+                final String url = mContext.getUrl(),appId = mContext.getAppId(),appSecret = mContext.getAppSecret(),stores_id = store_info.getString("stores_id"),
+                        member_id = mVip.getString("member_id"),third_order_id = generate_pay_son_order_id(),pay_method_id = mPayMethodSelected.getString("pay_method_id");
 
                 member_order_info.put("stores_id",stores_id);
                 member_order_info.put("member_id",member_id);
@@ -581,10 +579,14 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                 member_order_info.put("card_code",mVip.getString("card_code"));
                 member_order_info.put("mobile",mVip.getString("mobile"));
                 member_order_info.put("name",mVip.getString("name"));
-
+                member_order_info.put("pay_method_id",pay_method_id);
                 member_order_info.put("third_order_id",third_order_id);
                 member_order_info.put("cashier_id",cashier_info.getString("cas_id"));
-                member_order_info.put("order_money",sz_moeny);
+
+                if (!"-1".equals(sale_man_id))
+                    member_order_info.put("sc_id",sale_man_id);
+
+                member_order_info.put("order_money",charge_moeny);
 
                 //保存单据
                 if (!SQLiteHelper.saveFormJson(member_order_info,"member_order_info",null,0,err)){
@@ -601,7 +603,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                     data_.put("member_id",member_id);
                     data_.put("cashier_id",cashier_info.getString("cas_id"));
                     data_.put("hand_give_money",present_amt);
-                    data_.put("order_money",sz_moeny);
+                    data_.put("order_money",charge_moeny);
 
                     if (!"-1".equals(sale_man_id))
                             data_.put("sc_id",sale_man_id);
@@ -629,8 +631,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
 
                                     int is_check = mPayMethodSelected.getIntValue("is_check");
 
-                                    final String order_code = info_json.getString("order_code"),pay_method_id = mPayMethodSelected.getString("pay_method_id"),
-                                            whereClause = "member_id = ? and third_order_id = ?";
+                                    final String order_code = info_json.getString("order_code"),whereClause = "member_id = ? and third_order_id = ?";
 
                                     final String[] whereArgs = new String[]{member_id,third_order_id};
                                     final ContentValues values = new ContentValues();
@@ -663,7 +664,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                                         data_.put("pos_num",cashier_info.getString("pos_num"));
                                         data_.put("is_wuren",2);
                                         data_.put("order_code_son",third_order_id);
-                                        data_.put("pay_money",sz_moeny);
+                                        data_.put("pay_money",charge_moeny);
                                         data_.put("pay_method",pay_method_id);
                                         data_.put("pay_code_str",pay_code);
 
@@ -706,7 +707,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                                                                     }
                                                                     sz_param = HttpRequest.generate_request_parm(data_,appSecret);
 
-                                                                    Logger.i("会员充值支付查询参数:url:%s%s,param:%s",url,unified_pay_order,sz_param);
+                                                                    Logger.i("会员充值支付查询参数:url:%s%s,param:%s",url,unified_pay_query,sz_param);
                                                                     retJson = httpRequest.sendPost(url + unified_pay_query,sz_param,true);
                                                                     Logger.i("会员充值支付查询返回:%s",retJson.toString());
 
@@ -746,7 +747,6 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
 
                                     //保存支付方式,更新状态为已支付完成
                                     values.clear();
-                                    values.put("pay_method_id",pay_method_id);
                                     values.put("status",2);
                                     if (SQLiteHelper.execUpdateSql("member_order_info",values,whereClause,whereArgs,err) < 0){
                                         showPayError(err.toString());
@@ -757,7 +757,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                                     data_.put("appid",appId);
                                     data_.put("order_code",order_code);
                                     if (is_check == 2)
-                                        data_.put("case_pay_money",sz_moeny);
+                                        data_.put("case_pay_money",charge_moeny);
                                     data_.put("pay_method",pay_method_id);
 
                                     Logger.d_json(data_.toJSONString());

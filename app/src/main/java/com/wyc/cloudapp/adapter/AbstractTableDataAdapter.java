@@ -10,6 +10,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 /*
@@ -29,6 +30,11 @@ public abstract class AbstractTableDataAdapter<T extends AbstractTableDataAdapte
             super(itemView);
             mCurrentLayoutItemView = itemView;
         }
+
+        @Override
+        protected void finalize(){
+            Logger.d(getClass().getName() + " finalized");
+        }
     }
 
     @Override
@@ -39,7 +45,8 @@ public abstract class AbstractTableDataAdapter<T extends AbstractTableDataAdapte
     @Override
     public void onBindViewHolder(@NonNull T holder, int position) {
         if (mCurrentItemIndex == position + 1){
-            if (mCurrentItemView != holder.mCurrentLayoutItemView)mCurrentItemView = holder.mCurrentLayoutItemView;
+            mCurrentItemView = holder.mCurrentLayoutItemView;
+            setViewBackgroundColor(mCurrentItemView,true);
         }
     }
 
@@ -136,7 +143,7 @@ public abstract class AbstractTableDataAdapter<T extends AbstractTableDataAdapte
     }
 
     protected JSONObject getCurrentRecord(){
-        return mDatas == null || mCurrentItemIndex == -1 ? null : mDatas.getJSONObject(mCurrentItemIndex);
+        return (mDatas == null || mCurrentItemIndex == -1 || mCurrentItemIndex > mDatas.size()) ? null : mDatas.getJSONObject(mCurrentItemIndex - 1);
     }
 
     public interface ItemClickCallBack{

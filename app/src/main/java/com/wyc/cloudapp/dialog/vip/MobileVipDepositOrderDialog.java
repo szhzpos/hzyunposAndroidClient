@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.dialog.orderDialog;
+package com.wyc.cloudapp.dialog.vip;
 
 import androidx.annotation.NonNull;
 
@@ -8,21 +8,22 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
-import com.wyc.cloudapp.adapter.MobileRetailOrderAdapter;
+import com.wyc.cloudapp.adapter.MobileChargeOrderAdapter;
+import com.wyc.cloudapp.dialog.orderDialog.AbstractMobileQueryDialog;
 import com.wyc.cloudapp.utils.Utils;
 
-public final class MobileQueryRetailOrderDialog extends AbstractMobileQueryDialog {
-    public MobileQueryRetailOrderDialog(@NonNull MainActivity context) {
-        super(context, context.getString(R.string.m_sale_query_sz));
+public class MobileVipDepositOrderDialog extends AbstractMobileQueryDialog {
+    public MobileVipDepositOrderDialog(@NonNull MainActivity context) {
+        super(context, context.getString(R.string.m_charge_query_sz));
     }
     @Override
     protected int getContentLayoutId() {
-        return R.layout.mobile_retail_order_dialog_layout;
+        return R.layout.mobile_charge_order_dialog_layout;
     }
 
     @Override
     public AbstractQueryDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> getAdapter() {
-        return new MobileRetailOrderAdapter(mContext);
+        return new MobileChargeOrderAdapter(mContext);
     }
 
     @Override
@@ -42,7 +43,7 @@ public final class MobileQueryRetailOrderDialog extends AbstractMobileQueryDialo
     @Override
     public JSONArray getConditionSwitchContent() {
         final JSONArray array = new JSONArray();
-        final String search_hint = mContext.getString(R.string.m_search_hint);
+        final String search_hint = mContext.getString(R.string.m_charge_search_hint);
         if (search_hint != null){
             final String[] sz = search_hint.split("/");
             for (int i = 0,length = sz.length;i < length;i ++){

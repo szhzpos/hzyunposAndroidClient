@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.SaleActivity;
-import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
 import com.wyc.cloudapp.adapter.VipDepositOrderAdapter;
 import com.wyc.cloudapp.dialog.orderDialog.AbstractQuerySuperDialog;
 import com.wyc.cloudapp.utils.Utils;
@@ -83,7 +82,7 @@ public class VipDepositOrderDialog extends AbstractQuerySuperDialog {
     }
 
     @Override
-    protected AbstractQueryDataAdapter getAdapter() {
+    protected VipDepositOrderAdapter getAdapter() {
         return new VipDepositOrderAdapter(mContext);
     }
 

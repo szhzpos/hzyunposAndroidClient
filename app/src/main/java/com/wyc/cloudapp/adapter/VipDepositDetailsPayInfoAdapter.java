@@ -39,7 +39,7 @@ public final class VipDepositDetailsPayInfoAdapter extends AbstractTableDataAdap
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = View.inflate(mContext, R.layout.vip_deposit_details_pay_info_content_layout, null);
+        View itemView = View.inflate(mContext,mContext.lessThan7Inches(null) ? R.layout.mobile_vip_deposit_details_pay_info_content_layout : R.layout.vip_deposit_details_pay_info_content_layout, null);
         itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int) mContext.getResources().getDimension(R.dimen.table_row_height)));
         return new MyViewHolder(itemView);
     }
@@ -58,7 +58,7 @@ public final class VipDepositDetailsPayInfoAdapter extends AbstractTableDataAdap
                 holder.pay_time_tv.setText(pay_info.getString("pay_time"));
                 holder.pay_code_tv.setText(Utils.getNullStringAsEmpty(pay_info, "order_code_son"));
 
-                holder.mCurrentLayoutItemView.setOnClickListener(mItemClickListener);
+                holder.mCurrentLayoutItemView.setOnClickListener(this::setCurrentItemView);
             }
         }
     }
@@ -68,12 +68,10 @@ public final class VipDepositDetailsPayInfoAdapter extends AbstractTableDataAdap
         return mDatas == null ? 0: mDatas.size();
     }
 
-    private View.OnClickListener mItemClickListener = this::setCurrentItemView;
-
     public void setDatas(final String order_code){
         final StringBuilder err = new StringBuilder();
-        final String sql = "SELECT b.name pay_method_name ,a.third_order_id order_code_son,a.status,\n" +
-                "case a.status when 1 then '未支付' when 2 then '已支付' when 3 then '已完成' when 4 then '已关闭' end status_name, \n" +
+        final String sql = "SELECT a.order_code,a.member_id,b.pay_method_id,b.name pay_method_name ,a.third_order_id order_code_son,a.status,\n" +
+                "case a.status when 1 then '未支付' when 2 then '已支付' when 3 then '已完成' when 4 then '已关闭' when 5 then '待退款' when 6 then '已退款' else '其他' end status_name, \n" +
                 "datetime(a.addtime, 'unixepoch', 'localtime') pay_time,b.is_check,a.order_money pay_money \n" +
                 "FROM member_order_info a left join pay_method b on a.pay_method_id = b.pay_method_id where order_code = '"+ order_code +"'";
 

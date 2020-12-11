@@ -20,10 +20,12 @@ public class MobileVipChargeDialog extends AbstractVipChargeDialog implements Mo
         if (mPayMethodSelected != null){
             int is_check = mPayMethodSelected.getIntValue("is_check");
             if (is_check != 2){
-                final Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-                mContext.startActivityForResult(intent, MessageID.PAY_REQUEST_CODE);
-                mContext.setScanCallback(this);
-                return false;
+                if (!mPayMethodSelected.containsKey(PAY_CODE_LABEL)){
+                    final Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+                    mContext.startActivityForResult(intent, MessageID.PAY_REQUEST_CODE);
+                    mContext.setScanCallback(this);
+                    return false;
+                }
             }
         }else {
             MyDialog.ToastMessage(mContext.getString(R.string.pay_m_hint_sz),mContext,getWindow());

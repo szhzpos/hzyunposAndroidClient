@@ -151,10 +151,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     public void onBackPressed(){
         if (null != mCloseBtn)mCloseBtn.callOnClick();
     }
-    @Override
-    public void finalize(){
-        Logger.d("NormalMainActivity finalized");
-    }
+
     @Override
     public void onDestroy(){
         super.onDestroy();

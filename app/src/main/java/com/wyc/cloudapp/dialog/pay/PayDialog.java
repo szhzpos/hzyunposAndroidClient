@@ -143,11 +143,6 @@ public final class PayDialog extends AbstractDialogSaleActivity {
         }
     }
 
-    @Override
-    protected void finalize(){
-        Logger.d("PayDialog finalized");
-    }
-
     private void allDiscountBtn(){
         final Button all_discount_btn = findViewById(R.id.all_discount);
         if (null != all_discount_btn)

@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -55,8 +54,8 @@ public class SuperItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     @Override
-    public void finalize(){
-        Logger.d("SuperItemDecoration finalized");
+    protected void finalize(){
+        Logger.d(getClass().getName() + " finalized");
     }
 
     protected void drawVerticalPadding(final Canvas c, final RecyclerView parent) {

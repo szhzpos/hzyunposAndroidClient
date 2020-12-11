@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/query_time_btn_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/height_45"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="@dimen/margin_18"
+        android:layout_marginTop="@dimen/margin_12"
+        android:layout_marginEnd="@dimen/margin_18"
+        android:orientation="horizontal"
+        android:padding="@dimen/margin_1">
+
+        <Button
+            android:id="@+id/m_today_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/today_sz"
+            android:textSize="@dimen/font_size_16" />
+
+        <Button
+            android:id="@+id/m_yesterday_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/left_right_separator"
+            android:text="@string/yesterday_sz"
+            android:textSize="@dimen/font_size_16" />
+
+        <Button
+            android:id="@+id/m_other_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/other_sz"
+            android:textSize="@dimen/font_size_16" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/m_query_time_tv_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_40"
+        android:layout_marginStart="@dimen/margin_18"
+        android:layout_marginTop="@dimen/margin_12"
+        android:layout_marginEnd="@dimen/margin_18"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/m_start_date"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/round_border_sub_gray"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/margin_8"
+            android:paddingEnd="0dp"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/size_5"
+            android:layout_marginEnd="@dimen/size_5"
+            android:text="@string/to_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_18" />
+
+        <TextView
+            android:id="@+id/m_end_date"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/round_border_sub_gray"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/margin_8"
+            android:paddingEnd="0dp"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/m_query_condition_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_45"
+        android:layout_marginStart="@dimen/margin_5"
+        android:layout_marginTop="@dimen/margin_12"
+        android:layout_marginEnd="@dimen/margin_5"
+        android:layout_marginBottom="@dimen/margin_8"
+        android:background="@drawable/round_border_sub_gray"
+        android:orientation="horizontal"
+        android:padding="@dimen/margin_1"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/switch_condition"
+            android:layout_width="@dimen/size_108"
+            android:layout_height="match_parent"
+            android:drawableEnd="@drawable/content"
+            android:gravity="center"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_18" />
+
+        <EditText
+            android:id="@+id/order_vip__search"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="@drawable/left_separator"
+            android:drawableEnd="@drawable/search"
+            android:drawablePadding="@dimen/margin_8"
+            android:ems="10"
+            android:hint="@string/m_charge_search_hint"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            android:padding="@dimen/margin_5"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_18" />
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/m_order_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/margin_5"
+        android:layout_weight="1" />
+</LinearLayout>

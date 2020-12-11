@@ -122,8 +122,9 @@ public class VipDepositOrderAdapter extends AbstractQueryDataAdapter<VipDepositO
                 "       card_code,\n" +
                 "       order_money order_amt,\n" +
                 "       give_money give_amt,\n" +
-                "       order_code\n" +
-                "  FROM member_order_info a left join cashier_info b on a.cashier_id = b.cas_id " + where_sql;
+                "       order_code,\n" +
+                "       ifnull(c.sc_name,'') sc_name\n" +
+                "  FROM member_order_info a left join cashier_info b on a.cashier_id = b.cas_id left join sales_info c on a.sc_id = c.sc_id " + where_sql;
 
         Logger.d("sql:%s",sql);
         mDatas = SQLiteHelper.getListToJson(sql,err);

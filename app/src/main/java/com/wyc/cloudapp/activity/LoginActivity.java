@@ -156,7 +156,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
 
     @Override
     protected void finalize(){
-        Logger.d("LoginActivity finalized");
+        Logger.d(getClass().getSimpleName() + " finalized");
     }
 
     @Override

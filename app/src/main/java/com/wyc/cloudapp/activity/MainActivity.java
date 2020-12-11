@@ -40,6 +40,11 @@ public abstract class MainActivity extends AppCompatActivity {
         setIntent(intent);
     }
 
+    @Override
+    protected void finalize(){
+        Logger.d(getClass().getSimpleName() + " finalized");
+    }
+
     protected boolean verifyNumBtnPermissions(){
         return verifyPermissions("25",null);
     }
