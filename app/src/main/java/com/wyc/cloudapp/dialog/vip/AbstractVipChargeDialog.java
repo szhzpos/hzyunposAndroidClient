@@ -481,12 +481,12 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
 
     private boolean verify(){
         if (mVip == null){
-            MyDialog.ToastMessage(mVip_card_id,"会员信息不能为空!",mContext,getWindow());
+            MyDialog.ToastMessage(mVip_card_id,mContext.getString(R.string.not_empty_hint_sz,mContext.getString(R.string.vip_dialog_title_sz)),mContext,getWindow());
             return false;
         }
         if (checkChargeAmtEqualZero()){
             mChargeAmtEt.requestFocus();
-            MyDialog.ToastMessage(mChargeAmtEt,"充值金额不能为零!",mContext,getWindow());
+            MyDialog.ToastMessage(mChargeAmtEt,mContext.getString(R.string.not_zero_hint_sz,mContext.getString(R.string.deposit_amt_sz)),mContext,getWindow());
             return false;
         }else if (checkMinChargeAmt()){
             mChargeAmtEt.requestFocus();
@@ -495,7 +495,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
         }
 
         if (mPayMethodSelected == null){
-            MyDialog.ToastMessage("请选择付款方式!",mContext,getWindow());
+            MyDialog.ToastMessage(mContext.getString(R.string.pay_m_hint_sz),mContext,getWindow());
             return false;
         }
 
