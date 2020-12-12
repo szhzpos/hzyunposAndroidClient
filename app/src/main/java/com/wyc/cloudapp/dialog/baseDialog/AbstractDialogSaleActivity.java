@@ -15,10 +15,4 @@ public abstract class AbstractDialogSaleActivity extends AbstractDialog {
     public SaleActivity getPrivateContext() {
         return mContext;
     }
-
-    @Override
-    public void dismiss(){
-        super.dismiss();
-        mContext.setScanCallback(null);//一定要清空，否则对象无法被回收
-    }
 }

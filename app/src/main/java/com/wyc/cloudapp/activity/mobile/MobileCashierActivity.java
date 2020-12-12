@@ -40,6 +40,7 @@ import com.wyc.cloudapp.dialog.pay.PayDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.utils.Utils;
 
+import java.lang.ref.WeakReference;
 import java.util.Locale;
 
 import static com.wyc.cloudapp.utils.MessageID.PAY_REQUEST_CODE;
@@ -50,7 +51,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
     private EditText mSearchContent,mMobileSearchGoods;
     private GoodsInfoViewAdapter mGoodsInfoViewAdapter;
     private String mOrderCode = "";
-    private ScanCallback mScanCallback;
+    private WeakReference<ScanCallback> mScanCallback;
     private TextView mSaleSumAmtTv;
     private boolean isScan,isSelected;//协助完成界面切换，当isScan为true，isSelected为false的时候需要切换。
     @Override
@@ -306,7 +307,10 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
             if (requestCode == CODE_REQUEST_CODE) {
                 if (mSearchContent != null)selectGoodsWithSearchContent(_code);
             }else if (requestCode == PAY_REQUEST_CODE){
-                if (mScanCallback != null)mScanCallback.callback(_code);
+                if (mScanCallback != null){
+                    final ScanCallback callback = mScanCallback.get();
+                    if (callback != null)callback.callback(_code);
+                }
             }
         }
         super.onActivityResult(requestCode,resultCode,intent);
@@ -508,6 +512,8 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
 
     @Override
     public void setScanCallback(final ScanCallback callback){
-        mScanCallback = callback;
+        if (mScanCallback == null || callback != mScanCallback.get()){
+            mScanCallback = new WeakReference<>(callback);
+        }
     }
 }

@@ -27,12 +27,14 @@ import com.wyc.cloudapp.mobileFragemt.MyFragment;
 import com.wyc.cloudapp.mobileFragemt.ReportFragment;
 import com.wyc.cloudapp.utils.MessageID;
 
+import java.lang.ref.WeakReference;
+
 import static com.wyc.cloudapp.utils.MessageID.PAY_REQUEST_CODE;
 
 public final class MobileNavigationActivity extends AbstractMobileActivity implements CustomApplication.MessageCallback {
     private FragmentManager mFragmentManager;
     private CustomProgressDialog mProgressDialog;
-    private ScanCallback mScanCallback;
+    private WeakReference<ScanCallback> mScanCallback;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,10 +64,20 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
         if (resultCode == RESULT_OK ){
             final String _code = intent.getStringExtra("auth_code");
              if (requestCode == PAY_REQUEST_CODE){
-                if (mScanCallback != null)mScanCallback.callback(_code);
+                if (mScanCallback != null){
+                    final ScanCallback callback = mScanCallback.get();
+                    if (callback != null)callback.callback(_code);
+                }
             }
         }
         super.onActivityResult(requestCode,resultCode,intent);
+    }
+
+    @Override
+    public void setScanCallback(final ScanCallback callback){
+        if (mScanCallback == null || callback != mScanCallback.get()){
+            mScanCallback = new WeakReference<>(callback);
+        }
     }
 
     @Override
@@ -73,11 +85,6 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
         final Intent intent = new Intent(this, MobileCashierActivity.class);
         intent.putExtra("disposeHang",true);
         startActivity(intent);
-    }
-
-    @Override
-    public void setScanCallback(final ScanCallback callback){
-        if (callback != mScanCallback)mScanCallback = callback;
     }
 
     public void transfer(){
