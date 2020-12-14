@@ -18,7 +18,7 @@ import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
-public final class RetailDetailsPayInfoAdapter extends AbstractTableDataAdapter<RetailDetailsPayInfoAdapter.MyViewHolder> {
+public final class RetailDetailsPayInfoAdapter extends AbstractPayInfoAdapter<RetailDetailsPayInfoAdapter.MyViewHolder> {
     public RetailDetailsPayInfoAdapter(MainActivity context){
         mContext = context;
     }

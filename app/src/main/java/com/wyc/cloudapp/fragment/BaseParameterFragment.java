@@ -2,10 +2,6 @@ package com.wyc.cloudapp.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +9,9 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Switch;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -24,8 +23,6 @@ import com.wyc.cloudapp.utils.Utils;
 
 public class BaseParameterFragment extends AbstractBaseFragment {
     private static final String mTitle = "基本参数";
-    private View mRootView;
-    private Context mContext;
     public BaseParameterFragment() {
     }
 
@@ -35,7 +32,7 @@ public class BaseParameterFragment extends AbstractBaseFragment {
     }
 
     @Override
-    public JSONObject laodContent() {
+    public JSONObject loadContent() {
         get_or_show_saveDataPeriod(false);
         get_or_show_dual_view(false);
         get_or_show_goodsImgSetting(false);
@@ -122,7 +119,7 @@ public class BaseParameterFragment extends AbstractBaseFragment {
     @Override
     public void onResume(){
         super.onResume();
-        laodContent();
+        loadContent();
     }
 
     private void set_save_period(){

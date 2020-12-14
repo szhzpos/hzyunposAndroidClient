@@ -20,6 +20,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -93,7 +94,7 @@ public final class VipInfoDialog extends AbstractDialogSaleActivity {
         final Button chargeBtn = findViewById(R.id.vip_charge);
         if (null != chargeBtn)
             chargeBtn.setOnClickListener(view -> {
-                if (AbstractVipChargeDialog.verifyVipDepositPermissions(mContext)){
+                if (verifyVipDepositPermissions(mContext)){
                     if (mVip != null){
                         final AbstractVipChargeDialog chargeDialog = new NormalVipChargeDialog(mContext,mVip);
                         chargeDialog.exec();
@@ -308,6 +309,14 @@ public final class VipInfoDialog extends AbstractDialogSaleActivity {
 
     public interface onYesOnclickListener {
         void onYesClick(VipInfoDialog dialog);
+    }
+
+    public static boolean verifyVipDepositOrderPermissions(final @NonNull MainActivity context){
+        return context.verifyPermissions("24",null);
+    }
+
+    public static boolean verifyVipDepositPermissions(final @NonNull MainActivity context){
+        return context.verifyPermissions("23",null);
     }
 
     private static class Myhandler extends Handler {

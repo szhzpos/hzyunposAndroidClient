@@ -13,6 +13,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.MobileChargeOrderDetailsDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.logger.Logger;
@@ -104,10 +105,8 @@ public final class MobileChargeOrderAdapter extends AbstractQueryDataAdapter<Mob
                 if (Utils.getNotKeyAsNumberDefault(getCurrentOrder(),"order_status",2) == 2){
                     refund_btn.post(()->{
                         if (RefundDialog.verifyRefundPermission(mContext)){
-                            if (mContext.getSingleRefundStatus())mContext.setSingleRefundStatus(false);
                             final TextView order_code_tv = v.findViewById(R.id.order_code);
-                            final RefundDialog refundDialog = new RefundDialog(mContext,order_code_tv.getText().toString());
-                            refundDialog.show();
+                            AbstractVipChargeDialog.vipRefundAmt(mContext,order_code_tv.getText().toString());
                         }
                     });
                 }else{
@@ -129,7 +128,7 @@ public final class MobileChargeOrderAdapter extends AbstractQueryDataAdapter<Mob
                 "       datetime(a.addtime, 'unixepoch', 'localtime') oper_time,\n" +
                 "       case transfer_status when 1 then '未交班' when 2 then '已交班' else '其他' end s_e_status_name,\n" +
                 "       status ,\n" +
-                "       case status when 1 then '未付款' when '2' then '已付款' when '3' then '已完成' when '4' then '已关闭' end status_name,\n" +
+                "       case status when 1 then '未付款' when '2' then '已付款' when '3' then '已完成' when '4' then '已关闭' when '5' then '待退款' when '6' then '已退款' else '其他' end status_name,\n" +
                 "       b.cas_name,\n" +
                 "       name,\n" +
                 "       mobile,\n" +

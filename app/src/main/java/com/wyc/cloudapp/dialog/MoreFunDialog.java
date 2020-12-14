@@ -14,6 +14,7 @@ import com.wyc.cloudapp.dialog.goods.GoodsManageDialog;
 import com.wyc.cloudapp.dialog.orderDialog.QueryRefundOrderDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.dialog.vip.VipDepositOrderDialog;
+import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.print.Printer;
 
 public final class MoreFunDialog extends AbstractDialogSaleActivity {
@@ -157,13 +158,10 @@ public final class MoreFunDialog extends AbstractDialogSaleActivity {
         });
     }
 
-    private boolean verifyVipDepositOrderPermissions(){
-        return mContext.verifyPermissions("24",null);
-    }
     private void initVipDepositOrderBtn(){
         final Button btn = findViewById(R.id.vip_deposit_order);
         btn.setOnClickListener(v -> {
-            if (verifyVipDepositOrderPermissions()){
+            if (VipInfoDialog.verifyVipDepositOrderPermissions(mContext)){
                 final VipDepositOrderDialog vipDepositOrderDialog = new VipDepositOrderDialog(mContext);
                 vipDepositOrderDialog.show();
                 closeWindow();

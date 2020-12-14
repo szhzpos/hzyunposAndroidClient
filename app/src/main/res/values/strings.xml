@@ -343,7 +343,7 @@
     <string name="mobile_bg_sz">后台</string>
     <string name="casher_desk_sz">收银台</string>
     <string name="report_sz">报表</string>
-    <string name="my_sz">我的</string>
+    <string name="mobile_setup_sz">设置</string>
     <string name="fg_casher_sz">前台收银</string>
     <string name="trade_query_sz">交易查询</string>
     <string name="fg_refund_sz">前台退货</string>
@@ -367,7 +367,7 @@
     <string name="refund_money_sz">退款金额(元)</string>
     <string name="vip_charge_remark_sz">充值备注：</string>
     <string name="charge_plan_sz">充值方案：</string>
-    <string name="charge_amt__colon_sz">充值金额：</string>
+    <string name="charge_amt_colon_sz">充值金额：</string>
     <string name="present_amt_colon_sz">赠送金额：</string>
     <string name="sale_man_colon_sz">营业员：</string>
     <string name="pay_method_name_colon_sz">支付方式：</string>
@@ -411,5 +411,10 @@
     <string name="m_charge_query_sz">@string/vip_deposit_o_sz</string>
     <string name="m_charge_search_hint">充值单号/会员卡号</string>
     <string name="m_refund_amt_sz">退款</string>
+    <!-- 手机设置窗口-->
+    <string name="job_num_sz">工号：</string>
+    <string name="m_name_sz">姓名：</string>
+    <string name="exit_sz">退出登录</string>
+
 
 </resources>

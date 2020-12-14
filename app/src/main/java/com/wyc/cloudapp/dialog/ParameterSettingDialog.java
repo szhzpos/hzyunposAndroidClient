@@ -18,13 +18,14 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.FragmentPagerAdapter;
 
 public class ParameterSettingDialog extends DialogFragment {
 
-    private Context mContext;
+    private final MainActivity mContext;
 
-    ParameterSettingDialog(@NonNull Context context) {
+    ParameterSettingDialog(@NonNull MainActivity context) {
         mContext = context;
     }
     @Override

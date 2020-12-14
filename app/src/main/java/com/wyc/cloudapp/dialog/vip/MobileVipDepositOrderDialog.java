@@ -37,6 +37,7 @@ public class MobileVipDepositOrderDialog extends AbstractMobileQueryDialog {
                 where_sql.append(" and card_code ='").append(content).append("'");
             }
         }
+        where_sql.append(" order by addtime desc");
         return where_sql.toString();
     }
 

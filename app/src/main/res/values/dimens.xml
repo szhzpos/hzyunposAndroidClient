@@ -180,4 +180,5 @@
     <dimen name="float_circle_button_size">@dimen/size_45</dimen>
     <dimen name="mobile_vip_charge_item_height">@dimen/size_45</dimen>
     <dimen name="size_218">218dp</dimen>
+    <dimen name="m_setup_item_height">@dimen/size_45</dimen>
 </resources>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_68"
+        android:layout_margin="@dimen/margin_5"
+        android:background="@drawable/square_blue_shape"
+        android:padding="@dimen/margin_5">
+
+        <ImageView
+            android:id="@+id/user_info_label"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:contentDescription="@string/space_sz"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/nodish" />
+
+        <TextView
+            android:id="@+id/job_num_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_5"
+            android:text="@string/job_num_sz"
+            android:textColor="@color/label_text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintBottom_toTopOf="@+id/name_label"
+            app:layout_constraintStart_toEndOf="@+id/user_info_label"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/job_num_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0001"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toEndOf="@id/job_num_label"
+            app:layout_constraintTop_toTopOf="@id/job_num_label" />
+
+        <TextView
+            android:id="@+id/name_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/m_name_sz"
+            android:textColor="@color/label_text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/job_num_label"
+            app:layout_constraintTop_toBottomOf="@+id/job_num_label" />
+
+        <TextView
+            android:id="@+id/m_name_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toEndOf="@id/name_label"
+            app:layout_constraintTop_toTopOf="@id/name_label" />
+
+        <Button
+            android:id="@+id/m_exit_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_35"
+            android:background="@drawable/button_blue"
+            android:text="@string/exit_sz"
+            android:textColor="@color/blue_white"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/setup_main_function_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/margin_5"
+        android:background="@drawable/square_blue_shape"
+        android:orientation="vertical"
+        android:padding="@dimen/margin_8">
+
+        <TextView
+            android:id="@+id/m_print_options_tv"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/m_setup_item_height"
+            android:background="@drawable/bottom_separator"
+            android:drawableEnd="@drawable/fold"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/margin_8"
+            android:paddingEnd="@dimen/margin_0"
+            android:text="@string/printer_setting_sz"
+            android:textColor="@color/label_text_color"
+            android:textSize="@dimen/font_size_18" />
+    </LinearLayout>
+
+</LinearLayout>

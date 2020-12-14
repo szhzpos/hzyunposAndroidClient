@@ -3,6 +3,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -42,6 +43,7 @@ public abstract class AbstractTableDataAdapter<T extends AbstractTableDataAdapte
         return mDatas == null ? 0: mDatas.size();
     }
 
+    @CallSuper
     @Override
     public void onBindViewHolder(@NonNull T holder, int position) {
         if (mCurrentItemIndex == position + 1){
@@ -60,8 +62,6 @@ public abstract class AbstractTableDataAdapter<T extends AbstractTableDataAdapte
     public void setDatas(final String order_code) {
 
     }
-
-    public boolean isPaySuccess(){return false;}
 
     protected void setCurrentItemView(View v){
         if (mCurrentItemView == null){

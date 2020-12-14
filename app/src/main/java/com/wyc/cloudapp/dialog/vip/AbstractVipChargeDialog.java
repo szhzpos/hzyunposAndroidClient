@@ -23,6 +23,7 @@ import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
+import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.TreeListDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
@@ -309,10 +310,6 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
         mChargePlanTv = mobile_charge_plan;
     }
 
-    public static boolean verifyVipDepositPermissions(final @NonNull MainActivity context){
-        return context.verifyPermissions("23",null);
-    }
-
     private void showChargePlan(@NonNull final JSONObject object,final TextView mobile_charge_plan){
         int item_id = object.getIntValue("item_id");
         final String item_name = object.getString("item_name");
@@ -475,7 +472,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
         mobile_print_switch.setOnClickListener(v -> mContext.switchPrintStatus());
     }
 
-    private String generate_pay_son_order_id(){
+    private static String generate_pay_son_order_id(){
         return "MPAY" + new SimpleDateFormat("yyyyMMdd",Locale.CHINA).format(new Date()) + Utils.getNonce_str(8);
     }
 
@@ -574,6 +571,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                 member_order_info.put("stores_id",stores_id);
                 member_order_info.put("member_id",member_id);
                 member_order_info.put("status",1);
+                member_order_info.put("order_type",1);
                 member_order_info.put("addtime",System.currentTimeMillis() / 1000);
 
                 member_order_info.put("card_code",mVip.getString("card_code"));
@@ -644,7 +642,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                                     }
 
                                     //发起支付请求
-                                    if (is_check != 2){
+                                    if (PayMethodViewAdapter.isApiCheck(is_check)){
                                         String unified_pay_order = mPayMethodSelected.getString("unified_pay_order"),
                                                 unified_pay_query = mPayMethodSelected.getString("unified_pay_query"),
                                                 pay_code = mPayMethodSelected.getString(PAY_CODE_LABEL);
@@ -842,7 +840,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
             info.append(context.getString(R.string.vip_card_id_sz).concat(Utils.getNullStringAsEmpty(member,"card_code"))).append(new_line);
             info.append("会员姓名：".concat(Utils.getNullStringAsEmpty(member,"name"))).append(new_line);
             info.append("支付方式：".concat(Utils.getNullStringAsEmpty(money_order,"pay_method_name"))).append(new_line);
-            info.append("充值金额：".concat(Utils.getNullStringAsEmpty(money_order,"order_money"))).append(new_line);
+            info.append(context.getString(R.string.charge_amt_colon_sz).concat(Utils.getNullStringAsEmpty(money_order,"order_money"))).append(new_line);
             info.append(context.getString(R.string.give_amt).concat("：").concat(Utils.getNullStringAsEmpty(money_order,"give_money"))).append(new_line);
             info.append("会员余额：".concat(Utils.getNullStringAsEmpty(member,"money_sum"))).append(new_line);
             info.append("会员积分：".concat(Utils.getNullStringAsEmpty(member,"points_sum"))).append(new_line);
@@ -906,5 +904,88 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
             context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_f_err_hint_sz,print_format_info.getString("info")), context,context.getWindow()));
 
         return content;
+    }
+
+    public static void vipRefundAmt(final MainActivity context,final String order_id){
+        final StringBuilder order_code = new StringBuilder(order_id);
+        final CustomProgressDialog dialog = new CustomProgressDialog(context);
+        final JEventLoop loop = new JEventLoop();
+        dialog.setMessage("正在退款...");
+        CustomApplication.execute(()->{
+            boolean code = vipRefund(context,order_code);
+            if (code){
+                loop.done(1);
+            }else
+                loop.done(0);
+        });
+        if (loop.exec() == 1){
+            MyDialog.ToastMessage(order_code.toString(),context,null);
+        }else {
+            MyDialog.ToastMessage(order_code.toString(),context,null);
+        }
+        dialog.dismiss();
+    }
+    private static boolean vipRefund(final MainActivity context,final StringBuilder order_code){
+        final JSONObject object = new JSONObject();
+        if (SQLiteHelper.execSql(object,"select cashier_id,pay_method_id,stores_id, name, mobile, card_code, order_money, give_money, order_code, member_id, sc_id from " +
+                "member_order_info where order_code ='" + order_code +"'")){
+
+            Logger.d_json(object.toJSONString());
+
+            final JSONObject member_order_info = Utils.JsondeepCopy(object);
+            String remark = "会员手机充值退款;",third_order_id = generate_pay_son_order_id();
+
+            member_order_info.put("status",5);
+            member_order_info.put("order_type",2);
+            member_order_info.put("addtime",System.currentTimeMillis() / 1000);
+            member_order_info.put("third_order_id",third_order_id);
+
+            //保存单据
+            if (!SQLiteHelper.saveFormJson(member_order_info,"member_order_info",null,0,order_code)){
+                return false;
+            }
+
+
+
+            final HttpRequest httpRequest = new HttpRequest();
+            JSONObject data_ = new JSONObject(),retJson,info_json;
+            final String url = context.getUrl(),appId = context.getAppId(),appSecret = context.getAppSecret(),stores_id = object.getString("stores_id"),
+                    member_id = object.getString("member_id");
+
+
+            data_.put("appid",appId);
+            data_.put("stores_id",stores_id);
+            data_.put("member_id",member_id);
+            data_.put("order_code",order_code);
+            data_.put("order_money",-object.getDoubleValue("order_money"));
+
+            data_.put("xnote",remark);
+
+            String sz_param = HttpRequest.generate_request_parm(data_,appSecret);
+
+            Logger.i("生成会员充值退款订单参数:url:%s%s,param:%s",url ,"/api/member/mk_refund_money_order" ,sz_param);
+            retJson = httpRequest.sendPost(url + "/api/member/mk_refund_money_order",sz_param,true);
+            Logger.i("生成会员充值退款订单返回:%s",retJson.toString());
+
+            switch (retJson.getIntValue("flag")) {
+                case 0:
+                    order_code.append(retJson.getString("info"));
+                    break;
+                case 1:
+                    info_json = JSON.parseObject(retJson.getString("info"));
+                    switch (info_json.getString("status")) {
+                        case "n":
+                            order_code.append(info_json.getString("info"));
+                            break;
+                        case "y":
+                            Logger.d_json(info_json.toJSONString());
+                            break;
+                    }
+            }
+
+        }else {
+            order_code.append(object.getString("info"));
+        }
+        return false;
     }
 }

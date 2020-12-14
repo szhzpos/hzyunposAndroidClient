@@ -115,7 +115,7 @@ public class VipDepositOrderAdapter extends AbstractQueryDataAdapter<VipDepositO
                 "       datetime(a.addtime, 'unixepoch', 'localtime') oper_time,\n" +
                 "       case transfer_status when 1 then '未交班' when 2 then '已交班' else '其他' end s_e_status_name,\n" +
                 "       status ,\n" +
-                "       case status when 1 then '未付款' when '2' then '已付款' when '3' then '已完成' when '4' then '已关闭' end status_name,\n" +
+                "       case status when 1 then '未付款' when '2' then '已付款' when '3' then '已完成' when '4' then '已关闭' when '5' then '待退款' when '6' then '已退款' else '其他' end status_name,\n" +
                 "       b.cas_name,\n" +
                 "       name,\n" +
                 "       mobile,\n" +

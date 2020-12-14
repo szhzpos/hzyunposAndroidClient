@@ -48,7 +48,7 @@ import static android.database.Cursor.FIELD_TYPE_STRING;
 
 public final class SQLiteHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/order.db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
     private static SQLiteDatabase mDb;
     private final Context mContext;
     private SQLiteHelper(Context context){
@@ -68,9 +68,6 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
     }
     @Override
     public void onUpgrade(SQLiteDatabase db,int oldVersion, int newVersion) {
-
-        Logger.d("db onUpgrade");
-
         final List<String> update_list = new ArrayList<>(),modify_list = new ArrayList<>();
         final String sales_info_sql = "CREATE TABLE IF NOT EXISTS sales_info (\n" +
                 "    sc_id      VARCHAR PRIMARY KEY,\n" +
@@ -89,6 +86,12 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         //修改
         if(!checkColumnExists(db,"member_order_info","sc_id")){
             modify_list.add("ALTER TABLE member_order_info ADD COLUMN sc_id  VARCHAR");
+        }
+        if(!checkColumnExists(db,"member_order_info","order_type")){//1 充值单  2 会员退款单
+            modify_list.add("ALTER TABLE member_order_info ADD COLUMN order_type  INTEGER DEFAULT (1)");
+        }
+        if(!checkColumnExists(db,"member_order_info","origin_order_code")){
+            modify_list.add("ALTER TABLE member_order_info ADD COLUMN origin_order_code  VARCHAR");
         }
 
         try {

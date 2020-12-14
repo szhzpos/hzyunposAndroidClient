@@ -2,15 +2,14 @@ package com.wyc.cloudapp.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -24,8 +23,6 @@ import android_serialport_api.SerialPortFinder;
 
 public class PeripheralSettingFragment extends AbstractBaseFragment {
     private static final String mTitle = "外设设置";
-    private Context mContext;
-    private View mRootView;
     private ArrayAdapter<String> mSerialPortAdaper;
     private JSONArray mProTypes;
     public PeripheralSettingFragment() {
@@ -37,7 +34,7 @@ public class PeripheralSettingFragment extends AbstractBaseFragment {
     }
 
     @Override
-    public JSONObject laodContent() {
+    public JSONObject loadContent() {
 
         get_or_show_serialScale_setting(false);
         return null;
@@ -82,7 +79,7 @@ public class PeripheralSettingFragment extends AbstractBaseFragment {
         initSerialScale();
 
         //加载参数
-        laodContent();
+        loadContent();
     }
     @Override
     public void onAttach(@NonNull Context context) {

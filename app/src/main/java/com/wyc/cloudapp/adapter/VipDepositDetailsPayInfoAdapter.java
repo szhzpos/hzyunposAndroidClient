@@ -18,10 +18,24 @@ import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
-public final class VipDepositDetailsPayInfoAdapter extends AbstractTableDataAdapter<VipDepositDetailsPayInfoAdapter.MyViewHolder> {
+public final class VipDepositDetailsPayInfoAdapter extends AbstractPayInfoAdapter<VipDepositDetailsPayInfoAdapter.MyViewHolder> {
 
     public VipDepositDetailsPayInfoAdapter(MainActivity context){
         mContext = context;
+    }
+
+    @Override
+    public boolean isPaySuccess() {
+        boolean success  = true;
+        for (Object o : mDatas){
+            if (o instanceof JSONObject){
+                if(2 != Utils.getNotKeyAsNumberDefault((JSONObject)o,"status",1)){
+                    success = false;
+                    break;
+                }
+            }
+        }
+        return success;
     }
 
     static class MyViewHolder extends AbstractTableDataAdapter.SuperViewHolder {

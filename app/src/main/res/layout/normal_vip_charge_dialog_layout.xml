@@ -296,7 +296,7 @@
             android:layout_width="@dimen/size_82"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
-            android:text="@string/charge_amt__colon_sz"
+            android:text="@string/charge_amt_colon_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16" />
 

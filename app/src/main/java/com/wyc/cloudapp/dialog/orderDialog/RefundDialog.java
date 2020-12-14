@@ -21,6 +21,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
 import com.wyc.cloudapp.adapter.RefundDialogAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -460,13 +461,13 @@ public final class RefundDialog extends AbstractDialogMainActivity {
             tmp_record.put("ro_code",refund_code);
             tmp_record.put("remark",sz_refund_remark);
             tmp_record.put("road_pay_status",1);
-            if (is_check == 2){//记账方式支付状态为已支付
-                tmp_record.put("pay_time",System.currentTimeMillis() / 1000);
-                tmp_record.put("pay_status",2);
-            }else{
+            if (PayMethodViewAdapter.isApiCheck(is_check)){//记账方式支付状态为已支付
                 isRefundCheck = true;
                 tmp_record.put("pay_time",0);
                 tmp_record.put("pay_status",1);
+            }else{
+                tmp_record.put("pay_time",System.currentTimeMillis() / 1000);
+                tmp_record.put("pay_status",2);
             }
         }
 

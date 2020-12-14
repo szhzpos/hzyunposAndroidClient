@@ -14,12 +14,6 @@ import android.content.pm.PackageManager;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -30,6 +24,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -49,8 +48,6 @@ public class PrintFormatFragment extends AbstractBaseFragment {
     private static final int REQUEST_BLUETOOTH__PERMISSIONS = 0xabc8;
     private static final int REQUEST_BLUETOOTH_ENABLE = 0X8888;
     private static final String mTitle = "打印设置";
-    private View mRootView;
-    private Context mContext;
     private ArrayAdapter<String> mPrintIdAdapter;
     private CustomProgressDialog mProgressDialog;
     public PrintFormatFragment() {
@@ -62,7 +59,7 @@ public class PrintFormatFragment extends AbstractBaseFragment {
     }
 
     @Override
-    public JSONObject laodContent() {
+    public JSONObject loadContent() {
         get_or_show_printer_setting(false);
         get_or_show_print_format_content_2(false);
 
@@ -124,7 +121,7 @@ public class PrintFormatFragment extends AbstractBaseFragment {
     @Override
     public void onResume(){
         super.onResume();
-        laodContent();
+        loadContent();
     }
 
     @Override

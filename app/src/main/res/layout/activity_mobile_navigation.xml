@@ -80,7 +80,7 @@
             android:layout_weight="1"
             android:drawableTop="@drawable/m_bottom_5"
             android:gravity="center"
-            android:text="@string/my_sz"
+            android:text="@string/mobile_setup_sz"
             android:textColor="@color/mobile_fun_view_no_click"
             android:textSize="@dimen/font_size_14"
             app:verSpacing="@dimen/default_vertical" />

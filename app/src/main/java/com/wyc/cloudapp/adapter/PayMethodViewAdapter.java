@@ -222,4 +222,8 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     public JSONObject getDefaultPayMethod(){
         return mDefaultPayMethod;
     }
+
+    public static boolean isApiCheck(int check){
+        return check == 1;
+    }
 }

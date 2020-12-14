@@ -8,6 +8,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
+import com.wyc.cloudapp.adapter.AbstractPayInfoAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
@@ -26,7 +27,7 @@ import java.util.List;
 import java.util.Locale;
 
 public abstract class AbstractRetailOrderDetailsDialog extends AbstractOrderDetailsDialog {
-    protected AbstractTableDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> mRetailDetailsPayInfoAdapter;
+    protected AbstractPayInfoAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> mRetailDetailsPayInfoAdapter;
     public AbstractRetailOrderDetailsDialog(@NonNull MainActivity context, final CharSequence title, final JSONObject info) {
         super(context,title,info);
     }

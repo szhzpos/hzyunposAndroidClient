@@ -135,7 +135,7 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
         }
         private void showFragment(final View v){
             final FragmentTransaction ft = mFragmentManager.beginTransaction();
-
+            final MobileNavigationActivity activity = MobileNavigationActivity.this;
             Fragment current = null ;
             final int id = v.getId();
             if (id == R.id._mobile_board_tv) {//first
@@ -145,9 +145,9 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
             }else if (id == R.id._mobile_report_tv){//fourth
                 current = new ReportFragment();
             }else  if(id == R.id._mobile_my_tv){//fifth
-                current = new MyFragment();
+                current = new MyFragment(activity);
             }else{//third
-                current = new CashierDeskFragment(MobileNavigationActivity.this);
+                current = new CashierDeskFragment(activity);
             }
 
             ft.add(R.id.mobile_fragment_container,current);
@@ -168,7 +168,7 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
             }else if (id == R.id._mobile_report_tv){//fourth
 
             }else  if(id == R.id._mobile_my_tv){//fifth
-
+                support = true;
             }else{//third
                 support = true;
             }

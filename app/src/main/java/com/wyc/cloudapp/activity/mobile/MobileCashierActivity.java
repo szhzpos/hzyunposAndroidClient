@@ -379,10 +379,15 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
         boolean singleRefundStatus = intent.getBooleanExtra("singleRefundStatus",false);
         if (singleRefundStatus){
             setAllRefundStatusView(right,true);
-        }else {
-            right.setText(R.string.clear_sz);
-            right.setVisibility(View.INVISIBLE);
         }
+        left.postDelayed(()->{
+            int l_width = left.getWidth(),r_width = right.getWidth();
+            if (l_width > r_width){
+                right.setWidth(l_width);
+            }else if (l_width < r_width){
+                left.setWidth(r_width);
+            }
+        },100);
     }
 
     public void setAllRefundStatusView(TextView view,boolean b){
@@ -396,8 +401,6 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
                 dialog.show();
             });
         }else {
-            view.setVisibility(View.INVISIBLE);
-            view.setText(R.string.space_sz);
             view.setOnClickListener(null);
         }
     }

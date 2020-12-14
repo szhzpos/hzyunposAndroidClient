@@ -789,7 +789,7 @@ public final class PayDialog extends AbstractDialogSaleActivity {
                         open_cashbox = true;
                     }
                     is_check = pay_detail.getIntValue("is_check");
-                    if (is_check == 2){
+                    if (!PayMethodViewAdapter.isApiCheck(is_check)){
                         pay_status = 2;
                         pay_time = System.currentTimeMillis()/1000;
                     }else{
@@ -994,13 +994,12 @@ public final class PayDialog extends AbstractDialogSaleActivity {
         if (!mPayStatus){
             values_order.put("pay_status",1);
             values_order.put("spare_param1",err.toString());
-            valueList.add(values_order);
         }else{
             values_order.put("order_status",2);
             values_order.put("pay_status",2);
             values_order.put("pay_time",pay_time);
-            valueList.add(values_order);
         }
+        valueList.add(values_order);
         whereClauseList.add("order_code = ?");
         whereArgsList.add(new String[]{order_code});
 

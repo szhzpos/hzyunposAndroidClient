@@ -76,13 +76,14 @@ public abstract class AbstractTransferDialog extends AbstractDialogMainActivity 
         }
     }
     private void transferSuccess(){
-        CustomApplication.self().sync_transfer_order();
+        final CustomApplication app = CustomApplication.self();
+        app.sync_transfer_order();
         MyDialog dialog = new MyDialog(mContext);
         dialog.setMessage("交班成功！").setYesOnclickListener(mContext.getString(R.string.OK), myDialog -> {
             dismiss();
             myDialog.dismiss();
 
-            CustomApplication.self().resetSync();
+            app.resetSync();
 
             final Intent intent = new Intent(mContext, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

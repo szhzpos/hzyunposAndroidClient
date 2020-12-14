@@ -260,13 +260,11 @@
 
                 <TextView
                     android:id="@+id/mobile_charge_plan"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
                     android:autofillHints=""
                     android:background="@drawable/edit_text_style"
                     android:drawableEnd="@drawable/content"
-                    android:ems="10"
                     android:gravity="center_vertical"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/font_size_16" />
@@ -285,18 +283,16 @@
                     android:layout_width="@dimen/size_82"
                     android:layout_height="match_parent"
                     android:gravity="center_vertical"
-                    android:text="@string/charge_amt__colon_sz"
+                    android:text="@string/charge_amt_colon_sz"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/font_size_16" />
 
                 <EditText
                     android:id="@+id/mobile_charge_amt"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
                     android:autofillHints=""
                     android:background="@drawable/edit_text_style"
-                    android:ems="10"
                     android:inputType="textPersonName|numberDecimal"
                     android:selectAllOnFocus="true"
                     android:text="@string/zero_p_z_sz"
@@ -323,12 +319,10 @@
 
                 <EditText
                     android:id="@+id/mobile_present_amt"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
                     android:autofillHints=""
                     android:background="@drawable/edit_text_style"
-                    android:ems="10"
                     android:inputType="numberDecimal"
                     android:selectAllOnFocus="true"
                     android:text="@string/zero_p_z_sz"
@@ -355,12 +349,10 @@
 
                 <EditText
                     android:id="@+id/mobile_charge_remark"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
                     android:autofillHints=""
                     android:background="@drawable/edit_text_style"
-                    android:ems="10"
                     android:inputType="textPersonName"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/font_size_16" />
@@ -385,9 +377,8 @@
 
                 <TextView
                     android:id="@+id/mobile_sale_man"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
                     android:autofillHints=""
                     android:background="@drawable/edit_text_style"
                     android:drawableEnd="@drawable/content"
@@ -415,13 +406,11 @@
 
                 <TextView
                     android:id="@+id/mobile_pay_method"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
                     android:autofillHints=""
                     android:background="@drawable/edit_text_style"
                     android:drawableEnd="@drawable/content"
-                    android:ems="10"
                     android:gravity="center_vertical"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/font_size_16" />

@@ -18,7 +18,7 @@ import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
-public final class RefundDetailsPayInfoAdapter extends AbstractTableDataAdapter<RefundDetailsPayInfoAdapter.MyViewHolder> {
+public final class RefundDetailsPayInfoAdapter extends AbstractPayInfoAdapter<RefundDetailsPayInfoAdapter.MyViewHolder> {
 
     public RefundDetailsPayInfoAdapter(MainActivity context){
         mContext = context;
@@ -76,5 +76,19 @@ public final class RefundDetailsPayInfoAdapter extends AbstractTableDataAdapter<
             mDatas = new JSONArray();
             mContext.runOnUiThread(()->MyDialog.ToastMessage("加载付款明细错误：" + err,mContext,null));
         }
+    }
+
+    @Override
+    public boolean isPaySuccess(){
+        boolean success  = true;
+        for (Object o : mDatas){
+            if (o instanceof JSONObject){
+                if(2 != Utils.getNotKeyAsNumberDefault((JSONObject)o,"pay_status",1)){
+                    success = false;
+                    break;
+                }
+            }
+        }
+        return success;
     }
 }
