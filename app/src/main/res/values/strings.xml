@@ -385,8 +385,8 @@
     <string name="m_vip_no_sz">会员卡号：</string>
     <string name="m_vip_mobile_sz">会员手机：</string>
     <string name="vip_name_colon_sz">会员姓名：</string>
-    <string name="give_amt_colon_sz">赠送金额：</string>
-    <string name="deposit_amt_colon_sz">充值金额：</string>
+    <string name="give_amt_colon_sz">@string/present_amt_colon_sz</string>
+    <string name="deposit_amt_colon_sz">@string/charge_amt_colon_sz</string>
 
     <string name="m_sale_sz">@string/sale_man_colon_sz</string>
     <string name="m_order_amt_colon_sz">单据金额：</string>
@@ -410,11 +410,12 @@
     <!-- 手机充值单据窗口-->
     <string name="m_charge_query_sz">@string/vip_deposit_o_sz</string>
     <string name="m_charge_search_hint">充值单号/会员卡号</string>
-    <string name="m_refund_amt_sz">退款</string>
+    <string name="refund_sz">退款</string>
     <!-- 手机设置窗口-->
     <string name="job_num_sz">工号：</string>
     <string name="m_name_sz">姓名：</string>
     <string name="exit_sz">退出登录</string>
+    <string name="origin_order_code_sz">原单号</string>
 
 
 </resources>

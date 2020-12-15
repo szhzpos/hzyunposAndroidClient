@@ -16,7 +16,7 @@ import com.wyc.cloudapp.utils.Utils;
 
 public class SaleActivity extends MainActivity{
     protected AbstractSaleGoodsAdapter mSaleGoodsAdapter;
-    protected JSONObject mVipInfo;
+    protected JSONObject mVipInfo,mSaleManInfo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,9 +96,14 @@ public class SaleActivity extends MainActivity{
     public double getSumAmt(int type){
         return mSaleGoodsAdapter.getSumAmt(type);
     }
+
     @CallSuper
     public void clearVipInfo(){
         if (mVipInfo != null)mVipInfo = null;
+    }
+
+    public void clearSaleManInfo(){
+
     }
 
     @CallSuper
@@ -120,12 +125,16 @@ public class SaleActivity extends MainActivity{
     public JSONObject getVipInfo(){
         return mVipInfo;
     }
+    public JSONObject getSaleManId(){
+        return mSaleManInfo;
+    }
 
     @CallSuper
     @Override
     public void resetOrderInfo(){
         if (mSaleGoodsAdapter != null) mSaleGoodsAdapter.clearGoods();
         mPermissionCashierId = "";
+        clearSaleManInfo();
         clearVipInfo();
         setSingleRefundStatus(false);
         resetOrderCode();

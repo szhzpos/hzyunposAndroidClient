@@ -33,7 +33,10 @@ import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity {
@@ -80,23 +83,19 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
     private void initSaleMan(){
         final TextView mobile_sale_man = findViewById(R.id.mobile_sale_man);
         mobile_sale_man.setOnClickListener(v -> {
-            final TreeListDialog treeListDialog = new TreeListDialog(mContext,mContext.getString(R.string.sale_man_sz));
-            treeListDialog.setDatas(parse_sale_man(),null,true);
-            mobile_sale_man.post(()->{
-                if (treeListDialog.exec() == 1){
-                    final JSONObject object = treeListDialog.getSingleContent();
-                    mobile_sale_man.setTag(object.getString("item_id"));
-                    mobile_sale_man.setText(object.getString("item_name"));
-                }
-            });
+            final JSONObject object = showSaleInfo(mContext);
+            if (object.isEmpty()){
+                mobile_sale_man.setTag(object.getString("item_id"));
+                mobile_sale_man.setText(object.getString("item_name"));
+            }
         });
         mSaleManTv = mobile_sale_man;
     }
 
-    private JSONArray parse_sale_man(){
+    private static JSONArray parse_sale_man(final MainActivity activity){
         final StringBuilder err = new StringBuilder();
         final JSONArray array = new JSONArray(),
-                sales = SQLiteHelper.getListToJson("SELECT sc_id,sc_name FROM sales_info where stores_id = '" + Utils.getNullStringAsEmpty(mContext.getStoreInfo(),"stores_id") +"' and sc_status = 1",err);
+                sales = SQLiteHelper.getListToJson("SELECT sc_id,sc_name FROM sales_info where stores_id = '" + Utils.getNullStringAsEmpty(activity.getStoreInfo(),"stores_id") +"' and sc_status = 1",err);
         JSONObject object = new JSONObject(),tmp;
 
         object.put("level",0);
@@ -120,10 +119,21 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                 array.add(object);
             }
         }else {
-            MyDialog.ToastMessage("查询营业员错误:" + err,mContext,getWindow());
+            MyDialog.ToastMessage("查询营业员错误:" + err,activity,null);
         }
         return array;
     }
+
+    public static JSONObject showSaleInfo(final MainActivity activity){
+        final TreeListDialog treeListDialog = new TreeListDialog(activity,activity.getString(R.string.sale_man_sz));
+        treeListDialog.setDatas(parse_sale_man(activity),null,true);
+        if (treeListDialog.exec() == 1){
+            return treeListDialog.getSingleContent();
+        }
+
+        return new JSONObject();
+    }
+
 
     private void initVipInfoFields(){
         mVip_name = findViewById(R.id.vip_name);
@@ -610,8 +620,9 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
 
                     String sz_param = HttpRequest.generate_request_parm(data_,appSecret);
 
-                    Logger.i("生成充值订单参数:url:%s%s,param:%s",url ,"/api_v2/member/mk_money_order" ,sz_param);
-                    retJson = httpRequest.sendPost(url + "/api_v2/member/mk_money_order",sz_param,true);
+                    final String api = "/api_v2/member/mk_money_order";
+                    Logger.i("生成充值订单参数:url:%s%s,param:%s",url , api,sz_param);
+                    retJson = httpRequest.sendPost(url + api,sz_param,true);
                     Logger.i("生成充值订单返回:%s",retJson.toString());
 
                     switch (retJson.getIntValue("flag")) {
@@ -816,7 +827,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
         final StringBuilder info = new StringBuilder();
 
         final String store_name = Utils.getNullStringAsEmpty(format_info,"s_n");
-        final String new_line =  Printer.commandToStr(Printer.NEW_LINE);
+        final String new_line =  "\n";
         final String footer_c = Utils.getNullStringAsEmpty(format_info,"f_c");
 
         int print_count = Utils.getNotKeyAsNumberDefault(format_info,"p_c",1);
@@ -836,12 +847,17 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
 
             info.append(context.getString(R.string.store_name_sz).concat(Utils.getNullStringAsEmpty(stores_info,"stores_name"))).append(new_line);
             info.append(context.getString(R.string.order_sz).concat(Utils.getNullStringAsEmpty(money_order,"order_code"))).append(new_line);
+
+            final String origin_order_code = Utils.getNullStringAsEmpty(money_order,"source_order_code");
+            if (!"".equals(origin_order_code))
+                info.append(context.getString(R.string.origin_order_code_sz).concat("：").concat(origin_order_code)).append(new_line);
+
             info.append(context.getString(R.string.oper_sz).concat("：").concat(Utils.getNullStringAsEmpty(context.getCashierInfo(),"cas_name"))).append(new_line);
             info.append(context.getString(R.string.vip_card_id_sz).concat(Utils.getNullStringAsEmpty(member,"card_code"))).append(new_line);
             info.append("会员姓名：".concat(Utils.getNullStringAsEmpty(member,"name"))).append(new_line);
             info.append("支付方式：".concat(Utils.getNullStringAsEmpty(money_order,"pay_method_name"))).append(new_line);
             info.append(context.getString(R.string.charge_amt_colon_sz).concat(Utils.getNullStringAsEmpty(money_order,"order_money"))).append(new_line);
-            info.append(context.getString(R.string.give_amt).concat("：").concat(Utils.getNullStringAsEmpty(money_order,"give_money"))).append(new_line);
+            info.append(context.getString(R.string.give_amt).concat("：").concat(Utils.getNullOrEmptyStringAsDefault(money_order,"give_money","0.00"))).append(new_line);
             info.append("会员余额：".concat(Utils.getNullStringAsEmpty(member,"money_sum"))).append(new_line);
             info.append("会员积分：".concat(Utils.getNullStringAsEmpty(member,"points_sum"))).append(new_line);
             info.append("会员电话：".concat(Utils.getNullStringAsEmpty(member,"mobile"))).append(new_line);
@@ -910,9 +926,14 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
         final StringBuilder order_code = new StringBuilder(order_id);
         final CustomProgressDialog dialog = new CustomProgressDialog(context);
         final JEventLoop loop = new JEventLoop();
-        dialog.setMessage("正在退款...");
+        dialog.setMessage("正在退款...").show();
         CustomApplication.execute(()->{
-            boolean code = vipRefund(context,order_code);
+            boolean code = false;
+            try {
+                code = vipAllRefund(context,order_code);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
             if (code){
                 loop.done(1);
             }else
@@ -925,66 +946,233 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
         }
         dialog.dismiss();
     }
-    private static boolean vipRefund(final MainActivity context,final StringBuilder order_code){
+    private static boolean vipAllRefund(final MainActivity context,final StringBuilder sb){
         final JSONObject object = new JSONObject();
-        if (SQLiteHelper.execSql(object,"select cashier_id,pay_method_id,stores_id, name, mobile, card_code, order_money, give_money, order_code, member_id, sc_id from " +
-                "member_order_info where order_code ='" + order_code +"'")){
+        final String origin_order_code = sb.toString();
+        if (SQLiteHelper.execSql(object,"select a.status,a.order_type,cashier_id,b.is_check,a.pay_method_id,a.stores_id, a.name, a.mobile, a.card_code, a.order_money, a.give_money,member_id, a.sc_id from " +
+                "member_order_info a inner join pay_method b on a.pay_method_id = b.pay_method_id where order_code ='" + origin_order_code +"'")){
 
-            Logger.d_json(object.toJSONString());
+            if (!object.isEmpty()){
+                int status = Utils.getNotKeyAsNumberDefault(object,"status",-1),order_type = Utils.getNotKeyAsNumberDefault(object,"order_type",-1);
+                if ((order_type == 1 && status == 6) || (order_type == 2 && status == 3)){
+                    sb.append("订单已处理!");
+                }else {
+                    double order_money = -object.getDoubleValue("order_money");
+                    if (status == 3){
+                        final JSONObject member_order_info = Utils.JsondeepCopy(object);
 
-            final JSONObject member_order_info = Utils.JsondeepCopy(object);
-            String remark = "会员手机充值退款;",third_order_id = generate_pay_son_order_id();
+                        //删除不需要的内容
+                        member_order_info.remove("is_check");
 
-            member_order_info.put("status",5);
-            member_order_info.put("order_type",2);
-            member_order_info.put("addtime",System.currentTimeMillis() / 1000);
-            member_order_info.put("third_order_id",third_order_id);
+                        //更新内容
+                        member_order_info.put("status",5);
+                        member_order_info.put("order_type",2);
+                        member_order_info.put("origin_order_code",origin_order_code);
+                        member_order_info.put("addtime",System.currentTimeMillis() / 1000);
+                        member_order_info.put("third_order_id",generate_pay_son_order_id());
+                        member_order_info.put("order_money",order_money);
 
-            //保存单据
-            if (!SQLiteHelper.saveFormJson(member_order_info,"member_order_info",null,0,order_code)){
-                return false;
-            }
-
-
-
-            final HttpRequest httpRequest = new HttpRequest();
-            JSONObject data_ = new JSONObject(),retJson,info_json;
-            final String url = context.getUrl(),appId = context.getAppId(),appSecret = context.getAppSecret(),stores_id = object.getString("stores_id"),
-                    member_id = object.getString("member_id");
-
-
-            data_.put("appid",appId);
-            data_.put("stores_id",stores_id);
-            data_.put("member_id",member_id);
-            data_.put("order_code",order_code);
-            data_.put("order_money",-object.getDoubleValue("order_money"));
-
-            data_.put("xnote",remark);
-
-            String sz_param = HttpRequest.generate_request_parm(data_,appSecret);
-
-            Logger.i("生成会员充值退款订单参数:url:%s%s,param:%s",url ,"/api/member/mk_refund_money_order" ,sz_param);
-            retJson = httpRequest.sendPost(url + "/api/member/mk_refund_money_order",sz_param,true);
-            Logger.i("生成会员充值退款订单返回:%s",retJson.toString());
-
-            switch (retJson.getIntValue("flag")) {
-                case 0:
-                    order_code.append(retJson.getString("info"));
-                    break;
-                case 1:
-                    info_json = JSON.parseObject(retJson.getString("info"));
-                    switch (info_json.getString("status")) {
-                        case "n":
-                            order_code.append(info_json.getString("info"));
-                            break;
-                        case "y":
-                            Logger.d_json(info_json.toJSONString());
-                            break;
+                        //保存单据
+                        if (!SQLiteHelper.saveFormJson(member_order_info,"member_order_info",null,0,sb)){
+                            return false;
+                        }
                     }
+                    object.put("origin_order_code",origin_order_code);
+                    object.put("order_money",order_money);
+                    if (createRefundOrder(context,object)){
+                        int is_check = Utils.getNotKeyAsNumberDefault(object,"is_check",-1);
+                        if (PayMethodViewAdapter.isApiCheck(is_check)){
+                            if (!refundWithCheck(context,object)){
+                                return false;
+                            }
+                        }
+                        if (disposeRefundOrder(context,object)){
+                            sb.append(object.getString("info"));
+                            return true;
+                        }else {
+                            sb.append(object.getString("info"));
+                        }
+                    }else {
+                        sb.append(object.getString("info"));
+                    }
+                }
+            }else {
+                sb.append("不存在订单：").append(origin_order_code);
             }
-
         }else {
-            order_code.append(object.getString("info"));
+            sb.append(object.getString("info"));
+        }
+        return false;
+    }
+
+    private static boolean createRefundOrder(final MainActivity context,@NonNull final JSONObject object){
+        /*
+        * object 必须包含stores_id 仓库编号 member_id会员id origin_order_code充值单号 order_money充值金额(负数),成功之后用过object的refund_order_code返回退款单号
+        * */
+        final HttpRequest httpRequest = new HttpRequest();
+        JSONObject data_ = new JSONObject(),retJson,info_json;
+        final String url = context.getUrl(),appId = context.getAppId(),appSecret = context.getAppSecret(),stores_id = object.getString("stores_id"),
+                member_id = object.getString("member_id"),origin_order_code = object.getString("origin_order_code");
+
+        data_.put("appid",appId);
+        data_.put("stores_id",stores_id);
+        data_.put("member_id",member_id);
+        data_.put("order_code",origin_order_code);
+        data_.put("order_money",Utils.getNotKeyAsNumberDefault(object,"order_money",0.0));
+
+        data_.put("xnote","会员手机充值退款;");
+
+        String sz_param = HttpRequest.generate_request_parm(data_,appSecret),api = "/api/member/mk_refund_money_order",prefix = "生成会员充值退款";
+
+        Logger.i("%s订单参数:url:%s%s,param:%s",prefix,url ,api,sz_param);
+        retJson = httpRequest.sendPost(url + api,sz_param,true);
+        Logger.i("%s订单返回:%s",prefix,retJson.toString());
+
+
+        Logger.d_json(retJson.toJSONString());
+
+        switch (retJson.getIntValue("flag")) {
+            case 0:
+                object.put("info",retJson.getString("info"));
+                break;
+            case 1:
+                info_json = JSON.parseObject(retJson.getString("info"));
+                switch (info_json.getString("status")) {
+                    case "n":
+                        object.put("info",info_json.getString("info"));
+                        break;
+                    case "y":
+                        Logger.d_json(info_json.toJSONString());
+
+                        final String whereClause = "member_id = ? and origin_order_code = ? and order_type=2",refund_order_code = info_json.getString("order_code");
+
+                        final String[] whereArgs = new String[]{member_id,origin_order_code};
+                        final ContentValues values = new ContentValues();
+
+                        //保存退款单号
+                        final StringBuilder err = new StringBuilder();
+                        values.put("order_code",refund_order_code);
+                        if (SQLiteHelper.execUpdateSql("member_order_info",values,whereClause,whereArgs,err) >= 0){
+                            object.put("refund_order_code",refund_order_code);
+                            object.put("origin_order_code",origin_order_code);
+                            return true;
+                        }
+                        Logger.d(err);
+                        break;
+                }
+        }
+        return false;
+    }
+
+    private static boolean disposeRefundOrder(final MainActivity context,final JSONObject object){
+        /*
+        * object 必须包含member_id，refund_order_code,origin_order_code
+        * */
+        final String url = context.getUrl(),appId = context.getAppId(),appSecret = context.getAppSecret();
+        final HttpRequest httpRequest = new HttpRequest();
+        final JSONObject data_ = new JSONObject();
+
+
+        final String api = "/api/member/cl_refund_money_order",prefix = "处理会员充值退款",member_id = object.getString("member_id"),
+                refund_order_code = object.getString("refund_order_code"),origin_order_code = object.getString("origin_order_code");
+
+        //处理退款订单
+        data_.put("appid",appId);
+        data_.put("order_code",refund_order_code);
+
+
+        final String sz_param = HttpRequest.generate_request_parm(data_,appSecret);
+        Logger.i("%s订单参数:url:%s%s,param:%s",prefix,url ,api,sz_param);
+        final JSONObject retJson = httpRequest.sendPost(url + api,sz_param,true);
+        Logger.i("%s订单返回:%s",prefix,retJson.toString());
+
+        switch (retJson.getIntValue("flag")) {
+            case 0:
+                object.put("info",retJson.getString("info"));
+                break;
+            case 1:
+                final JSONObject info_json = JSON.parseObject(retJson.getString("info"));
+                Logger.d_json(info_json.toJSONString());
+
+                if ("y".equals(info_json.getString("status"))){
+                    //保存退款单号并更新订单状态
+                    final StringBuilder err = new StringBuilder();
+                    final List<ContentValues> valueList = new ArrayList<>();
+                    final List<String> tables = new ArrayList<>(),whereClauseList = new ArrayList<>();
+                    final List<String[]> whereArgsList = new ArrayList<>();
+
+                    tables.add("member_order_info");
+                    tables.add("member_order_info");
+
+
+                    final ContentValues refund_values = new ContentValues(),charge_values = new ContentValues();
+                    refund_values.put("order_code",refund_order_code);
+                    refund_values.put("status",3);
+                    refund_values.put("xnote",info_json.toString());
+
+                    charge_values.put("status",6);
+
+                    valueList.add(refund_values);
+                    valueList.add(charge_values);
+
+                    whereClauseList.add("member_id = ? and order_code = ? and order_type=2");
+                    whereClauseList.add("member_id = ? and order_code = ? and order_type=1");
+
+                    whereArgsList.add(new String[]{member_id,refund_order_code});
+                    whereArgsList.add(new String[]{member_id,origin_order_code});
+
+                    int[] rows = SQLiteHelper.execBatchUpdateSql(tables, valueList,whereClauseList,whereArgsList,err);
+                    if (rows == null){
+                        Logger.e("支付更新订单状态错误：%s",err);
+                    }else{
+                        int index = SQLiteHelper.verifyUpdateResult(rows);
+                        if (index == -1){
+                            if (context.getPrintStatus()){
+                                Printer.print(context,get_print_content(context,origin_order_code));
+                            }
+                            object.put("info",info_json.getString("info"));
+                            return true;
+                        } else{
+                            final String sz_err = String.format(Locale.CHINA,"数据表,%s未更新，value:%s,whereClause:%s,whereArgs:%s",tables.get(index),valueList.get(index),whereClauseList.get(index), Arrays.toString(whereArgsList.get(index)));
+                            Logger.e(sz_err);
+                            object.put("info",sz_err);
+                        }
+                    }
+                }else {
+                    object.put("info",info_json.getString("info"));
+                }
+                break;
+        }
+        return false;
+    }
+
+    private static boolean refundWithCheck(final MainActivity context,final JSONObject object){
+        final JSONObject data = new JSONObject();
+        data.put("appid",context.getAppId());
+        data.put("order_code",object.getString("origin_order_code"));
+        final String sz_param = HttpRequest.generate_request_parm(data,context.getAppSecret());
+        HttpRequest httpRequest = new HttpRequest();
+        JSONObject retJson = httpRequest.sendPost(context.getUrl() + "/api/pay2_refund/refund",sz_param,true);
+        switch (retJson.getIntValue("flag")){
+            case 0:
+                object.put("info",retJson.getString("info"));
+                break;
+            case 1:
+                JSONObject info = JSONObject.parseObject(retJson.getString("info"));
+                switch (info.getString("status")){
+                    case "n":
+                        object.put("info",info.getString("info"));
+                        break;
+                    case "y":
+                        if (info.getIntValue("recode") == 1) {
+                            final JSONArray refund_money_info = info.getJSONArray("refund_money_info");
+                            return true;
+                        }else {
+                            object.put("info",info.getString("info"));
+                        }
+                        break;
+                }
+                break;
         }
         return false;
     }

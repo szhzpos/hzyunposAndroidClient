@@ -2,6 +2,7 @@ package com.wyc.cloudapp.dialog.orderDialog;
 
 import android.os.Bundle;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSONObject;
@@ -16,6 +17,7 @@ public abstract class AbstractOrderDetailsDialog extends AbstractDialogMainActiv
         mOrderInfo = info;
     }
 
+    @CallSuper
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

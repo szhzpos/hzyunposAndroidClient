@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -37,6 +38,7 @@ import com.wyc.cloudapp.dialog.orderDialog.HangBillDialog;
 import com.wyc.cloudapp.dialog.orderDialog.MobileQueryRetailOrderDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.dialog.pay.PayDialog;
+import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -70,6 +72,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
         initSearchContent();
         initCheckout();
         initVipBtn();
+        initSaleBtn();
 
         //重置订单信息
         resetOrderInfo();
@@ -173,6 +176,22 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
             }else
                 vipInfoDialog.setYesOnclickListener(dialog -> {showVipInfo(dialog.getVip());dialog.dismiss(); }).show();
         });
+    }
+
+    private void initSaleBtn(){
+        final Button btn = findViewById(R.id.mobile_sale_man_btn);
+        if (btn != null)
+            btn.setOnClickListener(v -> {
+                final TextView sale_man_name = findViewById(R.id.sale_man_name);
+                final JSONObject object = AbstractVipChargeDialog.showSaleInfo(this);
+
+                final String name = Utils.getNullStringAsEmpty(object,"item_name");
+
+                mSaleManInfo = new JSONObject();
+                mSaleManInfo.put("id",Utils.getNullStringAsEmpty(object,"item_id"));
+                mSaleManInfo.put("name",name);
+                sale_man_name.setText(name);
+            });
     }
 
     private void initCheckout(){
@@ -495,6 +514,18 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
             mSaleGoodsAdapter.updateGoodsInfoToVip(vip);
         }
     }
+
+    @CallSuper
+    public void clearSaleManInfo(){
+        if (mSaleManInfo != null){
+            mSaleManInfo = null;
+            final TextView sale_man_name = findViewById(R.id.sale_man_name);
+            if (null != sale_man_name){
+                sale_man_name.setText(getText(R.string.space_sz));
+            }
+        }
+    }
+
     @Override
     public void clearVipInfo(){
         super.clearVipInfo();

@@ -393,6 +393,18 @@
             android:visibility="visible" />
 
         <Button
+            android:id="@+id/refund_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/width_128"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/margin_5"
+            android:background="@drawable/button_blue"
+            android:text="@string/refund_sz"
+            android:textColor="@color/blue_white"
+            android:textSize="@dimen/font_size_18"
+            android:visibility="visible" />
+
+        <Button
             android:id="@+id/reprint_btn"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/width_128"
@@ -402,18 +414,6 @@
             android:text="@string/reprint_order_sz"
             android:textColor="@color/blue_white"
             android:textSize="@dimen/font_size_18" />
-
-        <Button
-            android:id="@+id/abnormal_back_btn"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/width_128"
-            android:layout_height="match_parent"
-            android:layout_margin="@dimen/margin_5"
-            android:background="@drawable/button_blue"
-            android:text="@string/abnormal_back_order_sz"
-            android:textColor="@color/blue_white"
-            android:textSize="@dimen/font_size_18"
-            android:visibility="gone" />
 
         <Space
             android:layout_width="wrap_content"

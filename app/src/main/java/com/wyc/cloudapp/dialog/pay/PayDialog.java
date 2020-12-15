@@ -692,7 +692,7 @@ public final class PayDialog extends AbstractDialogSaleActivity {
             order_info.put("name",mVip.getString("name"));
             order_info.put("card_code",mVip.getString("card_code"));
         }
-        order_info.put("sc_ids","");
+        order_info.put("sc_ids",Utils.getNullStringAsEmpty(mContext.getSaleManId(),"id"));
         order_info.put("sc_tc_money",0.00);
         order_info.put("zl_money",zl_amt);
         order_info.put("ss_money",0.0);

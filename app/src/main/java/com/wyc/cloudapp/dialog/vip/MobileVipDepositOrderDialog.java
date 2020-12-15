@@ -23,7 +23,7 @@ public class MobileVipDepositOrderDialog extends AbstractMobileQueryDialog {
 
     @Override
     public AbstractQueryDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> getAdapter() {
-        return new MobileChargeOrderAdapter(mContext);
+        return new MobileChargeOrderAdapter(this);
     }
 
     @Override

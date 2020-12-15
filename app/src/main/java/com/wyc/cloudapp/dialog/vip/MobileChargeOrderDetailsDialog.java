@@ -1,6 +1,7 @@
 package com.wyc.cloudapp.dialog.vip;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -62,11 +63,6 @@ public class MobileChargeOrderDetailsDialog extends AbstractChargeOrderDetailsDi
     }
 
     @Override
-    protected void initGoodsDetail(){
-
-    }
-
-    @Override
     protected void initPayDetail(){
         final RecyclerView pay_detail = findViewById(R.id.m_pay_details_list);
         if (null != pay_detail){
@@ -93,8 +89,13 @@ public class MobileChargeOrderDetailsDialog extends AbstractChargeOrderDetailsDi
 
     private void initRefund(){
         final Button m_refund_btn = findViewById(R.id.m_refund_btn);
-        m_refund_btn.setOnClickListener(v -> {
-
-        });
+        int order_status = Utils.getNotKeyAsNumberDefault(mOrderInfo,"status",-1),order_type = Utils.getNotKeyAsNumberDefault(mOrderInfo,"order_type",-1);
+        if ((order_type == 1 && order_status == 6) || (order_type == 2 && order_status == 3)) {
+            m_refund_btn.setVisibility(View.GONE);
+        }else{
+            m_refund_btn.setOnClickListener(v -> {
+                AbstractVipChargeDialog.vipRefundAmt(mContext,Utils.getNullStringAsEmpty(mOrderInfo,"order_code"));
+            });
+        }
     }
 }

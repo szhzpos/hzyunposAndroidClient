@@ -42,6 +42,7 @@ public final class NormalTransferDetailsAdapter extends AbstractTransferDetailsA
 
     @Override
     public void onBindViewHolder(@NonNull AbstractTransferDetailsAdapter.MyViewHolder t_holder, int position) {
+        super.onBindViewHolder(t_holder, position);
         if (null != mDatas) {
             final JSONObject pay_info = mDatas.getJSONObject(position);
             if (pay_info != null) {

@@ -51,13 +51,23 @@
 
         <TextView
             android:id="@+id/order_code"
-            android:layout_width="158dp"
+            android:layout_width="@dimen/size_158"
             android:layout_height="match_parent"
             android:gravity="center"
             android:paddingTop="@dimen/margin_8"
             android:paddingBottom="@dimen/margin_8"
             android:text="@string/order_not_colon_sz"
             android:textColor="@color/appColor"
+            android:textSize="@dimen/font_size_16" />
+
+        <TextView
+            android:id="@+id/origin_order_code"
+            android:layout_width="@dimen/size_158"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingTop="@dimen/margin_8"
+            android:paddingBottom="@dimen/margin_8"
+            android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16" />
 
         <TextView

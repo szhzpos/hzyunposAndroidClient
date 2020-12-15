@@ -164,6 +164,7 @@ public final class MoreFunDialog extends AbstractDialogSaleActivity {
             if (VipInfoDialog.verifyVipDepositOrderPermissions(mContext)){
                 final VipDepositOrderDialog vipDepositOrderDialog = new VipDepositOrderDialog(mContext);
                 vipDepositOrderDialog.show();
+                vipDepositOrderDialog.triggerQuery();
                 closeWindow();
             }
         });

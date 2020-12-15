@@ -56,12 +56,22 @@
                 android:textSize="@dimen/font_size_18" />
 
             <TextView
-                android:layout_width="158dp"
+                android:layout_width="@dimen/size_158"
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:paddingTop="@dimen/margin_8"
                 android:paddingBottom="@dimen/margin_8"
                 android:text="@string/order_not_colon_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:layout_width="@dimen/size_158"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingTop="@dimen/margin_8"
+                android:paddingBottom="@dimen/margin_8"
+                android:text="@string/origin_order_code_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/font_size_18" />
 

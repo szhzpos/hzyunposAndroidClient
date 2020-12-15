@@ -425,8 +425,13 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
             case 3://赠送
                 new_price = value;
                 if (type == 3){
-                    discount_type = AbstractSaleGoodsAdapter.DISCOUNT_TYPE.PRESENT;
-                    new_discount = 0.0;
+                    discount_type = DISCOUNT_TYPE.PRESENT;
+                    if (Utils.getNotKeyAsNumberDefault(json,"discount_type",-1) == discount_type){
+                        deleteDiscountRecordForType(discount_type);
+                        return;
+                    }else {
+                        new_discount = 0.0;
+                    }
                 }else{
                     if (isNotParticipateDiscount(json))return;
                     if (!Utils.equalDouble(original_price,0.0))new_discount = value / original_price;

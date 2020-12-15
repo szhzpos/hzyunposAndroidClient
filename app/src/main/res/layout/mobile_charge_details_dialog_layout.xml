@@ -280,7 +280,7 @@
             android:layout_marginStart="@dimen/margin_5"
             android:layout_weight="1"
             android:background="@drawable/button_sub_blue"
-            android:text="@string/m_refund_amt_sz"
+            android:text="@string/refund_sz"
             android:textColor="@color/white"
             android:textSize="@dimen/font_size_16" />
 

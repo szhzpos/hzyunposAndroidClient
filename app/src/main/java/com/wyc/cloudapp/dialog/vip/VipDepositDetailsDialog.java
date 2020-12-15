@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.dialog.vip;
 
+import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -18,9 +19,14 @@ import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.Utils;
 
 
-public class VipDepositDetailsDialog extends AbstractChargeOrderDetailsDialog {
+public final class VipDepositDetailsDialog extends AbstractChargeOrderDetailsDialog {
     public VipDepositDetailsDialog(@NonNull MainActivity context, final JSONObject object) {
         super(context, context.getString(R.string.order_detail_sz),object);
+    }
+
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initRefund();
     }
 
     @Override
@@ -72,11 +78,6 @@ public class VipDepositDetailsDialog extends AbstractChargeOrderDetailsDialog {
     }
 
     @Override
-    protected void initGoodsDetail() {
-
-    }
-
-    @Override
     protected void initPayDetail(){
         final RecyclerView pay_detail = findViewById(R.id.pay_details);
         if (null != pay_detail){
@@ -106,5 +107,17 @@ public class VipDepositDetailsDialog extends AbstractChargeOrderDetailsDialog {
     protected void initVerifyPay() {
         final Button m_pay_verify_btn = findViewById(R.id.verify_pay_btn);
         if (m_pay_verify_btn != null)m_pay_verify_btn.setOnClickListener(v -> verify_pay());
+    }
+
+    private void initRefund(){
+        final Button m_refund_btn = findViewById(R.id.refund_btn);
+        int order_status = Utils.getNotKeyAsNumberDefault(mOrderInfo,"status",-1),order_type = Utils.getNotKeyAsNumberDefault(mOrderInfo,"order_type",-1);
+        if ((order_type == 1 && order_status == 6) || (order_type == 2 && order_status == 3)) {
+            m_refund_btn.setVisibility(View.GONE);
+        }else{
+            m_refund_btn.setOnClickListener(v -> {
+                AbstractVipChargeDialog.vipRefundAmt(mContext,Utils.getNullStringAsEmpty(mOrderInfo,"order_code"));
+            });
+        }
     }
 }

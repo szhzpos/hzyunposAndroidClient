@@ -38,6 +38,11 @@ public abstract class AbstractChargeOrderDetailsDialog extends AbstractOrderDeta
         Printer.showPrintIcon(mContext,true);
     }
 
+    @Override
+    protected void initGoodsDetail() {
+
+    }
+
     protected void verify_pay(){
         if (null != mPayRecord){
             if (mPayRecord.getIntValue("status") == 1){

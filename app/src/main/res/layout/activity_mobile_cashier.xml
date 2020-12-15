@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:orientation="vertical"
     tools:context=".activity.mobile.MobileCashierActivity">
 
@@ -110,19 +111,19 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/mobile_bottom_btn_layout"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="@dimen/height_58"
             android:layout_marginBottom="@dimen/margin_5"
             android:background="@color/white"
             android:orientation="horizontal"
             app:layout_constraintBottom_toTopOf="@+id/mobile_bottom_layout"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/mobile_other_fun_btn_layout"
             app:layout_constraintStart_toStartOf="parent">
 
             <Button
                 android:id="@+id/mobile_vip_btn"
                 style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="@dimen/width_208"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginStart="@dimen/margin_2"
                 android:layout_weight="1"
@@ -136,6 +137,8 @@
                 android:textColor="@color/blue_white"
                 android:textSize="@dimen/font_size_16"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/mobile_sale_man_btn"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <TextView
@@ -152,28 +155,46 @@
             <Button
                 android:id="@+id/mobile_sale_man_btn"
                 style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_marginStart="@dimen/margin_8"
                 android:background="@drawable/button_blue"
+                android:drawableEnd="@drawable/fold"
                 android:focusable="false"
+                android:gravity="start|center_vertical"
+                android:paddingStart="@dimen/margin_5"
                 android:text="@string/sale_man_sz"
                 android:textColor="@color/blue_white"
-                android:textSize="@dimen/font_size_18"
-                android:visibility="gone"
+                android:textSize="@dimen/font_size_16"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/mobile_vip_btn" />
+
+            <TextView
+                android:id="@+id/sale_man_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/size_32"
+                android:textColor="@color/orange_1"
+                android:textSize="@dimen/fun_button_font_size_16"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/mobile_sale_man_btn"
+                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
             android:id="@+id/mobile_other_fun_btn_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_8"
             android:layout_marginEnd="@dimen/margin_8"
             android:layout_marginBottom="@dimen/margin_8"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="@id/mobile_bottom_btn_layout"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/mobile_bottom_btn_layout">
 
             <com.wyc.cloudapp.CustomizationView.InterceptLinearLayout
                 android:id="@+id/mobile_other_fun_hide_layout"

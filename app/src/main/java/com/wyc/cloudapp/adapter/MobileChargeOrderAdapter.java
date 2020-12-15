@@ -10,19 +10,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.orderDialog.AbstractMobileQueryDialog;
+import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.MobileChargeOrderDetailsDialog;
-import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
-public final class MobileChargeOrderAdapter extends AbstractQueryDataAdapter<MobileChargeOrderAdapter.MyViewHolder> {
-    public MobileChargeOrderAdapter(final MainActivity activity){
-        mContext = activity;
+public final class MobileChargeOrderAdapter extends AbstractChargeOrderAdapter<MobileChargeOrderAdapter.MyViewHolder> {
+    protected AbstractMobileQueryDialog mDialog;
+    public MobileChargeOrderAdapter(final AbstractMobileQueryDialog dialog){
+        mDialog = dialog;
+        mContext = dialog.getPrivateContext();
     }
 
     static class MyViewHolder extends AbstractQueryDataAdapter.SuperViewHolder {
@@ -57,14 +57,21 @@ public final class MobileChargeOrderAdapter extends AbstractQueryDataAdapter<Mob
                 holder.order_code.setText(order_info.getString("order_code"));
                 holder.order_amt.setText(String.format(Locale.CHINA, "%.2f", order_info.getDoubleValue("order_amt")));
 
-                int order_status = order_info.getIntValue("order_status");
-                if (order_status != 2)
-                    holder.order_status.setTextColor(mContext.getColor(R.color.orange_1));
-                else
+                int order_status = order_info.getIntValue("status");
+                if (order_status == 3 || order_status == 6) {
+                    int order_type = Utils.getNotKeyAsNumberDefault(order_info,"order_type",-1);
+                    if ((order_type == 1 && order_status == 6) || (order_type == 2 && order_status == 3))
+                        holder.m_refund_order.setVisibility(View.GONE);
+                    else
+                        holder.m_refund_order.setVisibility(View.VISIBLE);
+
                     holder.order_status.setTextColor(mContext.getColor(R.color.mobile_order_status));
+                }else{
+                    holder.order_status.setTextColor(mContext.getColor(R.color.orange_1));
+                }
 
                 holder.order_status.setText(order_info.getString("status_name"));
-                holder.order_status.setTag(order_info.getIntValue("status"));
+                holder.order_status.setTag(order_status);
 
                 holder.cas_name.setText(order_info.getString("cas_name"));
 
@@ -107,6 +114,7 @@ public final class MobileChargeOrderAdapter extends AbstractQueryDataAdapter<Mob
                         if (RefundDialog.verifyRefundPermission(mContext)){
                             final TextView order_code_tv = v.findViewById(R.id.order_code);
                             AbstractVipChargeDialog.vipRefundAmt(mContext,order_code_tv.getText().toString());
+                            setDatas(mDialog.generateQueryCondition());
                         }
                     });
                 }else{
@@ -116,34 +124,7 @@ public final class MobileChargeOrderAdapter extends AbstractQueryDataAdapter<Mob
         }
         return v.performClick();
     };
-
     protected int getStatusViewId(){
         return R.id.m_charge_order_status;
-    }
-
-
-    public void setDatas(final String where_sql){
-        final StringBuilder err = new StringBuilder();
-        final String sql = "SELECT \n" +
-                "       datetime(a.addtime, 'unixepoch', 'localtime') oper_time,\n" +
-                "       case transfer_status when 1 then '未交班' when 2 then '已交班' else '其他' end s_e_status_name,\n" +
-                "       status ,\n" +
-                "       case status when 1 then '未付款' when '2' then '已付款' when '3' then '已完成' when '4' then '已关闭' when '5' then '待退款' when '6' then '已退款' else '其他' end status_name,\n" +
-                "       b.cas_name,\n" +
-                "       name,\n" +
-                "       mobile,\n" +
-                "       card_code,\n" +
-                "       order_money order_amt,\n" +
-                "       give_money give_amt,\n" +
-                "       order_code,\n" +
-                "       ifnull(c.sc_name,'') sc_name\n" +
-                "  FROM member_order_info a left join cashier_info b on a.cashier_id = b.cas_id left join sales_info c on a.sc_id = c.sc_id " + where_sql;
-
-        Logger.d("sql:%s",sql);
-        mDatas = SQLiteHelper.getListToJson(sql,err);
-        if (mDatas != null){
-            notifyDataSetChanged();
-        }else
-            MyDialog.ToastMessage("加载充值订单错误：" + err,mContext,null);
     }
 }
