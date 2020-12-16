@@ -109,8 +109,10 @@ public class SaleActivity extends MainActivity{
     @CallSuper
     @Override
     public void setSingleRefundStatus(boolean b){
-        if (mSaleGoodsAdapter != null) mSaleGoodsAdapter.setSingleRefundStatus(b);
-        if (b)resetOrderCode();
+        if (mSaleGoodsAdapter != null) {
+            mSaleGoodsAdapter.setSingleRefundStatus(b);
+            if (b)resetOrderCode();
+        }
     }
 
     @Override

@@ -22,7 +22,7 @@ public final class MobileQueryRetailOrderDialog extends AbstractMobileQueryDialo
 
     @Override
     public AbstractQueryDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> getAdapter() {
-        return new MobileRetailOrderAdapter(mContext);
+        return new MobileRetailOrderAdapter(this);
     }
 
     @Override

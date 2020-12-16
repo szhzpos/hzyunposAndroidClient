@@ -20,7 +20,7 @@
         android:id="@+id/keyboard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/transparent"
+        android:background="@color/white"
         android:focusable="false"
         android:focusableInTouchMode="false"
         app:layout_constraintStart_toStartOf="parent"

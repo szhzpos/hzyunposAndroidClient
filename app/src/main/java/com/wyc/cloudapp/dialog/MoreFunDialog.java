@@ -109,13 +109,10 @@ public final class MoreFunDialog extends AbstractDialogSaleActivity {
         });
     }
 
-    private boolean verifyOpenCashboxPermissions(){
-        return mContext.verifyPermissions("5",null);
-    }
     private void initOpenCashboxBtn(){
         final Button btn = findViewById(R.id.o_cashbox);
         btn.setOnClickListener(v -> {
-            if (verifyOpenCashboxPermissions())
+            if (mContext.verifyOpenCashboxPermissions())
                 Printer.print(mContext, Printer.commandToStr(Printer.OPEN_CASHBOX));
         });
     }

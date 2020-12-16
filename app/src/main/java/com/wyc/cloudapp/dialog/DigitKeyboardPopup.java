@@ -1,27 +1,23 @@
 package com.wyc.cloudapp.dialog;
 
-import android.app.Activity;
 import android.content.Context;
-import android.graphics.Point;
-import android.graphics.Rect;
 import android.text.Editable;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupWindow;
+
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.logger.Logger;
 
-import java.util.Arrays;
-
 public class DigitKeyboardPopup extends PopupWindow {
     private EditText mFocusView;
-    private View mUpHintView,mDownHintView;
+    private final View mUpHintView;
+    private final View mDownHintView;
     public DigitKeyboardPopup(@NonNull Context context) {
         super(context);
         final View view = LayoutInflater.from(context).inflate(R.layout.digit_keyboard_layout,null);
@@ -33,10 +29,19 @@ public class DigitKeyboardPopup extends PopupWindow {
 
         setBackgroundDrawable(context.getDrawable(R.color.transparent));
         setOutsideTouchable(true);
+        setOnDismissListener(() -> {
+            if (mFocusView != null)mFocusView.clearFocus();
+        });
     }
 
     @Override
-    public void showAsDropDown(View view){
+    protected void finalize(){
+        Logger.d(getClass().getSimpleName() + " finalized");
+    }
+
+
+    @Override
+    public void showAsDropDown(@NonNull View view){
         if (view instanceof EditText) {
             mFocusView = (EditText) view;
         }
@@ -52,6 +57,7 @@ public class DigitKeyboardPopup extends PopupWindow {
                 mFocusView = (EditText) view;
             }
             int[] windowPos = calculatePopWindowPos(view, getContentView());
+
             super.showAtLocation(view, android.view.Gravity.TOP | android.view.Gravity.START,windowPos[0] - view.getWidth()/2,windowPos[1]);
         }
     }
@@ -64,7 +70,7 @@ public class DigitKeyboardPopup extends PopupWindow {
                 tmp_v.setOnClickListener(mKeyboardListener);
             }
     }
-    private View.OnClickListener mKeyboardListener = new View.OnClickListener() {
+    private final View.OnClickListener mKeyboardListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
             int v_id = view.getId();

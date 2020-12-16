@@ -56,6 +56,10 @@ public abstract class MainActivity extends AppCompatActivity {
         return verifyPermissions("2",null);
     }
 
+    public boolean verifyOpenCashboxPermissions(){
+        return verifyPermissions("5",null);
+    }
+
     private void initCashierInfoAndStoreInfo(){
         final JSONObject cas_info = mCashierInfo = new JSONObject();
         final JSONObject st_info = mStoreInfo = new JSONObject();

@@ -64,8 +64,11 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
                 holder.reality_amt.setText(String.format(Locale.CHINA, "%.2f", order_info.getDoubleValue("reality_amt")));
 
                 int order_status = order_info.getIntValue("order_status");
+                Logger.d("order_status:%d",order_status);
                 if (order_status != 2)
                     holder.order_status.setTextColor(mContext.getColor(R.color.orange_1));
+                else
+                    holder.order_status.setTextColor(mContext.getColor(R.color.text_color));
 
                 holder.order_status.setText(order_info.getString("order_status_name"));
                 holder.order_status.setTag(order_status);
@@ -95,12 +98,13 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
     private final View.OnTouchListener touchListener = (v, event) -> {
         if (event.getAction() == MotionEvent.ACTION_DOWN){
             setCurrentItemView(v);
-            final TextView order_code_tv = v.findViewById(R.id.order_code),sale_refund_tv = v.findViewById(R.id.sale_refund),order_status = v.findViewById(R.id.order_status);
+            final TextView order_code_tv = v.findViewById(R.id.order_code),sale_refund_tv = v.findViewById(R.id.sale_refund),order_status_tv = v.findViewById(R.id.order_status);
             if (isClickView(order_code_tv,event.getX(),event.getY())){
                 final AbstractRetailOrderDetailsDialog retailOrderDetailsDialog = new NormalRetailOrderDetailsDialog(mContext,getCurrentOrder());
                 retailOrderDetailsDialog.show();
             }else if (isClickView(sale_refund_tv,event.getX(),event.getY())){
-                if (Utils.getViewTagValue(order_status,2) == 2){
+                int order_status = Utils.getViewTagValue(order_status_tv,-1);
+                if (order_status == 2 || order_status == 88){
                     sale_refund_tv.post(()->{
                         if (RefundDialog.verifyRefundPermission(mContext)){
                             if (mContext.getSingleRefundStatus())mContext.setSingleRefundStatus(false);
@@ -110,7 +114,7 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
                         }
                     });
                 }else{
-                    order_status.postDelayed(()-> MyDialog.ToastMessage(order_status,"订单状态不正常不能退款!",mContext,mDialog.getWindow()),100);
+                    order_status_tv.postDelayed(()-> MyDialog.ToastMessage(order_status_tv,order_status_tv.getText().toString(),mContext,mDialog.getWindow()),100);
                 }
             }
         }
@@ -132,7 +136,7 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
                 "       a.pay_status,\n" +
                 "       case a.pay_status when 1 then '未支付' when 2 then '已支付' when 3 then '支付中' else '其他' end pay_status_name,\n" +
                 "       a.order_status,\n" +
-                "       case a.order_status when 1 then '未付款' when 2 then '已付款' when 3 then '已取消' when 4 then '已退货' else '其他'  end order_status_name,\n" +
+                "       case a.order_status when 1 then '未付款' when 2 then '已付款' when 3 then '已取消' when 4 then '已退货' when 88 then '部分退货' else '其他'  end order_status_name,\n" +
                 "       datetime(a.addtime, 'unixepoch', 'localtime') oper_time,\n" +
                 "       a.remark,\n" +
                 "       a.cashier_id,\n" +

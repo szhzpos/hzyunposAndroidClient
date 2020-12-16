@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.adapter;
 
+import android.content.DialogInterface;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,9 +11,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.orderDialog.AbstractMobileQueryDialog;
 import com.wyc.cloudapp.dialog.orderDialog.MobileRetailOrderDetailsDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.logger.Logger;
@@ -20,8 +21,10 @@ import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 public final class MobileRetailOrderAdapter extends AbstractQueryDataAdapter<MobileRetailOrderAdapter.MyViewHolder> {
-    public MobileRetailOrderAdapter(final MainActivity activity){
-        mContext = activity;
+    protected AbstractMobileQueryDialog mDialog;
+    public MobileRetailOrderAdapter(final AbstractMobileQueryDialog dialog){
+        mDialog = dialog;
+        mContext = dialog.getPrivateContext();
     }
 
     static class MyViewHolder extends AbstractQueryDataAdapter.SuperViewHolder {
@@ -101,21 +104,29 @@ public final class MobileRetailOrderAdapter extends AbstractQueryDataAdapter<Mob
             setCurrentItemViewAndIndex(v);
             final TextView details_btn = v.findViewById(R.id.m_retail_order_detail),refund_btn = v.findViewById(R.id.m_refund_retail_order);
 
+            final JSONObject curr = getCurrentOrder();
             if (isClickView(details_btn,event.getX(),event.getY())){
-                final MobileRetailOrderDetailsDialog retailOrderDetailsDialog = new MobileRetailOrderDetailsDialog(mContext,getCurrentOrder());
+                final MobileRetailOrderDetailsDialog retailOrderDetailsDialog = new MobileRetailOrderDetailsDialog(mContext,curr);
                 retailOrderDetailsDialog.show();
             }else if (isClickView(refund_btn,event.getX(),event.getY())){
-                if (Utils.getNotKeyAsNumberDefault(getCurrentOrder(),"order_status",2) == 2){
+                int order_status = Utils.getNotKeyAsNumberDefault(curr,"order_status",-1);
+                if (order_status == 2 || order_status == 88){
                     refund_btn.post(()->{
                         if (RefundDialog.verifyRefundPermission(mContext)){
                             if (mContext.getSingleRefundStatus())mContext.setSingleRefundStatus(false);
                             final TextView order_code_tv = v.findViewById(R.id.order_code);
                             final RefundDialog refundDialog = new RefundDialog(mContext,order_code_tv.getText().toString());
+                            refundDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                @Override
+                                public void onDismiss(DialogInterface dialog) {
+                                    setDatas(mDialog.generateQueryCondition());
+                                }
+                            });
                             refundDialog.show();
                         }
                     });
                 }else{
-                    MyDialog.ToastMessage(v,"订单状态不正常不能退款!",mContext,null);
+                    MyDialog.ToastMessage(v,Utils.getNullStringAsEmpty(curr,"order_status_name"),mContext,null);
                 }
             }
         }
@@ -141,7 +152,7 @@ public final class MobileRetailOrderAdapter extends AbstractQueryDataAdapter<Mob
                 "       a.pay_status,\n" +
                 "       case a.pay_status when 1 then '未支付' when 2 then '已支付' when 3 then '支付中' else '其他' end pay_status_name,\n" +
                 "       a.order_status,\n" +
-                "       case a.order_status when 1 then '未付款' when 2 then '已付款' when 3 then '已取消' when 4 then '已退货' else '其他'  end order_status_name,\n" +
+                "       case a.order_status when 1 then '未付款' when 2 then '已付款' when 3 then '已取消' when 4 then '已退货' when 88 then '部分退货' else '其他'  end order_status_name,\n" +
                 "       datetime(a.addtime, 'unixepoch', 'localtime') oper_time,\n" +
                 "       a.remark,\n" +
                 "       a.cashier_id,\n" +

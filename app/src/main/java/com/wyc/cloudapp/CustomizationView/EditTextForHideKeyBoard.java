@@ -7,11 +7,14 @@ import android.util.AttributeSet;
 import android.widget.EditText;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.dialog.DigitKeyboardPopup;
 import com.wyc.cloudapp.utils.Utils;
 
 @SuppressLint("AppCompatCustomView")
 public class EditTextForHideKeyBoard extends EditText {
     private int mOnFocusTime = 300;
+    private boolean mShowSoftKeyboard = false;
+    private final OnFocusChangeListener[] mListeners = new OnFocusChangeListener[2];
     public EditTextForHideKeyBoard(Context context) {
         this(context,null);
     }
@@ -32,6 +35,8 @@ public class EditTextForHideKeyBoard extends EditText {
             int index = typedArray.getIndex(i);
             if (index == R.styleable.EditTextForHideKeyBoard_onFocusTime) {
                 mOnFocusTime = typedArray.getInteger(index, 300);
+            }else if (index == R.styleable.EditTextForHideKeyBoard_showSoftKeyboard){
+                mShowSoftKeyboard = typedArray.getBoolean(index,false);
             }
         }
         typedArray.recycle();
@@ -39,7 +44,24 @@ public class EditTextForHideKeyBoard extends EditText {
     }
     private void init(){
         setSelectAllOnFocus(true);
-        setOnFocusChangeListener((v, hasFocus) -> Utils.hideKeyBoard(this));
+        mListeners[0] = (v, hasFocus) -> {
+            Utils.hideKeyBoard(this);
+            if (mShowSoftKeyboard && hasFocus){
+                final DigitKeyboardPopup digitKeyboardPopup = new DigitKeyboardPopup(getContext());
+                digitKeyboardPopup.showAtLocation(v);
+            }
+        };
+        super.setOnFocusChangeListener((v, hasFocus) ->{
+            for (OnFocusChangeListener listener:mListeners){
+                if (null != listener)listener.onFocusChange(v,hasFocus);
+            }
+        });
+
         if (mOnFocusTime != 0)postDelayed(this::requestFocus,mOnFocusTime);
+    }
+
+    @Override
+    public void setOnFocusChangeListener(OnFocusChangeListener l){
+        mListeners[1] = l;
     }
 }

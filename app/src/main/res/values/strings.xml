@@ -13,7 +13,8 @@
     <string name="cashier_desk_sz">云店POS收银客户端</string>
     <string name="deal_sz">零售单</string>
     <string name="shift_exchange_sz">交 班</string>
-    <string name="other_sz">更多</string>
+    <string name="more_sz">更多</string>
+    <string name="other_sz">其他</string>
     <string name="cashier_sz">收银员：</string>
     <string name="store_sz">门店：</string>
     <string name="add">+</string>

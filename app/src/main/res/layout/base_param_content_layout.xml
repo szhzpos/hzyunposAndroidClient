@@ -159,7 +159,9 @@
                         android:inputType="number"
                         android:paddingStart="@dimen/margin_8"
                         android:paddingEnd="@dimen/size_0"
-                        android:text="@string/five_sz" />
+                        android:selectAllOnFocus="true"
+                        android:text="@string/five_sz"
+                        android:textColor="@color/text_color" />
 
                     <TextView
                         android:layout_width="wrap_content"

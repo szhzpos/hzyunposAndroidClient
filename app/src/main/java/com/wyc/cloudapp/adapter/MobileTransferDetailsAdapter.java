@@ -43,12 +43,13 @@ public final class MobileTransferDetailsAdapter extends AbstractTransferDetailsA
 
     @Override
     public void onBindViewHolder(@NonNull AbstractTransferDetailsAdapter.MyViewHolder t_holder, int position) {
+        super.onBindViewHolder(t_holder, position);
         if (null != mDatas) {
             final JSONObject pay_info = mDatas.getJSONObject(position);
             if (pay_info != null) {
                 final MyViewHolder holder = (MyViewHolder) t_holder;
 
-                if (position == mDatas.size() - 1){
+                if (position == mDatas.size() - 1) {
                     holder.pay_m_name_tv.setTextColor(Color.RED);
                 }
                 holder.pay_m_name_tv.setText(pay_info.getString("pay_name"));
@@ -56,7 +57,8 @@ public final class MobileTransferDetailsAdapter extends AbstractTransferDetailsA
                 holder._order_num.setText(String.valueOf(pay_info.getIntValue("order_num")));
 
                 holder._amt.setText(String.format(Locale.CHINA, "%.2f", pay_info.getDoubleValue("pay_money")));
-                if (mTransferAmtNotVisible) holder._amt.setTransformationMethod(editTextReplacement);
+                if (mTransferAmtNotVisible)
+                    holder._amt.setTransformationMethod(editTextReplacement);
             }
         }
     }

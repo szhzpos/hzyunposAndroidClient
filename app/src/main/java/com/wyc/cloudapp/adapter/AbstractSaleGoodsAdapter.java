@@ -426,12 +426,7 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
                 new_price = value;
                 if (type == 3){
                     discount_type = DISCOUNT_TYPE.PRESENT;
-                    if (Utils.getNotKeyAsNumberDefault(json,"discount_type",-1) == discount_type){
-                        deleteDiscountRecordForType(discount_type);
-                        return;
-                    }else {
-                        new_discount = 0.0;
-                    }
+                    new_discount = 0.0;
                 }else{
                     if (isNotParticipateDiscount(json))return;
                     if (!Utils.equalDouble(original_price,0.0))new_discount = value / original_price;
@@ -535,9 +530,17 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
     }
 
     public boolean present(){
-        boolean code;
-        if (code = verifyPresentPermissions()){
-            updateSaleGoodsInfo(0,3);
+        boolean code = false;
+        final JSONObject object = getCurrentContent();
+        if (!object.isEmpty()){
+            if (code = verifyPresentPermissions()){
+                if (Utils.getNotKeyAsNumberDefault(object,"discount_type",-1) == DISCOUNT_TYPE.PRESENT){
+                    deleteDiscountRecordForType(DISCOUNT_TYPE.PRESENT);
+                }else
+                    if (MyDialog.showMessageToModalDialog(mContext,String.format(Locale.CHINA,"是否赠送商品:%s?",Html.fromHtml(object.getString("goods_title")))) == 1){
+                        updateSaleGoodsInfo(0,3);
+                    }
+            }
         }
         return code;
     }
@@ -1200,7 +1203,11 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
     }
 
     public void setSingleRefundStatus(final boolean b){
-        mSingleRefundStatus = b;
+        if (b && mSingleRefundStatus){
+            mSingleRefundStatus = false;
+        }else
+            mSingleRefundStatus = b;
+
         notifyDataSetChanged();
     }
     public boolean getSingleRefundStatus(){

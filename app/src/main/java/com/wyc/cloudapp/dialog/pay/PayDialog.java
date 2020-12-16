@@ -341,7 +341,7 @@ public final class PayDialog extends AbstractDialogSaleActivity {
                                 }
                             }).setCancelListener(dialog -> {
                                 mPayMethodViewAdapter.showDefaultPayMethod();
-                                antoMol();
+                                autoMol();
                                 calculatePayContent();
                                 refreshContent();
                                 dialog.dismiss();
@@ -424,7 +424,7 @@ public final class PayDialog extends AbstractDialogSaleActivity {
     }
 
     public boolean initPayContent(){
-        antoMol();
+        autoMol();
         fullReduceDiscount();
         calculatePayContent();
         return true;
@@ -485,7 +485,7 @@ public final class PayDialog extends AbstractDialogSaleActivity {
             MyDialog.ToastMessage("自动抹零错误：" + object.getString("info"), mContext,null);
         }
     }
-    private void antoMol(){//自动抹零
+    private void autoMol(){//自动抹零
         setMolAmt();
         if (!Utils.equalDouble(mMolAmt,0.0))
             mContext.autoMol(mMolAmt);

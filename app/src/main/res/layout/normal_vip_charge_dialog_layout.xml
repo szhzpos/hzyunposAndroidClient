@@ -300,7 +300,7 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16" />
 
-        <EditText
+        <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
             android:id="@+id/mobile_charge_amt"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -310,6 +310,7 @@
             android:ems="10"
             android:inputType="textPersonName|numberDecimal"
             android:selectAllOnFocus="true"
+            app:showSoftKeyboard="true"
             android:text="@string/zero_p_z_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16" />
@@ -322,7 +323,7 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16" />
 
-        <EditText
+        <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
             android:id="@+id/mobile_present_amt"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -332,6 +333,8 @@
             android:ems="10"
             android:inputType="numberDecimal"
             android:selectAllOnFocus="true"
+            app:onFocusTime="0"
+            app:showSoftKeyboard="true"
             android:text="@string/zero_p_z_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16" />
@@ -378,6 +381,7 @@
             android:inputType="number"
             android:paddingStart="@dimen/margin_5"
             android:paddingEnd="0dp"
+            app:showSoftKeyboard="true"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
             android:visibility="gone" />

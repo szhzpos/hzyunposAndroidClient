@@ -3,6 +3,7 @@
     <attr name="onFocusTime" format="integer" />
     <declare-styleable name="EditTextForHideKeyBoard">
         <attr name="onFocusTime" />
+        <attr name="showSoftKeyboard" format="boolean" />
     </declare-styleable>
     <declare-styleable name="DrawableTextViewTopMargin">
         <attr name="verSpacing" format="dimension" />

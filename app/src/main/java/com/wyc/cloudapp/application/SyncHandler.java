@@ -173,7 +173,7 @@ public final class SyncHandler extends Handler {
                 case MessageID.UPLOAD_REFUND_ORDER_ID:
                     uploadRefundOrderInfo(app_id,base_url,appSecret);
                     return;
-                case MessageID.MODFIY_REPORT_PROGRESS_ID:
+                case MessageID.MODIFY_REPORT_PROGRESS_ID:
                     if (msg.obj instanceof  Boolean)
                         mReportProgress = (boolean)msg.obj;
                     return;
@@ -848,7 +848,7 @@ public final class SyncHandler extends Handler {
         removeMessages(MessageID.SYNC_FINISH_ID);
     }
     void modifyReportProgressStatus(boolean b){
-        sendMessageAtFrontOfQueue(obtainMessage(MessageID.MODFIY_REPORT_PROGRESS_ID,b));
+        sendMessageAtFrontOfQueue(obtainMessage(MessageID.MODIFY_REPORT_PROGRESS_ID,b));
     }
     void startNetworkTest(){
         if (!hasMessages(MessageID.NETWORKSTATUS_ID)){

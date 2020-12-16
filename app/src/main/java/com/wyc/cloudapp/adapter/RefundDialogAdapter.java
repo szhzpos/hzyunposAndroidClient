@@ -18,7 +18,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.dialog.DigitKeyboardPopup;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.logger.Logger;
@@ -34,12 +33,10 @@ public final class RefundDialogAdapter extends RecyclerView.Adapter<RefundDialog
     private onRefundGoodsDataChange mRefundGoodsDataChange;
     private onRefundPayDataChange mRefundPayDataChange;
     private JSONObject mVipInfo;
-    private DigitKeyboardPopup mDigitKeyboardPopup;
     private final boolean mSingleRefundStatus;
     public RefundDialogAdapter(AbstractDialogMainActivity dialog){
         mDialog = dialog;
         mContext = dialog.getPrivateContext();
-        mDigitKeyboardPopup = new DigitKeyboardPopup(mContext);
         mSingleRefundStatus = mContext.getSingleRefundStatus();
     }
 
@@ -145,8 +142,6 @@ public final class RefundDialogAdapter extends RecyclerView.Adapter<RefundDialog
                 }
 
                 if (!mSingleRefundStatus){
-                    holder.cur_refund_num_et.setOnFocusChangeListener(cur_refund_num_focusChangeListener);
-                    holder.cur_refund_num_et.setOnClickListener(cur_refund_num_click);
                     holder.sel_status_cb.setOnCheckedChangeListener(sel_status_CheckedChange);
                 }else {
                     holder.cur_refund_num_et.setEnabled(false);
@@ -163,17 +158,6 @@ public final class RefundDialogAdapter extends RecyclerView.Adapter<RefundDialog
     public int getItemCount() {
         return mGoodsDatas == null ? 0: mGoodsDatas.size();
     }
-
-    private final View.OnFocusChangeListener cur_refund_num_focusChangeListener = (v, hasFocus) -> {
-        if (!hasFocus)
-            mDigitKeyboardPopup.dismiss();
-        else
-            v.callOnClick();
-    };
-    private final View.OnClickListener cur_refund_num_click = (v)->{
-        Utils.hideKeyBoard((EditText)v);
-        mDigitKeyboardPopup.showAtLocation(v);
-    };
 
     private final CompoundButton.OnCheckedChangeListener sel_status_CheckedChange = (buttonView, isChecked) -> {
         final View parent = (View) buttonView.getParent();

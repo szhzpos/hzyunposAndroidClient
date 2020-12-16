@@ -46,7 +46,7 @@ public abstract class AbstractQueryDataAdapter<T extends AbstractTableDataAdapte
                             case R.id.order_status:
                             case R.id.refund_status:
                                 int status = Utils.getViewTagValue(child,2);
-                                if (status == 1 || status == 4){
+                                if (status == 1 || status == 4 || status == 88){
                                     tv.setTextColor(mContext.getColor(R.color.orange_1));
                                 }else{
                                     tv.setTextColor(text_color);

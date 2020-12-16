@@ -25,7 +25,7 @@ public final  class MessageID {
             VIP_C_SUCCESS_ID = 24,
             SYNC_GP_INFO_ID = 25,
             UPLOAD_ORDER_ID = 26,
-            MODFIY_REPORT_PROGRESS_ID = 28,
+            MODIFY_REPORT_PROGRESS_ID = 28,
             MARK_DOWNLOAD_RECORD_ID = 29,
             SYNC_PAUSE_ID = 30,
             SYNC_THREAD_QUIT_ID= 31,
@@ -35,7 +35,7 @@ public final  class MessageID {
             UPLOAD_REFUND_ORDER_ID = 36,
             START_SYNC_ORDER_INFO_ID = 37,
             FINISH_SYNC_ORDER_INFO_ID = 38,
-            APP_CHECK_VER_ID = 39, SYNC_FULLREDUCE_ID = 40,SYNC_PROMOTION_ID = 41,SYNC_SALES_INFO_ID = 42;
+            APP_CHECK_VER_ID = 39, SYNC_FULLREDUCE_ID = 40,SYNC_PROMOTION_ID = 41,SYNC_SALES_INFO_ID = 42,SYNC_SYSTEM_CONFIG = 43;
 
     public static final int PAY_REQUEST_CODE = 0x000000aa;
 }

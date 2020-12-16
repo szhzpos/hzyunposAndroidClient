@@ -22,11 +22,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -37,6 +39,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.CustomizationView.InterceptLinearLayout;
+import com.wyc.cloudapp.CustomizationView.ScaleView;
+import com.wyc.cloudapp.CustomizationView.TmpOrderButton;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
 import com.wyc.cloudapp.adapter.GoodsInfoItemDecoration;
@@ -46,18 +51,17 @@ import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
-import com.wyc.cloudapp.CustomizationView.ScaleView;
-import com.wyc.cloudapp.CustomizationView.TmpOrderButton;
 import com.wyc.cloudapp.dialog.MoreFunDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.SecondDisplay;
 import com.wyc.cloudapp.dialog.goods.AddGoodsInfoDialog;
+import com.wyc.cloudapp.dialog.orderDialog.AbstractTransferDialog;
 import com.wyc.cloudapp.dialog.orderDialog.HangBillDialog;
 import com.wyc.cloudapp.dialog.orderDialog.NormalTransferDialog;
 import com.wyc.cloudapp.dialog.orderDialog.QueryRetailOrderDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
-import com.wyc.cloudapp.dialog.orderDialog.AbstractTransferDialog;
 import com.wyc.cloudapp.dialog.pay.PayDialog;
+import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
@@ -117,6 +121,8 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
 
         //初始化交班
         initTransferBtn();
+
+        initMoreFunBtn();
 
         //重置订单信息
         resetOrderInfo();
@@ -264,6 +270,73 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
             }
         });
     }
+
+    private void initMoreFunBtn(){
+        final Button btn = findViewById(R.id.more_fun_btn);
+        btn.setOnClickListener(v -> {
+
+            final PopupWindow window = new PopupWindow(this);
+            window.setContentView(View.inflate(this,R.layout.more_fun_popup_window_layout,null));
+            window.setOutsideTouchable(true);
+            window.setBackgroundDrawable(getDrawable(R.color.transparent));
+
+            btn.post(()->{
+                final View contentView = window.getContentView();
+                contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+
+                final int content_height = contentView.getMeasuredHeight();
+                int width = btn.getWidth(),height = btn.getHeight();
+                int[] ints = new int[2];
+                btn.getLocationInWindow(ints);
+                window.showAsDropDown(btn,width, -content_height );
+
+                final InterceptLinearLayout interceptLinearLayout = contentView.findViewById(R.id.interceptLinearLayout);
+                if (interceptLinearLayout != null){
+                    interceptLinearLayout.setClickListener(view -> {
+                        int id = view.getId();
+                        if (id == R.id.pop_present_btn){
+                            if (present())window.dismiss();
+                        }else if (id == R.id.pop_o_cashbox){
+                            if (verifyOpenCashboxPermissions()){
+                                Printer.print(this, Printer.commandToStr(Printer.OPEN_CASHBOX));
+                                window.dismiss();
+                            }
+                        }else if (id == R.id.pop_sale_man_btn){
+                            final JSONObject object = AbstractVipChargeDialog.showSaleInfo(this);
+                            final String name = Utils.getNullStringAsEmpty(object,"item_name");
+                            mSaleManInfo = new JSONObject();
+                            mSaleManInfo.put("id",Utils.getNullStringAsEmpty(object,"item_id"));
+                            mSaleManInfo.put("name",name);
+                            setSaleManView(name);
+                            window.dismiss();
+                        }else if (id == R.id.pop_refund_btn){
+                            if (RefundDialog.verifyRefundPermission(this)){
+                                setSingleRefundStatus(true);
+                                window.dismiss();
+                            }
+                        }
+                    });
+
+                }
+            });
+
+        });
+    }
+
+    @CallSuper
+    public void clearSaleManInfo(){
+        if (mSaleManInfo != null){
+            mSaleManInfo = null;
+            setSaleManView(getText(R.string.space_sz).toString());
+        }
+    }
+    private void setSaleManView(final String s){
+        final TextView sale_man_name = findViewById(R.id.sale_man_tv);
+        if (null != sale_man_name){
+            sale_man_name.setText(s);
+        }
+    }
+
     private void initTransferBtn(){
         final LinearLayout shift_exchange_linearLayout = findViewById(R.id.shift_exchange_linearLayout);
         if (shift_exchange_linearLayout != null)

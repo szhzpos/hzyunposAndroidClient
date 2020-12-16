@@ -613,7 +613,10 @@ public final class RefundDialog extends AbstractDialogMainActivity {
         }
         update_sqls_list.add("update refund_order set order_status = 2 where ifnull(order_code,'') = '"+ order_code +"' and ro_code = '"+ ro_code +"'");
         if (!mRefundDialogAdapter.isSingleRefundStatus()){
-            update_sqls_list.add("update retail_order set order_status = 4 where order_code = '"+ order_code +"'");
+            if (mRefundType == 2){
+                update_sqls_list.add("update retail_order set order_status = 88 where order_code = '"+ order_code +"'");//部分退货
+            }else if (mRefundType == 1)
+                update_sqls_list.add("update retail_order set order_status = 4 where order_code = '"+ order_code +"'");
         }
         return SQLiteHelper.execBatchUpdateSql(update_sqls_list,err);
     }
