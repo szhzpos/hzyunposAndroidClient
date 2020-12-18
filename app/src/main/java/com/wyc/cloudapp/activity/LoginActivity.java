@@ -524,8 +524,6 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                                     case 1:
                                         info_json = JSON.parseObject(retJson.getString("info"));
 
-                                        Logger.d(info_json);
-
                                         switch (info_json.getString("status")) {
                                             case "n":
                                                 if (mHandler != null)mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "设置收银终端错误：" + info_json.getString("info")).sendToTarget();
@@ -562,6 +560,8 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                                                 _json.put("parameter_content",info_json.getJSONObject("pos_moling"));
                                                 _json.put("parameter_desc","收银抹零参数");
                                                 params.add(_json);
+
+                                                Logger.d_json(_json.toJSONString());
 
                                                 if (SQLiteHelper.execSQLByBatchFromJson(params,"local_parameter",null,err,1)){
                                                     if (mHandler != null)mHandler.obtainMessage(MessageID.LOGIN_OK_ID).sendToTarget();

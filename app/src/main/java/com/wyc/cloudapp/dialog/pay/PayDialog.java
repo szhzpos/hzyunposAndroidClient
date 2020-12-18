@@ -476,7 +476,52 @@ public final class PayDialog extends AbstractDialogSaleActivity {
                         mMolAmt =sale_sum_amt - Double.parseDouble(String.format(Locale.CHINA,"%.0f",sale_sum_amt));
                         break;
                     case 2://四舍五入到角
-                        mMolAmt =sale_sum_amt - Double.valueOf(String.format(Locale.CHINA,"%.1f",sale_sum_amt));
+                        mMolAmt =sale_sum_amt - Double.parseDouble(String.format(Locale.CHINA,"%.1f",sale_sum_amt));
+                        break;
+                }
+                Logger.d("mMolAmt:%f,sum：%f",mMolAmt,sale_sum_amt);
+            }
+        }else{
+            MyDialog.ToastMessage("自动抹零错误：" + object.getString("info"), mContext,null);
+        }
+    }
+    private void setMolAmtForOnline(){
+        double  sale_sum_amt = 0.0;
+        final JSONObject object = new JSONObject();
+        if (SQLiteHelper.getLocalParameter("pos_moling",object)){
+            int moling_way = object.getIntValue("moling_way");//moling_way抹零方式 1自动抹零 2手动抹零
+            switch (moling_way){
+                case 1://自动抹零
+                {
+                    int moling_rule = object.getIntValue("moling_rule");//moling_rule抹零规则 1不抹零 2四舍五入到角 3四舍五入到元 4舍去分 5舍去角 6有分进角 7有角进元
+                    int moling_type = object.getIntValue("moling_type");//moling_type抹零类型 1按现金抹零 2按整单抹零
+                    switch (moling_type){
+                        case 1:
+
+                            break;
+                        case 2:
+                            break;
+                    }
+
+                }
+                    break;
+                default://手动抹零
+                {
+                    int moling_toplimit = object.getIntValue("moling_toplimit");//手动抹零金额上限
+
+                }
+                    break;
+            }
+
+            if (object.getIntValue("s") == 1){
+                sale_sum_amt = Utils.formatDouble(mContext.getSumAmt(3),2);
+                int v = object.getIntValue("v");
+                switch (v){
+                    case 1://四舍五入到元
+                        mMolAmt =sale_sum_amt - Double.parseDouble(String.format(Locale.CHINA,"%.0f",sale_sum_amt));
+                        break;
+                    case 2://四舍五入到角
+                        mMolAmt =sale_sum_amt - Double.parseDouble(String.format(Locale.CHINA,"%.1f",sale_sum_amt));
                         break;
                 }
                 Logger.d("mMolAmt:%f,sum：%f",mMolAmt,sale_sum_amt);
