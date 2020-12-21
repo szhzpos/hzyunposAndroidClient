@@ -48,7 +48,7 @@ import static android.database.Cursor.FIELD_TYPE_STRING;
 
 public final class SQLiteHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/order.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
     private static SQLiteDatabase mDb;
     private final Context mContext;
     private SQLiteHelper(Context context){
@@ -93,6 +93,10 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         if(!checkColumnExists(db,"member_order_info","origin_order_code")){
             modify_list.add("ALTER TABLE member_order_info ADD COLUMN origin_order_code  VARCHAR");
         }
+        if(!checkColumnExists(db,"pay_method","is_moling")){
+            modify_list.add("ALTER TABLE pay_method ADD COLUMN is_moling INTEGER DEFAULT (1)");
+        }
+
 
         try {
             db.beginTransaction();

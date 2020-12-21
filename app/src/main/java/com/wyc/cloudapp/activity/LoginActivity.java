@@ -561,8 +561,6 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                                                 _json.put("parameter_desc","收银抹零参数");
                                                 params.add(_json);
 
-                                                Logger.d_json(_json.toJSONString());
-
                                                 if (SQLiteHelper.execSQLByBatchFromJson(params,"local_parameter",null,err,1)){
                                                     if (mHandler != null)mHandler.obtainMessage(MessageID.LOGIN_OK_ID).sendToTarget();
                                                 }else {

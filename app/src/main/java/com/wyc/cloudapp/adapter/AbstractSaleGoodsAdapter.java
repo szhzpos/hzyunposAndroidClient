@@ -573,7 +573,7 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
                 current_sale_amt = original_amt * new_discount;
 
                 new_price = Utils.formatDouble(current_sale_amt / xnum,4);
-                discount_amt = Utils.formatDouble(original_amt - current_sale_amt,2);
+                discount_amt = Utils.formatDouble(original_amt - current_sale_amt,4);
                 current_discount_amt = discount_amt - json.getDoubleValue("discount_amt");
 
                 json.put("discount",Utils.formatDouble(new_discount,4));
@@ -640,7 +640,7 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
                 final JSONObject record = mDiscountRecords.getJSONObject(i);
                 if (stringBuilder.length() > 0) stringBuilder.append(",");
                 stringBuilder.append(getDiscountName(Utils.getNotKeyAsNumberDefault(record,"discount_type",-1)));
-                stringBuilder.append("：").append(String.format(Locale.CHINA, "%.2f", record.getDoubleValue("discount_money")));
+                stringBuilder.append("：").append(String.format(Locale.CHINA, "%.3f", record.getDoubleValue("discount_money")));
             }
         }
         return stringBuilder.toString();
@@ -828,7 +828,7 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
                             original_goods = original_details.getJSONObject(j);
                             ori_id = getGoodsId(original_goods);
                             if (new_id == ori_id){
-                                new_goods.put("price",Utils.formatDouble(original_goods.getDoubleValue("price") + new_discount_amt,2));
+                                new_goods.put("price",Utils.formatDouble(original_goods.getDoubleValue("price") + new_discount_amt,4));
                                 original_details.remove(j);
                                 break;
                             }
@@ -837,7 +837,7 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
 
                         original_details.add(new_goods);
                     }
-                    record_json.put("discount_money",Utils.formatDouble(original_discount_amt,2));
+                    record_json.put("discount_money",Utils.formatDouble(original_discount_amt,4));
                     record_json.put("details",original_details.toJSONString());
                 }
             }
@@ -854,7 +854,7 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
             record.put("discount_type",type);
             record.put("type",mOrderType);
             record.put("relevant_id","");
-            record.put("discount_money",Utils.formatDouble(new_discount_amt,2));
+            record.put("discount_money",Utils.formatDouble(new_discount_amt,4));
             record.put("details",new_details.toJSONString());
             mDiscountRecords.add(record);
         }
@@ -910,15 +910,17 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
                         for (int k = 0,size = mDatas.size();k < size;k++){
                             goods = mDatas.getJSONObject(k);
                             if (getGoodsId(discount_goods) == getGoodsId(goods) && discount_goods.getIntValue("sale_type") == goods.getIntValue("sale_type")){
+
                                 double discount_money = discount_goods.getDoubleValue("price"),
                                         sale_amt = goods.getDoubleValue("sale_amt") + discount_money,
                                         xnum =Utils.getNotKeyAsNumberDefault(goods,"xnum",1.0),
                                         price = sale_amt / xnum;
+
                                 goods.remove("discount_type");
                                 goods.put("price",price);
-                                goods.put("sale_amt",Utils.formatDouble(sale_amt,2));
+                                goods.put("sale_amt",Utils.formatDouble(sale_amt,4));
                                 goods.put("discount",price / Utils.getNotKeyAsNumberDefault(goods,"original_price",1.0));
-                                goods.put("discount_amt",Utils.formatDouble(goods.getDoubleValue("discount_amt") - discount_money,2));
+                                goods.put("discount_amt",Utils.formatDouble(goods.getDoubleValue("discount_amt") - discount_money,4));
                             }
                         }
                     }
@@ -939,15 +941,19 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
     }
 
     private double getPerRecordMolAmt(double mol_amt,int sale_record){
-        if (!Utils.equalDouble(mol_amt,0.0) && sale_record != 0){
-            double per_record_mol_amt = Utils.formatDoubleDown(mol_amt / sale_record,2);//保留到分
-            Logger.d("per_record_mol_amt:%f",per_record_mol_amt);
-            if (Math.abs(per_record_mol_amt) < 0.01){
-                Logger.d("sale_record:%d",sale_record);
-                per_record_mol_amt = getPerRecordMolAmt(mol_amt,sale_record / 2);
+        if (!Utils.equalDouble(mol_amt,0.0)){
+            if (sale_record <= 1){
+                return mol_amt;
+            }else {
+                double per_record_mol_amt = Utils.formatDoubleDown(mol_amt / sale_record,4);//保留到分
+                Logger.d("per_record_mol_amt:%f",per_record_mol_amt);
+                if (Math.abs(per_record_mol_amt) < 0.01){
+                    Logger.d("sale_record:%d",sale_record);
+                    per_record_mol_amt = getPerRecordMolAmt(mol_amt,sale_record / 2);
+                }
+                Logger.d("per_record_mol_amt:%f",per_record_mol_amt);
+                return per_record_mol_amt;
             }
-            Logger.d("per_record_mol_amt:%f",per_record_mol_amt);
-            return per_record_mol_amt;
         }
         return 0.0;
     }
@@ -992,7 +998,7 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
             new_price = Utils.formatDouble(current_sale_amt / xnum,4);
 
             object.put("discount", new_discount);
-            object.put("discount_amt", Utils.formatDouble(per_record_mol_amt + object.getDoubleValue("discount_amt"),2));
+            object.put("discount_amt", Utils.formatDouble(per_record_mol_amt + object.getDoubleValue("discount_amt"),4));
             object.put("price",new_price);
             object.put("discount_type",type);
             object.put("sale_amt",current_sale_amt);

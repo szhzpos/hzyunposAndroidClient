@@ -103,7 +103,7 @@ public final class SyncHandler extends Handler {
                     mFunc = this::download_pay_method_img_and_upload_pay_method;
                     table_name = "pay_method";
                     table_cls = new String[]{"pay_method_id","name","status","remark","is_check","shortcut_key","sort","xtype","pay_img","master_img",
-                            "is_show_client","is_cardno","is_scan","wr_btn_img","unified_pay_order","unified_pay_query","rule","is_open","is_enable","support"};
+                            "is_show_client","is_cardno","is_scan","wr_btn_img","unified_pay_order","unified_pay_query","rule","is_open","is_enable","is_moling","support"};
                     sys_name = "正在同步支付方式";
                     url = base_url + "/api/cashier/get_pm_info";
                     object.put("stores_id",stores_id);

@@ -95,6 +95,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
                 }
 
                 if (pay_method_info.getBooleanValue(CUR_PAY_METHOD_LABEL)){
+                    Utils.disableView(myViewHolder.mCurrentLayoutItemView,300);
                     setSelectedSignVisibility(myViewHolder.mCurrentLayoutItemView,View.VISIBLE);
                 }else {
                     setSelectedSignVisibility(myViewHolder.mCurrentLayoutItemView,View.GONE);
@@ -112,8 +113,11 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     private final View.OnClickListener mClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            final JSONObject object = get_pay_method(Utils.getViewTagValue(v,""));
+
+            final JSONObject object = findPayMethodById(Utils.getViewTagValue(v,""));
             if (object != null && mOnItemClickListener != null){
+                notifyDataSetChanged();
+
                 if (object != mCurrentPayMethod){
                     if (null != mCurrentPayMethod)
                         mCurrentPayMethod.put(CUR_PAY_METHOD_LABEL,false);
@@ -129,7 +133,6 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
                 object.put(CUR_PAY_METHOD_LABEL,true);
                 mOnItemClickListener.onClick(object);
             }
-            notifyDataSetChanged();
         }
     };
 
@@ -194,11 +197,11 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     }
 
     private void setDefaultPayMethod(){
-        mDefaultPayMethod = get_pay_method(CASH_METHOD_ID);
-        mDefaultPayMethod.put(CUR_PAY_METHOD_LABEL,true);
+        mDefaultPayMethod = findPayMethodById(CASH_METHOD_ID);
+        if (null != mDefaultPayMethod)mDefaultPayMethod.put(CUR_PAY_METHOD_LABEL,true);
     }
 
-    public JSONObject get_pay_method(final String pay_method_id){
+    public JSONObject findPayMethodById(final String pay_method_id){
         final JSONArray array = mDatas;
         if (array != null && pay_method_id != null){
             for (int i = 0,length = array.size();i < length;i++){
@@ -211,12 +214,23 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
         return null;
     }
 
+    public static JSONObject get_pay_method(final String pay_method_id){
+        final JSONObject object = new JSONObject();
+        if (SQLiteHelper.execSql(object,"select *  from pay_method where status = '1' and pay_method_id = '" + pay_method_id + "'")){
+            if (object.isEmpty())return null;
+            return object;
+        }
+        return null;
+    }
+
     public void showDefaultPayMethod(){
-         mDefaultPayMethod.put(CUR_PAY_METHOD_LABEL,true);
-         if (mDefaultPayMethod != mCurrentPayMethod){
-             mCurrentPayMethod.put(CUR_PAY_METHOD_LABEL,false);
-         }
-        notifyDataSetChanged();
+        if (null != mDefaultPayMethod){
+            mDefaultPayMethod.put(CUR_PAY_METHOD_LABEL,true);
+            if (mDefaultPayMethod != mCurrentPayMethod){
+                mCurrentPayMethod.put(CUR_PAY_METHOD_LABEL,false);
+            }
+            notifyDataSetChanged();
+        }
     }
 
     public JSONObject getDefaultPayMethod(){
@@ -225,5 +239,9 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
 
     public static boolean isApiCheck(int check){
         return check == 1;
+    }
+
+    public static boolean isMol(final JSONObject object){
+        return object != null && 2 == object.getIntValue("is_moling");
     }
 }

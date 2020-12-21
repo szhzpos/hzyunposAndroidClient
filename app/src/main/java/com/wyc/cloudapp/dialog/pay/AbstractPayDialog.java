@@ -190,7 +190,12 @@ public abstract class AbstractPayDialog extends AbstractDialogMainActivity imple
         });
         view.setCancelListener(v -> closeWindow());
         view.setOkListener(v -> {
-            if (verify() && mYesOnclickListener != null)mYesOnclickListener.onYesClick(AbstractPayDialog.this);
+            if (verify()){
+                if (mYesOnclickListener != null)
+                    mYesOnclickListener.onYesClick(AbstractPayDialog.this);
+                else
+                    setCodeAndExit(1);
+            }
         });
         mOk = view.getOkBtn();
     }
