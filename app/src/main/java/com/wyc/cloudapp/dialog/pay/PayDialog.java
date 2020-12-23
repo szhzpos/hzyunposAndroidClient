@@ -113,8 +113,8 @@ public final class PayDialog extends AbstractDialogSaleActivity {
     @Override
     public void show(){
         super.show();
-        Printer.showPrintIcon(mContext,true);
-
+        Printer.showPrintIcon(mContext);
+        updatePrintIcon();
         refreshContent();
         showVipInfo();
         showFullReduceDes();
@@ -123,7 +123,7 @@ public final class PayDialog extends AbstractDialogSaleActivity {
     @Override
     public void dismiss(){
         super.dismiss();
-        Printer.showPrintIcon(mContext,false);
+        Printer.dismissPrintIcon(mContext);
     }
 
     @Override
@@ -142,6 +142,16 @@ public final class PayDialog extends AbstractDialogSaleActivity {
             mContext.deleteFullReduce();
             mContext.deleteAllDiscountRecord();
         }
+    }
+    @Override
+    protected void updatePrintIcon() {
+        final Window window = getWindow();
+        final View view = window.getDecorView();
+        view.post(()->{
+            int[] ints = new int[2];
+            view.getLocationOnScreen(ints);
+            Printer.updatePrintIcon(mContext,ints[0] ,ints[1]);
+        });
     }
 
     private void allDiscountBtn(){

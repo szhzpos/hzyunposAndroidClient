@@ -81,13 +81,13 @@ public final class RefundDialog extends AbstractDialogMainActivity {
     public void dismiss(){
         super.dismiss();
         if (mProgressDialog != null && mProgressDialog.isShowing())mProgressDialog.dismiss();
-        Printer.showPrintIcon(mContext,false);
+        Printer.dismissPrintIcon(mContext);
     }
 
     @Override
     public void show(){
         super.show();
-        Printer.showPrintIcon(mContext,true);
+        Printer.showPrintIcon(mContext);
         if (mRefundDialogAdapter.isSingleRefundStatus() && mRefundBtn != null){
             mRefundBtn.callOnClick();
         }else {

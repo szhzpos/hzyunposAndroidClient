@@ -1,5 +1,7 @@
 package com.wyc.cloudapp.activity;
+
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
@@ -230,6 +232,20 @@ public abstract class MainActivity extends AppCompatActivity {
     public boolean lessThan7Inches(DisplayMetrics displayMetrics){
         double diagonal = Utils.getDisplayMetrics((WindowManager)getSystemService(WINDOW_SERVICE),displayMetrics);
         return diagonal < 7.0;
+    }
+
+    public int getStatusBarHeight() {
+        if (isStatusBarShow()){
+            final Resources resources = getResources();
+            int resourceId = resources.getIdentifier("status_bar_height", "dimen", "android");
+            return resources.getDimensionPixelSize(resourceId);
+        }
+        return 0;
+    }
+    private boolean isStatusBarShow(){
+        final WindowManager.LayoutParams params = getWindow().getAttributes();
+        int paramsFlag = params.flags & (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        return paramsFlag == params.flags;
     }
 
     //业务公共方法

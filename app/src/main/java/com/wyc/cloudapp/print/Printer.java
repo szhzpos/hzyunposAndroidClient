@@ -428,32 +428,38 @@ public final class Printer {
         });
     }
 
+    public static void updatePrintIcon(final MainActivity activity,final int x,final int y){
+        if (mICO != null){
+            final WindowManager wm = (WindowManager)activity.getSystemService(WINDOW_SERVICE);
+            final WindowManager.LayoutParams wLayout = (WindowManager.LayoutParams) mICO.getLayoutParams();
+            wLayout.x = x;
+            wLayout.y = y - activity.getStatusBarHeight() +  Utils.dpToPx(activity,8);
+            wm.updateViewLayout(mICO,wLayout);
+        }
+    }
+
+    public static void dismissPrintIcon(final MainActivity activity){
+        final WindowManager wm = (WindowManager)activity.getSystemService(WINDOW_SERVICE);
+        if (wm != null) {
+            if (mICO != null) wm.removeViewImmediate(mICO);
+            mICO = null;
+        }
+    }
+
     //@RequiresApi(api = Build.VERSION_CODES.O)
     @SuppressLint("ClickableViewAccessibility")
-    public static void showPrintIcon(final MainActivity activity, boolean b){
-        if (b && !Settings.canDrawOverlays(activity))return;
-
+    public static void showPrintIcon(final MainActivity activity){
+        if (!Settings.canDrawOverlays(activity))return;
         final WindowManager wm = (WindowManager)activity.getSystemService(WINDOW_SERVICE);
         if (wm != null){
-            if (!b){
-                if (mICO != null)wm.removeViewImmediate(mICO);
-                mICO = null;
-                return;
-            }
 
-            final Display display = wm.getDefaultDisplay();
-            final Point point = new Point();
-            display.getSize(point);
-
-            final WindowManager.LayoutParams wLayou = new WindowManager.LayoutParams();
-            wLayou.type = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY : WindowManager.LayoutParams.TYPE_PHONE;
-            wLayou.format= PixelFormat.RGBA_8888;
-            wLayou.gravity= Gravity.LEFT|Gravity.TOP;
-            wLayou.flags= WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL| WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;;
-            wLayou.height = Utils.dpToPx(activity,32);
-            wLayou.width = Utils.dpToPx(activity,32);
-            wLayou.x = point.x - 128;
-            wLayou.y = point.y / 2;
+            final WindowManager.LayoutParams wLayout = new WindowManager.LayoutParams();
+            wLayout.type = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY : WindowManager.LayoutParams.TYPE_PHONE;
+            wLayout.format= PixelFormat.RGBA_8888;
+            wLayout.gravity= Gravity.LEFT|Gravity.TOP;
+            wLayout.flags= WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL| WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;;
+            wLayout.height = Utils.dpToPx(activity,32);
+            wLayout.width = Utils.dpToPx(activity,32);
 
             final Bitmap printer = BitmapFactory.decodeResource(activity.getResources(),R.drawable.printer);
             if (mICO != null)wm.removeViewImmediate(mICO);
@@ -464,35 +470,50 @@ public final class Printer {
                 mICO.setImageDrawable(activity.getDrawable(R.drawable.printer));
 
             mICO.setBackgroundColor(activity.getColor(R.color.appColor));
-            mICO.setOnClickListener(v -> {
-                activity.switchPrintStatus();
-                if (null != mICO && null != printer){
-                    if (activity.getPrintStatus()){
-                        mICO.setImageBitmap(printer);
-                    }else {
-                        mICO.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(activity,printer,Utils.dpToPx(activity,15),Utils.dpToPx(activity,15)));
-                    }
-                }
-            });
+
+            final Display display = wm.getDefaultDisplay();
+            final Point point = new Point();
+            display.getSize(point);
+            wLayout.x = point.x - 128;
+            wLayout.y = point.y / 2;
+            wm.addView(mICO,wLayout);
+
             mICO.setOnTouchListener(new View.OnTouchListener() {
                 private double touchX,touchY;
+                private boolean mIsMove;
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     switch (event.getAction()){
                         case MotionEvent.ACTION_DOWN:
-                            touchX = event.getRawX() - wLayou.x;
-                            touchY = event.getRawY() - wLayou.y;
+                            touchX = event.getRawX() - wLayout.x;
+                            touchY = event.getRawY() - wLayout.y;
                             break;
                         case MotionEvent.ACTION_MOVE:
-                            wLayou.x = (int) (event.getRawX() - touchX);
-                            wLayou.y = (int) (event.getRawY() - touchY);
-                            wm.updateViewLayout(mICO,wLayou);
+                            final float raw_x = event.getRawX(),raw_y = event.getRawY();
+                            if (touchX != raw_x - wLayout.x || touchY != raw_y - wLayout.y){//部分手机点击会触发MotionEvent.ACTION_MOVE事件，但是位置没发生改变
+                                mIsMove = true;
+                                wLayout.x = (int) (raw_x - touchX);
+                                wLayout.y = (int) (raw_y - touchY);
+                                wm.updateViewLayout(mICO,wLayout);
+                            }
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            if (!mIsMove){
+                                activity.switchPrintStatus();
+                                if (null != mICO && null != printer){
+                                    if (activity.getPrintStatus()){
+                                        mICO.setImageBitmap(printer);
+                                    }else {
+                                        mICO.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(activity,printer,Utils.dpToPx(activity,15),Utils.dpToPx(activity,15)));
+                                    }
+                                }
+                            }else
+                                mIsMove = false;
                             break;
                     }
                     return false;
                 }
             });
-            wm.addView(mICO,wLayou);
         }
     }
 }

@@ -1,7 +1,6 @@
 package com.wyc.cloudapp.dialog.orderDialog;
 
 import android.os.Bundle;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -41,6 +40,7 @@ public final class MobileTransferDialog extends AbstractTransferDialog {
     protected void initWindowSize(){//初始化窗口尺寸
         fullScreen();
     }
+
 
     private void initTransferInfoList(){
         mTransferDetailsAdapter.setDatas(mContext.getCashierInfo().getString("cas_id"));

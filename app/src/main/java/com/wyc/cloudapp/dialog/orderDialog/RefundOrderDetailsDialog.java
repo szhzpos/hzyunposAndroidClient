@@ -46,13 +46,13 @@ public class RefundOrderDetailsDialog extends AbstractDialogMainActivity {
     @Override
     public void dismiss(){
         super.dismiss();
-        Printer.showPrintIcon(mContext,false);
+        Printer.dismissPrintIcon(mContext);
     }
 
     @Override
     public void show(){
         super.show();
-        Printer.showPrintIcon(mContext,true);
+        Printer.showPrintIcon(mContext);
     }
 
     private void initReprint(){

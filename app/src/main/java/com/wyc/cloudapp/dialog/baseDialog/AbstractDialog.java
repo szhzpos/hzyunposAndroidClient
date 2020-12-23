@@ -24,7 +24,7 @@ public abstract class AbstractDialog extends Dialog {
     protected CharSequence mTitle;
     private WindowManager mWM;
     private WindowManager.LayoutParams mLayoutParams;
-    private View mRootView;
+    protected View mRootView;
     private JEventLoop mEventLoop;
     private int mCode;
     private float mTouchX,mTouchY;
@@ -114,10 +114,16 @@ public abstract class AbstractDialog extends Dialog {
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
                 isTitle = false;
+                updatePrintIcon();
                 break;
             default:
         }
         return super.onTouchEvent(event);
+    }
+
+
+    protected void updatePrintIcon(){
+
     }
 
     private boolean isTitleView(float x, float y){
