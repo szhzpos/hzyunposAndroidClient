@@ -18,7 +18,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.SaleActivity;
-import com.wyc.cloudapp.adapter.PayMethodItemDecoration;
+import com.wyc.cloudapp.decoration.PayMethodItemDecoration;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -92,7 +92,7 @@ public final class VipChargeDialogImp extends AbstractPayDialog {
         final RecyclerView recyclerView = findViewById(R.id.pay_method_list);
         recyclerView.setVisibility(View.VISIBLE);
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL,false));
-        recyclerView.addItemDecoration(new PayMethodItemDecoration(2));
+        recyclerView.addItemDecoration(new PayMethodItemDecoration());
         recyclerView.setAdapter(mPayMethodViewAdapter);
     }
 

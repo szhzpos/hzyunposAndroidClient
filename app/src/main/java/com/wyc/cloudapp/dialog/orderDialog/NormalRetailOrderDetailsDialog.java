@@ -16,7 +16,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.RetailDetailsGoodsInfoAdapter;
 import com.wyc.cloudapp.adapter.RetailDetailsPayInfoAdapter;
-import com.wyc.cloudapp.dialog.pay.PayDialog;
+import com.wyc.cloudapp.dialog.pay.AbstractSettlementDialog;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -112,7 +112,7 @@ public class NormalRetailOrderDetailsDialog extends AbstractRetailOrderDetailsDi
     protected void initReprint(){
         final Button reprint_btn = findViewById(R.id.reprint_btn);
         if (null != reprint_btn){
-            reprint_btn.setOnClickListener(v -> Printer.print(mContext, PayDialog.get_print_content(mContext, Utils.getNullStringAsEmpty(mOrderInfo,"order_code"),false)));
+            reprint_btn.setOnClickListener(v -> Printer.print(mContext, AbstractSettlementDialog.get_print_content(mContext, Utils.getNullStringAsEmpty(mOrderInfo,"order_code"),false)));
         }
     }
     @Override

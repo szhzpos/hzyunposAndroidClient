@@ -21,7 +21,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
-import com.wyc.cloudapp.adapter.SuperItemDecoration;
+import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.TreeListDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.logger.Logger;
@@ -79,7 +79,7 @@ public abstract class AbstractMobileQueryDialog extends AbstractDialogMainActivi
             mAdapter = getAdapter();
             order_list.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
             order_list.setAdapter(mAdapter);
-            order_list.addItemDecoration(new SuperItemDecoration(mContext.getColor(R.color.white)));
+            order_list.addItemDecoration(new LinearItemDecoration(mContext.getColor(R.color.white)));
         }
     }
 

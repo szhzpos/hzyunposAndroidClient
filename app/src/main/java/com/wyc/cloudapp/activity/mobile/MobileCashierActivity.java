@@ -28,16 +28,17 @@ import com.wyc.cloudapp.CustomizationView.TmpOrderButton;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
-import com.wyc.cloudapp.adapter.GoodsInfoItemDecoration;
+import com.wyc.cloudapp.decoration.GoodsInfoItemDecoration;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
-import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
-import com.wyc.cloudapp.adapter.SuperItemDecoration;
+import com.wyc.cloudapp.decoration.SaleGoodsItemDecoration;
+import com.wyc.cloudapp.decoration.SuperItemDecoration;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.goods.AddGoodsInfoDialog;
 import com.wyc.cloudapp.dialog.orderDialog.HangBillDialog;
 import com.wyc.cloudapp.dialog.orderDialog.MobileQueryRetailOrderDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
-import com.wyc.cloudapp.dialog.pay.PayDialog;
+import com.wyc.cloudapp.dialog.pay.MobileSettlementDialog;
+import com.wyc.cloudapp.dialog.pay.AbstractSettlementDialog;
 import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.utils.Utils;
@@ -200,7 +201,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
             Utils.disableView(v,500);
             if (!mSaleGoodsAdapter.isEmpty()){
                 if (!getSingleRefundStatus()){
-                    final PayDialog dialog = new PayDialog(this,getString(R.string.affirm_pay_sz));
+                    final AbstractSettlementDialog dialog = new MobileSettlementDialog(this,getString(R.string.affirm_pay_sz));
                     dialog.initPayContent();
                     if (mVipInfo != null)dialog.setVipInfo(mVipInfo,true);
                     if (dialog.exec() == 1){
@@ -223,7 +224,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
         final RecyclerView goods_info_view = findViewById(R.id.mobile_goods_info_list);
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(this,GoodsInfoViewAdapter.MOBILE_SPAN_COUNT);
         goods_info_view.setLayoutManager(gridLayoutManager);
-        SuperItemDecoration.registerGlobalLayoutToRecyclerView(goods_info_view,getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration(-1));
+        SuperItemDecoration.registerGlobalLayoutToRecyclerView(goods_info_view,getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration());
         mGoodsInfoViewAdapter.setOnGoodsSelectListener(object -> {
             if (mMobileSearchGoods != null && mMobileSearchGoods.getVisibility() == View.VISIBLE){
                 mMobileSearchGoods.getText().clear();

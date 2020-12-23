@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.adapter;
+package com.wyc.cloudapp.decoration;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -10,8 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.adapter.AbstractSaleGoodsAdapter;
 
-public class SaleGoodsItemDecoration extends SuperItemDecoration {
+public class SaleGoodsItemDecoration extends LinearItemDecoration {
     public SaleGoodsItemDecoration(int color){
         super(color);
     }

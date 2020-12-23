@@ -328,11 +328,11 @@
             <LinearLayout
                 android:id="@+id/func_btn_layout"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/height_45"
+                android:layout_height="@dimen/height_50"
                 android:layout_marginStart="@dimen/margin_2"
                 android:layout_marginTop="@dimen/margin_8"
                 android:layout_marginEnd="@dimen/margin_2"
-                android:layout_marginBottom="@dimen/margin_8"
+                android:layout_marginBottom="@dimen/margin_5"
                 android:orientation="horizontal">
 
                 <Button
@@ -387,8 +387,12 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/pay_method_list"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/height_68"
-                android:layout_margin="@dimen/margin_2" />
+                android:layout_height="@dimen/pay_method_container_height"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_marginTop="@dimen/margin_2"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:layout_marginBottom="@dimen/margin_5"
+                android:foreground="@drawable/dot_round_shape" />
 
             <LinearLayout
                 android:layout_width="match_parent"

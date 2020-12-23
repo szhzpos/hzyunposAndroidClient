@@ -53,7 +53,7 @@
     <dimen name="width_80">@dimen/size_80</dimen>
     <dimen name="width_328">@dimen/size_328</dimen>
     <dimen name="width_118">@dimen/size_118</dimen>
-    <dimen name="width_188">148dp</dimen>
+    <dimen name="mobile_transfer_amt_width">148dp</dimen>
     <dimen name="width_208">@dimen/size_208</dimen>
     <dimen name="width_128">@dimen/size_128</dimen>
     <dimen name="width_888">@dimen/size_888</dimen>
@@ -130,13 +130,14 @@
 
     <dimen name="mobile_pay_dialog_button_width">@dimen/size_0</dimen>
     <dimen name="mobile_pay_dialog_button_height">@dimen/size_50</dimen>
+    <dimen name="pay_method_height">@dimen/size_60</dimen>
+    <dimen name="pay_method_container_height">@dimen/size_128</dimen>
 
     <dimen name="login_keyboard_button_width">@dimen/width_80</dimen>
     <dimen name="login_keyboard_button_height">@dimen/size_65</dimen>
     <dimen name="mobile_login_keyboard_button_width">@dimen/size_45</dimen>
     <dimen name="mobile_login_keyboard_button_height">@dimen/size_45</dimen>
-    <dimen name="pay_detail_height">@dimen/height_45</dimen>
-    <dimen name="pay_method_width">@dimen/size_95</dimen>
+    <dimen name="pay_detail_row_height">@dimen/height_45</dimen>
     <dimen name="d_dialog_button_height">@dimen/height_122</dimen>
     <dimen name="drop_down_height">@dimen/height_45</dimen>
     <dimen name="more_fun_dialog_height">@dimen/size_288</dimen>

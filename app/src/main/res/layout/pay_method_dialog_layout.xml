@@ -10,9 +10,10 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/pay_method_list"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/height_68"
+        android:layout_height="@dimen/pay_method_container_height"
         android:layout_marginStart="@dimen/margin_2"
         android:layout_marginTop="@dimen/margin_2"
+        android:background="@drawable/dot_round_shape"
         android:visibility="gone" />
 
     <LinearLayout

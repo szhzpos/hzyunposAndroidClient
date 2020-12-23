@@ -16,6 +16,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,10 +30,11 @@ import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.FullReduceRulesAdapter;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.PayDetailViewAdapter;
-import com.wyc.cloudapp.adapter.PayMethodItemDecoration;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.decoration.PayMethodItemDecoration;
+import com.wyc.cloudapp.decoration.SuperItemDecoration;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -51,7 +53,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public final class PayDialog extends AbstractDialogSaleActivity {
+public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivity {
     private EditText mCashMoneyEt,mZlAmtEt,mRemarkEt;
     private PayMethodViewAdapter mPayMethodViewAdapter;
     private PayDetailViewAdapter mPayDetailViewAdapter;
@@ -64,7 +66,7 @@ public final class PayDialog extends AbstractDialogSaleActivity {
     private Window mWindow;
     private boolean isPayMethodMol = false,isManualMol = false;
     private final CustomProgressDialog mProgressDialog;
-    public PayDialog(final SaleActivity context, final String title){
+    public AbstractSettlementDialog(final SaleActivity context, final String title){
         super(context,title);
         mProgressDialog = new CustomProgressDialog(context);
     }
@@ -101,13 +103,6 @@ public final class PayDialog extends AbstractDialogSaleActivity {
 
         //根据金额设置按钮数字
          autoShowValueFromPayAmt();
-    }
-    @Override
-    protected int getContentLayoutId(){
-        if (mContext.lessThan7Inches(null)){
-            return R.layout.mobile_pay_dialog_content_layout;
-        }else
-            return R.layout.pay_dialog_content_layout;
     }
 
     @Override
@@ -394,8 +389,8 @@ public final class PayDialog extends AbstractDialogSaleActivity {
             }
         });
         final RecyclerView recyclerView = findViewById(R.id.pay_method_list);
-        recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL,false));
-        recyclerView.addItemDecoration(new PayMethodItemDecoration(2));
+        recyclerView.setLayoutManager(new GridLayoutManager(mContext,4));
+        SuperItemDecoration.registerGlobalLayoutToRecyclerView(recyclerView,mContext.getResources().getDimension(R.dimen.pay_method_height),new PayMethodItemDecoration());
         recyclerView.setAdapter(mPayMethodViewAdapter);
     }
 
@@ -1125,7 +1120,7 @@ public final class PayDialog extends AbstractDialogSaleActivity {
             if (index == -1){
                 if (mPayStatus){
                     if (mContext.getPrintStatus()){
-                        Printer.print(mContext, PayDialog.get_print_content(mContext,order_code,open_cashbox));
+                        Printer.print(mContext, AbstractSettlementDialog.get_print_content(mContext,order_code,open_cashbox));
                     }
                     paySuccess();
                 }

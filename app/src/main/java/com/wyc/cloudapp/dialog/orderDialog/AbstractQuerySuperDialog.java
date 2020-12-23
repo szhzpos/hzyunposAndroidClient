@@ -25,8 +25,9 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
-import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.decoration.LinearItemDecoration;
+import com.wyc.cloudapp.decoration.SuperItemDecoration;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.dialog.vip.VipDepositOrderDialog;
@@ -108,7 +109,7 @@ public abstract class AbstractQuerySuperDialog extends AbstractDialogMainActivit
             body.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
             body.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
             body.setAdapter(mAdapter);
-            SuperItemDecoration.registerGlobalLayoutToRecyclerView(body,mContext.getResources().getDimension(R.dimen.table_row_height),new SuperItemDecoration(mContext.getColor(R.color.gray_subtransparent)));
+            SuperItemDecoration.registerGlobalLayoutToRecyclerView(body,mContext.getResources().getDimension(R.dimen.table_row_height),new LinearItemDecoration(mContext.getColor(R.color.gray_subtransparent)));
         }
     }
     private void setTableLayout(){

@@ -44,12 +44,12 @@ import com.wyc.cloudapp.CustomizationView.ScaleView;
 import com.wyc.cloudapp.CustomizationView.TmpOrderButton;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
-import com.wyc.cloudapp.adapter.GoodsInfoItemDecoration;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
-import com.wyc.cloudapp.adapter.SaleGoodsItemDecoration;
-import com.wyc.cloudapp.adapter.SuperItemDecoration;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.decoration.GoodsInfoItemDecoration;
+import com.wyc.cloudapp.decoration.SaleGoodsItemDecoration;
+import com.wyc.cloudapp.decoration.SuperItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MoreFunDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -60,7 +60,8 @@ import com.wyc.cloudapp.dialog.orderDialog.HangBillDialog;
 import com.wyc.cloudapp.dialog.orderDialog.NormalTransferDialog;
 import com.wyc.cloudapp.dialog.orderDialog.QueryRetailOrderDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
-import com.wyc.cloudapp.dialog.pay.PayDialog;
+import com.wyc.cloudapp.dialog.pay.NormalSettlementDialog;
+import com.wyc.cloudapp.dialog.pay.AbstractSettlementDialog;
 import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
@@ -217,7 +218,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                     close_tv.setOnClickListener(null);
                     last_reprint_btn.setOnClickListener(null);
                 });
-                last_reprint_btn.setOnClickListener(v -> Printer.print(this, PayDialog.get_print_content(this,last_order_code.getText().toString(),false)));
+                last_reprint_btn.setOnClickListener(v -> Printer.print(this, AbstractSettlementDialog.get_print_content(this,last_order_code.getText().toString(),false)));
             }else {
                 MyDialog.ToastMessage(order_info.getString("info"),this,getWindow());
             }
@@ -428,7 +429,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(this,GoodsInfoViewAdapter.SPAN_COUNT);
         goods_info_view.setLayoutManager(gridLayoutManager);
         mGoodsInfoViewAdapter.setOnGoodsSelectListener(this::addSaleGoods);
-        SuperItemDecoration.registerGlobalLayoutToRecyclerView(goods_info_view,getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration(-1));
+        SuperItemDecoration.registerGlobalLayoutToRecyclerView(goods_info_view,getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration());
         goods_info_view.setAdapter(mGoodsInfoViewAdapter);
     }
     private void initGoodsCategoryAdapter(){
@@ -712,7 +713,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         }else {
             if (!mSaleGoodsAdapter.isEmpty()){
                 if (!getSingleRefundStatus()){
-                    final PayDialog dialog = new PayDialog(this,getString(R.string.affirm_pay_sz));
+                    final AbstractSettlementDialog dialog = new NormalSettlementDialog(this,getString(R.string.affirm_pay_sz));
                     dialog.initPayContent();
                     if (mVipInfo != null)dialog.setVipInfo(mVipInfo,true);
                     if (dialog.exec() == 1){

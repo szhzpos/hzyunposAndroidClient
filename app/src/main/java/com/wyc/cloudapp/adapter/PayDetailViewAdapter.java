@@ -59,7 +59,7 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
             itemView = View.inflate(mContext, R.layout.pay_detail_content_layout, null);
             holder = new ContentHolder(itemView);
         }
-        itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.pay_detail_height)));
+        itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.pay_detail_row_height)));
         return holder;
     }
 

@@ -157,7 +157,7 @@
                             android:textSize="@dimen/font_size_16" />
 
                         <TextView
-                            android:layout_width="@dimen/width_188"
+                            android:layout_width="@dimen/mobile_transfer_amt_width"
                             android:layout_height="match_parent"
                             android:gravity="center"
                             android:text="@string/pay_amt_sz"
@@ -219,7 +219,7 @@
                             android:textSize="@dimen/font_size_16" />
 
                         <TextView
-                            android:layout_width="@dimen/width_188"
+                            android:layout_width="@dimen/mobile_transfer_amt_width"
                             android:layout_height="match_parent"
                             android:gravity="center"
                             android:text="@string/refund_money_sz"
@@ -281,7 +281,7 @@
                             android:textSize="@dimen/font_size_16" />
 
                         <TextView
-                            android:layout_width="@dimen/width_188"
+                            android:layout_width="@dimen/mobile_transfer_amt_width"
                             android:layout_height="match_parent"
                             android:gravity="center"
                             android:text="@string/pay_amt_sz"

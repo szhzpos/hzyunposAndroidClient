@@ -16,6 +16,7 @@ import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
@@ -49,8 +50,10 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+        Logger.d(viewGroup);
         final View itemView = View.inflate(mContext, R.layout.pay_method_content_layout, null);
-        itemView.setLayoutParams( new RecyclerView.LayoutParams((int) mContext.getResources().getDimension(R.dimen.pay_method_width), ViewGroup.LayoutParams.MATCH_PARENT));
+        itemView.setLayoutParams( new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                (int) mContext.getResources().getDimension(R.dimen.pay_method_height)));
         return new MyViewHolder(itemView);
     }
 

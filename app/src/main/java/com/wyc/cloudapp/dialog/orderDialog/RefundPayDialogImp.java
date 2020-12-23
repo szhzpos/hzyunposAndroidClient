@@ -5,14 +5,15 @@ import android.view.View;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.adapter.PayMethodItemDecoration;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
+import com.wyc.cloudapp.decoration.PayMethodItemDecoration;
+import com.wyc.cloudapp.decoration.SuperItemDecoration;
 import com.wyc.cloudapp.dialog.pay.AbstractPayDialog;
 
 public class RefundPayDialogImp extends AbstractPayDialog {
@@ -64,8 +65,8 @@ public class RefundPayDialogImp extends AbstractPayDialog {
         });
         final RecyclerView recyclerView = findViewById(R.id.pay_method_list);
         recyclerView.setVisibility(View.VISIBLE);
-        recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL,false));
-        recyclerView.addItemDecoration(new PayMethodItemDecoration(2));
+        recyclerView.setLayoutManager(new GridLayoutManager(mContext,4));
+        SuperItemDecoration.registerGlobalLayoutToRecyclerView(recyclerView,mContext.getResources().getDimension(R.dimen.pay_method_height),new PayMethodItemDecoration());
         recyclerView.setAdapter(payMethodViewAdapter);
 
         mPayMethodViewAdapter = payMethodViewAdapter;
