@@ -106,7 +106,7 @@ public class ConnSettingDialog extends AbstractDialogContext {
                 final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
                 dialogWindow.setGravity(Gravity.CENTER);
                 double ratio = 0.4;
-                if (Utils.getDisplayMetrics(m,null) < 7) {
+                if (Utils.lessThan7Inches(mContext)) {
                     ratio = 0.9;
                 }
                 lp.width = (int)(ratio * point.x); // 宽度

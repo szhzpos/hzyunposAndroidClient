@@ -2,7 +2,6 @@ package com.wyc.cloudapp.dialog;
 
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -37,7 +36,7 @@ public final class VerifyPermissionDialog extends AbstractDialogMainActivity {
 
     @Override
     protected int getContentLayoutId() {
-        if (lessThan7Inches = mContext.lessThan7Inches(null))return R.layout.mobile_verify_permissions_dilaog_layout;
+        if (lessThan7Inches = mContext.lessThan7Inches())return R.layout.mobile_verify_permissions_dilaog_layout;
         return R.layout.verify_permissions_dilaog_layout;
     }
 

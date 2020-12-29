@@ -49,7 +49,7 @@ public class PayMethodDialogImp extends AbstractPayDialog implements MobileCashi
                 mPayCode.postDelayed(()->mPayCode.requestFocus(),350);
                 mPayCode.setVisibility(View.VISIBLE);
 
-                if (mContext.lessThan7Inches(null)){
+                if (mContext.lessThan7Inches()){
                     mPayCode.setOnTouchListener((view, motionEvent) -> {
                         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                             final float dx = motionEvent.getX();

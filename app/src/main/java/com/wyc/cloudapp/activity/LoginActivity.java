@@ -19,11 +19,13 @@ import android.os.Message;
 import android.text.Editable;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -68,7 +70,6 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
     private String mPosNum,mOperId,mStoresId;
     private Future<?> mLoginTask;
     private JSONObject mConnParam;
-    private DisplayMetrics mDisplayMetrics;
     private boolean isSmallScreen = false;
     private Handler mHandler;
     private final CustomApplication mApplication = CustomApplication.self();
@@ -94,6 +95,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
 
         initKeyboard();
         initDisplayInfoAndVersion();
+        initSetupDisplaySize();
 
         mApplication.registerHandleMessage(this);
 
@@ -101,12 +103,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
     }
 
     private void loadView(){
-        mDisplayMetrics = new DisplayMetrics();
-        double diagonal = Utils.getDisplayMetrics((WindowManager)getSystemService(WINDOW_SERVICE),mDisplayMetrics);
-
-        Logger.d("diagonal:%f",diagonal);
-
-        if ((isSmallScreen = diagonal < 7)){
+        if ((isSmallScreen = Utils.lessThan7Inches(this))){
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN) ;//显示状态栏
 
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -173,12 +170,61 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
         }
     }
 
+    private void initSetupDisplaySize(){
+        final Button display_size_btn = findViewById(R.id.display_size_btn);
+        if (null != display_size_btn){
+            final RadioGroup display_size_group = findViewById(R.id.display_size_group);
+
+            display_size_btn.setOnHoverListener(new View.OnHoverListener() {
+                @Override
+                public boolean onHover(View v, MotionEvent event) {
+                    Logger.d("onHover:%d",event.getAction());
+                    return false;
+                }
+            });
+
+            if (display_size_group != null){
+                display_size_btn.setOnClickListener(v -> {
+                    if (display_size_group.getVisibility() == View.VISIBLE){
+                        display_size_group.setOnClickListener(null);
+                        display_size_group.setVisibility(View.GONE);
+                    }else {
+                        double size = Utils.getDisplaySize(this);
+                        if (Utils.equalDouble(size,8)){
+                            display_size_group.check(R.id.tablet_size);
+                        }else if (Utils.equalDouble(size,6)){
+                            display_size_group.check(R.id.mobile_size);
+                        }else {
+                            display_size_group.check(R.id.auto_size);
+                        }
+                        display_size_group.setVisibility(View.VISIBLE);
+                        display_size_group.setOnCheckedChangeListener((group, checkedId) -> {
+                            final SharedPreferences preferences=getSharedPreferences("display_size", Context.MODE_PRIVATE);
+                            final SharedPreferences.Editor editor= preferences.edit();
+                            if (checkedId == R.id.tablet_size){
+                                editor.putInt("size", 8);
+                            }else if (checkedId == R.id.mobile_size){
+                                editor.putInt("size", 6);
+                            }else {
+                                editor.putInt("size", -1);
+                            }
+                            editor.apply();
+                            relaunch();
+                        });
+                    }
+                });
+            }
+        }
+    }
+
     private void initDisplayInfoAndVersion(){
         final TextView tv = findViewById(R.id.display_info_tv);
-        if (null != tv && mDisplayMetrics != null){
+        if (null != tv){
+            final DisplayMetrics displayMetrics = new DisplayMetrics();
+            Utils.getDisplayMetrics(this,displayMetrics);
             try {
                 final PackageInfo packageInfo = getPackageManager().getPackageInfo("com.wyc.cloudapp",0);
-                tv.setText(String.format(Locale.CHINA,"高:%d x 宽:%d DPI:%d 版本号:%s",mDisplayMetrics.heightPixels,mDisplayMetrics.widthPixels,mDisplayMetrics.densityDpi,packageInfo.versionName));
+                tv.setText(String.format(Locale.CHINA,"高:%d x 宽:%d DPI:%d 版本号:%s",displayMetrics.heightPixels,displayMetrics.widthPixels,displayMetrics.densityDpi,packageInfo.versionName));
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
                 MyDialog.ToastMessage(e.getMessage(),this,getWindow());
@@ -296,10 +342,14 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
     public void onActivityResult(int requestCode, int resultCode, Intent intent){
         super.onActivityResult(requestCode,resultCode,intent);
         if (resultCode == RESULT_CANCELED && requestCode == 0x000000cc){
-            finish();
-            final Intent intent_launch = new Intent(this,LoginActivity.class);
-            startActivity(intent_launch);
+            relaunch();
         }
+    }
+
+    private void relaunch(){
+        finish();
+        final Intent intent_launch = new Intent(this,LoginActivity.class);
+        startActivity(intent_launch);
     }
 
     private void initCloseMainWindow(){

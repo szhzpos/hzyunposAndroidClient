@@ -3,7 +3,6 @@ package com.wyc.cloudapp.activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -229,9 +228,8 @@ public abstract class MainActivity extends AppCompatActivity {
         return code;
     }
 
-    public boolean lessThan7Inches(DisplayMetrics displayMetrics){
-        double diagonal = Utils.getDisplayMetrics((WindowManager)getSystemService(WINDOW_SERVICE),displayMetrics);
-        return diagonal < 7.0;
+    public boolean lessThan7Inches(){
+        return Utils.lessThan7Inches(this);
     }
 
     public int getStatusBarHeight() {

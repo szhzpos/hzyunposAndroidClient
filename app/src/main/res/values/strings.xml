@@ -417,6 +417,9 @@
     <string name="m_name_sz">姓名：</string>
     <string name="exit_sz">退出登录</string>
     <string name="origin_order_code_sz">原单号</string>
-
+    <string name="display_size_sz">屏幕</string>
+    <string name="big_size_sz">平板</string>
+    <string name="small_size_sz">手机</string>
+    <string name="auto_size_sz">自动选择</string>
 
 </resources>

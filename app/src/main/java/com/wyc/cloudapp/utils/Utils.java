@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.icu.text.SimpleDateFormat;
 import android.net.wifi.WifiManager;
@@ -57,6 +58,8 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static android.content.Context.WINDOW_SERVICE;
 
 /**
  * Created by Administrator on 2018-03-06.
@@ -607,12 +610,26 @@ public final class Utils {
         return n * factorial(n - 1);
     }
 
-    public static double getDisplayMetrics(@NonNull final WindowManager wm,DisplayMetrics displayMetrics){
+    public static double getDisplaySize(@NonNull final Context context){
+        final SharedPreferences preferences = context.getSharedPreferences("display_size", Context.MODE_PRIVATE);
+        int size = preferences.getInt("size",-1);
+        if (size == -1)return getDisplayMetrics(context,null);
+        return size;
+    }
+
+    public static double getDisplayMetrics(@NonNull final Context context,DisplayMetrics displayMetrics){
+        final WindowManager wm = (WindowManager)context.getSystemService(WINDOW_SERVICE);
         final Display display = wm.getDefaultDisplay();
         if (displayMetrics == null)displayMetrics = new DisplayMetrics();
         display.getRealMetrics(displayMetrics);
         float w = displayMetrics.widthPixels / displayMetrics.xdpi,h = displayMetrics.heightPixels / displayMetrics.ydpi;
-        return Math.sqrt(w * w + h * h);
+        double diagonal = Math.sqrt(w * w + h * h);
+        Logger.d("displayMetrics:%s,diagonal:%f",displayMetrics,diagonal);
+        return diagonal;
+    }
+
+    public static boolean lessThan7Inches(@NonNull final Context context){
+        return  Utils.getDisplaySize(context) < 7.0;
     }
 
     public static int getStatusBarHeight(Context context) {

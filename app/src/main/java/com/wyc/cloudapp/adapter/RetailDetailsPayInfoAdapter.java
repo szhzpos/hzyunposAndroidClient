@@ -38,7 +38,7 @@ public final class RetailDetailsPayInfoAdapter extends AbstractPayInfoAdapter<Re
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = View.inflate(mContext, mContext.lessThan7Inches(null) ? R.layout.mobile_retail_details_pay_info_content_layout  : R.layout.retail_details_pay_info_content_layout, null);
+        View itemView = View.inflate(mContext, mContext.lessThan7Inches() ? R.layout.mobile_retail_details_pay_info_content_layout  : R.layout.retail_details_pay_info_content_layout, null);
         itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int) mContext.getResources().getDimension(R.dimen.table_row_height)));
         return new MyViewHolder(itemView);
     }

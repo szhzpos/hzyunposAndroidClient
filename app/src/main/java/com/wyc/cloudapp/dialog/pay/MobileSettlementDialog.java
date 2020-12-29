@@ -31,6 +31,7 @@ public final class MobileSettlementDialog extends AbstractSettlementDialog {
                 WindowManager.LayoutParams lp = dialogWindow.getAttributes();
                 dialogWindow.setGravity(Gravity.CENTER);
                 lp.width = point.x;
+                lp.height = point.y;
                 dialogWindow.setAttributes(lp);
             }
         }

@@ -54,7 +54,7 @@ public final class RefundDialog extends AbstractDialogMainActivity {
     public RefundDialog(@NonNull MainActivity context, final String order_code) {
         super(context, context.getString(R.string.refund_dialog_title_sz));
         mOrderCode = order_code;
-        lessThan7Inches = context.lessThan7Inches(null);
+        lessThan7Inches = context.lessThan7Inches();
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {

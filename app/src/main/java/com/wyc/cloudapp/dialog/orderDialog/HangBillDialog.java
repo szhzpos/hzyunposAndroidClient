@@ -73,7 +73,7 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
 
     @Override
     protected int getContentLayoutId(){
-        if (lessThan7Inches = mContext.lessThan7Inches(null)){
+        if (lessThan7Inches = mContext.lessThan7Inches()){
             return R.layout.mobile_hangbill_dialog_layout;
         }
         return R.layout.hangbill_dialog_layout;

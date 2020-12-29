@@ -57,7 +57,7 @@ public class AddGoodsInfoDialog extends AbstractDialogSaleActivity {
 
     @Override
     protected int getContentLayoutId() {
-        if (mContext.lessThan7Inches(null))return R.layout.mobile_add_goods_dialog_layout;
+        if (mContext.lessThan7Inches())return R.layout.mobile_add_goods_dialog_layout;
         return R.layout.add_goods_dialog_layout;
     }
 

@@ -101,7 +101,7 @@ public final class MyDialog extends Dialog {
     private void initWindowSize(){
         final WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
         if (m != null){
-            if (Utils.getDisplayMetrics(m,null) < 7){
+            if (Utils.lessThan7Inches(mContext)){
                 final Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
                 final Point point = new Point();
                 d.getSize(point);
