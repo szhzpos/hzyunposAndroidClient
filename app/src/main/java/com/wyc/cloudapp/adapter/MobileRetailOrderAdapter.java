@@ -161,7 +161,7 @@ public final class MobileRetailOrderAdapter extends AbstractQueryDataAdapter<Mob
                 "       a.total order_amt,\n" +
                 "       a.order_code,\n" +
                 "       ifnull(c.sc_name,'') sc_name,\n" +
-                "       (select count(c.xnum) from retail_order_goods c where c.order_code = a.order_code) xnum\n" +
+                "       (select sum(c.xnum) from retail_order_goods c where c.order_code = a.order_code) xnum\n" +
                 "  FROM retail_order a left join cashier_info b on a.cashier_id = b.cas_id left join  sales_info c on a.sc_ids = c.sc_id " + where_sql + " order by a.addtime desc";
 
         Logger.d("sql:%s",sql);

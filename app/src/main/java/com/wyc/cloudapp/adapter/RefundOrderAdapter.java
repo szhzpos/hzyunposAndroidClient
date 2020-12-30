@@ -158,7 +158,7 @@ public final class RefundOrderAdapter extends AbstractQueryDataAdapter<RefundOrd
     public void setDatas(final String where_sql){
         final StringBuilder err = new StringBuilder();
         final String sql = "SELECT  order_code retail_order_code,ro_code refund_order_code,total refund_order_amt,refund_total refund_amt,type refund_type,\n" +
-                "case type when 1 then '整单退货' when 2 then '部分退货' else '其他' end refund_type_name,order_status refund_status,\n" +
+                "case type when 1 then '整单退货' when 2 then '部分退货' when 3 then '单品退货' else '其他' end refund_type_name,order_status refund_status,\n" +
                 "case order_status when 1 then '未退货' when 2 then '已退货' else '其他' end refund_status_name,upload_status,\n" +
                 " case a.transfer_status when 1 then '未交班' when 2 then '已交班' else '其他' end s_e_status_name,\n" +
                 "case upload_status when 1 then '未上传' when 2 then '已上传' else '其他' end upload_status_name,cashier_id,b.cas_name,\n" +

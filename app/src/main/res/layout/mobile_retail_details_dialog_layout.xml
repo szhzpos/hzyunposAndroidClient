@@ -234,7 +234,6 @@
             android:id="@+id/m_pay_details_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_1"
             app:layout_constraintStart_toStartOf="@id/pay_details_label"
             app:layout_constraintTop_toBottomOf="@id/pay_details_label" />
 

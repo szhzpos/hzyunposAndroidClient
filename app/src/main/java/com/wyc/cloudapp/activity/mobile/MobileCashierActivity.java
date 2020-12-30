@@ -400,14 +400,6 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
         if (singleRefundStatus){
             setAllRefundStatusView(right,true);
         }
-        left.postDelayed(()->{
-            int l_width = left.getWidth(),r_width = right.getWidth();
-            if (l_width > r_width){
-                right.setWidth(l_width);
-            }else if (l_width < r_width){
-                left.setWidth(r_width);
-            }
-        },100);
     }
 
     public void setAllRefundStatusView(TextView view,boolean b){

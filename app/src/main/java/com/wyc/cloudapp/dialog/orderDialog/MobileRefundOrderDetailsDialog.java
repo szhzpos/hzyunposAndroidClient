@@ -67,13 +67,14 @@ public class MobileRefundOrderDetailsDialog extends AbstractDialogMainActivity {
 
             final TextView m_order_id_tv = findViewById(R.id.m_sale_id_tv),m_order_time_tv = findViewById(R.id.m_order_time_tv),m_vip_no_tv = findViewById(R.id.m_vip_no_tv),
                     m_sale_man_tv = findViewById(R.id.m_sale_man_tv),m_order_amt_tv = findViewById(R.id.m_order_amt_tv),m_disc_amt_tv = findViewById(R.id.m_disc_amt_tv),
-                    m_refund_id_tv = findViewById(R.id.m_refund_id_tv);
+                    m_refund_id_tv = findViewById(R.id.m_refund_id_tv),m_refund_type_tv = findViewById(R.id.m_refund_type_tv);
 
             if (m_order_id_tv != null)m_order_id_tv.setText(Utils.getNullStringAsEmpty(object,"retail_order_code"));
             if (m_refund_id_tv != null)m_refund_id_tv.setText(Utils.getNullStringAsEmpty(object,"refund_order_code"));
             if (m_sale_man_tv != null)m_sale_man_tv.setText(Utils.getNullStringAsEmpty(object,"sc_name"));
             if (m_vip_no_tv != null)m_vip_no_tv.setText(Utils.getNullStringAsEmpty(object,"card_code"));
             if (m_order_time_tv != null)m_order_time_tv.setText(Utils.getNullStringAsEmpty(object,"oper_time"));
+            if (m_refund_type_tv != null)m_refund_type_tv.setText(Utils.getNullStringAsEmpty(object,"refund_type_name"));
             if (m_order_amt_tv != null)m_order_amt_tv.setText(String.format(Locale.CHINA,"%.2f",object.getDoubleValue("refund_order_amt")));
         }
     }

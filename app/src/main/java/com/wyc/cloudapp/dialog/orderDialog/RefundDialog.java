@@ -261,7 +261,6 @@ public final class RefundDialog extends AbstractDialogMainActivity {
             }else  if (type == 2){
                 refund_btn.setText(mContext.getString(R.string.part_return_sz));
             }else if (type == 3){
-                mRefundType = 2;//显示单据的退货类型没有单品退货的标志，暂时改成部分退货
                 refund_btn.setText(mContext.getString(R.string.single_refund_sz));
             }else {
                 refund_btn.setText(mContext.getString(R.string.all_refund_sz));

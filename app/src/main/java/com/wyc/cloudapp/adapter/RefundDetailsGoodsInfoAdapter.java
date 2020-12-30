@@ -49,16 +49,16 @@ public final class RefundDetailsGoodsInfoAdapter extends AbstractTableDataAdapte
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
         if (null != mDatas) {
-            final JSONObject sale_goods_info = mDatas.getJSONObject(position);
-            if (sale_goods_info != null) {
+            final JSONObject refund_goods_info = mDatas.getJSONObject(position);
+            if (refund_goods_info != null) {
                 holder.row_id_tv.setText(String.valueOf(position + 1));
-                holder.item_no_tv.setText(sale_goods_info.getString("item_no"));
-                holder.barcode_tv.setText(sale_goods_info.getString("barcode"));
-                holder.goods_title_tv.setText(sale_goods_info.getString("goods_title"));
-                holder.refund_num_tv.setText(String.format(Locale.CHINA, "%.2f", sale_goods_info.getDoubleValue("refund_num")));
-                holder.unit_name_tv.setText(sale_goods_info.getString("unit_name"));
-                holder.refund_price_tv.setText(String.format(Locale.CHINA, "%.2f", sale_goods_info.getDoubleValue("refund_price")));
-                holder.refund_amt_tv.setText(String.format(Locale.CHINA, "%.2f", sale_goods_info.getDoubleValue("refund_amt")));
+                holder.item_no_tv.setText(refund_goods_info.getString("item_no"));
+                holder.barcode_tv.setText(refund_goods_info.getString("barcode"));
+                holder.goods_title_tv.setText(refund_goods_info.getString("goods_title"));
+                holder.refund_num_tv.setText(String.format(Locale.CHINA, "%.2f", refund_goods_info.getDoubleValue("refund_num")));
+                holder.unit_name_tv.setText(refund_goods_info.getString("unit_name"));
+                holder.refund_price_tv.setText(String.format(Locale.CHINA, "%.2f", refund_goods_info.getDoubleValue("refund_price")));
+                holder.refund_amt_tv.setText(String.format(Locale.CHINA, "%.2f", refund_goods_info.getDoubleValue("refund_amt")));
 
                 holder.mCurrentLayoutItemView.setOnClickListener(this::setCurrentItemView);
             }

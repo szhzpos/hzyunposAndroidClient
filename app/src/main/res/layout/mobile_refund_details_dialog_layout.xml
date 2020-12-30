@@ -104,6 +104,30 @@
             app:layout_constraintTop_toTopOf="@id/order_time_label" />
 
         <TextView
+            android:id="@+id/refund_type_label"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center"
+            android:paddingStart="@dimen/margin_12"
+            android:paddingEnd="0dp"
+            android:text="@string/refund_type_colon_sz"
+            android:textColor="@color/label_text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toStartOf="@id/order_time_label"
+            app:layout_constraintTop_toBottomOf="@id/order_time_label" />
+
+        <TextView
+            android:id="@+id/m_refund_type_tv"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center_vertical"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/refund_type_label"
+            app:layout_constraintTop_toTopOf="@id/refund_type_label" />
+
+        <TextView
             android:id="@+id/vip_no_label"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/height_30"
@@ -113,8 +137,8 @@
             android:text="@string/m_vip_no_sz"
             android:textColor="@color/label_text_color"
             android:textSize="@dimen/font_size_16"
-            app:layout_constraintStart_toStartOf="@id/order_time_label"
-            app:layout_constraintTop_toBottomOf="@id/order_time_label" />
+            app:layout_constraintStart_toStartOf="@id/refund_type_label"
+            app:layout_constraintTop_toBottomOf="@id/refund_type_label" />
 
         <TextView
             android:id="@+id/m_vip_no_tv"
@@ -259,7 +283,6 @@
             android:id="@+id/m_pay_details_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_1"
             app:layout_constraintStart_toStartOf="@id/pay_details_label"
             app:layout_constraintTop_toBottomOf="@id/pay_details_label" />
 

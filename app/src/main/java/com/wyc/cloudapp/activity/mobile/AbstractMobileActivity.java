@@ -27,23 +27,6 @@ public abstract class AbstractMobileActivity extends MainActivity {
         initTitleClickListener();
     }
 
-    @Override
-    public void onAttachedToWindow(){
-        super.onAttachedToWindow();
-        adjustTitle();
-    }
-
-    private void adjustTitle(){
-        mLeft.postDelayed(()->{
-            int l_width = mLeft.getWidth(),r_width = mRight.getWidth();
-            if (l_width > r_width){
-                mRight.setWidth(l_width);
-            }else if (l_width < r_width){
-                mLeft.setWidth(r_width);
-            }
-        },100);
-    }
-
     private void initTitle(){
         mLeft = findViewById(R.id.left_title_tv);
         mMiddle = findViewById(R.id.middle_title_tv);

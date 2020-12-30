@@ -24,11 +24,10 @@ public final class MobileRefundOrderAdapter extends AbstractQueryDataAdapter<Mob
     }
 
     static class MyViewHolder extends AbstractQueryDataAdapter.SuperViewHolder {
-        TextView  order_code,goods_num,order_amt,order_status,cas_name,oper_time,m_vip_label,m_retail_order_detail;
+        TextView  order_code,order_amt,order_status,cas_name,oper_time,m_vip_label,m_retail_order_detail;
         MyViewHolder(View itemView) {
             super(itemView);
             order_code = itemView.findViewById(R.id.order_code);
-            goods_num = itemView.findViewById(R.id.m_refund_order_num);
             order_amt = itemView.findViewById(R.id.m_refund_order_amt);
             order_status = itemView.findViewById(R.id.m_refund_order_status);
             cas_name = itemView.findViewById(R.id.m_refund_order_cas_name);
@@ -54,8 +53,6 @@ public final class MobileRefundOrderAdapter extends AbstractQueryDataAdapter<Mob
             if (order_info != null) {
                 holder.order_code.setText(order_info.getString("refund_order_code"));
                 holder.order_amt.setText(String.format(Locale.CHINA, "%.2f", order_info.getDoubleValue("refund_order_amt")));
-
-                holder.goods_num.setText(String.format(Locale.CHINA, "%.2f", order_info.getDoubleValue("xnum")));
 
                 int order_status = order_info.getIntValue("refund_status");
                 if (order_status == 4)
@@ -131,7 +128,7 @@ public final class MobileRefundOrderAdapter extends AbstractQueryDataAdapter<Mob
         final StringBuilder err = new StringBuilder();
         final String sql = "SELECT  order_code retail_order_code,ro_code refund_order_code,total refund_order_amt,refund_total refund_amt,type refund_type,\n" +
                 "a.card_code,a.name vip_name,a.mobile," +
-                "case type when 1 then '整单退货' when 2 then '部分退货' else '其他' end refund_type_name,order_status refund_status,\n" +
+                "case type when 1 then '整单退货' when 2 then '部分退货' when 3 then '单品退货'  else '其他' end refund_type_name,order_status refund_status,\n" +
                 "case order_status when 1 then '未退货' when 2 then '已退货' else '其他' end refund_status_name,upload_status,\n" +
                 "case a.transfer_status when 1 then '未交班' when 2 then '已交班' else '其他' end s_e_status_name,\n" +
                 "case upload_status when 1 then '未上传' when 2 then '已上传' else '其他' end upload_status_name,cashier_id,b.cas_name,\n" +

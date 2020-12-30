@@ -8,57 +8,7 @@
     android:orientation="vertical"
     tools:context=".activity.mobile.MobileCashierActivity">
 
-    <LinearLayout
-        android:id="@+id/title"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/height_58"
-        android:background="@color/activity_title_color">
-
-        <TextView
-            android:id="@+id/left_title_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:paddingStart="@dimen/margin_5"
-            android:paddingEnd="@dimen/size_0"
-            android:text="@string/back"
-            android:textColor="@android:color/white"
-            android:textSize="18sp" />
-
-        <Space
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <TextView
-            android:id="@+id/middle_title_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="@dimen/margin_1"
-            android:textAlignment="center"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/font_size_22" />
-
-        <Space
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-
-        <TextView
-            android:id="@+id/right_title_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:paddingStart="@dimen/margin_0"
-            android:paddingEnd="@dimen/margin_5"
-            android:textAlignment="viewEnd"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/font_size_18" />
-    </LinearLayout>
+    <include layout="@layout/activity_title_layout"/>
 
     <TextView
         android:id="@+id/mobile_order_code"
