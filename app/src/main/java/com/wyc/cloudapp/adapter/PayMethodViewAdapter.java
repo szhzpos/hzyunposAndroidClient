@@ -21,7 +21,8 @@ import com.wyc.cloudapp.utils.Utils;
 import java.util.Locale;
 
 public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdapter.MyViewHolder> {
-    public static final String CASH_METHOD_ID = "1";//现金支付方式id
+    private static final String CASH_METHOD_ID = "1";//现金支付方式id
+    private static final String DEFAULT_PAY_METHOD_ID = CASH_METHOD_ID;//默认支付方式ID为现金
     private static final String CUR_PAY_METHOD_LABEL = "isCur";
     private final MainActivity mContext;
     private JSONArray mDatas;
@@ -198,7 +199,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     }
 
     private void setDefaultPayMethod(){
-        mDefaultPayMethod = findPayMethodById(CASH_METHOD_ID);
+        mDefaultPayMethod = findPayMethodById(DEFAULT_PAY_METHOD_ID);
         if (null != mDefaultPayMethod)mDefaultPayMethod.put(CUR_PAY_METHOD_LABEL,true);
     }
 
@@ -215,7 +216,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
         return null;
     }
 
-    public static JSONObject get_pay_method(final String pay_method_id){
+    public static JSONObject getPayMethod(final String pay_method_id){
         final JSONObject object = new JSONObject();
         if (SQLiteHelper.execSql(object,"select *  from pay_method where status = '1' and pay_method_id = '" + pay_method_id + "'")){
             if (object.isEmpty())return null;
@@ -237,12 +238,28 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     public JSONObject getDefaultPayMethod(){
         return mDefaultPayMethod;
     }
-
+    public static String getDefaultPayMethodId(){
+        return DEFAULT_PAY_METHOD_ID;
+    }
+    public static String getCashMethodId(){
+        return CASH_METHOD_ID;
+    }
     public static boolean isApiCheck(int check){
         return check == 1;
     }
 
-    public static boolean isMol(final JSONObject object){
+    public static boolean isMolForPayMethod(final JSONObject object){
         return object != null && 2 == object.getIntValue("is_moling");
+    }
+
+    public boolean isMolWithPayed(){//查询已支付记录里面是否存在参与抹零的支付方式
+        final JSONArray array = mPayDetailViewAdapter == null ? null :mPayDetailViewAdapter.getDatas();
+        if (array != null){
+            for (int i = 0,length = array.size();i < length;i ++){
+                final JSONObject jsonObject = array.getJSONObject(i);
+                if (PayMethodViewAdapter.isMolForPayMethod(findPayMethodById(jsonObject.getString("pay_method_id"))))return true;
+            }
+        }
+        return false;
     }
 }

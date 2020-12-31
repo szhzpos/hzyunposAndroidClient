@@ -406,7 +406,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
             });
 
             //默认支付方式-现金
-            final JSONObject default_cash = get_pay_method(PayMethodViewAdapter.CASH_METHOD_ID);
+            final JSONObject default_cash = PayMethodViewAdapter.getPayMethod(PayMethodViewAdapter.getCashMethodId());
             mobile_pay_method.setTag(Utils.getNullStringAsEmpty(default_cash,"pay_method_id"));
             mobile_pay_method.setText(Utils.getNullStringAsEmpty(default_cash,"name"));
             mPayMethodSelected = default_cash;

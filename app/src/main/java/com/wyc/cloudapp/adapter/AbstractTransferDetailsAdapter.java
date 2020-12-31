@@ -118,7 +118,7 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
             total_orders += num;
             total_amt += amt;
 
-            if (PayMethodViewAdapter.CASH_METHOD_ID.equals(String.valueOf(pay_method_id))){
+            if (PayMethodViewAdapter.getCashMethodId().equals(String.valueOf(pay_method_id))){
                 cash_sum_amt += amt;
             }
             for (int i = 0,size = mDatas.size();i < size;i++){
@@ -150,7 +150,7 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
             total_num += num;
             total_amt += amt;
 
-            if (PayMethodViewAdapter.CASH_METHOD_ID.equals(String.valueOf(pay_method_id))){//退单现金要减
+            if (PayMethodViewAdapter.getCashMethodId().equals(String.valueOf(pay_method_id))){//退单现金要减
                 cash_sum_amt -= amt;
             }
 
@@ -183,7 +183,7 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
             total_num += num;
             total_amt += amt;
 
-            if (PayMethodViewAdapter.CASH_METHOD_ID.equals(String.valueOf(pay_method_id))){
+            if (PayMethodViewAdapter.getCashMethodId().equals(String.valueOf(pay_method_id))){
                 cash_sum_amt += amt;
             }
 
@@ -217,7 +217,7 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
             total_num += num;
             total_amt += amt;
 
-            if (PayMethodViewAdapter.CASH_METHOD_ID.equals(String.valueOf(pay_method_id))){
+            if (PayMethodViewAdapter.getCashMethodId().equals(String.valueOf(pay_method_id))){
                 cash_sum_amt += amt;
             }
 
