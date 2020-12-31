@@ -128,14 +128,14 @@
 
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="35dp"
+                    android:layout_height="@dimen/mobile_transfer_content_title_height"
                     android:background="@drawable/bottom_separator"
                     android:gravity="center_vertical"
-                    android:paddingStart="12dp"
+                    android:paddingStart="@dimen/margin_12"
                     android:paddingEnd="0dp"
                     android:text="@string/deal_sz"
                     android:textColor="@color/blue"
-                    android:textSize="18sp" />
+                    android:textSize="@dimen/font_size_18" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -190,14 +190,14 @@
 
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="35dp"
+                    android:layout_height="@dimen/mobile_transfer_content_title_height"
                     android:background="@drawable/bottom_separator"
                     android:gravity="center_vertical"
-                    android:paddingStart="12dp"
+                    android:paddingStart="@dimen/margin_12"
                     android:paddingEnd="0dp"
                     android:text="@string/r_b_title_sz"
                     android:textColor="@color/blue"
-                    android:textSize="18sp" />
+                    android:textSize="@dimen/font_size_18" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -252,10 +252,10 @@
 
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="35dp"
+                    android:layout_height="@dimen/mobile_transfer_content_title_height"
                     android:background="@drawable/bottom_separator"
                     android:gravity="center_vertical"
-                    android:paddingStart="12dp"
+                    android:paddingStart="@dimen/margin_12"
                     android:paddingEnd="0dp"
                     android:text="@string/charge_order_sz"
                     android:textColor="@color/blue"
@@ -315,14 +315,14 @@
 
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="35dp"
+                    android:layout_height="@dimen/mobile_transfer_content_title_height"
                     android:background="@drawable/bottom_separator"
                     android:gravity="center_vertical"
-                    android:paddingStart="12dp"
+                    android:paddingStart="@dimen/margin_12"
                     android:paddingEnd="0dp"
                     android:text="次卡订单"
-                    android:textColor="@color/contents_text"
-                    android:textSize="18sp" />
+                    android:textColor="@color/blue"
+                    android:textSize="@dimen/font_size_18" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
