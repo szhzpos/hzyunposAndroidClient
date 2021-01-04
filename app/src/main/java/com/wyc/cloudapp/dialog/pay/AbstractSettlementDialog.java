@@ -153,7 +153,8 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         final Button all_discount_btn = findViewById(R.id.all_discount);
         if (null != all_discount_btn)
             all_discount_btn.setOnClickListener(view -> {
-                final ChangeNumOrPriceDialog dialog = new ChangeNumOrPriceDialog(mContext, Html.fromHtml("折扣率<size value='14'>[1-10],10为不折扣</size> ",null,new FontSizeTagHandler(mContext)),String.format(Locale.CHINA,"%d",10));
+                final ChangeNumOrPriceDialog dialog = new ChangeNumOrPriceDialog(mContext, Html.fromHtml("折扣率<size value='14'>[1-10],10为不折扣</size> ",null,
+                        new FontSizeTagHandler(mContext)),String.format(Locale.CHINA,"%.2f",10.0),1.0,10.0);
                 dialog.setYesOnclickListener(myDialog -> {
                     if (mContext.allDiscount(myDialog.getContent())){
                         deleteFullReduceDiscount();
@@ -360,20 +361,15 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                             if (code == 1){
                                 final JSONObject jsonObject = payMethodDialogImp.getContent();
                                 if (jsonObject != null)mPayDetailViewAdapter.addPayDetail(jsonObject);
-                            }
-
-                            if (isPayMethodMol){
-                                if (code == 1){
-                                    if (!Utils.equalDouble(mActual_amt,mAmt_received) && isDefaultMol){
-                                        reCalculateMolAmt(default_method);
-                                    }
-                                }else {
+                                //付款之后的抹零金额计算放在支付明细registerAdapterDataObserver回调中进行，因为还要处理删除支付方式的情况
+                            }else {
+                                if (isPayMethodMol){
                                     if (isNotMol){
-                                        if (isMoled()){
-                                            reCalculateMolAmt(null);
+                                        if (isDefaultMol){
+                                            reCalculateMolAmt(default_method);
                                         }
                                     }else {
-                                        if (!isMoled()){
+                                        if (!isDefaultMol){
                                             deleteMolDiscountRecord();
                                         }
                                     }
@@ -401,20 +397,22 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
     }
 
     private void reCalculateMolAmt(JSONObject object){
-        if (object == null){
-            object = mPayMethodViewAdapter.getDefaultPayMethod();
-            if (!PayMethodViewAdapter.isMolForPayMethod(object)){
-                final JSONArray array = mPayDetailViewAdapter.getDatas();
-                for (int i = 0,size = array.size();i < size;i ++){
-                    object = array.getJSONObject(i);
-                    object = mPayMethodViewAdapter.findPayMethodById(object.getString("pay_method_id"));
-                    if (PayMethodViewAdapter.isMolForPayMethod(object))break;
+        if (Utils.equalDouble(mMolAmt,0.0)){
+            if (object == null){
+                object = mPayMethodViewAdapter.getDefaultPayMethod();
+                if (!PayMethodViewAdapter.isMolForPayMethod(object)){
+                    final JSONArray array = mPayDetailViewAdapter.getDatas();
+                    for (int i = 0,size = array.size();i < size;i ++){
+                        object = array.getJSONObject(i);
+                        object = mPayMethodViewAdapter.findPayMethodById(object.getString("pay_method_id"));
+                        if (PayMethodViewAdapter.isMolForPayMethod(object))break;
+                    }
                 }
             }
+            calculateMolAmt(object,true);
+            calculatePayContent();
+            refreshContent();
         }
-        calculateMolAmt(object);
-        calculatePayContent();
-        refreshContent();
     }
 
     private void initPayDetailViewAdapter() {
@@ -453,12 +451,10 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                     }else {
                         if(isPayMethodMol){
                             ////支付未完成，如果是按支付方式抹零则更新抹零金额
-                            if (isMoled()){
-                                reCalculateMolAmt(null);
-                            }else{
-                                if (!Utils.equalDouble(mMolAmt,0.0)){
-                                    deleteMolDiscountRecord();
-                                }
+                            if (!PayMethodViewAdapter.isMolForPayMethod(mPayMethodViewAdapter.getDefaultPayMethod())){
+                                deleteMolDiscountRecord();
+                            }else {
+                                reCalculateMolAmt(mPayMethodViewAdapter.getDefaultPayMethod());
                             }
                         }
                     }
@@ -490,7 +486,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
     }
 
     public boolean initPayContent(){
-        calculateMolAmt(PayMethodViewAdapter.getPayMethod(PayMethodViewAdapter.getDefaultPayMethodId()));
+        calculateMolAmt(PayMethodViewAdapter.getPayMethod(PayMethodViewAdapter.getDefaultPayMethodId()),false);
         fullReduceDiscount();
         calculatePayContent();
         return true;
@@ -557,40 +553,38 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             mContext.autoMol(mMolAmt);
      }*/
 
-    private void calculateMolAmt(final JSONObject method){
-        if (Utils.equalDouble(mMolAmt,0.0)){
-            final JSONObject object = new JSONObject();
-            if (SQLiteHelper.getLocalParameter("pos_moling",object)){
-                if (!object.isEmpty()){
-                    double mol_amt = 0.0;
-                    int moling_way = object.getIntValue("moling_way");//moling_way抹零方式 1自动抹零 2手动抹零
-                    if (1 == moling_way){
-                        int moling_rule = object.getIntValue("moling_rule");//moling_rule抹零规则 1不抹零 2四舍五入到角 3四舍五入到元 4舍去分 5舍去角 6有分进角 7有角进元
-                        int moling_type = object.getIntValue("moling_type");//moling_type抹零类型 1按支付方式抹零 2按整单抹零
-                        switch (moling_type){
-                            case 1:
-                                isPayMethodMol = true;
-                                if (PayMethodViewAdapter.isMolForPayMethod(method)){
-                                    mol_amt = disposeMolRule(moling_rule);
-                                    method.put("molAmt",mol_amt);
-                                }
-                                break;
-                            case 2:
+    private void calculateMolAmt(final JSONObject method,boolean recalculate){
+        final JSONObject object = new JSONObject();
+        if (SQLiteHelper.getLocalParameter("pos_moling",object)){
+            if (!object.isEmpty()){
+                double mol_amt = 0.0;
+                int moling_way = object.getIntValue("moling_way");//moling_way抹零方式 1自动抹零 2手动抹零
+                if (1 == moling_way){
+                    int moling_rule = object.getIntValue("moling_rule");//moling_rule抹零规则 1不抹零 2四舍五入到角 3四舍五入到元 4舍去分 5舍去角 6有分进角 7有角进元
+                    int moling_type = object.getIntValue("moling_type");//moling_type抹零类型 1按支付方式抹零 2按整单抹零
+                    switch (moling_type){
+                        case 1:
+                            isPayMethodMol = true;
+                            if (PayMethodViewAdapter.isMolForPayMethod(method)){
                                 mol_amt = disposeMolRule(moling_rule);
-                                break;
-                        }
-                    }else
-                        isManualMol = moling_way == 2;
-
-                    Logger.d("calculateMolAmt:%f",mol_amt);
-                    if (!Utils.equalDouble(mol_amt,0.0)){
-                        mContext.autoMol(mol_amt);
-                        mMolAmt = mol_amt;
+                                method.put("molAmt",mol_amt);
+                            }
+                            break;
+                        case 2:
+                            mol_amt = disposeMolRule(moling_rule);
+                            break;
                     }
+                }else
+                    isManualMol = moling_way == 2;
+
+                Logger.d("calculateMolAmt:%f",mol_amt);
+                if (!Utils.equalDouble(mol_amt,0.0) && (!recalculate || (mol_amt < mPay_balance || Utils.equalDouble(mol_amt, mPay_balance)))){
+                    mContext.autoMol(mol_amt);
+                    mMolAmt = mol_amt;
                 }
-            }else{
-                MyDialog.ToastMessage("自动抹零错误：" + object.getString("info"), mContext,null);
             }
+        }else{
+            MyDialog.ToastMessage("自动抹零错误：" + object.getString("info"), mContext,null);
         }
     }
     private double disposeMolRule(int rule){

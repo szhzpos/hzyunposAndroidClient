@@ -367,7 +367,8 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
                     dialog = new ChangeNumOrPriceDialog(mContext,"新价格",cur_json.getString("price"));
                     break;
                 case 2:
-                    dialog = new ChangeNumOrPriceDialog(mContext, Html.fromHtml("折扣率<size value='14'>[1-10],10为不折扣</size> ",null,new FontSizeTagHandler(mContext)),String.format(Locale.CHINA,"%.2f",Utils.getNotKeyAsNumberDefault(cur_json,"discount",1.0) * 10));
+                    dialog = new ChangeNumOrPriceDialog(mContext, Html.fromHtml("折扣率<size value='14'>[1-10],10为不折扣</size> ",null,new FontSizeTagHandler(mContext)),
+                            String.format(Locale.CHINA,"%.2f",Utils.getNotKeyAsNumberDefault(cur_json,"discount",1.0) * 10),1.0,10.0);
                     break;
                 case 0:
                     dialog = new ChangeNumOrPriceDialog(mContext,"新数量",String.format(Locale.CHINA,"%.2f",Utils.getNotKeyAsNumberDefault(cur_json,"xnum",1.0)));

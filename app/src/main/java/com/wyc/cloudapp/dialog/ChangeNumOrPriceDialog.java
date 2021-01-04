@@ -2,7 +2,9 @@ package com.wyc.cloudapp.dialog;
 
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.InputType;
+import android.text.Spanned;
 import android.view.View;
 import android.widget.EditText;
 
@@ -15,11 +17,17 @@ import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 public class ChangeNumOrPriceDialog extends AbstractDialogMainActivity {
     private EditText mNew_price_text;
     private final String mInitVal;
+    private Double mSmallestValue,mBiggestValue;
     private onNoOnclickListener noOnclickListener;//取消按钮被点击了的监听器
     private onYesOnclickListener yesOnclickListener;//确定按钮被点击了的监听器
     public ChangeNumOrPriceDialog(MainActivity context, final CharSequence title, final String initVal){
         super(context,title);
         mInitVal = initVal;
+    }
+    public ChangeNumOrPriceDialog(MainActivity context, final CharSequence title, final String initVal,final Double smallest,final Double biggest){
+        this(context,title,initVal);
+        mBiggestValue = biggest;
+        mSmallestValue = smallest;
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +60,7 @@ public class ChangeNumOrPriceDialog extends AbstractDialogMainActivity {
     public void show(){
         super.show();
     }
+
 
     public ChangeNumOrPriceDialog setNoOnclickListener(onNoOnclickListener onNoOnclickListener) {
         this.noOnclickListener = onNoOnclickListener;
@@ -94,14 +103,30 @@ public class ChangeNumOrPriceDialog extends AbstractDialogMainActivity {
     }
 
     private void initNewPrice(){
-        final EditText et = mNew_price_text =  findViewById(R.id.new_numOrprice_text);
+        final EditText et = findViewById(R.id.new_numOrprice_text);
         if (et != null){
             if ("".equals(mInitVal)) {
                 et.setInputType(InputType.TYPE_NUMBER_VARIATION_PASSWORD);
                 et.setTransformationMethod(new PasswordEditTextReplacement());
             }
             et.setText(mInitVal);
+            if (null != mBiggestValue || null != mSmallestValue)et.setFilters(new InputFilter[]{ new InputFilter() {
+                @Override
+                public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+                    try {
+                        double value = Double.parseDouble(dest.toString() + source);
+                        if ((mSmallestValue != null && value < mSmallestValue) || (mBiggestValue != null && value > mBiggestValue)){
+                            return "";
+                        }
+                    }catch (NumberFormatException e){
+                        e.printStackTrace();
+                        return "";
+                    }
+                    return null;
+                }
+            }});
         }
+        mNew_price_text = et;
     }
     private void initKeyboardView(){
         final KeyboardView view = findViewById(R.id.keyboard_view);
