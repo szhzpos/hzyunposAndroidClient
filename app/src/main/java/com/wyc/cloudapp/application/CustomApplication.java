@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,9 +17,12 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.logger.AndroidLogAdapter;
 import com.wyc.cloudapp.logger.DiskLogAdapter;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.Utils;
 
+import java.util.Locale;
 import java.util.Vector;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -27,7 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class CustomApplication extends Application {
     //使用无界限阻塞队列，不会触发拒绝策略；线程数最大等于核心线程数，如果所有线程都在运行则任务会进入队列等待执行<可能引发内存问题>，
-    private static final ScheduledThreadPoolExecutor THREAD_POOL_EXECUTOR = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2);
+    private static final DefaultScheduledThreadPoolExecutor THREAD_POOL_EXECUTOR = new DefaultScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2);
     private static CustomApplication mApplication;
     private final Vector<Activity> mActivities;
 
@@ -138,7 +142,6 @@ public final class CustomApplication extends Application {
         return THREAD_POOL_EXECUTOR.getActiveCount();
     }
 
-
     public static CustomApplication self(){
         return mApplication;
     }
@@ -225,5 +228,29 @@ public final class CustomApplication extends Application {
     }
     public interface MessageCallback{
         void handleMessage(final Handler handler,final Message msg);
+    }
+
+    private static class DefaultScheduledThreadPoolExecutor extends ScheduledThreadPoolExecutor{
+
+        public DefaultScheduledThreadPoolExecutor(int corePoolSize) {
+            super(corePoolSize);
+        }
+
+        @Override
+        protected void afterExecute(Runnable r, Throwable t) {
+            super.afterExecute(r, t);
+            if (t == null && r instanceof Future<?>) {
+                try {
+                    ((Future<?>) r).get();
+                } catch (ExecutionException | InterruptedException ee) {
+                    t = ee.getCause();
+                }
+            }
+            if (t != null){
+                final String sz = String.format(Locale.CHINA,"%s throw exception:%s",this.getClass().getSimpleName(),t.getMessage());
+                mApplication.getAppHandler().post(()-> Toast.makeText(mApplication,sz,Toast.LENGTH_LONG).show());
+                Logger.w("%s%s",sz, Utils.formatStackTrace(t.getStackTrace()));
+            }
+        }
     }
 }

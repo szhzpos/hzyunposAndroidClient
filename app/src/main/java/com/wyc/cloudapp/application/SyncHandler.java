@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 
 import static com.wyc.cloudapp.utils.MessageID.SYNC_DIS_INFO_ID;
 
-public final class SyncHandler extends Handler {
+final class SyncHandler extends Handler {
     private final HttpRequest mHttp;
     private final Handler mMainActivityHandler;
     private volatile boolean mReportProgress = true;

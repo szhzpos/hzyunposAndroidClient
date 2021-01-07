@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 
-public class SyncManagement extends Thread {
+class SyncManagement extends Thread {
     private CountDownLatch handlerInitLatch;
     private Handler mNotifyHandler;
     private SyncHandler mSyncHandler;

@@ -19,7 +19,6 @@ import android.os.Message;
 import android.text.Editable;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
@@ -59,6 +58,9 @@ import java.util.Locale;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 public class LoginActivity extends AppCompatActivity implements CustomApplication.MessageCallback {
     public static final String IMG_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/goods_img/";
     private static final int REQUEST_STORAGE_PERMISSIONS  = 800;
@@ -174,15 +176,6 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
         final Button display_size_btn = findViewById(R.id.display_size_btn);
         if (null != display_size_btn){
             final RadioGroup display_size_group = findViewById(R.id.display_size_group);
-
-            display_size_btn.setOnHoverListener(new View.OnHoverListener() {
-                @Override
-                public boolean onHover(View v, MotionEvent event) {
-                    Logger.d("onHover:%d",event.getAction());
-                    return false;
-                }
-            });
-
             if (display_size_group != null){
                 display_size_btn.setOnClickListener(v -> {
                     if (display_size_group.getVisibility() == View.VISIBLE){
@@ -500,9 +493,9 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                         CustomApplication.execute(()->{
                             if (mLoginTask != null){
                                 try {
-                                    mLoginTask.get();
+                                    mLoginTask.get(5000, TimeUnit.MILLISECONDS);
                                     if (mHandler != null)mHandler.sendMessageAtFrontOfQueue(mHandler.obtainMessage(MessageID.CANCEL_LOGIN_ID));
-                                } catch (ExecutionException | CancellationException | InterruptedException e) {
+                                } catch (ExecutionException | CancellationException | InterruptedException | TimeoutException e) {
                                     e.printStackTrace();
                                 }
                             }
