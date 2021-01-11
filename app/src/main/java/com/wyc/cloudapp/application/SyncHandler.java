@@ -31,7 +31,7 @@ import static com.wyc.cloudapp.utils.MessageID.SYNC_DIS_INFO_ID;
 final class SyncHandler extends Handler {
     private final HttpRequest mHttp;
     private final Handler mMainActivityHandler;
-    private volatile boolean mReportProgress = true;
+    private volatile boolean mReportProgress = true,isPause = false;
     private volatile int mCurrentNetworkStatusCode = HttpURLConnection.HTTP_OK;
     private long mLoseTime = 0;
     private final SyncManagement mSync;
@@ -65,10 +65,12 @@ final class SyncHandler extends Handler {
                 case MessageID.SYNC_PAUSE_ID:
                     synchronized (this){
                         try {
+                            isPause = true;
                             wait(15000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
+                        isPause = false;
                     }
                     return;
                 case MessageID.SYNC_GOODS_CATEGORY_ID:
@@ -474,7 +476,7 @@ final class SyncHandler extends Handler {
             }
         }
         if (!code){
-            Logger.e("上传单据错误：%s",err);
+            Logger.e("上传销售单据错误：%s",err);
             mMainActivityHandler.obtainMessage(MessageID.TRANSFERSTATUS_ID,false).sendToTarget();
         }
     }
@@ -568,7 +570,7 @@ final class SyncHandler extends Handler {
     private void uploadRefundOrderInfo(final String appid,final String url,final String appSecret){
         final StringBuilder err = new StringBuilder();
 
-        final JSONArray refund_orders = SQLiteHelper.getListToJson("SELECT ifnull(order_code,'') order_code,ro_code FROM refund_order where upload_status = 1 limit 500",err);
+        final JSONArray refund_orders = SQLiteHelper.getListToJson("SELECT ifnull(order_code,'') order_code,ro_code FROM refund_order where upload_status = 1 and order_status = 2 limit 500",err);
         if (refund_orders != null){
             JSONObject obj;
             for (int i = 0,size = refund_orders.size();i < size;i++){
@@ -577,6 +579,7 @@ final class SyncHandler extends Handler {
             }
         }
         if (err.length() != 0){
+            Logger.e("上传退货单据错误：%s",err);
             mMainActivityHandler.obtainMessage(MessageID.TRANSFERSTATUS_ID,false).sendToTarget();
         }
     }
@@ -835,6 +838,8 @@ final class SyncHandler extends Handler {
         }
     }
     void stopSync(){
+        if (isPause)_continue();//如果已经暂停，则先唤醒线程
+
         removeMessages(MessageID.MARK_DOWNLOAD_RECORD_ID);
         removeMessages(MessageID.SYNC_CASHIER_ID);
         removeMessages(MessageID.SYNC_GOODS_CATEGORY_ID);
@@ -873,11 +878,11 @@ final class SyncHandler extends Handler {
     }
 
     void pause(){
-        sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_PAUSE_ID));
+        if (!isPause)sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_PAUSE_ID));
     }
     void _continue(){
         synchronized (this){
-            notify();
+            if (isPause) notify();
         }
     }
     void sign_downloaded(){//标记已下载

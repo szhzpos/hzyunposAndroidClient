@@ -484,9 +484,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                 mProgressDialog.setCancel(true).setOnCancelListener(dialog -> {
                     final CustomApplication application = CustomApplication.self();
                     application.pauseSync();
-                    MyDialog.displayAskMessage(myDialog,"是否取消登录？",mSelf,(MyDialog mydialog)->{
-                        mydialog.dismiss();
-                        application.continueSync();
+                    if (MyDialog.showMessageToModalDialog(mSelf,"是否取消登录？") == 1){
                         application.stop_sync();
                         httpRequest.clearConnection(HttpRequest.CLOSEMODE.POST);
                         mProgressDialog.setMessage("正在取消登录...").refreshMessage().show();
@@ -494,19 +492,16 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                             if (mLoginTask != null){
                                 try {
                                     mLoginTask.get(5000, TimeUnit.MILLISECONDS);
-                                    if (mHandler != null)mHandler.sendMessageAtFrontOfQueue(mHandler.obtainMessage(MessageID.CANCEL_LOGIN_ID));
                                 } catch (ExecutionException | CancellationException | InterruptedException | TimeoutException e) {
                                     e.printStackTrace();
                                 }
+                                if (mHandler != null)mHandler.sendMessageAtFrontOfQueue(mHandler.obtainMessage(MessageID.CANCEL_LOGIN_ID));
                             }
                         });
-                    },(MyDialog myDialog)->{
-                        myDialog.dismiss();
+                    }else {
                         application.continueSync();
-                        if (mProgressDialog != null && !mProgressDialog.isShowing()){
-                            mProgressDialog.setRestShowTime(false).show();
-                        }
-                    });
+                        mProgressDialog.setRestShowTime(false).show();
+                    }
                 });
         },1000);
         mLoginTask = CustomApplication.submit(()-> {

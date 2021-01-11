@@ -302,6 +302,16 @@ public final class MyDialog extends Dialog {
         return loop.exec();
     }
 
+    public static void showErrorMessageToModalDialog(final Context context, final String message){
+        final JEventLoop loop = new JEventLoop();
+        final MyDialog dialog = new MyDialog(context, IconType.ERROR);
+        dialog.setTitle("错误信息").setMessage(message).setNoOnclickListener("取消", myDialog -> {
+            myDialog.dismiss();
+            loop.done(0);
+        }).show();
+        loop.exec();
+    }
+
     public static boolean ToastMessage(View anchor,final String message,final Context context,final Window window,boolean b){
         if(!b)ToastMessage(anchor,message,context,window);//条件为假是提示信息
         return b;

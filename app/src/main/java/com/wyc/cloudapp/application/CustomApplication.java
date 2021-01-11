@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.AndroidLogAdapter;
 import com.wyc.cloudapp.logger.DiskLogAdapter;
 import com.wyc.cloudapp.logger.Logger;
@@ -247,9 +248,15 @@ public final class CustomApplication extends Application {
                 }
             }
             if (t != null){
+                final Handler handler = mApplication.getAppHandler();
                 final String sz = String.format(Locale.CHINA,"%s throw exception:%s",this.getClass().getSimpleName(),t.getMessage());
-                mApplication.getAppHandler().post(()-> Toast.makeText(mApplication,sz,Toast.LENGTH_LONG).show());
                 Logger.w("%s%s",sz, Utils.formatStackTrace(t.getStackTrace()));
+                handler.post(()->{
+                    if (mApplication.mActivities.isEmpty()){
+                        handler.post(()-> Toast.makeText(mApplication,sz,Toast.LENGTH_LONG).show());
+                    }else
+                        MyDialog.showErrorMessageToModalDialog(mApplication.mActivities.get(0),sz);
+                });
             }
         }
     }
