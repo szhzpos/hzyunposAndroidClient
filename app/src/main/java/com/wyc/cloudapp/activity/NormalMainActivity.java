@@ -135,6 +135,8 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
 
         //初始化数据管理
         initSyncManagement();
+
+        System.gc();
     }
     private void initMemberVariable(){
         mProgressDialog = new CustomProgressDialog(this);
@@ -364,7 +366,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     private void initCloseMainWindow(){
         mCloseBtn = findViewById(R.id.close);
         mCloseBtn.setOnClickListener((View V)->{
-            MyDialog.displayAskMessage(null,"是否退出收银？",this,(MyDialog myDialog)->{
+            MyDialog.displayAskMessage(this, "是否退出收银？", (MyDialog myDialog)->{
                 myDialog.dismiss();
                 /*Intent intent = new Intent(this,LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -853,7 +855,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
             case MessageID.SYNC_ERR_ID://资料同步错误
                 if (mProgressDialog.isShowing())mProgressDialog.dismiss();
                 if (msg.obj instanceof String)
-                    MyDialog.displayErrorMessage(null,msg.obj.toString(),this);
+                    MyDialog.displayErrorMessage(this, msg.obj.toString());
                 break;
             case MessageID.SYNC_FINISH_ID:
                 if (mProgressDialog.isShowing())mProgressDialog.dismiss();

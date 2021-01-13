@@ -72,7 +72,7 @@ public class BarCodeScaleDownDialog extends AbstractDialogContext {
             del_scale_btn.setOnClickListener(v -> {
                 if (!mBarCodeScaleAdapter.getCurrentScalseInfos().isEmpty())
                     if (isDownloadFinished()){
-                        MyDialog.displayAskMessage(null, "是否删除条码秤信息？", mContext, myDialog -> {
+                        MyDialog.displayAskMessage(mContext, "是否删除条码秤信息？", myDialog -> {
                             mBarCodeScaleAdapter.deleteScale();
                             myDialog.dismiss();
                         },Dialog::dismiss);

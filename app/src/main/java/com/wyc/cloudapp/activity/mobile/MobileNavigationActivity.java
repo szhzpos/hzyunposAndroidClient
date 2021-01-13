@@ -187,7 +187,7 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
             case MessageID.SYNC_ERR_ID://资料同步错误
                 if (mProgressDialog.isShowing())mProgressDialog.dismiss();
                 if (msg.obj instanceof String)
-                    MyDialog.displayErrorMessage(null,msg.obj.toString(),this);
+                    MyDialog.displayErrorMessage(this, msg.obj.toString());
                 break;
             case MessageID.SYNC_FINISH_ID:
                 if (mProgressDialog.isShowing())mProgressDialog.dismiss();

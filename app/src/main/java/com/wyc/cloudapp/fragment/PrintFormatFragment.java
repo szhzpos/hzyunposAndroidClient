@@ -508,7 +508,7 @@ public class PrintFormatFragment extends AbstractBaseFragment {
                     bluetoothAdapter.startDiscovery();
                 }
             }else {
-                MyDialog.displayAskMessage(null, "蓝牙已关闭，是否开启蓝牙功能？", mContext, myDialog -> {
+                MyDialog.displayAskMessage(mContext, "蓝牙已关闭，是否开启蓝牙功能？", myDialog -> {
                     Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                     startActivityForResult(enableBtIntent,REQUEST_BLUETOOTH_ENABLE);//请求开启蓝牙
                     myDialog.dismiss();

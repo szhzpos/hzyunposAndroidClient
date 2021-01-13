@@ -73,13 +73,13 @@ public abstract class MainActivity extends AppCompatActivity {
                     mStoreInfo = JSON.parseObject(st_info.getString("storeInfo"));
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    MyDialog.displayErrorMessage(null,"初始化仓库信息错误：" + e.getMessage(),this);
+                    MyDialog.displayErrorMessage(this, "初始化仓库信息错误：" + e.getMessage());
                 }
             }else{
-                MyDialog.displayErrorMessage(null,"初始化仓库信息错误：" + st_info.getString("info"),this);
+                MyDialog.displayErrorMessage(this, "初始化仓库信息错误：" + st_info.getString("info"));
             }
         }else{
-            MyDialog.displayErrorMessage(null,"初始化收银员信息错误：" + cas_info.getString("info"),this);
+            MyDialog.displayErrorMessage(this, "初始化收银员信息错误：" + cas_info.getString("info"));
         }
     }
 
@@ -177,14 +177,14 @@ public abstract class MainActivity extends AppCompatActivity {
                             mPermissionCashierId = Utils.getNullStringAsEmpty(obj,"cas_id");
                         }
                     }else {
-                        MyDialog.displayErrorMessage(null,"未找到授权工号的权限记录,请确定输入是否正确!",this);
+                        MyDialog.displayErrorMessage(this, "未找到授权工号的权限记录,请确定输入是否正确!");
                     }
                 }catch (JSONException e){
                     e.printStackTrace();
-                    MyDialog.displayErrorMessage(null,"权限数据解析错误：" + e.getMessage(),this);
+                    MyDialog.displayErrorMessage(this, "权限数据解析错误：" + e.getMessage());
                 }
             }else {
-                MyDialog.displayErrorMessage(null,"权限查询错误：" + err,this);
+                MyDialog.displayErrorMessage(this, "权限查询错误：" + err);
             }
         }
         return code;
@@ -219,10 +219,10 @@ public abstract class MainActivity extends AppCompatActivity {
                         code = true;
                     }
                 }else{
-                    MyDialog.displayErrorMessage(null,"未找到授权工号的权限记录,请确定输入是否正确!",this);
+                    MyDialog.displayErrorMessage(this, "未找到授权工号的权限记录,请确定输入是否正确!");
                 }
             } else {
-                MyDialog.displayErrorMessage(null,"权限查询错误：" + discount_ojb.getString("info"),this);
+                MyDialog.displayErrorMessage(this, "权限查询错误：" + discount_ojb.getString("info"));
             }
         }
         return code;

@@ -135,7 +135,7 @@ public class ConnSettingDialog extends AbstractDialogContext {
                 if (!"".equals(shop_id)){
                     final JSONObject param = new JSONObject();
                     if (check_shop_id(shop_id,param)){
-                        MyDialog.displayAskMessage(null, "当前商户与数据库中的商户不一致，是否需要保存？", mContext, myDialog -> {
+                        MyDialog.displayAskMessage(mContext, "当前商户与数据库中的商户不一致，是否需要保存？", myDialog -> {
                             myDialog.dismiss();
                             if (mStore_nameTv != null)mStore_nameTv.setText(mContext.getString(R.string.space_sz));
 
@@ -154,7 +154,7 @@ public class ConnSettingDialog extends AbstractDialogContext {
                             if (code == 1){
                                 save(shop_id);
                             }else {
-                                MyDialog.displayMessage(null,err.toString(),v.getContext());
+                                MyDialog.displayMessage(v.getContext(), err.toString());
                             }
                         }, MyDialog::dismiss);
                     }else {
@@ -183,7 +183,7 @@ public class ConnSettingDialog extends AbstractDialogContext {
                 MyDialog.ToastMessage("保存成功！",mContext,null);
                 ConnSettingDialog.this.dismiss();
             }else
-                MyDialog.displayMessage(null,err.toString(),mContext);
+                MyDialog.displayMessage(mContext, err.toString());
         }
     }
 

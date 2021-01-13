@@ -81,7 +81,7 @@ public abstract class AbstractTransferDialog extends AbstractDialogMainActivity 
                                 transferSuccess();
                             });
                         }else {
-                            mContext.runOnUiThread(()-> MyDialog.displayErrorMessage(null,"保存交班信息错误：" +err,mContext));
+                            mContext.runOnUiThread(()-> MyDialog.displayErrorMessage(mContext, "保存交班信息错误：" +err));
                         }
                         myDialog.dismiss();
                     }).setNoOnclickListener(ChangeNumOrPriceDialog::dismiss).show();
@@ -92,8 +92,8 @@ public abstract class AbstractTransferDialog extends AbstractDialogMainActivity 
     private void transferSuccess(){
         final CustomApplication app = CustomApplication.self();
         app.sync_transfer_order();
-        MyDialog dialog = new MyDialog(mContext);
-        dialog.setMessage("交班成功！").setYesOnclickListener(mContext.getString(R.string.OK), myDialog -> {
+        MyDialog dialog = new MyDialog(mContext,"交班成功！");
+        dialog.setYesOnclickListener(mContext.getString(R.string.OK), myDialog -> {
             dismiss();
             myDialog.dismiss();
 
@@ -120,7 +120,7 @@ public abstract class AbstractTransferDialog extends AbstractDialogMainActivity 
                 this.show();
                 break;
             case 1://有正在支付的订单
-                MyDialog.displayAskMessage(null, "有正在支付订单，是否现在处理?", mContext, myDialog -> {
+                MyDialog.displayAskMessage(mContext, "有正在支付订单，是否现在处理?", myDialog -> {
                     final QueryRetailOrderDialog queryRetailOrderDialog = new QueryRetailOrderDialog(mContext);
                     queryRetailOrderDialog.show();
                     queryRetailOrderDialog.setQueryCondition(info.toString());
@@ -128,13 +128,13 @@ public abstract class AbstractTransferDialog extends AbstractDialogMainActivity 
                 }, MyDialog::dismiss);
                 break;
             case 2://当前收银员有挂单没处理
-                MyDialog.displayAskMessage(null, "当前收银员有挂单信息没处理，是否现在处理?", mContext, myDialog -> {
+                MyDialog.displayAskMessage(mContext, "当前收银员有挂单信息没处理，是否现在处理?", myDialog -> {
                     mContext.disposeHangBill();
                     myDialog.dismiss();
                 }, MyDialog::dismiss);
                 break;
             default:
-                MyDialog.displayErrorMessage(null,"确定是否可以交班错误：" + info,mContext);
+                MyDialog.displayErrorMessage(mContext, "确定是否可以交班错误：" + info);
                 break;
         }
     }

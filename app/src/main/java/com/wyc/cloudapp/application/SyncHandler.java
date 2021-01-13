@@ -30,29 +30,34 @@ import static com.wyc.cloudapp.utils.MessageID.SYNC_DIS_INFO_ID;
 
 final class SyncHandler extends Handler {
     private final HttpRequest mHttp;
-    private final Handler mMainActivityHandler;
+    private final Handler mMainActivityHandler = CustomApplication.self().getAppHandler();
     private volatile boolean mReportProgress = true,isPause = false;
     private volatile int mCurrentNetworkStatusCode = HttpURLConnection.HTTP_OK;
     private long mLoseTime = 0;
-    private final SyncManagement mSync;
     private JSONObject mHeartbeat;
     private Consumer<JSONArray> mFunc = (data)->{};
-    SyncHandler(Looper looper, final Handler handler, final SyncManagement syncManagement){
+
+    private String mAppId, mAppSecret,mUrl,mPosNum,mOperId,mStoresId;
+
+    SyncHandler(Looper looper){
         super(looper);
-
-        mMainActivityHandler = handler;
-        mSync = syncManagement;
-
         mHttp = new HttpRequest();
         mHttp.setConnTimeOut(3000);
-
-        initHeartbeatParameter(syncManagement);
     }
+
+    void initParameter(final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){
+        mUrl = url ;
+        mAppId = appid;
+        mAppSecret = appsecret;
+        mPosNum = pos_num;
+        mOperId = operid;
+        mStoresId = stores_id;
+    }
+
     @Override
     public void handleMessage(Message msg){
-        final SyncManagement sync = mSync;
 
-        final String base_url =  sync.getUrl(),app_id = sync.getAppId(),appSecret = sync.getAppSecret(),pos_num = sync.getPosNum(),oper_id = sync.getOperId(),stores_id = sync.getStoresId();
+        final String base_url =  mUrl,app_id = mAppId,appSecret = mAppSecret,pos_num = mPosNum,oper_id = mOperId,stores_id = mStoresId;
         JSONObject object = new JSONObject(),info_json,retJson;
         String table_name = "",sys_name = "",url = "",sz_param;
         String[] table_cls = null;
@@ -324,22 +329,21 @@ final class SyncHandler extends Handler {
         }
     }
 
-    private void initHeartbeatParameter(final SyncManagement sync){
-        final JSONObject data = new JSONObject();
-        data.put("appid",sync.getAppId());
-        data.put("pos_num",sync.getPosNum());
-        data.put("cas_id",sync.getOperId());
-        mHeartbeat = data;
-    }
     private void testNetworkStatus() throws JSONException {
         int syncInterval = 5000;
-        final SyncManagement sync = mSync;
-        final String test_url = sync.getUrl() + "/api/heartbeat/index";
+        final String test_url = mUrl + "/api/heartbeat/index";
         int err_code;
 
+        if (mHeartbeat == null){
+            final JSONObject data = new JSONObject();
+            data.put("appid",mAppId);
+            data.put("pos_num",mPosNum);
+            data.put("cas_id",mOperId);
+            mHeartbeat = data;
+        }
         mHeartbeat.put("randstr", Utils.getNonce_str(8));
 
-        final JSONObject retJson = mHttp.sendPost(test_url,HttpRequest.generate_request_parm(mHeartbeat,sync.getAppSecret()),true);
+        final JSONObject retJson = mHttp.sendPost(test_url,HttpRequest.generate_request_parm(mHeartbeat,mAppSecret),true);
         err_code = retJson.getIntValue("rsCode");
         switch (retJson.getIntValue("flag")) {
             case 0:
@@ -353,7 +357,7 @@ final class SyncHandler extends Handler {
                 if (mCurrentNetworkStatusCode != HttpURLConnection.HTTP_OK){//如果之前网络响应状态不为OK,则重连成功
                     mCurrentNetworkStatusCode = HttpURLConnection.HTTP_OK;
                     Logger.i("重新连接服务器成功！");
-                    sync.sync_order_info();
+                    sync_order_info();
                 }
                 final JSONObject  info_json = JSON.parseObject(retJson.getString("info"));
                 switch (info_json.getString("status")){
@@ -374,6 +378,17 @@ final class SyncHandler extends Handler {
         }
         mCurrentNetworkStatusCode = err_code;
     }
+
+    void sync_order_info(){
+        startUploadRefundOrder();
+        startUploadTransferOrder();
+        startUploadRetailOrder();
+
+        final Handler handler = CustomApplication.self().getAppHandler();
+        handler.sendMessageAtFrontOfQueue(handler.obtainMessage(MessageID.START_SYNC_ORDER_INFO_ID));
+        handler.obtainMessage(MessageID.FINISH_SYNC_ORDER_INFO_ID).sendToTarget();
+    }
+
     private void uploadRetailOrderInfo(final String appid,final String url,final String appSecret) {
         final StringBuilder err = new StringBuilder(),order_gp_ids = new StringBuilder();
         final String sql_orders = "SELECT discount_money,sc_ids sc_id,card_code,member_id,name,mobile,transfer_time,transfer_status,pay_time,pay_status,order_status,pos_code,addtime,cashier_id,total,\n" +
@@ -609,16 +624,15 @@ final class SyncHandler extends Handler {
     }
     private void upload_pay_method_id(final JSONArray datas) throws JSONException {
         if (datas != null && !datas.isEmpty()){
-            final SyncManagement sync = mSync;
-            final String url = sync.getUrl() + "/api/cashier/up_pm";
+            final String url = mUrl + "/api/cashier/up_pm";
 
             JSONObject object = new JSONObject();
 
-            object.put("appid",sync.getAppId());
+            object.put("appid",mAppId);
             object.put("pay_method_ids",datas);
-            object.put("pos_num",sync.getPosNum());
+            object.put("pos_num",mPosNum);
 
-            object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,sync.getAppSecret()),true);
+            object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,mAppSecret),true);
             if (object.getIntValue("flag") == 1){
                 object = JSON.parseObject(object.getString("info"));
                 if ("n".equals(object.getString("status"))){
@@ -682,16 +696,15 @@ final class SyncHandler extends Handler {
     }
     private void up_gp_goods(final JSONArray datas) throws JSONException{
         if (datas != null && !datas.isEmpty()){
-            final SyncManagement sync = mSync;
-            final String url = sync.getUrl() + "/api/promotion/up_gp";
+            final String url = mUrl + "/api/promotion/up_gp";
 
             JSONObject object = new JSONObject();
 
-            object.put("appid",sync.getAppId());
+            object.put("appid",mAppId);
             object.put("gp_ids",datas);
-            object.put("pos_num",sync.getPosNum());
+            object.put("pos_num",mPosNum);
 
-            object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,sync.getAppSecret()),true);
+            object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,mAppSecret),true);
             boolean success;
             if (success = (object.getIntValue("flag") == 1)){
                 object = JSON.parseObject(object.getString("info"));
@@ -703,16 +716,15 @@ final class SyncHandler extends Handler {
 
     private void upload_barcode_id(final JSONArray datas) throws JSONException {
         if (datas != null && !datas.isEmpty()){
-            final SyncManagement sync = mSync;
-            final String url = sync.getUrl() + "/api/goods/up_goods";
+            final String url = mUrl + "/api/goods/up_goods";
 
             JSONObject object = new JSONObject();
 
-            object.put("appid",sync.getAppId());
+            object.put("appid",mAppId);
             object.put("goods_ids",datas);
-            object.put("pos_num",sync.getPosNum());
+            object.put("pos_num",mPosNum);
 
-            object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,sync.getAppSecret()),true);
+            object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,mAppSecret),true);
             boolean success;
             if (success = (object.getIntValue("flag") == 1)){
                 object = JSON.parseObject(object.getString("info"));
@@ -722,16 +734,15 @@ final class SyncHandler extends Handler {
         }
     }
     private void clear_download_record(){
-        final SyncManagement sync = mSync;
-        final String url = sync.getUrl() + "/api/cashier/clear_download_record";
+        final String url = mUrl + "/api/cashier/clear_download_record";
 
         JSONObject object = new JSONObject();
 
-        object.put("appid",sync.getAppId());
-        object.put("pos_num",sync.getPosNum());
-        object.put("stores_id",sync.getStoresId());
+        object.put("appid",mAppId);
+        object.put("pos_num",mPosNum);
+        object.put("stores_id",mStoresId);
 
-        final JSONObject retJson = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,sync.getAppSecret()),true);
+        final JSONObject retJson = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,mAppSecret),true);
         boolean success;
         if (success = (retJson.getIntValue("flag") == 1)){
             object = JSON.parseObject(retJson.getString("info"));
@@ -743,8 +754,7 @@ final class SyncHandler extends Handler {
     private void up_category(final JSONArray datas) throws JSONException{
         if (datas != null && !datas.isEmpty()){
             JSONObject object;
-            final SyncManagement sync = mSync;
-            final String url = sync.getUrl() + "/api/scale/up_category";
+            final String url = mUrl + "/api/scale/up_category";
 
             final JSONArray category_ids = new JSONArray();
             for (int k = 0,length = datas.size();k < length;k++) {
@@ -753,11 +763,11 @@ final class SyncHandler extends Handler {
             }
 
             object = new JSONObject();
-            object.put("appid",sync.getAppId());
+            object.put("appid",mAppId);
             object.put("category_ids",category_ids);
-            object.put("pos_num",sync.getPosNum());
+            object.put("pos_num",mPosNum);
 
-            object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,sync.getAppSecret()),true);
+            object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,mAppSecret),true);
             boolean success;
             if (success = (object.getIntValue("flag") == 1)){
                 object = JSON.parseObject(object.getString("info"));
@@ -770,8 +780,7 @@ final class SyncHandler extends Handler {
     private void up_sales(final JSONArray datas) throws JSONException{
         if (datas != null && !datas.isEmpty()){
             JSONObject object;
-            final SyncManagement sync = mSync;
-            final String url = sync.getUrl() + "/api/cashier/up_sc";
+            final String url = mUrl + "/api/cashier/up_sc";
 
             final JSONArray sc_ids = new JSONArray();
             for (int k = 0,length = datas.size();k < length;k++) {
@@ -780,11 +789,11 @@ final class SyncHandler extends Handler {
             }
 
             object = new JSONObject();
-            object.put("appid",sync.getAppId());
+            object.put("appid",mAppId);
             object.put("sc_ids",sc_ids);
-            object.put("pos_num",sync.getPosNum());
+            object.put("pos_num",mPosNum);
 
-            object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,sync.getAppSecret()),true);
+            object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,mAppSecret),true);
             boolean success;
             if (success = (object.getIntValue("flag") == 1)){
                 object = JSON.parseObject(object.getString("info"));
@@ -797,8 +806,7 @@ final class SyncHandler extends Handler {
     private void up_promotion(final JSONArray datas) throws JSONException{
         if (datas != null && !datas.isEmpty()){
             JSONObject object;
-            final SyncManagement sync = mSync;
-            final String url = sync.getUrl() + "/api/promotion/up_promotion";
+            final String url = mUrl + "/api/promotion/up_promotion";
 
             final JSONArray tlp_ids = new JSONArray();
             for (int k = 0,length = datas.size();k < length;k++) {
@@ -807,11 +815,11 @@ final class SyncHandler extends Handler {
             }
 
             object = new JSONObject();
-            object.put("appid",sync.getAppId());
+            object.put("appid",mAppId);
             object.put("tlp_ids",tlp_ids);
-            object.put("pos_num",sync.getPosNum());
+            object.put("pos_num",mPosNum);
 
-            object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,sync.getAppSecret()),true);
+            object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,mAppSecret),true);
             boolean success;
             if (success = (object.getIntValue("flag") == 1)){
                 object = JSON.parseObject(object.getString("info"));

@@ -211,7 +211,7 @@ public final class RefundDialog extends AbstractDialogMainActivity {
                 if (Utils.equalDouble(refund_sum_amt,pay_sum_amt)){
                     requestRefund();
                 }else {
-                    MyDialog.displayErrorMessage(null,String.format(Locale.CHINA,"退货金额:%f  不等于 付款金额:%f",refund_sum_amt,pay_sum_amt), mContext);
+                    MyDialog.displayErrorMessage(mContext, String.format(Locale.CHINA,"退货金额:%f  不等于 付款金额:%f",refund_sum_amt,pay_sum_amt));
                 }
             });
 
@@ -294,8 +294,8 @@ public final class RefundDialog extends AbstractDialogMainActivity {
     }
 
     private void requestRefund(){
-        final MyDialog myDialog = new MyDialog(mContext);
-        myDialog.setTitle("退款信息").setMessage(mRefundDialogAdapter.PayDatasToString()).setYesOnclickListener(mContext.getString(R.string.OK), myDialog1 -> {
+        final MyDialog myDialog = new MyDialog(mContext,"退款信息");
+        myDialog.setMessage(mRefundDialogAdapter.PayDatasToString()).setYesOnclickListener(mContext.getString(R.string.OK), myDialog1 -> {
             myDialog1.dismiss();
             mProgressDialog.setCancel(false).setMessage("正在保存单据...").refreshMessage().show();
             CustomApplication.execute(()->{

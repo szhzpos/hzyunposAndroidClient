@@ -64,7 +64,6 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
                 holder.reality_amt.setText(String.format(Locale.CHINA, "%.2f", order_info.getDoubleValue("reality_amt")));
 
                 int order_status = order_info.getIntValue("order_status");
-                Logger.d("order_status:%d",order_status);
                 if (order_status != 2)
                     holder.order_status.setTextColor(mContext.getColor(R.color.orange_1));
                 else

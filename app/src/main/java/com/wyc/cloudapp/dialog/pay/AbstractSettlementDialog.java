@@ -446,7 +446,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                         if (Utils.equalDouble(sale_amt,rec_pay_amt)){//再次验证销售金额以及付款金额是否相等
                             startPay();
                         }else{
-                            MyDialog.displayErrorMessage(null,String.format(Locale.CHINA,"销售金额:%f  不等于 付款金额:%f",sale_amt,pay_amt), mContext);
+                            MyDialog.displayErrorMessage(mContext, String.format(Locale.CHINA,"销售金额:%f  不等于 付款金额:%f",sale_amt,pay_amt));
                         }
                     }else {
                         if(isPayMethodMol){
@@ -476,7 +476,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             CustomApplication.execute(this::requestPay);
         }else{
             mProgressDialog.dismiss();
-            MyDialog.displayErrorMessage(null,"保存单据错误：" + err,mContext);
+            MyDialog.displayErrorMessage(mContext, "保存单据错误：" + err);
         }
     }
 
@@ -1166,7 +1166,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
 
     private void payError(final StringBuilder err){
         mContext.runOnUiThread(()->{
-            MyDialog.displayErrorMessage(null,err.toString(),mContext);
+            MyDialog.displayErrorMessage(mContext, err.toString());
             if (mProgressDialog != null && mProgressDialog.isShowing())mProgressDialog.dismiss();
             mContext.resetOrderCode();
         });

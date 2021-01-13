@@ -26,7 +26,7 @@ public abstract class AbstractDialog extends Dialog {
     private WindowManager.LayoutParams mLayoutParams;
     protected View mRootView;
     private JEventLoop mEventLoop;
-    private int mCode;
+    private int mCode = 0;
     private float mTouchX,mTouchY;
     private boolean isTitle;
     AbstractDialog(@NonNull Context context, final CharSequence title, int style){

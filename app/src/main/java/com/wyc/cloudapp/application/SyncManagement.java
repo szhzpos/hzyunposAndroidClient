@@ -13,44 +13,15 @@ import java.util.concurrent.CountDownLatch;
 
 class SyncManagement extends Thread {
     private CountDownLatch handlerInitLatch;
-    private Handler mNotifyHandler;
     private SyncHandler mSyncHandler;
-    private String mAppId, mAppSecret,mUrl,mPosNum,mOperId,mStoresId;
-    SyncManagement(final Handler handler){
-        mNotifyHandler = handler;
+    SyncManagement(){
         handlerInitLatch = new CountDownLatch(1);
-    }
-
-    String getUrl(){
-        return mUrl;
-    }
-
-    String getAppId(){
-        return mAppId;
-    }
-
-    String getAppSecret(){
-        return mAppSecret;
-    }
-    String getPosNum(){
-        return mPosNum;
-    }
-    String getOperId(){
-        return mOperId;
-    }
-    String getStoresId(){
-        return mStoresId;
+        start();
     }
 
     void initSync(final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){
-        mUrl = url ;
-        mAppId = appid;
-        mAppSecret = appsecret;
-        mPosNum = pos_num;
-        mOperId = operid;
-        mStoresId = stores_id;
-
-        if (!isAlive())start();
+        acquireHandler();
+        mSyncHandler.initParameter(url,appid,appsecret,stores_id,pos_num,operid);
     }
 
     @Override
@@ -58,13 +29,13 @@ class SyncManagement extends Thread {
         Logger.i("SyncManagement<%s>启动:%s",getName(),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS",Locale.CHINA).format(new Date()));
         if (mSyncHandler == null) {
             Looper.prepare();
-            mSyncHandler = new SyncHandler(Looper.myLooper(),mNotifyHandler,this);
+            mSyncHandler = new SyncHandler(Looper.myLooper());
             handlerInitLatch.countDown();
         }
         Looper.loop();
     }
 
-    SyncHandler getHandler(){
+    private SyncHandler getHandler(){
         try{
             handlerInitLatch.await();//必须确保Handler初始化
         }catch (InterruptedException e){
@@ -82,10 +53,6 @@ class SyncManagement extends Thread {
                 e.printStackTrace();
             }
             mSyncHandler = null;
-            if (mNotifyHandler != null){
-                mNotifyHandler.removeCallbacksAndMessages(null);
-                mNotifyHandler = null;
-            }
             handlerInitLatch = null;
         }
         Logger.i("SyncManagement<%s>退出:%s",getName(),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.CHINA).format(new Date()));
@@ -107,18 +74,13 @@ class SyncManagement extends Thread {
     }
 
     void stop_sync(){
+        acquireHandler();
         mSyncHandler.stopSync();
     }
 
     void sync_order_info(){
-        sync_refund_order();
-
-        sync_transfer_order();
-
-        sync_retail_order();
-
-        if (mNotifyHandler != null) mNotifyHandler.sendMessageAtFrontOfQueue(mNotifyHandler.obtainMessage(MessageID.START_SYNC_ORDER_INFO_ID));
-        if (mNotifyHandler != null) mNotifyHandler.obtainMessage(MessageID.FINISH_SYNC_ORDER_INFO_ID).sendToTarget();
+        acquireHandler();
+        mSyncHandler.sync_order_info();
     }
 
     void sync_retail_order(){

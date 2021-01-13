@@ -555,7 +555,7 @@ public class AddGoodsInfoDialog extends AbstractDialogSaleActivity {
         int code = loop.exec();
         progressDialog.dismiss();
         if (code != 1){
-            MyDialog.displayErrorMessage(null,"新增商品错误:" + err,mContext);
+            MyDialog.displayErrorMessage(mContext, "新增商品错误:" + err);
         }
         return code == 1;
     }

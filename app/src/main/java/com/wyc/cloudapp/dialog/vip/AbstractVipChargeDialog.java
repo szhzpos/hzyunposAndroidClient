@@ -539,7 +539,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
         mChargeAmtEt.post(()-> {
             mProgressDialog.dismiss();
             clearPayCode(false);
-            MyDialog.displayErrorMessage(null,message,mContext);
+            MyDialog.displayErrorMessage(mContext, message);
         });
     }
 
@@ -599,7 +599,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                 //保存单据
                 if (!SQLiteHelper.saveFormJson(member_order_info,"member_order_info",null,0,err)){
                     mChargeAmtEt.post(()->{
-                        MyDialog.displayErrorMessage(null,err.toString(),mContext);
+                        MyDialog.displayErrorMessage(mContext, err.toString());
                     });
                     return;
                 }

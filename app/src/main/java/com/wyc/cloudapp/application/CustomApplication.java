@@ -48,7 +48,7 @@ public final class CustomApplication extends Application {
         myhandler  = new Myhandler(Looper.myLooper(),this);
         mNetworkStatus = new AtomicBoolean(true);
         mTransferStatus = new AtomicBoolean(true);//传输状态
-        mSyncManagement = new SyncManagement(myhandler);
+        mSyncManagement = new SyncManagement();
     }
     @Override
     public  void  onCreate(){

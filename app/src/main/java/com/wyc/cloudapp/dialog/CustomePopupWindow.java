@@ -114,7 +114,7 @@ public class CustomePopupWindow extends PopupWindow {
             mListView.setAdapter(mArrayAdapter);
             this.setWidth(mView.getWidth());
         }else{
-           MyDialog.displayErrorMessage(null,"查询内容出错： " + err,v.getContext());
+           MyDialog.displayErrorMessage(v.getContext(), "查询内容出错： " + err);
         }
     }
 
@@ -147,7 +147,7 @@ public class CustomePopupWindow extends PopupWindow {
             mListView.setAdapter(mArrayAdapter);
             this.setWidth(mView.getWidth());
         }else{
-            MyDialog.displayErrorMessage(null,"查询内容出错： " + err,v.getContext());
+            MyDialog.displayErrorMessage(v.getContext(), "查询内容出错： " + err);
         }
     }
 

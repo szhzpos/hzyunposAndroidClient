@@ -102,7 +102,7 @@ public final class GoodsPriceAdjustDialog extends AbstractDialogSaleActivity {
                     case 0:
                         loop.done(0);
                         mContext.runOnUiThread(()->{
-                            MyDialog.displayErrorMessage(null,retJson.getString("info"),mContext);
+                            MyDialog.displayErrorMessage(mContext, retJson.getString("info"));
                         });
                         break;
                     case 1:
@@ -113,7 +113,7 @@ public final class GoodsPriceAdjustDialog extends AbstractDialogSaleActivity {
                         }else {
                             loop.done(0);
                             mContext.runOnUiThread(()->{
-                                MyDialog.displayErrorMessage(null,info.getString("info"),mContext);
+                                MyDialog.displayErrorMessage(mContext, info.getString("info"));
                             });
                         }
                         break;

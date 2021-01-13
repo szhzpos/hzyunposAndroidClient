@@ -1065,7 +1065,7 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
                 }
             }
         }else {
-            MyDialog.displayErrorMessage(null,"满减优惠错误:" + err,mContext);
+            MyDialog.displayErrorMessage(mContext, "满减优惠错误:" + err);
         }
     }
     private void addFullReduce(double reduce_money,double sale_amt){

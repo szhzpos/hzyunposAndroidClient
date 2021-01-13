@@ -3,6 +3,7 @@ package com.wyc.cloudapp.dialog;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
@@ -18,19 +19,29 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleEventObserver;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.OnLifecycleEvent;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.callback.WindowCallback;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialog;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogContext;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import static android.content.Context.WINDOW_SERVICE;
 
-public final class MyDialog extends Dialog {
+public final class MyDialog extends AbstractDialogContext {
     private Button mYes,mNo;//mYes确定按钮、mNo取消按钮
-    private TextView mTitle,mMessage;//mTitle标题文本、mMessage消息提示文本
-    private String mTitleStr;//从外界设置的title文本
+    private TextView mMessage;//mTitle标题文本、mMessage消息提示文本
     private String mMessageStr;//从外界设置的消息文本
     private final Context mContext;
     private IconType mContentIconType = IconType.INFO;
@@ -39,8 +50,6 @@ public final class MyDialog extends Dialog {
     private String mYesStr,mNoStr;
     private onNoOnclickListener noOnclickListener;//取消按钮被点击了的监听器
     private onYesOnclickListener yesOnclickListener;//确定按钮被点击了的监听器
-
-
     public MyDialog  setNoOnclickListener(String str, onNoOnclickListener onNoOnclickListener) {
         if (str != null) {
             mNoStr = str;
@@ -61,14 +70,29 @@ public final class MyDialog extends Dialog {
         return  this;
     }
 
-    public MyDialog(Context context) {
-        super(context,R.style.MyDialog);
+    public MyDialog(Context context,final String title) {
+        super(context,title,R.style.MyDialog);
         this.mContext = context;
     }
 
-    public MyDialog(Context context, IconType type){
-        this(context);
+    public MyDialog(Context context,final String title, IconType type){
+        this(context,title);
         mContentIconType = type;
+        if (context instanceof LifecycleOwner){
+            ((LifecycleOwner)context).getLifecycle().addObserver(new LifecycleEventObserver() {
+                @Override
+                protected void finalize(){
+                    Logger.d("MyDialog's LifecycleObserver finalized");
+                }
+                @Override
+                public void onStateChanged(@NonNull LifecycleOwner source, @NonNull Lifecycle.Event event) {
+                    if (Lifecycle.Event.ON_DESTROY == event){
+                        dismiss();
+                        source.getLifecycle().removeObserver(this);
+                    }
+                }
+            });
+        }
     }
 
     public enum IconType {
@@ -76,15 +100,9 @@ public final class MyDialog extends Dialog {
     }
 
     @Override
-    public void  onBackPressed(){
-        if (noOnclickListener != null)noOnclickListener.onNoClick(this);
-        super.onBackPressed();
-    }
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.mydialog_layout);
         //按空白处不能取消动画
         setCanceledOnTouchOutside(false);
 
@@ -94,11 +112,10 @@ public final class MyDialog extends Dialog {
         initData();
         //初始化界面控件的事件
         initEvent();
-
-        initWindowSize();
     }
 
-    private void initWindowSize(){
+    @Override
+    protected void initWindowSize(){
         final WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
         if (m != null){
             if (Utils.lessThan7Inches(mContext)){
@@ -114,6 +131,16 @@ public final class MyDialog extends Dialog {
                 }
             }
         }
+    }
+
+    @Override
+    public Context getPrivateContext() {
+        return mContext;
+    }
+
+    @Override
+    protected int getContentLayoutId() {
+        return R.layout.mydialog_layout;
     }
 
     /**
@@ -138,10 +165,6 @@ public final class MyDialog extends Dialog {
      * 初始化界面控件的显示数据
      */
     private void initData() {
-        //如果用户自定了title和message
-        if (mTitleStr != null) {
-            mTitle.setText(mTitleStr);
-        }
         //如果设置按钮的文字
         if (mYesStr != null) {
             mYes.setText(mYesStr);
@@ -155,25 +178,11 @@ public final class MyDialog extends Dialog {
      * 初始化界面控件
      */
     private void initView() {
-        findViewById(R.id._close).setOnClickListener(v -> {
-            if (noOnclickListener != null){
-                noOnclickListener.onNoClick(MyDialog.this);
-            }else
-                this.dismiss();
-        });
         mYes = findViewById(R.id.yes);
         mNo = findViewById(R.id.no);
-        mTitle = findViewById(R.id.title_text);
         mMessage = findViewById(R.id.content);
         mMessage.setMovementMethod(ScrollingMovementMethod.getInstance());
-
     }
-
-    public MyDialog setTitle(String title) {
-        mTitleStr = title;
-        return  this;
-    }
-
     public MyDialog setMessage(String message) {
         mMessageStr = message;
         return  this;
@@ -186,16 +195,6 @@ public final class MyDialog extends Dialog {
 
         showBtn();
         showIcon();
-    }
-    @Override
-    public void dismiss(){
-        super.dismiss();
-        if (mMessageStr != null && mMessageStr.length() != 0){
-            mMessageStr = null;
-        }
-        if (mTitleStr != null && mTitleStr.length() != 0){
-            mTitleStr = null;
-        }
     }
 
     private void showIcon(){
@@ -237,79 +236,45 @@ public final class MyDialog extends Dialog {
         }
     }
 
-    private void setYes(boolean b){
-        mIsYes = b;
-    }
-    private void setNo(boolean b){
-        mIsNo = b;
+    public static void displayMessage(final Context context,final String message){
+        final MyDialog dialog = new MyDialog(context,"提示信息",IconType.INFO);
+        dialog.setMessage(message).setNoOnclickListener("确定", Dialog::dismiss).show();
     }
 
-    private void setContentIconType(IconType type){
-        mContentIconType = type;
+    public static void displayErrorMessage(final Context context,final String message){
+        final MyDialog dialog = new MyDialog(context,"提示信息", IconType.ERROR);
+        dialog.setMessage(message).setNoOnclickListener("取消", Dialog::dismiss).show();
     }
 
-    public static void displayMessage(MyDialog dialog,String message, Context context){
-        if (dialog == null)
-            dialog = new	MyDialog(context, IconType.INFO);
-        else{
-            dialog.setContentIconType(IconType.INFO);
-            dialog.setNo(false);
-        }
-        dialog.setTitle("提示信息").setMessage(message).setNoOnclickListener("确定", Dialog::dismiss).show();
+    public static void displayErrorMessage(final Context context,final String message,final onNoOnclickListener no){
+        final MyDialog dialog = new MyDialog(context,"提示信息", IconType.ERROR);
+        dialog.setMessage(message).setNoOnclickListener("取消",no).show();
     }
 
-    public static void displayErrorMessage(MyDialog dialog,String message, Context context){
-        if (dialog == null)
-            dialog = new MyDialog(context, IconType.ERROR);
-        else{
-            dialog.setContentIconType(IconType.ERROR);
-            dialog.setYes(false);
-        }
-        dialog.setTitle("提示信息").setMessage(message).setNoOnclickListener("取消", Dialog::dismiss).show();
-    }
-
-    public static void displayErrorMessage(MyDialog dialog,String message, Context context,onNoOnclickListener no){
-        if (dialog == null)
-            dialog  = new	MyDialog(context, IconType.ERROR);
-        else{
-            dialog.setContentIconType(IconType.ERROR);
-            dialog.setYes(false);
-        }
-        dialog.setTitle("提示信息").setMessage(message).setNoOnclickListener("取消",no).show();
-    }
-
-    public static void displayAskMessage(MyDialog dialog,String message, Context context,MyDialog.onYesOnclickListener yes,MyDialog.onNoOnclickListener no){
-        if (dialog == null)
-            dialog = new MyDialog(context, IconType.ASK);
-        else{
-            dialog.setContentIconType(IconType.ASK);
-            dialog.setYes(true);
-            dialog.setNo(true);
-        }
-        dialog.setTitle("提示信息").setMessage(message).setYesOnclickListener("是",yes).setNoOnclickListener("否", no).show();
+    public static void displayAskMessage(final Context context,final String message,final onYesOnclickListener yes,final onNoOnclickListener no){
+        final MyDialog dialog = new MyDialog(context, "提示信息",IconType.ERROR);
+        dialog.setMessage(message).setYesOnclickListener("是",yes).setNoOnclickListener("否", no).show();
     }
 
     public static int showMessageToModalDialog(final Context context,final String message){
-        final JEventLoop loop = new JEventLoop();
-        final MyDialog dialog = new MyDialog(context, IconType.ASK);
-        dialog.setTitle("提示信息").setMessage(message).setYesOnclickListener("是", myDialog -> {
+        final MyDialog dialog = new MyDialog(context,"提示信息",IconType.ASK);
+        dialog.setMessage(message).setYesOnclickListener("是", myDialog -> {
             myDialog.dismiss();
-            loop.done(1);
+            myDialog.setCodeAndExit(1);
         }).setNoOnclickListener("否", myDialog -> {
             myDialog.dismiss();
-            loop.done(0);
+            myDialog.setCodeAndExit(0);
         }).show();
-        return loop.exec();
+        return dialog.exec();
     }
 
     public static void showErrorMessageToModalDialog(final Context context, final String message){
-        final JEventLoop loop = new JEventLoop();
-        final MyDialog dialog = new MyDialog(context, IconType.ERROR);
-        dialog.setTitle("错误信息").setMessage(message).setNoOnclickListener("取消", myDialog -> {
+        final MyDialog dialog = new MyDialog(context,"错误信息",IconType.ERROR);
+        dialog.setMessage(message).setNoOnclickListener("取消", myDialog -> {
             myDialog.dismiss();
-            loop.done(0);
+            myDialog.setCodeAndExit(0);
         }).show();
-        loop.exec();
+        dialog.exec();
     }
 
     public static boolean ToastMessage(View anchor,final String message,final Context context,final Window window,boolean b){

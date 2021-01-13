@@ -62,7 +62,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         try {
             initTables(db);//初始化数据库
         }catch (SQLiteException e){
-            MyDialog.displayErrorMessage(null,"初始化本地数据库错误：" + e.getMessage(),mContext);
+            MyDialog.displayErrorMessage(mContext, "初始化本地数据库错误：" + e.getMessage());
         }
         onUpgrade(db,0,0);
     }
@@ -132,7 +132,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                         final SQLiteHelper sqLiteHelper = new SQLiteHelper(context);
                         mDb = sqLiteHelper.getWritableDatabase();
                     }catch (SQLiteCantOpenDatabaseException e){
-                        MyDialog.displayErrorMessage(null,"打开数据库错误：" + e.getLocalizedMessage(),context,(MyDialog myDialog)->{
+                        MyDialog.displayErrorMessage(context, "打开数据库错误：" + e.getLocalizedMessage(), (MyDialog myDialog)->{
                             myDialog.dismiss();
                             if (context instanceof Activity){
                                 ((Activity)context).finish();

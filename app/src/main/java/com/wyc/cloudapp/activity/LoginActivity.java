@@ -51,8 +51,10 @@ import com.wyc.cloudapp.service.AppUpdateService;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
+import com.wyc.cloudapp.utils.http.HttpUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.Locale;
 import java.util.concurrent.CancellationException;
@@ -61,16 +63,21 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+
 public class LoginActivity extends AppCompatActivity implements CustomApplication.MessageCallback {
     public static final String IMG_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/goods_img/";
     private static final int REQUEST_STORAGE_PERMISSIONS  = 800;
     private EditText mUserIdEt, mPasswordEt;
     private LoginActivity mSelf;
     private CustomProgressDialog mProgressDialog;
-    private MyDialog myDialog;
     private Button mCancelBtn,mLoginBtn;
     private String mPosNum,mOperId,mStoresId;
-    private Future<?> mLoginTask;
+    private Call mLoginCall;
+
     private JSONObject mConnParam;
     private boolean isSmallScreen = false;
     private Handler mHandler;
@@ -87,7 +94,6 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
         mSelf = this;
         mHandler = CustomApplication.self().getAppHandler();
         mProgressDialog = new CustomProgressDialog(this);
-        myDialog = new MyDialog(this);
 
         initCloseMainWindow();
         initLoginBtn();
@@ -271,7 +277,6 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                 intentService.putExtra("appSecret",appSecret);
                 startService(intentService);
                 mConnParam = conn_param;
-
             } else {
                 mProgressDialog.dismiss();
                 MyDialog.ToastMessage("连接参数不能为空!",this,getWindow());
@@ -280,7 +285,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
             }
         }else {
             mProgressDialog.dismiss();
-            MyDialog.displayErrorMessage(myDialog,conn_param.getString("info"),this);
+            MyDialog.displayErrorMessage(this, conn_param.getString("info"));
         }
     }
 
@@ -292,7 +297,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
             int status = intent.getIntExtra("status",0);
             switch (status){
                 case AppUpdateService.SUCCESS_STATUS:
-                    login();
+                    syncLogin();
                     break;
                 case AppUpdateService.BAD_NETWORK_STATUS:
                     offline_login();
@@ -307,7 +312,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                 case AppUpdateService.ERROR_STATUS:
                     default:
                         mProgressDialog.dismiss();
-                        MyDialog.displayErrorMessage(myDialog,"检查版本错误:" + intent.getStringExtra("info"),activity);
+                        MyDialog.displayErrorMessage(activity, "检查版本错误:" + intent.getStringExtra("info"));
                         break;
             }
         }
@@ -348,7 +353,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
     private void initCloseMainWindow(){
         mCancelBtn = findViewById(R.id.cancel);
         if (null != mCancelBtn)
-            mCancelBtn.setOnClickListener((View V)-> MyDialog.displayAskMessage(myDialog,"是否退出？", mSelf, myDialog -> {
+            mCancelBtn.setOnClickListener((View V)-> MyDialog.displayAskMessage(mSelf, "是否退出？", myDialog -> {
                 mSelf.finish();
                 myDialog.dismiss();
             }, Dialog::dismiss));
@@ -401,13 +406,13 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
 
     private void clearResource(){
         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
-        if (myDialog.isShowing())myDialog.dismiss();
     }
     private void checkSelfPermissionAndInitDb(){
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             if ((ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))){
-                myDialog.setTitle("提示信息").setMessage("APP不能存储数据,请设置允许APP读写手机存储权限").setNoOnclickListener("退出", myDialog -> {
-                    myDialog.dismiss();
+                final MyDialog dialog = new MyDialog(mSelf,"提示信息");
+                dialog.setMessage("APP不能存储数据,请设置允许APP读写手机存储权限").setNoOnclickListener("退出", myDialog -> {
+                    dialog.dismiss();
                     LoginActivity.this.finish();
                 }).setYesOnclickListener("重新获取",(MyDialog myDialog)->{
                     myDialog.dismiss();
@@ -476,144 +481,157 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
             }
         }
     };
-    private void login(){
-        final HttpRequest httpRequest = new HttpRequest();
+
+    private void syncLogin(){
         mProgressDialog.setCancel(false).setMessage("正在登录...").refreshMessage().show();
-        mLoginBtn.postDelayed(()->{
-            if (mProgressDialog.isShowing())
-                mProgressDialog.setCancel(true).setOnCancelListener(dialog -> {
-                    final CustomApplication application = CustomApplication.self();
-                    application.pauseSync();
-                    if (MyDialog.showMessageToModalDialog(mSelf,"是否取消登录？") == 1){
-                        application.stop_sync();
-                        httpRequest.clearConnection(HttpRequest.CLOSEMODE.POST);
-                        mProgressDialog.setMessage("正在取消登录...").refreshMessage().show();
-                        CustomApplication.execute(()->{
-                            if (mLoginTask != null){
-                                try {
-                                    mLoginTask.get(5000, TimeUnit.MILLISECONDS);
-                                } catch (ExecutionException | CancellationException | InterruptedException | TimeoutException e) {
-                                    e.printStackTrace();
-                                }
-                                if (mHandler != null)mHandler.sendMessageAtFrontOfQueue(mHandler.obtainMessage(MessageID.CANCEL_LOGIN_ID));
-                            }
-                        });
-                    }else {
-                        application.continueSync();
-                        mProgressDialog.setRestShowTime(false).show();
-                    }
-                });
-        },1000);
-        mLoginTask = CustomApplication.submit(()-> {
-            JSONObject object = new JSONObject(), conn_param = mConnParam, cashier_json, retJson, info_json, jsonLogin, store_info;
-            String url, sz_param, err_info,base_url = Utils.getNullStringAsEmpty(conn_param,"server_url"),appid =  Utils.getNullStringAsEmpty(conn_param,"appId"),
-                    appSecret = Utils.getNullStringAsEmpty(conn_param,"appSecret");
-            try {
-                mOperId = mUserIdEt.getText().toString();
 
-                object.put("appid",appid);
-                object.put("cas_account", mOperId);
-                object.put("cas_pwd", mPasswordEt.getText());
+        JSONObject object = new JSONObject(), conn_param = mConnParam;
+        final String url, sz_param, base_url = Utils.getNullStringAsEmpty(conn_param,"server_url"),appid =  Utils.getNullStringAsEmpty(conn_param,"appId"),
+                appSecret = Utils.getNullStringAsEmpty(conn_param,"appSecret");
+        mOperId = mUserIdEt.getText().toString();
 
-                sz_param = HttpRequest.generate_request_parm(object,appSecret);
+        object.put("appid",appid);
+        object.put("cas_account", mOperId);
+        object.put("cas_pwd", mPasswordEt.getText());
 
-                url = Utils.getNullStringAsEmpty(conn_param,"server_url") + "/api/cashier/login";
+        sz_param = HttpRequest.generate_request_parm(object,appSecret);
 
-                retJson = httpRequest.setConnTimeOut(3000).setReadTimeOut(3000).sendPost(url, sz_param, true);
+        url = Utils.getNullStringAsEmpty(conn_param,"server_url") + "/api/cashier/login";
 
-                switch (retJson.getIntValue("flag")) {
-                    case 0:
-                        int rsCode = Utils.getNotKeyAsNumberDefault(retJson,"rsCode",-1);
-                        if (rsCode == HttpURLConnection.HTTP_BAD_REQUEST  || rsCode == HttpURLConnection.HTTP_INTERNAL_ERROR){
-                            if (mHandler != null)mHandler.obtainMessage(MessageID.OFF_LINE_LOGIN_ID).sendToTarget();
-                        }else
-                        if (mHandler != null)mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, retJson.getString("info")).sendToTarget();
-                        break;
-                    case 1:
-                        info_json = JSON.parseObject(retJson.getString("info"));
-                        switch (info_json.getString("status")) {
-                            case "n":
-                                err_info = info_json.getString("info");
-                                if (err_info.contains("密码")) {
-                                    if (mHandler != null)mHandler.obtainMessage(MessageID.LOGIN_PW_ERROR_ID, "登录失败：" + err_info).sendToTarget();
-                                } else if (err_info.contains("账号") || err_info.contains("登录")) {
-                                    if (mHandler != null)mHandler.obtainMessage(MessageID.LOGIN_ID_ERROR_ID, "登录失败：" + err_info).sendToTarget();
-                                } else
-                                if (mHandler != null)mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "登录失败：" + err_info).sendToTarget();
-                                break;
-                            case "y":
-                                store_info = JSON.parseObject(info_json.getString("shop_info"));
-                                mStoresId = Utils.getNullStringAsEmpty(store_info,"stores_id");
-
-                                cashier_json = JSON.parseObject(info_json.getString("cashier"));
-
-                                url = base_url + "/api_v2/pos/set_ps";
-                                jsonLogin = new JSONObject();
-                                jsonLogin.put("appid", appid);
-                                jsonLogin.put("pos_code", Utils.getDeviceId(mSelf));
-                                jsonLogin.put("pos_name", Utils.getDeviceId(mSelf));
-                                jsonLogin.put("stores_id", mStoresId);
-                                sz_param = HttpRequest.generate_request_parm(jsonLogin, appSecret);
-                                retJson = httpRequest.sendPost(url, sz_param, true);
-                                switch (retJson.getIntValue("flag")) {
-                                    case 0:
-                                        if (mHandler != null)mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "设置收银终端错误：" + retJson.getString("info")).sendToTarget();
-                                        break;
-                                    case 1:
-                                        info_json = JSON.parseObject(retJson.getString("info"));
-
-                                        switch (info_json.getString("status")) {
-                                            case "n":
-                                                if (mHandler != null)mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "设置收银终端错误：" + info_json.getString("info")).sendToTarget();
-                                                break;
-                                            case "y":
-                                                final StringBuilder err = new StringBuilder();
-                                                final JSONArray params = new JSONArray();
-                                                mPosNum = info_json.getString("pos_num");
-
-                                                conn_param.put("pos_num",mPosNum);
-                                                conn_param.put("storeInfo",store_info);
-
-                                                JSONObject _json = new JSONObject();
-                                                _json.put("parameter_id","connParam");
-                                                _json.put("parameter_content",conn_param);
-                                                _json.put("parameter_desc","门店信息、服务器连接参数");
-                                                params.add(_json);
-
-                                                _json = new JSONObject();
-                                                _json.put("parameter_id","scale_setting");
-                                                _json.put("parameter_content",info_json.getJSONObject("scale"));
-                                                _json.put("parameter_desc","条码秤参数信息");
-                                                params.add(_json);
-
-                                                cashier_json.put("pos_num",mPosNum);
-                                                _json = new JSONObject();
-                                                _json.put("parameter_id","cashierInfo");
-                                                _json.put("parameter_content",cashier_json);
-                                                _json.put("parameter_desc","收银员信息");
-                                                params.add(_json);
-
-                                                _json = new JSONObject();
-                                                _json.put("parameter_id","pos_moling");
-                                                _json.put("parameter_content",info_json.getJSONObject("pos_moling"));
-                                                _json.put("parameter_desc","收银抹零参数");
-                                                params.add(_json);
-
-                                                if (SQLiteHelper.execSQLByBatchFromJson(params,"local_parameter",null,err,1)){
-                                                    if (mHandler != null)mHandler.obtainMessage(MessageID.LOGIN_OK_ID).sendToTarget();
-                                                }else {
-                                                    if (mHandler != null)mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "保存当前收银参数错误：" + err).sendToTarget();
-                                                }
-                                                break;
-                                        }
-                                }
-                                break;
-                        }
-                        break;
-                }
-            } catch (JSONException e) {
+        mLoginCall = HttpUtils.sendAsyncPost(url,sz_param);
+        mLoginCall.enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call,@NonNull IOException e) {
                 e.printStackTrace();
-                if (mHandler != null)mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, e.getMessage()).sendToTarget();
+                MyDialog.displayErrorMessage(mSelf, e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call,@NonNull Response response) {
+                JSONObject cashier_json, info_json, jsonLogin, store_info;
+
+                final ResponseBody responseBody = response.body();
+                if (responseBody == null)return;
+
+                try {
+                    info_json = JSON.parseObject(responseBody.string());
+                    switch (info_json.getString("status")) {
+                        case "n":
+                            final String err_info = info_json.getString("info");
+                            if (err_info.contains("密码")) {
+                                mHandler.obtainMessage(MessageID.LOGIN_PW_ERROR_ID, "登录失败：" + err_info).sendToTarget();
+                            } else if (err_info.contains("账号") || err_info.contains("登录")) {
+                                mHandler.obtainMessage(MessageID.LOGIN_ID_ERROR_ID, "登录失败：" + err_info).sendToTarget();
+                            } else
+                                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "登录失败：" + err_info).sendToTarget();
+                            break;
+                        case "y":
+                            store_info = JSON.parseObject(info_json.getString("shop_info"));
+                            mStoresId = Utils.getNullStringAsEmpty(store_info,"stores_id");
+
+                            cashier_json = JSON.parseObject(info_json.getString("cashier"));
+
+                            final String set_url = base_url + "/api_v2/pos/set_ps";
+                            jsonLogin = new JSONObject();
+                            jsonLogin.put("appid", appid);
+                            jsonLogin.put("pos_code", Utils.getDeviceId(mSelf));
+                            jsonLogin.put("pos_name", Utils.getDeviceId(mSelf));
+                            jsonLogin.put("stores_id", mStoresId);
+
+                            final String set_sz_param = HttpRequest.generate_request_parm(jsonLogin, appSecret);
+
+                            mLoginCall.cancel();
+                            mLoginCall = HttpUtils.sendAsyncPost(set_url,set_sz_param);
+                            mLoginCall.enqueue(new Callback() {
+                                @Override
+                                public void onFailure(@NonNull Call call,@NonNull IOException e) {
+                                    e.printStackTrace();
+                                    MyDialog.displayErrorMessage(mSelf, "设置收银终端错误：" + e.getMessage());
+                                }
+
+                                @Override
+                                public void onResponse(@NonNull Call call,@NonNull Response response) {
+                                    try {
+                                        final ResponseBody set_responseBody = response.body();
+                                        if (set_responseBody != null){
+                                            final JSONObject info_json = JSON.parseObject(set_responseBody.string());
+
+                                            switch (info_json.getString("status")) {
+                                                case "n":
+                                                    mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "设置收银终端错误：" + info_json.getString("info")).sendToTarget();
+                                                    break;
+                                                case "y":
+                                                    final StringBuilder err = new StringBuilder();
+                                                    final JSONArray params = new JSONArray();
+                                                    mPosNum = info_json.getString("pos_num");
+
+                                                    conn_param.put("pos_num",mPosNum);
+                                                    conn_param.put("storeInfo",store_info);
+
+                                                    JSONObject _json = new JSONObject();
+                                                    _json.put("parameter_id","connParam");
+                                                    _json.put("parameter_content",conn_param);
+                                                    _json.put("parameter_desc","门店信息、服务器连接参数");
+                                                    params.add(_json);
+
+                                                    _json = new JSONObject();
+                                                    _json.put("parameter_id","scale_setting");
+                                                    _json.put("parameter_content",info_json.getJSONObject("scale"));
+                                                    _json.put("parameter_desc","条码秤参数信息");
+                                                    params.add(_json);
+
+                                                    cashier_json.put("pos_num",mPosNum);
+                                                    _json = new JSONObject();
+                                                    _json.put("parameter_id","cashierInfo");
+                                                    _json.put("parameter_content",cashier_json);
+                                                    _json.put("parameter_desc","收银员信息");
+                                                    params.add(_json);
+
+                                                    _json = new JSONObject();
+                                                    _json.put("parameter_id","pos_moling");
+                                                    _json.put("parameter_content",info_json.getJSONObject("pos_moling"));
+                                                    _json.put("parameter_desc","收银抹零参数");
+                                                    params.add(_json);
+
+                                                    if (SQLiteHelper.execSQLByBatchFromJson(params,"local_parameter",null,err,1)){
+                                                        mHandler.obtainMessage(MessageID.LOGIN_OK_ID).sendToTarget();
+                                                    }else {
+                                                        mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "保存当前收银参数错误：" + err).sendToTarget();
+                                                    }
+                                                    break;
+                                            }
+                                        }
+                                    } catch (IOException | JSONException e) {
+                                        e.printStackTrace();
+                                        MyDialog.displayErrorMessage(mSelf, e.getMessage());
+                                    } finally {
+                                        response.close();
+                                    }
+                                }
+                            });
+                            break;
+                    }
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                    MyDialog.displayErrorMessage(mSelf, e.getMessage());
+                }finally {
+                    response.close();
+                }
+            }
+        });
+
+        mProgressDialog.setCancel(true).setOnCancelListener(dialog -> {
+            final CustomApplication application = CustomApplication.self();
+            application.pauseSync();
+            if (MyDialog.showMessageToModalDialog(mSelf,"是否取消登录？") == 1){
+                application.stop_sync();
+                mLoginCall.cancel();
+                if (mLoginCall.isCanceled()){
+                    mHandler.sendMessageAtFrontOfQueue(mHandler.obtainMessage(MessageID.CANCEL_LOGIN_ID));
+                }
+            }else {
+                application.continueSync();
+                if (mProgressDialog.isShowing())mProgressDialog.setRestShowTime(false).show();
             }
         });
     }
@@ -625,7 +643,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
             case MessageID.DIS_ERR_INFO_ID:
             case MessageID.SYNC_ERR_ID://资料同步错误
                 if (msg.obj != null){
-                    MyDialog.displayErrorMessage(myDialog,msg.obj.toString(),this);
+                    MyDialog.displayErrorMessage(this, msg.obj.toString());
                 }
                 break;
             case MessageID.CANCEL_LOGIN_ID:
@@ -636,7 +654,6 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                 launchLogin(true);
                 break;
             case MessageID.LOGIN_OK_ID://登录成功
-                //无论联网与否同步服务都要进行初始化，否则在后续获取handler时将导致死锁。
                 mApplication.initSyncManagement(Utils.getNullStringAsEmpty(mConnParam,"server_url"),Utils.getNullStringAsEmpty(mConnParam,"appId"),
                         Utils.getNullStringAsEmpty(mConnParam,"appSecret"),mStoresId,mPosNum,mOperId);
 
@@ -679,7 +696,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
     }
 
     private void offline_login(){
-        MyDialog.displayAskMessage(myDialog, "连接服务器失败，是否离线登录？", this, myDialog -> {
+        MyDialog.displayAskMessage(this, "连接服务器失败，是否离线登录？", myDialog -> {
             myDialog.dismiss();
 
             mOperId = mUserIdEt.getText().toString();
@@ -695,12 +712,9 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
             final String sz_count = SQLiteHelper.getString("SELECT count(cas_id) count FROM cashier_info where " +
                     "cas_account = '" + mOperId + "' and stores_id = '" + mStoresId + "' and cas_pwd = '" + local_password + "'", err);
 
-
-            //无论联网与否同步服务都要进行初始化，否则在后续获取handler时将导致死锁。
-            mApplication.initSyncManagement(Utils.getNullStringAsEmpty(mConnParam,"server_url"),Utils.getNullStringAsEmpty(mConnParam,"appId"),
-                    Utils.getNullStringAsEmpty(mConnParam,"appSecret"),mStoresId,mPosNum,mOperId);
-
             if (Integer.parseInt(sz_count) > 0) {
+                mApplication.initSyncManagement(Utils.getNullStringAsEmpty(mConnParam,"server_url"),Utils.getNullStringAsEmpty(mConnParam,"appId"),
+                        Utils.getNullStringAsEmpty(mConnParam,"appSecret"),mStoresId,mPosNum,mOperId);
                 launchLogin(false);
             } else {
                 if (mHandler != null)
