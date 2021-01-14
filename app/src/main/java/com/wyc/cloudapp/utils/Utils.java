@@ -174,7 +174,7 @@ public final class Utils {
         }
         int length = original.length();
         int start =length  - count;
-        return original.substring(start < 0 ? 0 :start,length);
+        return original.substring(Math.max(start, 0),length);
     }
 
     public static void setFocus(Activity activity, EditText textView){
@@ -343,6 +343,14 @@ public final class Utils {
     public static int getNotKeyAsNumberDefault(@Nullable final JSONObject object,final String key, final int default_v){
         if (object != null){
             final Integer obj = object.getInteger(key);
+            if (null != obj)return obj;
+        }
+        return default_v;
+    }
+
+    public static <T> T getNotKeyAsNumberDefault(@Nullable final JSONObject object, final String key, final T default_v){
+        if (object != null){
+            final T obj = (T) object.get(key);
             if (null != obj)return obj;
         }
         return default_v;

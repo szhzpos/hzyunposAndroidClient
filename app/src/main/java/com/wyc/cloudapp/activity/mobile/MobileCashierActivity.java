@@ -1,6 +1,7 @@
 package com.wyc.cloudapp.activity.mobile;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ReplacementTransformationMethod;
@@ -9,6 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -41,6 +43,7 @@ import com.wyc.cloudapp.dialog.pay.MobileSettlementDialog;
 import com.wyc.cloudapp.dialog.pay.AbstractSettlementDialog;
 import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.lang.ref.WeakReference;
@@ -81,6 +84,17 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
         initOtherFunction();
 
         initTitle();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mSearchContent.isShown())mSearchContent.clearFocus();
     }
 
     private void initOtherFunction(){
@@ -317,6 +331,8 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
                 });
                 mMobileSearchGoods = mobile_search_goods;
             }else mMobileSearchGoods.setVisibility(View.VISIBLE);
+
+            mMobileSearchGoods.requestFocus();
         }
     }
 
@@ -405,6 +421,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
     public void setAllRefundStatusView(TextView view,boolean b){
         setSingleRefundStatus(b);
         if (null == view)view = findViewById(R.id.right_title_tv);
+        b = mSaleGoodsAdapter.getSingleRefundStatus();
         if (b){
             view.setVisibility(View.VISIBLE);
             view.setText(R.string.all_refund_sz);
@@ -413,6 +430,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
                 dialog.show();
             });
         }else {
+            view.setText(R.string.space_sz);
             view.setOnClickListener(null);
         }
     }

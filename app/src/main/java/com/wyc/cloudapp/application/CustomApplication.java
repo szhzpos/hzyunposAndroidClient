@@ -2,6 +2,7 @@ package com.wyc.cloudapp.application;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -12,14 +13,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.AndroidLogAdapter;
 import com.wyc.cloudapp.logger.DiskLogAdapter;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Vector;
 import java.util.concurrent.Callable;
@@ -224,6 +229,14 @@ public final class CustomApplication extends Application {
         }
         @Override
         public void handleMessage(@NonNull Message msg) {
+            if(msg.what == MessageID.NETWORKSTATUS_ID && (msg.obj instanceof Boolean)){//统一更新离线时间
+                boolean code = (boolean) msg.obj;
+                if (code){
+                    updateOfflineTime(-1);
+                }else {
+                    updateOfflineTime(System.currentTimeMillis());
+                }
+            }
             if (app.mCallback != null)app.mCallback.handleMessage(this,msg);
         }
     }
@@ -258,6 +271,66 @@ public final class CustomApplication extends Application {
                         MyDialog.showErrorMessageToModalDialog(mApplication.mActivities.get(0),sz);
                 });
             }
+        }
+    }
+
+    public static boolean verifyOfflineTime(final Context context){
+        long offline_time = System.currentTimeMillis();
+        final JSONObject object = new JSONObject();
+        boolean code = SQLiteHelper.getLocalParameter("offline_time",object);
+        if (code){
+            if (object.isEmpty()){
+                object.put("v",offline_time);
+                saveOfflineTime(context,object);
+                code = true;
+            }else {
+                long old_offline_time = Utils.getNotKeyAsNumberDefault(object,"v",Long.valueOf(offline_time));
+                if (offline_time - old_offline_time > 72 * 3600 * 1000){
+                    final SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+                    final String sz_offline_time = String.format(Locale.CHINA,"最后离线时间:%s,当前时间:%s",sf.format(new Date(old_offline_time)),sf.format(new Date()));
+                    MyDialog.displayErrorMessage(context,sz_offline_time);
+                    code = false;
+                }
+            }
+        }else {
+            Toast.makeText(context,object.getString("info"),Toast.LENGTH_LONG).show();
+        }
+        return code;
+    }
+
+    private static void updateOfflineTime(long timestamp){
+        String sql = null;
+        final JSONObject object = new JSONObject();
+        if (timestamp <= 0){
+            sql = "delete from local_parameter where parameter_id = 'offline_time'";
+        }else {
+            boolean code = SQLiteHelper.getLocalParameter("offline_time",object);
+            if (code){
+                if (object.isEmpty()){
+                    object.put("v",timestamp);
+                    saveOfflineTime(mApplication,object);
+                }else {
+                    object.put("v",timestamp);
+                    sql = "update local_parameter set parameter_content = '"+ object +"' where parameter_id = 'offline_time'";
+                }
+            }else {
+                Toast.makeText(mApplication,object.getString("info"),Toast.LENGTH_LONG).show();
+            }
+        }
+        if (null != sql ){
+            if (!SQLiteHelper.execSql(object,sql)){
+                final String err = "更新离线时间错误:" + object.getString("v");
+                Logger.e(err);
+                Toast.makeText(mApplication,err,Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+    private static void saveOfflineTime(final Context context,final JSONObject object){
+        final StringBuilder err = new StringBuilder();
+        if (!SQLiteHelper.saveLocalParameter("offline_time",object,"前台离线时间",err)){
+            err.insert(0,"保存离线时间错误:");
+            Logger.e(err.toString());
+            Toast.makeText(context,err.toString(),Toast.LENGTH_LONG).show();
         }
     }
 }

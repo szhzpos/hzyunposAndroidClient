@@ -80,7 +80,6 @@ public class BasketView extends androidx.appcompat.widget.AppCompatImageView {
     }
 
     public void update(double num){
-        Logger.d("num:%f,mNumber:%f",num,mNumber);
         if (!Utils.equalDouble(num,mNumber)){
             mNumber = num;
             int _color = Color.BLUE;

@@ -26,6 +26,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -56,6 +57,8 @@ import com.wyc.cloudapp.utils.http.HttpUtils;
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -263,6 +266,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
             });
         mLoginBtn = login_btn;
     }
+
     private void check_ver(){
         mProgressDialog.setCancel(false).setMessage("正在检查更新...").refreshMessage().show();
         final JSONObject conn_param = new JSONObject();
@@ -698,34 +702,34 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
     private void offline_login(){
         MyDialog.displayAskMessage(this, "连接服务器失败，是否离线登录？", myDialog -> {
             myDialog.dismiss();
+            if (CustomApplication.verifyOfflineTime(this)){
+                 mOperId = mUserIdEt.getText().toString();
 
-            mOperId = mUserIdEt.getText().toString();
+                final String password = mPasswordEt.getText().toString();
+                final String local_password = Utils.getUserIdAndPasswordCombinationOfMD5(mOperId + password);
+                final StringBuilder err = new StringBuilder();
+                final JSONObject connParam = mConnParam;
 
-            final String password = mPasswordEt.getText().toString();
-            final String local_password = Utils.getUserIdAndPasswordCombinationOfMD5(mOperId + password);
-            final StringBuilder err = new StringBuilder();
-            final JSONObject connParam = mConnParam;
+                mPosNum = Utils.getNullStringAsEmpty(connParam, "pos_num");
+                mStoresId = Utils.getNullObjectAsEmptyJson(connParam, "storeInfo").getString("stores_id");
 
-            mPosNum = Utils.getNullStringAsEmpty(connParam, "pos_num");
-            mStoresId = Utils.getNullObjectAsEmptyJson(connParam, "storeInfo").getString("stores_id");
+                final String sz_count = SQLiteHelper.getString("SELECT count(cas_id) count FROM cashier_info where " +
+                        "cas_account = '" + mOperId + "' and stores_id = '" + mStoresId + "' and cas_pwd = '" + local_password + "'", err);
 
-            final String sz_count = SQLiteHelper.getString("SELECT count(cas_id) count FROM cashier_info where " +
-                    "cas_account = '" + mOperId + "' and stores_id = '" + mStoresId + "' and cas_pwd = '" + local_password + "'", err);
-
-            if (Integer.parseInt(sz_count) > 0) {
-                mApplication.initSyncManagement(Utils.getNullStringAsEmpty(mConnParam,"server_url"),Utils.getNullStringAsEmpty(mConnParam,"appId"),
-                        Utils.getNullStringAsEmpty(mConnParam,"appSecret"),mStoresId,mPosNum,mOperId);
-                launchLogin(false);
-            } else {
-                if (mHandler != null)
-                    mHandler.obtainMessage(MessageID.LOGIN_ID_ERROR_ID, "不存在此用户！").sendToTarget();
+                if (Integer.parseInt(sz_count) > 0) {
+                    mApplication.initSyncManagement(Utils.getNullStringAsEmpty(mConnParam,"server_url"),Utils.getNullStringAsEmpty(mConnParam,"appId"),
+                            Utils.getNullStringAsEmpty(mConnParam,"appSecret"),mStoresId,mPosNum,mOperId);
+                    launchLogin(false);
+                } else {
+                    if (mHandler != null)
+                        mHandler.obtainMessage(MessageID.LOGIN_ID_ERROR_ID, "不存在此用户！").sendToTarget();
+                }
             }
         }, myDialog -> {
             myDialog.dismiss();
             finish();
         });
     }
-
 
     public void initGoodsImgDirectory(){
         final File file = new File(IMG_PATH);

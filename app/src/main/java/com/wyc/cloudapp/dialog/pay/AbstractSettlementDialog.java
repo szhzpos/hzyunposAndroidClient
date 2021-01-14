@@ -52,6 +52,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.locks.LockSupport;
 
 public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivity {
     private EditText mCashMoneyEt,mZlAmtEt,mRemarkEt;
@@ -847,7 +848,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
     }
     private boolean saveOrderInfo(final StringBuilder err){
         boolean code;
-        final JSONObject counts = new JSONObject(),data = new JSONObject();
+        final JSONObject data = new JSONObject();
         final List<String>  tables = Arrays.asList("retail_order","retail_order_goods","retail_order_pays","discount_record"),
                 retail_order_cols = Arrays.asList("stores_id","order_code","discount","discount_price","total","cashier_id","addtime","pos_code","order_status","pay_status","pay_time","upload_status",
                         "upload_time","transfer_status","transfer_time","is_rk","mobile","name","card_code","sc_ids","sc_tc_money","member_id","discount_money","zl_money","ss_money","remark","zk_cashier_id"),
@@ -859,16 +860,17 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
 
 
            if (code = generateOrderInfo(data)){
-               if ((code = SQLiteHelper.execSql(counts,"select count(order_code) counts from retail_order where order_code = '" + mContext.getOrderCode() +"' and stores_id = '" + mContext.getStoreInfo().getString("stores_id") +"'"))){
-                   if (code = (0 == counts.getIntValue("counts"))){
-                       if (!(code = SQLiteHelper.execSQLByBatchFromJson(data,tables,Arrays.asList(retail_order_cols,retail_order_goods_cols,retail_order_pays_cols,discount_record_cols),err,0))){
-                           err.insert(0,"保存订单信息错误：");
-                       }
-                   }else{
-                       err.append("本地已存在此订单信息，请重新下单！");
+               final JSONObject retail_order = Utils.getNullObjectAsEmptyJsonArray(data,"retail_order").getJSONObject(0);
+               final String order_code = Utils.getNullStringAsEmpty(retail_order,"order_code"),stores_id = Utils.getNullStringAsEmpty(retail_order,"stores_id");
+               final List<String> delete_sql = Arrays.asList(" delete from retail_order where order_code = '"+ order_code +"' and stores_id = '"+ stores_id +"' and pay_status = 1 and order_status = 1",
+                       "delete from retail_order_goods where order_code = '"+ order_code +"'"," delete from retail_order_pays where order_code = '"+ order_code +"' and pay_status = 1");
+
+               if (code = SQLiteHelper.execBatchUpdateSql(delete_sql,err)){//保存之前，先删除相同订单号以及相同订单状态的订单信息，防止由于多次结账失败引起的订单错乱。
+                   if (!(code = SQLiteHelper.execSQLByBatchFromJson(data,tables,Arrays.asList(retail_order_cols,retail_order_goods_cols,retail_order_pays_cols,discount_record_cols),err,1))){
+                       err.insert(0,"保存订单信息错误：");
                    }
                }else{
-                   err.append("查询订单信息错误：").append(counts.getString("info"));
+                   err.append("清除本地相同订单错误!");
                }
            }else {
                err.append("生成订单错误：").append(data.getString("info"));
@@ -1015,13 +1017,10 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                                                         object.put("pay_code",info_json.getString("pay_code"));
                                                         object.put("order_code_son",info_json.getString("order_code_son"));
                                                         if (res_code == 4){
+                                                            final Thread current = Thread.currentThread();
                                                             mContext.runOnUiThread(()->{
                                                                 final ChangeNumOrPriceDialog password_dialog = new ChangeNumOrPriceDialog(mContext,"请输入密码","");
-                                                                password_dialog.setOnDismissListener(dialog -> {
-                                                                    synchronized (this){
-                                                                        notifyAll();
-                                                                    }
-                                                                });
+                                                                password_dialog.setOnDismissListener(dialog -> LockSupport.unpark(current));
                                                                 password_dialog.setYesOnclickListener(myDialog -> {
                                                                     try {
                                                                         object.put("pay_password",myDialog.getContentToStr());
@@ -1035,13 +1034,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                                                                     myDialog.dismiss();
                                                                 }).show();
                                                             });
-                                                            synchronized (this){
-                                                                try {
-                                                                    wait();
-                                                                } catch (InterruptedException e) {
-                                                                    e.printStackTrace();
-                                                                }
-                                                            }
+                                                            LockSupport.park();
                                                         }
                                                         if (mPayStatus){
                                                             sz_param = HttpRequest.generate_request_parm(object,appSecret);
@@ -1168,7 +1161,6 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         mContext.runOnUiThread(()->{
             MyDialog.displayErrorMessage(mContext, err.toString());
             if (mProgressDialog != null && mProgressDialog.isShowing())mProgressDialog.dismiss();
-            mContext.resetOrderCode();
         });
     }
 

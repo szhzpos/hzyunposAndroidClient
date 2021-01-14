@@ -135,8 +135,6 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
 
         //初始化数据管理
         initSyncManagement();
-
-        System.gc();
     }
     private void initMemberVariable(){
         mProgressDialog = new CustomProgressDialog(this);
@@ -723,6 +721,9 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                         showLastOrderInfo();
                         resetOrderInfo();
                         MyDialog.SnackbarMessage(getWindow(),"结账成功！", mOrderCodeTv);
+                    }else {
+                        //取消之后重置订单号
+                        resetOrderCode();
                     }
                 }else {
                     final RefundDialog refundDialog = new RefundDialog(this,"");
