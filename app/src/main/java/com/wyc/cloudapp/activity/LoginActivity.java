@@ -555,10 +555,9 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
 
                                 @Override
                                 public void onResponse(@NonNull Call call,@NonNull Response response) {
-                                    try {
-                                        final ResponseBody set_responseBody = response.body();
+                                    try (final ResponseBody set_responseBody = response.body()){
                                         if (set_responseBody != null){
-                                            final JSONObject info_json = JSON.parseObject(set_responseBody.string());
+                                            final JSONObject info_json = JSON.parseObject(set_responseBody.string());//Closes ResponseBody automatically
 
                                             switch (info_json.getString("status")) {
                                                 case "n":
@@ -608,8 +607,6 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                                     } catch (IOException | JSONException e) {
                                         e.printStackTrace();
                                         MyDialog.displayErrorMessage(mSelf, e.getMessage());
-                                    } finally {
-                                        response.close();
                                     }
                                 }
                             });

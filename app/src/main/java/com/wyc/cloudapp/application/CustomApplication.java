@@ -162,13 +162,6 @@ public final class CustomApplication extends Application {
         mCallback = callback;
     }
 
-    public boolean getAndSetTransferStatus(boolean b){
-        return mTransferStatus.getAndSet(b);
-    }
-    public boolean getAndSetNetworkStatus(boolean b){
-        return mNetworkStatus.getAndSet(b);
-    }
-
     public void initSyncManagement(final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){
         mSyncManagement.initSync(url,appid,appsecret,stores_id,pos_num,operid);
     }
@@ -229,20 +222,58 @@ public final class CustomApplication extends Application {
         }
         @Override
         public void handleMessage(@NonNull Message msg) {
-            if(msg.what == MessageID.NETWORKSTATUS_ID && (msg.obj instanceof Boolean)){//统一更新离线时间
-                boolean code = (boolean) msg.obj;
-                if (code){
-                    updateOfflineTime(-1);
-                }else {
-                    updateOfflineTime(System.currentTimeMillis());
-                }
+            switch (msg.what){
+                case MessageID.NETWORKSTATUS_ID:
+                    if ((msg.obj instanceof Boolean)){
+                        boolean code = (boolean) msg.obj;
+                        if (code){
+                            updateOfflineTime(-1);
+                        }else {
+                            updateOfflineTime(System.currentTimeMillis());
+                        }
+                        if (app.getAndSetNetworkStatus(code) != code){
+                            if (app.mCallback != null)app.mCallback.handleMessage(this,msg);
+                        }
+                    }
+                    break;
+                case MessageID.TRANSFERSTATUS_ID:
+                    if ((msg.obj instanceof Boolean)){
+                        boolean code = (boolean) msg.obj;
+
+                        if (app.getAndSetTransferStatus(code) != code){
+                            if (code){
+                                msg.arg1 = 2;
+                            }else
+                                msg.arg1 = 3;
+                        }else
+                            msg.arg1 = 1;
+
+                        if (app.mCallback != null)app.mCallback.handleMessage(this,msg);
+                    }
+                    break;
+                case MessageID.START_SYNC_ORDER_INFO_ID:
+                    Toast.makeText(app,"开始上传数据",Toast.LENGTH_SHORT).show();
+                    break;
+                case MessageID.FINISH_SYNC_ORDER_INFO_ID:
+                    Toast.makeText(app,"数据上传完成",Toast.LENGTH_SHORT).show();
+                    break;
+                default:
+                    if (app.mCallback != null)app.mCallback.handleMessage(this,msg);
             }
-            if (app.mCallback != null)app.mCallback.handleMessage(this,msg);
         }
     }
     public interface MessageCallback{
         void handleMessage(final Handler handler,final Message msg);
     }
+
+    private boolean getAndSetTransferStatus(boolean b){
+        return mTransferStatus.getAndSet(b);
+    }
+    private boolean getAndSetNetworkStatus(boolean b){
+        return mNetworkStatus.getAndSet(b);
+    }
+
+
 
     private static class DefaultScheduledThreadPoolExecutor extends ScheduledThreadPoolExecutor{
 
@@ -285,9 +316,10 @@ public final class CustomApplication extends Application {
                 code = true;
             }else {
                 long old_offline_time = Utils.getNotKeyAsNumberDefault(object,"v",Long.valueOf(offline_time));
-                if (offline_time - old_offline_time > 72 * 3600 * 1000){
+                int max_offline_hours = 72;
+                if (offline_time - old_offline_time > max_offline_hours * 3600 * 1000){
                     final SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
-                    final String sz_offline_time = String.format(Locale.CHINA,"最后离线时间:%s,当前时间:%s",sf.format(new Date(old_offline_time)),sf.format(new Date()));
+                    final String sz_offline_time = String.format(Locale.CHINA,"离线时间已超过%d小时;最后离线时间:%s,当前时间:%s",max_offline_hours,sf.format(new Date(old_offline_time)),sf.format(new Date()));
                     MyDialog.displayErrorMessage(context,sz_offline_time);
                     code = false;
                 }

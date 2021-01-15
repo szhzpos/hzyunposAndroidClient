@@ -193,20 +193,11 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
                 if (mProgressDialog.isShowing())mProgressDialog.dismiss();
                 CustomApplication.self().start_sync(false);
                 break;
-            case MessageID.NETWORKSTATUS_ID://网络状态
-                if (msg.obj instanceof Boolean)mApplication.setNetworkStatus((boolean) msg.obj);
-                break;
             case MessageID.SYNC_DIS_INFO_ID://资料同步进度信息
                 mProgressDialog.setMessage(msg.obj.toString()).refreshMessage();
                 if (!mProgressDialog.isShowing()) {
                     mProgressDialog.setCancel(false).show();
                 }
-                break;
-            case MessageID.START_SYNC_ORDER_INFO_ID:
-                Toast.makeText(this,"开始上传数据",Toast.LENGTH_SHORT).show();
-                break;
-            case MessageID.FINISH_SYNC_ORDER_INFO_ID:
-                Toast.makeText(this,"数据上传完成",Toast.LENGTH_SHORT).show();
                 break;
         }
     }

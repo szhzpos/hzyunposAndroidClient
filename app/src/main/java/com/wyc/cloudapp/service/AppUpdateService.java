@@ -21,6 +21,7 @@ import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
+import com.wyc.cloudapp.utils.http.HttpUtils;
 
 import java.io.File;
 import java.net.HttpURLConnection;
@@ -43,7 +44,7 @@ public class AppUpdateService extends Service {
         }
         @Override
         protected void finalize(){
-            Logger.d("AppUpdateService finalized");
+            Logger.d("%s finalized",getClass().getSimpleName());
         }
 
         @Override
@@ -69,7 +70,7 @@ public class AppUpdateService extends Service {
             final JSONObject object = new JSONObject();
             object.put("appid", appid);
             object.put("dir_name","pos_youren_an");
-            final JSONObject retJson = httpRequest.setConnTimeOut(3000).setReadTimeOut(3000).sendPost(url,HttpRequest.generate_request_parm(object,appSecret), true);
+            final JSONObject retJson = HttpUtils.sendPost(url,HttpRequest.generate_request_parm(object,appSecret),8,true);
             switch (retJson.getIntValue("flag")) {
                 case 0:
                     int rsCode = Utils.getNotKeyAsNumberDefault(retJson,"rsCode",-1);
@@ -195,7 +196,7 @@ public class AppUpdateService extends Service {
         obj.put("appid",appid);
         obj.put("appSecret",appSecret);
         mServiceHandler.obtainMessage(MessageID.APP_CHECK_VER_ID,startId,0,obj).sendToTarget();
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     @Override

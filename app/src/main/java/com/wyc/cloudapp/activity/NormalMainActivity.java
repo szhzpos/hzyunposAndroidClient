@@ -863,37 +863,29 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                 mApplication.start_sync(false);
                 break;
             case MessageID.TRANSFERSTATUS_ID://传输状态
-                if (msg.obj instanceof Boolean){
-                    imageView = findViewById(R.id.upload_status);
-                    boolean code = (boolean)msg.obj;
-                    if (code && imageView.getAnimation() == null){
-                        imageView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake_y));
-                    }
-                    if (mApplication.getAndSetTransferStatus(code) != code){
-                        if (imageView != null){
-                            if (code){
-                                imageView.setImageResource(R.drawable.transfer);
-                            }else{
-                                imageView.setImageResource(R.drawable.transfer_err);
-                                imageView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake_x));
-                            }
+                imageView = findViewById(R.id.upload_status);
+                switch (msg.arg1){
+                    case 2:
+                        imageView.setImageResource(R.drawable.transfer);
+                        break;
+                    case 3:
+                        imageView.setImageResource(R.drawable.transfer_err);
+                        imageView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake_x));
+                        break;
+                    default:
+                        if (imageView.getAnimation() == null){
+                            imageView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake_y));
                         }
-                    }
                 }
                 break;
             case MessageID.NETWORKSTATUS_ID://网络状态
-                if (msg.obj instanceof Boolean){
-                    boolean code = (boolean)msg.obj;
-                    imageView = findViewById(R.id.network_status);
-                    if (mApplication.getAndSetNetworkStatus(code) != code){
-                        if (imageView != null){
-                            if (code){
-                                imageView.setImageResource(R.drawable.network);
-                            }else{
-                                imageView.setImageResource(R.drawable.network_err);
-                                imageView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake_x));
-                            }
-                        }
+                imageView = findViewById(R.id.network_status);
+                if (imageView != null){
+                    if ((boolean)msg.obj){
+                        imageView.setImageResource(R.drawable.network);
+                    }else{
+                        imageView.setImageResource(R.drawable.network_err);
+                        imageView.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake_x));
                     }
                 }
                 break;
@@ -902,12 +894,6 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                 if (!mProgressDialog.isShowing()) {
                     mProgressDialog.setCancel(false).show();
                 }
-                break;
-            case MessageID.START_SYNC_ORDER_INFO_ID:
-                Toast.makeText(this,"开始上传数据",Toast.LENGTH_SHORT).show();
-                break;
-            case MessageID.FINISH_SYNC_ORDER_INFO_ID:
-                Toast.makeText(this,"数据上传完成",Toast.LENGTH_SHORT).show();
                 break;
         }
     }

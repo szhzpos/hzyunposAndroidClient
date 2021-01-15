@@ -48,19 +48,23 @@ public final class HttpRequest {
             case GET:
                 if (mGetConn != null){
                     mGetConn.disconnect();
+                    mGetConn = null;
                 }
                 break;
             case POST:
                 if (mPostConn != null){
                     mPostConn.disconnect();
+                    mPostConn = null;
                 }
                 break;
             case BOTH:
                 if (mGetConn != null){
                     mGetConn.disconnect();
+                    mGetConn = null;
                 }
                 if (mPostConn != null){
                     mPostConn.disconnect();
+                    mPostConn = null;
                 }
                 break;
         }
@@ -143,6 +147,7 @@ public final class HttpRequest {
                 content.put("flag", 0);
                 content.put("info",mGetConn.getResponseMessage());
             }else{
+                content.put("flag",1);
                 if (store_file instanceof File){//可能产生效率问题，后续跟进优化
                     download_file = (File) store_file;
                 }else {
@@ -154,7 +159,6 @@ public final class HttpRequest {
                     }
                 }
             }
-            content.put("flag",1);
             content.put("rsCode", mGetCode);
         }catch (IOException | JSONException e){
             content.put("flag",0);
@@ -190,6 +194,7 @@ public final class HttpRequest {
                 content.put("flag", 0);
                 content.put("info",mPostConn.getResponseMessage());
             }else{
+                content.put("flag",1);
                 if (store_file instanceof File){//可能产生效率问题，后续跟进优化
                     download_file = (File) store_file;
                 }else {
@@ -202,7 +207,6 @@ public final class HttpRequest {
                     }
                 }
             }
-            content.put("flag",1);
             content.put("rsCode", mPostCode);
         }catch (IOException | JSONException e){
             content.put("flag",0);
@@ -242,7 +246,6 @@ public final class HttpRequest {
 
             if(mPostCode != HttpURLConnection.HTTP_OK){
                 content.put("flag", 0);
-                content.put("rsCode",mPostCode);
                 content.put("info",mPostConn.getResponseMessage());
             }else{
                 reader = new InputStreamReader(mPostConn.getInputStream(),StandardCharsets.UTF_8);
