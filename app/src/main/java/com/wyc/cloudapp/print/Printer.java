@@ -62,7 +62,6 @@ public final class Printer {
             { 0x1b, 0x56, 0x01 },// 选择顺时针旋转90°
     };
 
-
     /**
      * 复位打印机
      */
@@ -439,9 +438,9 @@ public final class Printer {
     }
 
     public static void dismissPrintIcon(final MainActivity activity){
-        final WindowManager wm = (WindowManager)activity.getSystemService(WINDOW_SERVICE);
-        if (wm != null) {
-            if (mICO != null) wm.removeViewImmediate(mICO);
+        if (mICO != null){
+            final WindowManager wm = (WindowManager)activity.getSystemService(WINDOW_SERVICE);
+            if (wm != null)wm.removeViewImmediate(mICO);
             mICO = null;
         }
     }
@@ -461,13 +460,9 @@ public final class Printer {
             wLayout.height = Utils.dpToPx(activity,32);
             wLayout.width = Utils.dpToPx(activity,32);
 
-            final Bitmap printer = BitmapFactory.decodeResource(activity.getResources(),R.drawable.printer);
             if (mICO != null)wm.removeViewImmediate(mICO);
             mICO = new ImageView(activity);
-            if (!activity.getPrintStatus()){
-                if (printer != null) mICO.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(activity,printer,Utils.dpToPx(activity,15),Utils.dpToPx(activity,15)));
-            }else
-                mICO.setImageDrawable(activity.getDrawable(R.drawable.printer));
+            showIco(activity);
 
             mICO.setBackgroundColor(activity.getColor(R.color.appColor));
 
@@ -500,13 +495,7 @@ public final class Printer {
                         case MotionEvent.ACTION_UP:
                             if (!mIsMove){
                                 activity.switchPrintStatus();
-                                if (null != mICO && null != printer){
-                                    if (activity.getPrintStatus()){
-                                        mICO.setImageBitmap(printer);
-                                    }else {
-                                        mICO.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(activity,printer,Utils.dpToPx(activity,15),Utils.dpToPx(activity,15)));
-                                    }
-                                }
+                                showIco(activity);
                             }else
                                 mIsMove = false;
                             break;
@@ -516,4 +505,15 @@ public final class Printer {
             });
         }
     }
+    private static void showIco(final MainActivity context){
+        final Bitmap printer = BitmapFactory.decodeResource(context.getResources(),R.drawable.printer);
+        if (null != mICO && null != printer){
+            if (context.getPrintStatus()){
+                mICO.setImageBitmap(printer);
+            }else {
+                mICO.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(context,printer,Utils.dpToPx(context,15),Utils.dpToPx(context,15)));
+            }
+        }
+    }
+
 }
