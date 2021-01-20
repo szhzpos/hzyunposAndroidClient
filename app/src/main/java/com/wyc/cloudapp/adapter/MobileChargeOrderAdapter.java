@@ -85,7 +85,7 @@ public final class MobileChargeOrderAdapter extends AbstractChargeOrderAdapter<M
                 }
                 holder.m_vip_label.setText(vip_name);
 
-                holder.mCurrentLayoutItemView.setOnTouchListener(touchListener);
+                holder.itemView.setOnTouchListener(touchListener);
             }
         }
     }

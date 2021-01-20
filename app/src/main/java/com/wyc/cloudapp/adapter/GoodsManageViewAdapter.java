@@ -77,12 +77,12 @@ public final class GoodsManageViewAdapter extends AbstractTableDataAdapter<Goods
             int code = goods_info.getIntValue("status_code");
             _status_tv.setText(goods_info.getString("status"));
             _status_tv.setTag(code);
-            if (mCurrentItemView != holder.mCurrentLayoutItemView){
-                setViewBackgroundColor(holder.mCurrentLayoutItemView,false);
+            if (mCurrentItemView != holder.itemView){
+                setViewBackgroundColor(holder.itemView,false);
             }
             preload(position,_status_tv);
 
-            holder.mCurrentLayoutItemView.setOnClickListener(mItemClickListener);
+            holder.itemView.setOnClickListener(mItemClickListener);
         }
     }
 

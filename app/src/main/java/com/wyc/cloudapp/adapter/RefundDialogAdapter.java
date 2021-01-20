@@ -44,11 +44,9 @@ public final class RefundDialogAdapter extends RecyclerView.Adapter<RefundDialog
         private final TextView row_id,rog_id_tv,barcode_id_tv,barcode_tv,goods_title_tv,unit_name_tv,price_tv,num_tv,returnable_num_tv;
         private final EditText cur_refund_num_et,cur_refund_amt_et;
         private final CheckBox sel_status_cb;
-        View mCurrentLayoutItemView;
         private TextWatcher mTextWatcher;
         MyViewHolder(View itemView) {
             super(itemView);
-            mCurrentLayoutItemView = itemView;
             rog_id_tv = itemView.findViewById(R.id.rog_id);
             barcode_id_tv = itemView.findViewById(R.id.barcode_id);
 
@@ -123,7 +121,7 @@ public final class RefundDialogAdapter extends RecyclerView.Adapter<RefundDialog
                                 holder.cur_refund_num_et.setSelection(holder.cur_refund_num_et.length() - 1);
                             }else{
                                 if (!mSingleRefundStatus){
-                                    updateRefundNum(holder.mCurrentLayoutItemView,num);
+                                    updateRefundNum(holder.itemView,num);
                                     if (Utils.equalDouble(num,0.0)){
                                         if (holder.sel_status_cb.isChecked()){
                                             holder.sel_status_cb.setChecked(false);

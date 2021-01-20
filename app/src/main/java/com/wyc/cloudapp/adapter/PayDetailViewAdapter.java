@@ -27,11 +27,8 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
     static class ContentHolder extends RecyclerView.ViewHolder {
         private final TextView row_id,pay_method_id,pay_method_name,pay_detail_amt,pay_detail_zl,pay_detail_v_num;
-        private final View mCurrentLayoutItemView;//当前布局的item
         ContentHolder(View itemView) {
             super(itemView);
-            mCurrentLayoutItemView = itemView;
-
             row_id = itemView.findViewById(R.id.row_id);
             pay_method_id =  itemView.findViewById(R.id.pay_method_id);
             pay_method_name =  itemView.findViewById(R.id.pay_method_name);
@@ -76,14 +73,14 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
                 contentHolder.pay_detail_zl.setText(pay_detail.getString("pzl"));
                 contentHolder.pay_detail_v_num.setText(pay_detail.getString("v_num"));
 
-                contentHolder.mCurrentLayoutItemView.setOnTouchListener(new ClickListener(v -> {
+                contentHolder.itemView.setOnTouchListener(new ClickListener(v -> {
                     setCurrentItemIndexAndItemView(v);
                     deletePayDetail(mCurrentItemIndex);
                 }, this::setSelectStatus));
 
                 if (mCurrentItemIndex == i){
-                    setSelectStatus(contentHolder.mCurrentLayoutItemView);
-                    mCurrentItemView = contentHolder.mCurrentLayoutItemView;
+                    setSelectStatus(contentHolder.itemView);
+                    mCurrentItemView = contentHolder.itemView;
                 }
             }
         }

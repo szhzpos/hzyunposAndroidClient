@@ -60,7 +60,7 @@ public final class RefundDetailsGoodsInfoAdapter extends AbstractTableDataAdapte
                 holder.refund_price_tv.setText(String.format(Locale.CHINA, "%.2f", refund_goods_info.getDoubleValue("refund_price")));
                 holder.refund_amt_tv.setText(String.format(Locale.CHINA, "%.2f", refund_goods_info.getDoubleValue("refund_amt")));
 
-                holder.mCurrentLayoutItemView.setOnClickListener(this::setCurrentItemView);
+                holder.itemView.setOnClickListener(this::setCurrentItemView);
             }
         }
     }

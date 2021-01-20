@@ -82,7 +82,7 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
 
                 holder.oper_time.setText(order_info.getString("oper_time"));
 
-                holder.mCurrentLayoutItemView.setOnTouchListener(touchListener);
+                holder.itemView.setOnTouchListener(touchListener);
             }
         }
     }

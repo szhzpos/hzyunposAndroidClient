@@ -62,11 +62,8 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
     static class MyViewHolder extends RecyclerView.ViewHolder {
         private final TextView category_id;
         private final TextView category_name;
-        private final View mCurrentLayoutItemView;//当前布局的item
         MyViewHolder(View itemView) {
             super(itemView);
-            mCurrentLayoutItemView = itemView;
-
             category_id = itemView.findViewById(R.id.category_id);
             category_name =  itemView.findViewById(R.id.category_name);
         }
@@ -94,7 +91,7 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
             myViewHolder.category_name.setText(goods_type_info.getString("name"));
             if (i == 1 && mFirstLoad && !mContext.containGoods()){//一级分类触发第二个类别查询
                 mFirstLoad = false;
-                myViewHolder.mCurrentLayoutItemView.callOnClick();
+                myViewHolder.itemView.callOnClick();
             }
         }
     }

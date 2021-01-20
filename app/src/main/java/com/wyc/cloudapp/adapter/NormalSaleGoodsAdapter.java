@@ -18,7 +18,7 @@ public final class NormalSaleGoodsAdapter extends AbstractSaleGoodsAdapter {
     @Override
     public void onBindViewHolder(@NonNull AbstractSaleGoodsAdapter.MyViewHolder myViewHolder, int i) {
         super.onBindViewHolder(myViewHolder,i);
-        myViewHolder.mCurrentLayoutItemView.setOnTouchListener(onTouchListener);
+        myViewHolder.itemView.setOnTouchListener(onTouchListener);
     }
 
     private final ClickListener onTouchListener = new ClickListener(v -> {

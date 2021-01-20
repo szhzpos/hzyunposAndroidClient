@@ -47,10 +47,8 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
         CheckBox mul_cb;
         RadioButton single_rb;
         TextView item_id,item_name,row_id;
-        View mCurrentLayoutItemView;
         MyViewHolder(View itemView) {
             super(itemView);
-            mCurrentLayoutItemView = itemView;
             row_id = itemView.findViewById(R.id.row_id);
             icon = itemView.findViewById(R.id.item_ico);
             mul_cb = itemView.findViewById(R.id.multiple_cb);
@@ -120,14 +118,14 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
                     item_sel_cb.setOnCheckedChangeListener(checkedChangeListener);
                 }
             }else{
-                if (is_sel)setViewBackgroundColor(mCurrentItemView = holder.mCurrentLayoutItemView,true);
+                if (is_sel)setViewBackgroundColor(mCurrentItemView = holder.itemView,true);
             }
             holder.item_id.setText(item.getString("item_id"));
             holder.item_name.setText(item.getString("item_name"));
 
-            holder.mCurrentLayoutItemView.setPadding( 25 * item.getIntValue("level"),0,0,0);
-            holder.mCurrentLayoutItemView.setOnClickListener(itemListener);
-            holder.mCurrentLayoutItemView.setTag(item);
+            holder.itemView.setPadding( 25 * item.getIntValue("level"),0,0,0);
+            holder.itemView.setOnClickListener(itemListener);
+            holder.itemView.setTag(item);
         }
     }
 
@@ -137,7 +135,7 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
     }
     @Override
     public void onViewRecycled (@NonNull MyViewHolder holder){
-        if (mItemClick != null && mCurrentItemView == holder.mCurrentLayoutItemView)setViewBackgroundColor(mCurrentItemView,false);
+        if (mItemClick != null && mCurrentItemView == holder.itemView)setViewBackgroundColor(mCurrentItemView,false);
     }
 
     public void setDatas(final JSONArray datas,final JSONArray items){
@@ -147,11 +145,11 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
 
         notifyDataSetChanged();
     }
-    private CompoundButton.OnCheckedChangeListener checkedChangeListener = (buttonView, isChecked) -> {
+    private final CompoundButton.OnCheckedChangeListener checkedChangeListener = (buttonView, isChecked) -> {
         final View v = (View) buttonView.getParent();
         final TextView row_id_tv = v.findViewById(R.id.row_id);
         if (row_id_tv != null){
-            int row_id = Integer.valueOf(row_id_tv.getText().toString());
+            int row_id = Integer.parseInt(row_id_tv.getText().toString());
             if (row_id >= 0 && row_id < mDatas.size()){
                 final JSONObject object = Utils.getViewTagValue(v);
                 if (mSingleSel){
@@ -190,10 +188,10 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
         }
     }
 
-    private View.OnClickListener unfoldIcoListener = (view)->{
+    private final View.OnClickListener unfoldIcoListener = (view)->{
         final View parent = (View) view.getParent();
         final TextView row_id_tv = parent.findViewById(R.id.row_id);
-        int row_id = Integer.valueOf(row_id_tv.getText().toString());
+        int row_id = Integer.parseInt(row_id_tv.getText().toString());
         if (row_id >= 0 && row_id < mDatas.size()){
             final JSONObject object = mDatas.getJSONObject(row_id);
             boolean unfold = object.getBooleanValue("unfold"),is_sel = object.getBooleanValue("isSel");
@@ -235,7 +233,7 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
         }
     }
 
-    private View.OnClickListener itemListener = (v)->{
+    private final View.OnClickListener itemListener = (v)->{
         if (mItemClick != null){
             JSONObject jsonObject;
             if (mCurrentItemView != v){
@@ -292,7 +290,7 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
     private JSONObject getCurrentItem(final @NonNull View view){
         final TextView row_id_tv = view.findViewById(R.id.row_id);
         if (row_id_tv != null){
-            int row_id = Integer.valueOf(row_id_tv.getText().toString());
+            int row_id = Integer.parseInt(row_id_tv.getText().toString());
             if (row_id >= 0 && row_id < mDatas.size()){
                 final JSONObject obj = mDatas.getJSONObject(row_id);
                 obj.put("isSel",true);

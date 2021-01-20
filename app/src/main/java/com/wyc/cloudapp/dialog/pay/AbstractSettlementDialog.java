@@ -57,11 +57,11 @@ import java.util.concurrent.locks.LockSupport;
 public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivity {
     private EditText mCashMoneyEt,mZlAmtEt,mRemarkEt;
     private PayMethodViewAdapter mPayMethodViewAdapter;
+    private RecyclerView mPayMethodView;
     private PayDetailViewAdapter mPayDetailViewAdapter;
     private TextView mOrderAmtTv,mDiscountAmtTv,mActualAmtTv,mPayAmtTv,mAmtReceivedTv,mPayBalanceTv, mDiscountDescriptionTv;
     private double mOrder_amt = 0.0,mDiscount_amt = 0.0,mActual_amt = 0.0,mPay_amt = 0.0,mAmt_received = 0.0,mPay_balance = 0.0,mCashAmt = 0.0,mZlAmt = 0.0,mMolAmt = 0.0;
     private String mDiscountDesContent = "";
-    private Button mOK;
     private JSONObject mVip;
     private boolean mPayStatus = true;
     private Window mWindow;
@@ -277,10 +277,9 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                         tmp_v.setOnClickListener(v -> closeWindow());
                         break;
                     case R.id._ok:
-                        mOK = (Button) tmp_v;
                         tmp_v.setOnClickListener(v -> {
                             v.setEnabled(false);
-                            cash_pay();
+                            triggerDefaultPay();
                             v.postDelayed(()->v.setEnabled(true),300);
                         });
                         break;
@@ -291,6 +290,21 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             }
         }
     }
+
+    private void triggerDefaultPay(){
+        final String id = PayMethodViewAdapter.getDefaultPayMethodId();
+        final int index = mPayMethodViewAdapter.findPayMethodIndexById(id);
+        if (index != -1){
+            RecyclerView.ViewHolder viewHolder = mPayMethodView.findViewHolderForAdapterPosition(index);
+            if (viewHolder != null){
+                viewHolder.itemView.callOnClick();
+            }else
+                mPayMethodView.scrollToPosition(index);//如果找不到view则滚动
+        }else {
+            MyDialog.ToastMessage(String.format(Locale.CHINA,"ID为%s的支付方式不存在!",id),mContext,getWindow());
+        }
+    }
+
     private final View.OnClickListener button_click = v -> {
         final View view =  getCurrentFocus();
         if (view != null) {
@@ -330,12 +344,17 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         mPayMethodViewAdapter.setDatas("1");
         mPayMethodViewAdapter.setOnItemClickListener((object) -> {
             try {
-                final JSONObject pay_method_copy = Utils.JsondeepCopy(object);
-                final String pay_method_id = pay_method_copy.getString("pay_method_id");
-                if (PayMethodViewAdapter.getCashMethodId().equals(pay_method_id)) {
-                    mOK.callOnClick();
-                } else {
-                    if (verifyPayBalance()) {
+                if (verifyPayBalance()){
+
+                    final JSONObject pay_method_copy = Utils.JsondeepCopy(object);
+                    final String pay_method_id = pay_method_copy.getString("pay_method_id");
+                    if (PayMethodViewAdapter.getCashMethodId().equals(pay_method_id)) {
+                        pay_method_copy.put("pay_code",getCashPayCode());
+                        pay_method_copy.put("pamt",mCashAmt);
+                        pay_method_copy.put("pzl",String.format(Locale.CHINA,"%.2f",mZlAmt));
+                        pay_method_copy.put("v_num","");
+                        mPayDetailViewAdapter.addPayDetail(pay_method_copy);
+                    } else {
                         if (Utils.equalDouble(mPay_balance, 0) && mPayDetailViewAdapter.findPayDetailById(pay_method_id) == null) {//剩余金额为零，同时不存在此付款方式的记录。
                             MyDialog.SnackbarMessage(mWindow, "剩余金额为零！", getCurrentFocus());
                         } else {
@@ -377,9 +396,9 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                                 }
                             }
                         }
-                    }else{
-                        MyDialog.SnackbarMessage(mWindow,"剩余付款金额不能小于零！",mPayBalanceTv);
                     }
+                }else{
+                    MyDialog.SnackbarMessage(mWindow,"剩余付款金额不能小于零！",mPayBalanceTv);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -390,6 +409,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         recyclerView.setLayoutManager(new GridLayoutManager(mContext,4));
         SuperItemDecoration.registerGlobalLayoutToRecyclerView(recyclerView,mContext.getResources().getDimension(R.dimen.pay_method_height),new PayMethodItemDecoration());
         recyclerView.setAdapter(mPayMethodViewAdapter);
+        mPayMethodView = recyclerView;
     }
 
     private boolean isMoled(){
@@ -686,29 +706,6 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         }
 
     }
-
-    private void cash_pay(){
-        JSONObject pay_method_json;
-        if (verifyPayBalance()){
-            if (Utils.equalDouble(mPay_balance,0.0) && mPayDetailViewAdapter.getDatas().size() != 0){
-                mPayDetailViewAdapter.notifyDataSetChanged();
-            }else{
-                if ((pay_method_json = mPayMethodViewAdapter.findPayMethodById(PayMethodViewAdapter.getCashMethodId())) != null){
-                    pay_method_json = Utils.JsondeepCopy(pay_method_json);
-                    pay_method_json.put("pay_code",getCashPayCode());
-                    pay_method_json.put("pamt",mCashAmt);
-                    pay_method_json.put("pzl",String.format(Locale.CHINA,"%.2f",mZlAmt));
-                    pay_method_json.put("v_num","");
-                    mPayDetailViewAdapter.addPayDetail(pay_method_json);
-                }else{
-                    MyDialog.ToastMessage("现金付款方式不存在！", mContext,null);
-                }
-            }
-        }else{
-            MyDialog.SnackbarMessage(mWindow,"剩余付款金额不能小于零！",mPayBalanceTv);
-        }
-    }
-
 
     private boolean generateOrderInfo(final JSONObject info){
         double sale_sum_amt = 0.0,dis_sum_amt = 0.0,total = 0.0,zl_amt = 0.0;
@@ -1188,7 +1185,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             @Override
             public void afterTextChanged(Editable editable) {
                 try {
-                    mCashAmt = Double.valueOf(editable.toString());
+                    mCashAmt = Double.parseDouble(editable.toString());
                 }catch (NumberFormatException e){
                     mCashAmt = 0.0;
                 }
@@ -1198,7 +1195,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                     else{
                         cm.setText(mPayBalanceTv.getText());
                         cm.selectAll();
-                        MyDialog.ToastMessage("找零不能大于100", mContext,null);
+                        MyDialog.ToastMessage("找零不能大于100", mContext,AbstractSettlementDialog.this.getWindow());
                     }
                 }else{
                     mZlAmt = 0.00;

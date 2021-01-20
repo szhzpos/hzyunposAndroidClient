@@ -59,10 +59,8 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
 
     protected static class MyViewHolder extends RecyclerView.ViewHolder {
         TextView row_id,gp_id,goods_id,goods_title,unit_name,barcode_id,barcode,sale_price,sale_num,sale_amt,discount_sign,original_price;
-        View mCurrentLayoutItemView;
         MyViewHolder(View itemView) {
             super(itemView);
-            mCurrentLayoutItemView = itemView;
             row_id = itemView.findViewById(R.id.row_id);
             goods_id = itemView.findViewById(R.id.goods_id);
             gp_id = itemView.findViewById(R.id.gp_id);
@@ -131,7 +129,7 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
             }
 
             if (mCurrentItemIndex == i){
-                setSelectStatus(myViewHolder.mCurrentLayoutItemView);
+                setSelectStatus(myViewHolder.itemView);
             }
         }
     }

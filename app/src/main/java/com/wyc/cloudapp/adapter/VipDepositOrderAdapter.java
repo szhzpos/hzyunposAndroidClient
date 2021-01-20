@@ -22,11 +22,8 @@ public class VipDepositOrderAdapter extends AbstractChargeOrderAdapter<VipDeposi
 
     static class MyViewHolder extends AbstractQueryDataAdapter.SuperViewHolder {
         TextView row_id,card_code,mobile,vip_name,order_code,order_amt,give_amt,order_status,s_e_status,cas_name,oper_time,origin_order_code;
-        View mCurrentLayoutItemView;
         MyViewHolder(View itemView) {
             super(itemView);
-            mCurrentLayoutItemView = itemView;
-
             row_id = itemView.findViewById(R.id.row_id);
             order_code = itemView.findViewById(R.id.order_code);
             origin_order_code = itemView.findViewById(R.id.origin_order_code);
@@ -83,7 +80,7 @@ public class VipDepositOrderAdapter extends AbstractChargeOrderAdapter<VipDeposi
 
                 holder.oper_time.setText(order_info.getString("oper_time"));
 
-                holder.mCurrentLayoutItemView.setOnTouchListener(touchListener);
+                holder.itemView.setOnTouchListener(touchListener);
             }
         }
     }

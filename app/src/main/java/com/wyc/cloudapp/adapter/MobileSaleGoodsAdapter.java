@@ -67,7 +67,7 @@ public final class MobileSaleGoodsAdapter extends AbstractSaleGoodsAdapter imple
             holder.mobile_float_fun_btn.setClickListener(null);
             holder.mobile_float_fun_btn.setVisibility(View.GONE);
         }
-        myViewHolder.mCurrentLayoutItemView.setOnClickListener(onClickListener);
+        myViewHolder.itemView.setOnClickListener(onClickListener);
     }
 
 

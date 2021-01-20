@@ -75,7 +75,7 @@ public final class MobileRefundOrderAdapter extends AbstractQueryDataAdapter<Mob
                 }
                 holder.m_vip_label.setText(vip_name);
 
-                holder.mCurrentLayoutItemView.setOnTouchListener(touchListener);
+                holder.itemView.setOnTouchListener(touchListener);
             }
         }
     }

@@ -26,10 +26,8 @@ public abstract class AbstractTableDataAdapter<T extends AbstractTableDataAdapte
     private ItemClickCallBack mItemClickCallback;
 
     public static class SuperViewHolder extends RecyclerView.ViewHolder {
-        View mCurrentLayoutItemView;
         SuperViewHolder(View itemView) {
             super(itemView);
-            mCurrentLayoutItemView = itemView;
         }
 
         @Override
@@ -47,15 +45,15 @@ public abstract class AbstractTableDataAdapter<T extends AbstractTableDataAdapte
     @Override
     public void onBindViewHolder(@NonNull T holder, int position) {
         if (mCurrentItemIndex == position + 1){
-            mCurrentItemView = holder.mCurrentLayoutItemView;
+            mCurrentItemView = holder.itemView;
             setViewBackgroundColor(mCurrentItemView,true);
         }
     }
 
     @Override
     public void onViewRecycled (SuperViewHolder holder){
-        if (holder.mCurrentLayoutItemView == mCurrentItemView){
-            setViewBackgroundColor(holder.mCurrentLayoutItemView,false);//当前行回收过后有可能用于显示未选中的行，需要重置颜色
+        if (holder.itemView == mCurrentItemView){
+            setViewBackgroundColor(holder.itemView,false);//当前行回收过后有可能用于显示未选中的行，需要重置颜色
         }
     }
 

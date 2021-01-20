@@ -36,14 +36,11 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
         private final TextView pay_method_id,pay_method_name,pay_amt_tv;
-        private final View mCurrentLayoutItemView;//当前布局的item
         MyViewHolder(View itemView) {
             super(itemView);
             pay_method_id = itemView.findViewById(R.id.pay_method_id);
             pay_method_name =  itemView.findViewById(R.id.pay_method_name);
             pay_amt_tv = itemView.findViewById(R.id._amt_tv);
-
-            mCurrentLayoutItemView = itemView;
         }
     }
 
@@ -97,17 +94,17 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
                 }
 
                 if (pay_method_info.getBooleanValue(CUR_PAY_METHOD_LABEL)){
-                    Utils.disableView(myViewHolder.mCurrentLayoutItemView,300);
-                    setSelectedSignVisibility(myViewHolder.mCurrentLayoutItemView,View.VISIBLE);
+                    Utils.disableView(myViewHolder.itemView,300);
+                    setSelectedSignVisibility(myViewHolder.itemView,View.VISIBLE);
                 }else {
-                    setSelectedSignVisibility(myViewHolder.mCurrentLayoutItemView,View.GONE);
+                    setSelectedSignVisibility(myViewHolder.itemView,View.GONE);
                 }
 
-                myViewHolder.mCurrentLayoutItemView.setTag(pay_method_id);
+                myViewHolder.itemView.setTag(pay_method_id);
                 if (mOnItemClickListener != null){
-                    myViewHolder.mCurrentLayoutItemView.setOnClickListener(mClickListener);
+                    myViewHolder.itemView.setOnClickListener(mClickListener);
                 }
-                myViewHolder.mCurrentLayoutItemView.setOnHoverListener(hoverListener);
+                myViewHolder.itemView.setOnHoverListener(hoverListener);
             }
         }
     }
@@ -200,7 +197,9 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
 
     private void setDefaultPayMethod(){
         mDefaultPayMethod = findPayMethodById(DEFAULT_PAY_METHOD_ID);
-        if (null != mDefaultPayMethod)mDefaultPayMethod.put(CUR_PAY_METHOD_LABEL,true);
+        if (null != mDefaultPayMethod){
+            mDefaultPayMethod.put(CUR_PAY_METHOD_LABEL,true);
+        }
     }
 
     public JSONObject findPayMethodById(final String pay_method_id){
@@ -214,6 +213,19 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
             }
         }
         return null;
+    }
+
+    public int findPayMethodIndexById(final String pay_method_id){
+        final JSONArray array = mDatas;
+        if (array != null && pay_method_id != null){
+            for (int i = 0,length = array.size();i < length;i++){
+                final JSONObject jsonObject = array.getJSONObject(i);
+                if (pay_method_id.equals(jsonObject.getString("pay_method_id"))){
+                    return i;
+                }
+            }
+        }
+        return -1;
     }
 
     public static JSONObject getPayMethod(final String pay_method_id){

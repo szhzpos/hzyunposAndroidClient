@@ -61,11 +61,8 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     static class MyViewHolder extends RecyclerView.ViewHolder {
         TextView gp_id,goods_id,goods_title,unit_name,barcode_id,barcode,price;
         ImageView goods_img;
-        View mCurrentItemView;
         MyViewHolder(View itemView) {
             super(itemView);
-            mCurrentItemView = itemView;
-
             goods_img = itemView.findViewById(R.id.g_img);
             goods_id = itemView.findViewById(R.id.goods_id);
             gp_id = itemView.findViewById(R.id.gp_id);
@@ -120,7 +117,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
                 goods_title.setTextColor(mContext.getColor(R.color.good_name_color));//需要重新设置颜色；不然重用之后内容颜色为重用之前的。
             }
 
-            myViewHolder.mCurrentItemView.setOnClickListener(this);
+            myViewHolder.itemView.setOnClickListener(this);
         }
     }
 

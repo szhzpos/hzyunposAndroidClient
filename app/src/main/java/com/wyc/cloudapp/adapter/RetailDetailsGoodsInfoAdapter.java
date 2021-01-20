@@ -61,7 +61,7 @@ public final class RetailDetailsGoodsInfoAdapter extends AbstractTableDataAdapte
                 holder.price_tv.setText(String.format(Locale.CHINA, "%.2f", sale_goods_info.getDoubleValue("price")));
                 holder.sale_amt_tv.setText(String.format(Locale.CHINA, "%.2f", sale_goods_info.getDoubleValue("sale_amt")));
 
-                holder.mCurrentLayoutItemView.setOnClickListener(this::setCurrentItemView);
+                holder.itemView.setOnClickListener(this::setCurrentItemView);
             }
         }
     }

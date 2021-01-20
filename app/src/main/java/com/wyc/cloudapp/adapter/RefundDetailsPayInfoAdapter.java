@@ -58,7 +58,7 @@ public final class RefundDetailsPayInfoAdapter extends AbstractPayInfoAdapter<Re
                 holder.pay_time_tv.setText(pay_info.getString("pay_time"));
                 holder.pay_code_tv.setText(Utils.getNullStringAsEmpty(pay_info, "order_code_son"));
 
-                holder.mCurrentLayoutItemView.setOnClickListener(mItemClickListener);
+                holder.itemView.setOnClickListener(mItemClickListener);
             }
         }
     }

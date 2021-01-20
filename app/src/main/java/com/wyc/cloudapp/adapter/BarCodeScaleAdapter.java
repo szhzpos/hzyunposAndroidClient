@@ -53,12 +53,10 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     static class ContentHolder extends RecyclerView.ViewHolder {
-        private TextView _id,row_id,product_type,scale_ip,scale_port,g_c_name,g_c_id,down_status,scale_rmk;
-        private CheckBox s_checked;
-        private View mCurrentLayoutItemView;//当前布局的item
+        private final TextView _id,row_id,product_type,scale_ip,scale_port,g_c_name,g_c_id,down_status,scale_rmk;
+        private final CheckBox s_checked;
         ContentHolder(View itemView) {
             super(itemView);
-            mCurrentLayoutItemView = itemView;
             _id = itemView.findViewById(R.id._id);
             row_id = itemView.findViewById(R.id.row_id);
             s_checked =  itemView.findViewById(R.id.s_checked);
@@ -97,7 +95,7 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             contentHolder.s_checked.setChecked(false);
             contentHolder.s_checked.setOnCheckedChangeListener(this);
-            contentHolder.mCurrentLayoutItemView.setOnClickListener(this);
+            contentHolder.itemView.setOnClickListener(this);
         }
     }
 
