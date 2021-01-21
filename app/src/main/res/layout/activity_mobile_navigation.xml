@@ -23,26 +23,26 @@
         android:orientation="horizontal">
 
         <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
-            android:id="@+id/_mobile_board_tv"
+            android:id="@+id/_mobile_archive_tv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:drawableTop="@drawable/m_bottom_1"
             android:gravity="center"
-            android:text="@string/board_sz"
+            android:text="@string/archive_sz"
             android:textColor="@color/mobile_fun_view_no_click"
             android:textSize="@dimen/font_size_14"
             app:animType="1"
             app:verSpacing="@dimen/default_vertical" />
 
         <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
-            android:id="@+id/_mobile_bg_tv"
+            android:id="@+id/_mobile_business_tv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:drawableTop="@drawable/m_bottom_2"
             android:gravity="center"
-            android:text="@string/mobile_bg_sz"
+            android:text="@string/mobile_business_sz"
             android:textColor="@color/mobile_fun_view_no_click"
             android:textSize="@dimen/font_size_14"
             app:verSpacing="@dimen/default_vertical" />

@@ -37,6 +37,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
+        <activity android:name=".activity.mobile.MobilePurchaseOrder"></activity>
+        <activity android:name=".activity.mobile.AbstractMobileBusinessOrderActivity" />
         <activity android:name=".activity.mobile.MobileSetupActivity" />
         <activity android:name=".activity.SaleActivity" />
         <activity android:name=".activity.mobile.MobileCashierActivity" />

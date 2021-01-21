@@ -7,7 +7,6 @@ import android.os.Message;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -20,9 +19,9 @@ import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.orderDialog.AbstractTransferDialog;
 import com.wyc.cloudapp.dialog.orderDialog.MobileTransferDialog;
-import com.wyc.cloudapp.mobileFragemt.BackgroundFragment;
+import com.wyc.cloudapp.mobileFragemt.MobileBusinessFragment;
 import com.wyc.cloudapp.mobileFragemt.BoardFragment;
-import com.wyc.cloudapp.mobileFragemt.CashierDeskFragment;
+import com.wyc.cloudapp.mobileFragemt.MobileCashierDeskFragment;
 import com.wyc.cloudapp.mobileFragemt.MyFragment;
 import com.wyc.cloudapp.mobileFragemt.ReportFragment;
 import com.wyc.cloudapp.utils.MessageID;
@@ -138,16 +137,16 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
             final MobileNavigationActivity activity = MobileNavigationActivity.this;
             Fragment current = null ;
             final int id = v.getId();
-            if (id == R.id._mobile_board_tv) {//first
+            if (id == R.id._mobile_archive_tv) {//first
                 current = new BoardFragment();
-            }else if(id == R.id._mobile_bg_tv){//second
-                current = new BackgroundFragment();
+            }else if(id == R.id._mobile_business_tv){//second
+                current = new MobileBusinessFragment(activity);
             }else if (id == R.id._mobile_report_tv){//fourth
                 current = new ReportFragment();
             }else  if(id == R.id._mobile_my_tv){//fifth
                 current = new MyFragment(activity);
             }else{//third
-                current = new CashierDeskFragment(activity);
+                current = new MobileCashierDeskFragment(activity);
             }
 
             ft.add(R.id.mobile_fragment_container,current);
@@ -161,10 +160,10 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
         public void onClick(View v) {
             final int id = v.getId();
             boolean support = false;
-            if (id == R.id._mobile_board_tv) {//first
+            if (id == R.id._mobile_archive_tv) {//first
 
-            }else if(id == R.id._mobile_bg_tv){//second
-
+            }else if(id == R.id._mobile_business_tv){//second
+                support = true;
             }else if (id == R.id._mobile_report_tv){//fourth
 
             }else  if(id == R.id._mobile_my_tv){//fifth

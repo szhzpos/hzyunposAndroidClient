@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_35"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/margin_8"
+        android:paddingEnd="@dimen/margin_0"
+        android:text="@string/purchase_sz"
+        android:textColor="@color/blue"
+        android:textSize="@dimen/font_size_18"
+        android:visibility="visible" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_88"
+        android:background="@drawable/round_border_sub_gray"
+        android:orientation="vertical"
+        android:padding="@dimen/margin_1">
+
+        <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            android:id="@+id/purchase_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:drawableTop="@drawable/purchase_order"
+            android:tag="activity.mobile.MobilePurchaseOrder"
+            android:text="@string/purchase_order_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toStartOf="@+id/warehouse_tv"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:verSpacing="@dimen/margin_5" />
+
+        <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            android:id="@+id/warehouse_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/left_right_separator"
+            android:drawableTop="@drawable/warehouse"
+            android:gravity="center"
+            android:tag="activity.mobile.MobileCashierActivity"
+            android:text="@string/warehouse_order_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            android:visibility="visible"
+            app:layout_constraintEnd_toStartOf="@+id/refund_tv"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/purchase_tv"
+            app:layout_constraintTop_toTopOf="parent"
+            app:verSpacing="@dimen/margin_5" />
+
+        <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            android:id="@+id/refund_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:drawableTop="@drawable/refund_order"
+            android:gravity="center"
+            android:text="@string/wholesale_refund_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/warehouse_tv"
+            app:layout_constraintTop_toTopOf="parent"
+            app:verSpacing="@dimen/margin_5" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_35"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/margin_8"
+        android:paddingEnd="@dimen/margin_0"
+        android:text="@string/wholesale_sz"
+        android:textColor="@color/blue"
+        android:textSize="@dimen/font_size_18"
+        android:visibility="visible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_88"
+        android:background="@drawable/round_border_sub_gray"
+        android:orientation="vertical"
+        android:padding="@dimen/margin_1">
+
+        <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            android:id="@+id/wholesale_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/wholesale"
+            android:tag="activity.mobile.MobileCashierActivity"
+            android:text="@string/wholesale_order_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toStartOf="@+id/wholesale_sale_tv"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:verSpacing="@dimen/margin_8" />
+
+        <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            android:id="@+id/wholesale_sale_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/left_right_separator"
+            android:drawableTop="@drawable/wholesale_sale"
+            android:gravity="center"
+            android:tag="activity.mobile.MobileCashierActivity"
+            android:text="@string/wholesale_sale_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toStartOf="@+id/wholesale_refund_tv"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/wholesale_tv"
+            app:verSpacing="@dimen/margin_8"
+            tools:layout_editor_absoluteY="1dp" />
+
+        <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            android:id="@+id/wholesale_refund_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/wholesale_refund"
+            android:gravity="center"
+            android:tag="activity.mobile.MobileCashierActivity"
+            android:text="@string/wholesale_refund_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/wholesale_sale_tv"
+            app:layout_constraintTop_toTopOf="parent"
+            app:verSpacing="@dimen/margin_8" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_35"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/margin_8"
+        android:paddingEnd="@dimen/margin_0"
+        android:text="@string/warehouse_sz"
+        android:textColor="@color/blue"
+        android:textSize="@dimen/font_size_18"
+        android:visibility="visible" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_88"
+        android:background="@drawable/round_border_sub_gray"
+        android:orientation="vertical"
+        android:padding="@dimen/margin_1">
+
+        <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            android:id="@+id/other_inventory_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/other_inventory"
+            android:tag="activity.mobile.MobileCashierActivity"
+            android:text="@string/other_inventory_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toStartOf="@+id/inventory_order_tv"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:verSpacing="@dimen/margin_8" />
+
+        <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            android:id="@+id/inventory_order_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/left_right_separator"
+            android:drawableTop="@drawable/inventory_order_tv"
+            android:gravity="center"
+            android:tag="activity.mobile.MobileCashierActivity"
+            android:text="@string/inventory_order_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toStartOf="@+id/topDrawableTextView"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/other_inventory_tv"
+            app:layout_constraintTop_toTopOf="parent"
+            app:verSpacing="@dimen/margin_8" />
+
+        <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            android:id="@+id/topDrawableTextView"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/wholesale_refund"
+            android:gravity="center"
+            android:tag="activity.mobile.MobileCashierActivity"
+            android:text="@string/wholesale_refund_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/inventory_order_tv"
+            app:layout_constraintTop_toTopOf="parent"
+            app:verSpacing="@dimen/margin_8" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_35"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/margin_8"
+        android:paddingEnd="@dimen/margin_0"
+        android:text="@string/chain_sz"
+        android:textColor="@color/blue"
+        android:textSize="@dimen/font_size_18"
+        android:visibility="visible" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_88"
+        android:background="@drawable/round_border_sub_gray"
+        android:orientation="vertical"
+        android:padding="@dimen/margin_1">
+
+        <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            android:id="@+id/distribution_warehouse_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/distribution_warehouse"
+            android:tag="activity.mobile.MobileCashierActivity"
+            android:text="@string/distribution_warehouse_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toStartOf="@+id/distribution_warehousing_tv"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:verSpacing="@dimen/margin_8" />
+
+        <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            android:id="@+id/distribution_warehousing_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/left_right_separator"
+            android:drawableTop="@drawable/distribution_warehousing"
+            android:gravity="center"
+            android:tag="activity.mobile.MobileCashierActivity"
+            android:text="@string/distribution_warehousing_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toStartOf="@+id/topDrawableTextView2"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/distribution_warehouse_tv"
+            app:layout_constraintTop_toTopOf="parent"
+            app:verSpacing="@dimen/margin_8" />
+
+        <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            android:id="@+id/topDrawableTextView2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/wholesale_refund"
+            android:gravity="center"
+            android:tag="activity.mobile.MobileCashierActivity"
+            android:text="@string/wholesale_refund_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/distribution_warehousing_tv"
+            app:layout_constraintTop_toTopOf="parent"
+            app:verSpacing="@dimen/margin_8" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

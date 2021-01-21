@@ -340,8 +340,8 @@
     <string name="manage_category_sz">所属分类</string>
     <string name="manage_goods_attr_sz">商品属性</string>
     <string name="manage_goods_status_sz">商品状态</string>
-    <string name="board_sz">看板</string>
-    <string name="mobile_bg_sz">后台</string>
+    <string name="archive_sz">档案</string>
+    <string name="mobile_business_sz">业务</string>
     <string name="casher_desk_sz">收银台</string>
     <string name="report_sz">报表</string>
     <string name="mobile_setup_sz">设置</string>
@@ -423,4 +423,22 @@
     <string name="small_size_sz">手机</string>
     <string name="auto_size_sz">自动选择</string>
 
+    <!-- 业务模块-->
+    <string name="purchase_sz">采购</string>
+    <string name="purchase_order_sz">采购订货单</string>
+    <string name="warehouse_order_sz">采购入库单</string>
+    <string name="purchase_refund_order_sz">采购入库单</string>
+    <string name="wholesale_sz">批发</string>
+    <string name="wholesale_order_sz">批发订货单</string>
+    <string name="wholesale_sale_sz">批发销售单</string>
+    <string name="wholesale_refund_sz">客户退货单</string>
+    <string name="warehouse_sz">库存</string>
+    <string name="other_inventory_sz">其他出入库</string>
+    <string name="inventory_order_sz">实盘录入</string>
+    <string name="chain_sz">连锁</string>
+    <string name="distribution_warehouse_sz">配送出库单</string>
+    <string name="distribution_warehousing_sz">配送入库单</string>
+    <string name="all_sz">所有</string>
+    <string name="audited_sz">已审核</string>
+    <string name="unaudited_sz">未审核</string>
 </resources>

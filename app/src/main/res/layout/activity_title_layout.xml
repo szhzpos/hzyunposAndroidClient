@@ -34,6 +34,7 @@
         android:layout_width="@dimen/mobile_activity_title_left_right_tv_width"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:paddingStart="@dimen/margin_0"
         android:paddingEnd="@dimen/margin_5"
         android:textAlignment="viewEnd"

@@ -20,8 +20,8 @@ import com.wyc.cloudapp.dialog.vip.MobileVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.MobileVipDepositOrderDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 
-public final class CashierDeskFragment extends AbstractMobileFragment {
-    public CashierDeskFragment(MainActivity activity) {
+public final class MobileCashierDeskFragment extends AbstractMobileFragment {
+    public MobileCashierDeskFragment(MainActivity activity) {
         super(activity);
     }
 
