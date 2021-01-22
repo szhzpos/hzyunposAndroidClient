@@ -23,7 +23,7 @@
         android:paddingTop="@dimen/margin_8"
         android:paddingBottom="@dimen/margin_8"
         android:text="@string/refund_order_sz"
-        android:textColor="@color/appColor"
+        android:textColor="@color/lightBlue"
         android:textSize="@dimen/font_size_16" />
 
     <TextView
@@ -34,7 +34,7 @@
         android:paddingTop="@dimen/margin_8"
         android:paddingBottom="@dimen/margin_8"
         android:text="@string/retail_order_code_sz"
-        android:textColor="@color/appColor"
+        android:textColor="@color/lightBlue"
         android:textSize="@dimen/font_size_16" />
 
     <TextView

@@ -19,6 +19,8 @@
     <string name="store_sz">门店：</string>
     <string name="add">+</string>
     <string name="minus">-</string>
+    <string name="audit_sz">审核</string>
+    <string name="scan_sz">扫码</string>
     <string name="num_not_colon_sz">数量</string>
     <string name="clear_sz">清空</string>
     <string name="discount_sz">折扣</string>
@@ -159,7 +161,7 @@
     <string name="stores_address_sz">门店地址：</string>
     <string name="sec_num_sz">@string/num_not_colon_sz</string>
     <string name="sec_banner_sz">欢迎光临！</string>
-    <string name="sec_sum_sz">小计</string>
+    <string name="sec_sum_sz">@string/sum_sz</string>
     <string name="sec_n_b_sz">名称/条码</string>
     <string name="sec_price_sz">价格</string>
     <string name="sec_r_id_sz">序</string>
@@ -185,7 +187,7 @@
     <string name="down_s_sz">下发状态</string>
     <string name="b_code_s_d_sz">条码秤下发</string>
     <string name="manufacturer_sz">厂商</string>
-    <string name="scalse_name_sz">秤名</string>
+    <string name="scale_name_sz">秤名</string>
     <string name="modify_scale_sz">修改秤</string>
     <string name="serial_scale_sz">串口秤</string>
     <string name="pro_t_sz">协议类型</string>
@@ -395,6 +397,7 @@
     <string name="m_disc_amt_colon_sz">优惠金额：</string>
     <string name="m_num_sz">@string/num_colon_sz</string>
     <string name="m_price_colon_sz">单价：</string>
+    <string name="m_price_sz">单价</string>
     <string name="m_refund_sz">@string/o_back_sz</string>
     <string name="m_print_sz">打印</string>
 
@@ -423,7 +426,7 @@
     <string name="small_size_sz">手机</string>
     <string name="auto_size_sz">自动选择</string>
 
-    <!-- 业务模块-->
+    <!-- 业务功能-->
     <string name="purchase_sz">采购</string>
     <string name="purchase_order_sz">采购订货单</string>
     <string name="warehouse_order_sz">采购入库单</string>
@@ -432,7 +435,7 @@
     <string name="wholesale_order_sz">批发订货单</string>
     <string name="wholesale_sale_sz">批发销售单</string>
     <string name="wholesale_refund_sz">客户退货单</string>
-    <string name="warehouse_sz">库存</string>
+    <string name="inventory_sz">库存</string>
     <string name="other_inventory_sz">其他出入库</string>
     <string name="inventory_order_sz">实盘录入</string>
     <string name="chain_sz">连锁</string>
@@ -441,4 +444,24 @@
     <string name="all_sz">所有</string>
     <string name="audited_sz">已审核</string>
     <string name="unaudited_sz">未审核</string>
+
+    <!--新增业务订单-->
+    <string name="pick_goods_sz">选商品</string>
+    <string name="supplier_sz">货商：</string>
+    <string name="warehouse_sz">仓库：</string>
+    <string name="operator_sz">经办人：</string>
+    <string name="date_sz">日期：</string>
+    <string name="remark_colon_sz">备注：</string>
+    <string name="sum_sz">小计</string>
+    <string name="indent_sz">订单：</string>
+    <string name="total_colon_sz">合计：</string>
+
+    <string name="business_order_sz">@string/order_sz</string>
+    <string name="business_sum_sz">@string/sum_sz</string>
+    <string name="new_order_sz">新单</string>
+    <string name="business_save_sz">@string/save_sz</string>
+    <string name="business_audit_sz">@string/audit_sz</string>
+    <string name="business_scan_sz">@string/scan_sz</string>
+
+
 </resources>

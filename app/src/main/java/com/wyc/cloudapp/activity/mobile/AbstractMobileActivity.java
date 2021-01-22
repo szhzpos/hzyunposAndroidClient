@@ -68,10 +68,24 @@ public abstract class AbstractMobileActivity extends MainActivity {
         }
     }
 
+    protected CharSequence getMiddleText(){
+        if (mMiddle != null){
+            return mMiddle.getText();
+        }
+        return "";
+    }
+
     protected void setRightText(final String text){
         if (text != null && mRight != null){
             mRight.setText(text);
         }
+    }
+
+    protected CharSequence getRightText(){
+        if (mRight != null){
+            return mRight.getText();
+        }
+        return "";
     }
 
     protected void setLeftListener(final View.OnClickListener listener){

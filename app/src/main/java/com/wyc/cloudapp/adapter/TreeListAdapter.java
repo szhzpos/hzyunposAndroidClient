@@ -269,7 +269,7 @@ public class TreeListAdapter extends RecyclerView.Adapter<TreeListAdapter.MyView
                 selected_color = mContext.getColor(R.color.listSelected);
                 text_color = mContext.getColor(R.color.white);
             } else {
-                text_color = mContext.getColor(R.color.appColor);
+                text_color = mContext.getColor(R.color.lightBlue);
                 selected_color = mContext.getColor(R.color.white);
             }
             view.setBackgroundColor(selected_color);

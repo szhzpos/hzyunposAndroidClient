@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:padding="@dimen/margin_5"
-            android:text="@string/scalse_name_sz"
+            android:text="@string/scale_name_sz"
             android:textAlignment="viewEnd"
             android:textColor="@color/blue"
             android:textSize="@dimen/font_size_16" />

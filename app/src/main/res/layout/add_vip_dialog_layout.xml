@@ -17,7 +17,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/vip_ph_num_sz"
-            android:textColor="@color/appColor"
+            android:textColor="@color/lightBlue"
             android:textSize="@dimen/font_size_16" />
 
         <EditText
@@ -43,7 +43,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/vip_card_id_sz"
-            android:textColor="@color/appColor"
+            android:textColor="@color/lightBlue"
             android:textSize="@dimen/font_size_16" />
 
         <EditText
@@ -71,7 +71,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/level_sz"
-            android:textColor="@color/appColor"
+            android:textColor="@color/lightBlue"
             android:textSize="@dimen/font_size_16" />
 
         <Spinner
@@ -84,7 +84,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/vip_six_sz"
-            android:textColor="@color/appColor"
+            android:textColor="@color/lightBlue"
             android:textSize="@dimen/font_size_16" />
 
         <Spinner
@@ -106,7 +106,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/name_sz"
-            android:textColor="@color/appColor"
+            android:textColor="@color/lightBlue"
             android:textSize="@dimen/font_size_16" />
 
         <EditText
@@ -133,7 +133,7 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/birth_sz"
-            android:textColor="@color/appColor"
+            android:textColor="@color/lightBlue"
             android:textSize="@dimen/font_size_16" />
 
         <EditText

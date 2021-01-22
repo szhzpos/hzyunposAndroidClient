@@ -151,9 +151,9 @@
             android:layout_marginStart="@dimen/margin_2"
             android:layout_marginTop="@dimen/margin_1"
             android:layout_marginBottom="@dimen/margin_2"
-            android:background="@color/appColor"
+            android:background="@color/lightBlue"
             android:text="@string/query_sz"
-            android:textColor="@color/white_orange"
+            android:textColor="@color/white_pink"
             android:textSize="@dimen/font_size_18" />
     </LinearLayout>
 

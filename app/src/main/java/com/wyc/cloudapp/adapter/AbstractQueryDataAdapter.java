@@ -24,7 +24,7 @@ public abstract class AbstractQueryDataAdapter<T extends AbstractTableDataAdapte
                 text_color = mContext.getColor(R.color.white);
             }else {
                 selected_color = mContext.getColor(R.color.white);
-                item_color = mContext.getColor(R.color.appColor);
+                item_color = mContext.getColor(R.color.lightBlue);
                 text_color = mContext.getColor(R.color.text_color);
             }
             view.setBackgroundColor(selected_color);

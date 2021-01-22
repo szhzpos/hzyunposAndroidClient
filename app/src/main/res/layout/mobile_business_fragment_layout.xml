@@ -30,7 +30,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:drawableTop="@drawable/purchase_order"
-            android:tag="activity.mobile.MobilePurchaseOrder"
+            android:tag="activity.mobile.business.MobilePurchaseOrder"
             android:text="@string/purchase_order_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
@@ -47,7 +47,6 @@
             android:background="@drawable/left_right_separator"
             android:drawableTop="@drawable/warehouse"
             android:gravity="center"
-            android:tag="activity.mobile.MobileCashierActivity"
             android:text="@string/warehouse_order_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
@@ -101,7 +100,6 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:drawableTop="@drawable/wholesale"
-            android:tag="activity.mobile.MobileCashierActivity"
             android:text="@string/wholesale_order_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
@@ -109,7 +107,7 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:verSpacing="@dimen/margin_8" />
+            app:verSpacing="@dimen/margin_5" />
 
         <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
             android:id="@+id/wholesale_sale_tv"
@@ -119,14 +117,13 @@
             android:background="@drawable/left_right_separator"
             android:drawableTop="@drawable/wholesale_sale"
             android:gravity="center"
-            android:tag="activity.mobile.MobileCashierActivity"
             android:text="@string/wholesale_sale_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
             app:layout_constraintEnd_toStartOf="@+id/wholesale_refund_tv"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/wholesale_tv"
-            app:verSpacing="@dimen/margin_8"
+            app:verSpacing="@dimen/margin_5"
             tools:layout_editor_absoluteY="1dp" />
 
         <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
@@ -136,7 +133,6 @@
             android:layout_weight="1"
             android:drawableTop="@drawable/wholesale_refund"
             android:gravity="center"
-            android:tag="activity.mobile.MobileCashierActivity"
             android:text="@string/wholesale_refund_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
@@ -144,7 +140,7 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/wholesale_sale_tv"
             app:layout_constraintTop_toTopOf="parent"
-            app:verSpacing="@dimen/margin_8" />
+            app:verSpacing="@dimen/margin_5" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -155,7 +151,7 @@
         android:gravity="center_vertical"
         android:paddingStart="@dimen/margin_8"
         android:paddingEnd="@dimen/margin_0"
-        android:text="@string/warehouse_sz"
+        android:text="@string/inventory_sz"
         android:textColor="@color/blue"
         android:textSize="@dimen/font_size_18"
         android:visibility="visible" />
@@ -173,7 +169,6 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:drawableTop="@drawable/other_inventory"
-            android:tag="activity.mobile.MobileCashierActivity"
             android:text="@string/other_inventory_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
@@ -181,7 +176,7 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:verSpacing="@dimen/margin_8" />
+            app:verSpacing="@dimen/margin_5" />
 
         <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
             android:id="@+id/inventory_order_tv"
@@ -191,7 +186,6 @@
             android:background="@drawable/left_right_separator"
             android:drawableTop="@drawable/inventory_order_tv"
             android:gravity="center"
-            android:tag="activity.mobile.MobileCashierActivity"
             android:text="@string/inventory_order_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
@@ -199,7 +193,7 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/other_inventory_tv"
             app:layout_constraintTop_toTopOf="parent"
-            app:verSpacing="@dimen/margin_8" />
+            app:verSpacing="@dimen/margin_5" />
 
         <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
             android:id="@+id/topDrawableTextView"
@@ -245,7 +239,6 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:drawableTop="@drawable/distribution_warehouse"
-            android:tag="activity.mobile.MobileCashierActivity"
             android:text="@string/distribution_warehouse_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
@@ -253,7 +246,7 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:verSpacing="@dimen/margin_8" />
+            app:verSpacing="@dimen/margin_5" />
 
         <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
             android:id="@+id/distribution_warehousing_tv"
@@ -263,7 +256,6 @@
             android:background="@drawable/left_right_separator"
             android:drawableTop="@drawable/distribution_warehousing"
             android:gravity="center"
-            android:tag="activity.mobile.MobileCashierActivity"
             android:text="@string/distribution_warehousing_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
@@ -271,7 +263,7 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/distribution_warehouse_tv"
             app:layout_constraintTop_toTopOf="parent"
-            app:verSpacing="@dimen/margin_8" />
+            app:verSpacing="@dimen/margin_5" />
 
         <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
             android:id="@+id/topDrawableTextView2"

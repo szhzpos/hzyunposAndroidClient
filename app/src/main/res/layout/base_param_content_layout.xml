@@ -36,7 +36,7 @@
                 android:paddingStart="@dimen/margin_12"
                 android:paddingEnd="@dimen/size_0"
                 android:text="@string/data_save_sz"
-                android:textColor="@color/appColor"
+                android:textColor="@color/lightBlue"
                 android:textSize="@dimen/font_size_16" />
 
             <LinearLayout
@@ -109,7 +109,7 @@
                 android:paddingStart="@dimen/margin_12"
                 android:paddingEnd="@dimen/size_0"
                 android:text="@string/dualview_sz"
-                android:textColor="@color/appColor"
+                android:textColor="@color/lightBlue"
                 android:textSize="@dimen/font_size_16" />
 
             <LinearLayout
@@ -201,7 +201,7 @@
                 android:paddingStart="@dimen/margin_12"
                 android:paddingEnd="@dimen/size_0"
                 android:text="@string/display_setting_sz"
-                android:textColor="@color/appColor"
+                android:textColor="@color/lightBlue"
                 android:textSize="@dimen/font_size_16" />
 
             <LinearLayout
@@ -258,7 +258,7 @@
                 android:paddingStart="@dimen/margin_12"
                 android:paddingEnd="@dimen/size_0"
                 android:text="@string/ml_setting_sz"
-                android:textColor="@color/appColor"
+                android:textColor="@color/lightBlue"
                 android:textSize="@dimen/font_size_16" />
 
             <LinearLayout

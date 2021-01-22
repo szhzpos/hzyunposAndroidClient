@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/appColor"
+    android:background="@color/lightBlue"
     android:focusable="false"
     tools:context=".activity.MainActivity">
 
@@ -1278,7 +1278,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/close_sz"
-            android:textColor="@color/appColor"
+            android:textColor="@color/lightBlue"
             android:textSize="@dimen/font_size_14"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/order_code_layout" />

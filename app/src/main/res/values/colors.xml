@@ -3,7 +3,8 @@
     <color name="colorPrimary">@color/appColor</color>
     <color name="colorPrimaryDark">@color/appColor</color>
     <color name="colorAccent">@color/appColor</color>
-    <color name="appColor">#53A3F3</color><!--3F3F55-->
+    <color name="appColor">@color/lightBlue</color><!--3F3F55-->
+    <color name="lightBlue">#53A3F3</color>
     <color name="blue">#0080ff</color>
     <color name="white">#FFFFFF</color>
     <color name="pink">#F88C9F</color>
@@ -23,7 +24,7 @@
     <color name="label_text_color">@color/text_color</color>
     <color name="good_name_color">@color/black</color>
     <color name="pay_detail_header">@color/table_header_color</color>
-    <color name="table_header_color">@color/appColor</color>
+    <color name="table_header_color">@color/lightBlue</color>
     <color name="listSelected">#731883F7</color>
     <color name="abnormal_status_color">@color/orange_1</color>
     <color name="activity_title_color">#53A3F3</color>

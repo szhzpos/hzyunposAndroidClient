@@ -1,18 +1,13 @@
 package com.wyc.cloudapp.mobileFragemt;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import androidx.fragment.app.Fragment;
-
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.activity.mobile.MobilePurchaseOrder;
+import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.mobileFragemt.AbstractMobileFragment;
 
 public class MobileBusinessFragment extends AbstractMobileFragment {
     public MobileBusinessFragment(final MainActivity activity) {
@@ -32,10 +27,18 @@ public class MobileBusinessFragment extends AbstractMobileFragment {
 
     @Override
     protected void triggerItemClick(View v) {
+        String title = "";
         final Intent intent = new Intent();
         intent.setClassName(mContext,mContext.getPackageName().concat(".") + v.getTag());
-        if (v instanceof TextView)intent.putExtra("title",((TextView)v).getText());
-        startActivity(intent);
-        Toast.makeText(mContext,((TextView)v).getText(),Toast.LENGTH_LONG).show();
+        if (v instanceof TextView){
+            title = ((TextView)v).getText().toString();
+            intent.putExtra("title",title);
+        }
+        try {
+            startActivity(intent);
+        }catch (ActivityNotFoundException e){
+            e.printStackTrace();
+            MyDialog.ToastMessage("暂不支持" + title,mContext,null);
+        }
     }
 }

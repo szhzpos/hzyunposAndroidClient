@@ -464,7 +464,7 @@ public final class Printer {
             mICO = new ImageView(activity);
             showIco(activity);
 
-            mICO.setBackgroundColor(activity.getColor(R.color.appColor));
+            mICO.setBackgroundColor(activity.getColor(R.color.lightBlue));
 
             final Display display = wm.getDefaultDisplay();
             final Point point = new Point();

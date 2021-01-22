@@ -1,6 +1,5 @@
-package com.wyc.cloudapp.activity.mobile;
+package com.wyc.cloudapp.activity.mobile.business;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -8,11 +7,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
@@ -44,7 +43,6 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
         initStartDateAndTime();
         initOrderList();
         initTitle();
-
     }
 
     protected abstract AbstractQueryDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> getAdapter();
@@ -53,7 +51,7 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
 
     @Override
     protected int getContentLayoutId() {
-        return R.layout.activity_mobile_purchase_order;
+        return R.layout.activity_mobile_business_order;
     }
 
     @Override

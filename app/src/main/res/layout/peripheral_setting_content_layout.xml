@@ -31,7 +31,7 @@
                 android:paddingStart="@dimen/margin_12"
                 android:paddingEnd="@dimen/size_0"
                 android:text="@string/printer_setting_sz"
-                android:textColor="@color/appColor"
+                android:textColor="@color/lightBlue"
                 android:textSize="@dimen/font_size_16" />
 
             <LinearLayout
@@ -117,7 +117,7 @@
                 android:paddingStart="@dimen/margin_12"
                 android:paddingEnd="@dimen/size_0"
                 android:text="@string/ks_setting_sz"
-                android:textColor="@color/appColor"
+                android:textColor="@color/lightBlue"
                 android:textSize="@dimen/font_size_16" />
 
             <LinearLayout
@@ -193,7 +193,7 @@
                 android:paddingStart="@dimen/margin_12"
                 android:paddingEnd="@dimen/size_0"
                 android:text="@string/serial_scale_sz"
-                android:textColor="@color/appColor"
+                android:textColor="@color/lightBlue"
                 android:textSize="@dimen/font_size_16" />
 
             <LinearLayout
