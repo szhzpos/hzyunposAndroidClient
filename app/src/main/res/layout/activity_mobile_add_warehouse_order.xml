@@ -15,6 +15,7 @@
     <include layout="@layout/business_order_function_button_layout"/>
     <include layout="@layout/business_order_supplier_layout"/>
     <include layout="@layout/business_order_common_layout"/>
+    <include layout="@layout/business_source_order_layout"/>
     <include layout="@layout/business_order_remark_layout"/>
     <include layout="@layout/business_order_details_area_layout"/>
 </com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout>

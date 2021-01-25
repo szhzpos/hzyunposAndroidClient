@@ -3,6 +3,7 @@ package com.wyc.cloudapp.activity.mobile.business;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
+import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.DrawableUtil;
 import com.wyc.cloudapp.utils.Utils;
@@ -46,9 +48,8 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
     }
 
     protected abstract AbstractQueryDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> getAdapter();
-    protected abstract void add();
     protected abstract JSONObject generateQueryCondition();
-
+    protected abstract Class<?> jumpAddTarget();
     @Override
     protected int getContentLayoutId() {
         return R.layout.activity_mobile_business_order;
@@ -65,6 +66,18 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
         setRightText(getString(R.string.add_sz));
         setRightListener(v -> add());
     }
+    private void add(){
+        final CharSequence title = getRightText().toString() + getMiddleText();
+        final Intent intent = new Intent();
+        intent.setClass(this, jumpAddTarget());
+        intent.putExtra("title", title);
+        try {
+            startActivity(intent);
+        }catch (ActivityNotFoundException e){
+            e.printStackTrace();
+            MyDialog.ToastMessage("暂不支持" + title,this,null);
+        }
+    };
 
     private void initQueryTimeBtn(){
         final LinearLayout query_time_btn_layout = findViewById(R.id.query_time_btn_layout);

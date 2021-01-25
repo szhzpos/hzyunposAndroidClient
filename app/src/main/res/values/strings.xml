@@ -447,7 +447,8 @@
 
     <!--新增业务订单-->
     <string name="pick_goods_sz">选商品</string>
-    <string name="supplier_sz">货商：</string>
+    <string name="supplier_colon_sz">货商：</string>
+    <string name="customer_colon_sz">客户：</string>
     <string name="warehouse_sz">仓库：</string>
     <string name="operator_sz">经办人：</string>
     <string name="date_sz">日期：</string>

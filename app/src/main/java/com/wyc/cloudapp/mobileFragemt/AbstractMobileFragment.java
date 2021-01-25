@@ -28,6 +28,11 @@ public abstract class AbstractMobileFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+    @Override
+    protected void finalize(){
+        Logger.d(getClass().getSimpleName() + " finalized");
+    }
+
     @CallSuper
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

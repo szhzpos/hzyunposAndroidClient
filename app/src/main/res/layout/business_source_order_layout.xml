@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/height_40"
+    android:background="@drawable/round_shape_blue"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/margin_8"
+    android:paddingTop="@dimen/margin_5"
+    android:paddingEnd="@dimen/margin_8"
+    android:paddingBottom="@dimen/margin_5">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:text="@string/indent_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_14" />
+
+    <TextView
+        android:id="@+id/m_purchase_order_tv"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:drawableEnd="@drawable/small_fold"
+        android:gravity="center_vertical" />
+</LinearLayout>

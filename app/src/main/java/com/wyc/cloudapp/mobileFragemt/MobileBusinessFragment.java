@@ -4,15 +4,14 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.view.View;
 import android.widget.TextView;
+
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.mobileFragemt.AbstractMobileFragment;
 
 public class MobileBusinessFragment extends AbstractMobileFragment {
     public MobileBusinessFragment(final MainActivity activity) {
         super(activity);
-
     }
 
     @Override

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+        android:layout_height="@dimen/height_45"
+        android:orientation="horizontal"
+        android:showDividers="middle"
+        app:ItemPadding="@dimen/margin_5">
+        <Button
+            android:id="@+id/new_order_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/round_shape_main_color"
+            android:text="@string/new_order_sz"
+            android:textColor="@color/white_pink"
+            android:textSize="@dimen/font_size_18" />
+
+        <Button
+            android:id="@+id/m_business_save_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/round_shape_main_color"
+            android:text="@string/business_save_sz"
+            android:textColor="@color/white_pink"
+            android:textSize="@dimen/font_size_18" />
+
+        <Button
+            android:id="@+id/m_business_audit_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/round_shape_main_color"
+            android:text="@string/business_audit_sz"
+            android:textColor="@color/white_pink"
+            android:textSize="@dimen/font_size_18" />
+
+        <Button
+            android:id="@+id/m_business_scan_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/round_shape_main_color"
+            android:text="@string/business_scan_sz"
+            android:textColor="@color/white_pink"
+            android:textSize="@dimen/font_size_18" />
+
+        <Button
+            android:id="@+id/m_pick_goods_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/round_shape_main_color"
+            android:text="@string/pick_goods_sz"
+            android:textColor="@color/white_pink"
+            android:textSize="@dimen/font_size_18" />
+</com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout>
