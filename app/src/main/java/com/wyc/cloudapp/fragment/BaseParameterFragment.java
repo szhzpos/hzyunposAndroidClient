@@ -11,7 +11,6 @@ import android.widget.RadioGroup;
 import android.widget.Switch;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -21,7 +20,7 @@ import com.wyc.cloudapp.dialog.DigitKeyboardPopup;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
 
-public class BaseParameterFragment extends AbstractBaseFragment {
+public class BaseParameterFragment extends AbstractParameterFragment {
     private static final String mTitle = "基本参数";
     public BaseParameterFragment() {
     }
@@ -85,6 +84,17 @@ public class BaseParameterFragment extends AbstractBaseFragment {
     }
 
     @Override
+    protected void viewCreated(boolean created) {
+        if (created){
+            //初始化事件
+            set_save_period();//数据保存周期
+            _dual_view();//双屏设置
+            auto_mol();//自动抹零
+            findViewById(R.id.save).setOnClickListener(v->saveContent());
+        }
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
@@ -92,17 +102,6 @@ public class BaseParameterFragment extends AbstractBaseFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.base_param_content_layout,container);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        mRootView = view;
-        //初始化事件
-        set_save_period();//数据保存周期
-        _dual_view();//双屏设置
-        auto_mol();//自动抹零
-
-        mRootView.findViewById(R.id.save).setOnClickListener(v->saveContent());
     }
 
     @Override
@@ -123,64 +122,58 @@ public class BaseParameterFragment extends AbstractBaseFragment {
     }
 
     private void set_save_period(){
-        if (mRootView != null){
-            final RadioGroup group = mRootView.findViewById(R.id.save_period);
-            group.setOnCheckedChangeListener((group1, checkedId) -> {
-                final RadioButton rb = group1.findViewById(checkedId);
-                switch (checkedId){
-                    case R.id._a_week:
-                        rb.setTag(7);
-                        break;
-                    case R.id._a_month:
-                        rb.setTag(30);
-                        break;
-                    case R.id._three_month:
-                        rb.setTag(90);
-                        break;
-                }
-            });
-        }
+        final RadioGroup group = findViewById(R.id.save_period);
+        group.setOnCheckedChangeListener((group1, checkedId) -> {
+            final RadioButton rb = group1.findViewById(checkedId);
+            switch (checkedId){
+                case R.id._a_week:
+                    rb.setTag(7);
+                    break;
+                case R.id._a_month:
+                    rb.setTag(30);
+                    break;
+                case R.id._three_month:
+                    rb.setTag(90);
+                    break;
+            }
+        });
     }
     private void _dual_view(){
-        if (mRootView != null){
-            final Switch sh = mRootView.findViewById(R.id._dual_view_switch);
-            final View dual_v = mRootView.findViewById(R.id.dual_v);
-            sh.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                final EditText dualview_img_show_interval_et = dual_v.findViewById(R.id.dualview_img_show_interval);
-                if (null != dualview_img_show_interval_et)
-                    if (isChecked){
-                        dual_v.setVisibility(View.VISIBLE);
-                        dualview_img_show_interval_et.setOnFocusChangeListener((v, hasFocus) -> {
-                            if (hasFocus){
-                                v.callOnClick();
-                            }
-                        });
-                        dualview_img_show_interval_et.setOnClickListener(v -> {
-                            Utils.hideKeyBoard((EditText)v);
-                            DigitKeyboardPopup digitKeyboardPopup = new DigitKeyboardPopup(mContext);
-                            digitKeyboardPopup.showAsDropDown(v);
-                        });
-                    }else {
-                        dual_v.setVisibility(View.GONE);
-                        dualview_img_show_interval_et.setOnFocusChangeListener(null);
-                        dualview_img_show_interval_et.setOnClickListener(null);
-                    }
-            });
-        }
+        final Switch sh = findViewById(R.id._dual_view_switch);
+        final View dual_v = findViewById(R.id.dual_v);
+        sh.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            final EditText dualview_img_show_interval_et = dual_v.findViewById(R.id.dualview_img_show_interval);
+            if (null != dualview_img_show_interval_et)
+                if (isChecked){
+                    dual_v.setVisibility(View.VISIBLE);
+                    dualview_img_show_interval_et.setOnFocusChangeListener((v, hasFocus) -> {
+                        if (hasFocus){
+                            v.callOnClick();
+                        }
+                    });
+                    dualview_img_show_interval_et.setOnClickListener(v -> {
+                        Utils.hideKeyBoard((EditText)v);
+                        DigitKeyboardPopup digitKeyboardPopup = new DigitKeyboardPopup(mContext);
+                        digitKeyboardPopup.showAsDropDown(v);
+                    });
+                }else {
+                    dual_v.setVisibility(View.GONE);
+                    dualview_img_show_interval_et.setOnFocusChangeListener(null);
+                    dualview_img_show_interval_et.setOnClickListener(null);
+                }
+        });
     }
     private void auto_mol(){
-        if (null != mRootView){
-            final Switch sh = mRootView.findViewById(R.id.auto_mol_switch);
-            final RadioGroup rg = mRootView.findViewById(R.id._auto_mol_group);
+        final Switch sh = findViewById(R.id.auto_mol_switch);
+        final RadioGroup rg = findViewById(R.id._auto_mol_group);
 
-            sh.setOnCheckedChangeListener((buttonView, isChecked) -> rg.setVisibility(isChecked?View.VISIBLE:View.GONE));
-        }
+        sh.setOnCheckedChangeListener((buttonView, isChecked) -> rg.setVisibility(isChecked?View.VISIBLE:View.GONE));
     }
 
     private JSONObject get_or_show_saveDataPeriod(boolean way){
         //数据保存周期
         final JSONObject value_obj = new JSONObject();
-        final RadioGroup group = mRootView.findViewById(R.id.save_period);
+        final RadioGroup group = findViewById(R.id.save_period);
         final RadioButton rb_check = group.findViewById(group.getCheckedRadioButtonId());
         if (way){
             if ( null != rb_check){
@@ -202,8 +195,8 @@ public class BaseParameterFragment extends AbstractBaseFragment {
     private JSONObject get_or_show_dual_view(boolean b){
         //双屏
         final JSONObject value_obj = new JSONObject();
-        final Switch dual_view_sh = mRootView.findViewById(R.id._dual_view_switch);
-        final EditText show_interval = mRootView.findViewById(R.id.dualview_img_show_interval);
+        final Switch dual_view_sh = findViewById(R.id._dual_view_switch);
+        final EditText show_interval = findViewById(R.id.dualview_img_show_interval);
         int status = 0,interval = 0;
         if (b){
             if (dual_view_sh.isChecked()){
@@ -222,7 +215,7 @@ public class BaseParameterFragment extends AbstractBaseFragment {
 
                 status = value_obj.getIntValue("s");
                 dual_view_sh.setChecked(status == 1);
-                View dual_v = mRootView.findViewById(R.id.dual_v);
+                View dual_v = findViewById(R.id.dual_v);
                 if (status == 1){
                     dual_v.setVisibility(View.VISIBLE);
                     show_interval.setText(value_obj.getString("v"));
@@ -238,7 +231,7 @@ public class BaseParameterFragment extends AbstractBaseFragment {
     }
     private JSONObject get_or_show_goodsImgSetting(boolean b){
         JSONObject value_obj = new JSONObject();
-        Switch sh = mRootView.findViewById(R.id._goods_img_show_switch);
+        Switch sh = findViewById(R.id._goods_img_show_switch);
         int status = 0;
         if (b){
             if (sh.isChecked()){
@@ -257,7 +250,7 @@ public class BaseParameterFragment extends AbstractBaseFragment {
     }
     private JSONObject get_or_show_secLevelCategorySetting(boolean b){
         JSONObject value_obj = new JSONObject();
-        Switch sh = mRootView.findViewById(R.id._sec_level_category_show);
+        Switch sh = findViewById(R.id._sec_level_category_show);
         int status = 0;
         if (b){
             if (sh.isChecked()){
@@ -275,12 +268,12 @@ public class BaseParameterFragment extends AbstractBaseFragment {
     }
     private JSONObject get_or_show_autoMol(boolean b) {
         JSONObject value_obj = new JSONObject();
-        Switch sh = mRootView.findViewById(R.id.auto_mol_switch);
+        Switch sh = findViewById(R.id.auto_mol_switch);
         int status = 0,value = 0,id = -1;
         if (b){
             if (sh.isChecked()){
                 status = 1;
-                RadioGroup rg = mRootView.findViewById(R.id._auto_mol_group);
+                RadioGroup rg = findViewById(R.id._auto_mol_group);
                 switch (rg.getCheckedRadioButtonId()){
                     case R.id.mol_y:
                         id = R.id.mol_y;
@@ -297,7 +290,7 @@ public class BaseParameterFragment extends AbstractBaseFragment {
             value_obj.put("v",value);
         }else{
             if (SQLiteHelper.getLocalParameter("auto_mol",value_obj)){
-                RadioGroup rg = mRootView.findViewById(R.id._auto_mol_group);
+                RadioGroup rg = findViewById(R.id._auto_mol_group);
                 status = Utils.getNotKeyAsNumberDefault(value_obj,"s",0);
                 if (status == 1){
                     id =Utils.getNotKeyAsNumberDefault(value_obj,"id",R.id.mol_j);

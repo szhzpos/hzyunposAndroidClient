@@ -103,7 +103,7 @@ public final class MoreFunDialog extends AbstractDialogSaleActivity {
         btn.setOnClickListener(v -> {
             if (verifySetupPermissions()){
                 final ParameterSettingDialog parameterSettingDialog = new ParameterSettingDialog(mContext);
-                parameterSettingDialog.show(mContext.getSupportFragmentManager(),"");
+                parameterSettingDialog.show();
                 this.dismiss();
             }
         });

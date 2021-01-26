@@ -21,9 +21,9 @@ import com.wyc.cloudapp.utils.Utils;
 
 import android_serialport_api.SerialPortFinder;
 
-public class PeripheralSettingFragment extends AbstractBaseFragment {
+public class PeripheralSettingFragment extends AbstractParameterFragment {
     private static final String mTitle = "外设设置";
-    private ArrayAdapter<String> mSerialPortAdaper;
+    private ArrayAdapter<String> mSerialPortAdapter;
     private JSONArray mProTypes;
     public PeripheralSettingFragment() {
     }
@@ -63,24 +63,22 @@ public class PeripheralSettingFragment extends AbstractBaseFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void viewCreated(boolean created) {
+        if (created){
+            findViewById(R.id.save).setOnClickListener(v->saveContent());
+            //初始化
+            initSerialScale();
+
+            //加载参数
+            loadContent();
+        }
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.peripheral_setting_content_layout,container);
     }
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        mRootView = view;
-        mRootView.findViewById(R.id.save).setOnClickListener(v->saveContent());
-        //初始化
-        initSerialScale();
 
-        //加载参数
-        loadContent();
-    }
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -98,10 +96,10 @@ public class PeripheralSettingFragment extends AbstractBaseFragment {
     }
 
     private void initSerialScale(){
-        final Spinner pro_type = mRootView.findViewById(R.id.pro_type),ser_port = mRootView.findViewById(R.id.ser_port);
-        mSerialPortAdaper = new ArrayAdapter<>(mContext,R.layout.drop_down_style);
+        final Spinner pro_type = findViewById(R.id.pro_type),ser_port = findViewById(R.id.ser_port);
+        mSerialPortAdapter = new ArrayAdapter<>(mContext,R.layout.drop_down_style);
         final ArrayAdapter<String> proTypeAdaper = new ArrayAdapter<>(mContext,R.layout.drop_down_style);
-        mSerialPortAdaper.setDropDownViewResource(R.layout.drop_down_style);
+        mSerialPortAdapter.setDropDownViewResource(R.layout.drop_down_style);
         proTypeAdaper.setDropDownViewResource(R.layout.drop_down_style);
 
         //协议类型
@@ -119,16 +117,16 @@ public class PeripheralSettingFragment extends AbstractBaseFragment {
         final SerialPortFinder mSerialPortFinder = new SerialPortFinder();
 
         final String[] entryValues = mSerialPortFinder.getAllDevicesPath();
-        mSerialPortAdaper.add("NONE");
+        mSerialPortAdapter.add("NONE");
         for(String value : entryValues){
-            mSerialPortAdaper.add(value);
+            mSerialPortAdapter.add(value);
         }
-        ser_port.setAdapter(mSerialPortAdaper);
+        ser_port.setAdapter(mSerialPortAdapter);
 
     }
     private JSONObject get_or_show_serialScale_setting(boolean way){
         JSONObject object;
-        final Spinner pro_type_s = mRootView.findViewById(R.id.pro_type),ser_port_s = mRootView.findViewById(R.id.ser_port);
+        final Spinner pro_type_s = findViewById(R.id.pro_type),ser_port_s = findViewById(R.id.ser_port);
         if (way){
             object = mProTypes.getJSONObject(pro_type_s.getSelectedItemPosition());
             object.put("ser_port",ser_port_s.getSelectedItem());
@@ -146,8 +144,8 @@ public class PeripheralSettingFragment extends AbstractBaseFragment {
                         }
                     }
                 }
-                for (int i = 0,size = mSerialPortAdaper.getCount();i < size;i ++){
-                    if (ser_port.equals(mSerialPortAdaper.getItem(i))){
+                for (int i = 0,size = mSerialPortAdapter.getCount();i < size;i ++){
+                    if (ser_port.equals(mSerialPortAdapter.getItem(i))){
                         ser_port_s.setSelection(i);
                         break;
                     }

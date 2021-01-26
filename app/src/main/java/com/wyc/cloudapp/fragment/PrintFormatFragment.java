@@ -43,7 +43,7 @@ import java.util.HashMap;
 
 import static android.app.Activity.RESULT_OK;
 
-public class PrintFormatFragment extends AbstractBaseFragment {
+public class PrintFormatFragment extends AbstractParameterFragment {
     public static final String ACTION_USB_PERMISSION = "com.wyc.cloudapp.USB_PERMISSION";
     private static final int REQUEST_BLUETOOTH__PERMISSIONS = 0xabc8;
     private static final int REQUEST_BLUETOOTH_ENABLE = 0X8888;
@@ -85,21 +85,18 @@ public class PrintFormatFragment extends AbstractBaseFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void viewCreated(boolean created) {
+        if (created){
+            final Button save_btn = findViewById(R.id.save);
+            initPrinterId();
+            //保存参数
+            save_btn.setOnClickListener(v->saveContent());
+        }
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.print_format_content_layout,container);
-    }
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        mRootView = view;
-        final Button save_btn = mRootView.findViewById(R.id.save);
-        initPrinterId();
-        //保存参数
-        save_btn.setOnClickListener(v->saveContent());
     }
 
     @Override
@@ -155,7 +152,7 @@ public class PrintFormatFragment extends AbstractBaseFragment {
     }
 
     private void initPrinterId(){
-        Spinner printerId = mRootView.findViewById(R.id.printer_id);
+        Spinner printerId = findViewById(R.id.printer_id);
         mPrintIdAdapter = new ArrayAdapter<>(mContext,R.layout.drop_down_style);
         mPrintIdAdapter.setDropDownViewResource(R.layout.drop_down_style);
         mPrintIdAdapter.add("请选择打印机");
@@ -167,7 +164,7 @@ public class PrintFormatFragment extends AbstractBaseFragment {
                 if (null != tmp){
                     String[] vals = tmp.split("\t");
                     if (vals.length > 1){
-                        RadioGroup radioGroup = mRootView.findViewById(R.id.print_way);
+                        RadioGroup radioGroup = findViewById(R.id.print_way);
                         switch (radioGroup.getCheckedRadioButtonId()){
                             case R.id.bluetooth_p:
                                 bondBlueTooth(vals[1]);
@@ -197,145 +194,141 @@ public class PrintFormatFragment extends AbstractBaseFragment {
 
     private JSONObject get_or_show_print_format_content(boolean way){
         final JSONObject object = new JSONObject(),content = new JSONObject();
-        if (mRootView != null){
-            final RadioGroup frg = mRootView.findViewById(R.id.format_rg),fzrg = mRootView.findViewById(R.id.format_size_rg);
-            final EditText stores_name = mRootView.findViewById(R.id.stores_name),footer_c = mRootView.findViewById(R.id.footer_c),
-                    p_count = mRootView.findViewById(R.id.c_count),footer_space = mRootView.findViewById(R.id.footer_space);
-            String parameter_id = "",parameter_desc = "";
-            int id = frg.getCheckedRadioButtonId();
-            switch (id){
-                case R.id.checkout_format:
-                    parameter_id = "c_f_info";
-                    parameter_desc = "结账小票打印格式信息";
-                    break;
-                case R.id.vip_c_format:
-                    parameter_id = "v_f_info";
-                    parameter_desc = "充值小票打印格式信息";
-                    break;
-                case R.id.refund_format:
-                    parameter_id = "r_f_info";
-                    parameter_desc = "退货小票打印格式信息";
-                    break;
-                case R.id.transfer_format:
-                    parameter_id = "t_f_info";
-                    parameter_desc = "交班小票打印格式信息";
-                    break;
-            }
-             if (way){
-                 object.put("f",id);
-                 object.put("f_z",fzrg.getCheckedRadioButtonId());
-                 object.put("s_n",stores_name.getText().toString());
-                 object.put("f_c",footer_c.getText().toString());
-                 object.put("p_c",p_count.getText().toString());
-                 object.put("f_s",footer_space.getText().toString());
+        final RadioGroup frg = findViewById(R.id.format_rg),fzrg = findViewById(R.id.format_size_rg);
+        final EditText stores_name = findViewById(R.id.stores_name),footer_c = findViewById(R.id.footer_c),
+                p_count = findViewById(R.id.c_count),footer_space = findViewById(R.id.footer_space);
+        String parameter_id = "",parameter_desc = "";
+        int id = frg.getCheckedRadioButtonId();
+        switch (id){
+            case R.id.checkout_format:
+                parameter_id = "c_f_info";
+                parameter_desc = "结账小票打印格式信息";
+                break;
+            case R.id.vip_c_format:
+                parameter_id = "v_f_info";
+                parameter_desc = "充值小票打印格式信息";
+                break;
+            case R.id.refund_format:
+                parameter_id = "r_f_info";
+                parameter_desc = "退货小票打印格式信息";
+                break;
+            case R.id.transfer_format:
+                parameter_id = "t_f_info";
+                parameter_desc = "交班小票打印格式信息";
+                break;
+        }
+        if (way){
+            object.put("f",id);
+            object.put("f_z",fzrg.getCheckedRadioButtonId());
+            object.put("s_n",stores_name.getText().toString());
+            object.put("f_c",footer_c.getText().toString());
+            object.put("p_c",p_count.getText().toString());
+            object.put("f_s",footer_space.getText().toString());
 
-                 content.put("parameter_id", parameter_id);
-                 content.put("parameter_content",object);
-                 content.put("parameter_desc",parameter_desc);
-             }else{
-                 if (SQLiteHelper.getLocalParameter(parameter_id,object)){
-                     fzrg.check(object.getIntValue("f_z"));
-                     stores_name.setText(Utils.getNullStringAsEmpty(object,"s_n"));
-                     footer_c.setText(Utils.getNullStringAsEmpty(object,"f_c"));
-                     p_count.setText(Utils.getNullOrEmptyStringAsDefault(object,"p_c","1"));
-                     footer_space.setText(Utils.getNullOrEmptyStringAsDefault(object,"f_s","5"));
-                 }else{
-                     MyDialog.ToastMessage("加载打印格式参数错误：" + object.getString("info"),mContext,null);
-                 }
-             }
+            content.put("parameter_id", parameter_id);
+            content.put("parameter_content",object);
+            content.put("parameter_desc",parameter_desc);
+        }else{
+            if (SQLiteHelper.getLocalParameter(parameter_id,object)){
+                fzrg.check(object.getIntValue("f_z"));
+                stores_name.setText(Utils.getNullStringAsEmpty(object,"s_n"));
+                footer_c.setText(Utils.getNullStringAsEmpty(object,"f_c"));
+                p_count.setText(Utils.getNullOrEmptyStringAsDefault(object,"p_c","1"));
+                footer_space.setText(Utils.getNullOrEmptyStringAsDefault(object,"f_s","5"));
+            }else{
+                MyDialog.ToastMessage("加载打印格式参数错误：" + object.getString("info"),mContext,null);
+            }
         }
         return content;
     }
 
     private JSONArray get_or_show_print_format_content_2(boolean way){//每种格式共用公共参数
         final JSONArray array = new JSONArray();
-        if (mRootView != null){
-            JSONObject object = new JSONObject(),content = new JSONObject();
-            final RadioGroup fzrg = mRootView.findViewById(R.id.format_size_rg);
-            final EditText stores_name_et = mRootView.findViewById(R.id.stores_name),footer_c_et = mRootView.findViewById(R.id.footer_c),
-                    p_count_et = mRootView.findViewById(R.id.c_count),footer_space_et = mRootView.findViewById(R.id.footer_space),
-                    v_c_count_et = mRootView.findViewById(R.id.v_c_count),r_c_count_et = mRootView.findViewById(R.id.r_c_count),t_c_count_et = mRootView.findViewById(R.id.t_c_count);
+        JSONObject object = new JSONObject(),content = new JSONObject();
+        final RadioGroup fzrg = findViewById(R.id.format_size_rg);
+        final EditText stores_name_et = findViewById(R.id.stores_name),footer_c_et = findViewById(R.id.footer_c),
+                p_count_et = findViewById(R.id.c_count),footer_space_et = findViewById(R.id.footer_space),
+                v_c_count_et = findViewById(R.id.v_c_count),r_c_count_et = findViewById(R.id.r_c_count),t_c_count_et = findViewById(R.id.t_c_count);
 
-            if (way){
-                int size_id = fzrg.getCheckedRadioButtonId();
-                final String stores_name = stores_name_et.getText().toString(),footer_c = footer_c_et.getText().toString(),p_count = p_count_et.getText().toString(),
-                        footer_space = footer_space_et.getText().toString();
+        if (way){
+            int size_id = fzrg.getCheckedRadioButtonId();
+            final String stores_name = stores_name_et.getText().toString(),footer_c = footer_c_et.getText().toString(),p_count = p_count_et.getText().toString(),
+                    footer_space = footer_space_et.getText().toString();
 
-                //结账单
-                object.put("f",R.id.checkout_format);
-                object.put("f_z",size_id);
-                object.put("s_n",stores_name);
-                object.put("f_c",footer_c);
-                object.put("p_c",p_count);
-                object.put("f_s",footer_space);
+            //结账单
+            object.put("f",R.id.checkout_format);
+            object.put("f_z",size_id);
+            object.put("s_n",stores_name);
+            object.put("f_c",footer_c);
+            object.put("p_c",p_count);
+            object.put("f_s",footer_space);
 
-                content.put("parameter_id","c_f_info");
-                content.put("parameter_content",object);
-                content.put("parameter_desc","结账小票打印格式信息");
-                array.add(content);
+            content.put("parameter_id","c_f_info");
+            content.put("parameter_content",object);
+            content.put("parameter_desc","结账小票打印格式信息");
+            array.add(content);
 
-                //充值单
-                object = new JSONObject();
-                object.put("f",R.id.vip_c_format);
-                object.put("f_z",size_id);
-                object.put("s_n",stores_name);
-                object.put("f_c",footer_c);
-                object.put("p_c",v_c_count_et.getText().toString());
-                object.put("f_s",footer_space);
-                content = new JSONObject();
-                content.put("parameter_id", "v_f_info");
-                content.put("parameter_content",object);
-                content.put("parameter_desc","充值小票打印格式信息");
-                array.add(content);
+            //充值单
+            object = new JSONObject();
+            object.put("f",R.id.vip_c_format);
+            object.put("f_z",size_id);
+            object.put("s_n",stores_name);
+            object.put("f_c",footer_c);
+            object.put("p_c",v_c_count_et.getText().toString());
+            object.put("f_s",footer_space);
+            content = new JSONObject();
+            content.put("parameter_id", "v_f_info");
+            content.put("parameter_content",object);
+            content.put("parameter_desc","充值小票打印格式信息");
+            array.add(content);
 
-                //退货单
-                object = new JSONObject();
-                object.put("f",R.id.refund_format);
-                object.put("f_z",size_id);
-                object.put("s_n",stores_name);
-                object.put("f_c",footer_c);
-                object.put("p_c",r_c_count_et.getText().toString());
-                object.put("f_s",footer_space);
-                content = new JSONObject();
-                content.put("parameter_id", "r_f_info");
-                content.put("parameter_content",object);
-                content.put("parameter_desc","退货小票打印格式信息");
-                array.add(content);
+            //退货单
+            object = new JSONObject();
+            object.put("f",R.id.refund_format);
+            object.put("f_z",size_id);
+            object.put("s_n",stores_name);
+            object.put("f_c",footer_c);
+            object.put("p_c",r_c_count_et.getText().toString());
+            object.put("f_s",footer_space);
+            content = new JSONObject();
+            content.put("parameter_id", "r_f_info");
+            content.put("parameter_content",object);
+            content.put("parameter_desc","退货小票打印格式信息");
+            array.add(content);
 
-                //交班单
-                object = new JSONObject();
-                object.put("f",R.id.transfer_format);
-                object.put("f_z",size_id);
-                object.put("s_n",stores_name);
-                object.put("f_c",footer_c);
-                object.put("p_c",t_c_count_et.getText().toString());
-                object.put("f_s",footer_space);
-                content = new JSONObject();
-                content.put("parameter_id", "t_f_info");
-                content.put("parameter_content",object);
-                content.put("parameter_desc","交班小票打印格式信息");
-                array.add(content);
+            //交班单
+            object = new JSONObject();
+            object.put("f",R.id.transfer_format);
+            object.put("f_z",size_id);
+            object.put("s_n",stores_name);
+            object.put("f_c",footer_c);
+            object.put("p_c",t_c_count_et.getText().toString());
+            object.put("f_s",footer_space);
+            content = new JSONObject();
+            content.put("parameter_id", "t_f_info");
+            content.put("parameter_content",object);
+            content.put("parameter_desc","交班小票打印格式信息");
+            array.add(content);
+        }else{
+            boolean code = SQLiteHelper.getLocalParameter("c_f_info",object);
+            if (code){
+                fzrg.check(object.getIntValue("f_z"));
+                stores_name_et.setText(Utils.getNullStringAsEmpty(object,"s_n"));
+                footer_c_et.setText(Utils.getNullStringAsEmpty(object,"f_c"));
+                p_count_et.setText(Utils.getNullOrEmptyStringAsDefault(object,"p_c","1"));
+                footer_space_et.setText(Utils.getNullOrEmptyStringAsDefault(object,"f_s","5"));
+
+                code = SQLiteHelper.getLocalParameter("v_f_info",object);
+                if (code)v_c_count_et.setText(Utils.getNullOrEmptyStringAsDefault(object,"p_c","1"));
+
+                code = SQLiteHelper.getLocalParameter("r_f_info",object);
+                if (code)r_c_count_et.setText(Utils.getNullOrEmptyStringAsDefault(object,"p_c","1"));
+
+                code = SQLiteHelper.getLocalParameter("t_f_info",object);
+                if (code)t_c_count_et.setText(Utils.getNullOrEmptyStringAsDefault(object,"p_c","1"));
+
             }else{
-                boolean code = SQLiteHelper.getLocalParameter("c_f_info",object);
-                if (code){
-                    fzrg.check(object.getIntValue("f_z"));
-                    stores_name_et.setText(Utils.getNullStringAsEmpty(object,"s_n"));
-                    footer_c_et.setText(Utils.getNullStringAsEmpty(object,"f_c"));
-                    p_count_et.setText(Utils.getNullOrEmptyStringAsDefault(object,"p_c","1"));
-                    footer_space_et.setText(Utils.getNullOrEmptyStringAsDefault(object,"f_s","5"));
-
-                    code = SQLiteHelper.getLocalParameter("v_f_info",object);
-                    if (code)v_c_count_et.setText(Utils.getNullOrEmptyStringAsDefault(object,"p_c","1"));
-
-                    code = SQLiteHelper.getLocalParameter("r_f_info",object);
-                    if (code)r_c_count_et.setText(Utils.getNullOrEmptyStringAsDefault(object,"p_c","1"));
-
-                    code = SQLiteHelper.getLocalParameter("t_f_info",object);
-                    if (code)t_c_count_et.setText(Utils.getNullOrEmptyStringAsDefault(object,"p_c","1"));
-
-                }else{
-                    MyDialog.ToastMessage("加载打印格式参数错误：" + object.getString("info"),mContext,null);
-                }
+                MyDialog.ToastMessage("加载打印格式参数错误：" + object.getString("info"),mContext,null);
             }
         }
         return array;
@@ -343,8 +336,8 @@ public class PrintFormatFragment extends AbstractBaseFragment {
     private JSONObject get_or_show_printer_setting(boolean way) {
         int id = -1,status = 0;
         JSONObject object = new JSONObject();
-        RadioGroup radioGroup = mRootView.findViewById(R.id.print_way);
-        Spinner printerId = mRootView.findViewById(R.id.printer_id);
+        RadioGroup radioGroup = findViewById(R.id.print_way);
+        Spinner printerId = findViewById(R.id.printer_id);
         if (way){
             switch (radioGroup.getCheckedRadioButtonId()){
                 case R.id.bluetooth_p:
@@ -481,7 +474,7 @@ public class PrintFormatFragment extends AbstractBaseFragment {
     };
 
     private void startFindDevice(){
-        RadioGroup radioGroup = mRootView.findViewById(R.id.print_way);
+        RadioGroup radioGroup = findViewById(R.id.print_way);
         switch (radioGroup.getCheckedRadioButtonId()){
             case R.id.bluetooth_p:
                 if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {

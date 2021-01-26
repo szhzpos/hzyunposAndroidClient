@@ -116,21 +116,18 @@ public final class MyDialog extends AbstractDialogContext {
 
     @Override
     protected void initWindowSize(){
-        final WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
-        if (m != null){
-            if (Utils.lessThan7Inches(mContext)){
-                final Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
-                final Point point = new Point();
-                d.getSize(point);
-                final Window dialogWindow = this.getWindow();
-                if (dialogWindow != null){
-                    final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-                    dialogWindow.setGravity(Gravity.CENTER);
-                    lp.width = (int) (point.x * 0.95);
-                    dialogWindow.setAttributes(lp);
-                }
-            }
+        final Display d = mContext.getDisplay(); // 获取屏幕宽、高用
+        final Point point = new Point();
+        d.getSize(point);
+        final Window dialogWindow = this.getWindow();
+        final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+        dialogWindow.setGravity(Gravity.CENTER);
+        if (Utils.lessThan7Inches(mContext)){
+            lp.width = (int) (point.x * 0.95);
+        }else {
+            lp.width = Utils.dpToPx(mContext,368);
         }
+        dialogWindow.setAttributes(lp);
     }
 
     @Override

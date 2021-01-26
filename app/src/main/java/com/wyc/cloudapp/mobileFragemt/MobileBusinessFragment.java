@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.TextView;
 
+import com.wyc.cloudapp.CustomizationView.TopDrawableTextView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -26,18 +27,25 @@ public class MobileBusinessFragment extends AbstractMobileFragment {
 
     @Override
     protected void triggerItemClick(View v) {
-        String title = "";
-        final Intent intent = new Intent();
-        intent.setClassName(mContext,mContext.getPackageName().concat(".") + v.getTag());
-        if (v instanceof TextView){
-            title = ((TextView)v).getText().toString();
-            intent.putExtra("title",title);
+        if (v instanceof TopDrawableTextView){
+            String title = "";
+            final Intent intent = new Intent();
+            intent.setClassName(mContext,mContext.getPackageName().concat(".") + v.getTag());
+            if (v instanceof TextView){
+                title = ((TextView)v).getText().toString();
+                intent.putExtra("title",title);
+            }
+            try {
+                startActivity(intent);
+            }catch (ActivityNotFoundException e){
+                e.printStackTrace();
+                MyDialog.ToastMessage("暂不支持" + title,mContext,null);
+            }
         }
-        try {
-            startActivity(intent);
-        }catch (ActivityNotFoundException e){
-            e.printStackTrace();
-            MyDialog.ToastMessage("暂不支持" + title,mContext,null);
-        }
+    }
+
+    @Override
+    protected void viewCreated(boolean created) {
+
     }
 }

@@ -24,18 +24,8 @@ public final class MyFragment extends AbstractMobileFragment {
 
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View root = super.onCreateView(inflater,container,savedInstanceState);
-        if (root != null){
-            initExit(root);
-            initUserInfo(root);
-        }
-        return root;
-    }
-
-    private void initExit(@NonNull final View root){
-        final Button exit = root.findViewById(R.id.m_exit_btn);
+    private void initExit(){
+        final Button exit = findViewById(R.id.m_exit_btn);
         exit.setOnClickListener(v -> {
             if (MyDialog.showMessageToModalDialog(mContext,"是否退出登录?") == 1){
                 CustomApplication.self().resetSync();
@@ -47,8 +37,8 @@ public final class MyFragment extends AbstractMobileFragment {
         });
     }
 
-    private void initUserInfo(@NonNull final View root){
-        final TextView job_num_tv = root.findViewById(R.id.job_num_tv),m_name_tv = root.findViewById(R.id.m_name_tv);
+    private void initUserInfo(){
+        final TextView job_num_tv = findViewById(R.id.job_num_tv),m_name_tv = findViewById(R.id.m_name_tv);
         final JSONObject object = mContext.getCashierInfo();
         job_num_tv.setText(object.getString("cas_code"));
         m_name_tv.setText(object.getString("cas_name"));
@@ -73,5 +63,13 @@ public final class MyFragment extends AbstractMobileFragment {
             if (v instanceof TextView)intent.putExtra("title",((TextView)v).getText());
         }
         startActivity(intent);
+    }
+
+    @Override
+    protected void viewCreated(boolean created) {
+        if (created){
+            initExit();
+            initUserInfo();
+        }
     }
 }

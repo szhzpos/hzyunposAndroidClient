@@ -90,4 +90,8 @@ public final class MobileCashierDeskFragment extends AbstractMobileFragment {
         }
     }
 
+    @Override
+    protected void viewCreated(boolean created) {
+
+    }
 }

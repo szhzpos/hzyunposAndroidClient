@@ -48,6 +48,7 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
     private View mCashierDesk;
     private float x1,y1;
     private final List<Integer> mBtnId = new ArrayList<>();
+    private boolean isMoved = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,50 +65,65 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
         return R.layout.activity_mobile_navigation;
     }
 
+
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
+        Logger.d("action:%d,isMoved:%s,x1:%f,y1:%f",event.getAction(),isMoved,x1,y1);
         switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:
                 x1 = event.getX();
                 y1 = event.getY();
+                isMoved = false;
                 break;
             case MotionEvent.ACTION_MOVE:{
                 //有可能没触发ACTION_DOWN，这里更新成第一个ACTION_MOVE事件的值
-                if (x1 == -1){
-                    x1 = event.getX();
-                }
-                if (y1 == -1){
-                    y1 = event.getY();
+                float m_x = event.getX(),m_y = event.getY();
+                if (x1 == -1 || y1 == -1){
+                    x1 = m_x;
+                    y1 = m_y;
+                    isMoved = false;
+                }else {
+                    isMoved = x1 != m_x || y1 != m_y;
                 }
             }
             break;
             case MotionEvent.ACTION_UP:
-                int current_id = mCurrentNavView == null ? -1 : mCurrentNavView.getId(),
-                        current_index = mBtnId.indexOf(current_id);
-                float x2 = event.getX();
-                float y2 = event.getY();
-                if(x1-x2 > Math.abs(y2-y1)) {//左划
-                    x1 = -1;
-                    y1 = -1;
-                    if ((current_index += 1) > mBtnId.size() - 1){
-                        current_index = 0;
-                    }
-                    final View view = findViewById(mBtnId.get(current_index));
-                    if (null != view){
-                        view.callOnClick();
-                        return true;
-                    }
+                float x1_tmp = x1;
+                float y1_tmp = y1;
 
-                } else if(x2-x1 > Math.abs(y2-y1) ) {//右划
-                    x1 = -1;
-                    y1 = -1;
-                    if ((current_index -= 1) < 0){
-                        current_index = mBtnId.size() - 1;
-                    }
-                    final View view = findViewById(mBtnId.get(current_index));
-                    if (view != null){
-                        view.callOnClick();
-                        return true;
+                x1 = -1;
+                y1 = -1;
+
+                if (isMoved){
+                    isMoved = false;
+
+                    int current_id = mCurrentNavView == null ? -1 : mCurrentNavView.getId(),
+                            current_index = mBtnId.indexOf(current_id);
+
+                    float x2 = event.getX();
+                    float y2 = event.getY();
+
+                    Logger.d("x2:%f,y2:%f",x2,y2);
+
+                    if(x1_tmp-x2 > Math.abs(y2-y1_tmp)) {//左划
+                        if ((current_index += 1) > mBtnId.size() - 1){
+                            current_index = 0;
+                        }
+                        final View view = findViewById(mBtnId.get(current_index));
+                        if (null != view){
+                            view.callOnClick();
+                            return true;
+                        }
+
+                    } else if(x2-x1_tmp > Math.abs(y2-y1_tmp) ) {//右划
+                        if ((current_index -= 1) < 0){
+                            current_index = mBtnId.size() - 1;
+                        }
+                        final View view = findViewById(mBtnId.get(current_index));
+                        if (view != null){
+                            view.callOnClick();
+                            return true;
+                        }
                     }
                 }
                 break;

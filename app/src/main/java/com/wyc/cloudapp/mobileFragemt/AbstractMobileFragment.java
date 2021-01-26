@@ -10,6 +10,7 @@ import androidx.annotation.CallSuper;
 import androidx.fragment.app.Fragment;
 
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.fragment.AbstractBaseFragment;
 import com.wyc.cloudapp.logger.Logger;
 
 /*
@@ -18,7 +19,7 @@ import com.wyc.cloudapp.logger.Logger;
  * 叶节点的点击事件可以调用triggerItemClick，子类可实现此方法实现业务逻辑。
  * Activity 的全类名保存在叶节点的tag属性中。
  * */
-public abstract class AbstractMobileFragment extends Fragment {
+public abstract class AbstractMobileFragment extends AbstractBaseFragment {
     protected MainActivity mContext;
     public AbstractMobileFragment(final MainActivity activity){
         mContext = activity;
@@ -26,11 +27,6 @@ public abstract class AbstractMobileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    protected void finalize(){
-        Logger.d(getClass().getSimpleName() + " finalized");
     }
 
     @CallSuper
