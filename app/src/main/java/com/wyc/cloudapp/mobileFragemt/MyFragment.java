@@ -1,14 +1,9 @@
 package com.wyc.cloudapp.mobileFragemt;
 
 import android.content.Intent;
-import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-
-import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
@@ -18,7 +13,7 @@ import com.wyc.cloudapp.activity.mobile.MobileSetupActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
 
-public final class MyFragment extends AbstractMobileFragment {
+public final class MyFragment extends AbstractJumpFragment {
     public MyFragment(final MainActivity activity) {
         super(activity);
 
@@ -39,9 +34,8 @@ public final class MyFragment extends AbstractMobileFragment {
 
     private void initUserInfo(){
         final TextView job_num_tv = findViewById(R.id.job_num_tv),m_name_tv = findViewById(R.id.m_name_tv);
-        final JSONObject object = mContext.getCashierInfo();
-        job_num_tv.setText(object.getString("cas_code"));
-        m_name_tv.setText(object.getString("cas_name"));
+        job_num_tv.setText(mContext.getCashierCode());
+        m_name_tv.setText(mContext.getCashierName());
     }
 
     @Override
@@ -67,7 +61,8 @@ public final class MyFragment extends AbstractMobileFragment {
 
     @Override
     protected void viewCreated(boolean created) {
-        if (created){
+        super.viewCreated(created);
+        if (created) {
             initExit();
             initUserInfo();
         }

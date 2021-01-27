@@ -14,7 +14,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
 
-public final class TopDrawableTextView extends androidx.appcompat.widget.AppCompatTextView{
+public final class TopDrawableTextView extends JumpTextView{
     private float mVerSpacing,mBottomSpacing;
     private final Drawable[] mDrawables;
     private Drawable mTopDrawable;

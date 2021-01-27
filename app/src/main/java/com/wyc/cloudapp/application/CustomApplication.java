@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -46,6 +47,10 @@ public final class CustomApplication extends Application {
     private final AtomicBoolean mNetworkStatus;
     private MessageCallback mCallback;
     private final Myhandler myhandler;
+
+    private JSONObject mCashierInfo,mStoreInfo;
+    private String mAppId, mAppSecret,mUrl;
+
     public CustomApplication(){
         super();
         mApplication = this;
@@ -62,6 +67,57 @@ public final class CustomApplication extends Application {
         Logger.addLogAdapter(new DiskLogAdapter());//日志记录磁盘
 
         registerActivityLifecycleCallbacks(callbacks);
+    }
+
+    public void initCashierInfoAndStoreInfo(){
+        final JSONObject cas_info = mCashierInfo = new JSONObject();
+        final JSONObject st_info = mStoreInfo = new JSONObject();
+        if (SQLiteHelper.getLocalParameter("cashierInfo",cas_info)){
+            if (SQLiteHelper.getLocalParameter("connParam",st_info)){
+                try {
+                    mUrl = st_info.getString("server_url");
+                    mAppId = st_info.getString("appId");
+                    mAppSecret = st_info.getString("appSecret");
+                    mStoreInfo = JSON.parseObject(st_info.getString("storeInfo"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    MyDialog.displayErrorMessage(this, "初始化仓库信息错误：" + e.getMessage());
+                }
+            }else{
+                MyDialog.displayErrorMessage(this, "初始化仓库信息错误：" + st_info.getString("info"));
+            }
+        }else{
+            MyDialog.displayErrorMessage(this, "初始化收银员信息错误：" + cas_info.getString("info"));
+        }
+    }
+
+    public JSONObject getCashierInfo(){
+        return mCashierInfo;
+    }
+    public JSONObject getStoreInfo(){
+        return mStoreInfo;
+    }
+    public String getCashierName(){
+       return mCashierInfo.getString("cas_name");
+    }
+    public String getCashierId(){
+        return mCashierInfo.getString("cas_Id");
+    }
+    public String getStoreName(){
+        return mStoreInfo.getString("stores_name");
+    }
+    public String getStoreId(){
+        return mStoreInfo.getString("stores_id");
+    }
+
+    public String getAppId(){
+        return mAppId;
+    }
+    public String getAppSecret(){
+        return mAppSecret;
+    }
+    public String getUrl(){
+        return mUrl;
     }
 
     private final ActivityLifecycleCallbacks callbacks = new ActivityLifecycleCallbacks() {

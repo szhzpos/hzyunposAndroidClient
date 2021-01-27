@@ -129,8 +129,8 @@ public final class VipChargeDialogImp extends AbstractPayDialog {
                 final JSONObject member_order_info = new JSONObject();
                 final StringBuilder err = new StringBuilder();
 
-                JSONObject cashier_info = mContext.getCashierInfo(),store_info = mContext.getStoreInfo(),data_ = new JSONObject(),retJson,info_json;
-                final String url = mContext.getUrl(),appId = mContext.getAppId(),appSecret = mContext.getAppSecret(),stores_id = store_info.getString("stores_id"),sz_moeny =  mPayAmtEt.getText().toString(),
+                JSONObject data_ = new JSONObject(),retJson,info_json;
+                final String url = mContext.getUrl(),appId = mContext.getAppId(),appSecret = mContext.getAppSecret(),stores_id = mContext.getStoreId(),sz_moeny =  mPayAmtEt.getText().toString(),
                         member_id = mVip.getString("member_id"),third_order_id = generate_pay_son_order_id();
 
 
@@ -144,7 +144,7 @@ public final class VipChargeDialogImp extends AbstractPayDialog {
                 member_order_info.put("name",mVip.getString("name"));
 
                 member_order_info.put("third_order_id",third_order_id);
-                member_order_info.put("cashier_id",cashier_info.getString("cas_id"));
+                member_order_info.put("cashier_id",mContext.getCashierId());
                 member_order_info.put("order_money",sz_moeny);
 
                 //保存单据
@@ -158,7 +158,7 @@ public final class VipChargeDialogImp extends AbstractPayDialog {
                         data_.put("appid",appId);
                         data_.put("stores_id",stores_id);
                         data_.put("member_id",member_id);
-                        data_.put("cashier_id",cashier_info.getString("cas_id"));
+                        data_.put("cashier_id",mContext.getCashierId());
                         data_.put("order_money",sz_moeny);
 
                         String sz_param = HttpRequest.generate_request_parm(data_,appSecret);
@@ -212,7 +212,7 @@ public final class VipChargeDialogImp extends AbstractPayDialog {
                                             data_.put("appid",appId);
                                             data_.put("stores_id",stores_id);
                                             data_.put("order_code",order_code);
-                                            data_.put("pos_num",cashier_info.getString("pos_num"));
+                                            data_.put("pos_num",mContext.getPosNum());
                                             data_.put("is_wuren",2);
                                             data_.put("order_code_son",third_order_id);
                                             data_.put("pay_money",sz_moeny);
@@ -384,7 +384,7 @@ public final class VipChargeDialogImp extends AbstractPayDialog {
         return "MPAY" + new SimpleDateFormat("yyyyMMdd",Locale.CHINA).format(new Date()) + Utils.getNonce_str(8);
     }
     private static class Myhandler extends Handler {
-        private WeakReference<VipChargeDialogImp> weakHandler;
+        private final WeakReference<VipChargeDialogImp> weakHandler;
         private Myhandler(VipChargeDialogImp dialog){
             this.weakHandler = new WeakReference<>(dialog);
         }

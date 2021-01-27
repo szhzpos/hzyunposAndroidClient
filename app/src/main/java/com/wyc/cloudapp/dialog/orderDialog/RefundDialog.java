@@ -421,8 +421,8 @@ public final class RefundDialog extends AbstractDialogMainActivity {
         return order_code;
     }
     private boolean generateRefundData(final @NonNull JSONObject refund_info){
-        final String stores_id = mContext.getStoreInfo().getString("stores_id"),pos_num = mContext.getPosNum(),cashier_id = mContext.getCashierInfo().getString("cas_id"),
-                cashier_name = mContext.getCashierInfo().getString("cas_name"),sz_refund_remark = mRemarkEt == null ? "" : mRemarkEt.getText().toString();
+        final String stores_id = mContext.getStoreId(),pos_num = mContext.getPosNum(),cashier_id = mContext.getCashierId(),
+                cashier_name = mContext.getCashierName(),sz_refund_remark = mRemarkEt == null ? "" : mRemarkEt.getText().toString();
 
         JSONObject tmp_record;
         long time = System.currentTimeMillis() / 1000;

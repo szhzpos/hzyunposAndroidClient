@@ -715,7 +715,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         JSONObject order_info = new JSONObject(),tmp_json;
         JSONArray orders = new JSONArray(),combination_goods = new JSONArray(),sales_data,pays_data,discount_records;
 
-        final String order_code = mContext.getOrderCode(),stores_id = mContext.getStoreInfo().getString("stores_id"),zk_cashier_id = mContext.getPermissionCashierId();
+        final String order_code = mContext.getOrderCode(),stores_id = mContext.getStoreId(),zk_cashier_id = mContext.getPermissionCashierId();
         final StringBuilder err = new StringBuilder();
         //处理销售明细
         sales_data = Utils.JsondeepCopy(mContext.getSaleData());//不能直接获取引用，需要重新复制一份否则会修改原始数据；如果业务不能正常完成，之前数据会遭到破坏
@@ -811,7 +811,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         order_info.put("discount_price",sale_sum_amt);
         order_info.put("discount_money",total);
         order_info.put("discount",String.format(Locale.CHINA,"%.4f",sale_sum_amt / total));
-        order_info.put("cashier_id", mContext.getCashierInfo().getString("cas_id"));
+        order_info.put("cashier_id", mContext.getCashierId());
         order_info.put("addtime",time);
         order_info.put("pos_code", mContext.getPosNum());
         order_info.put("order_status",1);//订单状态（1未付款，2已付款，3已取消，4已退货）
@@ -898,7 +898,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         String pay_method_id ,pay_money,unified_pay_order,unified_pay_query,sz_param,v_num,order_code_son ,third_pay_order_id,discount_xnote;
 
         final String order_code = mContext.getOrderCode(),url = mContext.getUrl(),appId = mContext.getAppId(),appSecret = mContext.getAppSecret(),
-                stores_id = mContext.getStoreInfo().getString("stores_id"),pos_num = mContext.getCashierInfo().getString("pos_num");
+                stores_id = mContext.getStoreId(),pos_num = mContext.getPosNum();
 
         final List<ContentValues> valueList = new ArrayList<>();
         final List<String> tables = new ArrayList<>(),whereClauseList = new ArrayList<>();

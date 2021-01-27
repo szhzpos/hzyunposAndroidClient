@@ -52,8 +52,7 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
 
     public void setDatas(final String cas_id){
         final StringBuilder err = new StringBuilder();
-        int stores_id = mContext.getStoreInfo().getIntValue("stores_id");
-        final String start_time = mTransferStartTime,ti_code = generateTransferIdOrderCode();
+        final String start_time = mTransferStartTime,ti_code = generateTransferIdOrderCode(),stores_id = mContext.getStoreId();
 
         Logger.d("start_time：%s",start_time);
 
@@ -85,7 +84,7 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
                 mTransferSumInfo.put("sj_money",cash_sum_amt);
                 mTransferSumInfo.put("sum_money",cash_sum_amt);
                 mTransferSumInfo.put("transfer_time",start_time);
-                mTransferSumInfo.put("stores_id",mContext.getStoreInfo().getIntValue("stores_id"));
+                mTransferSumInfo.put("stores_id",mContext.getStoreId());
                 mTransferSumInfo.put("ti_code",ti_code);
             }
         }
@@ -96,7 +95,7 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
         return mContext.verifyPermissions("7",null,false);
     }
 
-    private String getTransferStartTime(final String cas_id,int stores_id,final StringBuilder err){
+    private String getTransferStartTime(final String cas_id,final String stores_id,final StringBuilder err){
         final String start_time_where_sql = " transfer_status = 1 and (order_status = 2  or order_status = 4) and stores_id = "+ stores_id +" and cashier_id =" + cas_id,
                 start_time_sql = "select min(addtime) addtime from (select min(addtime) addtime from member_order_info where  transfer_status = 1 and status = 3 and stores_id = "+ stores_id +" and cashier_id =" + cas_id +
                         " union select min(addtime) addtime from refund_order where "+ start_time_where_sql + " union select min(addtime) addtime from retail_order where "+ start_time_where_sql +") as b";
@@ -249,7 +248,7 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
         return order_code;
     }
 
-    protected boolean getTransferOrderCodes(final String ti_code,final String cas_id,int stores_id,final String start_time,final StringBuilder err){
+    protected boolean getTransferOrderCodes(final String ti_code,final String cas_id,final String stores_id,final String start_time,final StringBuilder err){
         boolean code = false;
          final String retail_code_sql = "select cashier_id cas_id,order_code from retail_order where transfer_status = 1 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +"  and (order_status = 2  or order_status = 4) and "+ start_time +" <= addtime and addtime <= strftime('%s','now') group by order_code,cashier_id",
                  refund_code_sql = "select cashier_id cas_id,ro_code order_code from refund_order where transfer_status = 1 and order_status = 2 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +" and "+ start_time +" <= addtime and addtime <= strftime('%s','now') group by ro_code,cashier_id",
@@ -287,7 +286,7 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
          return code;
      }
 
-    protected boolean getTransferDetailsInfo(final String cas_id,int stores_id,final String start_time,final StringBuilder err){
+    protected boolean getTransferDetailsInfo(final String cas_id,final String stores_id,final String start_time,final StringBuilder err){
          final String retail_sql = "SELECT pay_method,c.name pay_name ,count(1) order_num,sum(pay_money) pay_money FROM retail_order_pays a left join pay_method c on a.pay_method = c.pay_method_id inner join \n" +
                  "retail_order b on a.order_code = b.order_code where b.transfer_status = 1 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +"  and (b.order_status = 2  or b.order_status = 4) and a.pay_status = 2 and "+ start_time +" <= b.addtime and b.addtime <= strftime('%s','now') group by pay_method",
                  refund_sql = "SELECT pay_method,c.name pay_name,count(1) order_num,sum(pay_money) pay_money FROM refund_order_pays a left join pay_method c on a.pay_method = c.pay_method_id inner join refund_order b \n" +
@@ -304,8 +303,8 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
      }
 
     public int verifyTransfer(final StringBuilder info){
-        int code = -1,stores_id= mContext.getStoreInfo().getIntValue("stores_id");
-        String cas_id = mContext.getCashierInfo().getString("cas_id"),start_time = getTransferStartTime(cas_id,stores_id,info);
+        int code = -1;
+        String cas_id = mContext.getCashierId(),stores_id= mContext.getStoreId(),start_time = getTransferStartTime(cas_id,stores_id,info);
 
         if (start_time != null){
             if (start_time.isEmpty())start_time = String.valueOf(new Date().getTime() / 1000);
@@ -314,8 +313,8 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
                     sz_h_counts = SQLiteHelper.getString("select count(hang_id) from hangbill where cas_id = '"+ cas_id +"' and stores_id = " + stores_id,info);
 
             if (sz_counts != null && sz_h_counts != null){
-                if (Integer.valueOf(sz_counts) == 0 ){
-                    if (Integer.valueOf(sz_h_counts) == 0){
+                if (Integer.parseInt(sz_counts) == 0 ){
+                    if (Integer.parseInt(sz_h_counts) == 0){
                         code = 0;
                         mTransferStartTime = start_time;
                     }else {
@@ -337,7 +336,7 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
 
     public boolean saveTransferDetailInfo(double cashbox_amt,final StringBuilder err){
         boolean code;
-        int stores_id= mContext.getStoreInfo().getIntValue("stores_id"),cas_id = mContext.getCashierInfo().getIntValue("cas_id");
+        final String stores_id= mContext.getStoreId(),cas_id = mContext.getCashierId();
         final JSONObject data = new JSONObject();
         final List<String> tables = Arrays.asList("transfer_info","transfer_order","transfer_money_info","transfer_once_cardsc","transfer_recharge_money","transfer_refund_money"),
                 transfer_info_cls = Arrays.asList("sj_money","cashbox_money","cards_num","cards_money","order_money","order_e_date","order_b_date","recharge_num","recharge_money","refund_num",

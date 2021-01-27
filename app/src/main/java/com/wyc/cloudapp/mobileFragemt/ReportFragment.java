@@ -1,34 +1,56 @@
 package com.wyc.cloudapp.mobileFragemt;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import com.wyc.cloudapp.CustomizationView.TopDrawableTextView;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.dialog.MyDialog;
 
-public class ReportFragment extends Fragment {
-    public ReportFragment() {
+public class ReportFragment extends AbstractJumpFragment {
+
+    public ReportFragment(final MainActivity activity) {
+        super(activity);
+    }
+
+    @Override
+    protected void viewCreated(boolean created) {
+        super.viewCreated(created);
 
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        return inflater.inflate(R.layout.mobile_report_fragment_layout, container, false);
+    protected int getRootLayout() {
+        return R.layout.mobile_report_fragment_layout;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
+    }
 
+    @Override
+    protected int getMainViewId() {
+        return R.id.main_function_layout;
+    }
+
+    @Override
+    protected void triggerItemClick(View v) {
+        final Intent intent = new Intent();
+        intent.setClassName(mContext,mContext.getPackageName().concat(".") + v.getTag());
+        try {
+            startActivity(intent);
+        }catch (ActivityNotFoundException e){
+            e.printStackTrace();
+            MyDialog.ToastMessage("暂不支持" + ((TextView)v).getText(),mContext,null);
+        }
     }
 }

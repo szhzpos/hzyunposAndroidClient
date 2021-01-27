@@ -44,7 +44,7 @@
     <string name="appSecret">appSecret：</string>
     <string name="save_sz">保存</string>
     <string name="conn_dialog_title_sz">连接参数</string>
-    <string name="loading_sz">加载中...</string>
+    <string name="loading_sz">加载中…</string>
     <string name="sec_sign_sz">s</string>
     <string name="store_name_sz">门店：</string>
     <string name="currency_symbol_sz">￥</string>
@@ -271,7 +271,7 @@
     <string name="t_f_retail_sz">零售</string>
     <string name="t_f_refund_sz">@string/o_back_sz</string>
     <string name="t_f_deposit_sz">@string/charge_sz</string>
-    <string name="t_f_cards_sz">次卡</string>
+    <string name="t_f_cards_sz">@string/times_card_sz</string>
     <string name="t_f_retail_s_sz">零售合计：</string>
     <string name="t_f_deposit_s_sz">充值合计：</string>
     <string name="t_f_cards_s_sz">次卡合计：</string>
@@ -342,7 +342,7 @@
     <string name="manage_category_sz">所属分类</string>
     <string name="manage_goods_attr_sz">商品属性</string>
     <string name="manage_goods_status_sz">商品状态</string>
-    <string name="archive_sz">档案</string>
+    <string name="archive_sz">看板</string>
     <string name="mobile_business_sz">业务</string>
     <string name="casher_desk_sz">收银台</string>
     <string name="report_sz">报表</string>
@@ -392,7 +392,7 @@
     <string name="give_amt_colon_sz">@string/present_amt_colon_sz</string>
     <string name="deposit_amt_colon_sz">@string/charge_amt_colon_sz</string>
 
-    <string name="m_sale_sz">@string/sale_man_colon_sz</string>
+    <string name="m_sale_man_sz">@string/sale_man_colon_sz</string>
     <string name="m_order_amt_colon_sz">单据金额：</string>
     <string name="m_disc_amt_colon_sz">优惠金额：</string>
     <string name="m_num_sz">@string/num_colon_sz</string>
@@ -404,8 +404,8 @@
     <!-- 手机零售单据窗口-->
     <string name="m_sale_query_sz">销售查询</string>
     <string name="m_search_hint">销售单号/会员卡号</string>
-    <string name="today_sz">今天</string>
-    <string name="yesterday_sz">昨天</string>
+    <string name="today_sz">今日</string>
+    <string name="yesterday_sz">昨日</string>
     <string name="m_refund_order_sz">退单</string>
     <string name="query_way_sz">查询方式</string>
     <!-- 手机退货单据窗口-->
@@ -464,5 +464,26 @@
     <string name="business_audit_sz">@string/audit_sz</string>
     <string name="business_scan_sz">@string/scan_sz</string>
 
+    <!--看板-->
+    <string name="business_monitors_sz">营业监控</string>
+    <string name="seven_days_sz">近7天</string>
+    <string name="sale_amt_sz">销售金额</string>
+    <string name="times_card_amt_sz">次卡金额</string>
+    <string name="payment_way_sz">付款方式</string>
+    <string name="sale_sz">销售</string>
+    <string name="times_card_sz">次卡</string>
 
+    <!--报表-->
+    <string name="business_data_sz">营业数据</string>
+    <string name="sale_rank_sz">销售排行</string>
+    <string name="commodity_analysis_sz">商品分析</string>
+    <string name="category_sum_sz">类别汇总</string>
+    <string name="commodity_management_sz">商品管理</string>
+    <string name="commodity_stocks_sz">商品库存</string>
+    <string name="financial_verification_sz">财务对账</string>
+    <string name="cashier_bill_sz">收银员对账</string>
+    <string name="ft_days_sz">近14天</string>
+    <string name="last_month_sz">上月</string>
+    <string name="sale_num_sz">销量</string>
+    <string name="o_sale_amt_sz">销售额(元)</string>
 </resources>

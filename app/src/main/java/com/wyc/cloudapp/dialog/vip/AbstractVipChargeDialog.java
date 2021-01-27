@@ -95,7 +95,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
     private static JSONArray parse_sale_man(final MainActivity activity){
         final StringBuilder err = new StringBuilder();
         final JSONArray array = new JSONArray(),
-                sales = SQLiteHelper.getListToJson("SELECT sc_id,sc_name FROM sales_info where stores_id = '" + Utils.getNullStringAsEmpty(activity.getStoreInfo(),"stores_id") +"' and sc_status = 1",err);
+                sales = SQLiteHelper.getListToJson("SELECT sc_id,sc_name FROM sales_info where stores_id = '" + activity.getStoreId() +"' and sc_status = 1",err);
         JSONObject object = new JSONObject(),tmp;
 
         object.put("level",0);
@@ -574,8 +574,8 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                 final JSONObject member_order_info = new JSONObject();
                 final StringBuilder err = new StringBuilder();
 
-                JSONObject cashier_info = mContext.getCashierInfo(),store_info = mContext.getStoreInfo(),data_ = new JSONObject(),retJson,info_json;
-                final String url = mContext.getUrl(),appId = mContext.getAppId(),appSecret = mContext.getAppSecret(),stores_id = store_info.getString("stores_id"),
+                JSONObject data_ = new JSONObject(),retJson,info_json;
+                final String url = mContext.getUrl(),appId = mContext.getAppId(),appSecret = mContext.getAppSecret(),stores_id = mContext.getStoreId(),
                         member_id = mVip.getString("member_id"),third_order_id = generate_pay_son_order_id(),pay_method_id = mPayMethodSelected.getString("pay_method_id");
 
                 member_order_info.put("stores_id",stores_id);
@@ -589,7 +589,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                 member_order_info.put("name",mVip.getString("name"));
                 member_order_info.put("pay_method_id",pay_method_id);
                 member_order_info.put("third_order_id",third_order_id);
-                member_order_info.put("cashier_id",cashier_info.getString("cas_id"));
+                member_order_info.put("cashier_id",mContext.getCashierId());
 
                 if (!"-1".equals(sale_man_id))
                     member_order_info.put("sc_id",sale_man_id);
@@ -609,7 +609,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                     data_.put("appid",appId);
                     data_.put("stores_id",stores_id);
                     data_.put("member_id",member_id);
-                    data_.put("cashier_id",cashier_info.getString("cas_id"));
+                    data_.put("cashier_id",mContext.getCashierId());
                     data_.put("hand_give_money",present_amt);
                     data_.put("order_money",charge_moeny);
 
@@ -670,7 +670,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                                         data_.put("appid",appId);
                                         data_.put("stores_id",stores_id);
                                         data_.put("order_code",order_code);
-                                        data_.put("pos_num",cashier_info.getString("pos_num"));
+                                        data_.put("pos_num",mContext.getPosNum());
                                         data_.put("is_wuren",2);
                                         data_.put("order_code_son",third_order_id);
                                         data_.put("pay_money",charge_moeny);
@@ -838,7 +838,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
 
         if (money_orders.isEmpty() || members.isEmpty())return "";//打印内容为空直接返回空
 
-        final JSONObject stores_info = context.getStoreInfo(),money_order = money_orders.getJSONObject(0),member = members.getJSONObject(0);
+        final JSONObject stores_info = CustomApplication.self().getStoreInfo(),money_order = money_orders.getJSONObject(0),member = members.getJSONObject(0);
 
         while (print_count-- > 0) {//打印份数
             info.append(Printer.commandToStr(Printer.DOUBLE_HEIGHT)).append(Printer.commandToStr(Printer.ALIGN_CENTER))
@@ -852,7 +852,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
             if (!"".equals(origin_order_code))
                 info.append(context.getString(R.string.origin_order_code_sz).concat("：").concat(origin_order_code)).append(new_line);
 
-            info.append(context.getString(R.string.oper_sz).concat("：").concat(Utils.getNullStringAsEmpty(context.getCashierInfo(),"cas_name"))).append(new_line);
+            info.append(context.getString(R.string.oper_sz).concat("：").concat(Utils.getNullStringAsEmpty(CustomApplication.self().getCashierInfo(),"cas_name"))).append(new_line);
             info.append(context.getString(R.string.vip_card_id_sz).concat(Utils.getNullStringAsEmpty(member,"card_code"))).append(new_line);
             info.append("会员姓名：".concat(Utils.getNullStringAsEmpty(member,"name"))).append(new_line);
             info.append("支付方式：".concat(Utils.getNullStringAsEmpty(money_order,"pay_method_name"))).append(new_line);

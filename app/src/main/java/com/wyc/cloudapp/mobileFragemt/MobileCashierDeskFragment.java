@@ -20,7 +20,7 @@ import com.wyc.cloudapp.dialog.vip.MobileVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.MobileVipDepositOrderDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 
-public final class MobileCashierDeskFragment extends AbstractMobileFragment {
+public final class MobileCashierDeskFragment extends AbstractJumpFragment {
     public MobileCashierDeskFragment(MainActivity activity) {
         super(activity);
     }
@@ -88,10 +88,5 @@ public final class MobileCashierDeskFragment extends AbstractMobileFragment {
                 MyDialog.ToastMessage("暂不支持此功能!",context,null);
             }
         }
-    }
-
-    @Override
-    protected void viewCreated(boolean created) {
-
     }
 }

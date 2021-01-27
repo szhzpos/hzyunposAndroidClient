@@ -136,7 +136,7 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
             if (!object.isEmpty()){
                 final JSONObject promotion_obj = new JSONObject();
                 CharSequence goods_title = Utils.getNullStringAsEmpty(object,"goods_title");
-                if (GoodsInfoViewAdapter.getPromotionGoods(promotion_obj,mBarcodeId,Utils.getNotKeyAsNumberDefault(mContext.getStoreInfo(),"stores_id",-1))){
+                if (GoodsInfoViewAdapter.getPromotionGoods(promotion_obj,mBarcodeId,mContext.getStoreId())){
                     if (!promotion_obj.isEmpty()){
                         int way = promotion_obj.getIntValue("way");
                         switch (way){

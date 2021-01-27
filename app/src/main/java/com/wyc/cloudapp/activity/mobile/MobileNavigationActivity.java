@@ -68,7 +68,6 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        Logger.d("action:%d,isMoved:%s,x1:%f,y1:%f",event.getAction(),isMoved,x1,y1);
         switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:
                 x1 = event.getX();
@@ -105,7 +104,7 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
 
                     Logger.d("x2:%f,y2:%f",x2,y2);
 
-                    if(x1_tmp-x2 > Math.abs(y2-y1_tmp)) {//左划
+                    if(x1_tmp-x2 > Math.abs(y2-y1_tmp + 88)) {//左划
                         if ((current_index += 1) > mBtnId.size() - 1){
                             current_index = 0;
                         }
@@ -115,7 +114,7 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
                             return true;
                         }
 
-                    } else if(x2-x1_tmp > Math.abs(y2-y1_tmp) ) {//右划
+                    } else if(x2-x1_tmp > Math.abs(y2-y1_tmp) + 88) {//右划
                         if ((current_index -= 1) < 0){
                             current_index = mBtnId.size() - 1;
                         }
@@ -206,7 +205,11 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
     private final View.OnClickListener mNavClick = new View.OnClickListener() {
         private boolean setCurrentView(final View v){
             final TopDrawableTextView textView = (TopDrawableTextView)v;
-            setMiddleText(textView.getText().toString());
+            if (v.getId() == R.id._mobile_archive_tv){
+                setMiddleText(getStoreName());
+            }else
+                setMiddleText(textView.getText().toString());
+
             if (mCurrentNavView != null){
                 if (mCurrentNavView != textView){
                     mCurrentNavView.setTextColor(getColor(R.color.mobile_fun_view_no_click));
@@ -229,17 +232,16 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
             Fragment current = null ;
             final int id = v.getId();
             if (id == R.id._mobile_archive_tv) {//first
-                current = new BoardFragment();
+                current = new BoardFragment(activity);
             }else if(id == R.id._mobile_business_tv){//second
                 current = new MobileBusinessFragment(activity);
             }else if (id == R.id._mobile_report_tv){//fourth
-                current = new ReportFragment();
+                current = new ReportFragment(activity);
             }else  if(id == R.id._mobile_my_tv){//fifth
                 current = new MyFragment(activity);
             }else{//third
                 current = new MobileCashierDeskFragment(activity);
             }
-
             ft.add(R.id.mobile_fragment_container,current);
             if (mCurrentFragment != null)ft.remove(mCurrentFragment);
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
@@ -249,26 +251,7 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
         }
         @Override
         public void onClick(View v) {
-            final int id = v.getId();
-            boolean support = false;
-            if (id == R.id._mobile_archive_tv) {//first
-
-            }else if(id == R.id._mobile_business_tv){//second
-                support = true;
-            }else if (id == R.id._mobile_report_tv){//fourth
-
-            }else  if(id == R.id._mobile_my_tv){//fifth
-                support = true;
-            }else{//third
-                support = true;
-            }
-            if(support){
-                if (setCurrentView(v))showFragment(v);
-            }else {
-                if (v instanceof TextView){
-                    MyDialog.ToastMessage(String.format(Locale.CHINA,"暂不支持%s功能!",((TextView)v).getText()),MobileNavigationActivity.this,null);
-                }
-            }
+            if (setCurrentView(v))showFragment(v);
         }
     };
 

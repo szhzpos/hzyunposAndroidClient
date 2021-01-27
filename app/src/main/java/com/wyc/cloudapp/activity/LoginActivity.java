@@ -688,7 +688,8 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
     }
 
     private void launchLogin(boolean isConnection){
-        CustomApplication.self().setNetworkStatus(isConnection);
+        mApplication.setNetworkStatus(isConnection);
+        mApplication.initCashierInfoAndStoreInfo();
         final Intent intent = new Intent(this,NormalMainActivity.class);
         if (isSmallScreen)intent.setClass(this, MobileNavigationActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

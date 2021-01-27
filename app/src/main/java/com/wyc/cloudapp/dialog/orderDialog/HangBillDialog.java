@@ -287,7 +287,7 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
         if (mHbCursorAdapter != null){
             String sql = "SELECT _id,hang_id,amt h_amt,ifnull(vip_name,'无') vip_name,oper_date FROM hangbill";
             if (hang_id != null){
-                sql = sql + " where cas_id = "+ mContext.getCashierInfo().getIntValue("cas_id") +" and hang_id like '" + hang_id +"%'";
+                sql = sql + " where cas_id = "+ mContext.getCashierId() +" and hang_id like '" + hang_id +"%'";
             }
             try {
                 Cursor cursor = SQLiteHelper.getCursor(sql,null);
@@ -307,7 +307,7 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
     private void loadHangBillDetail(final String hang_id){
         if (mHbDetailCursorAdapter != null){
             try {
-                Cursor cursor = SQLiteHelper.getCursor("SELECT _id,barcode,goods_title,xnum,sale_price,discount,sale_amt,barcode_id FROM hangbill_detail where cas_id = " + mContext.getCashierInfo().getIntValue("cas_id") +" and hang_id = " + hang_id,null);
+                Cursor cursor = SQLiteHelper.getCursor("SELECT _id,barcode,goods_title,xnum,sale_price,discount,sale_amt,barcode_id FROM hangbill_detail where cas_id = " + mContext.getCashierId() +" and hang_id = " + hang_id,null);
                 cursor.moveToFirst();
                 mHbDetailCursorAdapter.changeCursor(cursor);
                 if (cursor.getCount() != 0){
@@ -423,9 +423,9 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
             final JSONArray orders = new JSONArray(),details = new JSONArray();
 
             try {
-                final String stores_id = mContext.getStoreInfo().getString("stores_id"),
-                        cas_id = mContext.getCashierInfo().getString("cas_id"),
-                        cas_name = mContext.getCashierInfo().getString("cas_name");
+                final String stores_id = mContext.getStoreId(),
+                        cas_id = mContext.getCashierId(),
+                        cas_name = mContext.getCashierName();
 
                 hang_id = getHangId();
 
@@ -490,7 +490,7 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
 
     private int getHangId(){
         final JSONObject data = new JSONObject();
-        if (!SQLiteHelper.execSql(data,"select ifnull(max(hang_id),0) + 1 hang_id from hangbill where cas_id = " + mContext.getCashierInfo().getIntValue("cas_id"))){
+        if (!SQLiteHelper.execSql(data,"select ifnull(max(hang_id),0) + 1 hang_id from hangbill where cas_id = " + mContext.getCashierId())){
             mContext.runOnUiThread(()->MyDialog.ToastMessage("查询挂单号错误：" + data.getString("info"),mContext,mContext.getWindow()));
             return 0;
         }
@@ -499,7 +499,7 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
 
     public static int getHangCounts(MainActivity context){
         final JSONObject data = new JSONObject();
-        if (!SQLiteHelper.execSql(data,"select count(1) hang_counts from hangbill where cas_id = " + context.getCashierInfo().getIntValue("cas_id"))){
+        if (!SQLiteHelper.execSql(data,"select count(1) hang_counts from hangbill where cas_id = " + context.getCashierId())){
             context.runOnUiThread(()->MyDialog.ToastMessage("查询挂单数错误：" + data.getString("info"),context,context.getWindow()));
             return 0;
         }

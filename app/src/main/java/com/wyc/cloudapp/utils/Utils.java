@@ -350,6 +350,7 @@ public final class Utils {
 
     public static <T> T getNotKeyAsNumberDefault(@Nullable final JSONObject object, final String key, final T default_v){
         if (object != null){
+            final Object o = object.get(key);
             final T obj = (T) object.get(key);
             if (null != obj)return obj;
         }
@@ -653,6 +654,10 @@ public final class Utils {
             sb.append("\n");
         }
         return sb.toString();
+    }
+
+    public static boolean isNotEmpty(final String sz){
+        return sz != null && !sz.isEmpty();
     }
 
 }

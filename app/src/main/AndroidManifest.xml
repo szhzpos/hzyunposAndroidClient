@@ -37,6 +37,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
+        <activity android:name=".activity.mobile.report.MobileSaleRankActivity"/>
         <activity android:name=".activity.mobile.business.MobileWholesaleRefundOrderActivity" />
         <activity android:name=".activity.mobile.business.MobileWholesaleRefundOrderActivity$MobileAddWholesaleRefundOrderActivity" />
         <activity android:name=".activity.mobile.business.MobileWholesaleOrderActivity" />

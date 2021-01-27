@@ -37,7 +37,7 @@ public final class NormalTransferDialog extends AbstractTransferDialog {
 
     private void initTransferInfoList(){
         final RecyclerView transfer_list = findViewById(R.id.transfer_info_list);
-        mTransferDetailsAdapter.setDatas(mContext.getCashierInfo().getString("cas_id"));
+        mTransferDetailsAdapter.setDatas(mContext.getCashierId());
         transfer_list.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
         transfer_list.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
         transfer_list.setAdapter(mTransferDetailsAdapter);
@@ -48,7 +48,7 @@ public final class NormalTransferDialog extends AbstractTransferDialog {
     private void setFooterInfo(){
         final JSONObject object = mTransferDetailsAdapter.getTransferSumInfo();
         final TextView cas_name = findViewById(R.id.cas_name);
-        cas_name.setText(mContext.getCashierInfo().getString("cas_name"));
+        cas_name.setText(mContext.getCashierName());
 
         if (!object.isEmpty()){
             final TextView retail_sum_order_num_tv = findViewById(R.id.retail_sum_order_num),retail_sum_amt_tv = findViewById(R.id.retail_sum_amt),

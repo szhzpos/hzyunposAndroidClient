@@ -73,7 +73,7 @@ public final class GoodsPriceAdjustDialog extends AbstractDialogSaleActivity {
         }
 
         final JSONObject object = new JSONObject(),goods = new JSONObject();
-        if (!SQLiteHelper.execSql(object,"SELECT pt_user_id FROM cashier_info where cas_code = '"+ Utils.getNullStringAsEmpty(mContext.getCashierInfo(),"cas_code") +"'")){
+        if (!SQLiteHelper.execSql(object,"SELECT pt_user_id FROM cashier_info where cas_code = '"+ mContext.getCashierCode() +"'")){
             MyDialog.ToastMessage(object.getString("info"),mContext,getWindow());
             return;
         }

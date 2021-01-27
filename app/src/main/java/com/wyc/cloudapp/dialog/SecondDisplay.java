@@ -223,7 +223,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
             try {
                 object.put("appid",appid);
                 object.put("pos_num",mContext.getPosNum());
-                object.put("stores_id", Utils.getNullStringAsEmpty(mContext.getStoreInfo(),"stores_id"));
+                object.put("stores_id", mContext.getStoreId());
                 final JSONObject retJson = httpRequest.setConnTimeOut(10000).sendPost(url  + "/api/pos_img/index",HttpRequest.generate_request_parm(object,appSecret),true);
                 if (retJson.getIntValue("flag") == 1){
                     object = JSON.parseObject(retJson.getString("info"));

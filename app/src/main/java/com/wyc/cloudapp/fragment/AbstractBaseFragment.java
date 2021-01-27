@@ -36,4 +36,7 @@ public abstract class AbstractBaseFragment extends Fragment {
         }
         return mRootView.findViewById(id);
     }
+    protected View getRootView(){
+        return mRootView;
+    }
 }

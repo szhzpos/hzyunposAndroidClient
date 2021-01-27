@@ -508,7 +508,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
     }
     @Override
     public void resetOrderCode(){
-        mOrderCode = mSaleGoodsAdapter.generateOrderCode(mCashierInfo.getString("pos_num"),1);
+        mOrderCode = mSaleGoodsAdapter.generateOrderCode(getPosNum(),1);
     }
     @Override
     public String getOrderCode(){ return mOrderCode;}

@@ -369,7 +369,7 @@ public class AddGoodsInfoDialog extends AbstractDialogSaleActivity {
             final HttpRequest httpRequest = new HttpRequest();
             final JSONObject object = new JSONObject();
             object.put("appid",mContext.getAppId());
-            object.put("stores_id",mContext.getStoreInfo().getString("stores_id"));
+            object.put("stores_id",mContext.getStoreId());
             final String sz_param = HttpRequest.generate_request_parm(object,mContext.getAppSecret());
             final JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + "/api/supplier_search/xlist",sz_param,true);
             switch (retJson.getIntValue("flag")){
@@ -565,7 +565,7 @@ public class AddGoodsInfoDialog extends AbstractDialogSaleActivity {
         final JSONObject data = new JSONObject();
         data.put("appid",activity.getAppId());
         data.put("pos_num",activity.getPosNum());
-        data.put("stores_id",activity.getStoreInfo().getString("stores_id"));
+        data.put("stores_id",activity.getStoreId());
         final String param = HttpRequest.generate_request_parm(data,activity.getAppSecret());
         final JSONObject retJson = httpRequest.sendPost(activity.getUrl() +"/api_v2/goods/get_goods_all",param,true);
         switch (retJson.getIntValue("flag")){

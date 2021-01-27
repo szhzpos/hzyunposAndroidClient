@@ -44,7 +44,7 @@ public class VipDepositOrderDialog extends AbstractQuerySuperDialog {
 
         final StringBuilder where_sql = new StringBuilder();
 
-        where_sql.append("where a.stores_id = ").append(mContext.getStoreInfo().getIntValue("stores_id"));
+        where_sql.append("where a.stores_id = ").append(mContext.getStoreId());
 
         if(sz_order_code.length() != 0){
             if(where_sql.length() != 0)

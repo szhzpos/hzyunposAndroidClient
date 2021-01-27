@@ -49,7 +49,7 @@ public class QueryRetailOrderDialog extends AbstractQuerySuperDialog {
 
         final StringBuilder where_sql = new StringBuilder();
 
-        where_sql.append("where a.stores_id = ").append(mContext.getStoreInfo().getIntValue("stores_id"));
+        where_sql.append("where a.stores_id = ").append(mContext.getStoreId());
 
         if(sz_order_code.length() != 0){
             if(where_sql.length() != 0)
@@ -130,9 +130,8 @@ public class QueryRetailOrderDialog extends AbstractQuerySuperDialog {
         if (mEndTimeEt != null)mEndTimeEt.setText(mContext.getString(R.string.end_time_sz));
 
         if (mCashierEt != null){
-            final JSONObject cashier = mContext.getCashierInfo();
-            mCashierEt.setText(cashier.getString("cas_name"));
-            mCashierEt.setTag(cashier.getString("cas_id"));
+            mCashierEt.setText(mContext.getCashierName());
+            mCashierEt.setTag(mContext.getCashierId());
         }
 
         if (mPayStatusEt != null){

@@ -175,9 +175,9 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         final TextView cashier_name = findViewById(R.id.cashier_name),
                 store_name = findViewById(R.id.store_name),
                 pos_num = findViewById(R.id.pos_num);
-        cashier_name.setText(mCashierInfo.getString("cas_name"));
-        pos_num.setText(mCashierInfo.getString("pos_num"));
-        store_name.setText(String.format("%s%s%s%s",mStoreInfo.getString("stores_name"),"[",mStoreInfo.getString("stores_id"),"]"));
+        cashier_name.setText(getCashierName());
+        pos_num.setText(getPosNum());
+        store_name.setText(String.format("%s%s%s%s",getStoreName(),"[",getStoreId(),"]"));
     }
     private void initScaleView(){
         mScaleView = findViewById(R.id.scaleView);
@@ -771,13 +771,13 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
 
     @Override
     public void resetOrderCode(){
-        mOrderCodeTv.setText(mSaleGoodsAdapter.generateOrderCode(mCashierInfo.getString("pos_num"),1));
+        mOrderCodeTv.setText(mSaleGoodsAdapter.generateOrderCode(getPosNum(),1));
     }
     private void initSecondDisplay(){
         mSecondDisplay = SecondDisplay.getInstantiate(this);
         if (null != mSecondDisplay){
             if (mApplication.isConnection())mSecondDisplay.loadAdImg(mUrl,mAppId, mAppSecret);
-            mSecondDisplay.setDatas(mSaleGoodsAdapter.getDatas()).setNavigationInfo(mStoreInfo).show();
+            mSecondDisplay.setDatas(mSaleGoodsAdapter.getDatas()).setNavigationInfo(mApplication.getStoreInfo()).show();
         }
     }
     @Override

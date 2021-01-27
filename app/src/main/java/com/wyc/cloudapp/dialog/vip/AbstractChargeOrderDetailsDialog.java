@@ -76,7 +76,7 @@ public abstract class AbstractChargeOrderDetailsDialog extends AbstractOrderDeta
     protected boolean disposeChargeById(@NonNull final JSONObject object,@NonNull final StringBuilder err){
         boolean code = true;
 
-        final String url = mContext.getUrl(),appId = mContext.getAppId(),appSecret = mContext.getAppSecret(),stores_id = mContext.getStoreInfo().getString("stores_id"),
+        final String url = mContext.getUrl(),appId = mContext.getAppId(),appSecret = mContext.getAppSecret(),stores_id = mContext.getStoreId(),
                 pay_method_id = object.getString("pay_method_id"),
                 order_code = object.getString("order_code");
 

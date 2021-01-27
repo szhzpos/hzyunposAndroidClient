@@ -342,7 +342,7 @@ public final class RefundDialogAdapter extends RecyclerView.Adapter<RefundDialog
 
         object.put("appid",mContext.getAppId());
         object.put("retail_code",order_code);
-        object.put("stores_id",mContext.getStoreInfo().getString("stores_id"));
+        object.put("stores_id",mContext.getStoreId());
 
 
         final JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + "/api/refund/getretailrefund",HttpRequest.generate_request_parm(object,mContext.getAppSecret()),true);

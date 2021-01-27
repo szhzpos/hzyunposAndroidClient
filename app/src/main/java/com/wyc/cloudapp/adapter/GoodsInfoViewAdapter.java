@@ -273,7 +273,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
                     code = parseElectronicBarcode(object,weigh_barcode_info);
                 }else {
                     final JSONObject promotion_obj = new JSONObject();
-                    if (code = getPromotionGoods(promotion_obj,Utils.getNotKeyAsNumberDefault(object,"barcode_id",-1),Utils.getNotKeyAsNumberDefault(mContext.getStoreInfo(),"stores_id",-1))){
+                    if (code = getPromotionGoods(promotion_obj,Utils.getNotKeyAsNumberDefault(object,"barcode_id",-1),mContext.getStoreId())){
                         if (!promotion_obj.isEmpty()){
                             object.put("sale_type",SALE_TYPE.SPECIAL_PROMOTION);//1 零售特价促销
                             object.put("limit_xnum",promotion_obj.getDoubleValue("limit_xnum"));
@@ -302,7 +302,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         return mPriceAdjustMode;
     }
 
-    public static boolean getPromotionGoods(final JSONObject object,int barcode_id,int stores_id){
+    public static boolean getPromotionGoods(final JSONObject object,int barcode_id,final String stores_id){
         final String sql = "select way,limit_xnum,promotion_price from promotion_info where barcode_id = '" + barcode_id +"' and status = 1 and " +
                 "stores_id = " + stores_id + " and date(start_date, 'unixepoch', 'localtime') || ' ' ||begin_time  <= datetime('now', 'localtime') \n" +
                 " and datetime('now', 'localtime') <= date(end_date, 'unixepoch', 'localtime') || ' ' ||end_time and \n" +
@@ -342,7 +342,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
             Logger.d("price：%f,xnum:%f,sale_amt:%f",price,xnum,amt);
 
             final JSONObject promotion_obj = new JSONObject();
-            if (code = getPromotionGoods(promotion_obj,Utils.getNotKeyAsNumberDefault(object,"barcode_id",-1),Utils.getNotKeyAsNumberDefault(mContext.getStoreInfo(),"stores_id",-1))){
+            if (code = getPromotionGoods(promotion_obj,Utils.getNotKeyAsNumberDefault(object,"barcode_id",-1),mContext.getStoreId())){
                 double discount = 1.0,ori_price = object.getDoubleValue("retail_price");
                 if (!promotion_obj.isEmpty()){
                     object.put("sale_type",SALE_TYPE.SPECIAL_PROMOTION);//1 零售特价促销

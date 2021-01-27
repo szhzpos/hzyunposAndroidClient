@@ -53,7 +53,7 @@ public class QueryRefundOrderDialog extends AbstractQuerySuperDialog {
             final String start_date_time = mStartDateEt.getText() + " " + mStartTimeEt.getText(),end_date_time = mEndDateEt.getText() + " " + mEndTimeEt.getText(),
                     sz_order_code = order_code_et.getText().toString(),sz_cashier = Utils.getViewTagValue(mCashierEt,""),sz_refund_code = refund_order_code_et.getText().toString();
 
-            where_sql.append("where a.stores_id = ").append(mContext.getStoreInfo().getIntValue("stores_id"));
+            where_sql.append("where a.stores_id = ").append(mContext.getStoreId());
 
             if(sz_order_code.length() != 0){
                 if(where_sql.length() != 0)

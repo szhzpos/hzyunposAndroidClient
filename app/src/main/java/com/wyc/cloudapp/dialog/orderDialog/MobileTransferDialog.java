@@ -43,7 +43,7 @@ public final class MobileTransferDialog extends AbstractTransferDialog {
 
 
     private void initTransferInfoList(){
-        mTransferDetailsAdapter.setDatas(mContext.getCashierInfo().getString("cas_id"));
+        mTransferDetailsAdapter.setDatas(mContext.getCashierId());
         final RecyclerView retail_details_list = findViewById(R.id.retail_details_list),refund_details_list = findViewById(R.id.refund_details_list),
                 recharge_details_list = findViewById(R.id.recharge_details_list);
 
@@ -141,7 +141,7 @@ public final class MobileTransferDialog extends AbstractTransferDialog {
     private void setFooterInfo(){
         final JSONObject object = mTransferDetailsAdapter.getTransferSumInfo();
         final TextView cas_name = findViewById(R.id.cas_name_tv);
-        cas_name.setText(mContext.getCashierInfo().getString("cas_name"));
+        cas_name.setText(mContext.getCashierName());
 
         if (!object.isEmpty()){
             final TextView ti_start_time_tv = findViewById(R.id.ti_start_time_tv),payable_amt = findViewById(R.id.payable_amt)

@@ -66,8 +66,7 @@ public final class MobileTransferDetailsAdapter extends AbstractTransferDetailsA
     @Override
     public void setDatas(final String cas_id){
         final StringBuilder err = new StringBuilder();
-        int stores_id = mContext.getStoreInfo().getIntValue("stores_id");
-        final String start_time = mTransferStartTime,ti_code = generateTransferIdOrderCode();
+        final String start_time = mTransferStartTime,ti_code = generateTransferIdOrderCode(),stores_id = mContext.getStoreId();
 
         Logger.d("start_time：%s",start_time);
 
@@ -85,7 +84,7 @@ public final class MobileTransferDetailsAdapter extends AbstractTransferDetailsA
             mTransferSumInfo.put("sj_money",cash_sum_amt);
             mTransferSumInfo.put("sum_money",cash_sum_amt);
             mTransferSumInfo.put("transfer_time",start_time);
-            mTransferSumInfo.put("stores_id",mContext.getStoreInfo().getIntValue("stores_id"));
+            mTransferSumInfo.put("stores_id",stores_id);
             mTransferSumInfo.put("ti_code",ti_code);
         }
         if (err.length() != 0)mContext.runOnUiThread(()-> MyDialog.ToastMessage(err.toString(),mContext,null));

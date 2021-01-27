@@ -1,11 +1,162 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/main_function_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="reprt" />
-</LinearLayout>
+        android:orientation="vertical"
+        android:padding="@dimen/margin_5">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_45"
+            android:layout_marginStart="@dimen/margin_5"
+            android:layout_marginEnd="@dimen/margin_5"
+            android:background="@drawable/bottom_separator"
+            android:gravity="bottom"
+            android:padding="@dimen/margin_5"
+            android:text="@string/business_data_sz"
+            android:textSize="@dimen/font_size_16" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/size_68"
+            android:background="@drawable/bottom_separator"
+            android:orientation="horizontal">
+
+            <com.wyc.cloudapp.CustomizationView.JumpTextView
+                android:id="@+id/sale_ranking_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:drawableStart="@drawable/query_icon"
+                android:gravity="center_vertical"
+                android:tag="activity.mobile.report.MobileSaleRankActivity"
+                android:text="@string/sale_rank_sz"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/font_size_16" />
+
+            <com.wyc.cloudapp.CustomizationView.JumpTextView
+                android:id="@+id/query_detail_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:drawableStart="@drawable/query_icon"
+                android:gravity="fill_vertical"
+                android:text="@string/trade_query_sz"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/font_size_16" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_45"
+            android:layout_marginStart="@dimen/margin_5"
+            android:layout_marginEnd="@dimen/margin_5"
+            android:background="@drawable/bottom_separator"
+            android:gravity="bottom"
+            android:padding="@dimen/margin_5"
+            android:text="@string/commodity_analysis_sz"
+            android:textSize="@dimen/font_size_16" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/size_68"
+            android:background="@drawable/bottom_separator"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/sale_statistics_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="78dp"
+                android:layout_weight="1"
+                android:drawableStart="@drawable/query_icon"
+                android:gravity="center_vertical"
+                android:padding="5dp"
+                android:text="销售统计"
+                android:textColor="@color/colorPrimary"
+                android:textSize="16sp"
+                android:visibility="gone" />
+
+            <com.wyc.cloudapp.CustomizationView.JumpTextView
+                android:id="@+id/category_sum_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:drawableStart="@drawable/query_icon"
+                android:gravity="fill_vertical"
+                android:text="@string/category_sum_sz"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/font_size_16" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_45"
+            android:layout_marginStart="@dimen/margin_5"
+            android:layout_marginEnd="@dimen/margin_5"
+            android:background="@drawable/bottom_separator"
+            android:gravity="bottom"
+            android:padding="@dimen/margin_5"
+            android:text="@string/commodity_management_sz"
+            android:textSize="@dimen/font_size_16" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/size_68"
+            android:background="@drawable/bottom_separator"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+
+            <com.wyc.cloudapp.CustomizationView.JumpTextView
+                android:id="@+id/goods_stock_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:drawableStart="@drawable/query_icon"
+                android:gravity="center_vertical"
+                android:text="@string/commodity_stocks_sz"
+                android:textColor="@color/colorPrimary"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_45"
+            android:layout_marginStart="@dimen/margin_5"
+            android:layout_marginEnd="@dimen/margin_5"
+            android:background="@drawable/bottom_separator"
+            android:gravity="bottom"
+            android:padding="@dimen/margin_5"
+            android:text="@string/financial_verification_sz"
+            android:textSize="@dimen/font_size_16" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/size_68"
+            android:background="@drawable/bottom_separator"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+            <com.wyc.cloudapp.CustomizationView.JumpTextView
+                android:id="@+id/cashier_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:drawableStart="@drawable/query_icon"
+                android:gravity="center_vertical"
+                android:text="@string/cashier_bill_sz"
+                android:textColor="@color/colorPrimary"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
