@@ -637,6 +637,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                 }
                 break;
             default:
+                amt = sale_sum_amt;
                 break;
         }
 

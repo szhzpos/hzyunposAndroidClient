@@ -70,7 +70,7 @@ public class AppUpdateService extends Service {
             final JSONObject object = new JSONObject();
             object.put("appid", appid);
             object.put("dir_name","pos_youren_an");
-            final JSONObject retJson = HttpUtils.sendPost(url,HttpRequest.generate_request_parm(object,appSecret),8,true);
+            final JSONObject retJson = HttpUtils.sendPost(url,HttpRequest.generate_request_parm(object,appSecret),30,true);
             switch (retJson.getIntValue("flag")) {
                 case 0:
                     int rsCode = Utils.getNotKeyAsNumberDefault(retJson,"rsCode",-1);

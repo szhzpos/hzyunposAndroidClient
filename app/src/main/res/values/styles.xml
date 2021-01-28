@@ -10,6 +10,11 @@
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
+    <style name="splashTheme" parent="AppTheme">
+        <item name="android:windowContentTransitions">false</item>
+        <item name="android:windowBackground">@drawable/logobg</item>
+    </style>
+
     <style name="MyDialog" parent="Base.ThemeOverlay.AppCompat.Dialog">
         <!--背景颜色及和透明程度-->
         <item name="android:windowBackground">@android:color/transparent</item>

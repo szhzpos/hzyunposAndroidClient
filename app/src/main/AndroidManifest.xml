@@ -69,6 +69,7 @@
                 android:resource="@xml/usb_device_filter" />
         </activity>
         <activity
+            android:theme="@style/splashTheme"
             android:name=".activity.LoginActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTop"
