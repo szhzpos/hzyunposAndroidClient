@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Looper;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Display;
 import android.view.Gravity;
@@ -50,6 +51,7 @@ public final class MyDialog extends AbstractDialogContext {
     private String mYesStr,mNoStr;
     private onNoOnclickListener noOnclickListener;//取消按钮被点击了的监听器
     private onYesOnclickListener yesOnclickListener;//确定按钮被点击了的监听器
+    private LifecycleEventObserver mLifecycleEventObserver;
     public MyDialog  setNoOnclickListener(String str, onNoOnclickListener onNoOnclickListener) {
         if (str != null) {
             mNoStr = str;
@@ -79,7 +81,7 @@ public final class MyDialog extends AbstractDialogContext {
         this(context,title);
         mContentIconType = type;
         if (context instanceof LifecycleOwner){
-            ((LifecycleOwner)context).getLifecycle().addObserver(new LifecycleEventObserver() {
+            mLifecycleEventObserver = new LifecycleEventObserver() {
                 @Override
                 protected void finalize(){
                     Logger.d("MyDialog's LifecycleObserver finalized");
@@ -91,7 +93,16 @@ public final class MyDialog extends AbstractDialogContext {
                         source.getLifecycle().removeObserver(this);
                     }
                 }
-            });
+            };
+            ((LifecycleOwner)context).getLifecycle().addObserver(mLifecycleEventObserver);
+        }
+    }
+
+    @Override
+    public void dismiss() {
+        super.dismiss();
+        if (mLifecycleEventObserver != null){
+            ((LifecycleOwner)mContext).getLifecycle().removeObserver(mLifecycleEventObserver);
         }
     }
 
@@ -249,11 +260,12 @@ public final class MyDialog extends AbstractDialogContext {
     }
 
     public static void displayAskMessage(final Context context,final String message,final onYesOnclickListener yes,final onNoOnclickListener no){
-        final MyDialog dialog = new MyDialog(context, "提示信息",IconType.ERROR);
+        final MyDialog dialog = new MyDialog(context, "提示信息",IconType.ASK);
         dialog.setMessage(message).setYesOnclickListener("是",yes).setNoOnclickListener("否", no).show();
     }
 
     public static int showMessageToModalDialog(final Context context,final String message){
+        if (Looper.myLooper() == null)Looper.prepare();
         final MyDialog dialog = new MyDialog(context,"提示信息",IconType.ASK);
         dialog.setMessage(message).setYesOnclickListener("是", myDialog -> {
             myDialog.dismiss();

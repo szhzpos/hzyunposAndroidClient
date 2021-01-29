@@ -209,29 +209,25 @@ public final class VipInfoDialog extends AbstractDialogSaleActivity {
     }
 
     public static JSONArray searchVip(final String mobile) throws JSONException {
-        JSONObject object = new JSONObject(),ret_json;
+        JSONObject object = CustomApplication.getConnParam(),ret_json;
         final HttpRequest httpRequest = new HttpRequest();
         JSONArray vips = null;
-        if (SQLiteHelper.getLocalParameter("connParam",object)){
-            object.put("appid",object.getString("appId"));
-            object.put("mobile",mobile);
-            ret_json = httpRequest.sendPost(object.getString("server_url") + "/api/member/get_member_info",HttpRequest.generate_request_parm(object,object.getString("appSecret")),true);
-            switch (ret_json.getIntValue("flag")){
-                case 0:
-                    throw new JSONException(ret_json.getString("info"));
-                case 1:
-                    ret_json = JSON.parseObject(ret_json.getString("info"));
-                    switch (ret_json.getString("status")){
-                        case "n":
-                            throw new JSONException(ret_json.getString("info"));
-                        case "y":
-                            vips = JSON.parseArray(ret_json.getString("list"));
-                            break;
-                    }
-                    break;
-            }
-        }else{
-            throw new JSONException(object.getString("info"));
+        object.put("appid",object.getString("appId"));
+        object.put("mobile",mobile);
+        ret_json = httpRequest.sendPost(object.getString("server_url") + "/api/member/get_member_info",HttpRequest.generate_request_parm(object,object.getString("appSecret")),true);
+        switch (ret_json.getIntValue("flag")){
+            case 0:
+                throw new JSONException(ret_json.getString("info"));
+            case 1:
+                ret_json = JSON.parseObject(ret_json.getString("info"));
+                switch (ret_json.getString("status")){
+                    case "n":
+                        throw new JSONException(ret_json.getString("info"));
+                    case "y":
+                        vips = JSON.parseArray(ret_json.getString("list"));
+                        break;
+                }
+                break;
         }
         return vips;
     }

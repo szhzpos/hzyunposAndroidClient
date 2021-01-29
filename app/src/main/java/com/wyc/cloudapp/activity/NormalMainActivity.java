@@ -133,8 +133,8 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
 
         initScaleView();
 
-        //初始化数据管理
-        initSyncManagement();
+        //启动同步
+        launchSync();
     }
     private void initMemberVariable(){
         mProgressDialog = new CustomProgressDialog(this);
@@ -165,7 +165,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         clearResource();
     }
 
-    private void initSyncManagement(){
+    private void launchSync(){
         mApplication.registerHandleMessage(this);
         mApplication.sync_order_info();
         mApplication.start_sync(false);

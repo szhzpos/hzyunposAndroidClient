@@ -1,6 +1,5 @@
 package com.wyc.cloudapp.data;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -20,6 +19,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
@@ -47,14 +47,35 @@ import static android.database.Cursor.FIELD_TYPE_STRING;
  */
 
 public final class SQLiteHelper extends SQLiteOpenHelper {
-    private static final String DATABASE_NAME = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/order.db";
     private static final int DATABASE_VERSION = 5;
     private static SQLiteDatabase mDb;
     private final Context mContext;
-    private SQLiteHelper(Context context){
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        Logger.d("DATABASE_NAME:%s",DATABASE_NAME);
+    private SQLiteHelper(Context context,final String databaseName){
+        super(context, databaseName, null, DATABASE_VERSION);
+        Logger.d("DATABASE_NAME:%s",databaseName);
         mContext = context;
+    }
+
+    public static void initDb(Context context, final String storesId){
+        if (mDb == null){
+            synchronized (SQLiteHelper.class){
+                if (mDb == null){
+                    try {
+                        //数据库名称order_门店编号
+                        final String databaseName = String.format(Locale.CHINA,"%sorder_%s",Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/"
+                                ,storesId);
+                        final SQLiteHelper sqLiteHelper = new SQLiteHelper(context,databaseName);
+                        mDb = sqLiteHelper.getWritableDatabase();
+                    }catch (SQLiteCantOpenDatabaseException e){
+                        CustomApplication.self().getAppHandler().post(()->
+                            MyDialog.displayErrorMessage(context, "打开数据库错误：" + e.getLocalizedMessage(), (MyDialog myDialog)->{
+                            myDialog.dismiss();
+                            CustomApplication.self().exit();
+                        }));
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -123,30 +144,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
     public void onConfigure (SQLiteDatabase db){
         db.execSQL("PRAGMA foreign_keys=ON;");
     }
-    public static boolean initDb(Context context){
-        boolean code = true;
-        if (mDb == null){
-            synchronized (SQLiteHelper.class){
-                if (mDb == null){
-                    try {
-                        final SQLiteHelper sqLiteHelper = new SQLiteHelper(context);
-                        mDb = sqLiteHelper.getWritableDatabase();
-                    }catch (SQLiteCantOpenDatabaseException e){
-                        MyDialog.displayErrorMessage(context, "打开数据库错误：" + e.getLocalizedMessage(), (MyDialog myDialog)->{
-                            myDialog.dismiss();
-                            if (context instanceof Activity){
-                                ((Activity)context).finish();
-                            }else{
-                                System.exit(0);
-                            }
-                        });
-                        code = false;
-                    }
-                }
-            }
-        }
-        return code;
-    }
+
     public static boolean isNew(){
         final StringBuilder err = new StringBuilder();
         final String sql = "select count(1) from barcode_info";

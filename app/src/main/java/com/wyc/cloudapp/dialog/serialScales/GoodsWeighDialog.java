@@ -19,6 +19,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
@@ -158,7 +159,7 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
                     final ImageView imageView = findViewById(R.id.w_g_img);
                     if (!"".equals(img_url)){
                         final String szImage = img_url.substring(img_url.lastIndexOf("/") + 1);
-                        final Bitmap bitmap = BitmapFactory.decodeFile(LoginActivity.IMG_PATH + szImage);
+                        final Bitmap bitmap = BitmapFactory.decodeFile(CustomApplication.IMG_PATH + szImage);
                         imageView.setImageBitmap(bitmap);
                     }else{
                         imageView.setImageDrawable(mContext.getDrawable(R.drawable.nodish));

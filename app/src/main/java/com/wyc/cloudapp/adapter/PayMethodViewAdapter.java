@@ -14,6 +14,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
@@ -71,7 +72,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
                 String szImage = pay_method_info.getString("pay_img");
                 if (!"".equals(szImage) && szImage != null){
                     szImage = szImage.substring(szImage.lastIndexOf("/") + 1);
-                    drawable = Drawable.createFromPath(LoginActivity.IMG_PATH + szImage);
+                    drawable = Drawable.createFromPath(CustomApplication.IMG_PATH + szImage);
                 }else{
                     drawable = mContext.getDrawable(R.drawable.default_pay);
                 }

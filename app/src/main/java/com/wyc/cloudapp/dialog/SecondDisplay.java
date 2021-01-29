@@ -163,7 +163,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
                         String img_url = object.getString("img_url");
                         if (!"".equals(img_url)){
                             final String szImage = img_url.substring(img_url.lastIndexOf("/") + 1);
-                            mBannerBitmap = BitmapFactory.decodeFile(LoginActivity.IMG_PATH + szImage);
+                            mBannerBitmap = BitmapFactory.decodeFile(CustomApplication.IMG_PATH + szImage);
                             mCurrentBarcodeId = barcode_id;
                         }
                     }else{

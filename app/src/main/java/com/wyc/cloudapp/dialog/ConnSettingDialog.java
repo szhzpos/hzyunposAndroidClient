@@ -1,6 +1,7 @@
 package com.wyc.cloudapp.dialog;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
@@ -116,15 +117,10 @@ public class ConnSettingDialog extends AbstractDialogContext {
     }
 
     private boolean check_shop_id(final String shop_id,final JSONObject param){
-        boolean code;
-        if(code = SQLiteHelper.getLocalParameter("connParam",param)){
-            if (!param.isEmpty()){
-                return !Utils.getNullStringAsEmpty(param,"shop_id").equals(shop_id);
-            }else {
-                code = false;
-            }
+        if (!param.isEmpty()){
+            return !Utils.getNullStringAsEmpty(param,"shop_id").equals(shop_id);
         }
-        return code;
+        return false;
     }
 
     private void initSaveBtn(){
@@ -133,7 +129,7 @@ public class ConnSettingDialog extends AbstractDialogContext {
             save_btn.setOnClickListener((View v)->{
                 final String shop_id = mShopIdEt.getText().toString();
                 if (!"".equals(shop_id)){
-                    final JSONObject param = new JSONObject();
+                    final JSONObject param = CustomApplication.getConnParam();
                     if (check_shop_id(shop_id,param)){
                         MyDialog.displayAskMessage(mContext, "当前商户与数据库中的商户不一致，是否需要保存？", myDialog -> {
                             myDialog.dismiss();
@@ -168,51 +164,39 @@ public class ConnSettingDialog extends AbstractDialogContext {
     }
 
     private void save(final String shop_id){
-        if (SQLiteHelper.initDb(mContext)){
-            final JSONObject json = new JSONObject();
-            final StringBuilder err = new StringBuilder();
+        final JSONObject json = new JSONObject();
+        json.put("server_url",verifyUrl());
+        json.put("appId", mAppIdTv.getText().toString());
+        json.put("url", mUrlTv.getText().toString());
+        json.put("shop_id",shop_id);
+        json.put("appSecret", mAppSecretTv.getText().toString());
 
-            json.put("server_url",verifyUrl());
-            json.put("appId", mAppIdTv.getText().toString());
-            json.put("url", mUrlTv.getText().toString());
-            json.put("shop_id",shop_id);
-            json.put("appSecret", mAppSecretTv.getText().toString());
-            json.put("storeInfo","{}");
-
-            if (SQLiteHelper.saveLocalParameter("connParam",json,"门店信息、服务器连接参数",err)){
-                MyDialog.ToastMessage("保存成功！",mContext,null);
-                ConnSettingDialog.this.dismiss();
-            }else
-                MyDialog.displayMessage(mContext, err.toString());
-        }
+        CustomApplication.setConnParam(json);
+        dismiss();
     }
 
     private void showConnParam(){
-        final JSONObject param = new JSONObject();
-        if(SQLiteHelper.getLocalParameter("connParam",param)){
-            if (Utils.JsonIsNotEmpty(param)){
-                try {
-                    mShopIdEt.setText(param.getString("shop_id"));
-                    mShopIdEt.setTag(mShopIdEt.getText().toString());
+        final JSONObject param = CustomApplication.getConnParam();
+        if (Utils.JsonIsNotEmpty(param)){
+            try {
+                mShopIdEt.setText(param.getString("shop_id"));
+                mShopIdEt.setTag(mShopIdEt.getText().toString());
 
-                    mUrlTv.setText(param.getString("url"));
-                    final JSONObject storeInfo = JSON.parseObject(param.getString("storeInfo"));
-                    if (storeInfo.containsKey("stores_name")){
-                        mStore_nameTv.setText(String.format("%s%s%s%s",storeInfo.getString("stores_name"),"[",storeInfo.getString("stores_id"),"]"));
-                    }else {
-                        final View view = findViewById(R.id.ip_fo);
-                        view.setVisibility(View.GONE);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    MyDialog.ToastMessage("显示门店信息错误：" + e.getMessage(),mContext,null);
+                mUrlTv.setText(param.getString("url"));
+                final JSONObject storeInfo = JSON.parseObject(Utils.getNullOrEmptyStringAsDefault(param,"storeInfo","{}"));
+                if (storeInfo.containsKey("stores_name")){
+                    mStore_nameTv.setText(String.format("%s%s%s%s",storeInfo.getString("stores_name"),"[",storeInfo.getString("stores_id"),"]"));
+                }else {
+                    final View view = findViewById(R.id.ip_fo);
+                    view.setVisibility(View.GONE);
                 }
-            }else {
-                final View view = findViewById(R.id.ip_fo);
-                view.setVisibility(View.GONE);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                MyDialog.ToastMessage("显示门店信息错误：" + e.getMessage(),mContext,null);
             }
-        }else{
-            MyDialog.ToastMessage(param.getString("info"),mContext,getWindow());
+        }else {
+            final View view = findViewById(R.id.ip_fo);
+            view.setVisibility(View.GONE);
         }
     }
 

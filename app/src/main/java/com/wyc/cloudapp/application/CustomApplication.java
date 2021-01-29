@@ -3,7 +3,9 @@ package com.wyc.cloudapp.application;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -24,6 +26,7 @@ import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -37,6 +40,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class CustomApplication extends Application {
+    public static final String IMG_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/goods_img/";
     //使用无界限阻塞队列，不会触发拒绝策略；线程数最大等于核心线程数，如果所有线程都在运行则任务会进入队列等待执行<可能引发内存问题>，
     private static final DefaultScheduledThreadPoolExecutor THREAD_POOL_EXECUTOR = new DefaultScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2);
     private static CustomApplication mApplication;
@@ -71,24 +75,32 @@ public final class CustomApplication extends Application {
 
     public void initCashierInfoAndStoreInfo(){
         final JSONObject cas_info = mCashierInfo = new JSONObject();
-        final JSONObject st_info = mStoreInfo = new JSONObject();
+        final JSONObject st_info = mStoreInfo = getConnParam();
         if (SQLiteHelper.getLocalParameter("cashierInfo",cas_info)){
-            if (SQLiteHelper.getLocalParameter("connParam",st_info)){
-                try {
-                    mUrl = st_info.getString("server_url");
-                    mAppId = st_info.getString("appId");
-                    mAppSecret = st_info.getString("appSecret");
-                    mStoreInfo = JSON.parseObject(st_info.getString("storeInfo"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    MyDialog.displayErrorMessage(this, "初始化仓库信息错误：" + e.getMessage());
-                }
-            }else{
-                MyDialog.displayErrorMessage(this, "初始化仓库信息错误：" + st_info.getString("info"));
+            try {
+                mUrl = st_info.getString("server_url");
+                mAppId = st_info.getString("appId");
+                mAppSecret = st_info.getString("appSecret");
+                mStoreInfo = JSON.parseObject(st_info.getString("storeInfo"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+                MyDialog.displayErrorMessage(this, "初始化仓库信息错误：" + e.getMessage());
             }
         }else{
             MyDialog.displayErrorMessage(this, "初始化收银员信息错误：" + cas_info.getString("info"));
         }
+    }
+    public static JSONObject getConnParam(){
+        final SharedPreferences preferences= mApplication.getSharedPreferences("conn_param", Context.MODE_PRIVATE);
+        return JSON.parseObject(preferences.getString("param","{}"));
+    }
+
+    public static void setConnParam(final JSONObject jsonObject){
+        //
+        final SharedPreferences preferences= mApplication.getSharedPreferences("conn_param", Context.MODE_PRIVATE);
+        final SharedPreferences.Editor editor= preferences.edit();
+        editor.putString("param",jsonObject.toString());
+        editor.apply();
     }
 
     public JSONObject getCashierInfo(){
@@ -108,6 +120,13 @@ public final class CustomApplication extends Application {
     }
     public String getStoreId(){
         return mStoreInfo.getString("stores_id");
+    }
+    public String getStoreIdWithSharedPreferences(){
+        final JSONObject conn_param = getConnParam();
+        if (conn_param.isEmpty()){
+            return "";
+        }
+        return Utils.getNullOrEmptyStringAsDefault(JSON.parseObject(conn_param.getString("storeInfo")),"stores_id","");
     }
 
     public String getAppId(){
@@ -157,7 +176,7 @@ public final class CustomApplication extends Application {
         }
     };
 
-    private void exit(){
+    public void exit(){
         myhandler.removeCallbacksAndMessages(null);
         mSyncManagement.quit();
         mApplication = null;
@@ -329,7 +348,18 @@ public final class CustomApplication extends Application {
         return mNetworkStatus.getAndSet(b);
     }
 
-
+    public static void initDbAndImgDirectory(final String stores_id){
+        mApplication.initGoodsImgDirectory();
+        SQLiteHelper.initDb(mApplication,stores_id);
+    }
+    private void initGoodsImgDirectory(){
+        final File file = new File(IMG_PATH);
+        if (!file.exists()){
+            if (!file.mkdir()){
+                MyDialog.ToastMessage("初始化商品图片目录错误！",this,null);
+            }
+        }
+    }
 
     private static class DefaultScheduledThreadPoolExecutor extends ScheduledThreadPoolExecutor{
 

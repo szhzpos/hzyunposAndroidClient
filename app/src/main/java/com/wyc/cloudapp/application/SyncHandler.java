@@ -609,7 +609,7 @@ final class SyncHandler extends Handler {
             img_url_info = object.getString("pay_img");
             if (!img_url_info.equals("")){
                 img_file_name = img_url_info.substring(img_url_info.lastIndexOf("/") + 1);
-                final File file = new File(LoginActivity.IMG_PATH + img_file_name);
+                final File file = new File(CustomApplication.IMG_PATH + img_file_name);
                 if (!file.exists()){
                     JSONObject load_img = mHttp.getFile(file,img_url_info);
                     if (load_img.getIntValue("flag") == 0){
@@ -654,7 +654,7 @@ final class SyncHandler extends Handler {
             img_url_info = object.getString("img_url");
             if (!img_url_info.equals("")){
                 img_file_name = img_url_info.substring(img_url_info.lastIndexOf("/") + 1);
-                File file = new File(LoginActivity.IMG_PATH + img_file_name);
+                File file = new File(CustomApplication.IMG_PATH + img_file_name);
                 if (!file.exists()){
                     JSONObject load_img = mHttp.getFile(file,img_url_info);
                     if (load_img.getIntValue("flag") == 0){

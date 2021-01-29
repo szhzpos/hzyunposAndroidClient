@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.text.Editable;
 import android.util.DisplayMetrics;
@@ -26,6 +27,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -63,7 +65,6 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class LoginActivity extends AppCompatActivity implements CustomApplication.MessageCallback {
-    public static final String IMG_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/goods_img/";
     private static final int REQUEST_STORAGE_PERMISSIONS  = 800;
     private EditText mUserIdEt, mPasswordEt;
     private LoginActivity mSelf;
@@ -71,7 +72,6 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
     private Button mCancelBtn,mLoginBtn;
     private String mPosNum,mOperId,mStoresId;
     private Call mLoginCall;
-
     private JSONObject mConnParam;
     private boolean isSmallScreen = false;
     private Handler mHandler;
@@ -137,6 +137,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
     public void onResume(){
         super.onResume();
         checkSelfPermissionAndInitDb();
+        show_shop_info();
         setLastUser();
     }
 
@@ -163,10 +164,8 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull  int[]  grantResults) {
         if (requestCode == REQUEST_STORAGE_PERMISSIONS) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                SQLiteHelper.initDb(this);
-                initGoodsImgDirectory();
-                //显示商户域名
-                show_shop_info();
+                //onResume 请求存储权限，如果拒绝是无法进入软件的，如果同意用户登录之后才能打开数据库，所以此处无业务代码。
+                Toast.makeText(this,"ACQUIRE WRITE_EXTERNAL_STORAGE SUCCESSFULLY",Toast.LENGTH_SHORT).show();
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -261,27 +260,22 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
 
     private void check_ver(){
         mProgressDialog.setCancel(false).setMessage("正在检查更新...").refreshMessage().show();
-        final JSONObject conn_param = new JSONObject();
-        if (SQLiteHelper.getLocalParameter("connParam", conn_param)) {
-            if (Utils.JsonIsNotEmpty(conn_param)) {
-                final String url = Utils.getNullStringAsEmpty(conn_param,"server_url"),appid = Utils.getNullStringAsEmpty(conn_param,"appId"),
-                        appSecret = Utils.getNullStringAsEmpty(conn_param,"appSecret");
+        final JSONObject conn_param = CustomApplication.getConnParam();
+        if (Utils.JsonIsNotEmpty(conn_param)) {
+            final String url = Utils.getNullStringAsEmpty(conn_param,"server_url"),appid = Utils.getNullStringAsEmpty(conn_param,"appId"),
+                    appSecret = Utils.getNullStringAsEmpty(conn_param,"appSecret");
 
-                final Intent intentService = new Intent(this, AppUpdateService.class);
-                intentService.putExtra("url",url);
-                intentService.putExtra("appid",appid);
-                intentService.putExtra("appSecret",appSecret);
-                startService(intentService);
-                mConnParam = conn_param;
-            } else {
-                mProgressDialog.dismiss();
-                MyDialog.ToastMessage("连接参数不能为空!",this,getWindow());
-                final View view = findViewById(R.id.setup_ico);
-                if (null != view)view.callOnClick();
-            }
-        }else {
+            final Intent intentService = new Intent(this, AppUpdateService.class);
+            intentService.putExtra("url",url);
+            intentService.putExtra("appid",appid);
+            intentService.putExtra("appSecret",appSecret);
+            startService(intentService);
+            mConnParam = conn_param;
+        } else {
             mProgressDialog.dismiss();
-            MyDialog.displayErrorMessage(this, conn_param.getString("info"));
+            MyDialog.ToastMessage("连接参数不能为空!",this,getWindow());
+            final View view = findViewById(R.id.setup_ico);
+            if (null != view)view.callOnClick();
         }
     }
 
@@ -415,31 +409,27 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                     ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},REQUEST_STORAGE_PERMISSIONS );
                 }).show();
             }else {
-                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},REQUEST_STORAGE_PERMISSIONS );
+                MyDialog.displayAskMessage(this, "用户已经禁用存储读写权限，是否手动授权?", myDialog -> {
+                    final Intent intent = new Intent();
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
+                    intent.setData(Uri.fromParts("package", getPackageName(), null));
+                    startActivity(intent);
+                    myDialog.dismiss();
+                }, myDialog -> LoginActivity.this.finish());
             }
-        }else{
-            initDbAndImgDirectory();
-            //显示商户域名
-            show_shop_info();
         }
     }
     private void show_shop_info(){
-        final JSONObject param = new JSONObject();
-        if(SQLiteHelper.getLocalParameter("connParam",param)){
-            if (Utils.JsonIsNotEmpty(param)){
-                final JSONObject shop_info = JSON.parseObject(Utils.getNullOrEmptyStringAsDefault(param,"storeInfo","{}"));
-                shop_info.put("shop_id",Utils.getNullStringAsEmpty(param,"shop_id"));
-                shop_info.put("shop_name",String.format("%s%s%s%s",Utils.getNullStringAsEmpty(shop_info,"stores_name"),"[",Utils.getNullStringAsEmpty(shop_info,"stores_id"),"]"));
-                show_shop_info(shop_info);
-            }
-        }else{
-            MyDialog.ToastMessage(param.getString("info"),this,getWindow());
+        final JSONObject param = CustomApplication.getConnParam();
+        if (Utils.JsonIsNotEmpty(param)){
+            final JSONObject shop_info = JSON.parseObject(Utils.getNullOrEmptyStringAsDefault(param,"storeInfo","{}"));
+            shop_info.put("shop_id",Utils.getNullStringAsEmpty(param,"shop_id"));
+            shop_info.put("shop_name",String.format("%s%s%s%s",Utils.getNullStringAsEmpty(shop_info,"stores_name"),"[",Utils.getNullStringAsEmpty(shop_info,"stores_id"),"]"));
+            show_shop_info(shop_info);
         }
     }
-    private void initDbAndImgDirectory(){
-        SQLiteHelper.initDb(this);
-        initGoodsImgDirectory();
-    }
+
     private void initKeyboard(){
         final ConstraintLayout keyboard_linear_layout = findViewById(R.id.keyboard);
         if (null != keyboard_linear_layout)
@@ -492,7 +482,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
 
         sz_param = HttpRequest.generate_request_parm(object,appSecret);
 
-        url = Utils.getNullStringAsEmpty(conn_param,"server_url") + "/api/cashier/login";
+        url = base_url + "/api/cashier/login";
 
         mLoginCall = HttpUtils.sendAsyncPost(url,sz_param);
         mLoginCall.enqueue(new Callback() {
@@ -524,8 +514,21 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                         case "y":
                             store_info = JSON.parseObject(info_json.getString("shop_info"));
                             mStoresId = Utils.getNullStringAsEmpty(store_info,"stores_id");
-
                             cashier_json = JSON.parseObject(info_json.getString("cashier"));
+
+                            //初始化本地数据库
+                        {
+                            final String id = mApplication.getStoreIdWithSharedPreferences();
+                            if (!id.isEmpty() && !id.equals(mStoresId)){
+                                final String message = String.format(Locale.CHINA,"本次登录的操作员【%s<%s>】所属门店/仓库【%s】，确定登录将切换前台数据库，是否登录?"
+                                        ,Utils.getNullStringAsEmpty(cashier_json,"cas_name"),mOperId,Utils.getNullStringAsEmpty(store_info,"stores_name"));
+                                if(MyDialog.showMessageToModalDialog(mSelf,message) == 0){
+                                    mProgressDialog.dismiss();
+                                    return;
+                                }
+                            }
+                            CustomApplication.initDbAndImgDirectory(mStoresId);
+                        }
 
                             final String set_url = base_url + "/api_v2/pos/set_ps";
                             jsonLogin = new JSONObject();
@@ -562,14 +565,9 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
 
                                                     conn_param.put("pos_num",mPosNum);
                                                     conn_param.put("storeInfo",store_info);
+                                                    CustomApplication.setConnParam(conn_param);
 
                                                     JSONObject _json = new JSONObject();
-                                                    _json.put("parameter_id","connParam");
-                                                    _json.put("parameter_content",conn_param);
-                                                    _json.put("parameter_desc","门店信息、服务器连接参数");
-                                                    params.add(_json);
-
-                                                    _json = new JSONObject();
                                                     _json.put("parameter_id","scale_setting");
                                                     _json.put("parameter_content",info_json.getJSONObject("scale"));
                                                     _json.put("parameter_desc","条码秤参数信息");
@@ -707,8 +705,8 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                         "cas_account = '" + mOperId + "' and stores_id = '" + mStoresId + "' and cas_pwd = '" + local_password + "'", err);
 
                 if (Integer.parseInt(sz_count) > 0) {
-                    mApplication.initSyncManagement(Utils.getNullStringAsEmpty(mConnParam,"server_url"),Utils.getNullStringAsEmpty(mConnParam,"appId"),
-                            Utils.getNullStringAsEmpty(mConnParam,"appSecret"),mStoresId,mPosNum,mOperId);
+                    mApplication.initSyncManagement(Utils.getNullStringAsEmpty(connParam,"server_url"),Utils.getNullStringAsEmpty(connParam,"appId"),
+                            Utils.getNullStringAsEmpty(connParam,"appSecret"),mStoresId,mPosNum,mOperId);
                     launchLogin(false);
                 } else {
                     if (mHandler != null)
@@ -719,14 +717,5 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
             myDialog.dismiss();
             finish();
         });
-    }
-
-    public void initGoodsImgDirectory(){
-        final File file = new File(IMG_PATH);
-        if (!file.exists()){
-            if (!file.mkdir()){
-                MyDialog.ToastMessage("初始化商品图片目录错误！",this,null);
-            }
-        }
     }
 }

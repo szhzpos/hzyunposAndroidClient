@@ -94,7 +94,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
                 if (!"".equals(img_url)){
                     final String szImage = img_url.substring(img_url.lastIndexOf("/") + 1);
                     CustomApplication.execute(()->{
-                        final Bitmap bitmap = BitmapFactory.decodeFile(LoginActivity.IMG_PATH + szImage);
+                        final Bitmap bitmap = BitmapFactory.decodeFile(CustomApplication.IMG_PATH + szImage);
                         goods_img.post(()-> myViewHolder.goods_img.setImageBitmap(bitmap));
                     });
                 }else{
