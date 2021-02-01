@@ -86,13 +86,13 @@ public abstract class MainActivity extends AppCompatActivity {
     }
 
     public String getAppId(){
-        return mApplication.getAppId();
+        return mAppId;
     }
     public String getAppSecret(){
-        return mApplication.getAppSecret();
+        return mAppSecret;
     }
     public String getUrl(){
-        return mApplication.getUrl();
+        return mUrl;
     }
 
     public boolean verifyPermissions(final String per_id,final String requested_cas_code){

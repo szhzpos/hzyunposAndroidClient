@@ -380,13 +380,13 @@
     <!-- 手机单据明细窗口-->
     <string name="m_order_head_sz">单头信息</string>
     <string name="m_order_details_sz">单据明细</string>
-    <string name="m_pay_details_sz">付款信息</string>
+    <string name="m_pay_info_sz">付款信息</string>
     <string name="m_sale_order_id_sz">销售单号：</string>
     <string name="m_charge_order_id_sz">充值单号：</string>
     <string name="m_refund_order_id_sz">退货单号：</string>
     <string name="refund_type_colon_sz">退货方式：</string>
     <string name="m_order_time_sz">订单时间：</string>
-    <string name="m_vip_no_sz">会员卡号：</string>
+    <string name="m_vip_no_colon_sz">会员卡号：</string>
     <string name="m_vip_mobile_sz">会员手机：</string>
     <string name="vip_name_colon_sz">会员姓名：</string>
     <string name="give_amt_colon_sz">@string/present_amt_colon_sz</string>
@@ -486,4 +486,31 @@
     <string name="last_month_sz">上月</string>
     <string name="sale_num_sz">销量</string>
     <string name="o_sale_amt_sz">销售额(元)</string>
+
+    <!-- 交易查询-->
+    <string name="this_week_sz">本周</string>
+    <string name="last_week_sz">上周</string>
+    <string name="this_month_sz">本月</string>
+    <string name="custom_sz">自定义</string>
+    <string name="start_date_sz">开始日期</string>
+    <string name="end_date_sz">结束日期</string>
+    <string name="order_num_with_unit_sz">订单数(笔)</string>
+    <string name="order_amt_with_unit_sz">订单金额(元)</string>
+    <string name="order_code_sz">订单编号</string>
+    <string name="consume_store_sz">消费门店</string>
+    <string name="consume_time_sz">消费时间</string>
+    <string name="consume_amt_sz">消费金额</string>
+    <string name="vip_no_sz">会员卡号</string>
+    <string name="consume_details_sz">消费明细</string>
+    <string name="pay_details_sz">付款明细</string>
+
+    <!-- 类别统计-->
+    <string name="all_category_sz">全部类别</string>
+    <string name="category_name_sz">类别名称</string>
+    <string name="act_sale_num_sz">实际销量</string>
+    <string name="act_sale_amt_sz">实际销售额</string>
+    <string name="act_ml_sz">实际毛利</string>
+    <string name="act_mll_sz">实际毛利率</string>
+
+
 </resources>

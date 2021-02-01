@@ -48,6 +48,7 @@
                 android:layout_weight="1"
                 android:drawableStart="@drawable/query_icon"
                 android:gravity="fill_vertical"
+                android:tag="activity.mobile.report.DealQueryActivity"
                 android:text="@string/trade_query_sz"
                 android:textColor="@color/colorPrimary"
                 android:textSize="@dimen/font_size_16" />
@@ -92,6 +93,7 @@
                 android:layout_weight="1"
                 android:drawableStart="@drawable/query_icon"
                 android:gravity="fill_vertical"
+                android:tag="activity.mobile.report.CategoryStatisticsActivity"
                 android:text="@string/category_sum_sz"
                 android:textColor="@color/colorPrimary"
                 android:textSize="@dimen/font_size_16" />

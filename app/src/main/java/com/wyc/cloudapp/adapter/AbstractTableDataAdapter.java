@@ -26,7 +26,7 @@ public abstract class AbstractTableDataAdapter<T extends AbstractTableDataAdapte
     private ItemClickCallBack mItemClickCallback;
 
     public static class SuperViewHolder extends RecyclerView.ViewHolder {
-        SuperViewHolder(View itemView) {
+        public SuperViewHolder(View itemView) {
             super(itemView);
         }
 
@@ -73,9 +73,14 @@ public abstract class AbstractTableDataAdapter<T extends AbstractTableDataAdapte
             setViewBackgroundColor(v,false);
             setCurrentItemViewAndIndex(null);
         }
+        triggerItemClick();
+    }
+
+    protected void triggerItemClick(){
         if (mItemClickCallback != null)mItemClickCallback.onClick(getCurrentRecord());
     }
-    View.OnClickListener mItemClickListener = this::setCurrentItemView;
+
+    protected View.OnClickListener mItemClickListener = this::setCurrentItemView;
 
     protected void setViewBackgroundColor(final View view, boolean s){
         if(view != null){
@@ -119,7 +124,7 @@ public abstract class AbstractTableDataAdapter<T extends AbstractTableDataAdapte
                 mCurrentItemIndex = -1;
             }else{
                 try {
-                    mCurrentItemIndex = Integer.valueOf(tv.getText().toString());
+                    mCurrentItemIndex = Integer.parseInt(tv.getText().toString());
                 }catch (NumberFormatException e){
                     e.printStackTrace();
                     mCurrentItemIndex = -1;

@@ -37,7 +37,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
-        <activity android:name=".activity.mobile.report.MobileSaleRankActivity"/>
+        <activity android:name=".activity.mobile.report.CategoryStatisticsActivity" />
+        <activity android:name=".activity.mobile.report.OrderDetailsActivity" />
+        <activity android:name=".activity.mobile.report.DealQueryActivity" />
+        <activity android:name=".activity.mobile.report.MobileSaleRankActivity" />
         <activity android:name=".activity.mobile.business.MobileWholesaleRefundOrderActivity" />
         <activity android:name=".activity.mobile.business.MobileWholesaleRefundOrderActivity$MobileAddWholesaleRefundOrderActivity" />
         <activity android:name=".activity.mobile.business.MobileWholesaleOrderActivity" />
@@ -69,10 +72,10 @@
                 android:resource="@xml/usb_device_filter" />
         </activity>
         <activity
-            android:theme="@style/splashTheme"
             android:name=".activity.LoginActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTop"
+            android:theme="@style/splashTheme"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

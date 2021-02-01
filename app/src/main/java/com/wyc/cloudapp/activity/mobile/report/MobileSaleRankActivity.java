@@ -2,7 +2,6 @@ package com.wyc.cloudapp.activity.mobile.report;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -17,10 +16,11 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
-import com.wyc.cloudapp.adapter.MobileSaleRankAdapter;
+import com.wyc.cloudapp.adapter.report.MobileSaleRankAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
 
@@ -40,7 +40,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class MobileSaleRankActivity extends AbstractMobileActivity {
+public final class MobileSaleRankActivity extends AbstractMobileActivity {
 
     private JSONObject mQueryCondition;
     private int mCurrentDateViewId = -1;
@@ -164,7 +164,6 @@ public class MobileSaleRankActivity extends AbstractMobileActivity {
         final ProgressDialog progressDialog = ProgressDialog.show(this,"","正在查询数据...",true);
         final JEventLoop loop = new JEventLoop();
         final StringBuilder err = new StringBuilder();
-
         CustomApplication.execute(()->{
             final JSONObject object = mQueryCondition;
             try {
@@ -184,21 +183,20 @@ public class MobileSaleRankActivity extends AbstractMobileActivity {
                         err.append(retJson.getString("info"));
                         break;
                     case 1:
-                        final JSONObject info = JSONObject.parseObject(retJson.getString("info")),data = info.getJSONObject("data");
+                        final JSONObject info = JSONObject.parseObject(retJson.getString("info")),data = Utils.getNullObjectAsEmptyJson(info,"data");
                         final Activity activity = MobileSaleRankActivity.this;
                         activity.runOnUiThread(()->{
-                            if (data != null){
+                            if (!data.isEmpty()){
                                 mAdapter.setDataForArray(data.getJSONArray("goods"));
                             }else {
-                                mAdapter.setDatas((String) null);
+                                mAdapter.setDataForArray(null);
                                 Toast.makeText(activity,info.getString("info"),Toast.LENGTH_SHORT).show();
                             }
                         });
                         loop.done(1);
                         break;
                 }
-
-            } catch (JSONException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 err.append(e.getMessage());
                 loop.done(0);
