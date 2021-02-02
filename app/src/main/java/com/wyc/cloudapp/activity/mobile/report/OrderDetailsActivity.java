@@ -14,14 +14,14 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
-import com.wyc.cloudapp.adapter.report.GoodsDetailsAdapter;
+import com.wyc.cloudapp.adapter.report.MobileGoodsDetailsAdapter;
 import com.wyc.cloudapp.utils.Utils;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 public final class OrderDetailsActivity extends AbstractMobileActivity {
     private View mCurrentDetailsView;
-    private GoodsDetailsAdapter mDetailsAdapter;
+    private MobileGoodsDetailsAdapter mDetailsAdapter;
     private JSONArray saleDetails,payDetails;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +86,7 @@ public final class OrderDetailsActivity extends AbstractMobileActivity {
     private void initOrderList(final JSONArray datas){
         final RecyclerView recyclerView  = findViewById(R.id.goods_details_list);
         if (null != recyclerView){
-            mDetailsAdapter = new GoodsDetailsAdapter(this);
+            mDetailsAdapter = new MobileGoodsDetailsAdapter(this);
             mDetailsAdapter.setDatas(datas,0);
             recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
             recyclerView.setAdapter(mDetailsAdapter);

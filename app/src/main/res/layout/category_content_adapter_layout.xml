@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="45dp"
+    android:background="@drawable/bottom_separator">
+
+    <TextView
+        android:id="@+id/sale_num_tv"
+        android:layout_width="@dimen/height_88"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center_vertical|end"
+        android:text="@string/act_sale_num_sz"
+        android:textSize="@dimen/font_size_16" />
+
+    <TextView
+        android:id="@+id/sale_amt_tv"
+        android:layout_width="@dimen/height_88"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center_vertical|end"
+        android:text="@string/act_sale_amt_sz"
+        android:textSize="@dimen/font_size_16" />
+
+    <TextView
+        android:id="@+id/profit_tv"
+        android:layout_width="@dimen/height_88"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center_vertical|end"
+        android:text="@string/act_ml_sz"
+        android:textSize="@dimen/font_size_16" />
+
+    <TextView
+        android:id="@+id/profit_rate_tv"
+        android:layout_width="@dimen/height_88"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="right|center_vertical"
+        android:text="@string/act_mll_sz"
+        android:textSize="@dimen/font_size_16" />
+</LinearLayout>

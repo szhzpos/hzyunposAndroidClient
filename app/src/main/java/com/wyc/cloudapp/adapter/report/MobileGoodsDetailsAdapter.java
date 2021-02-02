@@ -29,10 +29,10 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class GoodsDetailsAdapter extends AbstractTableDataAdapter<GoodsDetailsAdapter.MyViewHolder>{
+public class MobileGoodsDetailsAdapter extends AbstractTableDataAdapter<MobileGoodsDetailsAdapter.MyViewHolder>{
 
     private int mShowType = 0;
-    public GoodsDetailsAdapter(MainActivity context) {
+    public MobileGoodsDetailsAdapter(MainActivity context) {
         mContext = context;
     }
 

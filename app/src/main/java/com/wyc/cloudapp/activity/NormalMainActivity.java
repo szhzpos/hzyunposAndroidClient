@@ -2,10 +2,14 @@ package com.wyc.cloudapp.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -43,6 +47,7 @@ import com.wyc.cloudapp.CustomizationView.InterceptLinearLayout;
 import com.wyc.cloudapp.CustomizationView.ScaleView;
 import com.wyc.cloudapp.CustomizationView.TmpOrderButton;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.mobile.MobileNavigationActivity;
 import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -72,7 +77,10 @@ import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.Locale;
+
+import static com.wyc.cloudapp.fragment.PrintFormatFragment.ACTION_USB_PERMISSION;
 
 public final class NormalMainActivity extends SaleActivity implements CustomApplication.MessageCallback {
     private RecyclerView mSaleGoodsRecyclerView;
@@ -88,6 +96,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     private ScaleView mScaleView;
     private CustomProgressDialog mProgressDialog;
     private EditText mSearch_content;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -135,6 +144,8 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
 
         //启动同步
         launchSync();
+
+        checkUsbPermission();
     }
     private void initMemberVariable(){
         mProgressDialog = new CustomProgressDialog(this);
@@ -163,6 +174,40 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     public void onDestroy(){
         super.onDestroy();
         clearResource();
+    }
+
+    private void checkUsbPermission(){
+        final JSONObject object = new JSONObject();
+        if (SQLiteHelper.getLocalParameter("printer",object)){
+            final String printer_info = Utils.getNullStringAsEmpty(object,"v");
+            int status_id = object.getIntValue("id");
+            final String[] vals = printer_info.split("\t");
+            if (status_id == R.id.usb_p && vals.length > 1){
+                final UsbManager manager = (UsbManager)getSystemService(Context.USB_SERVICE);
+                if (null != manager){
+                    HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
+                    UsbDevice device = null;
+                    boolean isExist = false;
+                    for(String sz:deviceList.keySet()){
+                        device = deviceList.get(sz);
+                        if (null != device){
+                            int id = device.getVendorId(),pid = device.getProductId();
+                            vals[0] = vals[0].substring(vals[0].indexOf(":") + 1);
+                            vals[1] = vals[1].substring(vals[1].indexOf(":") + 1);
+                            if (String.valueOf(id).equals(vals[0]) && vals[1].equals(String.valueOf(pid))){
+                                isExist = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (isExist && !manager.hasPermission(device)){
+                        PendingIntent permissionIntent = PendingIntent.getBroadcast(mApplication, 0, new Intent(ACTION_USB_PERMISSION), 0);
+                        manager.requestPermission(device, permissionIntent);
+                    }
+                }
+            }
+        }else
+            MyDialog.ToastMessage("加载打印机参数错误：" + object.getString("info"),mApplication,null);
     }
 
     private void launchSync(){

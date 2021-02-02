@@ -2,6 +2,7 @@ package com.wyc.cloudapp.activity;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +11,8 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -57,12 +60,15 @@ import com.wyc.cloudapp.utils.http.HttpUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Locale;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+
+import static com.wyc.cloudapp.fragment.PrintFormatFragment.ACTION_USB_PERMISSION;
 
 public class LoginActivity extends AppCompatActivity implements CustomApplication.MessageCallback {
     private static final int REQUEST_STORAGE_PERMISSIONS  = 800;
@@ -76,6 +82,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
     private boolean isSmallScreen = false;
     private Handler mHandler;
     private final CustomApplication mApplication = CustomApplication.self();
+    private boolean isFirstRequestPermissions = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
@@ -250,7 +257,6 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
         final Button login_btn = findViewById(R.id.b_login);
         if (null != login_btn)
             login_btn.setOnClickListener((View v)-> {
-
                 saveLastUser();
 
                 check_ver();
@@ -409,14 +415,18 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                     ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},REQUEST_STORAGE_PERMISSIONS );
                 }).show();
             }else {
-                MyDialog.displayAskMessage(this, "用户已经禁用存储读写权限，是否手动授权?", myDialog -> {
-                    final Intent intent = new Intent();
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
-                    intent.setData(Uri.fromParts("package", getPackageName(), null));
-                    startActivity(intent);
-                    myDialog.dismiss();
-                }, myDialog -> LoginActivity.this.finish());
+                if (isFirstRequestPermissions){
+                    isFirstRequestPermissions = false;
+                    ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},REQUEST_STORAGE_PERMISSIONS );
+                }else
+                    MyDialog.displayAskMessage(this, "用户已经禁用存储读写权限，是否手动授权?", myDialog -> {
+                        final Intent intent = new Intent();
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
+                        intent.setData(Uri.fromParts("package", getPackageName(), null));
+                        startActivity(intent);
+                        myDialog.dismiss();
+                    }, myDialog -> LoginActivity.this.finish());
             }
         }
     }
@@ -515,6 +525,11 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                             store_info = JSON.parseObject(info_json.getString("shop_info"));
                             mStoresId = Utils.getNullStringAsEmpty(store_info,"stores_id");
                             cashier_json = JSON.parseObject(info_json.getString("cashier"));
+
+                            if (!Utils.isNotEmpty(mStoresId)){
+                                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "登录错误，门店编号不能为空!").sendToTarget();
+                                return;
+                            }
 
                             //初始化本地数据库
                         {
@@ -690,28 +705,33 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
     private void offline_login(){
         MyDialog.displayAskMessage(this, "连接服务器失败，是否离线登录？", myDialog -> {
             myDialog.dismiss();
-            if (CustomApplication.verifyOfflineTime(this)){
-                 mOperId = mUserIdEt.getText().toString();
+            final JSONObject connParam = mConnParam;
+            mStoresId = Utils.getNullObjectAsEmptyJson(connParam, "storeInfo").getString("stores_id");
+            if (Utils.isNotEmpty(mStoresId)){
+                CustomApplication.initDbAndImgDirectory(mStoresId);
+                if (CustomApplication.verifyOfflineTime(this)){
+                    mOperId = mUserIdEt.getText().toString();
 
-                final String password = mPasswordEt.getText().toString();
-                final String local_password = Utils.getUserIdAndPasswordCombinationOfMD5(mOperId + password);
-                final StringBuilder err = new StringBuilder();
-                final JSONObject connParam = mConnParam;
+                    final String password = mPasswordEt.getText().toString();
+                    final String local_password = Utils.getUserIdAndPasswordCombinationOfMD5(mOperId + password);
+                    final StringBuilder err = new StringBuilder();
 
-                mPosNum = Utils.getNullStringAsEmpty(connParam, "pos_num");
-                mStoresId = Utils.getNullObjectAsEmptyJson(connParam, "storeInfo").getString("stores_id");
 
-                final String sz_count = SQLiteHelper.getString("SELECT count(cas_id) count FROM cashier_info where " +
-                        "cas_account = '" + mOperId + "' and stores_id = '" + mStoresId + "' and cas_pwd = '" + local_password + "'", err);
+                    mPosNum = Utils.getNullStringAsEmpty(connParam, "pos_num");
 
-                if (Integer.parseInt(sz_count) > 0) {
-                    mApplication.initSyncManagement(Utils.getNullStringAsEmpty(connParam,"server_url"),Utils.getNullStringAsEmpty(connParam,"appId"),
-                            Utils.getNullStringAsEmpty(connParam,"appSecret"),mStoresId,mPosNum,mOperId);
-                    launchLogin(false);
-                } else {
-                    if (mHandler != null)
+                    final String sz_count = SQLiteHelper.getString("SELECT count(cas_id) count FROM cashier_info where " +
+                            "cas_account = '" + mOperId + "' and stores_id = '" + mStoresId + "' and cas_pwd = '" + local_password + "'", err);
+
+                    if (Integer.parseInt(sz_count) > 0) {
+                        mApplication.initSyncManagement(Utils.getNullStringAsEmpty(connParam,"server_url"),Utils.getNullStringAsEmpty(connParam,"appId"),
+                                Utils.getNullStringAsEmpty(connParam,"appSecret"),mStoresId,mPosNum,mOperId);
+                        launchLogin(false);
+                    } else {
                         mHandler.obtainMessage(MessageID.LOGIN_ID_ERROR_ID, "不存在此用户！").sendToTarget();
+                    }
                 }
+            }else {
+                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "离线登录，门店编号不能为空!").sendToTarget();
             }
         }, myDialog -> {
             myDialog.dismiss();
