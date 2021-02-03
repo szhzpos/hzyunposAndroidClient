@@ -93,6 +93,7 @@
     <dimen name="size_118">118dp</dimen>
     <dimen name="size_208">208dp</dimen>
     <dimen name="size_128">128dp</dimen>
+    <dimen name="size_188">188dp</dimen>
     <dimen name="size_888">888dp</dimen>
     <dimen name="size_82">82dp</dimen>
     <dimen name="size_272">272dp</dimen>
@@ -186,4 +187,5 @@
     <dimen name="mobile_transfer_content_title_height">@dimen/size_35</dimen>
     <dimen name="business_monitor_btn_w">@dimen/size_78</dimen>
     <dimen name="business_monitor_btn_h">@dimen/size_35</dimen>
+    <dimen name="stock_query_goods_name_w">@dimen/size_188</dimen>
 </resources>

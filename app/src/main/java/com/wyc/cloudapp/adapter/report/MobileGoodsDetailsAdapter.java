@@ -21,7 +21,7 @@ import java.util.Locale;
  * @ProjectName: CloudApp
  * @Package: com.wyc.cloudapp.adapter.report
  * @ClassName: GoodsDetailsAdapter
- * @Description: java类作用描述
+ * @Description: 交易查询报表商品明细适配器
  * @Author: wyc
  * @CreateDate: 2021/2/1 15:00
  * @UpdateUser: 更新者
@@ -40,7 +40,7 @@ public class MobileGoodsDetailsAdapter extends AbstractTableDataAdapter<MobileGo
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         final View itemView = View.inflate(mContext, R.layout.goods_details_content_layout, null);
-        final RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Utils.dpToPx(mContext,68));
+        final RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Utils.dpToPx(mContext,88));
         final int margin = Utils.dpToPx(mContext,24);
         lp.setMarginStart(margin);
         lp.setMarginEnd(margin);

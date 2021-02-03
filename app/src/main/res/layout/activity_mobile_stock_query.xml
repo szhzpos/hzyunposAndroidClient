@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/encode_view"
+    android:orientation="vertical"
+    tools:context="reports.activity.StockQueryActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/margin_5">
+
+        <Spinner
+            android:id="@+id/_condition_spinner"
+            style="@style/Widget.AppCompat.Light.Spinner.DropDown.ActionBar"
+            android:layout_width="@dimen/width_88"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/margin_2"
+            android:dropDownWidth="wrap_content"
+            android:foreground="@drawable/spinner_style"
+            android:minWidth="88dp"
+            android:overlapAnchor="false"
+            android:paddingStart="2dp"
+            android:paddingEnd="0dp" />
+
+        <EditText
+            android:id="@+id/_contition"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/margin_5"
+            android:layout_marginBottom="@dimen/margin_1"
+            android:layout_weight="1"
+            android:autofillHints=""
+            android:background="@drawable/square_blue_shape"
+            android:drawableEnd="@drawable/scan"
+            android:ems="10"
+            android:hint="@string/keyword_sz"
+            android:inputType="textPersonName"
+            android:paddingStart="5dp"
+            android:paddingEnd="0dp"
+            android:selectAllOnFocus="true"
+            android:textColor="@color/colorAccent" />
+
+        <Button
+            android:id="@+id/query_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/width_88"
+            android:layout_height="match_parent"
+            android:background="@drawable/round_shape_main_color"
+            android:text="@string/query_sz"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/font_size_18" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="2dp"
+        android:background="@drawable/square_blue_shape"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <TextView
+            android:id="@+id/brand_cond"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textSize="@dimen/font_size_18" />
+
+        <TextView
+            android:id="@+id/category_cond"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/margin_1"
+            android:layout_weight="1"
+            android:background="@drawable/left_separator"
+            android:gravity="center"
+            android:textSize="@dimen/font_size_18" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_68"
+        android:layout_marginStart="@dimen/margin_2"
+        android:layout_marginTop="@dimen/margin_5"
+        android:layout_marginEnd="@dimen/margin_2"
+        android:background="@drawable/square_blue_shape"
+        android:baselineAligned="false"
+        android:orientation="horizontal"
+        android:padding="@dimen/margin_5">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/stock_num_sz"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:id="@+id/stock_num"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/zero_p_z_sz"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/font_size_18" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/left_separator"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/stock_amt_unit_sz"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:id="@+id/stock_amt"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/zero_p_z_sz"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/font_size_18" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="5dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/bottom_separator"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="@dimen/stock_query_goods_name_w"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/margin_5"
+                android:gravity="center_vertical"
+                android:text="@string/g_name_sz"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:layout_width="@dimen/width_88"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/stock_num_sz"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/stock_amt_sz"
+                android:textSize="@dimen/font_size_16" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/stock_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+</LinearLayout>

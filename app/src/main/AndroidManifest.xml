@@ -37,9 +37,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
-        <activity android:name=".activity.mobile.report.CategoryStatisticsActivity" />
-        <activity android:name=".activity.mobile.report.OrderDetailsActivity" />
-        <activity android:name=".activity.mobile.report.DealQueryActivity" />
+        <activity android:name=".activity.mobile.report.MobileStockQueryActivity"></activity>
+        <activity android:name=".activity.mobile.report.MobileCategoryStatisticsActivity" />
+        <activity android:name=".activity.mobile.report.MobileDealQueryActivity$OrderDetailsActivity" />
+        <activity android:name=".activity.mobile.report.MobileDealQueryActivity" />
         <activity android:name=".activity.mobile.report.MobileSaleRankActivity" />
         <activity android:name=".activity.mobile.business.MobileWholesaleRefundOrderActivity" />
         <activity android:name=".activity.mobile.business.MobileWholesaleRefundOrderActivity$MobileAddWholesaleRefundOrderActivity" />
@@ -63,13 +64,16 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="landscape">
-            <!--<intent-filter>
+
+            <!--
+            <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
             </intent-filter>
 
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
-                android:resource="@xml/usb_device_filter" />-->
+                android:resource="@xml/usb_device_filter" />
+            -->
         </activity>
         <activity
             android:name=".activity.LoginActivity"
@@ -100,6 +104,7 @@
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
             </intent-filter>
+
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/usb_device_filter" />

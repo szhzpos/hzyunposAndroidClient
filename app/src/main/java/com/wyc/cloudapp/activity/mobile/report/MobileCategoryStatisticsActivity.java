@@ -40,7 +40,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public final class CategoryStatisticsActivity extends AbstractMobileActivity {
+public final class MobileCategoryStatisticsActivity extends AbstractMobileActivity {
     private JSONObject mQueryConditionObj;
     private View mCurrentDateView;
     private MobileCategoryNameAdapter mNames;

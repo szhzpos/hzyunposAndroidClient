@@ -512,5 +512,10 @@
     <string name="act_ml_sz">实际毛利</string>
     <string name="act_mll_sz">实际毛利率</string>
 
+    <!--库存查询-->
+    <string name="keyword_sz">请输入关键字</string>
+    <string name="stock_num_sz">库存数量</string>
+    <string name="stock_amt_unit_sz">库存金额(元)</string>
+    <string name="stock_amt_sz">库存金额</string>
 
 </resources>

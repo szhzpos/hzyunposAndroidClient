@@ -23,6 +23,7 @@ import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -235,15 +236,8 @@ public class PieView extends View {
     private int getMaxLegendWidth(){
         int max = 0;
         if (mLegendTextBounds != null){
-            Rect i_r,j_r;
-            for (int i = 0,size = mLegendTextBounds.size(); i < size ;i ++){
-                i_r = mLegendTextBounds.get(i);
-                max = i_r.width();
-                for (int j = 0;j < size - i;j ++){
-                    j_r = mLegendTextBounds.get(j);
-                    if (j_r.width() > i_r.width())max = j_r.width();
-                }
-            }
+            Collections.sort(mLegendTextBounds, (o1, o2) -> -Integer.compare(o1.width(), o2.width()));
+            max = mLegendTextBounds.get(0).width();
         }
         Logger.d("max_legend_width:%d",max);
         return max;
