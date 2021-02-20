@@ -41,18 +41,13 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public final class MobileDealQueryActivity extends AbstractMobileActivity {
-    private JSONObject mQueryCondition;
+public final class MobileDealQueryActivity extends AbstractReportActivity {
     private MobileDealQueryAdapter mAdapter;
-    private View mCurrentDateView;
     private boolean isFirst = true;
-    private Button mQuery;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setMiddleText(getStoreName());
-        mQueryCondition = new JSONObject();
-        mQueryCondition.put("stores_id",getStoreId());
 
         initVipAndOrder();
         initOrderList();
@@ -190,12 +185,12 @@ public final class MobileDealQueryActivity extends AbstractMobileActivity {
                     break;
             }
 
-            mQueryCondition.put("start_time",start_time / 1000);
-            mQueryCondition.put("end_time",end_time / 1000);
+            mQueryConditionObj.put("start_time",start_time / 1000);
+            mQueryConditionObj.put("end_time",end_time / 1000);
 
             Logger.d("start:%s,end:%s",sdf.format(new Date(start_time)),sdf.format(new Date(end_time)));
 
-            Logger.d_json(mQueryCondition.toString());
+            Logger.d_json(mQueryConditionObj.toString());
 
             getDatas();
 
@@ -242,11 +237,11 @@ public final class MobileDealQueryActivity extends AbstractMobileActivity {
         final StringBuilder err = new StringBuilder();
 
         CustomApplication.execute(()->{
-            final  JSONObject object = mQueryCondition;
+            final  JSONObject object = mQueryConditionObj;
             try {
                 object.put("appid",mAppId);
 
-                final JSONObject retJson = HttpUtils.sendPost(mUrl + "/api_v2/boss/get_retail_order",HttpRequest.generate_request_parm(object, mAppSecret),true);
+                final JSONObject retJson = HttpUtils.sendPost(mUrl + "/api/boss/get_retail_order",HttpRequest.generate_request_parm(object, mAppSecret),true);
 
                 switch (retJson.getIntValue("flag")) {
                     case 0:
@@ -291,17 +286,6 @@ public final class MobileDealQueryActivity extends AbstractMobileActivity {
         }
     }
 
-    private void setStartTime(final Calendar calendar){
-        calendar.set(Calendar.HOUR_OF_DAY,0);
-        calendar.set(Calendar.MINUTE,0);
-        calendar.set(Calendar.SECOND,0);
-    }
-    private void setEndTime(final Calendar calendar){
-        calendar.set(Calendar.HOUR_OF_DAY,23);
-        calendar.set(Calendar.MINUTE,59);
-        calendar.set(Calendar.SECOND,59);
-    }
-
     private void showCustomDate(boolean b){
         final LinearLayout custome_date_layout = findViewById(R.id.custome_date_layout);
         final EditText s = custome_date_layout.findViewById(R.id.start_date),e = custome_date_layout.findViewById(R.id.end_date);
@@ -335,18 +319,6 @@ public final class MobileDealQueryActivity extends AbstractMobileActivity {
         }
     }
 
-    public void showDatePickerDialog(final Context context, final TextView tv, Calendar calendar) {
-        new DatePickerDialog(context,
-                (view, year, monthOfYear, dayOfMonth) -> {
-                    tv.setText(String.format(Locale.CHINA,"%d-%02d-%02d",year,monthOfYear + 1,dayOfMonth));
-                    if (mQuery != null)mQuery.callOnClick();
-                }
-                // 设置初始日期
-                , calendar.get(Calendar.YEAR)
-                ,calendar.get(Calendar.MONTH)
-                ,calendar.get(Calendar.DAY_OF_MONTH)).show();
-    }
-
     private void initOrderList(){
         final RecyclerView recyclerView  = findViewById(R.id.order_list);
         if (null != recyclerView){
@@ -371,7 +343,7 @@ public final class MobileDealQueryActivity extends AbstractMobileActivity {
                 object.put("appid", mAppId);
                 object.put("order_code",order_code);
 
-                final JSONObject retJson = HttpUtils.sendPost(mUrl + "/api_v2/boss/get_retail_order_goods", HttpRequest.generate_request_parm(object, mAppSecret),true);
+                final JSONObject retJson = HttpUtils.sendPost(mUrl + "/api/boss/get_retail_order_goods", HttpRequest.generate_request_parm(object, mAppSecret),true);
 
                 switch (retJson.getIntValue("flag")) {
                     case 0:
@@ -424,15 +396,15 @@ public final class MobileDealQueryActivity extends AbstractMobileActivity {
                     final String sz = editable.toString();
                     if (!"".equals(sz)){
                         if (sz.startsWith("N")){
-                            mQueryCondition.remove("members");
-                            mQueryCondition.put("order_code",sz);
+                            mQueryConditionObj.remove("members");
+                            mQueryConditionObj.put("order_code",sz);
                         }else {
-                            mQueryCondition.remove("order_code");
-                            mQueryCondition.put("members",sz);
+                            mQueryConditionObj.remove("order_code");
+                            mQueryConditionObj.put("members",sz);
                         }
                     }else {
-                        mQueryCondition.remove("members");
-                        mQueryCondition.remove("order_code");
+                        mQueryConditionObj.remove("members");
+                        mQueryConditionObj.remove("order_code");
                     }
                 }
             });
@@ -445,7 +417,6 @@ public final class MobileDealQueryActivity extends AbstractMobileActivity {
                 if (mCurrentDateView != null)mCurrentDateView.callOnClick();
             });
         }
-        mQuery = btn;
     }
 
     public static final class OrderDetailsActivity extends AbstractMobileActivity {

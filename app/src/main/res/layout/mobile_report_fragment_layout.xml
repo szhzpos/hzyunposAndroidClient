@@ -156,6 +156,7 @@
                 android:layout_height="match_parent"
                 android:drawableStart="@drawable/query_icon"
                 android:gravity="center_vertical"
+                android:tag="activity.mobile.report.MobileCashierTransfer"
                 android:text="@string/cashier_bill_sz"
                 android:textColor="@color/colorPrimary"
                 android:textSize="16sp" />

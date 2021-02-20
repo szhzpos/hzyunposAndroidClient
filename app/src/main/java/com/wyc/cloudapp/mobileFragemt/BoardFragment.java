@@ -149,7 +149,7 @@ public class BoardFragment extends AbstractMobileFragment {
                 object.put("stores_id",mContext.getStoreId());
                 object.put("see_type",2);
 
-                final JSONObject retJson = HttpUtils.sendPost(base_url + "/api_v2/boss/sales_volume",HttpRequest.generate_request_parm(object, appsecret),true);
+                final JSONObject retJson = HttpUtils.sendPost(base_url + "/api/boss/sales_volume",HttpRequest.generate_request_parm(object, appsecret),true);
 
                 switch (retJson.getIntValue("flag")) {
                     case 0:
@@ -242,7 +242,7 @@ public class BoardFragment extends AbstractMobileFragment {
             object.put("search_type",1);
             object.put("see_type",2);
 
-            final JSONObject retJson = HttpUtils.sendPost(base_url + "/api_v2/boss/sales_paymethod",HttpRequest.generate_request_parm(object, appsecret),true);
+            final JSONObject retJson = HttpUtils.sendPost(base_url + "/api/boss/sales_paymethod",HttpRequest.generate_request_parm(object, appsecret),true);
 
             switch (retJson.getIntValue("flag")) {
                 case 0:
@@ -355,8 +355,8 @@ public class BoardFragment extends AbstractMobileFragment {
                 object.put("search_type",search_type);
                 object.put("see_type",2);
 
-                //final JSONObject retJson = HttpRequest.sendPost_hz(base_url + "/api_v2/boss/sales_paymethod",Utils.jsonToMd5_hz(object, appsecret),null,true);
-                final JSONObject retJson = HttpUtils.sendPost(base_url + "/api_v2/boss/sales_paymethod", HttpRequest.generate_request_parm(object,appsecret),true);
+                //final JSONObject retJson = HttpRequest.sendPost_hz(base_url + "/api/boss/sales_paymethod",Utils.jsonToMd5_hz(object, appsecret),null,true);
+                final JSONObject retJson = HttpUtils.sendPost(base_url + "/api/boss/sales_paymethod", HttpRequest.generate_request_parm(object,appsecret),true);
 
                 switch (retJson.getIntValue("flag")) {
                     case 0:

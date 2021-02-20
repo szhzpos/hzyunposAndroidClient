@@ -567,7 +567,7 @@ public class AddGoodsInfoDialog extends AbstractDialogSaleActivity {
         data.put("pos_num",activity.getPosNum());
         data.put("stores_id",activity.getStoreId());
         final String param = HttpRequest.generate_request_parm(data,activity.getAppSecret());
-        final JSONObject retJson = httpRequest.sendPost(activity.getUrl() +"/api_v2/goods/get_goods_all",param,true);
+        final JSONObject retJson = httpRequest.sendPost(activity.getUrl() +"/api/goods/get_goods_all",param,true);
         switch (retJson.getIntValue("flag")){
             case 0:
                 code = false;

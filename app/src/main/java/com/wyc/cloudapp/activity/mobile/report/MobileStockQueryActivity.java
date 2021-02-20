@@ -33,10 +33,9 @@ import com.wyc.cloudapp.utils.http.HttpUtils;
 import static android.content.DialogInterface.BUTTON_NEGATIVE;
 import static android.content.DialogInterface.BUTTON_POSITIVE;
 
-public class MobileStockQueryActivity extends AbstractMobileActivity {
+public class MobileStockQueryActivity extends AbstractReportActivity {
     private static final int CODE_REQUEST_CODE = 0x000000bb;//条码请求标识
     private TextView mBrandCondTv, mCategoryCondTv;
-    private JSONObject mQueryConditionObj;
     private int mCurrentBrandIndex,mCurrentCategoryIndex;
     private JSONArray mCategoryList,mBrandList;
     private Button mQueryBtn;
@@ -46,10 +45,6 @@ public class MobileStockQueryActivity extends AbstractMobileActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        mQueryConditionObj = new JSONObject();
-        mQueryConditionObj.put("stores_id",getStoreId());
-
         initBrandAndCategory();
         initQueryBtn();
         initQueryCondition();

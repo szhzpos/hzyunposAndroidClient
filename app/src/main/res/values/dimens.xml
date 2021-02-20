@@ -59,6 +59,7 @@
     <dimen name="width_888">@dimen/size_888</dimen>
 
     <dimen name="size_0">0dp</dimen>
+    <dimen name="size_0.5">0.5dp</dimen>
     <dimen name="size_1">1dp</dimen>
     <dimen name="size_2">2dp</dimen>
     <dimen name="size_5">5dp</dimen>
@@ -183,9 +184,10 @@
     <dimen name="mobile_vip_charge_item_height">@dimen/size_45</dimen>
     <dimen name="size_218">218dp</dimen>
     <dimen name="m_setup_item_height">@dimen/size_45</dimen>
-    <dimen name="mobile_activity_title_left_right_tv_width">@dimen/size_78</dimen>
+    <dimen name="mobile_activity_title_left_right_tv_width">@dimen/size_108</dimen>
     <dimen name="mobile_transfer_content_title_height">@dimen/size_35</dimen>
     <dimen name="business_monitor_btn_w">@dimen/size_78</dimen>
     <dimen name="business_monitor_btn_h">@dimen/size_35</dimen>
     <dimen name="stock_query_goods_name_w">@dimen/size_188</dimen>
+    <dimen name="cashier_transfer_title_width">@dimen/width_88</dimen>
 </resources>

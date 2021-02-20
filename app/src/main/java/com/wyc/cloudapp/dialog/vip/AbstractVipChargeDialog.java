@@ -620,7 +620,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
 
                     String sz_param = HttpRequest.generate_request_parm(data_,appSecret);
 
-                    final String api = "/api_v2/member/mk_money_order";
+                    final String api = "/api/member/mk_money_order";
                     Logger.i("生成充值订单参数:url:%s%s,param:%s",url , api,sz_param);
                     retJson = httpRequest.sendPost(url + api,sz_param,true);
                     Logger.i("生成充值订单返回:%s",retJson.toString());

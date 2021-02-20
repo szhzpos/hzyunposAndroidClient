@@ -545,7 +545,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                             CustomApplication.initDbAndImgDirectory(mStoresId);
                         }
 
-                            final String set_url = base_url + "/api_v2/pos/set_ps";
+                            final String set_url = base_url + "/api/pos/set_ps";
                             jsonLogin = new JSONObject();
                             jsonLogin.put("appid", appid);
                             jsonLogin.put("pos_code", Utils.getDeviceId(mSelf));

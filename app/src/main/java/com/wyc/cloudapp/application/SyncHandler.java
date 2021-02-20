@@ -123,7 +123,7 @@ final class SyncHandler extends Handler {
                             "min_discount","is_refund","is_give","is_put","pt_user_id","pt_user_cname","remark","authority"};
 
                     sys_name = "正在同步门店收银员";
-                    url = base_url + "/api_v2/scale/get_cashier_info";
+                    url = base_url + "/api/scale/get_cashier_info";
 
                     object.put("cas_id",oper_id);
                     object.put("pos_num",pos_num);
@@ -453,7 +453,7 @@ final class SyncHandler extends Handler {
 
                                     Logger.d_json(data.toJSONString());
 
-                                    retJson = mHttp.sendPost(url + "/api_v2/retail_upload/order_upload",HttpRequest.generate_request_parm(send_data,appSecret),true);
+                                    retJson = mHttp.sendPost(url + "/api/retail_upload/order_upload",HttpRequest.generate_request_parm(send_data,appSecret),true);
                                     switch (retJson.getIntValue("flag")){
                                         case 0:
                                             code = false;

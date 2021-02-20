@@ -40,9 +40,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public final class MobileSaleRankActivity extends AbstractMobileActivity {
-
-    private JSONObject mQueryCondition;
+public final class MobileSaleRankActivity extends AbstractReportActivity {
     private int mCurrentDateViewId = -1;
     private MobileSaleRankAdapter mAdapter;
     private View mToday;
@@ -50,16 +48,9 @@ public final class MobileSaleRankActivity extends AbstractMobileActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initTitle();
-        mQueryCondition = new JSONObject();
-        mQueryCondition.put("stores_id",getStoreId());
 
         initOrderList();
         initDateCondition();
-    }
-
-    private void initTitle(){
-        setMiddleText(getStoreName());
     }
 
     @Override
@@ -111,7 +102,7 @@ public final class MobileSaleRankActivity extends AbstractMobileActivity {
         try {
             switch (view_id){
                 case R.id.today_tv:
-                    mQueryCondition.put("time_type",2);
+                    mQueryConditionObj.put("time_type",2);
 
                     start_time = sdf.format(rightNow.getTime());
 
@@ -119,7 +110,7 @@ public final class MobileSaleRankActivity extends AbstractMobileActivity {
 
                     break;
                 case R.id.yestoday_tv:
-                    mQueryCondition.put("time_type",2);
+                    mQueryConditionObj.put("time_type",2);
 
                     rightNow.add(Calendar.DAY_OF_YEAR,-1);
 
@@ -129,11 +120,11 @@ public final class MobileSaleRankActivity extends AbstractMobileActivity {
 
                     break;
                 case R.id.ft_days_tv:
-                    mQueryCondition.put("time_type",1);
-                    mQueryCondition.put("days",14);
+                    mQueryConditionObj.put("time_type",1);
+                    mQueryConditionObj.put("days",14);
                     break;
                 case R.id.last_month_tv:
-                    mQueryCondition.put("time_type",2);
+                    mQueryConditionObj.put("time_type",2);
 
                     rightNow.add(Calendar.MONTH,-1);
                     int fday = rightNow.getActualMinimum(5);
@@ -147,10 +138,10 @@ public final class MobileSaleRankActivity extends AbstractMobileActivity {
                     break;
             }
 
-            mQueryCondition.put("start_time",start_time);
-            mQueryCondition.put("end_time",end_time);
+            mQueryConditionObj.put("start_time",start_time);
+            mQueryConditionObj.put("end_time",end_time);
 
-            Logger.d_json(mQueryCondition.toJSONString());
+            Logger.d_json(mQueryConditionObj.toJSONString());
 
             getDatas();
 
@@ -165,7 +156,7 @@ public final class MobileSaleRankActivity extends AbstractMobileActivity {
         final JEventLoop loop = new JEventLoop();
         final StringBuilder err = new StringBuilder();
         CustomApplication.execute(()->{
-            final JSONObject object = mQueryCondition;
+            final JSONObject object = mQueryConditionObj;
             try {
                 object.put("appid",mAppId);
                 int stores_id = object.getIntValue("stores_id");
@@ -175,7 +166,7 @@ public final class MobileSaleRankActivity extends AbstractMobileActivity {
                     object.put("see_type",2);
                 }
 
-                final JSONObject retJson = HttpUtils.sendPost(mUrl + "/api_v2/boss/goods_sales_rank", HttpRequest.generate_request_parm(object, mAppSecret),true);
+                final JSONObject retJson = HttpUtils.sendPost(mUrl + "/api/boss/goods_sales_rank", HttpRequest.generate_request_parm(object, mAppSecret),true);
 
                 switch (retJson.getIntValue("flag")) {
                     case 0:

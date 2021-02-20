@@ -37,7 +37,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
-        <activity android:name=".activity.mobile.report.MobileStockQueryActivity"></activity>
+        <activity android:name=".activity.mobile.report.MobileCashierTransfer" />
+        <activity android:name=".activity.mobile.report.MobileCashierTransfer$TransferDetailsActivity" />
+        <activity android:name=".activity.mobile.report.MobileStockQueryActivity" />
         <activity android:name=".activity.mobile.report.MobileCategoryStatisticsActivity" />
         <activity android:name=".activity.mobile.report.MobileDealQueryActivity$OrderDetailsActivity" />
         <activity android:name=".activity.mobile.report.MobileDealQueryActivity" />

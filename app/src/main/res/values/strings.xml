@@ -11,7 +11,7 @@
     <string name="dialog_title">对话框</string>
     <string name="not_vip_sz">散客</string>
     <string name="cashier_desk_sz">云店POS收银客户端</string>
-    <string name="deal_sz">零售单</string>
+    <string name="retail_sz">零售单</string>
     <string name="shift_exchange_sz">交 班</string>
     <string name="more_sz">更多</string>
     <string name="other_sz">其他</string>
@@ -217,6 +217,8 @@
     <string name="abnormal_back_order_sz">异常退单</string>
     <string name="verify_pay_sz">支付验证</string>
     <string name="card_code_sz">卡号</string>
+    <string name="transfer_time_sz">交班时间：</string>
+    <string name="end_time_label_sz">结束时间：</string>
     <!-- 结账单 -->
     <string name="line_58">--------------------------------</string>
     <string name="b_f_title_sz">结账单</string>
@@ -265,8 +267,8 @@
     <string name="t_f_store_sz">@string/store_sz</string>
     <string name="t_f_order_sz">@string/order_sz</string>
     <string name="t_f_s_time_sz">开始时间：</string>
-    <string name="t_f_e_time_sz">结束时间：</string>
-    <string name="t_f_time_sz">交班时间：</string>
+    <string name="t_f_e_time_sz">@string/end_time_label_sz</string>
+    <string name="t_f_time_sz">@string/transfer_time_sz</string>
     <string name="t_f_oper_sz">当班人：</string>
     <string name="t_f_retail_sz">零售</string>
     <string name="t_f_refund_sz">@string/o_back_sz</string>
@@ -517,5 +519,20 @@
     <string name="stock_num_sz">库存数量</string>
     <string name="stock_amt_unit_sz">库存金额(元)</string>
     <string name="stock_amt_sz">库存金额</string>
+
+    <!--收银员对账查询-->
+    <string name="transfer_cash_sz">交班现金</string>
+    <string name="actual_cash_sz">实交现金</string>
+
+    <!--收银员对账明细-->
+    <string name="transfer_order_num_sz">单数(笔)</string>
+    <string name="transfer_operator_sz">交班人：</string>
+    <string name="upload_time_sz">上传时间：</string>
+    <string name="times_card_order_sz">次卡订单</string>
+    <string name="final_sum_amt_sz">总合计</string>
+    <string name="pay_sum_amt_sz">收款合计</string>
+    <string name="transfer_cash_unit_sz">交班现金(元)</string>
+    <string name="actual_cash_unit_sz">实交现金(元)</string>
+    <string name="cashBox_residue_unit_sz">钱箱剩余(元)</string>
 
 </resources>

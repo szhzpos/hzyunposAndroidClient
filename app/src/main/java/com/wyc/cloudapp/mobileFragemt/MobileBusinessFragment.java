@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.TextView;
 
-import com.wyc.cloudapp.CustomizationView.TopDrawableTextView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.dialog.MyDialog;

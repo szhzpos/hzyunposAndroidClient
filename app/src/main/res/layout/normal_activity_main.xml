@@ -48,7 +48,7 @@
                 android:layout_width="@dimen/main_top_fun_btn_width"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:contentDescription="@string/deal_sz"
+                android:contentDescription="@string/retail_sz"
                 app:srcCompat="@drawable/q_deal" />
 
             <TextView
@@ -57,7 +57,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1.5"
                 android:gravity="center"
-                android:text="@string/deal_sz"
+                android:text="@string/retail_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/font_size_14" />
         </LinearLayout>

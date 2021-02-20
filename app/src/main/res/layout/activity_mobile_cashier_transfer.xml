@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/margin_1">
+
+    <LinearLayout
+        android:id="@+id/date_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_58"
+        android:background="@drawable/stroke_blue_shape"
+        android:orientation="horizontal"
+        android:padding="@dimen/margin_1">
+
+        <TextView
+            android:id="@+id/today_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/today_sz"
+            android:textSize="@dimen/font_size_18" />
+
+        <TextView
+            android:id="@+id/yestoday_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/yesterday_sz"
+            android:textSize="@dimen/font_size_18" />
+
+        <TextView
+            android:id="@+id/this_week_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/this_week_sz"
+            android:textSize="@dimen/font_size_18" />
+
+        <TextView
+            android:id="@+id/last_week_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/last_week_sz"
+            android:textSize="@dimen/font_size_18" />
+
+        <TextView
+            android:id="@+id/this_month_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/this_month_sz"
+            android:textSize="@dimen/font_size_18" />
+
+        <TextView
+            android:id="@+id/custom_date_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/custom_sz"
+            android:textSize="@dimen/font_size_18" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/custome_date_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_50"
+        android:layout_marginTop="@dimen/margin_8"
+        android:background="@drawable/stroke_blue_shape"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/start_date"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_35"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="@dimen/margin_1"
+            android:layout_weight="1"
+            android:autofillHints=""
+            android:background="@color/encode_view"
+            android:ems="10"
+            android:hint="@string/start_date_sz"
+            android:inputType="datetime"
+            android:padding="@dimen/margin_5" />
+
+        <EditText
+            android:id="@+id/end_date"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_35"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="@dimen/margin_1"
+            android:layout_weight="1"
+            android:autofillHints=""
+            android:background="@drawable/left_separator"
+            android:ems="10"
+            android:hint="@string/end_date_sz"
+            android:inputType="datetime"
+            android:padding="@dimen/margin_5" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/margin_2"
+        android:background="@drawable/stroke_blue_shape"
+        android:orientation="horizontal"
+        android:padding="@dimen/margin_1">
+
+        <LinearLayout
+            android:layout_width="178dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/height_50"
+                android:background="@color/encode_view"
+                android:gravity="center"
+                android:text="@string/cashier_not_colon_sz"
+                android:textSize="@dimen/font_size_16" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/cashier_name_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/top_separator"
+                android:padding="@dimen/margin_1" />
+
+        </LinearLayout>
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/height_50"
+                    android:background="@color/encode_view"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="@dimen/cashier_transfer_title_width"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/transfer_cash_sz"
+                        android:textSize="@dimen/font_size_16" />
+
+                    <TextView
+                        android:layout_width="@dimen/cashier_transfer_title_width"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/actual_cash_sz"
+                        android:textSize="@dimen/font_size_16" />
+
+                    <TextView
+                        android:layout_width="@dimen/cashier_transfer_title_width"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/sale_sz"
+                        android:textSize="@dimen/font_size_16" />
+
+                    <TextView
+                        android:layout_width="@dimen/cashier_transfer_title_width"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/o_back_sz"
+                        android:textSize="@dimen/font_size_16" />
+
+                    <TextView
+                        android:layout_width="@dimen/cashier_transfer_title_width"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/charge_sz"
+                        android:textSize="@dimen/font_size_16" />
+
+                    <TextView
+                        android:layout_width="@dimen/cashier_transfer_title_width"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/times_card_sz"
+                        android:textSize="@dimen/font_size_16" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/transfer_order_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/top_separator"
+                    android:padding="1dp">
+
+                </androidx.recyclerview.widget.RecyclerView>
+
+            </LinearLayout>
+        </HorizontalScrollView>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -24,7 +24,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:text="@string/business_monitors_sz"
-                android:textColor="@android:color/black"
+                android:textColor="@color/label_text_color"
                 android:textSize="18sp" />
 
             <Space
@@ -345,7 +345,7 @@
                     android:layout_height="match_parent"
                     android:gravity="center_vertical"
                     android:text="@string/payment_way_sz"
-                    android:textColor="@android:color/black"
+                    android:textColor="@color/label_text_color"
                     android:textSize="@dimen/font_size_18" />
 
                 <Space

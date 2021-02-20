@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="45dp"
+    android:background="@drawable/bottom_separator"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/pay_name_tv"
+        android:layout_width="88dp"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="@string/refund_way_sz"
+        android:textSize="@dimen/font_size_14" />
+
+    <TextView
+        android:id="@+id/pay_money_tv"
+        android:layout_width="188dp"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="@string/refund_money_sz"
+        android:textSize="@dimen/font_size_14" />
+
+    <TextView
+        android:id="@+id/order_num_tv"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/transfer_order_num_sz"
+        android:textSize="@dimen/font_size_14" />
+</LinearLayout>

@@ -40,9 +40,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public final class MobileCategoryStatisticsActivity extends AbstractMobileActivity {
-    private JSONObject mQueryConditionObj;
-    private View mCurrentDateView;
+public final class MobileCategoryStatisticsActivity extends AbstractReportActivity {
+
     private MobileCategoryNameAdapter mNames;
     private MobileCategoryContentAdapter mContents;
     private LinearLayout mSelectedCategory;
@@ -51,11 +50,6 @@ public final class MobileCategoryStatisticsActivity extends AbstractMobileActivi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setMiddleText(getStoreName());
-
-        mQueryConditionObj = new JSONObject();
-        mQueryConditionObj.put("stores_id",getStoreId());
-
         initDateCondition();
         initCategoryStatisticsList();
         initCategoryLayout();
@@ -216,7 +210,7 @@ public final class MobileCategoryStatisticsActivity extends AbstractMobileActivi
             try {
                 object.put("appid",mAppId);
 
-                final JSONObject retJson = HttpUtils.sendPost(mUrl + "/api_v2/boss/goods_sales_category", HttpRequest.generate_request_parm(object, mAppSecret),true);
+                final JSONObject retJson = HttpUtils.sendPost(mUrl + "/api/boss/goods_sales_category", HttpRequest.generate_request_parm(object, mAppSecret),true);
 
                 switch (retJson.getIntValue("flag")) {
                     case 0:
@@ -333,29 +327,6 @@ public final class MobileCategoryStatisticsActivity extends AbstractMobileActivi
                 e.setOnFocusChangeListener(null);
             }
         }
-    }
-
-    public void showDatePickerDialog(final Context context, final TextView tv, Calendar calendar) {
-        new DatePickerDialog(context,
-                (view, year, monthOfYear, dayOfMonth) ->{
-                    tv.setText(String.format(Locale.CHINA,"%d-%02d-%02d",year,monthOfYear + 1,dayOfMonth));
-                    if (mCurrentDateView != null)mCurrentDateView.callOnClick();
-                }
-                // 设置初始日期
-                , calendar.get(Calendar.YEAR)
-                ,calendar.get(Calendar.MONTH)
-                ,calendar.get(Calendar.DAY_OF_MONTH)).show();
-    }
-
-    private void setStartTime(final Calendar calendar){
-        calendar.set(Calendar.HOUR_OF_DAY,0);
-        calendar.set(Calendar.MINUTE,0);
-        calendar.set(Calendar.SECOND,0);
-    }
-    private void setEndTime(final Calendar calendar){
-        calendar.set(Calendar.HOUR_OF_DAY,23);
-        calendar.set(Calendar.MINUTE,59);
-        calendar.set(Calendar.SECOND,59);
     }
 
     private void initCategoryStatisticsList(){

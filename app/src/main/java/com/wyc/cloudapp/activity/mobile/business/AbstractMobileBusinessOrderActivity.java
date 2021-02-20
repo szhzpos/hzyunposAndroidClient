@@ -35,7 +35,6 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
     protected long mStartTime,mEndTime;
     protected Button mCurrentDateBtn,mCurrentAuditStatusBtn;
     protected TextView mStartDateTv,mEndDateTv;
-    private AbstractQueryDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> mAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -245,9 +244,8 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
     private void initOrderList(){
         final RecyclerView order_list = findViewById(R.id.m_order_list);
         if (null != order_list){
-            mAdapter = getAdapter();
             order_list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
-            order_list.setAdapter(mAdapter);
+            order_list.setAdapter(getAdapter());
             order_list.addItemDecoration(new LinearItemDecoration(this.getColor(R.color.white)));
         }
     }

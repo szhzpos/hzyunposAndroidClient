@@ -45,12 +45,14 @@ public class ReportFragment extends AbstractJumpFragment {
     @Override
     protected void triggerItemClick(View v) {
         final Intent intent = new Intent();
+        final String title = ((TextView)v).getText().toString();
+        intent.putExtra("title",title);
         intent.setClassName(mContext,mContext.getPackageName().concat(".") + v.getTag());
         try {
             startActivity(intent);
         }catch (ActivityNotFoundException e){
             e.printStackTrace();
-            MyDialog.ToastMessage("暂不支持" + ((TextView)v).getText(),mContext,null);
+            MyDialog.ToastMessage("暂不支持" + title,mContext,null);
         }
     }
 }

@@ -10,7 +10,6 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 
-import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
@@ -26,7 +25,7 @@ import static android.content.Context.WINDOW_SERVICE;
 
 public class QueryRetailOrderDialog extends AbstractQuerySuperDialog {
     public QueryRetailOrderDialog(@NonNull MainActivity context) {
-        super(context,context.getString(R.string.deal_sz));
+        super(context,context.getString(R.string.retail_sz));
     }
 
     @Override
