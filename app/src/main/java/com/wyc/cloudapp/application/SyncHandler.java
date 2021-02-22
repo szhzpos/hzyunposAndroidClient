@@ -102,6 +102,7 @@ final class SyncHandler extends Handler {
                             "unit_id","unit_name","specifi","category_name","metering_id","shelf_life","goods_status","brand","origin","type","goods_tare","barcode_status","category_id",
                             "tax_rate","tc_mode","tc_rate","yh_mode","yh_price","mnemonic_code","image","attr_id","attr_name","attr_code","conversion","update_price","stock_unit_id","stock_unit_name","img_url"};
                     url = base_url + "/api/goods/get_goods_all";
+                    object.put("stores_id",stores_id);
                     object.put("pos_num",pos_num);
                     object.put("page",msg.obj);
                     object.put("limit",100);
@@ -722,6 +723,7 @@ final class SyncHandler extends Handler {
 
             object.put("appid",mAppId);
             object.put("goods_ids",datas);
+            object.put("barcode_ids",datas);
             object.put("pos_num",mPosNum);
 
             object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,mAppSecret),true);

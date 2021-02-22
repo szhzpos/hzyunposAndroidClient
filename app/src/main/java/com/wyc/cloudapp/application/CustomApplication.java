@@ -121,7 +121,7 @@ public final class CustomApplication extends Application {
        return mCashierInfo.getString("cas_name");
     }
     public String getCashierId(){
-        return mCashierInfo.getString("cas_Id");
+        return mCashierInfo.getString("cas_id");
     }
     public String getPtUserId(){
         return Utils.getNullStringAsEmpty(mCashierInfo,"pt_user_id");
