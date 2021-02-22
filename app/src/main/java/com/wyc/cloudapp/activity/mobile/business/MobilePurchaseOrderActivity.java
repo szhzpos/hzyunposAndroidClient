@@ -1,16 +1,12 @@
 package com.wyc.cloudapp.activity.mobile.business;
 
-import android.content.ActivityNotFoundException;
-import android.content.Intent;
 import android.os.Bundle;
 
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
-import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
-import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.adapter.business.MobilePurchaseOrderAdapter;
 
-import org.json.JSONObject;
-
+/*采购订货单*/
 public class MobilePurchaseOrderActivity extends AbstractMobileBusinessOrderActivity {
 
     @Override
@@ -19,25 +15,33 @@ public class MobilePurchaseOrderActivity extends AbstractMobileBusinessOrderActi
     }
 
     @Override
-    public AbstractQueryDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> getAdapter() {
-        return null;
+    public MobilePurchaseOrderAdapter getAdapter() {
+        return new MobilePurchaseOrderAdapter(this);
     }
 
     @Override
     protected JSONObject generateQueryCondition() {
-        return null;
+        final JSONObject condition = new JSONObject();
+        condition.put("api","/api/cgd/xlist");
+        return condition;
     }
 
     @Override
-    protected Class<?> jumpAddTarget() {
+    public Class<?> jumpAddTarget() {
         return MobileAddPurchaseOrderActivity.class;
     }
 
     public static class MobileAddPurchaseOrderActivity extends AbstractMobileAddOrderActivity {
-
         @Override
         protected int getContentLayoutId() {
             return R.layout.activity_mobile_add_purchase_order;
         }
+
+        @Override
+        protected JSONObject generateQueryCondition() {
+            return null;
+        }
     }
+
+
 }

@@ -7,7 +7,7 @@
     android:background="@color/white"
     android:orientation="vertical">
 
-    <LinearLayout
+    <com.wyc.cloudapp.CustomizationView.InterceptLinearLayout
         android:id="@+id/query_time_btn_layout"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/height_45"
@@ -45,7 +45,7 @@
             android:layout_weight="1"
             android:text="@string/other_sz"
             android:textSize="@dimen/font_size_16" />
-    </LinearLayout>
+    </com.wyc.cloudapp.CustomizationView.InterceptLinearLayout>
 
     <LinearLayout
         android:id="@+id/m_query_time_tv_layout"
@@ -91,7 +91,7 @@
             android:textSize="@dimen/font_size_16" />
     </LinearLayout>
 
-    <LinearLayout
+    <com.wyc.cloudapp.CustomizationView.InterceptLinearLayout
         android:id="@+id/audit_btn_layout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/height_45"
@@ -129,7 +129,7 @@
             android:layout_weight="1"
             android:text="@string/audited_sz"
             android:textSize="@dimen/font_size_16" />
-    </LinearLayout>
+    </com.wyc.cloudapp.CustomizationView.InterceptLinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/m_order_list"

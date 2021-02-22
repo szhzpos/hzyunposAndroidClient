@@ -73,21 +73,29 @@ public final class CustomApplication extends Application {
         registerActivityLifecycleCallbacks(callbacks);
     }
 
-    public void initCashierInfoAndStoreInfo(){
+    public boolean initCashierInfoAndStoreInfo(final Context context){
         final JSONObject cas_info = mCashierInfo = new JSONObject();
         final JSONObject st_info = mStoreInfo = getConnParam();
         if (SQLiteHelper.getLocalParameter("cashierInfo",cas_info)){
-            try {
-                mUrl = st_info.getString("server_url");
-                mAppId = st_info.getString("appId");
-                mAppSecret = st_info.getString("appSecret");
-                mStoreInfo = JSON.parseObject(st_info.getString("storeInfo"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-                MyDialog.displayErrorMessage(this, "初始化仓库信息错误：" + e.getMessage());
+            if(SQLiteHelper.execSql(cas_info,"SELECT ifnull(pt_user_cname,'') pt_user_cname,ifnull(pt_user_id,'') pt_user_id FROM cashier_info where cas_id = " + cas_info.getString("cas_id"))){
+                try {
+                    mUrl = st_info.getString("server_url");
+                    mAppId = st_info.getString("appId");
+                    mAppSecret = st_info.getString("appSecret");
+                    mStoreInfo = JSON.parseObject(st_info.getString("storeInfo"));
+                    return true;
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    MyDialog.displayErrorMessage(context, "初始化仓库信息错误：" + e.getMessage());
+                    return false;
+                }
+            }else {
+                MyDialog.displayErrorMessage(context, "初始化收银员信息错误：" + cas_info.getString("info"));
+                return false;
             }
         }else{
-            MyDialog.displayErrorMessage(this, "初始化收银员信息错误：" + cas_info.getString("info"));
+            MyDialog.displayErrorMessage(context, "初始化收银员信息错误：" + cas_info.getString("info"));
+            return false;
         }
     }
     public static JSONObject getConnParam(){
@@ -114,6 +122,9 @@ public final class CustomApplication extends Application {
     }
     public String getCashierId(){
         return mCashierInfo.getString("cas_Id");
+    }
+    public String getPtUserId(){
+        return Utils.getNullStringAsEmpty(mCashierInfo,"pt_user_id");
     }
     public String getStoreName(){
         return mStoreInfo.getString("stores_name");

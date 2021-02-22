@@ -8,6 +8,7 @@ import android.widget.TextView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.utils.Utils;
 
 public class MobileBusinessFragment extends AbstractJumpFragment {
     public MobileBusinessFragment(final MainActivity activity) {
@@ -26,16 +27,19 @@ public class MobileBusinessFragment extends AbstractJumpFragment {
 
     @Override
     protected void triggerItemClick(View v) {
-        String title = "";
-        final Intent intent = new Intent();
-        intent.setClassName(mContext,mContext.getPackageName().concat(".") + v.getTag());
-        title = ((TextView)v).getText().toString();
-        intent.putExtra("title",title);
-        try {
-            startActivity(intent);
-        }catch (ActivityNotFoundException e){
-            e.printStackTrace();
-            MyDialog.ToastMessage("暂不支持" + title,mContext,null);
+        if (Utils.isNotEmpty(mContext.getPtUserId())){
+            final Intent intent = new Intent();
+            intent.setClassName(mContext,mContext.getPackageName().concat(".") + v.getTag());
+            final String title = v instanceof TextView ? ((TextView)v).getText().toString() : "";
+            intent.putExtra("title",title);
+            try {
+                startActivity(intent);
+            }catch (ActivityNotFoundException e){
+                e.printStackTrace();
+                MyDialog.ToastMessage("暂不支持" + title,mContext,null);
+            }
+        }else {
+            MyDialog.ToastMessage("当前用户没有没权限处理此业务!",mContext,null);
         }
     }
 }

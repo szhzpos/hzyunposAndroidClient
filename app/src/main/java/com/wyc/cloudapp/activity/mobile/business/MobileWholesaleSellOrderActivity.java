@@ -2,15 +2,13 @@ package com.wyc.cloudapp.activity.mobile.business;
 
 import android.os.Bundle;
 
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
-import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
-
-import org.json.JSONObject;
+import com.wyc.cloudapp.adapter.business.MobilePurchaseOrderAdapter;
 
 public class MobileWholesaleSellOrderActivity extends AbstractMobileBusinessOrderActivity {
     @Override
-    protected AbstractQueryDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> getAdapter() {
+    protected MobilePurchaseOrderAdapter getAdapter() {
         return null;
     }
 
@@ -20,7 +18,7 @@ public class MobileWholesaleSellOrderActivity extends AbstractMobileBusinessOrde
     }
 
     @Override
-    protected Class<?> jumpAddTarget() {
+    public Class<?> jumpAddTarget() {
         return MobileAddWholesaleSellOrderActivity.class;
     }
 
@@ -29,6 +27,11 @@ public class MobileWholesaleSellOrderActivity extends AbstractMobileBusinessOrde
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+        }
+
+        @Override
+        protected JSONObject generateQueryCondition() {
+            return null;
         }
 
         @Override

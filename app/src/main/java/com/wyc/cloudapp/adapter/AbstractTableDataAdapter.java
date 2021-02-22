@@ -60,6 +60,9 @@ public abstract class AbstractTableDataAdapter<T extends AbstractTableDataAdapte
     public void setDatas(final String order_code) {
 
     }
+    public void setDataForArray(final JSONArray array) {
+
+    }
 
     protected void setCurrentItemView(View v){
         if (mCurrentItemView == null){

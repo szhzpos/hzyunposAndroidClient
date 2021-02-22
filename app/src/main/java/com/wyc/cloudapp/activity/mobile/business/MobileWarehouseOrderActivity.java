@@ -1,15 +1,10 @@
 package com.wyc.cloudapp.activity.mobile.business;
 
-import android.content.ActivityNotFoundException;
-import android.content.Intent;
 import android.os.Bundle;
 
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
-import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
-import com.wyc.cloudapp.dialog.MyDialog;
-
-import org.json.JSONObject;
+import com.wyc.cloudapp.adapter.business.MobilePurchaseOrderAdapter;
 
 public final class MobileWarehouseOrderActivity extends AbstractMobileBusinessOrderActivity{
     @Override
@@ -17,7 +12,7 @@ public final class MobileWarehouseOrderActivity extends AbstractMobileBusinessOr
         super.onCreate(savedInstanceState);
     }
     @Override
-    protected AbstractQueryDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> getAdapter() {
+    protected MobilePurchaseOrderAdapter getAdapter() {
         return null;
     }
     @Override
@@ -26,7 +21,7 @@ public final class MobileWarehouseOrderActivity extends AbstractMobileBusinessOr
     }
 
     @Override
-    protected Class<?> jumpAddTarget() {
+    public Class<?> jumpAddTarget() {
         return MobileAddWarehouseOrderActivity.class;
     }
 
@@ -34,6 +29,11 @@ public final class MobileWarehouseOrderActivity extends AbstractMobileBusinessOr
         @Override
         protected int getContentLayoutId() {
             return R.layout.activity_mobile_add_warehouse_order;
+        }
+
+        @Override
+        protected JSONObject generateQueryCondition() {
+            return null;
         }
     }
 }

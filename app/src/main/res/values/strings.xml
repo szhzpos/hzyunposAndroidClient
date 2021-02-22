@@ -432,7 +432,7 @@
     <string name="purchase_sz">采购</string>
     <string name="purchase_order_sz">采购订货单</string>
     <string name="warehouse_order_sz">采购入库单</string>
-    <string name="purchase_refund_order_sz">采购入库单</string>
+    <string name="purchase_refund_order_sz">采购退货单</string>
     <string name="wholesale_sz">批发</string>
     <string name="wholesale_order_sz">批发订货单</string>
     <string name="wholesale_sale_sz">批发销售单</string>

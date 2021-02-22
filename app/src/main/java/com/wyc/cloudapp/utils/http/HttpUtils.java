@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import org.xmlpull.v1.XmlPullParserException;
@@ -66,7 +67,7 @@ public final class HttpUtils {
                 content.put("flag",1);
                 if (responseBody != null){
                     if (json){
-                        content.put("info",responseBody.string());
+                        content.put("info",Utils.unicode2StringWithStringBuilder(new StringBuilder(responseBody.string())).toString());
                     }else {
                         try (Reader reader = new InputStreamReader(responseBody.byteStream(),StandardCharsets.UTF_8)){
                             final Map<String,String> map = Utils.parseXml(reader);

@@ -694,12 +694,13 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
 
     private void launchLogin(boolean isConnection){
         mApplication.setNetworkStatus(isConnection);
-        mApplication.initCashierInfoAndStoreInfo();
-        final Intent intent = new Intent(this,NormalMainActivity.class);
-        if (isSmallScreen)intent.setClass(this, MobileNavigationActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
-        finish();
+        if (mApplication.initCashierInfoAndStoreInfo(this)){
+            final Intent intent = new Intent(this,NormalMainActivity.class);
+            if (isSmallScreen)intent.setClass(this, MobileNavigationActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
+        }
     }
 
     private void offline_login(){

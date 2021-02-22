@@ -65,7 +65,7 @@
             android:drawableTop="@drawable/refund_order"
             android:gravity="center"
             android:tag="activity.mobile.business.MobilePurchaseRefundOrderActivity"
-            android:text="@string/wholesale_refund_sz"
+            android:text="@string/purchase_refund_order_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
             android:visibility="visible"

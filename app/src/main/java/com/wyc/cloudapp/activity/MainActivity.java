@@ -54,23 +54,26 @@ public abstract class MainActivity extends AppCompatActivity {
 
     public String getPosNum(){return Utils.getNullStringAsEmpty(mApplication.getCashierInfo(),"pos_num");}
     public String getCashierName(){
-        return mApplication.getCashierInfo().getString("cas_name");
+        return mApplication.getCashierName();
     }
     public String getCashierId(){
-        return mApplication.getCashierInfo().getString("cas_id");
+        return mApplication.getCashierId();
     }
     public String getCashierCode(){
         return mApplication.getCashierInfo().getString("cas_code");
     }
     public String getStoreName(){
-        return mApplication.getStoreInfo().getString("stores_name");
+        return mApplication.getStoreName();
     }
     public String getStoreId(){
-        return mApplication.getStoreInfo().getString("stores_id");
+        return mApplication.getStoreId();
     }
     public String getPermissionCashierId(){
         if ("".equals(mPermissionCashierId))return mApplication.getCashierInfo().getString("cas_id");
         return mPermissionCashierId;
+    }
+    public String getPtUserId(){
+        return mApplication.getPtUserId();
     }
 
     public boolean isConnection(){
