@@ -152,7 +152,7 @@ public final class MobileSaleRankActivity extends AbstractReportActivity {
     };
 
     private void getDatas(){
-        final ProgressDialog progressDialog = ProgressDialog.show(this,"","正在查询数据...",true);
+        final ProgressDialog progressDialog = ProgressDialog.show(this,"",getString(R.string.hints_query_data_sz),true);
         final JEventLoop loop = new JEventLoop();
         final StringBuilder err = new StringBuilder();
         CustomApplication.execute(()->{

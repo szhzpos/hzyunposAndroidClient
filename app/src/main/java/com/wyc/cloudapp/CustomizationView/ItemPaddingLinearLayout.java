@@ -7,6 +7,8 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
@@ -15,6 +17,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.logger.Logger;
 
 public class ItemPaddingLinearLayout extends LinearLayout {
+    private boolean ignore = false;
     public ItemPaddingLinearLayout(Context context) {
         this(context,null);
     }
@@ -37,6 +40,18 @@ public class ItemPaddingLinearLayout extends LinearLayout {
             }
         }
 
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent (MotionEvent ev){
+        if (ignore){
+            return true;
+        }else
+            return super.onInterceptTouchEvent(ev);
+    }
+
+    public void setIgnore(boolean b){
+        ignore = b;
     }
 
     private void init(float padding){

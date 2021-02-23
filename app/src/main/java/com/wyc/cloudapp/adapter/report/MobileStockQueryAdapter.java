@@ -97,7 +97,7 @@ public class MobileStockQueryAdapter extends AbstractTableDataAdapter<MobileStoc
         getDatas(true);
     }
     private void getDatas(boolean append){
-        final ProgressDialog progressDialog = ProgressDialog.show(mContext,"","正在查询数据...",true);
+        final ProgressDialog progressDialog = ProgressDialog.show(mContext,"",mContext.getString(R.string.hints_query_data_sz),true);
         final JEventLoop loop = new JEventLoop();
         final StringBuilder err = new StringBuilder();
         final JSONObject object = mPreQueryCondition;

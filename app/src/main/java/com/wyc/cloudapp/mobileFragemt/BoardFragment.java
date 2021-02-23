@@ -114,7 +114,7 @@ public class BoardFragment extends AbstractMobileFragment {
 
     private void getBusinessDatas(final JSONObject condition){
         final CustomProgressDialog progressDialog = new CustomProgressDialog(mContext);
-        progressDialog.setMessage("正在查询数据...").show();
+        progressDialog.setMessage(getString(R.string.hints_query_data_sz)).show();
         final JEventLoop loop = new JEventLoop();
         final StringBuilder err = new StringBuilder();
 
@@ -324,7 +324,7 @@ public class BoardFragment extends AbstractMobileFragment {
     private void getPayMethodDatas(int search_type,final JSONObject condition){
         //search_type 1商品销售额 2充值金额 3次卡销售额 4购物卡销售额 默认全部
         final CustomProgressDialog progressDialog = new CustomProgressDialog(mContext);
-        progressDialog.setMessage("正在查询数据...").show();
+        progressDialog.setMessage(getString(R.string.hints_query_data_sz)).show();
         final JEventLoop loop = new JEventLoop();
         final StringBuilder err = new StringBuilder();
         CustomApplication.execute(()->{

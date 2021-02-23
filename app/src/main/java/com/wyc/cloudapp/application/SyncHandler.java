@@ -12,7 +12,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.logger.Logger;
@@ -39,10 +38,18 @@ final class SyncHandler extends Handler {
 
     private String mAppId, mAppSecret,mUrl,mPosNum,mOperId,mStoresId;
 
+    private static final List<Integer> mSyncBasicsDataMessageIds = getBasicsDataMessageIds();
+
     SyncHandler(Looper looper){
         super(looper);
         mHttp = new HttpRequest();
         mHttp.setConnTimeOut(3000);
+    }
+
+    private static List<Integer> getBasicsDataMessageIds(){
+        return Arrays.asList(MessageID.SYNC_CASHIER_ID/*收银员*/,MessageID.SYNC_GOODS_CATEGORY_ID/*商品类别*/,MessageID.SYNC_PAY_METHOD_ID/*支付方式*/,MessageID.SYNC_STORES_ID/*仓库信息*/,
+                MessageID.SYNC_GP_INFO_ID/*组合商品*/,MessageID.SYNC_GOODS_ID/*商品信息*/,MessageID.SYNC_FULLREDUCE_ID/*满减信息*/,MessageID.SYNC_SALES_INFO_ID/*营业员信息*/,
+                MessageID.SYNC_SALE_OPERATOR_INFO_ID/*经办人信息*/,MessageID.SYNC_PROMOTION_ID/*促销信息*/);
     }
 
     void initParameter(final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){
@@ -52,6 +59,11 @@ final class SyncHandler extends Handler {
         mPosNum = pos_num;
         mOperId = operid;
         mStoresId = stores_id;
+    }
+
+    List<String> getSyncDataTableName(){
+        return Arrays.asList("shop_category","shop_stores","barcode_info","pay_method","cashier_info","fullreduce_info","sales_info",
+                "promotion_info","sale_operator_info","goods_group", "goods_group_info");
     }
 
     @Override
@@ -89,7 +101,7 @@ final class SyncHandler extends Handler {
                     break;
                 case MessageID.SYNC_STORES_ID://仓库信息
                     table_name = "shop_stores";
-                    table_cls = new String[]{"stores_id","stores_name","manager","telphone","region","status","nature"};
+                    table_cls = new String[]{"stores_id","stores_name","manager","telphone","region","status","nature","wh_id"};
                     sys_name = "正在同步仓库";
                     url = base_url + "/api/scale/get_stores";
                     object.put("pt_user_id",oper_id);
@@ -166,6 +178,13 @@ final class SyncHandler extends Handler {
                     object.put("page",msg.obj);
                     object.put("pos_num",pos_num);
                     break;
+                case MessageID.SYNC_SALE_OPERATOR_INFO_ID:
+                    table_name = "sale_operator_info";
+                    sys_name = "正在同步经办人";
+                    table_cls = new String[]{"sales_id","name","sort"};
+                    url = base_url + "/api/Jingbanren/xlist";
+                    object.put("stores_id",stores_id);
+                    break;
                 case MessageID.SYNC_FINISH_ID:
                     mMainActivityHandler.obtainMessage(MessageID.SYNC_FINISH_ID).sendToTarget();//同步完成
                     return;
@@ -234,6 +253,7 @@ final class SyncHandler extends Handler {
                             }else {
                                 data = Utils.getNullObjectAsEmptyJsonArray(info_json,"data");
                             }
+
                             if(data.size() != 0){
                                 switch (msg.what){
                                     case MessageID.SYNC_GP_INFO_ID:{
@@ -834,32 +854,19 @@ final class SyncHandler extends Handler {
     void stop(){
         sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_THREAD_QUIT_ID));
     }
+
     void sync(){
         if (mCurrentNetworkStatusCode == HttpURLConnection.HTTP_OK){
-            if (!hasMessages(MessageID.SYNC_CASHIER_ID))obtainMessage(MessageID.SYNC_CASHIER_ID).sendToTarget();//收银员
-            if (!hasMessages(MessageID.SYNC_GOODS_CATEGORY_ID))obtainMessage(MessageID.SYNC_GOODS_CATEGORY_ID,0).sendToTarget();//商品类别
-            if (!hasMessages(MessageID.SYNC_PAY_METHOD_ID))obtainMessage(MessageID.SYNC_PAY_METHOD_ID,0).sendToTarget();//支付方式
-            if (!hasMessages(MessageID.SYNC_STORES_ID))obtainMessage(MessageID.SYNC_STORES_ID).sendToTarget();//仓库信息
-            if (!hasMessages(MessageID.SYNC_GP_INFO_ID))obtainMessage(MessageID.SYNC_GP_INFO_ID,0).sendToTarget();//商品组合ID
-            if (!hasMessages(MessageID.SYNC_GOODS_ID))obtainMessage(MessageID.SYNC_GOODS_ID,0).sendToTarget();//商品信息obj代表当前下载页数
-            if (!hasMessages(MessageID.SYNC_FULLREDUCE_ID))obtainMessage(MessageID.SYNC_FULLREDUCE_ID).sendToTarget();//满减信息
-            if (!hasMessages(MessageID.SYNC_SALES_INFO_ID))obtainMessage(MessageID.SYNC_SALES_INFO_ID,0).sendToTarget();//营业员信息
-            if (!hasMessages(MessageID.SYNC_PROMOTION_ID))obtainMessage(MessageID.SYNC_PROMOTION_ID,0).sendToTarget();//商品信息obj代表当前下载页数
+            for (int id : mSyncBasicsDataMessageIds){
+                if (!hasMessages(id))obtainMessage(id,0).sendToTarget();
+            }
         }
     }
     void stopSync(){
         if (isPause)_continue();//如果已经暂停，则先唤醒线程
-
-        removeMessages(MessageID.MARK_DOWNLOAD_RECORD_ID);
-        removeMessages(MessageID.SYNC_CASHIER_ID);
-        removeMessages(MessageID.SYNC_GOODS_CATEGORY_ID);
-        removeMessages(MessageID.SYNC_STORES_ID);
-        removeMessages(MessageID.SYNC_PAY_METHOD_ID);
-        removeMessages(MessageID.SYNC_GP_INFO_ID);
-        removeMessages(MessageID.SYNC_GOODS_ID);
-        removeMessages(MessageID.SYNC_FULLREDUCE_ID);
-        removeMessages(MessageID.SYNC_PROMOTION_ID);
-        removeMessages(MessageID.SYNC_SALES_INFO_ID);
+        for (int id : mSyncBasicsDataMessageIds){
+            removeMessages(id);
+        }
         removeMessages(MessageID.SYNC_FINISH_ID);
     }
     void modifyReportProgressStatus(boolean b){

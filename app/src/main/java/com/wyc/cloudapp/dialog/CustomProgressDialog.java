@@ -105,4 +105,9 @@ public class CustomProgressDialog extends ProgressDialog
         if (mShowTime == 300)dismiss();
         mShowTimeView.postDelayed(this::updateTime,1000);
     }
+    public static CustomProgressDialog showProgress(final Context context,final String message){
+        final CustomProgressDialog progressDialog = new CustomProgressDialog(context);
+        progressDialog.setMessage(message).show();
+        return progressDialog;
+    }
 }

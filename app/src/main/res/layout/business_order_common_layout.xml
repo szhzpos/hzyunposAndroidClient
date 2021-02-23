@@ -7,7 +7,7 @@
     <LinearLayout
         android:id="@+id/one"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/business_order_item_height"
         android:layout_marginEnd="@dimen/margin_5"
         android:layout_weight="1"
         android:background="@drawable/round_shape_blue"
@@ -36,13 +36,14 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:drawableEnd="@drawable/small_fold"
-            android:gravity="center_vertical" />
+            android:gravity="center_vertical"
+            android:textColor="@color/text_color" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/two"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/business_order_item_height"
         android:layout_weight="1"
         android:background="@drawable/round_shape_blue"
         android:orientation="horizontal"
@@ -59,7 +60,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
-            android:text="@string/operator_sz"
+            android:text="@string/sale_operator_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_14" />
 
@@ -69,13 +70,14 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:drawableEnd="@drawable/small_fold"
-            android:gravity="center_vertical" />
+            android:gravity="center_vertical"
+            android:textColor="@color/text_color" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/three"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/business_order_item_height"
         android:layout_marginTop="@dimen/margin_5"
         android:layout_marginEnd="@dimen/margin_5"
         android:layout_weight="1"
@@ -104,14 +106,14 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:drawableEnd="@drawable/small_fold"
-            android:gravity="center_vertical" />
+            android:gravity="center_vertical"
+            android:textColor="@color/text_color" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/four"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/business_order_item_height"
         android:layout_weight="1"
         android:background="@drawable/round_shape_blue"
         android:orientation="horizontal"
@@ -138,7 +140,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:drawableEnd="@drawable/small_fold"
-            android:gravity="center_vertical" />
+            android:gravity="center_vertical"
+            android:textColor="@color/text_color" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

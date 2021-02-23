@@ -58,7 +58,6 @@ public class MobilePurchaseOrderAdapter extends AbstractBusinessDataAdapter<Mobi
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        super.onBindViewHolder(holder, position);
         final JSONObject object = mDatas.getJSONObject(position);
 
         holder.cgd_code_tv.setText(Html.fromHtml("<u>" + object.getString("cgd_code") + "</u>"));
@@ -70,16 +69,5 @@ public class MobilePurchaseOrderAdapter extends AbstractBusinessDataAdapter<Mobi
         holder.audit_tv.setText("1".equals(object.getString("sh_status")) ? mContext.getString(R.string.unaudited_sz) : mContext.getString(R.string.audited_sz));
         holder.amt_tv.setText(String.format(Locale.CHINA,"%.2f", Utils.getNotKeyAsNumberDefault(object,"total",0.0)));
         holder.date_tv.setText(object.getString("add_datetime"));
-    }
-
-    @Override
-    protected void setCurrentItemView(View v) {
-
-    }
-
-    @Override
-    public void setDataForArray(@NonNull final JSONArray array){
-        mDatas = array;
-        notifyDataSetChanged();
     }
 }

@@ -47,7 +47,7 @@ import static android.database.Cursor.FIELD_TYPE_STRING;
  */
 
 public final class SQLiteHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
     private static SQLiteDatabase mDb;
     private final Context mContext;
     private SQLiteHelper(Context context,final String databaseName){
@@ -101,8 +101,15 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    sc_status  INTEGER,\n" +
                 "    appids     VARCHAR,\n" +
                 "    sc_addtime INTEGER\n" +
+                ");",
+            sale_operator_info_sql = "CREATE TABLE IF NOT EXISTS sale_operator_info (\n" +//经办人
+                "    sales_id VARCHAR PRIMARY KEY\n" +
+                "                     NOT NULL,\n" +
+                "    name,\n" +
+                "    sort     VARCHAR\n" +
                 ");";
         update_list.add(sales_info_sql);
+        update_list.add(sale_operator_info_sql);
 
         //修改
         if(!checkColumnExists(db,"member_order_info","sc_id")){
@@ -116,6 +123,9 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         }
         if(!checkColumnExists(db,"pay_method","is_moling")){
             modify_list.add("ALTER TABLE pay_method ADD COLUMN is_moling INTEGER DEFAULT (1)");
+        }
+        if(!checkColumnExists(db,"shop_stores","wh_id")){
+            modify_list.add("ALTER TABLE shop_stores ADD COLUMN wh_id");
         }
 
 

@@ -22,7 +22,6 @@ public class LinearItemDecoration extends SuperItemDecoration {
 
     @Override
     public void onDrawOver(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-        super.onDrawOver(c, parent, state);
         final RecyclerView.LayoutManager manager = parent.getLayoutManager();
         if (manager instanceof LinearLayoutManager) {
             if (((LinearLayoutManager) manager).getOrientation() == LinearLayoutManager.VERTICAL) {
@@ -34,7 +33,6 @@ public class LinearItemDecoration extends SuperItemDecoration {
     }
     @Override
     public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-        super.getItemOffsets(outRect, view, parent, state);
         final RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
         if (layoutManager instanceof LinearLayoutManager) {
             if (mSpace == -1)mSpace = Utils.dpToPx(view.getContext(),5);

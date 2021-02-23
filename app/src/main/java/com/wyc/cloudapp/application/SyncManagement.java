@@ -8,6 +8,7 @@ import com.wyc.cloudapp.utils.MessageID;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 
@@ -110,6 +111,10 @@ class SyncManagement extends Thread {
     void rest(){
         acquireHandler();
         mSyncHandler.removeCallbacksAndMessages(null);
+    }
+    List<String> getDataTableName(){
+        acquireHandler();
+        return mSyncHandler.getSyncDataTableName();
     }
 
     private void acquireHandler(){

@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.SaleActivity;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.barcodeScales.BarCodeScaleDownDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
@@ -119,33 +120,19 @@ public final class MoreFunDialog extends AbstractDialogSaleActivity {
     private void initSyncBtn(){
         final Button sync_btn = findViewById(R.id.sync_btn);
         sync_btn.setOnClickListener(v->{
-            final StringBuilder err = new StringBuilder();
-            if (SQLiteHelper.execDelete("barcode_info",null,null,err) < 0){
-                MyDialog.ToastMessage(err.toString(),mContext,getWindow());
-            }
-            if (SQLiteHelper.execDelete("pay_method",null,null,err) < 0){
-                MyDialog.ToastMessage(err.toString(),mContext,getWindow());
-            }
-            if (SQLiteHelper.execDelete("shop_category",null,null,err) < 0){
-                MyDialog.ToastMessage(err.toString(),mContext,getWindow());
-            }
-            if (SQLiteHelper.execDelete("goods_group",null,null,err) < 0){
-                MyDialog.ToastMessage(err.toString(),mContext,getWindow());
-            }
-            if (SQLiteHelper.execDelete("goods_group_info",null,null,err) < 0){
-                MyDialog.ToastMessage(err.toString(),mContext,getWindow());
-            }
-            if (SQLiteHelper.execDelete("sales_info",null,null,err) < 0){
-                MyDialog.ToastMessage(err.toString(),mContext,getWindow());
-            }
-            if (SQLiteHelper.execDelete("promotion_info",null,null,err) < 0){
-                MyDialog.ToastMessage(err.toString(),mContext,getWindow());
-            }
-
-            mContext.manualSync();
+            clearBasicsData();
+            manualSync();
             this.dismiss();
         });
     }
+
+    private void clearBasicsData(){
+        CustomApplication.self().clearBasicsData();
+    }
+    private void manualSync(){
+        CustomApplication.self().manualSync();
+    }
+
     private void initQueryRefundOrderBtn(){
         final Button btn = findViewById(R.id.query_local_refund_btn);
         btn.setOnClickListener(v -> {

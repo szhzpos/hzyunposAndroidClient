@@ -19,8 +19,10 @@ import com.wyc.cloudapp.CustomizationView.InterceptLinearLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
+import com.wyc.cloudapp.adapter.report.AbstractDataAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
+import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.DrawableUtil;
@@ -40,7 +42,7 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
     private long mStartTime = 0,mEndTime = 0;
     private Button mCurrentDateBtn,mCurrentAuditStatusBtn;
     private TextView mStartDateTv,mEndDateTv;
-    private AbstractTableDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> mAdapter;
+    private AbstractDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> mAdapter;
     private JSONObject mParameterObj;
     private boolean isFirstLoad = true;
     @Override
@@ -56,7 +58,7 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
         initTitle();
     }
 
-    protected abstract AbstractTableDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> getAdapter();
+    protected abstract AbstractDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> getAdapter();
     protected abstract JSONObject generateQueryCondition();
     public abstract Class<?> jumpAddTarget();
     @Override
@@ -171,17 +173,17 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
     };
 
     private void query(){
-
-        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
-
         final JSONObject condition = generateQueryCondition();
         if (null != condition){
+            final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+
             mParameterObj.put("appid",getAppId());
             mParameterObj.put("stores_id",getStoreId());
             mParameterObj.put("pt_user_id",getPtUserId());
             mParameterObj.put("begin_time",sdf.format(new Date(mStartTime)));
             mParameterObj.put("end_time",sdf.format(new Date(mEndTime)));
 
+            final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,getString(R.string.hints_query_data_sz));
             CustomApplication.execute(()->{
                 final String param =  HttpRequest.generate_request_parm(mParameterObj,getAppSecret());
 
@@ -192,11 +194,7 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
                     try {
                         final JSONObject info = JSONObject.parseObject(retJson.getString("info"));
                         final JSONArray data = Utils.getNullObjectAsEmptyJsonArray(info,"data");
-
-
-
                         runOnUiThread(()-> mAdapter.setDataForArray(data));
-                        Logger.d_json(data.toString());
                     }catch (JSONException e){
                         e.printStackTrace();
                         runOnUiThread(()-> MyDialog.ToastMessage(e.getMessage(),this,null));
@@ -204,6 +202,7 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
                 }else {
                     runOnUiThread(()-> MyDialog.ToastMessage(retJson.getString("info"),this,null));
                 }
+                progressDialog.dismiss();
             });
         }
     }

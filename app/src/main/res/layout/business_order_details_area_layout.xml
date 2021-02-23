@@ -8,37 +8,35 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/height_40"
         android:background="@drawable/round_shape_main_color"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/margin_8">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/width_128"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:gravity="center"
             android:text="@string/goods_i_sz"
             android:textColor="@color/white"
             android:textSize="@dimen/font_size_16" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/width_68"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:gravity="center"
             android:text="@string/num_not_colon_sz"
             android:textColor="@color/white"
             android:textSize="@dimen/font_size_16" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/width_88"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:gravity="center"
             android:text="@string/m_price_sz"
             android:textColor="@color/white"
             android:textSize="@dimen/font_size_16" />
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
@@ -57,19 +55,21 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/height_45"
         android:background="@drawable/round_shape_main_color"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/margin_8"
+        android:paddingEnd="@dimen/margin_8">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
-            android:paddingStart="@dimen/margin_8"
             android:paddingEnd="0dp"
             android:text="@string/num_colon_sz"
             android:textColor="@color/white"
             android:textSize="@dimen/font_size_18" />
 
         <TextView
+            android:id="@+id/business_sum_num_tv"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -88,10 +88,10 @@
             android:textSize="@dimen/font_size_18" />
 
         <TextView
+            android:id="@+id/business_sum_amt_tv"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center_vertical"
+            android:gravity="center_vertical|end"
             android:text="@string/zero_p_z_sz"
             android:textColor="@color/orange_1"
             android:textSize="@dimen/font_size_18" />

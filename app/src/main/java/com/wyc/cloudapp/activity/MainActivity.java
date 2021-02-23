@@ -2,11 +2,9 @@ package com.wyc.cloudapp.activity;
 
 import android.content.Intent;
 import android.content.res.Resources;
-import android.os.Bundle;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import androidx.annotation.CallSuper;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.alibaba.fastjson.JSON;
@@ -82,10 +80,6 @@ public abstract class MainActivity extends AppCompatActivity {
 
     public void data_upload(){
         mApplication.data_upload();
-    }
-
-    public void manualSync(){
-        mApplication.manualSync();
     }
 
     public String getAppId(){

@@ -29,6 +29,7 @@ import com.wyc.cloudapp.utils.Utils;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 import java.util.concurrent.Callable;
@@ -297,6 +298,16 @@ public final class CustomApplication extends Application {
 
     public void resetSync(){
         mSyncManagement.rest();
+    }
+
+    public void clearBasicsData(){
+        final List<String> names = mSyncManagement.getDataTableName();
+        final StringBuilder err = new StringBuilder();
+        for (String name : names){
+            if (SQLiteHelper.execDelete(name,null,null,err) < 0){
+                Toast.makeText(this,err,Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
 
