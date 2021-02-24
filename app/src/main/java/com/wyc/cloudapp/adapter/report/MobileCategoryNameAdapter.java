@@ -30,11 +30,11 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class MobileCategoryNameAdapter extends AbstractTableDataAdapter<MobileCategoryNameAdapter.MyViewHolder> {
+public class MobileCategoryNameAdapter extends AbstractDataAdapter<MobileCategoryNameAdapter.MyViewHolder> {
     private View.OnClickListener mItemListener;
     private final Drawable drawable;
     public MobileCategoryNameAdapter(MainActivity context) {
-        mContext = context;
+        super(context);
         drawable = context.getDrawable(R.drawable.small_fold);
         if (drawable != null) drawable.setBounds(0, 0, drawable.getIntrinsicWidth() / 2 , drawable.getIntrinsicHeight() / 2 );
     }
@@ -50,7 +50,6 @@ public class MobileCategoryNameAdapter extends AbstractTableDataAdapter<MobileCa
 
     @Override
     public void onBindViewHolder( @NonNull final  MyViewHolder holder, int position) {
-        super.onBindViewHolder(holder, position);
         if (mDatas != null) {
             final JSONObject object = mDatas.getJSONObject(position);
             final TextView view = holder.category_name_tv;
@@ -70,16 +69,6 @@ public class MobileCategoryNameAdapter extends AbstractTableDataAdapter<MobileCa
                 view.setOnClickListener(null);
             }
         }
-    }
-
-    @Override
-    protected void setCurrentItemView(View v) {
-
-    }
-
-    public void setDataForArray(final JSONArray array){
-        mDatas = array;
-        notifyDataSetChanged();
     }
 
     public void setItemListener(final View.OnClickListener listener){

@@ -4,11 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,7 +19,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import com.wyc.cloudapp.CustomizationView.InterceptLinearLayout;
 import com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
@@ -33,10 +35,11 @@ import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
 
-import java.util.Calendar;
 import java.util.Locale;
 
+
 public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActivity {
+
     private AbstractDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> mAdapter;
     private JSONArray mSupplierList;
 
@@ -49,13 +52,31 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED);
 
         initTitle();
+        initView();
+
+        getSupplier();
+        CustomApplication.self().getAppHandler().post(this::queryData);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        getSupplier();
-        CustomApplication.self().getAppHandler().post(this::queryData);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SelectGoodsActivity.SELECT_GOODS_CODE) {
+            if (null != data){
+                final String barcode_id = data.getStringExtra("barcode_id");
+                Logger.d("barcode_id:%s",barcode_id);
+            }
+        }
     }
 
     protected abstract JSONObject generateQueryCondition();
@@ -67,11 +88,15 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
         setOrderStatus();
 
         mAdapter.setDataForArray(Utils.getNullObjectAsEmptyJsonArray(mOrderInfo,"goods_list"));
-        mAdapter.notifyDataSetChanged();
     }
     protected void setView(@NonNull final TextView view, final String id, final String name){
         view.setTag(id);
         view.setText(name);
+    }
+
+    private boolean isShowOrder(){
+        final Intent intent = getIntent();
+        return null != intent && intent.hasExtra("order_id");
     }
 
     private void generateOrderCode() {
@@ -128,21 +153,14 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
             object.put("stores_id",getStoreId());
             final String sz_param = HttpRequest.generate_request_parm(object,getAppSecret());
             final JSONObject retJson = httpRequest.sendPost(this.getUrl() + "/api/supplier_search/xlist",sz_param,true);
-            switch (retJson.getIntValue("flag")){
-                case 0:
-                    runOnUiThread(()->{
-                        MyDialog.ToastMessage("查询供应商信息错误:" + retJson.getString("info"),this,null);
-                    });
-                    break;
-                case 1:
-                    final JSONObject info_obj = JSONObject.parseObject(retJson.getString("info"));
-                    if ("n".equals(Utils.getNullOrEmptyStringAsDefault(info_obj,"status","n"))){
-                        runOnUiThread(()-> MyDialog.ToastMessage("查询供应商信息错误:" + info_obj.getString("info"),this,null));
-                    }else{
-                        final JSONArray data = info_obj.getJSONArray("data");
-                        mSupplierList = parse_supplier_info_and_set_default(data);
-                    }
-                    break;
+            if (HttpUtils.checkRequestSuccess(retJson)){
+                final JSONObject info_obj = JSONObject.parseObject(retJson.getString("info"));
+                if (HttpUtils.checkBusinessSuccess(info_obj)){
+                    final JSONArray data = info_obj.getJSONArray("data");
+                    mSupplierList = parse_supplier_info_and_set_default(data);
+                }else {
+                    MyDialog.ToastMessageInMainThread("查询供应商信息错误:" + info_obj.getString("info"));
+                }
             }
         });
     }
@@ -173,6 +191,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
         return array;
     }
 
+    @CallSuper
     protected void initView(){
         initSupplier();
         initStores();
@@ -182,7 +201,37 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
         initRemark();
         initOrderDetailsList();
         initFooterView();
+        initFunctionBtn();
     }
+
+    private void initFunctionBtn(){
+        final Button new_order_btn = findViewById(R.id.new_order_btn),business_save_btn = findViewById(R.id.m_business_save_btn),business_audit_btn = findViewById(R.id.m_business_audit_btn),
+                business_scan_btn = findViewById(R.id.m_business_scan_btn),pick_goods_btn = findViewById(R.id.m_pick_goods_btn);
+
+        new_order_btn.setOnClickListener(mFunctionClickListener);
+        pick_goods_btn.setOnClickListener(mFunctionClickListener);
+
+    }
+    private final View.OnClickListener mFunctionClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            final int id = v.getId();
+            if (id == R.id.new_order_btn){
+                if (mAdapter.getItemCount() != 0){
+                    if (MyDialog.showMessageToModalDialog(v.getContext(),"已存在商品，是否重新开单?") == 1){
+                        generateOrderCode();
+                        mAdapter.clear();
+                    }
+                }else {
+                    generateOrderCode();
+                }
+            }else if (id == R.id.m_pick_goods_btn){
+                startActivityForResult(new Intent(AbstractMobileAddOrderActivity.this,SelectGoodsActivity.class),SelectGoodsActivity.SELECT_GOODS_CODE);
+            }
+        }
+    };
+
+
     private void initSupplier(){//初始化供应商
         final TextView business_supplier_tv = findViewById(R.id.m_business_supplier_tv);
         final String sup = getString(R.string.supplier_colon_sz);
@@ -253,13 +302,14 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
 
     private void initOrderCode(){
         mOrderCodeTv = findViewById(R.id.m_business_order_tv);
-
     }
 
     private void initDate(){
-        final TextView business_date_tv = findViewById(R.id.m_business_date_tv);
-        business_date_tv.setOnClickListener(v -> Utils.showDatePickerDialog(this,(TextView) v, Calendar.getInstance()));
-        mDateTv = business_date_tv;
+        final LinearLayout view = findViewById(R.id.two);
+        if (!isShowOrder()){
+            view.setVisibility(View.GONE);
+        }else
+            mDateTv = view.findViewById(R.id.m_business_date_tv);
     }
 
     private void initRemark(){
@@ -275,7 +325,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                 public void onChanged() {
                     super.onChanged();
                     final JSONArray array = mAdapter.getData();
-                    double num = 0.0,amt = 0.0;
+                    double num = 0.0 ;
                     for (int i = 0,size = array.size();i < size;i ++){
                         final JSONObject object = array.getJSONObject(i);
                         num += Utils.getNotKeyAsNumberDefault(object,"xnum",0.0);
@@ -301,14 +351,10 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
     }
 
     private void queryData(){
-        final Intent intent = getIntent();
-        if (intent != null){
-            final String order_id = intent.getStringExtra("order_id");
-            if (Utils.isNotEmpty(order_id)){
-                query(order_id);
-            }else {
-                generateOrderCode();
-            }
+        if (isShowOrder()){
+            query(getIntent().getStringExtra("order_id"));
+        }else {
+            generateOrderCode();
         }
     }
 
@@ -319,23 +365,22 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
             parameterObj.put("appid",getAppId());
             parameterObj.put("stores_id",getStoreId());
             parameterObj.put("pt_user_id",getPtUserId());
-            parameterObj.put("cgd_id",id);
+            parameterObj.put(condition.getString("id_name"),id);
 
             final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,getString(R.string.hints_query_data_sz));
             CustomApplication.execute(()->{
                 final JSONObject retJson = HttpUtils.sendPost(getUrl() + condition.getString("api"), HttpRequest.generate_request_parm(parameterObj,getAppSecret()),true);
-                if (retJson.getIntValue("flag") == 1){
+                if (HttpUtils.checkRequestSuccess(retJson)){
                     try {
-                        final JSONObject info = JSON.parseObject(retJson.getString("info"));
-                        mOrderInfo = info.getJSONObject("data");
-                        Logger.d_json(mOrderInfo.toString());
-                        runOnUiThread(this::showOrder);
+                        final JSONObject info = JSONObject.parseObject(retJson.getString("info"));
+                        if (HttpUtils.checkBusinessSuccess(info)){
+                            mOrderInfo = info.getJSONObject("data");
+                            runOnUiThread(this::showOrder);
+                        }else throw new JSONException(info.getString("info"));
                     }catch (JSONException e){
                         e.printStackTrace();
-                        runOnUiThread(()-> MyDialog.ToastMessage(e.getMessage(),this,null));
+                        MyDialog.ToastMessageInMainThread(e.getMessage());
                     }
-                }else {
-                    runOnUiThread(()-> MyDialog.ToastMessage(retJson.getString("info"),this,null));
                 }
                 progressDialog.dismiss();
             });

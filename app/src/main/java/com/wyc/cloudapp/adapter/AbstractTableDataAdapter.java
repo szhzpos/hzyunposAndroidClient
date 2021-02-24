@@ -24,15 +24,8 @@ public abstract class AbstractTableDataAdapter<T extends AbstractTableDataAdapte
     private int mCurrentItemIndex = -1;
     private ItemClickCallBack mItemClickCallback;
 
-    public static class SuperViewHolder extends RecyclerView.ViewHolder {
-        public SuperViewHolder(View itemView) {
-            super(itemView);
-        }
-
-        @Override
-        protected void finalize(){
-            Logger.d(getClass().getName() + " finalized");
-        }
+    public AbstractTableDataAdapter(MainActivity activity) {
+        super(activity);
     }
 
     @CallSuper

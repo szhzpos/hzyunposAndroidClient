@@ -547,18 +547,24 @@ public final class Utils {
 
     public static void showDatePickerDialog(final Context context, final TextView tv, Calendar calendar) {
         new DatePickerDialog(context,
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                        tv.setText(String.format(Locale.CHINA,"%d-%02d-%02d",year,monthOfYear + 1,dayOfMonth));
-                    }
-                }
+                (view, year, monthOfYear, dayOfMonth) -> tv.setText(String.format(Locale.CHINA,"%d-%02d-%02d",year,monthOfYear + 1,dayOfMonth))
                 // 设置初始日期
                 , calendar.get(Calendar.YEAR)
                 ,calendar.get(Calendar.MONTH)
                 ,calendar.get(Calendar.DAY_OF_MONTH)).show();
     }
 
+    public static void showDatePickerDialog(final Context context,final View clickEvent, final TextView tv, Calendar calendar) {
+        new DatePickerDialog(context,
+                (view, year, monthOfYear, dayOfMonth) -> {
+                    tv.setText(String.format(Locale.CHINA,"%d-%02d-%02d",year,monthOfYear + 1,dayOfMonth));
+                    if (null != clickEvent)clickEvent.callOnClick();
+                }
+                // 设置初始日期
+                , calendar.get(Calendar.YEAR)
+                ,calendar.get(Calendar.MONTH)
+                ,calendar.get(Calendar.DAY_OF_MONTH)).show();
+    }
 
     public static String unicodeToString(String unicode) {
         StringBuilder sb = new StringBuilder();

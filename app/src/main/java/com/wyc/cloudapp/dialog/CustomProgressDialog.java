@@ -108,6 +108,7 @@ public class CustomProgressDialog extends ProgressDialog
     public static CustomProgressDialog showProgress(final Context context,final String message){
         final CustomProgressDialog progressDialog = new CustomProgressDialog(context);
         progressDialog.setMessage(message).show();
+        progressDialog.setCancelable(false);
         return progressDialog;
     }
 }

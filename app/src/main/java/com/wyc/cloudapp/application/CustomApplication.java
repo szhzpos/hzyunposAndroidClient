@@ -405,9 +405,9 @@ public final class CustomApplication extends Application {
                 Logger.w("%s%s",sz, Utils.formatStackTrace(t.getStackTrace()));
                 handler.post(()->{
                     if (mApplication.mActivities.isEmpty()){
-                        handler.post(()-> Toast.makeText(mApplication,sz,Toast.LENGTH_LONG).show());
+                        Toast.makeText(mApplication,sz,Toast.LENGTH_LONG).show();
                     }else
-                        MyDialog.showErrorMessageToModalDialog(mApplication.mActivities.get(0),sz);
+                        MyDialog.showErrorMessageToModalDialog(mApplication.mActivities.lastElement(),sz);
                 });
             }
         }

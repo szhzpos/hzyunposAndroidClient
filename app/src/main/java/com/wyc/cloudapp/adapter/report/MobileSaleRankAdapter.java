@@ -26,7 +26,7 @@ import com.wyc.cloudapp.utils.Utils;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class MobileSaleRankAdapter extends AbstractTableDataAdapter<MobileSaleRankAdapter.MyViewHolder> {
+public class MobileSaleRankAdapter extends AbstractDataAdapter<MobileSaleRankAdapter.MyViewHolder> {
 
     static class MyViewHolder extends AbstractTableDataAdapter.SuperViewHolder {
         TextView goods_name_tv,sale_num_tv,sale_amt_tv;
@@ -39,7 +39,7 @@ public class MobileSaleRankAdapter extends AbstractTableDataAdapter<MobileSaleRa
     }
 
     public MobileSaleRankAdapter(MainActivity context) {
-        mContext = context;
+        super(context);
     }
 
     @Override
@@ -54,7 +54,6 @@ public class MobileSaleRankAdapter extends AbstractTableDataAdapter<MobileSaleRa
 
     @Override
     public void onBindViewHolder( @NonNull final  MyViewHolder holder, int position) {
-        super.onBindViewHolder(holder, position);
         if (mDatas != null) {
             final JSONObject object = mDatas.getJSONObject(position);
             holder.goods_name_tv.setText(object.getString("goods_title"));
@@ -69,8 +68,4 @@ public class MobileSaleRankAdapter extends AbstractTableDataAdapter<MobileSaleRa
         return mDatas == null ? 0 : mDatas.size();
     }
 
-    public void setDataForArray(final JSONArray array){
-        mDatas = array;
-        notifyDataSetChanged();
-    }
 }

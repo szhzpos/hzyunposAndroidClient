@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.activity.mobile.business.AbstractMobileBusinessOrderActivity;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.adapter.report.AbstractDataAdapter;
@@ -22,6 +23,10 @@ import com.wyc.cloudapp.adapter.report.AbstractDataAdapter;
  * @Version: 1.0
  */
 public abstract class AbstractBusinessDataAdapter<T extends AbstractTableDataAdapter.SuperViewHolder > extends AbstractDataAdapter<T> implements View.OnClickListener {
+    public AbstractBusinessDataAdapter(MainActivity activity) {
+        super(activity);
+    }
+
     @Override
     public void onClick(View v) {
         if (mContext instanceof AbstractMobileBusinessOrderActivity){

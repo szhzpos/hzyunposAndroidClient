@@ -20,7 +20,7 @@ import java.util.Locale;
 
 public final class MobileRefundOrderAdapter extends AbstractQueryDataAdapter<MobileRefundOrderAdapter.MyViewHolder> {
     public MobileRefundOrderAdapter(final MainActivity activity){
-        mContext = activity;
+        super(activity);
     }
 
     static class MyViewHolder extends AbstractQueryDataAdapter.SuperViewHolder {

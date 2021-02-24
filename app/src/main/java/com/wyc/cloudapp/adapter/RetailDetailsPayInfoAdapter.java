@@ -20,7 +20,7 @@ import java.util.Locale;
 
 public final class RetailDetailsPayInfoAdapter extends AbstractPayInfoAdapter<RetailDetailsPayInfoAdapter.MyViewHolder> {
     public RetailDetailsPayInfoAdapter(MainActivity context){
-        mContext = context;
+        super(context);
     }
 
     static class MyViewHolder extends AbstractTableDataAdapter.SuperViewHolder {
@@ -52,7 +52,7 @@ public final class RetailDetailsPayInfoAdapter extends AbstractPayInfoAdapter<Re
                 holder.row_id_tv.setText(String.valueOf(position + 1));
                 holder.pay_method_name_tv.setTag(pay_info.getIntValue("pay_method"));
                 holder.pay_method_name_tv.setText(pay_info.getString("name"));
-                holder.pay_amt_tv.setText(String.format(Locale.CHINA, "%.2f", pay_info.getDoubleValue("pamt")));
+                holder.pay_amt_tv.setText(String.format(Locale.CHINA, "%s%.2f",mContext.getString(R.string.currency_symbol_sz) ,pay_info.getDoubleValue("pamt")));
                 holder.pay_status_tv.setText(pay_info.getString("pay_status_name"));
                 holder.pay_time_tv.setText(pay_info.getString("pay_time"));
                 holder.pay_code_tv.setText(Utils.getNullStringAsEmpty(pay_info, "order_code_son"));

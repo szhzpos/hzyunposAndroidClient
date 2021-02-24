@@ -32,6 +32,7 @@ import androidx.lifecycle.OnLifecycleEvent;
 import com.google.android.material.snackbar.Snackbar;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.LoginActivity;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.callback.WindowCallback;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogContext;
@@ -282,6 +283,11 @@ public final class MyDialog extends AbstractDialogContext {
     public static boolean ToastMessage(View anchor,final String message,final Context context,final Window window,boolean b){
         if(!b)ToastMessage(anchor,message,context,window);//条件为假是提示信息
         return b;
+    }
+
+    public static void ToastMessageInMainThread(final String message){
+        final CustomApplication application = CustomApplication.self();
+        application.getAppHandler().post(()-> Toast.makeText(application,message,Toast.LENGTH_LONG).show());
     }
 
     public static void ToastMessage(final String message, @NonNull final Context context, final Window window){

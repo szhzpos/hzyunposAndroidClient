@@ -1,9 +1,14 @@
 package com.wyc.cloudapp.utils.http;
 
+import android.app.Application;
+import android.content.Context;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -127,5 +132,18 @@ public final class HttpUtils {
                 throw unknownHostException;
             }
         }
+    }
+
+    public static boolean checkRequestSuccess(final JSONObject object){
+        if (null == object)return false;
+        boolean code = object.getIntValue("flag") == 1;
+        if (!code){
+            final CustomApplication application = CustomApplication.self();
+            application.getAppHandler().post(()->Toast.makeText(application, object.getString("info"), Toast.LENGTH_LONG).show());
+        }
+        return code;
+    }
+    public static boolean checkBusinessSuccess(final JSONObject object){
+        return null != object && "y".equals(object.getString("status"));
     }
 }

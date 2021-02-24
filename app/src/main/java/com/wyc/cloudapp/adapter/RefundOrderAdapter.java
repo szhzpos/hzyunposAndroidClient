@@ -22,7 +22,7 @@ import java.util.Locale;
 
 public final class RefundOrderAdapter extends AbstractQueryDataAdapter<RefundOrderAdapter.MyViewHolder> {
     public RefundOrderAdapter(final MainActivity context){
-        mContext = context;
+        super(context);
     }
     static class MyViewHolder extends AbstractTableDataAdapter.SuperViewHolder {
         TextView row_id,retail_order_code,refund_order_code,refund_order_amt,refund_amt,refund_type,refund_status,cas_name,upload_status,oper_time;

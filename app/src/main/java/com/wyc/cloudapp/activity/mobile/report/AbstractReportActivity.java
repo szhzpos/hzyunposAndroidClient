@@ -12,6 +12,7 @@ import androidx.annotation.CallSuper;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
+import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Calendar;
 import java.util.Locale;
@@ -40,15 +41,7 @@ public abstract class AbstractReportActivity extends AbstractMobileActivity {
         mQueryConditionObj.put("stores_id",getStoreId());
     }
     protected void showDatePickerDialog(final Context context, final TextView tv, Calendar calendar) {
-        new DatePickerDialog(context,
-                (view, year, monthOfYear, dayOfMonth) -> {
-                    tv.setText(String.format(Locale.CHINA,"%d-%02d-%02d",year,monthOfYear + 1,dayOfMonth));
-                    if (mCurrentDateView != null)mCurrentDateView.callOnClick();
-                }
-                // 设置初始日期
-                , calendar.get(Calendar.YEAR)
-                ,calendar.get(Calendar.MONTH)
-                ,calendar.get(Calendar.DAY_OF_MONTH)).show();
+        Utils.showDatePickerDialog(context,mCurrentDateView,tv,calendar);
     }
 
     protected void setStartTime(final Calendar calendar){

@@ -25,10 +25,10 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class MobileCategoryContentAdapter extends AbstractTableDataAdapter<MobileCategoryContentAdapter.MyViewHolder>{
+public class MobileCategoryContentAdapter extends AbstractDataAdapter<MobileCategoryContentAdapter.MyViewHolder>{
 
     public MobileCategoryContentAdapter(final MainActivity activity){
-        mContext = activity;
+        super(activity);
     }
 
     @NonNull
@@ -42,7 +42,6 @@ public class MobileCategoryContentAdapter extends AbstractTableDataAdapter<Mobil
 
     @Override
     public void onBindViewHolder( @NonNull final  MyViewHolder holder, int position) {
-        super.onBindViewHolder(holder, position);
         if (mDatas != null) {
             final JSONObject object = mDatas.getJSONObject(position);
             holder.sale_num_tv.setText(String.format(Locale.CHINA, "%.2f", object.getDoubleValue("sum_xnum")));
@@ -50,16 +49,6 @@ public class MobileCategoryContentAdapter extends AbstractTableDataAdapter<Mobil
             holder.profit_tv.setText(String.format(Locale.CHINA, "%.2f", object.getDoubleValue("real_profit")));
             holder.profit_rate_tv.setText(object.getString("real_profit_rate"));
         }
-    }
-
-    @Override
-    protected void setCurrentItemView(View v) {
-
-    }
-
-    public void setDataForArray(final JSONArray array){
-        mDatas = array;
-        notifyDataSetChanged();
     }
 
     static class MyViewHolder extends AbstractTableDataAdapter.SuperViewHolder {

@@ -29,11 +29,11 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class MobileGoodsDetailsAdapter extends AbstractTableDataAdapter<MobileGoodsDetailsAdapter.MyViewHolder>{
+public class MobileGoodsDetailsAdapter extends AbstractDataAdapter<MobileGoodsDetailsAdapter.MyViewHolder>{
 
     private int mShowType = 0;
     public MobileGoodsDetailsAdapter(MainActivity context) {
-        mContext = context;
+        super(context);
     }
 
     @NonNull
@@ -64,7 +64,6 @@ public class MobileGoodsDetailsAdapter extends AbstractTableDataAdapter<MobileGo
 
     @Override
     public void onBindViewHolder( @NonNull final  MyViewHolder holder, int position) {
-        super.onBindViewHolder(holder, position);
         if (mDatas != null) {
             final JSONObject object = mDatas.getJSONObject(position);
             holder.goods_title_tv.setText(object.getString("goods_title"));

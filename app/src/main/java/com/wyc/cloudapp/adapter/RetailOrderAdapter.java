@@ -24,8 +24,8 @@ import java.util.Locale;
 public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrderAdapter.MyViewHolder> {
     private AbstractDialogMainActivity mDialog;
     public RetailOrderAdapter(final AbstractDialogMainActivity dialogMainActivity){
+        super(dialogMainActivity.getPrivateContext());
         mDialog = dialogMainActivity;
-        mContext = dialogMainActivity.getPrivateContext();
     }
 
     static class MyViewHolder extends AbstractQueryDataAdapter.SuperViewHolder {

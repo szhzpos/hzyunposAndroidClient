@@ -20,7 +20,7 @@ import java.util.Locale;
 public final class MobileRetailDetailsGoodsInfoAdapter extends AbstractTableDataAdapter<MobileRetailDetailsGoodsInfoAdapter.MyViewHolder> {
 
     public MobileRetailDetailsGoodsInfoAdapter(MainActivity context){
-        mContext = context;
+        super(context);
     }
 
     static class MyViewHolder extends AbstractTableDataAdapter.SuperViewHolder {
@@ -52,15 +52,15 @@ public final class MobileRetailDetailsGoodsInfoAdapter extends AbstractTableData
                 holder.row_id_tv.setText(String.valueOf(position + 1));
                 holder.goods_title_tv.setText(String.format(Locale.CHINA,"、%s",sale_goods_info.getString("goods_title")));
                 holder.xnum_tv.setText(String.format(Locale.CHINA, "%.3f", sale_goods_info.getDoubleValue("xnum")));
-                holder.price_tv.setText(String.format(Locale.CHINA, "%.2f", sale_goods_info.getDoubleValue("price")));
-                holder.sale_amt_tv.setText(String.format(Locale.CHINA, "%.2f", sale_goods_info.getDoubleValue("sale_amt")));
+                holder.price_tv.setText(String.format(Locale.CHINA, "%.2f/%s", sale_goods_info.getDoubleValue("price"),sale_goods_info.getString("unit_name")));
+                holder.sale_amt_tv.setText(String.format(Locale.CHINA, "%s%.2f", mContext.getString(R.string.currency_symbol_sz),sale_goods_info.getDoubleValue("sale_amt")));
             }
         }
     }
 
     public void setDatas(final String order_code){
         final StringBuilder err = new StringBuilder();
-        final String sql = "SELECT a.goods_title,a.type,b.price,b.total_money sale_amt,b.xnum,(b.xnum * y_price - b.total_money) discount_amt,b.xnum * y_price original_amt,b.y_price original_price FROM " +
+        final String sql = "SELECT a.goods_title,a.unit_name,a.type,b.price,b.total_money sale_amt,b.xnum,(b.xnum * y_price - b.total_money) discount_amt,b.xnum * y_price original_amt,b.y_price original_price FROM " +
                 "retail_order_goods b left join barcode_info a on a.barcode_id = b.barcode_id\n" +
                 "where a.goods_status = 1 and a.barcode_status = 1 and b.order_code = '" + order_code + "'";
 

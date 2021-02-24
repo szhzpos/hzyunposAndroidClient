@@ -17,7 +17,7 @@ import java.util.Locale;
 
 public class VipDepositOrderAdapter extends AbstractChargeOrderAdapter<VipDepositOrderAdapter.MyViewHolder> {
     public VipDepositOrderAdapter(final MainActivity activity){
-        mContext = activity;
+        super(activity);
     }
 
     static class MyViewHolder extends AbstractQueryDataAdapter.SuperViewHolder {

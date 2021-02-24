@@ -20,7 +20,7 @@ import java.util.Locale;
 
 public final class MobileRefundDetailsPayInfoAdapter extends AbstractPayInfoAdapter<MobileRefundDetailsPayInfoAdapter.MyViewHolder> {
     public MobileRefundDetailsPayInfoAdapter(MainActivity context){
-        mContext = context;
+        super(context);
     }
 
     static class MyViewHolder extends AbstractTableDataAdapter.SuperViewHolder {

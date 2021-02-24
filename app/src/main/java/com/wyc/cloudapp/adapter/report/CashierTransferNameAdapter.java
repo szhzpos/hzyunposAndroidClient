@@ -1,6 +1,5 @@
 package com.wyc.cloudapp.adapter.report;
 
-import android.content.Context;
 import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +29,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class CashierTransferNameAdapter extends AbstractTableDataAdapter<CashierTransferNameAdapter.MyViewHolder> {
+public class CashierTransferNameAdapter extends AbstractDataAdapter<CashierTransferNameAdapter.MyViewHolder> {
     private View.OnClickListener mListener;
     static class MyViewHolder extends AbstractTableDataAdapter.SuperViewHolder {
         TextView cas_name,transfer_id,trans_time;
@@ -43,7 +42,7 @@ public class CashierTransferNameAdapter extends AbstractTableDataAdapter<Cashier
     }
 
     public CashierTransferNameAdapter(final MainActivity context) {
-        mContext = context;
+        super(context);
     }
 
     @Override
@@ -58,7 +57,6 @@ public class CashierTransferNameAdapter extends AbstractTableDataAdapter<Cashier
 
     @Override
     public void onBindViewHolder( @NonNull final  MyViewHolder holder, int position) {
-        super.onBindViewHolder(holder, position);
         if (mDatas != null) {
             final JSONObject object = mDatas.getJSONObject(position);
             holder.cas_name.setText(object.getString("cas_name"));
@@ -72,11 +70,6 @@ public class CashierTransferNameAdapter extends AbstractTableDataAdapter<Cashier
     @Override
     public int getItemCount() {
         return mDatas == null ? 0 : mDatas.size();
-    }
-
-    public void setDataForArray(final com.alibaba.fastjson.JSONArray array){
-        mDatas = array;
-        notifyDataSetChanged();
     }
 
     public void setItemListener(final View.OnClickListener listener){

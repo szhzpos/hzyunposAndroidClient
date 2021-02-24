@@ -3,6 +3,7 @@ package com.wyc.cloudapp.activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,7 +21,7 @@ import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
-public abstract class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
     protected final CustomApplication mApplication = CustomApplication.self();
     protected final String mAppId = mApplication.getAppId(), mAppSecret = mApplication.getAppSecret(),mUrl = mApplication.getUrl();
     protected String mPermissionCashierId = "";
@@ -34,6 +35,25 @@ public abstract class MainActivity extends AppCompatActivity {
     protected void finalize(){
         Logger.d(getClass().getSimpleName() + " finalized");
     }
+
+    @Override
+    public void onBackPressed() {
+        hide();
+        super.onBackPressed();
+    }
+
+    @Override
+    public void finish() {
+        hide();
+        super.finish();
+    }
+    private void hide(){
+        final InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
+        }
+    }
+
 
     protected boolean verifyNumBtnPermissions(){
         return verifyPermissions("25",null);

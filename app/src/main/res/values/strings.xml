@@ -8,6 +8,7 @@
     <string name="OK">确定</string>
     <string name="yes">是</string>
     <string name="no">否</string>
+    <string name="rmb_unit">元</string>
     <string name="dialog_title">对话框</string>
     <string name="not_vip_sz">散客</string>
     <string name="cashier_desk_sz">云店POS收银客户端</string>
@@ -536,4 +537,5 @@
     <string name="cashBox_residue_unit_sz">钱箱剩余(元)</string>
 
     <string name="hints_query_data_sz">正在查询数据…</string>
+    <string name="select_goods_label">商品选择</string>
 </resources>

@@ -26,7 +26,7 @@ public class PayMethodStatisticsViewAdapter extends AbstractTableDataAdapter<Pay
     }
 
     public PayMethodStatisticsViewAdapter(final MainActivity context) {
-        mContext = context;
+        super(context);
      }
 
     @Override

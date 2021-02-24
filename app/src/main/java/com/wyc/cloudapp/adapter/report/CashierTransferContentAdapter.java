@@ -29,7 +29,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class CashierTransferContentAdapter extends AbstractTableDataAdapter<CashierTransferContentAdapter.MyViewHolder> {
+public class CashierTransferContentAdapter extends AbstractDataAdapter<CashierTransferContentAdapter.MyViewHolder> {
 
     static class MyViewHolder extends AbstractTableDataAdapter.SuperViewHolder {
         TextView sum_money,sj_money,order_money,order_num,refund_money,refund_num,recharge_money,recharge_num,oncecard_money,oncecard_num;
@@ -50,7 +50,7 @@ public class CashierTransferContentAdapter extends AbstractTableDataAdapter<Cash
     }
 
     public CashierTransferContentAdapter(final MainActivity activity) {
-        mContext = activity;
+        super(activity);
     }
 
     @Override
@@ -65,7 +65,6 @@ public class CashierTransferContentAdapter extends AbstractTableDataAdapter<Cash
 
     @Override
     public void onBindViewHolder( @NonNull final  MyViewHolder holder, int position) {
-        super.onBindViewHolder(holder, position);
         if (mDatas != null) {
             final JSONObject object = mDatas.getJSONObject(position);
 
@@ -90,10 +89,5 @@ public class CashierTransferContentAdapter extends AbstractTableDataAdapter<Cash
     @Override
     public int getItemCount() {
         return mDatas == null ? 0 : mDatas.size();
-    }
-
-    public void setDataForArray(final JSONArray array){
-        mDatas = array;
-        notifyDataSetChanged();
     }
 }

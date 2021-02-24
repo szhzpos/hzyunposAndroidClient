@@ -21,7 +21,7 @@ import java.util.Locale;
 public final class VipDepositDetailsPayInfoAdapter extends AbstractPayInfoAdapter<VipDepositDetailsPayInfoAdapter.MyViewHolder> {
 
     public VipDepositDetailsPayInfoAdapter(MainActivity context){
-        mContext = context;
+        super(context);
     }
 
     @Override

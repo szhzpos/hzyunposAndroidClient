@@ -39,13 +39,13 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class MobileStockQueryAdapter extends AbstractTableDataAdapter<MobileStockQueryAdapter.MyViewHolder> {
+public class MobileStockQueryAdapter extends AbstractDataAdapter<MobileStockQueryAdapter.MyViewHolder> {
 
     private int mDataSize = 0, mOffset = 0,mLimit = 50,mTotalRows = 0;
     private JSONObject mPreQueryCondition;
 
     public MobileStockQueryAdapter(final MainActivity activity){
-        mContext = activity;
+        super(activity);
         mDataSize = getItemCount();
     }
 
@@ -60,7 +60,6 @@ public class MobileStockQueryAdapter extends AbstractTableDataAdapter<MobileStoc
 
     @Override
     public void onBindViewHolder( @NonNull final  MyViewHolder holder, int position) {
-        super.onBindViewHolder(holder, position);
         if (mDatas != null) {
             final JSONObject object = mDatas.getJSONObject(position);
             double stock_num = object.getDoubleValue("stock_num");

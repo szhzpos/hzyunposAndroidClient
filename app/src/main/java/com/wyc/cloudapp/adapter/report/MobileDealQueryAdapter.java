@@ -33,7 +33,7 @@ public class MobileDealQueryAdapter extends AbstractTableDataAdapter<MobileDealQ
 
     private String mOrderCode = "";
     public MobileDealQueryAdapter(MainActivity context) {
-        mContext = context;
+        super(context);
     }
     @NonNull
     @Override
@@ -81,10 +81,5 @@ public class MobileDealQueryAdapter extends AbstractTableDataAdapter<MobileDealQ
             order_amt_tv = itemView.findViewById(R.id.order_amt_tv);
             order_date_tv = itemView.findViewById(R.id.order_date_tv);
         }
-    }
-
-    public void setDataForArray(final JSONArray array){
-        mDatas = array;
-        notifyDataSetChanged();
     }
 }

@@ -21,7 +21,7 @@ public final class GoodsManageViewAdapter extends AbstractTableDataAdapter<Goods
     private String mWhereCondition;
     private int mCurrentPage,mAllRowsForQueryCondition,mDataSize,mPerPageRows = 50;
     public GoodsManageViewAdapter(SaleActivity context){
-        mContext = context;
+        super(context);
         mDatas = new JSONArray();
     }
     static class MyViewHolder extends AbstractTableDataAdapter.SuperViewHolder {

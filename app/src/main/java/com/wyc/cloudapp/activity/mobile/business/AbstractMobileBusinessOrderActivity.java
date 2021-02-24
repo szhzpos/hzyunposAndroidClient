@@ -190,17 +190,19 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
                 Logger.d("业务查询参数:%s",param);
 
                 final JSONObject retJson = HttpUtils.sendPost(getUrl() + condition.getString("api"),param,true);
-                if (retJson.getIntValue("flag") == 1){
+                if (HttpUtils.checkRequestSuccess(retJson)){
                     try {
                         final JSONObject info = JSONObject.parseObject(retJson.getString("info"));
-                        final JSONArray data = Utils.getNullObjectAsEmptyJsonArray(info,"data");
-                        runOnUiThread(()-> mAdapter.setDataForArray(data));
+                        if (HttpUtils.checkBusinessSuccess(info)){
+                            final JSONArray data = Utils.getNullObjectAsEmptyJsonArray(info,"data");
+                            runOnUiThread(()-> mAdapter.setDataForArray(data));
+                        }else {
+                            throw new JSONException(info.getString("info"));
+                        }
                     }catch (JSONException e){
                         e.printStackTrace();
                         runOnUiThread(()-> MyDialog.ToastMessage(e.getMessage(),this,null));
                     }
-                }else {
-                    runOnUiThread(()-> MyDialog.ToastMessage(retJson.getString("info"),this,null));
                 }
                 progressDialog.dismiss();
             });
@@ -239,8 +241,11 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
             mParameterObj.put("sh_status",2);
         }
         //请求数据
-        query();
-        if (isFirstLoad)isFirstLoad = false;
+        if (isFirstLoad){
+            isFirstLoad = false;
+            query();
+        }else
+            mCurrentDateBtn.callOnClick();
 
         if (btn != mCurrentAuditStatusBtn){
             btn.setTextColor(white);
@@ -271,7 +276,7 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
         final TextView end_date = findViewById(R.id.m_end_date);
         if (null != end_date){
             end_date.setText(new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).format(new Date()));
-            end_date.setOnClickListener(v -> Utils.showDatePickerDialog(this,(TextView) v, Calendar.getInstance()));
+            end_date.setOnClickListener(v -> Utils.showDatePickerDialog(this,mCurrentDateBtn,(TextView) v, Calendar.getInstance()));
 
             mEndDateTv = end_date;
         }
@@ -280,7 +285,7 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
         final TextView start_date = findViewById(R.id.m_start_date);
         if (null != start_date) {
             start_date.setText(new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).format(new Date()));
-            start_date.setOnClickListener(v -> Utils.showDatePickerDialog(this, (TextView) v, Calendar.getInstance()));
+            start_date.setOnClickListener(v -> Utils.showDatePickerDialog(this,mCurrentDateBtn,(TextView) v, Calendar.getInstance()));
             mStartDateTv = start_date;
         }
     }

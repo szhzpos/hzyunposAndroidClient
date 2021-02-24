@@ -21,8 +21,8 @@ import java.util.Locale;
 public final class MobileChargeOrderAdapter extends AbstractChargeOrderAdapter<MobileChargeOrderAdapter.MyViewHolder> {
     protected AbstractMobileQueryDialog mDialog;
     public MobileChargeOrderAdapter(final AbstractMobileQueryDialog dialog){
+        super(dialog.getPrivateContext());
         mDialog = dialog;
-        mContext = dialog.getPrivateContext();
     }
 
     static class MyViewHolder extends AbstractQueryDataAdapter.SuperViewHolder {

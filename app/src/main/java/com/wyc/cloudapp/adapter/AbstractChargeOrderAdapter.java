@@ -1,10 +1,15 @@
 package com.wyc.cloudapp.adapter;
 
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 
 public abstract class AbstractChargeOrderAdapter<T extends AbstractTableDataAdapter.SuperViewHolder> extends AbstractQueryDataAdapter<T> {
+    public AbstractChargeOrderAdapter(MainActivity activity) {
+        super(activity);
+    }
+
     @Override
     public void setDatas(final String where_sql){
         final StringBuilder err = new StringBuilder();

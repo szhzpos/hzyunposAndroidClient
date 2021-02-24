@@ -21,7 +21,7 @@ import java.util.Locale;
 public final class RefundDetailsPayInfoAdapter extends AbstractPayInfoAdapter<RefundDetailsPayInfoAdapter.MyViewHolder> {
 
     public RefundDetailsPayInfoAdapter(MainActivity context){
-        mContext = context;
+        super(context);
     }
 
     static class MyViewHolder extends AbstractTableDataAdapter.SuperViewHolder {

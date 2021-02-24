@@ -20,7 +20,7 @@ import java.util.Locale;
 public final class RetailDetailsGoodsInfoAdapter extends AbstractTableDataAdapter<RetailDetailsGoodsInfoAdapter.MyViewHolder> {
 
     public RetailDetailsGoodsInfoAdapter(MainActivity context){
-        mContext = context;
+        super(context);
     }
 
     static class MyViewHolder extends AbstractTableDataAdapter.SuperViewHolder {

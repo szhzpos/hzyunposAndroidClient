@@ -76,7 +76,7 @@
         android:gravity="center"
         android:paddingTop="@dimen/margin_8"
         android:paddingBottom="@dimen/margin_8"
-        android:textColor="@color/text_color"
+        android:textColor="@color/orange_1"
         android:textSize="@dimen/font_size_16"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/pay_method_name" />

@@ -42,12 +42,6 @@ public class MobilePurchaseOrderActivity extends AbstractMobileBusinessOrderActi
     public static class MobileAddPurchaseOrderActivity extends AbstractMobileAddOrderActivity {
 
         @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            initView();
-        }
-
-        @Override
         protected int getContentLayoutId() {
             return R.layout.activity_mobile_add_purchase_order;
         }
@@ -56,6 +50,7 @@ public class MobilePurchaseOrderActivity extends AbstractMobileBusinessOrderActi
         protected JSONObject generateQueryCondition() {
             final JSONObject condition = new JSONObject();
             condition.put("api","/api/cgd/xinfo");
+            condition.put("id_name","cgd_id");
             return condition;
         }
 

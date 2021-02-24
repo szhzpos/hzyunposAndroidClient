@@ -43,8 +43,10 @@ public class MobileRetailOrderDetailsDialog extends AbstractRetailOrderDetailsDi
             if (m_sale_man_tv != null)m_sale_man_tv.setText(Utils.getNullStringAsEmpty(object,"sc_name"));
             if (m_vip_no_tv != null)m_vip_no_tv.setText(Utils.getNullStringAsEmpty(object,"card_code"));
             if (m_order_time_tv != null)m_order_time_tv.setText(Utils.getNullStringAsEmpty(object,"oper_time"));
-            if (m_order_amt_tv != null)m_order_amt_tv.setText(String.format(Locale.CHINA,"%.2f",object.getDoubleValue("order_amt")));
-            if (m_disc_amt_tv != null)m_disc_amt_tv.setText(String.format(Locale.CHINA,"%.2f",object.getDoubleValue("order_amt") - object.getDoubleValue("reality_amt")));
+
+            final String currency = mContext.getString(R.string.currency_symbol_sz);
+            if (m_order_amt_tv != null)m_order_amt_tv.setText(String.format(Locale.CHINA,"%s%.2f",currency,object.getDoubleValue("order_amt")));
+            if (m_disc_amt_tv != null)m_disc_amt_tv.setText(String.format(Locale.CHINA,"%s%.2f",currency,object.getDoubleValue("order_amt") - object.getDoubleValue("reality_amt")));
         }
     }
 

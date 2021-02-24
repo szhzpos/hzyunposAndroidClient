@@ -23,8 +23,8 @@ import java.util.Locale;
 public final class MobileRetailOrderAdapter extends AbstractQueryDataAdapter<MobileRetailOrderAdapter.MyViewHolder> {
     protected AbstractMobileQueryDialog mDialog;
     public MobileRetailOrderAdapter(final AbstractMobileQueryDialog dialog){
+        super(dialog.getPrivateContext());
         mDialog = dialog;
-        mContext = dialog.getPrivateContext();
     }
 
     static class MyViewHolder extends AbstractQueryDataAdapter.SuperViewHolder {

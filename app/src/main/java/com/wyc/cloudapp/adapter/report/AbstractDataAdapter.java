@@ -1,11 +1,14 @@
 package com.wyc.cloudapp.adapter.report;
 
+import android.view.View;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
+import com.wyc.cloudapp.logger.Logger;
 
 /**
  * @ProjectName: CloudApp
@@ -23,12 +26,33 @@ public abstract class AbstractDataAdapter <T extends RecyclerView.ViewHolder> ex
     protected MainActivity mContext;
     protected JSONArray mDatas;
 
+    public AbstractDataAdapter(MainActivity activity){
+        mContext = activity;
+    }
+
+    public static class SuperViewHolder extends RecyclerView.ViewHolder {
+        public SuperViewHolder(View itemView) {
+            super(itemView);
+        }
+
+        @Override
+        protected void finalize(){
+            Logger.d(getClass().getName() + " finalized");
+        }
+    }
+
     public void setDataForArray(final JSONArray array){
         mDatas = array;
         notifyDataSetChanged();
     }
     public JSONArray getData(){
         return mDatas;
+    }
+    public boolean isEmpty(){
+        return getItemCount() == 0;
+    }
+    public void clear(){
+        if (mDatas != null)mDatas.clear();
     }
     @Override
     public int getItemCount() {

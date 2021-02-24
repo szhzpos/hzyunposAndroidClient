@@ -7,9 +7,14 @@ import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.utils.Utils;
 
 public abstract class AbstractQueryDataAdapter<T extends AbstractTableDataAdapter.SuperViewHolder> extends AbstractTableDataAdapter<T> {
+
+    public AbstractQueryDataAdapter(MainActivity activity) {
+        super(activity);
+    }
 
     public abstract void setDatas(final String sql);
 

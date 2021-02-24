@@ -499,7 +499,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
             @Override
             public void onFailure(@NonNull Call call,@NonNull IOException e) {
                 e.printStackTrace();
-                MyDialog.displayErrorMessage(mSelf, e.getMessage());
+                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,e.getMessage()).sendToTarget();
             }
 
             @Override
@@ -560,7 +560,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                                 @Override
                                 public void onFailure(@NonNull Call call,@NonNull IOException e) {
                                     e.printStackTrace();
-                                    MyDialog.displayErrorMessage(mSelf, "设置收银终端错误：" + e.getMessage());
+                                    mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"设置收银终端错误：" + e.getMessage()).sendToTarget();
                                 }
 
                                 @Override
@@ -611,7 +611,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                                         }
                                     } catch (IOException | JSONException e) {
                                         e.printStackTrace();
-                                        MyDialog.displayErrorMessage(mSelf, e.getMessage());
+                                        mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, e.getMessage()).sendToTarget();
                                     }
                                 }
                             });
@@ -619,7 +619,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                     }
                 } catch (IOException | JSONException e) {
                     e.printStackTrace();
-                    MyDialog.displayErrorMessage(mSelf, e.getMessage());
+                    mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, e.getMessage()).sendToTarget();
                 }finally {
                     response.close();
                 }

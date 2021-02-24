@@ -24,7 +24,7 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
     protected PasswordEditTextReplacement editTextReplacement;
     protected String mTransferStartTime = "";
     public AbstractTransferDetailsAdapter(MainActivity context){
-        mContext = context;
+        super(context);
         mTransferSumInfo = new JSONObject();
         mTransferAmtNotVisible = !verifyShowAmtPermissions();
 

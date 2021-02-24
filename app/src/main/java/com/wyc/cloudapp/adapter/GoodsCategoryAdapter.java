@@ -1,6 +1,7 @@
 package com.wyc.cloudapp.adapter;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -34,21 +35,23 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
     @Override
     public void onClick(View view) {
         TextView name,category_id;
+        final Resources resources = mContext.getResources();
+        int white = resources.getColor(R.color.white,null),blue = resources.getColor(R.color.blue,null);
         if (null != mCurrentItemView){
             if (mCurrentItemView != view){
-                mCurrentItemView.setBackgroundColor(mContext.getResources().getColor(R.color.white,null));
+                mCurrentItemView.setBackgroundColor(white);
                 name = mCurrentItemView.findViewById(R.id.category_name);
-                name.setTextColor(mContext.getResources().getColor(R.color.blue,null));
+                name.setTextColor(blue);
 
                 mCurrentItemView = view;
-                mCurrentItemView.setBackgroundColor(mContext.getResources().getColor(R.color.blue,null));
+                mCurrentItemView.setBackgroundColor(blue);
                 name = mCurrentItemView.findViewById(R.id.category_name);
-                name.setTextColor(mContext.getResources().getColor(R.color.white,null));
+                name.setTextColor(white);
             }
         }else{
-            view.setBackgroundColor(mContext.getResources().getColor(R.color.blue,null));
+            view.setBackgroundColor(blue);
             name = view.findViewById(R.id.category_name);
-            name.setTextColor(mContext.getResources().getColor(R.color.white,null));
+            name.setTextColor(white);
             mCurrentItemView = view;
         }
 

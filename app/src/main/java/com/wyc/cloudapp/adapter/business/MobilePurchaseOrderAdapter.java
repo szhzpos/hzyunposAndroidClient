@@ -32,7 +32,7 @@ import java.util.Locale;
 public class MobilePurchaseOrderAdapter extends AbstractBusinessDataAdapter<MobilePurchaseOrderAdapter.MyViewHolder>{
 
     public MobilePurchaseOrderAdapter(final MainActivity activity){
-        mContext = activity;
+        super(activity);
     }
 
     static class MyViewHolder extends AbstractQueryDataAdapter.SuperViewHolder {

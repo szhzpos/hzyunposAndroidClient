@@ -30,7 +30,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class TransferDetailsAdapter extends AbstractTableDataAdapter<TransferDetailsAdapter.MyViewHolder> {
+public class TransferDetailsAdapter extends AbstractDataAdapter<TransferDetailsAdapter.MyViewHolder> {
 
     static class MyViewHolder extends AbstractTableDataAdapter.SuperViewHolder {
         TextView pay_name_tv,pay_money_tv,order_num_tv;
@@ -43,7 +43,7 @@ public class TransferDetailsAdapter extends AbstractTableDataAdapter<TransferDet
     }
 
     public TransferDetailsAdapter(final MainActivity context,final JSONArray array) {
-         mContext = context;
+        super(context);
          mDatas = array;
     }
 
@@ -59,7 +59,6 @@ public class TransferDetailsAdapter extends AbstractTableDataAdapter<TransferDet
 
     @Override
     public void onBindViewHolder( @NonNull final  MyViewHolder holder, int position) {
-        super.onBindViewHolder(holder, position);
         if (mDatas != null && !mDatas.isEmpty()) {
             final JSONObject object = mDatas.getJSONObject(position);
             holder.pay_name_tv.setText(object.getString("pay_name"));
@@ -72,10 +71,5 @@ public class TransferDetailsAdapter extends AbstractTableDataAdapter<TransferDet
     @Override
     public int getItemCount() {
         return mDatas == null ? 0 : mDatas.size();
-    }
-
-    public void setDataForArray(final JSONArray array){
-        mDatas = array;
-        notifyDataSetChanged();
     }
 }
