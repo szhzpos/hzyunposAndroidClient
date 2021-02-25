@@ -30,6 +30,7 @@ import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.TreeListDialog;
+import com.wyc.cloudapp.dialog.goods.BusinessSelectGoodsDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -210,6 +211,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
 
         new_order_btn.setOnClickListener(mFunctionClickListener);
         pick_goods_btn.setOnClickListener(mFunctionClickListener);
+        business_scan_btn.setOnClickListener(mFunctionClickListener);
 
     }
     private final View.OnClickListener mFunctionClickListener = new View.OnClickListener() {
@@ -227,6 +229,9 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                 }
             }else if (id == R.id.m_pick_goods_btn){
                 startActivityForResult(new Intent(AbstractMobileAddOrderActivity.this,SelectGoodsActivity.class),SelectGoodsActivity.SELECT_GOODS_CODE);
+            }else if (id == R.id.m_business_scan_btn){
+                final BusinessSelectGoodsDialog dialog = new BusinessSelectGoodsDialog(AbstractMobileAddOrderActivity.this);
+                dialog.show();
             }
         }
     };

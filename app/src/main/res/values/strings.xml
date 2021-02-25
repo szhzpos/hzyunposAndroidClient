@@ -220,6 +220,10 @@
     <string name="card_code_sz">卡号</string>
     <string name="transfer_time_sz">交班时间：</string>
     <string name="end_time_label_sz">结束时间：</string>
+    <string name="barcode_colon_sz">条码：</string>
+    <string name="item_no_colon_sz">货号：</string>
+    <string name="unit_colon_sz">单位：</string>
+
     <!-- 结账单 -->
     <string name="line_58">--------------------------------</string>
     <string name="b_f_title_sz">结账单</string>
@@ -308,7 +312,7 @@
     <string name="clound_backgound_sz">云后台</string>
     <!-- 商品新增窗口-->
     <string name="a_goods_sz">新增商品</string>
-    <string name="a_barcode_sz">条码：</string>
+    <string name="a_barcode_sz">@string/barcode_colon_sz</string>
     <string name="a_g_name_sz">商品名称：</string>
     <string name="a_purchase_price_sz">参考进价：</string>
     <string name="a_retail_price">零售价：</string>
@@ -317,7 +321,7 @@
     <string name="a_ckml_sz">参考毛利：</string>
     <string name="a_goods_attr_sz">商品属性：</string>
     <string name="a_supplier_sz">供应商：</string>
-    <string name="a_item_no_sz">货号：</string>
+    <string name="a_item_no_sz">@string/item_no_colon_sz</string>
     <string name="a_vip_price_sz">会员价：</string>
 
     <string name="fullreduce_des_sz">满%1$s减%2$s</string>
@@ -538,4 +542,9 @@
 
     <string name="hints_query_data_sz">正在查询数据…</string>
     <string name="select_goods_label">商品选择</string>
+
+    <!--业务单据商品选择对话框-->
+    <string name="scan_code_label">扫码录入</string>
+    <string name="business_barcode_sz">@string/barcode_colon_sz</string>
+    <string name="business_item_no_sz">@string/item_no_colon_sz</string>
 </resources>
