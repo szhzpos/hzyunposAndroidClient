@@ -12,7 +12,7 @@
 
     <TextView
         android:id="@+id/barcode_tv"
-        android:layout_width="@dimen/width_128"
+        android:layout_width="0dp"
         android:layout_height="@dimen/_size_25"
         android:gravity="center_vertical"
         android:text="6954767433073"
@@ -25,6 +25,7 @@
         android:id="@+id/name_tv"
         android:layout_width="0dp"
         android:layout_height="@dimen/_size_25"
+        android:layout_marginStart="@dimen/margin_8"
         android:gravity="center_vertical"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16"
@@ -36,11 +37,12 @@
         android:id="@+id/num_tv"
         android:layout_width="@dimen/width_68"
         android:layout_height="@dimen/_size_25"
+        android:layout_marginStart="@dimen/width_88"
         android:gravity="center"
         android:text="8888.00"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16"
-        app:layout_constraintStart_toEndOf="@id/barcode_tv"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/barcode_tv" />
 
     <TextView

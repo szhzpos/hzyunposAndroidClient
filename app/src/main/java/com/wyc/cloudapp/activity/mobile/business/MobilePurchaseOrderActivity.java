@@ -2,17 +2,14 @@ package com.wyc.cloudapp.activity.mobile.business;
 
 import android.os.Bundle;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
+import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
 import com.wyc.cloudapp.adapter.business.MobilePurchaseOrderAdapter;
 import com.wyc.cloudapp.adapter.business.MobilePurchaseOrderDetailsAdapter;
 import com.wyc.cloudapp.adapter.report.AbstractDataAdapter;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
-import com.wyc.cloudapp.utils.http.HttpRequest;
-import com.wyc.cloudapp.utils.http.HttpUtils;
 
 /*采购订货单*/
 public class MobilePurchaseOrderActivity extends AbstractMobileBusinessOrderActivity {
@@ -67,13 +64,23 @@ public class MobilePurchaseOrderActivity extends AbstractMobileBusinessOrderActi
         }
 
         @Override
-        protected AbstractDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> getAdapter() {
+        protected AbstractBusinessOrderDetailsDataAdapter<? extends AbstractDataAdapter.SuperViewHolder> getAdapter() {
             return new MobilePurchaseOrderDetailsAdapter(this);
         }
 
         @Override
         protected String generateOrderCodePrefix() {
             return "CG";
+        }
+
+        @Override
+        protected JSONObject generateGoodsDetails(JSONObject object) {
+            if (null != object){
+                object.put("last_jh_price",Utils.getNotKeyAsNumberDefault(object,"new_price",Utils.getNotKeyAsNumberDefault(object,"buying_price",0.0)));
+                object.put("xnum",Utils.getNotKeyAsNumberDefault(object,"new_num",1.00));
+                Logger.d_json(object.toString());
+            }
+            return object;
         }
 
     }

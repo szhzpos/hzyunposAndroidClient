@@ -11,7 +11,6 @@ import android.widget.Toast;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,6 +22,7 @@ import com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
+import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
 import com.wyc.cloudapp.adapter.report.AbstractDataAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -36,17 +36,19 @@ import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
 
+import java.lang.ref.WeakReference;
 import java.util.Locale;
 
 
 public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActivity {
 
-    private AbstractDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> mAdapter;
+    private AbstractBusinessOrderDetailsDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> mAdapter;
     private JSONArray mSupplierList;
 
     protected JSONObject mOrderInfo;
     protected TextView mSupplierTV,mSaleOperatorTv,mWarehouseTv,mOrderCodeTv,mDateTv,mRemarkEt,mSumNumTv,mSumAmtTv;
 
+    private WeakReference<ScanCallback> mScanCallback;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,19 +72,48 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == SelectGoodsActivity.SELECT_GOODS_CODE) {
-            if (null != data){
-                final String barcode_id = data.getStringExtra("barcode_id");
-                Logger.d("barcode_id:%s",barcode_id);
+        if (resultCode == RESULT_OK ){
+            if (requestCode == SelectGoodsActivity.SELECT_GOODS_CODE) {
+                if (null != data){
+                    final String barcode_id = data.getStringExtra("barcode_id");
+                    Logger.d("barcode_id:%s",barcode_id);
+                    final JSONObject object = new JSONObject();
+                    if (BusinessSelectGoodsDialog.selectGoodsWithBarcodeId(object,barcode_id)){
+                        Logger.d_json(object.toString());
+                        addGoodsDetails(object);
+                    }else {
+                        MyDialog.ToastMessage(object.getString("info"),this,getWindow());
+                    }
+                }
+            }else if (requestCode == BusinessSelectGoodsDialog.BARCODE_REQUEST_CODE){
+                if (mScanCallback != null){
+                    final ScanCallback callback = mScanCallback.get();
+                    if (callback != null){
+                        final String _code = data.getStringExtra("auth_code");
+                        callback.callback(_code);
+                    }
+                }
             }
         }
     }
 
+    private void addGoodsDetails(final JSONObject object){
+        if (mAdapter != null)mAdapter.addDetails(generateGoodsDetails(object));
+    }
+
+    @Override
+    public void setScanCallback(final ScanCallback callback){
+        if (mScanCallback == null || callback != mScanCallback.get()){
+            mScanCallback = new WeakReference<>(callback);
+        }
+    }
+
     protected abstract JSONObject generateQueryCondition();
-    protected abstract AbstractDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> getAdapter();
+    protected abstract AbstractBusinessOrderDetailsDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> getAdapter();
     protected abstract String generateOrderCodePrefix();
+    protected abstract JSONObject generateGoodsDetails(final JSONObject object);
 
     @CallSuper
     protected void showOrder(){
@@ -231,11 +262,12 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                 startActivityForResult(new Intent(AbstractMobileAddOrderActivity.this,SelectGoodsActivity.class),SelectGoodsActivity.SELECT_GOODS_CODE);
             }else if (id == R.id.m_business_scan_btn){
                 final BusinessSelectGoodsDialog dialog = new BusinessSelectGoodsDialog(AbstractMobileAddOrderActivity.this);
-                dialog.show();
+                if (dialog.exec() == 1){
+                    addGoodsDetails(dialog.getContentObj());
+                }
             }
         }
     };
-
 
     private void initSupplier(){//初始化供应商
         final TextView business_supplier_tv = findViewById(R.id.m_business_supplier_tv);
@@ -330,13 +362,21 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                 public void onChanged() {
                     super.onChanged();
                     final JSONArray array = mAdapter.getData();
-                    double num = 0.0 ;
-                    for (int i = 0,size = array.size();i < size;i ++){
+                    double num = 0.0,price = 0.0,sum_num= 0.0,amt = 0.0;
+
+                    int size = array.size();
+                    for (int i = 0;i < size;i ++){
                         final JSONObject object = array.getJSONObject(i);
-                        num += Utils.getNotKeyAsNumberDefault(object,"xnum",0.0);
+                        num = Utils.getNotKeyAsNumberDefault(object,"xnum",0.0);
+                        price = Utils.getNotKeyAsNumberDefault(object,"last_jh_price",0.0);
+
+                        sum_num += num;
+                        amt += num * price;
                     }
-                    mSumNumTv.setText(String.format(Locale.CHINA,"%.2f",num));
-                    mSumAmtTv.setText(String.format(Locale.CHINA,"%.2f",Utils.getNotKeyAsNumberDefault(mOrderInfo,"total",0.0)));
+                    mSumNumTv.setText(String.format(Locale.CHINA,"%.2f",sum_num));
+                    mSumAmtTv.setText(String.format(Locale.CHINA,"%.2f",amt));
+
+                    details_list.scrollToPosition(size - 1);
                 }
             });
             details_list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));

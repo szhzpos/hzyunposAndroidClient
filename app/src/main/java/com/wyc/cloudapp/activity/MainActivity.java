@@ -12,6 +12,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -68,6 +69,13 @@ public class MainActivity extends AppCompatActivity {
 
     public boolean verifyOpenCashboxPermissions(){
         return verifyPermissions("5",null);
+    }
+
+    public String getNotEmptyHintsString(final String sz){
+        return getString(R.string.not_empty_hint_sz,sz);
+    }
+    public String getNotExistHintsString(final String sz){
+        return getString(R.string.not_exist_hint_sz,sz);
     }
 
     public String getPosNum(){return Utils.getNullStringAsEmpty(mApplication.getCashierInfo(),"pos_num");}

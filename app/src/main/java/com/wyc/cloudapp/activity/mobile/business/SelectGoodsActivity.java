@@ -44,6 +44,7 @@ import com.wyc.cloudapp.utils.Utils;
 public class SelectGoodsActivity extends AbstractMobileActivity {
     public static final int SELECT_GOODS_CODE = 0x147;
     private GoodsAdapter mGoodsInfoAdapter;
+    private EditText mSearchContentEt;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +54,8 @@ public class SelectGoodsActivity extends AbstractMobileActivity {
         initGoodsCategory();
         initGoodsInfo();
         initSearchContent();
+
+        checkSearch();
     }
 
     @Override
@@ -94,7 +97,21 @@ public class SelectGoodsActivity extends AbstractMobileActivity {
             }
             return false;
         });
+
+        mSearchContentEt = search;
     }
+
+    private void checkSearch(){
+        final Intent intent = getIntent();
+        if (intent != null){
+            final String barcode = intent.getStringExtra("barcode");
+            if (Utils.isNotEmpty(barcode) && mSearchContentEt != null){
+                mSearchContentEt.setText(barcode);
+                mSearchContentEt.post(()->search(barcode));
+            }
+        }
+    }
+
     private void search(final String id){
         mGoodsInfoAdapter.fuzzy_search_goods(id,true);
     }
@@ -109,7 +126,7 @@ public class SelectGoodsActivity extends AbstractMobileActivity {
         mGoodsInfoAdapter.setOnSelectFinish(barcode_id -> {
             final Intent intent = new Intent();
             intent.putExtra("barcode_id",barcode_id);
-            setResult(SELECT_GOODS_CODE,intent);
+            setResult(RESULT_OK,intent);
             finish();
         });
 
@@ -251,6 +268,7 @@ public class SelectGoodsActivity extends AbstractMobileActivity {
             final View itemView = View.inflate(mContext, R.layout.goods_info_content_layout, null);
             final RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.goods_height));
             itemView.setLayoutParams(lp);
+            itemView.setOnClickListener(this);
             return new MyViewHolder(itemView);
         }
 
@@ -272,8 +290,6 @@ public class SelectGoodsActivity extends AbstractMobileActivity {
                 if(goods_title.getCurrentTextColor() != mContext.getResources().getColor(R.color.good_name_color,null)){
                     goods_title.setTextColor(mContext.getColor(R.color.good_name_color));//需要重新设置颜色；不然重用之后内容颜色为重用之前的。
                 }
-
-                myViewHolder.itemView.setOnClickListener(this);
             }
         }
 
@@ -295,7 +311,7 @@ public class SelectGoodsActivity extends AbstractMobileActivity {
                         "where status = 1";
             }else{
                 sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(case type when 2 then only_coding else barcode end,'') barcode," +
-                        "type,retail_price price,ifnull(img_url,'') img_url from barcode_info where (goods_status = 1 and barcode_status = 1) and category_id in (select category_id from shop_category where path like '%" + id +"%')";
+                        "type,buying_price price,ifnull(img_url,'') img_url from barcode_info where (goods_status = 1 and barcode_status = 1) and category_id in (select category_id from shop_category where path like '%" + id +"%')";
             }
 
             mDatas = SQLiteHelper.getListToJson(sql,0,0,false,err);
@@ -306,8 +322,7 @@ public class SelectGoodsActivity extends AbstractMobileActivity {
             }
         }
 
-        public boolean fuzzy_search_goods(@NonNull final String search_content,boolean autoSelect){
-            boolean code = false;
+        public void fuzzy_search_goods(@NonNull final String search_content,boolean autoSelect){
             final StringBuilder err = new StringBuilder();
             final ContentValues barcodeRuleObj = new ContentValues();
             String sql_where,full_sql,sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(case type when 2 then only_coding else barcode end,'') barcode,only_coding,type,retail_price price\n" +
@@ -324,18 +339,15 @@ public class SelectGoodsActivity extends AbstractMobileActivity {
             Logger.d("full_sql:%s",full_sql);
 
             if (array != null){
-                if (code = !array.isEmpty()){
-                    if (autoSelect && array.size() == 1){
-                        if (onSelectFinish != null)onSelectFinish.onFinish(array.getJSONObject(0).getString("barcode_id"));
-                    }else {
-                        mDatas = array;
-                        notifyDataSetChanged();
-                    }
+                if (autoSelect && array.size() == 1){
+                    if (onSelectFinish != null)onSelectFinish.onFinish(array.getJSONObject(0).getString("barcode_id"));
+                }else {
+                    mDatas = array;
+                    notifyDataSetChanged();
                 }
             }else{
                 MyDialog.ToastMessage("搜索商品错误：" + err,mContext,null);
             }
-            return code;
         }
     }
 }

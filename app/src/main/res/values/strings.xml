@@ -111,8 +111,9 @@
     <string name="sync_sz">同步数据</string>
     <string name="setup_sz">参数设置</string>
     <string name="remark_hint_sz">请输入备注信息</string>
-    <string name="not_zero_hint_sz">%1$s不能为零</string>
-    <string name="not_empty_hint_sz">%1$s不能为空</string>
+    <string name="not_zero_hint_sz">%1$s不能为零!</string>
+    <string name="not_empty_hint_sz">%1$s不能为空!</string>
+    <string name="not_exist_hint_sz">不存在%1$s!</string>
     <string name="not_zl_hint_sz">不找零</string>
     <string name="select_pay_way_hint_sz">请选择付款方式</string>
     <string name="base_param_sz">基本参数</string>

@@ -8,7 +8,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
@@ -29,7 +28,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class MobilePurchaseOrderAdapter extends AbstractBusinessDataAdapter<MobilePurchaseOrderAdapter.MyViewHolder>{
+public class MobilePurchaseOrderAdapter extends AbstractBusinessOrderDataAdapter<MobilePurchaseOrderAdapter.MyViewHolder> {
 
     public MobilePurchaseOrderAdapter(final MainActivity activity){
         super(activity);

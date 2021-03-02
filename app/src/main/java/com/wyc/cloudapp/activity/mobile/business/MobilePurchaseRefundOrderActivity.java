@@ -4,8 +4,9 @@ import android.os.Bundle;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
+import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
 import com.wyc.cloudapp.adapter.business.MobilePurchaseOrderAdapter;
+import com.wyc.cloudapp.adapter.report.AbstractDataAdapter;
 
 public class MobilePurchaseRefundOrderActivity extends AbstractMobileBusinessOrderActivity {
     @Override
@@ -42,16 +43,21 @@ public class MobilePurchaseRefundOrderActivity extends AbstractMobileBusinessOrd
 
         @Override
         protected void showOrder() {
-
+            super.showOrder();
         }
 
         @Override
-        protected AbstractTableDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> getAdapter() {
+        protected AbstractBusinessOrderDetailsDataAdapter<? extends AbstractDataAdapter.SuperViewHolder> getAdapter() {
             return null;
         }
 
         @Override
         protected String generateOrderCodePrefix() {
+            return null;
+        }
+
+        @Override
+        protected JSONObject generateGoodsDetails(JSONObject object) {
             return null;
         }
 

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
+    android:background="@drawable/round_shape"
     android:paddingStart="@dimen/margin_5"
     android:paddingTop="@dimen/margin_5"
     android:paddingEnd="@dimen/margin_5"
@@ -31,6 +31,7 @@
         android:inputType="number"
         android:paddingStart="@dimen/margin_5"
         android:paddingEnd="0dp"
+        android:selectAllOnFocus="true"
         android:textColor="@color/label_text_color"
         android:textSize="@dimen/font_size_16"
         app:layout_constraintEnd_toEndOf="parent"
@@ -54,7 +55,7 @@
         android:layout_height="@dimen/height_35"
         android:autofillHints=""
         android:background="@drawable/bottom_separator"
-        android:inputType="number"
+        android:gravity="center_vertical"
         android:paddingStart="@dimen/margin_5"
         android:paddingEnd="0dp"
         android:textColor="@color/label_text_color"
@@ -80,7 +81,7 @@
         android:layout_height="@dimen/height_35"
         android:autofillHints=""
         android:background="@drawable/bottom_separator"
-        android:inputType="number"
+        android:gravity="center_vertical"
         android:paddingStart="@dimen/margin_5"
         android:paddingEnd="0dp"
         android:textColor="@color/label_text_color"
@@ -116,6 +117,8 @@
             android:inputType="numberDecimal"
             android:paddingStart="@dimen/margin_5"
             android:paddingEnd="0dp"
+            android:selectAllOnFocus="true"
+            android:text="@string/zero_p_z_sz"
             android:textColor="@color/label_text_color"
             android:textSize="@dimen/font_size_16" />
 
@@ -128,14 +131,14 @@
             android:textColor="@color/label_text_color"
             android:textSize="@dimen/font_size_16" />
 
-        <EditText
+        <TextView
             android:id="@+id/unit_tv"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:autofillHints=""
             android:background="@drawable/bottom_separator"
-            android:inputType="number"
+            android:gravity="center_vertical"
             android:paddingStart="@dimen/margin_5"
             android:paddingEnd="0dp"
             android:textColor="@color/label_text_color"
@@ -170,6 +173,8 @@
             android:inputType="numberDecimal"
             android:paddingStart="@dimen/margin_5"
             android:paddingEnd="0dp"
+            android:selectAllOnFocus="true"
+            android:text="@string/zero_p_z_sz"
             android:textColor="@color/label_text_color"
             android:textSize="@dimen/font_size_16" />
 
@@ -189,9 +194,10 @@
             android:layout_weight="1"
             android:autofillHints=""
             android:background="@drawable/bottom_separator"
-            android:inputType="number"
+            android:gravity="center_vertical"
             android:paddingStart="@dimen/margin_5"
             android:paddingEnd="0dp"
+            android:text="@string/zero_p_z_sz"
             android:textColor="@color/label_text_color"
             android:textSize="@dimen/font_size_16" />
 

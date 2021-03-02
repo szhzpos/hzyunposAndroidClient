@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -19,6 +20,8 @@ import androidx.annotation.NonNull;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.logger.Logger;
+
+import static android.content.Context.INPUT_METHOD_SERVICE;
 
 public abstract class AbstractDialog extends Dialog {
     protected CharSequence mTitle;
@@ -91,8 +94,16 @@ public abstract class AbstractDialog extends Dialog {
     @Override
     @CallSuper
     public void dismiss(){
-        super.dismiss();
+        hideInputMethod();
         if (mEventLoop != null)mEventLoop.done(mCode);
+        super.dismiss();
+    }
+
+    private void hideInputMethod(){
+        final InputMethodManager imm = (InputMethodManager) getContext().getSystemService(INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
+        }
     }
 
     @Override

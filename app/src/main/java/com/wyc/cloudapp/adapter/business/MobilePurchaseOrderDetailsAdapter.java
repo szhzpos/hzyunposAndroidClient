@@ -30,7 +30,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class MobilePurchaseOrderDetailsAdapter extends AbstractDataAdapter<MobilePurchaseOrderDetailsAdapter.MyViewHolder> {
+public class MobilePurchaseOrderDetailsAdapter extends AbstractBusinessOrderDetailsDataAdapter<MobilePurchaseOrderDetailsAdapter.MyViewHolder> {
 
     public MobilePurchaseOrderDetailsAdapter(final MainActivity activity){
         super(activity);
