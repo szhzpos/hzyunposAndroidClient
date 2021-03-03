@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.method.ReplacementTransformationMethod;
 import android.view.Display;
@@ -52,8 +53,16 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
     private String mBarcode;
     private EditText mBarcodeEt,mNumEt,mPriceEt;
     private TextView mItemNoTv,mNameTv,mAmtTv,mUnitTv;
+    private boolean isModify = false;
     public BusinessSelectGoodsDialog(@NonNull MainActivity context) {
         super(context, context.getString(R.string.scan_code_label));
+    }
+
+    public BusinessSelectGoodsDialog(@NonNull MainActivity context,final JSONObject object) {
+        this(context);
+        if (isModify = object != null){
+            mContentObj = object;
+        }
     }
 
     @Override
@@ -64,6 +73,15 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
         initBtn();
         initSearchContent();
         initView();
+    }
+
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if (isModify){
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+            showGoods();
+        }
     }
 
     @Override
@@ -252,13 +270,27 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
 
     private void showGoods(){
         final JSONObject object = mContentObj;
+        if (null == object)return;
+
+        double num = 0.0,price = 0.0;
+
+        if (isModify){
+            mBarcodeEt.setText(object.getString("barcode"));
+            mBarcodeEt.setInputType(InputType.TYPE_NULL);
+            num = Utils.getNotKeyAsNumberDefault(object,"xnum",1.00);
+            price = object.getDoubleValue("last_jh_price");
+        }else {
+            num = 1.00;
+            price = object.getDoubleValue("buying_price");
+        }
 
         mItemNoTv.setText(object.getString("only_coding"));
         mNameTv.setText(object.getString("goods_title"));
-        mNumEt.setText(String.valueOf(1.00));
+        mNumEt.setText(String.valueOf(num));
 
         mPriceEt.requestFocus();
-        mPriceEt.setText(object.getString("buying_price"));
+        mPriceEt.post(()->mPriceEt.selectAll());
+        mPriceEt.setText(String.valueOf(price));
 
         mUnitTv.setTag(object.getString("stock_unit_id"));
         mUnitTv.setText(object.getString("stock_unit_name"));

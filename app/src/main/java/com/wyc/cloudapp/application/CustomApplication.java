@@ -124,6 +124,9 @@ public final class CustomApplication extends Application {
     public String getCashierId(){
         return mCashierInfo.getString("cas_id");
     }
+    public String getCashierCode(){
+        return mApplication.getCashierInfo().getString("cas_code");
+    }
     public String getPtUserId(){
         return Utils.getNullStringAsEmpty(mCashierInfo,"pt_user_id");
     }
@@ -308,6 +311,10 @@ public final class CustomApplication extends Application {
                 Toast.makeText(this,err,Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    public static void run(Runnable r){
+        mApplication.getAppHandler().post(r);
     }
 
 

@@ -2,6 +2,9 @@ package com.wyc.cloudapp.activity.mobile.business;
 
 import android.os.Bundle;
 
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
@@ -10,6 +13,8 @@ import com.wyc.cloudapp.adapter.business.MobilePurchaseOrderDetailsAdapter;
 import com.wyc.cloudapp.adapter.report.AbstractDataAdapter;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
+
+import java.util.Locale;
 
 /*采购订货单*/
 public class MobilePurchaseOrderActivity extends AbstractMobileBusinessOrderActivity {
@@ -52,6 +57,33 @@ public class MobilePurchaseOrderActivity extends AbstractMobileBusinessOrderActi
         }
 
         @Override
+        protected RecyclerView.AdapterDataObserver getDataObserver() {
+            super.getDataObserver();
+            return new RecyclerView.AdapterDataObserver() {
+                @Override
+                public void onChanged() {
+                    super.onChanged();
+                    final JSONArray array = getDetailsData();
+                    double num = 0.0,price = 0.0,sum_num= 0.0,amt = 0.0;
+
+                    int size = array.size();
+                    for (int i = 0;i < size;i ++){
+                        final JSONObject object = array.getJSONObject(i);
+                        num = Utils.getNotKeyAsNumberDefault(object,"xnum",0.0);
+                        price = Utils.getNotKeyAsNumberDefault(object,"last_jh_price",0.0);
+
+                        sum_num += num;
+                        amt += num * price;
+                    }
+                    mSumNumTv.setText(String.format(Locale.CHINA,"%.2f",sum_num));
+                    mSumAmtTv.setText(String.format(Locale.CHINA,"%.2f",amt));
+
+                    scrollToLast();
+                }
+            };
+        }
+
+        @Override
         protected void showOrder() {
             super.showOrder();
 
@@ -72,16 +104,5 @@ public class MobilePurchaseOrderActivity extends AbstractMobileBusinessOrderActi
         protected String generateOrderCodePrefix() {
             return "CG";
         }
-
-        @Override
-        protected JSONObject generateGoodsDetails(JSONObject object) {
-            if (null != object){
-                object.put("last_jh_price",Utils.getNotKeyAsNumberDefault(object,"new_price",Utils.getNotKeyAsNumberDefault(object,"buying_price",0.0)));
-                object.put("xnum",Utils.getNotKeyAsNumberDefault(object,"new_num",1.00));
-                Logger.d_json(object.toString());
-            }
-            return object;
-        }
-
     }
 }

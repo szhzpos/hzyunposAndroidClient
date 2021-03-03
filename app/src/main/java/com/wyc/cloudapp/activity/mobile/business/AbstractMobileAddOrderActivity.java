@@ -23,7 +23,6 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
-import com.wyc.cloudapp.adapter.report.AbstractDataAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
@@ -44,6 +43,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
 
     private AbstractBusinessOrderDetailsDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> mAdapter;
     private JSONArray mSupplierList;
+    private RecyclerView mDetailsView;
 
     protected JSONObject mOrderInfo;
     protected TextView mSupplierTV,mSaleOperatorTv,mWarehouseTv,mOrderCodeTv,mDateTv,mRemarkEt,mSumNumTv,mSumAmtTv;
@@ -82,7 +82,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                     final JSONObject object = new JSONObject();
                     if (BusinessSelectGoodsDialog.selectGoodsWithBarcodeId(object,barcode_id)){
                         Logger.d_json(object.toString());
-                        addGoodsDetails(object);
+                        addGoodsDetails(object,false);
                     }else {
                         MyDialog.ToastMessage(object.getString("info"),this,getWindow());
                     }
@@ -99,8 +99,30 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
         }
     }
 
-    private void addGoodsDetails(final JSONObject object){
-        if (mAdapter != null)mAdapter.addDetails(generateGoodsDetails(object));
+    @Override
+    public void onBackPressed() {
+        if (mAdapter.getItemCount() != 0){
+            CustomApplication.run(()->{
+                if (MyDialog.showMessageToModalDialog(this,"已选择商品，是否退出？") == 1){
+                    super.onBackPressed();
+                }
+            });
+        }else
+            super.onBackPressed();
+    }
+
+    private void addGoodsDetails(final JSONObject object, boolean modify){
+        if (mAdapter != null){
+            int index = mAdapter.isExist(object);
+            if (index >= 0 && !modify){
+                mDetailsView.scrollToPosition(index);
+                MyDialog.displayAskMessage(this, String.format(Locale.CHINA,"<%s>已存在，是否继续？",SelectGoodsActivity.getGoodsName(object)), myDialog -> {
+                    mAdapter.addDetails(mAdapter.updateGoodsDetails(object),index,false);
+                    myDialog.dismiss();
+                }, MyDialog::dismiss);
+            }else
+                mAdapter.addDetails(mAdapter.updateGoodsDetails(object),index,modify);
+        }
     }
 
     @Override
@@ -113,7 +135,22 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
     protected abstract JSONObject generateQueryCondition();
     protected abstract AbstractBusinessOrderDetailsDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> getAdapter();
     protected abstract String generateOrderCodePrefix();
-    protected abstract JSONObject generateGoodsDetails(final JSONObject object);
+
+    protected RecyclerView.AdapterDataObserver getDataObserver(){
+        return new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+            }
+        };
+    }
+
+    protected void modifyGoodsDetails(@NonNull JSONObject object) {
+        final BusinessSelectGoodsDialog dialog = new BusinessSelectGoodsDialog(this,object);
+        if (dialog.exec() == 1){
+            addGoodsDetails(dialog.getContentObj(),true);
+        }
+    }
 
     @CallSuper
     protected void showOrder(){
@@ -124,6 +161,14 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
     protected void setView(@NonNull final TextView view, final String id, final String name){
         view.setTag(id);
         view.setText(name);
+    }
+
+    protected void scrollToLast(){
+        if (mDetailsView  != null && mAdapter != null)mDetailsView.scrollToPosition(mAdapter.getItemCount() - 1);
+    }
+
+    protected JSONArray getDetailsData(){
+        return mAdapter == null ? null : mAdapter.getData();
     }
 
     private boolean isShowOrder(){
@@ -263,7 +308,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
             }else if (id == R.id.m_business_scan_btn){
                 final BusinessSelectGoodsDialog dialog = new BusinessSelectGoodsDialog(AbstractMobileAddOrderActivity.this);
                 if (dialog.exec() == 1){
-                    addGoodsDetails(dialog.getContentObj());
+                    addGoodsDetails(dialog.getContentObj(),false);
                 }
             }
         }
@@ -357,31 +402,13 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
         final RecyclerView details_list = findViewById(R.id.details_list);
         if (null != details_list){
             mAdapter = getAdapter();
-            mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-                @Override
-                public void onChanged() {
-                    super.onChanged();
-                    final JSONArray array = mAdapter.getData();
-                    double num = 0.0,price = 0.0,sum_num= 0.0,amt = 0.0;
-
-                    int size = array.size();
-                    for (int i = 0;i < size;i ++){
-                        final JSONObject object = array.getJSONObject(i);
-                        num = Utils.getNotKeyAsNumberDefault(object,"xnum",0.0);
-                        price = Utils.getNotKeyAsNumberDefault(object,"last_jh_price",0.0);
-
-                        sum_num += num;
-                        amt += num * price;
-                    }
-                    mSumNumTv.setText(String.format(Locale.CHINA,"%.2f",sum_num));
-                    mSumAmtTv.setText(String.format(Locale.CHINA,"%.2f",amt));
-
-                    details_list.scrollToPosition(size - 1);
-                }
-            });
+            mAdapter.registerAdapterDataObserver(getDataObserver());
+            mAdapter.setItemListener(this::modifyGoodsDetails);
             details_list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
             details_list.setAdapter(mAdapter);
-            details_list.addItemDecoration(new LinearItemDecoration(this.getColor(R.color.white)));
+            details_list.addItemDecoration(new LinearItemDecoration(getColor(R.color.white),3));
+
+            mDetailsView = details_list;
         }
     }
 

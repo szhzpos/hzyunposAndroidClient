@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         return mApplication.getCashierId();
     }
     public String getCashierCode(){
-        return mApplication.getCashierInfo().getString("cas_code");
+        return mApplication.getCashierCode();
     }
     public String getStoreName(){
         return mApplication.getStoreName();

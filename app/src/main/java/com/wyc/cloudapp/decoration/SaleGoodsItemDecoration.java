@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.AbstractSaleGoodsAdapter;
 
-public class SaleGoodsItemDecoration extends LinearItemDecoration {
+public final class SaleGoodsItemDecoration extends LinearItemDecoration {
     public SaleGoodsItemDecoration(int color){
         super(color);
     }
@@ -28,7 +28,7 @@ public class SaleGoodsItemDecoration extends LinearItemDecoration {
 
             final int p_w = parent.getMeasuredWidth(),p_h = parent.getMeasuredHeight();
 
-            final String sz = "单品退货";
+            final String sz = context.getString(R.string.single_refund_sz);
             final Rect bounds = new Rect();
             paint.setTextSize(context.getResources().getDimension(R.dimen.font_size_18));
             paint.getTextBounds(sz,0,sz.length(),bounds);

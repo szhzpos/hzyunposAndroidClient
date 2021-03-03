@@ -29,15 +29,12 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class BoardFragment extends AbstractMobileFragment {
+public final class BoardFragment extends AbstractMobileFragment {
     private int mCurrentTimeBtnId,mCurrentPayMethodBtnId;
     private JSONObject mQueryCondition;
     private PayMethodStatisticsViewAdapter mAdapter;
     private View mToday;
     private PieView mPieStatistics;
-    public BoardFragment(final MainActivity activity) {
-        super(activity);
-    }
 
     @Override
     protected int getRootLayout() {

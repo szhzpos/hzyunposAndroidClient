@@ -232,15 +232,15 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
             Fragment current = null ;
             final int id = v.getId();
             if (id == R.id._mobile_archive_tv) {//first
-                current = new BoardFragment(activity);
+                current = new BoardFragment();
             }else if(id == R.id._mobile_business_tv){//second
-                current = new MobileBusinessFragment(activity);
+                current = new MobileBusinessFragment();
             }else if (id == R.id._mobile_report_tv){//fourth
-                current = new ReportFragment(activity);
+                current = new ReportFragment();
             }else  if(id == R.id._mobile_my_tv){//fifth
-                current = new MyFragment(activity);
+                current = new MyFragment();
             }else{//third
-                current = new MobileCashierDeskFragment(activity);
+                current = new MobileCashierDeskFragment();
             }
             ft.add(R.id.mobile_fragment_container,current);
             if (mCurrentFragment != null)ft.remove(mCurrentFragment);

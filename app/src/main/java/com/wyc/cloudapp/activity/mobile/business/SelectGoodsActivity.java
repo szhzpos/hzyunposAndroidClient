@@ -137,7 +137,7 @@ public class SelectGoodsActivity extends AbstractMobileActivity {
         final RecyclerView goods_type_view = findViewById(R.id.business_goods_type_list);
         final CategoryAdapter mGoodsCategoryAdapter = new CategoryAdapter(this);
         goods_type_view.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
-        mGoodsCategoryAdapter.setDatas(0);
+        mGoodsCategoryAdapter.setDatas(-2);//业务单据商品选择不加载组合商品
         goods_type_view.setAdapter(mGoodsCategoryAdapter);
     }
 
@@ -145,6 +145,9 @@ public class SelectGoodsActivity extends AbstractMobileActivity {
         mGoodsInfoAdapter.loadGoodsByCategoryId(id);
     }
 
+    static String getGoodsName(final JSONObject object){
+        return Utils.getNullStringAsEmpty(object,"goods_title");
+    }
 
     static public class CategoryAdapter extends AbstractDataAdapter<CategoryAdapter.MyViewHolder> implements View.OnClickListener{
         private View mCurrentItemView;
@@ -213,11 +216,16 @@ public class SelectGoodsActivity extends AbstractMobileActivity {
 
         public void setDatas(int parent_id){
             final StringBuilder err = new StringBuilder();
-            if (0 == parent_id)
-                mDatas = SQLiteHelper.getListToJson("select category_id,name from shop_category where parent_id='0' and status = 1 union select -1 category_id,'组合商品' name ",0,0,false,err);
-            else
-                mDatas = SQLiteHelper.getListToJson("select category_id,name from shop_category where depth = 2 and status = 1 and parent_id=" + parent_id,0,0,false,err);
-
+            switch (parent_id){
+                case 0:
+                    mDatas = SQLiteHelper.getListToJson("select category_id,name from shop_category where parent_id='0' and status = 1 union select -1 category_id,'组合商品' name ",0,0,false,err);
+                    break;
+                case -2:
+                    mDatas = SQLiteHelper.getListToJson("select category_id,name from shop_category where parent_id='0'",0,0,false,err);
+                    break;
+                default:
+                    mDatas = SQLiteHelper.getListToJson("select category_id,name from shop_category where depth = 2 and status = 1 and parent_id=" + parent_id,0,0,false,err);
+            }
             if (mDatas != null){
                 this.notifyDataSetChanged();
             }else{

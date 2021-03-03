@@ -51,11 +51,6 @@ public class MobileWholesaleRefundOrderActivity extends AbstractMobileBusinessOr
         }
 
         @Override
-        protected JSONObject generateGoodsDetails(JSONObject object) {
-            return null;
-        }
-
-        @Override
         protected int getContentLayoutId() {
             return R.layout.activity_mobile_add_wholesale_refund_order;
         }

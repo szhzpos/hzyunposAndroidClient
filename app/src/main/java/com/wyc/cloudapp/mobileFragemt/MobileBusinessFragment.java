@@ -10,11 +10,7 @@ import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
 
-public class MobileBusinessFragment extends AbstractJumpFragment {
-    public MobileBusinessFragment(final MainActivity activity) {
-        super(activity);
-    }
-
+public final class MobileBusinessFragment extends AbstractJumpFragment {
     @Override
     protected int getRootLayout() {
         return R.layout.mobile_business_fragment_layout;

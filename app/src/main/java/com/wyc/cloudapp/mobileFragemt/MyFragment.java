@@ -14,11 +14,6 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
 
 public final class MyFragment extends AbstractJumpFragment {
-    public MyFragment(final MainActivity activity) {
-        super(activity);
-
-    }
-
     private void initExit(){
         final Button exit = findViewById(R.id.m_exit_btn);
         exit.setOnClickListener(v -> {

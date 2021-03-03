@@ -15,12 +15,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.dialog.MyDialog;
 
-public class ReportFragment extends AbstractJumpFragment {
-
-    public ReportFragment(final MainActivity activity) {
-        super(activity);
-    }
-
+public final class ReportFragment extends AbstractJumpFragment {
     @Override
     protected void viewCreated(boolean created) {
         super.viewCreated(created);

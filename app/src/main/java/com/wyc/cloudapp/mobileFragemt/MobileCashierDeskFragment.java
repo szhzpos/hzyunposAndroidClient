@@ -21,10 +21,6 @@ import com.wyc.cloudapp.dialog.vip.MobileVipDepositOrderDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 
 public final class MobileCashierDeskFragment extends AbstractJumpFragment {
-    public MobileCashierDeskFragment(MainActivity activity) {
-        super(activity);
-    }
-
     @Override
     protected int getRootLayout() {
         return R.layout.mobile_cashier_desk_fragment_layout;

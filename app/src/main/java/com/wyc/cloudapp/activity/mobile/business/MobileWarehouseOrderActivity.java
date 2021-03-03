@@ -53,9 +53,5 @@ public final class MobileWarehouseOrderActivity extends AbstractMobileBusinessOr
             return null;
         }
 
-        @Override
-        protected JSONObject generateGoodsDetails(JSONObject object) {
-            return null;
-        }
     }
 }

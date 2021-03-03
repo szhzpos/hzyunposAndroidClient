@@ -21,9 +21,6 @@ import com.wyc.cloudapp.logger.Logger;
  * Activity 的全类名保存在叶节点的tag属性中。
  * */
 public abstract class AbstractJumpFragment extends AbstractMobileFragment {
-    public AbstractJumpFragment(final MainActivity activity){
-        super(activity);
-    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

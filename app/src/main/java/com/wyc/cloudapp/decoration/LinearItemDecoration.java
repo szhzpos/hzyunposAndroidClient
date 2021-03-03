@@ -16,8 +16,12 @@ public class LinearItemDecoration extends SuperItemDecoration {
     public LinearItemDecoration(int color) {
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        if (-1 == color)color = 0x4DA1A1A1;
+        /*if (-1 == color)color = 0x4DA1A1A1; The white decimal value is -1*/
         mPaint.setColor(color);
+    }
+    public LinearItemDecoration(int color,int space){
+        this(color);
+        mSpace = space;
     }
 
     @Override
@@ -52,20 +56,19 @@ public class LinearItemDecoration extends SuperItemDecoration {
             final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
             final int top = child.getBottom() + params.bottomMargin + Math.round(child.getTranslationY());
             final int bottom = (top + mSpace);
-            c.drawRect(left, bottom + 1, right, bottom, mPaint);
+            c.drawLine(left,bottom,right,bottom,mPaint);
         }
     }
 
     protected void drawHorizontalPadding(final Canvas c, final RecyclerView parent) {
         final int top = parent.getPaddingTop();
-        final int bottom = parent.getHeight() - parent.getPaddingBottom();
         final int childCount = parent.getChildCount();
         for (int i = 0; i < childCount; i++) {
             final View child = parent.getChildAt(i);
             final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
             final int left = child.getRight() + params.rightMargin + Math.round(child.getTranslationX());
             final int right =(left + mSpace);
-            c.drawRect(left, top, right, bottom, mPaint);
+            c.drawLine(right, top, right, child.getBottom(), mPaint);
         }
     }
 }
