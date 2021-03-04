@@ -16,7 +16,6 @@ import androidx.annotation.NonNull;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -159,7 +158,7 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
                     final ImageView imageView = findViewById(R.id.w_g_img);
                     if (!"".equals(img_url)){
                         final String szImage = img_url.substring(img_url.lastIndexOf("/") + 1);
-                        final Bitmap bitmap = BitmapFactory.decodeFile(CustomApplication.IMG_PATH + szImage);
+                        final Bitmap bitmap = BitmapFactory.decodeFile(CustomApplication.getGoodsImgSavePath() + szImage);
                         imageView.setImageBitmap(bitmap);
                     }else{
                         imageView.setImageDrawable(mContext.getDrawable(R.drawable.nodish));

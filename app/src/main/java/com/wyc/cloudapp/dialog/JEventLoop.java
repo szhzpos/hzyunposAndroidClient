@@ -71,7 +71,10 @@ public final class JEventLoop {
             if (!stack.isEmpty()){
                 final JEventLoop loop = stack.peek();
                 //如果栈顶对象的mDone为真，在对象mHandler所属的消息队列最前面加入退出事件。当当前循环退出后立即让栈顶对象退出。
-                if (loop.mDone)loop.mHandler.postAtFrontOfQueue(loop::exit);
+                if (loop.mDone){
+                    stack.pop();
+                    loop.mHandler.postAtFrontOfQueue(loop::exit);
+                }
             }
         }
 

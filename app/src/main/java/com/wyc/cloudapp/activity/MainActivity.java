@@ -22,7 +22,7 @@ import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
     protected final CustomApplication mApplication = CustomApplication.self();
     protected final String mAppId = mApplication.getAppId(), mAppSecret = mApplication.getAppSecret(),mUrl = mApplication.getUrl();
     protected String mPermissionCashierId = "";
@@ -31,30 +31,6 @@ public class MainActivity extends AppCompatActivity {
         super.onNewIntent(intent);
         setIntent(intent);
     }
-
-    @Override
-    protected void finalize(){
-        Logger.d(getClass().getSimpleName() + " finalized");
-    }
-
-    @Override
-    public void onBackPressed() {
-        hide();
-        super.onBackPressed();
-    }
-
-    @Override
-    public void finish() {
-        hide();
-        super.finish();
-    }
-    private void hide(){
-        final InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
-        }
-    }
-
 
     protected boolean verifyNumBtnPermissions(){
         return verifyPermissions("25",null);
@@ -78,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         return getString(R.string.not_exist_hint_sz,sz);
     }
 
-    public String getPosNum(){return Utils.getNullStringAsEmpty(mApplication.getCashierInfo(),"pos_num");}
+    public String getPosNum(){return mApplication.getPosNum();}
     public String getCashierName(){
         return mApplication.getCashierName();
     }

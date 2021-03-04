@@ -3,7 +3,6 @@ package com.wyc.cloudapp.dialog;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
@@ -20,26 +19,18 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleEventObserver;
-import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.OnLifecycleEvent;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.callback.WindowCallback;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogContext;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
-
-import static android.content.Context.WINDOW_SERVICE;
 
 public final class MyDialog extends AbstractDialogContext {
     private Button mYes,mNo;//mYes确定按钮、mNo取消按钮
@@ -286,8 +277,7 @@ public final class MyDialog extends AbstractDialogContext {
     }
 
     public static void ToastMessageInMainThread(final String message){
-        final CustomApplication application = CustomApplication.self();
-        application.getAppHandler().post(()-> Toast.makeText(application,message,Toast.LENGTH_LONG).show());
+        CustomApplication.runInMainThread(()-> Toast.makeText(CustomApplication.self(),message,Toast.LENGTH_LONG).show());
     }
 
     public static void ToastMessage(final String message, @NonNull final Context context, final Window window){

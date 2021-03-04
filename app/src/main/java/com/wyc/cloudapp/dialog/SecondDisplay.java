@@ -25,7 +25,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.NormalSaleGoodsAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -163,7 +162,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
                         String img_url = object.getString("img_url");
                         if (!"".equals(img_url)){
                             final String szImage = img_url.substring(img_url.lastIndexOf("/") + 1);
-                            mBannerBitmap = BitmapFactory.decodeFile(CustomApplication.IMG_PATH + szImage);
+                            mBannerBitmap = BitmapFactory.decodeFile(CustomApplication.getGoodsImgSavePath() + szImage);
                             mCurrentBarcodeId = barcode_id;
                         }
                     }else{

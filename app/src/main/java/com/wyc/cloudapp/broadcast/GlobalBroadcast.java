@@ -11,14 +11,11 @@ import android.hardware.usb.UsbManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
-import android.os.Looper;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.fragment.PrintFormatFragment;
-import com.wyc.cloudapp.logger.Logger;
 
 /**
  * Created by Administrator on 2018-05-04.
@@ -35,8 +32,7 @@ public class GlobalBroadcast extends BroadcastReceiver {
                     network_status(context);
                     break;
                 case "android.intent.action.BOOT_COMPLETED":
-                    Intent login = new Intent(context, LoginActivity.class);
-                    context.startActivity(login);
+                    LoginActivity.start(context);
                     break;
                 case "android.hardware.usb.action.USB_DEVICE_ATTACHED":
                     synchronized (this) {

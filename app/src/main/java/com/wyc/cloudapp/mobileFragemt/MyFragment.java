@@ -5,10 +5,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.LoginActivity;
-import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.activity.mobile.MobileSetupActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -19,9 +17,7 @@ public final class MyFragment extends AbstractJumpFragment {
         exit.setOnClickListener(v -> {
             if (MyDialog.showMessageToModalDialog(mContext,"是否退出登录?") == 1){
                 CustomApplication.self().resetSync();
-                final Intent intent = new Intent(mContext, LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                mContext.startActivity(intent);
+                LoginActivity.start(mContext);
                 mContext.finish();
             }
         });

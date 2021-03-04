@@ -138,8 +138,7 @@ public final class HttpUtils {
         if (null == object)return false;
         boolean code = object.getIntValue("flag") == 1;
         if (!code){
-            final CustomApplication application = CustomApplication.self();
-            application.getAppHandler().post(()->Toast.makeText(application, object.getString("info"), Toast.LENGTH_LONG).show());
+            CustomApplication.runInMainThread(()->Toast.makeText(CustomApplication.self(), object.getString("info"), Toast.LENGTH_LONG).show());
         }
         return code;
     }

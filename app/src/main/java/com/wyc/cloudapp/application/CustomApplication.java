@@ -1,9 +1,12 @@
 package com.wyc.cloudapp.application;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -13,11 +16,13 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.AndroidLogAdapter;
@@ -41,7 +46,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class CustomApplication extends Application {
-    public static final String IMG_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/goods_img/";
     //使用无界限阻塞队列，不会触发拒绝策略；线程数最大等于核心线程数，如果所有线程都在运行则任务会进入队列等待执行<可能引发内存问题>，
     private static final DefaultScheduledThreadPoolExecutor THREAD_POOL_EXECUTOR = new DefaultScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2);
     private static CustomApplication mApplication;
@@ -70,8 +74,27 @@ public final class CustomApplication extends Application {
         super.onCreate();
         Logger.addLogAdapter(new AndroidLogAdapter());
         Logger.addLogAdapter(new DiskLogAdapter());//日志记录磁盘
-
+        CrashHandler.getInstance().init(this);
         registerActivityLifecycleCallbacks(callbacks);
+
+        //initGlobal();
+    }
+
+    private void initGlobal(){
+        //如果已经获得权限则直接初始化全局数据.
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
+            final String stores_id = getStoreIdWithSharedPreferences();
+            if (!"".equals(stores_id)){
+                initDb(stores_id);
+                if (isNotLogin())initCashierInfoAndStoreInfo(this);
+                initSyncManagement(mUrl,mAppId,mAppSecret,stores_id,getPosNum(),getCashierCode());
+            }
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
     }
 
     public boolean initCashierInfoAndStoreInfo(final Context context){
@@ -87,15 +110,15 @@ public final class CustomApplication extends Application {
                     return true;
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    MyDialog.displayErrorMessage(context, "初始化仓库信息错误：" + e.getMessage());
+                    Toast.makeText(context, "初始化仓库信息错误：" + e.getMessage(),Toast.LENGTH_LONG).show();
                     return false;
                 }
             }else {
-                MyDialog.displayErrorMessage(context, "初始化收银员信息错误：" + cas_info.getString("info"));
+                Toast.makeText(context, "初始化收银员信息错误：" + cas_info.getString("info"),Toast.LENGTH_LONG).show();
                 return false;
             }
         }else{
-            MyDialog.displayErrorMessage(context, "初始化收银员信息错误：" + cas_info.getString("info"));
+            Toast.makeText(context, "初始化收银员信息错误：" + cas_info.getString("info"),Toast.LENGTH_LONG).show();
             return false;
         }
     }
@@ -112,6 +135,10 @@ public final class CustomApplication extends Application {
         editor.apply();
     }
 
+    public boolean isNotLogin(){
+        return mStoreInfo == null || mCashierInfo == null;
+    }
+
     public JSONObject getCashierInfo(){
         return mCashierInfo;
     }
@@ -121,11 +148,12 @@ public final class CustomApplication extends Application {
     public String getCashierName(){
        return mCashierInfo.getString("cas_name");
     }
+    public String getPosNum(){return Utils.getNullStringAsEmpty(mCashierInfo,"pos_num");}
     public String getCashierId(){
         return mCashierInfo.getString("cas_id");
     }
     public String getCashierCode(){
-        return mApplication.getCashierInfo().getString("cas_code");
+        return Utils.getNullStringAsEmpty(mCashierInfo,"cas_code");
     }
     public String getPtUserId(){
         return Utils.getNullStringAsEmpty(mCashierInfo,"pt_user_id");
@@ -134,7 +162,7 @@ public final class CustomApplication extends Application {
         return mStoreInfo.getString("stores_name");
     }
     public String getStoreId(){
-        return mStoreInfo.getString("stores_id");
+        return Utils.getNullStringAsEmpty(mStoreInfo,"stores_id");
     }
     public String getStoreIdWithSharedPreferences(){
         final JSONObject conn_param = getConnParam();
@@ -256,10 +284,6 @@ public final class CustomApplication extends Application {
         mSyncManagement.initSync(url,appid,appsecret,stores_id,pos_num,operid);
     }
 
-    public Handler getAppHandler(){
-        return myhandler;
-    }
-
     public void data_upload(){
         mSyncManagement.sync_order_info();
     }
@@ -313,8 +337,21 @@ public final class CustomApplication extends Application {
         }
     }
 
-    public static void run(Runnable r){
-        mApplication.getAppHandler().post(r);
+    public static void runInMainThread(Runnable r){
+        mApplication.myhandler.post(r);
+    }
+
+    public static void sendMessage(int what){
+        mApplication.myhandler.obtainMessage(what).sendToTarget();
+    }
+    public static void sendMessage(int what,  Object obj){
+        mApplication.myhandler.obtainMessage(what,obj).sendToTarget();
+    }
+    public static void sendMessage(int what,int arg1,int arg2){
+        mApplication.myhandler.obtainMessage(what,arg1,arg2).sendToTarget();
+    }
+    public static void sendMessageAtFrontOfQueue(int what){
+        mApplication.myhandler.sendMessageAtFrontOfQueue(mApplication.myhandler.obtainMessage(what));
     }
 
 
@@ -377,18 +414,43 @@ public final class CustomApplication extends Application {
         return mNetworkStatus.getAndSet(b);
     }
 
-    public static void initDbAndImgDirectory(final String stores_id){
-        mApplication.initGoodsImgDirectory();
+    public static void initDb(final String stores_id){
+        if (!mApplication.getStoreId().equals(stores_id)){
+            //输入的门店ID和当前的不一样需要重新初始化数据库，因为数据库名称和门店ID相关。
+            SQLiteHelper.closeDB();
+        }
         SQLiteHelper.initDb(mApplication,stores_id);
     }
-    private void initGoodsImgDirectory(){
-        final File file = new File(IMG_PATH);
-        if (!file.exists()){
-            if (!file.mkdir()){
-                MyDialog.ToastMessage("初始化商品图片目录错误！",this,null);
+
+    public static String getGoodsImgSavePath(){
+        return getSaveDirectory("hzYunPos/goods_img");
+    }
+
+    public static String getCrashSavePath(){
+        return getSaveDirectory("hzYunPos/crash_log");
+    }
+
+    /*
+    * 创建数据目录路，如果外部存储不存在或者在外部存储创建失败则由 Context.getDir 创建并返回;需要注意如果不在外部存储创建，App卸载时将被删除。
+    * @param str 目录名称
+    * @return 返回目录全路径字符串
+    * */
+    @NonNull
+    private static String getSaveDirectory(String str) {
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            final String rootDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + str + "/";
+            final File file = new File(rootDir);
+            if (!file.exists()) {
+                if (!file.mkdirs()) {
+                    return mApplication.getDir(str, Context.MODE_PRIVATE).getAbsolutePath();
+                }
             }
+            return rootDir;
+        } else {
+            return mApplication.getDir(str, Context.MODE_PRIVATE).getAbsolutePath();
         }
     }
+
 
     private static class DefaultScheduledThreadPoolExecutor extends ScheduledThreadPoolExecutor{
 
@@ -407,7 +469,7 @@ public final class CustomApplication extends Application {
                 }
             }
             if (t != null){
-                final Handler handler = mApplication.getAppHandler();
+                final Handler handler = mApplication.myhandler;
                 final String sz = String.format(Locale.CHINA,"%s throw exception:%s",this.getClass().getSimpleName(),t.getMessage());
                 Logger.w("%s%s",sz, Utils.formatStackTrace(t.getStackTrace()));
                 handler.post(()->{

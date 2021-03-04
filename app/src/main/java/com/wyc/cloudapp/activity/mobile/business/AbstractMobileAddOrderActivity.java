@@ -58,7 +58,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
         initView();
 
         getSupplier();
-        CustomApplication.self().getAppHandler().post(this::queryData);
+        CustomApplication.runInMainThread(this::queryData);
     }
 
     @Override
@@ -102,13 +102,14 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
     @Override
     public void onBackPressed() {
         if (mAdapter.getItemCount() != 0){
-            CustomApplication.run(()->{
-                if (MyDialog.showMessageToModalDialog(this,"已选择商品，是否退出？") == 1){
-                    super.onBackPressed();
-                }
-            });
+            if (MyDialog.showMessageToModalDialog(this,"已选择商品，是否退出？") == 1){
+                super.onBackPressed();
+            }
         }else
             super.onBackPressed();
+
+        int i = 0;
+        i++;
     }
 
     private void addGoodsDetails(final JSONObject object, boolean modify){

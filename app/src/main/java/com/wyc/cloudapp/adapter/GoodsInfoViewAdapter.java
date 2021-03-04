@@ -17,7 +17,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.android.material.snackbar.Snackbar;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -94,7 +93,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
                 if (!"".equals(img_url)){
                     final String szImage = img_url.substring(img_url.lastIndexOf("/") + 1);
                     CustomApplication.execute(()->{
-                        final Bitmap bitmap = BitmapFactory.decodeFile(CustomApplication.IMG_PATH + szImage);
+                        final Bitmap bitmap = BitmapFactory.decodeFile(CustomApplication.getGoodsImgSavePath() + szImage);
                         goods_img.post(()-> myViewHolder.goods_img.setImageBitmap(bitmap));
                     });
                 }else{

@@ -58,7 +58,6 @@ public class MobilePurchaseOrderActivity extends AbstractMobileBusinessOrderActi
 
         @Override
         protected RecyclerView.AdapterDataObserver getDataObserver() {
-            super.getDataObserver();
             return new RecyclerView.AdapterDataObserver() {
                 @Override
                 public void onChanged() {

@@ -54,7 +54,7 @@ public class ChangeNumOrPriceDialog extends AbstractDialogMainActivity {
     @Override
     public void dismiss(){
         super.dismiss();
-        if (null != mNew_price_text)mNew_price_text.setText(mContext.getString(R.string.space_sz));
+        if (null != mNew_price_text)mNew_price_text.getText().clear();
     }
     @Override
     public void show(){
@@ -110,21 +110,19 @@ public class ChangeNumOrPriceDialog extends AbstractDialogMainActivity {
                 et.setTransformationMethod(new PasswordEditTextReplacement());
             }
             et.setText(mInitVal);
-            if (null != mBiggestValue || null != mSmallestValue)et.setFilters(new InputFilter[]{ new InputFilter() {
-                @Override
-                public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+            if (null != mBiggestValue || null != mSmallestValue){
+                et.setFilters(new InputFilter[]{(source, start, end, dest, dstart, dend) -> {
                     try {
                         double value = Double.parseDouble(dest.toString() + source);
                         if ((mSmallestValue != null && value < mSmallestValue) || (mBiggestValue != null && value > mBiggestValue)){
                             return "";
                         }
                     }catch (NumberFormatException e){
-                        e.printStackTrace();
                         return "";
                     }
                     return null;
-                }
-            }});
+                }});
+            }
         }
         mNew_price_text = et;
     }

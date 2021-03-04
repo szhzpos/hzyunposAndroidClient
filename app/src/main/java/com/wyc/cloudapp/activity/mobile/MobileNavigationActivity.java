@@ -242,8 +242,8 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
             }else{//third
                 current = new MobileCashierDeskFragment();
             }
-            ft.add(R.id.mobile_fragment_container,current);
             if (mCurrentFragment != null)ft.remove(mCurrentFragment);
+            ft.add(R.id.mobile_fragment_container,current);
             ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             ft.show(current);
             mCurrentFragment = current;

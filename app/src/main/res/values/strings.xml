@@ -9,6 +9,7 @@
     <string name="yes">是</string>
     <string name="no">否</string>
     <string name="rmb_unit">元</string>
+    <string name="tip_crash">非常抱歉,程序出现异常.</string>
     <string name="dialog_title">对话框</string>
     <string name="not_vip_sz">散客</string>
     <string name="cashier_desk_sz">云店POS收银客户端</string>

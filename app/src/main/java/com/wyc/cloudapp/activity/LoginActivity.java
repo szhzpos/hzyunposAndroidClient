@@ -2,7 +2,6 @@ package com.wyc.cloudapp.activity;
 
 import android.Manifest;
 import android.app.Dialog;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,14 +10,10 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.hardware.usb.UsbDevice;
-import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.text.Editable;
 import android.util.DisplayMetrics;
@@ -60,7 +55,6 @@ import com.wyc.cloudapp.utils.http.HttpUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Locale;
 
 import okhttp3.Call;
@@ -68,9 +62,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-import static com.wyc.cloudapp.fragment.PrintFormatFragment.ACTION_USB_PERMISSION;
-
-public class LoginActivity extends AppCompatActivity implements CustomApplication.MessageCallback {
+public class LoginActivity extends BaseActivity implements CustomApplication.MessageCallback {
     private static final int REQUEST_STORAGE_PERMISSIONS  = 800;
     private EditText mUserIdEt, mPasswordEt;
     private LoginActivity mSelf;
@@ -80,7 +72,6 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
     private Call mLoginCall;
     private JSONObject mConnParam;
     private boolean isSmallScreen = false;
-    private Handler mHandler;
     private final CustomApplication mApplication = CustomApplication.self();
     private boolean isFirstRequestPermissions = true;
     @Override
@@ -94,7 +85,6 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
 
         //初始化成员变量
         mSelf = this;
-        mHandler = CustomApplication.self().getAppHandler();
         mProgressDialog = new CustomProgressDialog(this);
 
         initCloseMainWindow();
@@ -123,6 +113,12 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
         }
     }
 
+    public static void start(final Context context){
+        final Intent intent = new Intent(context, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        context.startActivity(intent);
+    }
+
     @Override
     public void onStart(){
         super.onStart();
@@ -143,7 +139,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
     @Override
     public void onResume(){
         super.onResume();
-        checkSelfPermissionAndInitDb();
+        checkSelfPermission();
         show_shop_info();
         setLastUser();
     }
@@ -160,11 +156,6 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
 
         Logger.d("onNewIntentAction:%s",intent.getAction());
         //if activity called finish method ,onNewIntent will not be called;
-    }
-
-    @Override
-    protected void finalize(){
-        Logger.d(getClass().getSimpleName() + " finalized");
     }
 
     @Override
@@ -403,7 +394,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
     private void clearResource(){
         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
     }
-    private void checkSelfPermissionAndInitDb(){
+    private void checkSelfPermission(){
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             if ((ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))){
                 final MyDialog dialog = new MyDialog(mSelf,"提示信息");
@@ -499,7 +490,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
             @Override
             public void onFailure(@NonNull Call call,@NonNull IOException e) {
                 e.printStackTrace();
-                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,e.getMessage()).sendToTarget();
+                CustomApplication.sendMessage(MessageID.DIS_ERR_INFO_ID,e.getMessage());
             }
 
             @Override
@@ -515,11 +506,11 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                         case "n":
                             final String err_info = info_json.getString("info");
                             if (err_info.contains("密码")) {
-                                mHandler.obtainMessage(MessageID.LOGIN_PW_ERROR_ID, "登录失败：" + err_info).sendToTarget();
+                                CustomApplication.sendMessage(MessageID.LOGIN_PW_ERROR_ID, "登录失败：" + err_info);
                             } else if (err_info.contains("账号") || err_info.contains("登录")) {
-                                mHandler.obtainMessage(MessageID.LOGIN_ID_ERROR_ID, "登录失败：" + err_info).sendToTarget();
+                                CustomApplication.sendMessage(MessageID.LOGIN_ID_ERROR_ID, "登录失败：" + err_info);
                             } else
-                                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "登录失败：" + err_info).sendToTarget();
+                                CustomApplication.sendMessage(MessageID.DIS_ERR_INFO_ID, "登录失败：" + err_info);
                             break;
                         case "y":
                             store_info = JSON.parseObject(info_json.getString("shop_info"));
@@ -527,7 +518,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                             cashier_json = JSON.parseObject(info_json.getString("cashier"));
 
                             if (!Utils.isNotEmpty(mStoresId)){
-                                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "登录错误，门店编号不能为空!").sendToTarget();
+                                CustomApplication.sendMessage(MessageID.DIS_ERR_INFO_ID, "登录错误，门店编号不能为空!");
                                 return;
                             }
 
@@ -542,7 +533,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                                     return;
                                 }
                             }
-                            CustomApplication.initDbAndImgDirectory(mStoresId);
+                            CustomApplication.initDb(mStoresId);
                         }
 
                             final String set_url = base_url + "/api/pos/set_ps";
@@ -560,7 +551,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                                 @Override
                                 public void onFailure(@NonNull Call call,@NonNull IOException e) {
                                     e.printStackTrace();
-                                    mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"设置收银终端错误：" + e.getMessage()).sendToTarget();
+                                    CustomApplication.sendMessage(MessageID.DIS_ERR_INFO_ID,"设置收银终端错误：" + e.getMessage());
                                 }
 
                                 @Override
@@ -571,7 +562,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
 
                                             switch (info_json.getString("status")) {
                                                 case "n":
-                                                    mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "设置收银终端错误：" + info_json.getString("info")).sendToTarget();
+                                                    CustomApplication.sendMessage(MessageID.DIS_ERR_INFO_ID, "设置收银终端错误：" + info_json.getString("info"));
                                                     break;
                                                 case "y":
                                                     final StringBuilder err = new StringBuilder();
@@ -602,16 +593,16 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                                                     params.add(_json);
 
                                                     if (SQLiteHelper.execSQLByBatchFromJson(params,"local_parameter",null,err,1)){
-                                                        mHandler.obtainMessage(MessageID.LOGIN_OK_ID).sendToTarget();
+                                                        CustomApplication.sendMessage(MessageID.LOGIN_OK_ID);
                                                     }else {
-                                                        mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "保存当前收银参数错误：" + err).sendToTarget();
+                                                        CustomApplication.sendMessage(MessageID.DIS_ERR_INFO_ID, "保存当前收银参数错误：" + err);
                                                     }
                                                     break;
                                             }
                                         }
                                     } catch (IOException | JSONException e) {
                                         e.printStackTrace();
-                                        mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, e.getMessage()).sendToTarget();
+                                        CustomApplication.sendMessage(MessageID.DIS_ERR_INFO_ID, e.getMessage());
                                     }
                                 }
                             });
@@ -619,7 +610,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                     }
                 } catch (IOException | JSONException e) {
                     e.printStackTrace();
-                    mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, e.getMessage()).sendToTarget();
+                    CustomApplication.sendMessage(MessageID.DIS_ERR_INFO_ID, e.getMessage());
                 }finally {
                     response.close();
                 }
@@ -633,7 +624,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                 application.stop_sync();
                 mLoginCall.cancel();
                 if (mLoginCall.isCanceled()){
-                    mHandler.sendMessageAtFrontOfQueue(mHandler.obtainMessage(MessageID.CANCEL_LOGIN_ID));
+                    CustomApplication.sendMessageAtFrontOfQueue(MessageID.CANCEL_LOGIN_ID);
                 }
             }else {
                 application.continueSync();
@@ -709,7 +700,7 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
             final JSONObject connParam = mConnParam;
             mStoresId = Utils.getNullObjectAsEmptyJson(connParam, "storeInfo").getString("stores_id");
             if (Utils.isNotEmpty(mStoresId)){
-                CustomApplication.initDbAndImgDirectory(mStoresId);
+                CustomApplication.initDb(mStoresId);
                 if (CustomApplication.verifyOfflineTime(this)){
                     mOperId = mUserIdEt.getText().toString();
 
@@ -728,11 +719,11 @@ public class LoginActivity extends AppCompatActivity implements CustomApplicatio
                                 Utils.getNullStringAsEmpty(connParam,"appSecret"),mStoresId,mPosNum,mOperId);
                         launchLogin(false);
                     } else {
-                        mHandler.obtainMessage(MessageID.LOGIN_ID_ERROR_ID, "不存在此用户！").sendToTarget();
+                        CustomApplication.sendMessage(MessageID.LOGIN_ID_ERROR_ID, "不存在此用户！");
                     }
                 }
             }else {
-                mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID, "离线登录，门店编号不能为空!").sendToTarget();
+                CustomApplication.sendMessage(MessageID.DIS_ERR_INFO_ID, "离线登录，门店编号不能为空!");
             }
         }, myDialog -> {
             myDialog.dismiss();

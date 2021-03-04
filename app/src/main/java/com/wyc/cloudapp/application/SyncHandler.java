@@ -29,7 +29,6 @@ import static com.wyc.cloudapp.utils.MessageID.SYNC_DIS_INFO_ID;
 
 final class SyncHandler extends Handler {
     private final HttpRequest mHttp;
-    private final Handler mMainActivityHandler = CustomApplication.self().getAppHandler();
     private volatile boolean mReportProgress = true,isPause = false;
     private volatile int mCurrentNetworkStatusCode = HttpURLConnection.HTTP_OK;
     private long mLoseTime = 0;
@@ -186,7 +185,7 @@ final class SyncHandler extends Handler {
                     object.put("stores_id",stores_id);
                     break;
                 case MessageID.SYNC_FINISH_ID:
-                    mMainActivityHandler.obtainMessage(MessageID.SYNC_FINISH_ID).sendToTarget();//同步完成
+                    CustomApplication.sendMessage(MessageID.SYNC_FINISH_ID);//同步完成
                     return;
                 case MessageID.NETWORKSTATUS_ID:
                     testNetworkStatus();
@@ -205,7 +204,7 @@ final class SyncHandler extends Handler {
                         mReportProgress = (boolean)msg.obj;
                     return;
                 case MessageID.MARK_DOWNLOAD_RECORD_ID:
-                    if (mReportProgress)mMainActivityHandler.obtainMessage(SYNC_DIS_INFO_ID,"正在更新信息....").sendToTarget();
+                    if (mReportProgress)CustomApplication.sendMessage(SYNC_DIS_INFO_ID,"正在更新信息....");
                     clear_download_record();
                     return;
                 case MessageID.SYNC_THREAD_QUIT_ID://由于处理程序内部会发送消息，消息队列退出需在处理程序内部处理
@@ -216,7 +215,7 @@ final class SyncHandler extends Handler {
 
             }
 
-            if (mReportProgress)mMainActivityHandler.obtainMessage(SYNC_DIS_INFO_ID,sys_name + "信息....").sendToTarget();
+            if (mReportProgress)CustomApplication.sendMessage(SYNC_DIS_INFO_ID,sys_name + "信息....");
 
             object.put("appid",app_id);
             sz_param = HttpRequest.generate_request_parm(object,appSecret);
@@ -328,23 +327,23 @@ final class SyncHandler extends Handler {
             if (!code) {
                 stopSync();
                 if (mReportProgress) {
-                    mMainActivityHandler.obtainMessage(MessageID.SYNC_ERR_ID, sys_name).sendToTarget();
+                    CustomApplication.sendMessage(MessageID.SYNC_ERR_ID, sys_name);
                 }else{
-                    mMainActivityHandler.obtainMessage(MessageID.TRANSFERSTATUS_ID,false).sendToTarget();
+                    CustomApplication.sendMessage(MessageID.TRANSFERSTATUS_ID,false);
                     Logger.e("%s", sys_name);
                 }
             }else{
                 if (!mReportProgress)
-                    mMainActivityHandler.obtainMessage(MessageID.TRANSFERSTATUS_ID,true).sendToTarget();
+                    CustomApplication.sendMessage(MessageID.TRANSFERSTATUS_ID,true);
             }
         }catch (JSONException e){
             e.printStackTrace();
             sys_name = "同步" + table_name + "错误:" +  e.getMessage();
             if (mReportProgress) {
                 removeCallbacksAndMessages(null);
-                mMainActivityHandler.obtainMessage(MessageID.SYNC_ERR_ID, sys_name).sendToTarget();
+                CustomApplication.sendMessage(MessageID.SYNC_ERR_ID, sys_name);
             }else {
-                mMainActivityHandler.obtainMessage(MessageID.TRANSFERSTATUS_ID,false).sendToTarget();
+                CustomApplication.sendMessage(MessageID.TRANSFERSTATUS_ID,false);
                 Logger.e("%s", sys_name);
             }
         }
@@ -371,10 +370,10 @@ final class SyncHandler extends Handler {
                 if (mCurrentNetworkStatusCode != err_code){
                     Logger.e("连接服务器错误：" + retJson.getString("info"));
                 }
-                mMainActivityHandler.obtainMessage(MessageID.NETWORKSTATUS_ID,false).sendToTarget();
+                CustomApplication.sendMessage(MessageID.NETWORKSTATUS_ID,false);
                 break;
             case 1:
-                mMainActivityHandler.obtainMessage(MessageID.NETWORKSTATUS_ID,true).sendToTarget();
+                CustomApplication.sendMessage(MessageID.NETWORKSTATUS_ID,true);
                 if (mCurrentNetworkStatusCode != HttpURLConnection.HTTP_OK){//如果之前网络响应状态不为OK,则重连成功
                     mCurrentNetworkStatusCode = HttpURLConnection.HTTP_OK;
                     Logger.i("重新连接服务器成功！");
@@ -383,7 +382,7 @@ final class SyncHandler extends Handler {
                 final JSONObject  info_json = JSON.parseObject(retJson.getString("info"));
                 switch (info_json.getString("status")){
                     case "n":
-                        mMainActivityHandler.obtainMessage(MessageID.NETWORKSTATUS_ID,false).sendToTarget();
+                        CustomApplication.sendMessage(MessageID.NETWORKSTATUS_ID,false);
                         Logger.e("网络检测错误：" + info_json.getString("info"));
                         break;
                     case "y":
@@ -405,9 +404,8 @@ final class SyncHandler extends Handler {
         startUploadTransferOrder();
         startUploadRetailOrder();
 
-        final Handler handler = CustomApplication.self().getAppHandler();
-        handler.sendMessageAtFrontOfQueue(handler.obtainMessage(MessageID.START_SYNC_ORDER_INFO_ID));
-        handler.obtainMessage(MessageID.FINISH_SYNC_ORDER_INFO_ID).sendToTarget();
+        CustomApplication.sendMessageAtFrontOfQueue(MessageID.START_SYNC_ORDER_INFO_ID);
+        CustomApplication.sendMessage(MessageID.FINISH_SYNC_ORDER_INFO_ID);
     }
 
     private void uploadRetailOrderInfo(final String appid,final String url,final String appSecret) {
@@ -513,7 +511,7 @@ final class SyncHandler extends Handler {
         }
         if (!code){
             Logger.e("上传销售单据错误：%s",err);
-            mMainActivityHandler.obtainMessage(MessageID.TRANSFERSTATUS_ID,false).sendToTarget();
+            CustomApplication.sendMessage(MessageID.TRANSFERSTATUS_ID,false);
         }
     }
 
@@ -599,7 +597,7 @@ final class SyncHandler extends Handler {
         }
         if (err.length() != 0){
             Logger.e("上传交班单据错误%s,ti_code:%s",err);
-            mMainActivityHandler.obtainMessage(MessageID.TRANSFERSTATUS_ID,false).sendToTarget();
+            CustomApplication.sendMessage(MessageID.TRANSFERSTATUS_ID,false);
         }
     }
 
@@ -616,7 +614,7 @@ final class SyncHandler extends Handler {
         }
         if (err.length() != 0){
             Logger.e("上传退货单据错误：%s",err);
-            mMainActivityHandler.obtainMessage(MessageID.TRANSFERSTATUS_ID,false).sendToTarget();
+            CustomApplication.sendMessage(MessageID.TRANSFERSTATUS_ID,false);
         }
     }
 
@@ -630,7 +628,7 @@ final class SyncHandler extends Handler {
             img_url_info = object.getString("pay_img");
             if (!img_url_info.equals("")){
                 img_file_name = img_url_info.substring(img_url_info.lastIndexOf("/") + 1);
-                final File file = new File(CustomApplication.IMG_PATH + img_file_name);
+                final File file = new File(CustomApplication.getGoodsImgSavePath() + img_file_name);
                 if (!file.exists()){
                     JSONObject load_img = mHttp.getFile(file,img_url_info);
                     if (load_img.getIntValue("flag") == 0){
@@ -675,7 +673,7 @@ final class SyncHandler extends Handler {
             img_url_info = object.getString("img_url");
             if (!img_url_info.equals("")){
                 img_file_name = img_url_info.substring(img_url_info.lastIndexOf("/") + 1);
-                File file = new File(CustomApplication.IMG_PATH + img_file_name);
+                File file = new File(CustomApplication.getGoodsImgSavePath() + img_file_name);
                 if (!file.exists()){
                     JSONObject load_img = mHttp.getFile(file,img_url_info);
                     if (load_img.getIntValue("flag") == 0){

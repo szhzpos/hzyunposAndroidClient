@@ -10,6 +10,8 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 import android.os.Environment;
+import android.os.Looper;
+import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,7 +50,7 @@ import static android.database.Cursor.FIELD_TYPE_STRING;
 
 public final class SQLiteHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 6;
-    private static SQLiteDatabase mDb;
+    private static volatile SQLiteDatabase mDb;
     private final Context mContext;
     private SQLiteHelper(Context context,final String databaseName){
         super(context, databaseName, null, DATABASE_VERSION);
@@ -67,11 +69,13 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                         final SQLiteHelper sqLiteHelper = new SQLiteHelper(context,databaseName);
                         mDb = sqLiteHelper.getWritableDatabase();
                     }catch (SQLiteCantOpenDatabaseException e){
-                        CustomApplication.self().getAppHandler().post(()->
-                            MyDialog.displayErrorMessage(context, "打开数据库错误：" + e.getLocalizedMessage(), (MyDialog myDialog)->{
-                            myDialog.dismiss();
-                            CustomApplication.self().exit();
-                        }));
+                        CustomApplication.execute(()-> {
+                            Looper.prepare();
+                            MyDialog.ToastMessage("打开数据库错误：" + e.getLocalizedMessage(),context,null);
+                            Looper.loop();
+                        });
+                        SystemClock.sleep(3000);
+                        CustomApplication.self().exit();
                     }
                 }
             }
@@ -393,6 +397,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             synchronized (SQLiteHelper.class){
                 mDb.close();
                 mDb = null;
+                Logger.d("mDb closed...");
             }
         }
     }
