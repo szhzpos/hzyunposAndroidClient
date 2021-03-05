@@ -8,7 +8,7 @@
     android:padding="@dimen/margin_5">
 
     <TextView
-        android:id="@+id/cgd_code_tv"
+        android:id="@+id/order_code_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="CG2021022200001"
@@ -25,8 +25,8 @@
         android:text="@string/supplier_colon_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16"
-        app:layout_constraintStart_toStartOf="@id/cgd_code_tv"
-        app:layout_constraintTop_toBottomOf="@id/cgd_code_tv" />
+        app:layout_constraintStart_toStartOf="@id/order_code_tv"
+        app:layout_constraintTop_toBottomOf="@id/order_code_tv" />
 
     <TextView
         android:id="@+id/gs_name_tv"

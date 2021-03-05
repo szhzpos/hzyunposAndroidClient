@@ -52,6 +52,21 @@ public class MobileWholesaleSellOrderActivity extends AbstractMobileBusinessOrde
         }
 
         @Override
+        protected JSONObject generateUploadCondition() {
+            return null;
+        }
+
+        @Override
+        protected JSONObject generateAuditCondition() {
+            return null;
+        }
+
+        @Override
+        protected String getOrderIDKey() {
+            return null;
+        }
+
+        @Override
         protected int getContentLayoutId() {
             return R.layout.activity_mobile_add_wholesale_sell_order;
         }

@@ -51,6 +51,21 @@ public class MobileWholesaleRefundOrderActivity extends AbstractMobileBusinessOr
         }
 
         @Override
+        protected JSONObject generateUploadCondition() {
+            return null;
+        }
+
+        @Override
+        protected JSONObject generateAuditCondition() {
+            return null;
+        }
+
+        @Override
+        protected String getOrderIDKey() {
+            return null;
+        }
+
+        @Override
         protected int getContentLayoutId() {
             return R.layout.activity_mobile_add_wholesale_refund_order;
         }

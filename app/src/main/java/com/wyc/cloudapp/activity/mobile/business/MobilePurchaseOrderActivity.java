@@ -57,41 +57,9 @@ public class MobilePurchaseOrderActivity extends AbstractMobileBusinessOrderActi
         }
 
         @Override
-        protected RecyclerView.AdapterDataObserver getDataObserver() {
-            return new RecyclerView.AdapterDataObserver() {
-                @Override
-                public void onChanged() {
-                    super.onChanged();
-                    final JSONArray array = getDetailsData();
-                    double num = 0.0,price = 0.0,sum_num= 0.0,amt = 0.0;
-
-                    int size = array.size();
-                    for (int i = 0;i < size;i ++){
-                        final JSONObject object = array.getJSONObject(i);
-                        num = Utils.getNotKeyAsNumberDefault(object,"xnum",0.0);
-                        price = Utils.getNotKeyAsNumberDefault(object,"last_jh_price",0.0);
-
-                        sum_num += num;
-                        amt += num * price;
-                    }
-                    mSumNumTv.setText(String.format(Locale.CHINA,"%.2f",sum_num));
-                    mSumAmtTv.setText(String.format(Locale.CHINA,"%.2f",amt));
-
-                    scrollToLast();
-                }
-            };
-        }
-
-        @Override
         protected void showOrder() {
             super.showOrder();
-
-            final JSONObject object = mOrderInfo;
-            setView(mSupplierTV, Utils.getNullStringAsEmpty(object, "gs_id"), Utils.getNullStringAsEmpty(object, "gs_name"));
-            setView(mSaleOperatorTv, Utils.getNullStringAsEmpty(object, "cg_pt_user_id"), Utils.getNullStringAsEmpty(object, "cg_user_cname"));
-            setView(mOrderCodeTv, "", Utils.getNullStringAsEmpty(object, "cgd_code"));
-            setView(mDateTv, "", Utils.getNullStringAsEmpty(object, "add_datetime"));
-            setView(mRemarkEt, "", Utils.getNullStringAsEmpty(object, "remark"));
+            setView(mOrderCodeTv, "", Utils.getNullStringAsEmpty(mOrderInfo, "cgd_code"));
         }
 
         @Override
@@ -102,6 +70,53 @@ public class MobilePurchaseOrderActivity extends AbstractMobileBusinessOrderActi
         @Override
         protected String generateOrderCodePrefix() {
             return "CG";
+        }
+
+        @Override
+        protected JSONObject generateUploadCondition() {
+            final JSONObject upload_obj = super.generateUploadCondition(),object = new JSONObject();
+
+            upload_obj.put("cgd_code",mOrderCodeTv.getText().toString());
+            upload_obj.put("cgd_id",Utils.getNullStringAsEmpty(mOrderInfo,"cgd_id"));
+            upload_obj.put("total",Double.parseDouble(mSumAmtTv.getText().toString()));
+            upload_obj.put("validity_time",getOrderValidityDate());
+            upload_obj.put("goods_list_json",getGoodsList());
+
+            object.put("api","/api/cgd/add");
+            object.put("upload_obj",upload_obj);
+            return object;
+        }
+
+        @Override
+        protected JSONObject generateAuditCondition() {
+            final JSONObject condition = new JSONObject();
+            condition.put("api","/api/cgd/sh");
+            return condition;
+        }
+
+        @Override
+        protected String getOrderIDKey() {
+            return "cgd_id";
+        }
+
+        private JSONArray getGoodsList(){
+            final JSONArray array = getOrderDetails(),data = new JSONArray();
+
+            for (int i = 0,size = array.size();i < size;i ++){
+                final JSONObject object = new JSONObject(),old_obj = array.getJSONObject(i);
+
+                object.put("xnum",old_obj.getDoubleValue("xnum"));
+                object.put("price",old_obj.getDoubleValue("price"));
+                object.put("xnote","");
+                object.put("barcode_id",old_obj.getString("barcode_id"));
+                object.put("goods_id",old_obj.getString("goods_id"));
+                object.put("conversion",old_obj.getString("conversion"));
+                object.put("unit_id",old_obj.getString("unit_id"));
+
+                data.add(object);
+            }
+
+            return data;
         }
     }
 }

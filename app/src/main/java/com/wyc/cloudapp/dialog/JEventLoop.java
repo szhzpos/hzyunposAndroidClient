@@ -86,7 +86,7 @@ public final class JEventLoop {
         mCode = code;
         mDone = true;
         synchronized (mLock){
-            if (mHandler != null){ mHandler.post(this::exit); }
+            if (mHandler != null){ mHandler.postAtFrontOfQueue(this::exit); }
         }
     }
 

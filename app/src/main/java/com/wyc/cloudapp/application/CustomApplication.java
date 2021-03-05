@@ -76,20 +76,6 @@ public final class CustomApplication extends Application {
         Logger.addLogAdapter(new DiskLogAdapter());//日志记录磁盘
         CrashHandler.getInstance().init(this);
         registerActivityLifecycleCallbacks(callbacks);
-
-        //initGlobal();
-    }
-
-    private void initGlobal(){
-        //如果已经获得权限则直接初始化全局数据.
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
-            final String stores_id = getStoreIdWithSharedPreferences();
-            if (!"".equals(stores_id)){
-                initDb(stores_id);
-                if (isNotLogin())initCashierInfoAndStoreInfo(this);
-                initSyncManagement(mUrl,mAppId,mAppSecret,stores_id,getPosNum(),getCashierCode());
-            }
-        }
     }
 
     @Override
@@ -354,6 +340,9 @@ public final class CustomApplication extends Application {
         mApplication.myhandler.sendMessageAtFrontOfQueue(mApplication.myhandler.obtainMessage(what));
     }
 
+    public static void postAtFrontOfQueue(Runnable r){
+        mApplication.myhandler.postAtFrontOfQueue(r);
+    }
 
     private static class Myhandler extends Handler {
         private final CustomApplication app;

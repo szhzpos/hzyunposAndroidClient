@@ -19,26 +19,26 @@ import java.util.Locale;
 /**
  * @ProjectName: CloudApp
  * @Package: com.wyc.cloudapp.adapter.business
- * @ClassName: MobilePurchaseOrderAdapter
- * @Description: 采购订货单适配器
+ * @ClassName: MobileWarehouseOrderAdapter
+ * @Description: java类作用描述
  * @Author: wyc
- * @CreateDate: 2021/2/22 16:11
+ * @CreateDate: 2021/3/5 18:10
  * @UpdateUser: 更新者
- * @UpdateDate: 2021/2/22 16:11
+ * @UpdateDate: 2021/3/5 18:10
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class MobilePurchaseOrderAdapter extends AbstractBusinessOrderDataAdapter<MobilePurchaseOrderAdapter.MyViewHolder> {
+public class MobileWarehouseOrderAdapter extends AbstractBusinessOrderDataAdapter<MobileWarehouseOrderAdapter.MyViewHolder> {
 
-    public MobilePurchaseOrderAdapter(final MainActivity activity){
+    public MobileWarehouseOrderAdapter(final MainActivity activity){
         super(activity);
     }
 
     static class MyViewHolder extends AbstractQueryDataAdapter.SuperViewHolder {
-        TextView cgd_code_tv,gs_name_tv,wh_name_tv,audit_tv,amt_tv,date_tv;
+        TextView order_code_tv,gs_name_tv,wh_name_tv,audit_tv,amt_tv,date_tv;
         MyViewHolder(View itemView) {
             super(itemView);
-            cgd_code_tv = itemView.findViewById(R.id.order_code_tv);
+            order_code_tv = itemView.findViewById(R.id.order_code_tv);
             gs_name_tv = itemView.findViewById(R.id.gs_name_tv);
             wh_name_tv = itemView.findViewById(R.id.wh_name_tv);
             audit_tv = itemView.findViewById(R.id.audit_tv);
@@ -59,9 +59,9 @@ public class MobilePurchaseOrderAdapter extends AbstractBusinessOrderDataAdapter
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         final JSONObject object = mDatas.getJSONObject(position);
 
-        holder.cgd_code_tv.setText(Html.fromHtml("<u>" + object.getString("cgd_code") + "</u>"));
-        holder.cgd_code_tv.setTag(object.getString("cgd_id"));
-        holder.cgd_code_tv.setOnClickListener(this);
+        holder.order_code_tv.setText(Html.fromHtml("<u>" + object.getString("rkd_code") + "</u>"));
+        holder.order_code_tv.setTag(object.getString("rkd_id"));
+        holder.order_code_tv.setOnClickListener(this);
 
         holder.gs_name_tv.setText(object.getString("gs_name"));
         holder.wh_name_tv.setText(mContext.getStoreName());

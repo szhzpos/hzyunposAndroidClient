@@ -52,7 +52,10 @@ public abstract class AbstractDataAdapter <T extends RecyclerView.ViewHolder> ex
         return getItemCount() == 0;
     }
     public void clear(){
-        if (mDatas != null)mDatas.clear();
+        if (mDatas != null){
+            mDatas.clear();
+            notifyDataSetChanged();
+        }
     }
     @Override
     public int getItemCount() {

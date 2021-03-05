@@ -36,6 +36,8 @@ import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
 
 import java.lang.ref.WeakReference;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Locale;
 
 
@@ -44,11 +46,13 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
     private AbstractBusinessOrderDetailsDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> mAdapter;
     private JSONArray mSupplierList;
     private RecyclerView mDetailsView;
+    private CustomProgressDialog mProgressDialog;
 
     protected JSONObject mOrderInfo;
     protected TextView mSupplierTV,mSaleOperatorTv,mWarehouseTv,mOrderCodeTv,mDateTv,mRemarkEt,mSumNumTv,mSumAmtTv;
 
     private WeakReference<ScanCallback> mScanCallback;
+    private String mOrderID;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +73,12 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
     @Override
     public void onStart() {
         super.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mProgressDialog != null && mProgressDialog.isShowing())mProgressDialog.dismiss();
     }
 
     @Override
@@ -101,15 +111,14 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
 
     @Override
     public void onBackPressed() {
-        if (mAdapter.getItemCount() != 0){
-            if (MyDialog.showMessageToModalDialog(this,"已选择商品，是否退出？") == 1){
-                super.onBackPressed();
-            }
+        if (!isAudit() && mAdapter.getItemCount() != 0){
+            CustomApplication.runInMainThread(()->{
+                if (MyDialog.showMessageToModalDialog(this,"已选择商品，是否退出？") == 1){
+                    super.onBackPressed();
+                }
+            });
         }else
             super.onBackPressed();
-
-        int i = 0;
-        i++;
     }
 
     private void addGoodsDetails(final JSONObject object, boolean modify){
@@ -118,11 +127,11 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
             if (index >= 0 && !modify){
                 mDetailsView.scrollToPosition(index);
                 MyDialog.displayAskMessage(this, String.format(Locale.CHINA,"<%s>已存在，是否继续？",SelectGoodsActivity.getGoodsName(object)), myDialog -> {
-                    mAdapter.addDetails(mAdapter.updateGoodsDetails(object),index,false);
+                    mAdapter.addDetails(mAdapter.updateGoodsDetail(object),index,false);
                     myDialog.dismiss();
                 }, MyDialog::dismiss);
             }else
-                mAdapter.addDetails(mAdapter.updateGoodsDetails(object),index,modify);
+                mAdapter.addDetails(mAdapter.updateGoodsDetail(object),index,modify);
         }
     }
 
@@ -136,14 +145,23 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
     protected abstract JSONObject generateQueryCondition();
     protected abstract AbstractBusinessOrderDetailsDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> getAdapter();
     protected abstract String generateOrderCodePrefix();
+    protected abstract JSONObject generateAuditCondition();
+    protected abstract String getOrderIDKey();
 
-    protected RecyclerView.AdapterDataObserver getDataObserver(){
-        return new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                super.onChanged();
-            }
-        };
+
+    @CallSuper
+    protected JSONObject generateUploadCondition(){
+        final JSONObject upload_obj = new JSONObject();
+        upload_obj.put("pt_user_id",getPtUserId());
+        upload_obj.put("gs_id", Utils.getViewTagValue(mSupplierTV,""));
+        upload_obj.put("cg_pt_user_id",Utils.getViewTagValue(mSaleOperatorTv,""));
+        upload_obj.put("remark",mRemarkEt.getText().toString());
+
+        return upload_obj;
+    }
+
+    protected boolean isAudit(){
+        return Utils.getNotKeyAsNumberDefault(mOrderInfo,"sh_status",1) == 2;
     }
 
     protected void modifyGoodsDetails(@NonNull JSONObject object) {
@@ -153,23 +171,37 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
         }
     }
 
+    protected String getOrderValidityDate(){
+        final Calendar now = Calendar.getInstance();
+        now.add(Calendar.MONTH,1);;
+        return new SimpleDateFormat("yyyy-MM-dd",Locale.CHINA).format(now.getTime());
+    }
+
+    protected JSONArray getOrderDetails(){
+        return mAdapter == null ? null : mAdapter.getData();
+    }
+
+    protected void resetBusinessOrderInfo(){
+        finish();
+    }
+
     @CallSuper
     protected void showOrder(){
         setOrderStatus();
+
+        final JSONObject object = mOrderInfo;
+        setView(mSupplierTV, Utils.getNullStringAsEmpty(object, "gs_id"), Utils.getNullStringAsEmpty(object, "gs_name"));
+        setView(mSaleOperatorTv, Utils.getNullStringAsEmpty(object, "cg_pt_user_id"), Utils.getNullStringAsEmpty(object, "cg_user_cname"));
+        setView(mDateTv, "", Utils.getNullStringAsEmpty(object, "add_datetime"));
+        setView(mRemarkEt, "", Utils.getNullStringAsEmpty(object, "remark"));
+
+        Logger.d_json(mOrderInfo.toString());
 
         mAdapter.setDataForArray(Utils.getNullObjectAsEmptyJsonArray(mOrderInfo,"goods_list"));
     }
     protected void setView(@NonNull final TextView view, final String id, final String name){
         view.setTag(id);
         view.setText(name);
-    }
-
-    protected void scrollToLast(){
-        if (mDetailsView  != null && mAdapter != null)mDetailsView.scrollToPosition(mAdapter.getItemCount() - 1);
-    }
-
-    protected JSONArray getDetailsData(){
-        return mAdapter == null ? null : mAdapter.getData();
     }
 
     private boolean isShowOrder(){
@@ -184,33 +216,31 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
             parameterObj.put("prefix",generateOrderCodePrefix());
             final String sz_param = HttpRequest.generate_request_parm(parameterObj,getAppSecret());
             final JSONObject retJson = HttpUtils.sendPost(getUrl() + "/api/codes/mk_code",sz_param,true);
-            switch (retJson.getIntValue("flag")){
-                case 0:
-                    runOnUiThread(()-> MyDialog.ToastMessage("查询订单编号错误:" + retJson.getString("info"),this,null));
-                    break;
-                case 1:
-                    try {
-                        final JSONObject info = JSON.parseObject(retJson.getString("info"));
-                        if ("y".equals(info.getString("status"))){
-                            mOrderCodeTv.post(()-> mOrderCodeTv.setText(info.getString("code")));
-                        }else {
-                            runOnUiThread(()-> Toast.makeText(this,info.getString("info"),Toast.LENGTH_LONG));
-                        }
-                    }catch (JSONException e){
-                        e.printStackTrace();
-                        runOnUiThread(()-> Toast.makeText(this,e.getLocalizedMessage(),Toast.LENGTH_LONG));
+
+            if (HttpUtils.checkRequestSuccess(retJson)){
+                try {
+                    final JSONObject info = JSON.parseObject(retJson.getString("info"));
+                    if (HttpUtils.checkBusinessSuccess(info)){
+                        mOrderCodeTv.post(()-> mOrderCodeTv.setText(info.getString("code")));
+                    }else {
+                        runOnUiThread(()-> Toast.makeText(this,info.getString("info"),Toast.LENGTH_LONG));
                     }
-                    break;
+                }catch (JSONException e){
+                    e.printStackTrace();
+                    runOnUiThread(()-> Toast.makeText(this,e.getLocalizedMessage(),Toast.LENGTH_LONG));
+                }
+            }else {
+                runOnUiThread(()-> MyDialog.ToastMessage("查询订单编号错误:" + retJson.getString("info"),this,null));
             }
         });
     }
 
     private void setOrderStatus(){
-        final ItemPaddingLinearLayout business_function_btn_layout = findViewById(R.id.business_function_btn_layout);
-        if (Utils.getNotKeyAsNumberDefault(mOrderInfo,"sh_status",1) == 2){
-
+        mOrderID = Utils.getNullStringAsEmpty(mOrderInfo,getOrderIDKey());
+        if (isAudit()){
             final ItemPaddingLinearLayout business_main = findViewById(R.id.business_add_main_layout);
             business_main.setIgnore(true);
+            final ItemPaddingLinearLayout business_function_btn_layout = business_main.findViewById(R.id.business_function_btn_layout);
 
             for (int i = 0,size = business_function_btn_layout.getChildCount(); i < size ;i ++){
                 final View view = business_function_btn_layout.getChildAt(i);
@@ -289,6 +319,8 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
         new_order_btn.setOnClickListener(mFunctionClickListener);
         pick_goods_btn.setOnClickListener(mFunctionClickListener);
         business_scan_btn.setOnClickListener(mFunctionClickListener);
+        business_save_btn.setOnClickListener(mFunctionClickListener);
+        business_audit_btn.setOnClickListener(mFunctionClickListener);
 
     }
     private final View.OnClickListener mFunctionClickListener = new View.OnClickListener() {
@@ -296,10 +328,9 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
         public void onClick(View v) {
             final int id = v.getId();
             if (id == R.id.new_order_btn){
-                if (mAdapter.getItemCount() != 0){
+                if (!mAdapter.isEmpty()){
                     if (MyDialog.showMessageToModalDialog(v.getContext(),"已存在商品，是否重新开单?") == 1){
-                        generateOrderCode();
-                        mAdapter.clear();
+                        resetBusinessOrderInfo();
                     }
                 }else {
                     generateOrderCode();
@@ -311,9 +342,94 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                 if (dialog.exec() == 1){
                     addGoodsDetails(dialog.getContentObj(),false);
                 }
+            }else if (id == R.id.m_business_save_btn){
+                uploadOrderInfo();
+            }else if (id == R.id.m_business_audit_btn){
+                auditOrder();
             }
         }
     };
+
+    private void uploadOrderInfo(){
+        showProgress(getString(R.string.upload_order_hints));
+        CustomApplication.execute(()->{
+            final JSONObject condition = generateUploadCondition(),param_obj = condition.getJSONObject("upload_obj");
+            param_obj.put("appid",getAppId());
+            param_obj.put("stores_id",getStoreId());
+
+            Logger.d_json(param_obj.toString());
+
+            String sz_param = HttpRequest.generate_request_parm(param_obj,getAppSecret()),api = condition.getString("api"),err = "";
+            final JSONObject retJson = HttpUtils.sendPost(getUrl() + api,sz_param,true);
+            if (HttpUtils.checkRequestSuccess(retJson)){
+                final JSONObject info = JSON.parseObject(retJson.getString("info"));
+                Logger.d_json(retJson.toString());
+                if (HttpUtils.checkBusinessSuccess(info)){
+                    mOrderID = info.getString(getOrderIDKey());
+                    if (MyDialog.showMessageToModalDialog(this,String.format(Locale.CHINA,"%s,%s",getString(R.string.upload_order_success_hints),getString(R.string.ask_audit_hints))) == 1){
+                        auditOrder();
+                    }else
+                        CustomApplication.runInMainThread(()->{
+                            resetBusinessOrderInfo();
+                            Toast.makeText(this,getString(R.string.upload_order_success_hints),Toast.LENGTH_LONG).show();
+                        });
+                }else {
+                    err = info.getString("info");
+                }
+            }else {
+                err = retJson.getString("info");
+            }
+            if (Utils.isNotEmpty(err)){
+                MyDialog.ToastMessageInMainThread("上传业务单据错误:" + err);
+            }
+            mProgressDialog.dismiss();
+        });
+    }
+
+    private void showProgress(final String mess){
+        if (mProgressDialog == null)
+            mProgressDialog = CustomProgressDialog.showProgress(this,mess);
+        else
+            mProgressDialog.setMessage(mess).refreshMessage();
+    }
+
+    private void auditOrder(){
+        if (!Utils.isNotEmpty(mOrderID)){
+            MyDialog.ToastMessage("请先保存单据!",this,getWindow());
+            return;
+        }
+        showProgress(getString(R.string.auditing_hints));
+        CustomApplication.execute(()->{
+            final JSONObject condition = generateAuditCondition(),param_obj = new JSONObject();
+            param_obj.put("appid",getAppId());
+            param_obj.put("stores_id",getStoreId());
+            param_obj.put("pt_user_id",getPtUserId());
+            param_obj.put(getOrderIDKey(),mOrderID);
+
+            Logger.d_json(param_obj.toString());
+
+            String sz_param = HttpRequest.generate_request_parm(param_obj,getAppSecret()),api = condition.getString("api"),err = "";
+            final JSONObject retJson = HttpUtils.sendPost(getUrl() + api,sz_param,true);
+            if (HttpUtils.checkRequestSuccess(retJson)){
+                final JSONObject info = JSON.parseObject(retJson.getString("info"));
+                Logger.d_json(retJson.toString());
+                if (HttpUtils.checkBusinessSuccess(info)){
+                    CustomApplication.runInMainThread(()->{
+                        resetBusinessOrderInfo();
+                        Toast.makeText(this,getString(R.string.audited_sz),Toast.LENGTH_LONG).show();
+                    });
+                }else {
+                    err = info.getString("info");
+                }
+            }else {
+                err = retJson.getString("info");
+            }
+            if (Utils.isNotEmpty(err)){
+                MyDialog.ToastMessageInMainThread("审核单据错误:" + err);
+            }
+            mProgressDialog.dismiss();
+        });
+    }
 
     private void initSupplier(){//初始化供应商
         final TextView business_supplier_tv = findViewById(R.id.m_business_supplier_tv);
@@ -324,7 +440,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
             if (treeListDialog.exec() == 1){
                 final JSONObject object = treeListDialog.getSingleContent();
                 business_supplier_tv.setText(object.getString("item_name"));
-                business_supplier_tv.setTag(object.getIntValue("item_id"));
+                business_supplier_tv.setTag(object.getString("item_id"));
             }
         }));
 
@@ -348,7 +464,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
             if (treeListDialog.exec() == 1){
                 final JSONObject object = treeListDialog.getSingleContent();
                 business_operator_tv.setText(object.getString("item_name"));
-                business_operator_tv.setTag(object.getIntValue("item_id"));
+                business_operator_tv.setTag(object.getString("item_id"));
             }
         }));
 
@@ -403,7 +519,27 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
         final RecyclerView details_list = findViewById(R.id.details_list);
         if (null != details_list){
             mAdapter = getAdapter();
-            mAdapter.registerAdapterDataObserver(getDataObserver());
+            mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+                @Override
+                public void onChanged() {
+                    super.onChanged();
+                    final JSONArray array = mAdapter.getData();
+                    double num = 0.0,price = 0.0,sum_num= 0.0,amt = 0.0;
+
+                    int size = array.size();
+                    for (int i = 0;i < size;i ++){
+                        final JSONObject object = array.getJSONObject(i);
+                        num = Utils.getNotKeyAsNumberDefault(object,mAdapter.getNumKey(),0.0);
+                        price = Utils.getNotKeyAsNumberDefault(object,mAdapter.getPriceKey(),0.0);
+
+                        sum_num += num;
+                        amt += num * price;
+                    }
+                    mSumNumTv.setText(String.format(Locale.CHINA,"%.2f",sum_num));
+                    mSumAmtTv.setText(String.format(Locale.CHINA,"%.2f",amt));
+                    mDetailsView.scrollToPosition(size - 1);
+                }
+            });
             mAdapter.setItemListener(this::modifyGoodsDetails);
             details_list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
             details_list.setAdapter(mAdapter);
@@ -454,6 +590,8 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                         e.printStackTrace();
                         MyDialog.ToastMessageInMainThread(e.getMessage());
                     }
+                }else {
+                    MyDialog.ToastMessageInMainThread(retJson.getString("info"));
                 }
                 progressDialog.dismiss();
             });

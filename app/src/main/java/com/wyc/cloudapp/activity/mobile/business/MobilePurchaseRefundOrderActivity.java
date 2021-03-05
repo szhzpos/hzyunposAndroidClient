@@ -57,6 +57,21 @@ public class MobilePurchaseRefundOrderActivity extends AbstractMobileBusinessOrd
         }
 
         @Override
+        protected JSONObject generateUploadCondition() {
+            return null;
+        }
+
+        @Override
+        protected JSONObject generateAuditCondition() {
+            return null;
+        }
+
+        @Override
+        protected String getOrderIDKey() {
+            return null;
+        }
+
+        @Override
         protected int getContentLayoutId() {
             return R.layout.activity_mobile_add_purchase_refund_order;
         }

@@ -277,12 +277,9 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
         if (isModify){
             mBarcodeEt.setText(object.getString("barcode"));
             mBarcodeEt.setInputType(InputType.TYPE_NULL);
-            num = Utils.getNotKeyAsNumberDefault(object,"xnum",1.00);
-            price = object.getDoubleValue("last_jh_price");
-        }else {
-            num = 1.00;
-            price = object.getDoubleValue("buying_price");
         }
+        num = Utils.getNotKeyAsNumberDefault(object,"xnum",1.00);
+        price = object.getDoubleValue("price");
 
         mItemNoTv.setText(object.getString("only_coding"));
         mNameTv.setText(object.getString("goods_title"));
@@ -300,7 +297,7 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
         final String sql = "SELECT points_max_money,stock_unit_name,stock_unit_id,conversion,attr_code,\n" +
                 "       attr_name,attr_id,mnemonic_code,yh_price,tax_rate,category_id,barcode_status,\n" +
                 "       type,origin,brand,goods_status,shelf_life,metering_id,category_name,\n" +
-                "       specifi,unit_name,unit_id,ps_price,cost_price,trade_price,buying_price,\n" +
+                "       specifi,unit_name,unit_id,ps_price,cost_price,trade_price,buying_price price,\n" +
                 "       retail_price,only_coding,goods_title,barcode,barcode_id,goods_id\n" +
                 "  FROM barcode_info where barcode_id = '"+ barcode_id +"'";
 

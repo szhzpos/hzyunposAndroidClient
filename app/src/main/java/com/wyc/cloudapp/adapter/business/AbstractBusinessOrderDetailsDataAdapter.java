@@ -86,6 +86,14 @@ public abstract class AbstractBusinessOrderDetailsDataAdapter<T extends Abstract
         return new String[]{"xnum"};
     }
 
+    public String getNumKey(){
+        return "xnum";
+    }
+
+    public String getPriceKey(){
+        return "price";
+    }
+
     public void addDetails(@Nullable final JSONObject object,int index,boolean modify){ //index >=0 需要把第一个参数累加到index位置
         if (object != null){
             if (mDatas == null)mDatas = new JSONArray();
@@ -122,5 +130,5 @@ public abstract class AbstractBusinessOrderDetailsDataAdapter<T extends Abstract
         return -1;
     }
 
-    public abstract JSONObject updateGoodsDetails(final JSONObject object);
+    public abstract JSONObject updateGoodsDetail(final JSONObject object);
 }

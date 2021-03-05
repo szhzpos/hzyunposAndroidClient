@@ -102,7 +102,6 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
     private boolean handleException(Throwable ex) {
         if (ex == null)
             return false;
-
         try {
             // 使用Toast来显示异常信息
             new Thread() {
@@ -113,7 +112,6 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
                     Looper.loop();
                 }
             }.start();
-            Logger.d("%s-%s--uncaughtException:%s",TAG,"Crash!", ex);
             // 收集设备参数信息
             collectDeviceInfo(mContext);
             // 保存日志文件
@@ -184,6 +182,8 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
             printWriter.close();
             String result = writer.toString();
             sb.append(result);
+
+            Logger.d("%s-%s--uncaughtException:%s",TAG,"Crash!",result);
 
             return writeFile(sb.toString());
         } catch (Exception e) {

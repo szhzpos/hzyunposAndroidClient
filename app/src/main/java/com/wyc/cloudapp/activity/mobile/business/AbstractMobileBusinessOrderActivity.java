@@ -69,6 +69,7 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
     @Override
     protected void onResume() {
         super.onResume();
+        if (mCurrentDateBtn != null && !isFirstLoad)mCurrentDateBtn.callOnClick();
     }
 
     private void initTitle(){
@@ -99,7 +100,6 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
                     ,getColor(R.color.transparent), Utils.dpToPx(this,1),getColor(R.color.blue)));
         });
         query_time_btn_layout.setClickListener(mClickListener);
-
         today.post(today::callOnClick);
     }
     private final View.OnClickListener mClickListener = v -> {
@@ -296,7 +296,7 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
             mAdapter = getAdapter();
             order_list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
             order_list.setAdapter(mAdapter);
-            order_list.addItemDecoration(new LinearItemDecoration(this.getColor(R.color.white)));
+            order_list.addItemDecoration(new LinearItemDecoration(this.getColor(R.color.gray_subtransparent)));
         }
     }
 }
