@@ -114,6 +114,7 @@
     <string name="not_zero_hint_sz">%1$s不能为零!</string>
     <string name="not_empty_hint_sz">%1$s不能为空!</string>
     <string name="not_exist_hint_sz">不存在%1$s!</string>
+    <string name="select_anything_hint">选择%1$s</string>
     <string name="not_zl_hint_sz">不找零</string>
     <string name="select_pay_way_hint_sz">请选择付款方式</string>
     <string name="base_param_sz">基本参数</string>
@@ -451,6 +452,7 @@
     <string name="distribution_warehousing_sz">配送入库单</string>
     <string name="all_sz">所有</string>
     <string name="audited_sz">已审核</string>
+    <string name="saved_sz">已保存</string>
     <string name="unaudited_sz">未审核</string>
 
     <!--新增业务订单-->
@@ -462,7 +464,7 @@
     <string name="date_sz">日期：</string>
     <string name="remark_colon_sz">备注：</string>
     <string name="sum_sz">小计</string>
-    <string name="indent_sz">订单：</string>
+    <string name="indent_sz">来源订单：</string>
     <string name="total_colon_sz">合计：</string>
 
     <string name="business_order_sz">@string/order_sz</string>
@@ -542,7 +544,7 @@
     <string name="cashBox_residue_unit_sz">钱箱剩余(元)</string>
 
     <string name="hints_query_data_sz">正在查询数据…</string>
-    <string name="select_goods_label">商品选择</string>
+    <string name="select_goods_label">选择商品</string>
 
     <!--业务单据商品选择对话框-->
     <string name="scan_code_label">扫码录入</string>

@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.activity.mobile.business;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,7 +9,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -61,6 +61,7 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
     protected abstract AbstractDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> getAdapter();
     protected abstract JSONObject generateQueryCondition();
     public abstract Class<?> jumpAddTarget();
+
     @Override
     protected int getContentLayoutId() {
         return R.layout.activity_mobile_business_order;
@@ -90,6 +91,7 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
             MyDialog.ToastMessage("暂不支持" + title,this,null);
         }
     };
+
 
     private void initQueryTimeBtn(){
         final InterceptLinearLayout query_time_btn_layout = findViewById(R.id.query_time_btn_layout);
@@ -203,6 +205,8 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
                         e.printStackTrace();
                         runOnUiThread(()-> MyDialog.ToastMessage(e.getMessage(),this,null));
                     }
+                }else {
+                    runOnUiThread(()-> MyDialog.ToastMessage(retJson.getString("info"),this,null));
                 }
                 progressDialog.dismiss();
             });
@@ -218,8 +222,17 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
                     ,getColor(R.color.transparent), Utils.dpToPx(this,1),getColor(R.color.blue)));
         });
         audit_btn_layout.setClickListener(mAuditStatusClickListener);
+        if (isFindSourceOrderId()){//如果是查找来源单号则隐藏审核查询条件。
+            final Button audit_btn = audit_btn_layout.findViewById(R.id.m_audit_btn);
+            audit_btn.post(audit_btn::callOnClick);
+            audit_btn_layout.setVisibility(View.GONE);
+        }else
+            m_all_btn.post(m_all_btn::callOnClick);
+    }
 
-        m_all_btn.post(m_all_btn::callOnClick);
+    public boolean isFindSourceOrderId(){
+        final Intent result = getIntent();
+        return result != null && result.getBooleanExtra("FindSource",false);
     }
 
     private final View.OnClickListener mAuditStatusClickListener = v -> {

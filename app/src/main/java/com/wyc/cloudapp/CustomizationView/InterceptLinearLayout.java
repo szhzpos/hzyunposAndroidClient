@@ -31,6 +31,7 @@ public class InterceptLinearLayout extends LinearLayout {
         final int counts = getChildCount();
         for (int i = 0;i < counts; i ++){
             final View btn = getChildAt(i);
+            if (btn.getVisibility() == GONE)continue;
             btn.setOnClickListener(listener);
         }
     }

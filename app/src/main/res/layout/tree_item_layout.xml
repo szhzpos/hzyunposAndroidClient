@@ -17,12 +17,14 @@
         android:id="@+id/single_rb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:visibility="gone" />
 
     <CheckBox
         android:id="@+id/multiple_cb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:visibility="gone" />
 
     <TextView
@@ -40,7 +42,14 @@
         android:paddingStart="@dimen/margin_8"
         android:paddingEnd="0dp"
         android:textColor="@color/lightBlue"
-        android:textSize="@dimen/font_size_18" />
+        android:textSize="@dimen/font_size_18"
+        android:visibility="gone" />
+
+    <ViewStub
+        android:id="@+id/content_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
 
     <ImageView
         android:id="@+id/item_ico"

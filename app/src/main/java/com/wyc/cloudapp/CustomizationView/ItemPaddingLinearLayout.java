@@ -2,6 +2,9 @@ package com.wyc.cloudapp.CustomizationView;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.ShapeDrawable;
@@ -15,14 +18,65 @@ import androidx.annotation.Nullable;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.Utils;
 
 public class ItemPaddingLinearLayout extends LinearLayout {
     private boolean ignore = false;
+    private String mCentreLabel;
+    private Paint mPaint;
+    private Rect mTextBounds;
     public ItemPaddingLinearLayout(Context context) {
         this(context,null);
     }
     public ItemPaddingLinearLayout(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs,0);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    @Override
+    public void onDrawForeground(Canvas canvas) {
+        super.onDrawForeground(canvas);
+        if (isDrawLabel()){
+            drawLabel(canvas);
+        }
+    }
+
+    private boolean isDrawLabel(){
+        return Utils.isNotEmpty(mCentreLabel) && mTextBounds != null && mPaint != null;
+    }
+    private void drawLabel(final Canvas canvas){
+
+        int width = getMeasuredWidth(),height = getMeasuredHeight();
+
+        final int t_w = mTextBounds.width(),t_h = mTextBounds.height(),w = t_w << 1,h = t_h * 3,left = (width - w) / 2,top = (height - h) / 3;
+        final Rect rect = new Rect(left,top,w + left ,h + top);
+
+        canvas.save();
+        canvas.rotate(15,width >> 1,height >> 1);
+        canvas.drawText(mCentreLabel,rect.left + ((w - t_w) >> 1),rect.top + h - t_h,mPaint);
+        mPaint.setStyle(Paint.Style.STROKE);
+        canvas.drawRect(rect,mPaint);
+        canvas.restore();
+    }
+    public void setCentreLabel(final String label){
+        if (null == label)return;
+        if (mPaint == null || mTextBounds == null){
+            final Paint paint = new Paint();
+            paint.setAntiAlias(true);
+            paint.setColor(Color.RED);
+            final Rect bounds = new Rect();
+            paint.setTextSize(getResources().getDimension(R.dimen.font_size_18));
+            paint.getTextBounds(label,0,label.length(),bounds);
+            mPaint = paint;
+            mTextBounds = bounds;
+        }else {
+            mPaint.getTextBounds(label,0,label.length(),mTextBounds);
+        }
+        mCentreLabel = label;
     }
 
     public ItemPaddingLinearLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {

@@ -1,26 +1,15 @@
 package com.wyc.cloudapp.adapter.business;
 
 import android.text.Html;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
-import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
-import com.wyc.cloudapp.utils.Utils;
-
-import java.util.Locale;
 
 /**
  * @ProjectName: CloudApp
  * @Package: com.wyc.cloudapp.adapter.business
  * @ClassName: MobileWarehouseOrderAdapter
- * @Description: java类作用描述
+ * @Description: 库存单据适配器
  * @Author: wyc
  * @CreateDate: 2021/3/5 18:10
  * @UpdateUser: 更新者
@@ -28,45 +17,15 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class MobileWarehouseOrderAdapter extends AbstractBusinessOrderDataAdapter<MobileWarehouseOrderAdapter.MyViewHolder> {
+public class MobileWarehouseOrderAdapter extends MobileBaseOrderAdapter {
 
     public MobileWarehouseOrderAdapter(final MainActivity activity){
         super(activity);
     }
-
-    static class MyViewHolder extends AbstractQueryDataAdapter.SuperViewHolder {
-        TextView order_code_tv,gs_name_tv,wh_name_tv,audit_tv,amt_tv,date_tv;
-        MyViewHolder(View itemView) {
-            super(itemView);
-            order_code_tv = itemView.findViewById(R.id.order_code_tv);
-            gs_name_tv = itemView.findViewById(R.id.gs_name_tv);
-            wh_name_tv = itemView.findViewById(R.id.wh_name_tv);
-            audit_tv = itemView.findViewById(R.id.audit_tv);
-            amt_tv = itemView.findViewById(R.id.amt_tv);
-            date_tv = itemView.findViewById(R.id.date_tv);
-        }
-    }
-
-    @NonNull
     @Override
-    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = View.inflate(mContext, R.layout.mobile_purchase_order_content_layout, null);
-        itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT));
-        return new MyViewHolder(itemView);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        final JSONObject object = mDatas.getJSONObject(position);
-
+    void bindViewHolder(MyViewHolder holder, JSONObject object) {
         holder.order_code_tv.setText(Html.fromHtml("<u>" + object.getString("rkd_code") + "</u>"));
         holder.order_code_tv.setTag(object.getString("rkd_id"));
-        holder.order_code_tv.setOnClickListener(this);
-
-        holder.gs_name_tv.setText(object.getString("gs_name"));
-        holder.wh_name_tv.setText(mContext.getStoreName());
-        holder.audit_tv.setText("1".equals(object.getString("sh_status")) ? mContext.getString(R.string.unaudited_sz) : mContext.getString(R.string.audited_sz));
-        holder.amt_tv.setText(String.format(Locale.CHINA,"%.2f", Utils.getNotKeyAsNumberDefault(object,"total",0.0)));
-        holder.date_tv.setText(object.getString("add_datetime"));
     }
+
 }

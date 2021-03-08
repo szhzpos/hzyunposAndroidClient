@@ -81,6 +81,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
         if (mProgressDialog != null && mProgressDialog.isShowing())mProgressDialog.dismiss();
     }
 
+    @CallSuper
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -160,6 +161,19 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
         return upload_obj;
     }
 
+    @CallSuper
+    protected void initView(){
+        initSupplier();
+        initStores();
+        initSaleOperator();
+        initOrderCode();
+        initDate();
+        initRemark();
+        initOrderDetailsList();
+        initFooterView();
+        initFunctionBtn();
+    }
+
     protected boolean isAudit(){
         return Utils.getNotKeyAsNumberDefault(mOrderInfo,"sh_status",1) == 2;
     }
@@ -178,7 +192,14 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
     }
 
     protected JSONArray getOrderDetails(){
-        return mAdapter == null ? null : mAdapter.getData();
+        if (mAdapter == null)return new JSONArray();
+        JSONArray array = mAdapter.getData();
+        if (array == null)array = new JSONArray();
+        return array;
+    }
+
+    protected void setOrderDetails(final JSONArray array){
+        if (null != mAdapter)mAdapter.setDataForArray(array);
     }
 
     protected void resetBusinessOrderInfo(){
@@ -237,11 +258,10 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
 
     private void setOrderStatus(){
         mOrderID = Utils.getNullStringAsEmpty(mOrderInfo,getOrderIDKey());
+        final ItemPaddingLinearLayout business_main = findViewById(R.id.business_add_main_layout);
         if (isAudit()){
-            final ItemPaddingLinearLayout business_main = findViewById(R.id.business_add_main_layout);
             business_main.setIgnore(true);
             final ItemPaddingLinearLayout business_function_btn_layout = business_main.findViewById(R.id.business_function_btn_layout);
-
             for (int i = 0,size = business_function_btn_layout.getChildCount(); i < size ;i ++){
                 final View view = business_function_btn_layout.getChildAt(i);
                 if (view.getId() == R.id.audit_status_tv){
@@ -250,7 +270,10 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                     view.setVisibility(View.GONE);
                 }
             }
+        }else if (Utils.isNotEmpty(mOrderID)){
+            business_main.setCentreLabel(getString(R.string.saved_sz));
         }
+
     }
 
     private void getSupplier(){
@@ -299,19 +322,6 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
         return array;
     }
 
-    @CallSuper
-    protected void initView(){
-        initSupplier();
-        initStores();
-        initSaleOperator();
-        initOrderCode();
-        initDate();
-        initRemark();
-        initOrderDetailsList();
-        initFooterView();
-        initFunctionBtn();
-    }
-
     private void initFunctionBtn(){
         final Button new_order_btn = findViewById(R.id.new_order_btn),business_save_btn = findViewById(R.id.m_business_save_btn),business_audit_btn = findViewById(R.id.m_business_audit_btn),
                 business_scan_btn = findViewById(R.id.m_business_scan_btn),pick_goods_btn = findViewById(R.id.m_pick_goods_btn);
@@ -343,7 +353,10 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                     addGoodsDetails(dialog.getContentObj(),false);
                 }
             }else if (id == R.id.m_business_save_btn){
-                uploadOrderInfo();
+                if (mAdapter.isEmpty()){
+                    MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.goods_i_sz)),v.getContext(),getWindow());
+                }else
+                    uploadOrderInfo();
             }else if (id == R.id.m_business_audit_btn){
                 auditOrder();
             }

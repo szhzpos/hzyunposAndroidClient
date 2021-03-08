@@ -1,8 +1,8 @@
 package com.wyc.cloudapp.adapter.business;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
-import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
@@ -30,12 +30,21 @@ public abstract class AbstractBusinessOrderDataAdapter<T extends AbstractTableDa
     @Override
     public void onClick(View v) {
         if (mContext instanceof AbstractMobileBusinessOrderActivity){
+            final String order_id = (String) v.getTag();
+
             final AbstractMobileBusinessOrderActivity activity = (AbstractMobileBusinessOrderActivity)mContext;
-            final Intent intent = new Intent();
-            intent.setClass(mContext, activity.jumpAddTarget());
-            intent.putExtra("order_id",(String) v.getTag());
-            intent.putExtra("title", mContext.getString(R.string.order_detail_sz));
-            mContext.startActivity(intent);
+            if (activity.isFindSourceOrderId()){
+                final Intent intent = new Intent();
+                intent.putExtra("order_id",order_id);
+                activity.setResult(Activity.RESULT_OK,intent);
+                activity.finish();
+            }else {
+                final Intent intent = new Intent();
+                intent.setClass(activity, activity.jumpAddTarget());
+                intent.putExtra("order_id",order_id);
+                intent.putExtra("title", mContext.getString(R.string.order_detail_sz));
+                activity.startActivity(intent);
+            }
         }else
             throw new IllegalArgumentException("mContext must extends AbstractMobileBusinessOrderActivity!");
     }
