@@ -12,6 +12,7 @@ import android.database.sqlite.SQLiteStatement;
 import android.os.Environment;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -51,11 +52,10 @@ import static android.database.Cursor.FIELD_TYPE_STRING;
 public final class SQLiteHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 6;
     private static volatile SQLiteDatabase mDb;
-    private final Context mContext;
+
     private SQLiteHelper(Context context,final String databaseName){
         super(context, databaseName, null, DATABASE_VERSION);
         Logger.d("DATABASE_NAME:%s",databaseName);
-        mContext = context;
     }
 
     public static void initDb(Context context, final String storesId){
@@ -84,11 +84,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        try {
-            initTables(db);//初始化数据库
-        }catch (SQLiteException e){
-            MyDialog.displayErrorMessage(mContext, "初始化本地数据库错误：" + e.getMessage());
-        }
+        initTables(db);//初始化数据库
         onUpgrade(db,0,0);
     }
     @Override
@@ -816,7 +812,6 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         }
     }
 
-
     private static String generateSql(@NonNull final String table_name, @Nullable List<String> cls, int type){
         StringBuilder stringBuilderHead = new StringBuilder();
         StringBuilder stringBuilderfoot = new StringBuilder();
@@ -1164,6 +1159,12 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    attr_code        VARCHAR,\n" +
                 "    attr_name        VARCHAR,\n" +
                 "    attr_id          INTEGER,\n" +
+                "    brand_code        VARCHAR,\n" +
+                "    brand        VARCHAR,\n" +
+                "    brand_id          INTEGER,\n" +
+                "    gs_name        VARCHAR,\n" +
+                "    gs_code        VARCHAR,\n" +
+                "    gs_id          INTEGER,\n" +
                 "    image            VARCHAR,\n" +
                 "    mnemonic_code    VARCHAR,\n" +
                 "    yh_price         REAL    DEFAULT (0.0),\n" +
@@ -1176,7 +1177,6 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    goods_tare       INTEGER,\n" +
                 "    type             INTEGER,\n" +
                 "    origin           VARCHAR,\n" +
-                "    brand            VARCHAR,\n" +
                 "    goods_status     INTEGER,\n" +
                 "    shelf_life       VARCHAR,\n" +
                 "    metering_id      INTEGER,\n" +
@@ -1566,14 +1566,18 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    end_time   VARCHAR,\n" +
                 "    starttime  NUMERIC,\n" +
                 "    endtime    NUMERIC\n" +
-                ");",sql_promotion_info = "CREATE TABLE IF NOT EXISTS promotion_info (\n" +
+                ");",sql_promotion_info = "CREATE TABLE IF NOT EXISTS promotion_info (\n" +//零售特价促销
                 "    tlp_id        INTEGER PRIMARY KEY\n" +
                 "                            NOT NULL,\n" +
                 "    tlpb_id      INTEGER,\n" +
                 "    barcode_id      INTEGER,\n" +
+                "    type_detail_id      INTEGER,\n" +
                 "    status          INTEGER,\n" +
                 "    way             INTEGER,\n" +
                 "    limit_xnum      INTEGER,\n" +
+                "    promotion_object INTEGER,\n" +
+                "    promotion_grade_id INTEGER,\n" +
+                "    promotion_type INTEGER,\n" +
                 "    promotion_price NUMERIC,\n" +
                 "    stores_id       INTEGER,\n" +
                 "    start_date      VARCHAR,\n" +

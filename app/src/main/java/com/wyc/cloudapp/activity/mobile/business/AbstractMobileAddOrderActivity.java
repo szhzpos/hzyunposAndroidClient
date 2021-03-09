@@ -92,7 +92,6 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                     Logger.d("barcode_id:%s",barcode_id);
                     final JSONObject object = new JSONObject();
                     if (BusinessSelectGoodsDialog.selectGoodsWithBarcodeId(object,barcode_id)){
-                        Logger.d_json(object.toString());
                         addGoodsDetails(object,false);
                     }else {
                         MyDialog.ToastMessage(object.getString("info"),this,getWindow());
@@ -112,7 +111,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
 
     @Override
     public void onBackPressed() {
-        if (!isAudit() && mAdapter.getItemCount() != 0){
+        if (!isAudit() && !mAdapter.isEmpty()){
             CustomApplication.runInMainThread(()->{
                 if (MyDialog.showMessageToModalDialog(this,"已选择商品，是否退出？") == 1){
                     super.onBackPressed();
@@ -174,36 +173,38 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
         initFunctionBtn();
     }
 
-    protected boolean isAudit(){
+    protected final boolean isAudit(){
         return Utils.getNotKeyAsNumberDefault(mOrderInfo,"sh_status",1) == 2;
     }
 
-    protected void modifyGoodsDetails(@NonNull JSONObject object) {
-        final BusinessSelectGoodsDialog dialog = new BusinessSelectGoodsDialog(this,object);
-        if (dialog.exec() == 1){
-            addGoodsDetails(dialog.getContentObj(),true);
-        }
+    protected boolean hasSource(){
+        return false;
     }
 
-    protected String getOrderValidityDate(){
+    protected final String getOrderValidityDate(){
         final Calendar now = Calendar.getInstance();
         now.add(Calendar.MONTH,1);;
         return new SimpleDateFormat("yyyy-MM-dd",Locale.CHINA).format(now.getTime());
     }
 
-    protected JSONArray getOrderDetails(){
+    protected final JSONArray getOrderDetails(){
         if (mAdapter == null)return new JSONArray();
         JSONArray array = mAdapter.getData();
         if (array == null)array = new JSONArray();
         return array;
     }
 
-    protected void setOrderDetails(final JSONArray array){
+    //用来源订单明细设置当前明细
+    protected final void setOrderDetailsWithSourceOrder(final JSONArray array){
         if (null != mAdapter)mAdapter.setDataForArray(array);
     }
 
     protected void resetBusinessOrderInfo(){
         finish();
+    }
+
+    protected final boolean isDetailsEmpty(){
+        return null != mAdapter && mAdapter.isEmpty();
     }
 
     @CallSuper
@@ -383,19 +384,21 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                         auditOrder();
                     }else
                         CustomApplication.runInMainThread(()->{
+                            mProgressDialog.dismiss();
                             resetBusinessOrderInfo();
                             Toast.makeText(this,getString(R.string.upload_order_success_hints),Toast.LENGTH_LONG).show();
                         });
                 }else {
+                    mProgressDialog.dismiss();
                     err = info.getString("info");
                 }
             }else {
+                mProgressDialog.dismiss();
                 err = retJson.getString("info");
             }
             if (Utils.isNotEmpty(err)){
                 MyDialog.ToastMessageInMainThread("上传业务单据错误:" + err);
             }
-            mProgressDialog.dismiss();
         });
     }
 
@@ -559,6 +562,13 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
             details_list.addItemDecoration(new LinearItemDecoration(getColor(R.color.white),3));
 
             mDetailsView = details_list;
+        }
+    }
+
+    private void modifyGoodsDetails(@NonNull JSONObject object) {
+        final BusinessSelectGoodsDialog dialog = new BusinessSelectGoodsDialog(this,hasSource(),object);
+        if (dialog.exec() == 1){
+            addGoodsDetails(dialog.getContentObj(),true);
         }
     }
 

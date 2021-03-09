@@ -252,14 +252,15 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
 
     public boolean getSingleGoods(@NonNull JSONObject object, final String weigh_barcode_info, final String id){
         final String full_sql,sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,only_coding,ifnull(type,0) type," +
-                "retail_price,retail_price price,tc_rate,tc_mode,tax_rate,ps_price,cost_price,trade_price,buying_price,yh_mode,yh_price,metering_id,conversion from barcode_info where goods_status = 1 and barcode_status = 1 and ";
+                "brand_id,gs_id,a.category_id,b.path path,retail_price,retail_price price,tc_rate,tc_mode,tax_rate,ps_price,cost_price,trade_price,buying_price,yh_mode,yh_price," +
+                "metering_id,conversion from barcode_info a inner join shop_category b on a.category_id = b.category_id where goods_status = 1 and barcode_status = 1 and ";
 
         boolean isWeighBarcode = weigh_barcode_info != null && weigh_barcode_info.length() != 0;
         if (isWeighBarcode){
             full_sql = sql + "only_coding = '" + id + "'";
         }else
             full_sql = sql + "barcode_id = " + id + " UNION select gp_id ,-1 goods_id,ifnull(gp_title,'') goods_title,ifnull(unit_name,'') unit_name, -1 barcode_id,ifnull(gp_code,'') barcode,-1 only_coding,ifnull(type,0) type," +
-                    "gp_price retail_price,gp_price price,0 tc_rate,0 tc_mode,0 tax_rate,0 ps_price,0 cost_price,0 trade_price,gp_price buying_price,0 yh_mode,0 yh_price,1 metering_id,1 conversion from goods_group \n" +
+                    "'' brand_id,'' gs_id, '' category_id,'' path,gp_price retail_price,gp_price price,0 tc_rate,0 tc_mode,0 tax_rate,0 ps_price,0 cost_price,0 trade_price,gp_price buying_price,0 yh_mode,0 yh_price,1 metering_id,1 conversion from goods_group \n" +
                     "where status = 1 and gp_id = " + id;
         boolean code =  SQLiteHelper.execSql(object,full_sql);
         if (code){
@@ -272,7 +273,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
                     code = parseElectronicBarcode(object,weigh_barcode_info);
                 }else {
                     final JSONObject promotion_obj = new JSONObject();
-                    if (code = getPromotionGoods(promotion_obj,Utils.getNotKeyAsNumberDefault(object,"barcode_id",-1),mContext.getStoreId())){
+                    if (code = getPromotionGoods(promotion_obj,object,mContext.getStoreId())){
                         if (!promotion_obj.isEmpty()){
                             object.put("sale_type",SALE_TYPE.SPECIAL_PROMOTION);//1 零售特价促销
                             object.put("limit_xnum",promotion_obj.getDoubleValue("limit_xnum"));
@@ -301,15 +302,47 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         return mPriceAdjustMode;
     }
 
-    public static boolean getPromotionGoods(final JSONObject object,int barcode_id,final String stores_id){
-        final String sql = "select way,limit_xnum,promotion_price from promotion_info where barcode_id = '" + barcode_id +"' and status = 1 and " +
+    public static boolean getPromotionGoods(final JSONObject object,final JSONObject goods,final String stores_id){
+        final StringBuilder err = new StringBuilder();
+        boolean code = true;
+        final String brand_id  = goods.getString("brand_id"),gs_id = goods.getString("gs_id"),category_id = goods.getString("path"),vip_grade_id = "1",barcode_id = goods.getString("barcode_id");
+
+        final String sql = "select way,limit_xnum,promotion_price from promotion_info where ((type_detail_id = '"+ barcode_id +"' and promotion_type=1 ) or " +
+                "(instr('" + category_id +"' ,type_detail_id||'@') > 0 and promotion_type=2 )" +
+                "  or (type_detail_id = '"+ gs_id +"' and promotion_type=3 )  or (type_detail_id = '" + brand_id +"' and promotion_type= 4)) and " +
+                "(promotion_object = 0 or ((promotion_object = 2 and "+ vip_grade_id +" > 0) or promotion_grade_id = "+ vip_grade_id +")) and status = 1 and " +
                 "stores_id = " + stores_id + " and date(start_date, 'unixepoch', 'localtime') || ' ' ||begin_time  <= datetime('now', 'localtime') \n" +
                 " and datetime('now', 'localtime') <= date(end_date, 'unixepoch', 'localtime') || ' ' ||end_time and \n" +
                 "promotion_week like '%' ||case strftime('%w','now' ) when 0 then 7 else strftime('%w','now' ) end||'%' order by tlp_id desc";
 
+        JSONArray array;
+        if (code = (array = SQLiteHelper.getListToJson(sql,err)) != null){
+            double price = goods.getDoubleValue("retail_price"),promotion_price = 0.0;
+            JSONObject promotion_obj;
+            int way = 0;
+            for (int i = 0,size = array.size();i < size;i ++){
+                promotion_obj = array.getJSONObject(i);
+                way = promotion_obj.getIntValue("way");
+                promotion_price = promotion_obj.getDoubleValue("promotion_price");
+                switch (way){
+                    case 1://定价
+                        if (price > promotion_price)price = promotion_price;
+                        break;
+                    case 2://折扣
+                        promotion_price = price * promotion_price;
+                        if (price > promotion_price)
+                        object.put("price",promotion_obj.getDoubleValue("promotion_price") / 10 * object.getDoubleValue("retail_price"));
+                        break;
+                }
+            }
+            Logger.d_json(array.toString());
+        }
         Logger.d("PromotionGoodsSQL：%s",sql);
 
-        return SQLiteHelper.execSql(object,sql);
+        if (!code){
+            object.put("info",err);
+        }
+        return code;
     }
 
     private boolean parseElectronicBarcode(@NonNull final JSONObject object,@NonNull final String weigh_barcode_info){
@@ -341,7 +374,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
             Logger.d("price：%f,xnum:%f,sale_amt:%f",price,xnum,amt);
 
             final JSONObject promotion_obj = new JSONObject();
-            if (code = getPromotionGoods(promotion_obj,Utils.getNotKeyAsNumberDefault(object,"barcode_id",-1),mContext.getStoreId())){
+            if (code = getPromotionGoods(promotion_obj,object,mContext.getStoreId())){
                 double discount = 1.0,ori_price = object.getDoubleValue("retail_price");
                 if (!promotion_obj.isEmpty()){
                     object.put("sale_type",SALE_TYPE.SPECIAL_PROMOTION);//1 零售特价促销

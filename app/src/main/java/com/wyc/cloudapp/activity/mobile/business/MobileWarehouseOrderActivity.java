@@ -2,7 +2,6 @@ package com.wyc.cloudapp.activity.mobile.business;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -11,8 +10,6 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
-import com.wyc.cloudapp.adapter.business.MobilePurchaseOrderAdapter;
-import com.wyc.cloudapp.adapter.business.MobilePurchaseOrderDetailsAdapter;
 import com.wyc.cloudapp.adapter.business.MobileWarehouseOrderAdapter;
 import com.wyc.cloudapp.adapter.business.MobileWarehouseOrderDetailsAdapter;
 import com.wyc.cloudapp.adapter.report.AbstractDataAdapter;
@@ -20,15 +17,11 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.TreeListDialog;
-import com.wyc.cloudapp.dialog.goods.BusinessSelectGoodsDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 
 public final class MobileWarehouseOrderActivity extends AbstractMobileBusinessOrderActivity{
@@ -70,13 +63,25 @@ public final class MobileWarehouseOrderActivity extends AbstractMobileBusinessOr
         protected void onActivityResult(int requestCode, int resultCode, Intent data) {
             super.onActivityResult(requestCode, resultCode, data);
             if (resultCode == RESULT_OK ){
-                if (requestCode == SELECT_ORDER_CODE)queryPurchaseOrderInfo(data.getStringExtra("order_id"));
+                if (requestCode == SELECT_ORDER_CODE){
+                    queryPurchaseOrderInfo(data.getStringExtra("order_id"));
+                }
             }
+        }
+
+        @Override
+        protected boolean hasSource() {
+            return null != mPurchaseOrderCodeTv && !mPurchaseOrderCodeTv.getText().toString().isEmpty();
         }
 
         private void initSourceOrder(){
             mPurchaseOrderCodeTv = findViewById(R.id.m_source_order_tv);
             mPurchaseOrderCodeTv.setOnClickListener(v -> {
+                if (!isDetailsEmpty()){
+                    if (MyDialog.showMessageToModalDialog(this,"已存在商品明细，是否替换？") == 0){
+                        return;
+                    }
+                }
                 final Intent intent = new Intent();
                 intent.setClass(this,MobilePurchaseOrderActivity.class);
                 intent.putExtra("title",getString(R.string.select_anything_hint,getString(R.string.purchase_order_sz)));
@@ -119,7 +124,7 @@ public final class MobileWarehouseOrderActivity extends AbstractMobileBusinessOr
             setView(mSaleOperatorTv,Utils.getNullStringAsEmpty(object,"cg_pt_user_id"),Utils.getNullStringAsEmpty(object,"cg_user_cname"));
             setView(mSupplierTV,Utils.getNullStringAsEmpty(object,"gs_id"),Utils.getNullStringAsEmpty(object,"gs_name"));
 
-            setOrderDetails(Utils.getNullObjectAsEmptyJsonArray(object,"goods_list"));
+            setOrderDetailsWithSourceOrder(Utils.getNullObjectAsEmptyJsonArray(object,"goods_list"));
         }
         private void setWarehouse(final JSONObject order){
             final JSONObject object = new JSONObject();

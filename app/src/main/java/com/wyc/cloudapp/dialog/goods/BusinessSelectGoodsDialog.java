@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -53,16 +54,20 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
     private String mBarcode;
     private EditText mBarcodeEt,mNumEt,mPriceEt;
     private TextView mItemNoTv,mNameTv,mAmtTv,mUnitTv;
-    private boolean isModify = false;
+    private boolean isModify = false,hasSourceOrder = false;
     public BusinessSelectGoodsDialog(@NonNull MainActivity context) {
         super(context, context.getString(R.string.scan_code_label));
     }
 
     public BusinessSelectGoodsDialog(@NonNull MainActivity context,final JSONObject object) {
+        this(context,false,object);
+    }
+    public BusinessSelectGoodsDialog(@NonNull MainActivity context,boolean source,final JSONObject object) {
         this(context);
         if (isModify = object != null){
-            mContentObj = object;
+            mContentObj = Utils.JsondeepCopy(object);
         }
+        hasSourceOrder = source;
     }
 
     @Override
@@ -155,6 +160,16 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
                 double num = 0.00,price = 0.00;
                 try {
                     num = Double.parseDouble(s.toString());
+                    if (hasSourceOrder){
+                        double old_num = Utils.getNotKeyAsNumberDefault(mContentObj,"xnum",0.0);
+                        if (old_num < num){
+                            num = old_num;
+                            mNumEt.setText(String.valueOf(old_num));
+                            mNumEt.selectAll();
+                            mNumEt.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.shake_x));
+                            MyDialog.ToastMessage(mNumEt,"当前数量不能大于来源单据数量!",mContext,getWindow());
+                        }
+                    }
                     price = Double.parseDouble(mPriceEt.getText().toString());
                 }catch (NumberFormatException e){
                     e.printStackTrace();

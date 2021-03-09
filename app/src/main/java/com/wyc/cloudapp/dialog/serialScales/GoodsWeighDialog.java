@@ -130,13 +130,14 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
     }
     private void initGoodsInfo(){
         final JSONObject object = new JSONObject();
-        boolean code = SQLiteHelper.execSql(object,"select ifnull(goods_title,'') goods_title,ifnull(unit_name,'') unit_name,retail_price price,ifnull(img_url,'') img_url from barcode_info where goods_status = '1' and barcode_status = '1' and barcode_id = '" + mBarcodeId +"'" +
-                " UNION select ifnull(gp_title,'') goods_title,ifnull(unit_name,'') unit_name,gp_price price,ifnull(img_url,'') img_url from goods_group where status = '1' and gp_id = '" + mBarcodeId +"'");
+        boolean code = SQLiteHelper.execSql(object,"select barcode_id,brand_id,gs_id,a.category_id,b.path path,ifnull(goods_title,'') goods_title,ifnull(unit_name,'') unit_name,retail_price price,ifnull(img_url,'') img_url from " +
+                "barcode_info a inner join shop_category b on a.category_id = b.category_id where goods_status = '1' and barcode_status = '1' and barcode_id = '" + mBarcodeId +"'" +
+                " UNION select '' brand_id,'' gs_id, '' category_id,'' path, -1 barcode_id,ifnull(gp_title,'') goods_title,ifnull(unit_name,'') unit_name,gp_price price,ifnull(img_url,'') img_url from goods_group where status = '1' and gp_id = '" + mBarcodeId +"'");
         if (code){
             if (!object.isEmpty()){
                 final JSONObject promotion_obj = new JSONObject();
                 CharSequence goods_title = Utils.getNullStringAsEmpty(object,"goods_title");
-                if (GoodsInfoViewAdapter.getPromotionGoods(promotion_obj,mBarcodeId,mContext.getStoreId())){
+                if (GoodsInfoViewAdapter.getPromotionGoods(promotion_obj,object,mContext.getStoreId())){
                     if (!promotion_obj.isEmpty()){
                         int way = promotion_obj.getIntValue("way");
                         switch (way){

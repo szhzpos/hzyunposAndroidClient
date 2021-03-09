@@ -3,12 +3,14 @@ package com.wyc.cloudapp.activity.mobile.business;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -37,6 +39,9 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.TimeZone;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobileActivity {
     private long mStartTime = 0,mEndTime = 0;
@@ -197,6 +202,13 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
                         final JSONObject info = JSONObject.parseObject(retJson.getString("info"));
                         if (HttpUtils.checkBusinessSuccess(info)){
                             final JSONArray data = Utils.getNullObjectAsEmptyJsonArray(info,"data");
+                            if (isFindSourceOrderId()){
+                                for (int i = data.size()-1; i >=0; i--) {
+                                    if (data.getJSONObject(i).getIntValue("rk_status") == 3){
+                                        data.remove(i);
+                                    }
+                                }
+                            }
                             runOnUiThread(()-> mAdapter.setDataForArray(data));
                         }else {
                             throw new JSONException(info.getString("info"));
