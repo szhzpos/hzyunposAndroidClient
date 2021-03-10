@@ -1586,6 +1586,33 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    begin_time      VARCHAR,\n" +
                 "    end_time        VARCHAR,\n" +
                 "    xtype           INTEGER\n" +
+                ");\n",sql_step_promotion_info = "CREATE TABLE IF NOT EXISTS step_promotion_info (\n" +//零售阶梯促销
+                "    tlp_id        INTEGER PRIMARY KEY\n" +
+                "                            NOT NULL,\n" +
+                "    tlpb_id      INTEGER,\n" +
+                "    type_detail_id      INTEGER,\n" +
+                "    status          INTEGER,\n" +
+                "    way             INTEGER,\n" +
+                "    promotion_object INTEGER,\n" +
+                "    promotion_grade_id INTEGER,\n" +
+                "    promotion_type INTEGER,\n" +
+                "    xnum_one NUMERIC,\n" +
+                "    promotion_price_one NUMERIC,\n" +
+                "    xnum_two NUMERIC,\n" +
+                "    promotion_price_two NUMERIC,\n" +
+                "    xnum_three NUMERIC,\n" +
+                "    promotion_price_three NUMERIC,\n" +
+                "    xnum_four NUMERIC,\n" +
+                "    promotion_price_four NUMERIC,\n" +
+                "    xnum_five NUMERIC,\n" +
+                "    promotion_price_five NUMERIC,\n" +
+                "    stores_id       INTEGER,\n" +
+                "    start_date      VARCHAR,\n" +
+                "    end_date        VARCHAR,\n" +
+                "    promotion_week  VARCHAR,\n" +
+                "    begin_time      VARCHAR,\n" +
+                "    end_time        VARCHAR,\n" +
+                "    xtype           INTEGER\n" +
                 ");\n";
 
         list.add(sql_shop_stores);
@@ -1618,6 +1645,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         list.add(sql_once_cards);
         list.add(sql_fullreduce_info);
         list.add(sql_promotion_info);
+        list.add(sql_step_promotion_info);
 
         try {
             db.beginTransaction();

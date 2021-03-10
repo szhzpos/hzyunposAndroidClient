@@ -40,6 +40,7 @@ public final  class MessageID {
     public static final int SYNC_PROMOTION_ID = 41;
     public static final int SYNC_SALES_INFO_ID = 42;
     public static final int SYNC_SALE_OPERATOR_INFO_ID = 44/*经办人*/;
+    public static final int SYNC_STEP_PROMOTION_ID = 45;
 
     public static final int PAY_REQUEST_CODE = 0x000000aa;
 }

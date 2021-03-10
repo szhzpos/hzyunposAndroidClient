@@ -17,6 +17,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.SaleActivity;
+import com.wyc.cloudapp.activity.mobile.business.SelectGoodsActivity;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -135,21 +136,13 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
                 " UNION select '' brand_id,'' gs_id, '' category_id,'' path, -1 barcode_id,ifnull(gp_title,'') goods_title,ifnull(unit_name,'') unit_name,gp_price price,ifnull(img_url,'') img_url from goods_group where status = '1' and gp_id = '" + mBarcodeId +"'");
         if (code){
             if (!object.isEmpty()){
-                final JSONObject promotion_obj = new JSONObject();
+
                 CharSequence goods_title = Utils.getNullStringAsEmpty(object,"goods_title");
-                if (GoodsInfoViewAdapter.getPromotionGoods(promotion_obj,object,mContext.getStoreId())){
-                    if (!promotion_obj.isEmpty()){
-                        int way = promotion_obj.getIntValue("way");
-                        switch (way){
-                            case 1://定价
-                                object.put("price",promotion_obj.getDoubleValue("promotion_price"));
-                                break;
-                            case 2://折扣
-                                object.put("price",promotion_obj.getDoubleValue("promotion_price") / 10 * object.getDoubleValue("price"));
-                                break;
-                        }
+                if (GoodsInfoViewAdapter.getPromotionInfo(object,mContext.getStoreId())){
+
+                    if (GoodsInfoViewAdapter.isPromotion(object))
                         goods_title = Html.fromHtml(goods_title + "<font color='red'><size value='14'>(促销)</size></font> ",null,new FontSizeTagHandler(mContext));
-                    }
+
                     final TextView name = findViewById(R.id.w_g_name),unit = findViewById(R.id.unit_name);
                     name.setText(goods_title);
                     mPriceTv.setText(Utils.getNullOrEmptyStringAsDefault(object,"price","0.0"));
@@ -166,7 +159,7 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
                     }
                     mWvalueEt.setText(String.format(Locale.CHINA,"%.2f",1.0));
                 }else {
-                    MyDialog.ToastMessage("查询促销信息错误：" +promotion_obj.getString("info"),mContext,getWindow());
+                    MyDialog.ToastMessage("查询促销信息错误：" +object.getString("info"),mContext,getWindow());
                 }
             }
         }else{

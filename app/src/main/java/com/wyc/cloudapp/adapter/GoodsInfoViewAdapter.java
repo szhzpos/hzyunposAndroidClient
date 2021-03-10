@@ -272,26 +272,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
                 if (isWeighBarcode){
                     code = parseElectronicBarcode(object,weigh_barcode_info);
                 }else {
-                    final JSONObject promotion_obj = new JSONObject();
-                    if (code = getPromotionGoods(promotion_obj,object,mContext.getStoreId())){
-                        if (!promotion_obj.isEmpty()){
-                            object.put("sale_type",SALE_TYPE.SPECIAL_PROMOTION);//1 零售特价促销
-                            object.put("limit_xnum",promotion_obj.getDoubleValue("limit_xnum"));
-
-                            int way = promotion_obj.getIntValue("way");
-                            switch (way){
-                                case 1://定价
-                                    object.put("price",promotion_obj.getDoubleValue("promotion_price"));
-                                    break;
-                                case 2://折扣
-                                    object.put("price",promotion_obj.getDoubleValue("promotion_price") / 10 * object.getDoubleValue("retail_price"));
-                                    break;
-                            }
-                        }
-                    }else {
-                        object.clear();
-                        object.put("info",promotion_obj.getString("info"));
-                    }
+                    code = getPromotionInfo(object,mContext.getStoreId());
                 }
             }
         }
@@ -302,47 +283,55 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         return mPriceAdjustMode;
     }
 
-    public static boolean getPromotionGoods(final JSONObject object,final JSONObject goods,final String stores_id){
+    public static boolean getPromotionInfo(final JSONObject goods, final String stores_id){
         final StringBuilder err = new StringBuilder();
-        boolean code = true;
+
         final String brand_id  = goods.getString("brand_id"),gs_id = goods.getString("gs_id"),category_id = goods.getString("path"),vip_grade_id = "1",barcode_id = goods.getString("barcode_id");
 
-        final String sql = "select way,limit_xnum,promotion_price from promotion_info where ((type_detail_id = '"+ barcode_id +"' and promotion_type=1 ) or " +
+        final String where_sql = "where ((type_detail_id = '"+ barcode_id +"' and promotion_type=1 ) or " +
                 "(instr('" + category_id +"' ,type_detail_id||'@') > 0 and promotion_type=2 )" +
                 "  or (type_detail_id = '"+ gs_id +"' and promotion_type=3 )  or (type_detail_id = '" + brand_id +"' and promotion_type= 4)) and " +
                 "(promotion_object = 0 or ((promotion_object = 2 and "+ vip_grade_id +" > 0) or promotion_grade_id = "+ vip_grade_id +")) and status = 1 and " +
                 "stores_id = " + stores_id + " and date(start_date, 'unixepoch', 'localtime') || ' ' ||begin_time  <= datetime('now', 'localtime') \n" +
                 " and datetime('now', 'localtime') <= date(end_date, 'unixepoch', 'localtime') || ' ' ||end_time and \n" +
-                "promotion_week like '%' ||case strftime('%w','now' ) when 0 then 7 else strftime('%w','now' ) end||'%' order by tlp_id desc";
+                "promotion_week like '%' ||case strftime('%w','now' ) when 0 then 7 else strftime('%w','now' ) end||'%'";
 
+        double price = goods.getDoubleValue("retail_price");
+
+        final String sql = "select tlp_id,1 tj_type,way,0.0 xnum_one,limit_xnum limit_xnum_one,case way when 1 then case when promotion_price < "+ price + " then promotion_price else " + price +" end " +
+                "when 2 then promotion_price/10.0 *"+ price +" end promotion_price_one,0.0 xnum_two,0.0 limit_xnum_two,0.0 promotion_price_two,0.0 xnum_three,0.0 limit_xnum_three,0.0 promotion_price_three," +
+                "0.0 xnum_four,0.0 limit_xnum_four,0.0 promotion_price_four," +
+                "0.0 xnum_five,0.0 limit_xnum_five,0.0 promotion_price_five from promotion_info " + where_sql +
+
+                " union all " +
+
+                "select tlp_id,2 tj_type,way,xnum_one,0.0 limit_xnum_one,case way when 1 then case when promotion_price_one < "+ price + " then promotion_price_one else " + price +" end " +
+                "when 2 then promotion_price_one/10.0 *"+ price +" end promotion_price_one," +
+                "xnum_two,0.0 limit_xnum_two,case way when 1 then case when promotion_price_one < "+ price + " then promotion_price_one else " + price +" end " +
+                "when 2 then promotion_price_two/10.0 *"+ price +" end promotion_price_two," +
+                "xnum_three,0.0 limit_xnum_three,case way when 1 then case when promotion_price_three < "+ price + " then promotion_price_three else " + price +" end " +
+                "when 2 then promotion_price_three/10.0 *"+ price +" end promotion_price_three," +
+                "xnum_four,0.0 limit_xnum_four,case way when 1 then case when promotion_price_four < "+ price + " then promotion_price_four else " + price +" end " +
+                "when 2 then promotion_price_four/10.0 *"+ price +" end promotion_price_four," +
+                "xnum_five,0.0 limit_xnum_five, case way when 1 then case when promotion_price_five < "+ price + " then promotion_price_five else " + price +" end " +
+                "when 2 then promotion_price_five/10.0 *"+ price +" end promotion_price_five from step_promotion_info "+ where_sql;
+
+        boolean code;
         JSONArray array;
         if (code = (array = SQLiteHelper.getListToJson(sql,err)) != null){
-            double price = goods.getDoubleValue("retail_price"),promotion_price = 0.0;
-            JSONObject promotion_obj;
-            int way = 0;
-            for (int i = 0,size = array.size();i < size;i ++){
-                promotion_obj = array.getJSONObject(i);
-                way = promotion_obj.getIntValue("way");
-                promotion_price = promotion_obj.getDoubleValue("promotion_price");
-                switch (way){
-                    case 1://定价
-                        if (price > promotion_price)price = promotion_price;
-                        break;
-                    case 2://折扣
-                        promotion_price = price * promotion_price;
-                        if (price > promotion_price)
-                        object.put("price",promotion_obj.getDoubleValue("promotion_price") / 10 * object.getDoubleValue("retail_price"));
-                        break;
-                }
+            if (!array.isEmpty()){
+                goods.put("sale_type",SALE_TYPE.SPECIAL_PROMOTION);//1 零售特价促销 以及 零售阶梯特价促销
+                goods.put("promotion_rules",array);
             }
-            Logger.d_json(array.toString());
+        }else {
+            goods.put("info",err);
         }
         Logger.d("PromotionGoodsSQL：%s",sql);
-
-        if (!code){
-            object.put("info",err);
-        }
         return code;
+    }
+
+    public static boolean isPromotion(final JSONObject goods){
+        return goods.getIntValue("sale_type") == GoodsInfoViewAdapter.SALE_TYPE.SPECIAL_PROMOTION;
     }
 
     private boolean parseElectronicBarcode(@NonNull final JSONObject object,@NonNull final String weigh_barcode_info){
@@ -373,34 +362,12 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
             }
             Logger.d("price：%f,xnum:%f,sale_amt:%f",price,xnum,amt);
 
-            final JSONObject promotion_obj = new JSONObject();
-            if (code = getPromotionGoods(promotion_obj,object,mContext.getStoreId())){
-                double discount = 1.0,ori_price = object.getDoubleValue("retail_price");
-                if (!promotion_obj.isEmpty()){
-                    object.put("sale_type",SALE_TYPE.SPECIAL_PROMOTION);//1 零售特价促销
-                    object.put("limit_xnum",promotion_obj.getDoubleValue("limit_xnum"));
+            object.put("price",price);
+            object.put("xnum",String.format(Locale.CHINA,"%.4f",xnum));
+            object.put("sale_amt",amt);
+            object.put(W_G_MARK,weigh_barcode_info);
 
-                    int way = promotion_obj.getIntValue("way");
-                    switch (way){
-                        case 1://定价
-                            if (!Utils.equalDouble(ori_price,0.0))discount = promotion_obj.getDoubleValue("promotion_price") / ori_price;
-                            break;
-                        case 2://折扣
-                            discount = promotion_obj.getDoubleValue("promotion_price") / 10;
-                            break;
-                    }
-                }
-
-                Logger.d("discount:%f,xnum:%f,amt:%f",discount,xnum,amt);
-
-                object.put("price",price * discount);
-                object.put("xnum",String.format(Locale.CHINA,"%.4f",xnum));
-                object.put("sale_amt",amt);
-                object.put(W_G_MARK,weigh_barcode_info);
-
-            }else {
-                object.put("info",promotion_obj.getString("info"));
-            }
+            code = getPromotionInfo(object,mContext.getStoreId());
         }else {
             object.put("info",barcodeRuleObj.getAsString("info"));
         }

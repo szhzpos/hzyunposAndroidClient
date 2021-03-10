@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -25,7 +26,10 @@ import com.wyc.cloudapp.utils.FontSizeTagHandler;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<AbstractSaleGoodsAdapter.MyViewHolder> {
@@ -286,17 +290,72 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
     private JSONObject verifyPromotion(final @NonNull JSONObject object,double num){
         JSONObject tmp_obj;
         int sale_type = object.getIntValue("sale_type");
-        double limit_xnum = object.getDoubleValue("limit_xnum");
-        if (sale_type == GoodsInfoViewAdapter.SALE_TYPE.SPECIAL_PROMOTION && !Utils.equalDouble(limit_xnum,0.0)){
+        if (sale_type == GoodsInfoViewAdapter.SALE_TYPE.SPECIAL_PROMOTION){
+
             int barcode_id = object.getIntValue("barcode_id"),gp_id = object.getIntValue("gp_id");
-            double sum_xnum = 0.0,diff_xnum = 0.0,ori_price = 0.0;
+            double sum_xnum = 0.0,diff_xnum = 0.0,ori_price = 0.0,new_price = 0.0;
             for (int i = 0,length = mDatas.size();i < length;i++) {
                 tmp_obj = mDatas.getJSONObject(i);
                 if (sale_type == tmp_obj.getIntValue("sale_type") && barcode_id == tmp_obj.getIntValue("barcode_id") && gp_id == tmp_obj.getIntValue("gp_id")){
                     sum_xnum  += tmp_obj.getDoubleValue("xnum");
                 }
             }
-            if ((diff_xnum = sum_xnum + num - limit_xnum) > 0){
+
+            final JSONArray promotion_rules = Utils.getNullObjectAsEmptyJsonArray(object,"promotion_rules");
+            Logger.d_json(promotion_rules.toString());
+
+            JSONObject rule,satisfy_rule;
+            boolean isSatisfy  =false;
+            double upper_limit_num = 0.0,lower_limit_num = 0.0;
+            final JSONArray satisfy_rules = new JSONArray();
+            for (int i = 0,size = promotion_rules.size();i < size;i ++){
+                 rule = promotion_rules.getJSONObject(i);
+                isSatisfy  =false;
+                 if (Utils.notLessDouble(sum_xnum,lower_limit_num = rule.getDoubleValue("xnum_one")) && !Utils.equalDouble(lower_limit_num,0.0)){
+                     new_price = rule.getDoubleValue("promotion_price_one");
+                     upper_limit_num = rule.getDoubleValue("limit_xnum_one");
+                     isSatisfy = true;
+                 }else if (Utils.notLessDouble(sum_xnum,lower_limit_num = rule.getDoubleValue("xnum_two")) && !Utils.equalDouble(lower_limit_num,0.0)){
+                     new_price = rule.getDoubleValue("promotion_price_two");
+                     upper_limit_num = rule.getDoubleValue("limit_xnum_two");
+                     isSatisfy = true;
+                 }else if (Utils.notLessDouble(sum_xnum,lower_limit_num = rule.getDoubleValue("xnum_three")) && !Utils.equalDouble(lower_limit_num,0.0)){
+                     new_price = rule.getDoubleValue("promotion_price_three");
+                     upper_limit_num = rule.getDoubleValue("limit_xnum_three");
+                     isSatisfy = true;
+                 }else if (Utils.notLessDouble(sum_xnum,lower_limit_num = rule.getDoubleValue("xnum_four")) && !Utils.equalDouble(lower_limit_num,0.0)){
+                     new_price = rule.getDoubleValue("promotion_price_four");
+                     upper_limit_num = rule.getDoubleValue("limit_xnum_four");
+                     isSatisfy = true;
+                 }else if (Utils.notLessDouble(sum_xnum,lower_limit_num = rule.getDoubleValue("xnum_five")) && !Utils.equalDouble(lower_limit_num,0.0)){
+                     new_price = rule.getDoubleValue("promotion_price_five");
+                     upper_limit_num = rule.getDoubleValue("limit_xnum_five");
+                     isSatisfy = true;
+                 }
+                 if (isSatisfy){
+                     satisfy_rule = new JSONObject();
+                     satisfy_rule.put("tlp_id",rule.getIntValue("tlp_id"));
+                     satisfy_rule.put("lower_limit_num",lower_limit_num);
+                     satisfy_rule.put("upper_limit_num",upper_limit_num);
+                     satisfy_rule.put("price",new_price);
+                     satisfy_rules.add(satisfy_rule);
+                 }
+            }
+
+            Logger.d_json(satisfy_rules.toString());
+
+            List<Test> lists = satisfy_rules.toJavaList(Test.class);
+            Collections.sort(lists);
+
+            Logger.d(lists.toString());
+
+            Test test = lists.get(0);
+            double limit_xnum = test.getLower_limit_num();
+            new_price = test.getPrice();
+
+            if (Utils.equalDouble(limit_xnum,0.0)){
+                object.put("price",new_price);
+            }else if ((diff_xnum = sum_xnum + num - limit_xnum) > 0){
                 final JSONObject copy = Utils.JsondeepCopy(object);
                 ori_price = copy.getDoubleValue("retail_price");
                 copy.put("sale_type",GoodsInfoViewAdapter.SALE_TYPE.COMMON);
@@ -309,10 +368,59 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
                 Logger.d("diff_xnum:%f",diff_xnum);
 
                 return copy;
+            }else {
+                object.put("price",new_price);
             }
         }
 
         return null;
+    }
+    private static class Test implements Comparable<Test> {
+        int tlp_id;
+        double price,upper_limit_num,lower_limit_num;
+
+        public void setTlp_id(int tlp_id) {
+            this.tlp_id = tlp_id;
+        }
+
+        public int getTlp_id() {
+            return tlp_id;
+        }
+
+        public void setPrice(double price) {
+            this.price = price;
+        }
+
+        public double getPrice() {
+            return price;
+        }
+
+        public void setLower_limit_num(double lower_limit_num) {
+            this.lower_limit_num = lower_limit_num;
+        }
+
+        public double getLower_limit_num() {
+            return lower_limit_num;
+        }
+
+        public void setUpper_limit_num(double upper_limit_num) {
+            this.upper_limit_num = upper_limit_num;
+        }
+
+        public double getUpper_limit_num() {
+            return upper_limit_num;
+        }
+
+        @Override
+        public int compareTo(Test o) {
+            return Double.compare(price,o.price);
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return String.format(Locale.CHINA,"tlp_id:%d,price:%f,upper_limit_num:%f,lower_limit_num:%f",tlp_id,price,upper_limit_num,lower_limit_num);
+        }
     }
 
     public void deleteSaleGoods(int index,double num){

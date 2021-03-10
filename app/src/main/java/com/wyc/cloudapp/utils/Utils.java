@@ -527,7 +527,9 @@ public final class Utils {
     public static boolean equalDouble(double a,double b){
         return Math.abs(a - b) < 0.00001;
     }
-
+    public static boolean notLessDouble(double a,double b){
+        return equalDouble(a,b) || a > b;
+    }
 
     public static void showTimePickerDialog(final Context context, final TextView tv, Calendar calendar) {
         new TimePickerDialog( context,3,

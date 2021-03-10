@@ -48,7 +48,7 @@ final class SyncHandler extends Handler {
     private static List<Integer> getBasicsDataMessageIds(){
         return Arrays.asList(MessageID.SYNC_CASHIER_ID/*收银员*/,MessageID.SYNC_GOODS_CATEGORY_ID/*商品类别*/,MessageID.SYNC_PAY_METHOD_ID/*支付方式*/,MessageID.SYNC_STORES_ID/*仓库信息*/,
                 MessageID.SYNC_GP_INFO_ID/*组合商品*/,MessageID.SYNC_GOODS_ID/*商品信息*/,MessageID.SYNC_FULLREDUCE_ID/*满减信息*/,MessageID.SYNC_SALES_INFO_ID/*营业员信息*/,
-                MessageID.SYNC_SALE_OPERATOR_INFO_ID/*经办人信息*/,MessageID.SYNC_PROMOTION_ID/*促销信息*/);
+                MessageID.SYNC_SALE_OPERATOR_INFO_ID/*经办人信息*/,MessageID.SYNC_PROMOTION_ID/*促销信息*/,MessageID.SYNC_STEP_PROMOTION_ID/*阶梯促销*/);
     }
 
     void initParameter(final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){
@@ -178,6 +178,18 @@ final class SyncHandler extends Handler {
                     object.put("page",msg.obj);
                     object.put("pos_num",pos_num);
                     break;
+                case MessageID.SYNC_STEP_PROMOTION_ID:
+                    mFunc = this::up_step_promotion;
+                    table_name = "step_promotion_info";
+                    table_cls = new String[]{"tlpb_id","tlp_id","type_detail_id","status","way","promotion_object","promotion_grade_id","promotion_type",
+                            "xnum_one","promotion_price_one","xnum_two","promotion_price_two","xnum_three","promotion_price_three","xnum_four","promotion_price_four","xnum_five","promotion_price_five",
+                            "stores_id","start_date","end_date","promotion_week","begin_time","end_time","xtype"};
+                    sys_name = "正在同步零售阶梯促销";
+                    url = base_url + "/api/promotion/get_promotion_sellstep";
+                    object.put("stores_id",stores_id);
+                    object.put("page",msg.obj);
+                    object.put("pos_num",pos_num);
+                    break;
                 case MessageID.SYNC_SALE_OPERATOR_INFO_ID:
                     table_name = "sale_operator_info";
                     sys_name = "正在同步经办人";
@@ -267,6 +279,7 @@ final class SyncHandler extends Handler {
                                     }
                                         break;
                                     case MessageID.SYNC_PROMOTION_ID:
+                                    case MessageID.SYNC_STEP_PROMOTION_ID:
                                     case MessageID.SYNC_PAY_METHOD_ID:
                                     case MessageID.SYNC_GOODS_CATEGORY_ID:
                                     case MessageID.SYNC_SALES_INFO_ID:
@@ -847,6 +860,32 @@ final class SyncHandler extends Handler {
                 success = "y".equals(object.getString("status"));
             }
             if (!success)Logger.e("标记已获取促销信息错误:" + object.getString("info"));
+        }
+    }
+
+    private void up_step_promotion(final JSONArray datas) throws JSONException{
+        if (datas != null && !datas.isEmpty()){
+            JSONObject object;
+            final String url = mUrl + "/api/promotion/up_promotion_sellstep";
+
+            final JSONArray tlp_ids = new JSONArray();
+            for (int k = 0,length = datas.size();k < length;k++) {
+                object = datas.getJSONObject(k);
+                tlp_ids.add(object.getIntValue("tlp_id"));
+            }
+
+            object = new JSONObject();
+            object.put("appid",mAppId);
+            object.put("tlp_ids",tlp_ids);
+            object.put("pos_num",mPosNum);
+
+            object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,mAppSecret),true);
+            boolean success;
+            if (success = (object.getIntValue("flag") == 1)){
+                object = JSON.parseObject(object.getString("info"));
+                success = "y".equals(object.getString("status"));
+            }
+            if (!success)Logger.e("标记已获取阶梯促销信息错误:" + object.getString("info"));
         }
     }
 
