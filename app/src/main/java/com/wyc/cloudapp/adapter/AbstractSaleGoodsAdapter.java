@@ -159,7 +159,7 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
         addSaleGoods(goods,1,false);
     };
 
-    protected void addSaleGoods(final @NonNull JSONObject goods,double num,boolean isBarcodeWeighingGoods){
+    protected void addSaleGoods(@NonNull JSONObject goods,double num,boolean isBarcodeWeighingGoods){
         final JSONObject copy = verifyPromotion(goods,num);
         if (copy != null){
             double diff_xnum = copy.getDoubleValue("xnum");
@@ -182,14 +182,18 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
 
                 original_price = tmp_obj.getDoubleValue("original_price");
                 sum_xnum = tmp_obj.getDoubleValue("xnum") + num;
-                new_price = tmp_obj.getDoubleValue("price");
+
+                if (isPromotion){
+                    new_price = goods.getDoubleValue("price");
+                    tmp_obj.put("price",new_price);
+                }else {
+                    new_price = tmp_obj.getDoubleValue("price");
+                }
 
                 original_amt = original_price * sum_xnum;
                 current_sale_amt = sum_xnum * new_price;
 
-                current_discount_amt = Utils.formatDouble((original_price - new_price) * num,4);
-
-                discount_amt =  original_amt - current_sale_amt;
+                discount_amt = current_discount_amt = original_amt - current_sale_amt;
 
                 Logger.d("new_price:%f,original_price:%f,current_sale_amt:%f,original_amt:%f,current_discount_amt:%f,sum_xnum:%f",new_price,original_price,current_sale_amt,original_amt,current_discount_amt,sum_xnum);
 
@@ -198,8 +202,8 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
                 tmp_obj.put("sale_amt",Utils.formatDouble(current_sale_amt,4));
                 tmp_obj.put("original_amt",Utils.formatDouble(original_amt,4));
                 mCurrentItemIndex = i;
-
-                discount_type = tmp_obj.getIntValue("discount_type");
+                discount_type = getGoodsLastDiscountType(tmp_obj);
+                goods = tmp_obj;
                 break;
             }
         }
@@ -210,8 +214,7 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
 
             if (isPromotion){//促销商品
                 if (!Utils.equalDouble(original_price,0.0))discount = sale_price / original_price;
-                discount_type = AbstractSaleGoodsAdapter.DISCOUNT_TYPE.PROMOTION;
-                goods.put("discount_type", discount_type);
+                discount_type = DISCOUNT_TYPE.PROMOTION;
             }
             if (isBarcodeWeighingGoods){
                 original_amt = goods.getDoubleValue("sale_amt");
@@ -252,7 +255,6 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
                         break;
                 }
                 discount_type = AbstractSaleGoodsAdapter.DISCOUNT_TYPE.V_DISCOUNT;
-                goods.put("discount_type", discount_type);
             }else {
                 current_sale_amt = original_amt * discount;
             }
@@ -272,19 +274,44 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
         }
         //处理优惠记录
         if (!Utils.equalDouble(current_discount_amt,0.0) && discount_type != -1){
-            final JSONArray discount_details = new JSONArray();
             final JSONObject discount_json = new JSONObject();
             discount_json.put("gp_id",goods.getIntValue("gp_id"));
             discount_json.put("barcode_id",goods.getIntValue("barcode_id"));
+            discount_json.put("discount_type",discount_type);
             discount_json.put("sale_type",goods.getIntValue("sale_type"));
             discount_json.put("price",current_discount_amt);
-            discount_details.add(discount_json);
 
             //处理商品优惠明细
-            addDiscountRecords(discount_type,discount_details);
+            addDiscountRecord(goods,discount_json);
         }
 
         this.notifyDataSetChanged();
+    }
+
+    private int getGoodsLastDiscountType(final JSONObject object){
+        final JSONArray array = Utils.getNullObjectAsEmptyJsonArray(object,"discount_records");
+        if (array.isEmpty())return -1;
+        return Utils.getNotKeyAsNumberDefault(array.getJSONObject(array.size() -1),"discount_type",-1);
+    }
+
+    private void addDiscountRecord(final JSONObject goods,final JSONObject _record){
+        final JSONArray discount_records = Utils.getNullObjectAsEmptyJsonArray(goods,"discount_records");
+        int discount_type = Utils.getNotKeyAsNumberDefault(_record,"discount_type",-1);
+        JSONObject row;
+
+        boolean exist = false;
+        for (int i = 0,size = discount_records.size(); i < size;i --){
+            row = discount_records.getJSONObject(i);
+            if (Utils.getNotKeyAsNumberDefault(row,"discount_type",-1) == discount_type){
+                row.put("price",_record.getDoubleValue("price"));
+                exist = true;
+                break;
+            }
+        }
+        if (!exist){
+            discount_records.add(_record);
+        }
+        goods.put("discount_records",discount_records);
     }
 
     private JSONObject verifyPromotion(final @NonNull JSONObject object,double num){
@@ -293,13 +320,15 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
         if (sale_type == GoodsInfoViewAdapter.SALE_TYPE.SPECIAL_PROMOTION){
 
             int barcode_id = object.getIntValue("barcode_id"),gp_id = object.getIntValue("gp_id");
-            double sum_xnum = 0.0,diff_xnum = 0.0,ori_price = 0.0,new_price = 0.0;
+            double sum_xnum = 0.0,diff_xnum = 0.0,new_price = 0.0;
             for (int i = 0,length = mDatas.size();i < length;i++) {
                 tmp_obj = mDatas.getJSONObject(i);
                 if (sale_type == tmp_obj.getIntValue("sale_type") && barcode_id == tmp_obj.getIntValue("barcode_id") && gp_id == tmp_obj.getIntValue("gp_id")){
                     sum_xnum  += tmp_obj.getDoubleValue("xnum");
                 }
             }
+            sum_xnum += num;
+
 
             final JSONArray promotion_rules = Utils.getNullObjectAsEmptyJsonArray(object,"promotion_rules");
             Logger.d_json(promotion_rules.toString());
@@ -332,6 +361,7 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
                      upper_limit_num = rule.getDoubleValue("limit_xnum_five");
                      isSatisfy = true;
                  }
+
                  if (isSatisfy){
                      satisfy_rule = new JSONObject();
                      satisfy_rule.put("tlp_id",rule.getIntValue("tlp_id"));
@@ -343,33 +373,35 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
             }
 
             Logger.d_json(satisfy_rules.toString());
-
-            List<Test> lists = satisfy_rules.toJavaList(Test.class);
-            Collections.sort(lists);
-
-            Logger.d(lists.toString());
-
-            Test test = lists.get(0);
-            double limit_xnum = test.getLower_limit_num();
-            new_price = test.getPrice();
-
-            if (Utils.equalDouble(limit_xnum,0.0)){
-                object.put("price",new_price);
-            }else if ((diff_xnum = sum_xnum + num - limit_xnum) > 0){
-                final JSONObject copy = Utils.JsondeepCopy(object);
-                ori_price = copy.getDoubleValue("retail_price");
-                copy.put("sale_type",GoodsInfoViewAdapter.SALE_TYPE.COMMON);
-                copy.put("price",ori_price);
-                copy.put("xnum",diff_xnum);
-                copy.put("sale_amt",diff_xnum * ori_price);
-                if (AbstractSaleGoodsAdapter.DISCOUNT_TYPE.PROMOTION == copy.getIntValue("discount_type")){
-                    copy.remove("discount_type");
-                }
-                Logger.d("diff_xnum:%f",diff_xnum);
-
-                return copy;
+            if (satisfy_rules.isEmpty()){
+                object.put("sale_type",GoodsInfoViewAdapter.SALE_TYPE.COMMON);
             }else {
-                object.put("price",new_price);
+                List<Test> lists = satisfy_rules.toJavaList(Test.class);
+                Collections.sort(lists);
+                Logger.d(lists.toString());
+
+                Test test = lists.get(0);
+                double limit_xnum = test.getUpper_limit_num();
+                new_price = test.getPrice();
+
+                if (Utils.equalDouble(limit_xnum,0.0)){
+                    object.put("price",new_price);
+                }else if ((diff_xnum = sum_xnum  - limit_xnum) > 0){
+                    final JSONObject copy = Utils.JsondeepCopy(object);
+                    double ori_price = copy.getDoubleValue("retail_price");
+                    copy.put("sale_type",GoodsInfoViewAdapter.SALE_TYPE.COMMON);
+                    copy.put("price",ori_price);
+                    copy.put("xnum",diff_xnum);
+                    copy.put("sale_amt",diff_xnum * ori_price);
+                    if (AbstractSaleGoodsAdapter.DISCOUNT_TYPE.PROMOTION == copy.getIntValue("discount_type")){
+                        copy.remove("discount_type");
+                    }
+                    Logger.d("diff_xnum:%f",diff_xnum);
+
+                    return copy;
+                }else {
+                    object.put("price",new_price);
+                }
             }
         }
 
@@ -426,8 +458,6 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
     public void deleteSaleGoods(int index,double num){
         int size = mDatas.size();
         if (0 <= index && index < size){
-            final JSONObject jsonObject = mDatas.getJSONObject(index);
-            deleteDiscountRecordForGoods(jsonObject,num);
             if (num == 0){//等于0删除整条记录
                 if (verifyDeletePermissions()){
                     mDatas.remove(index);
@@ -442,6 +472,7 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
                 }else
                     return;
             }else{
+                final JSONObject jsonObject = mDatas.getJSONObject(index);
                 double current_num = jsonObject.getDoubleValue("xnum"),price = jsonObject.getDoubleValue("price");
                 if ((current_num = current_num - num) <= 0){
                     if (verifyDeletePermissions()){
@@ -455,6 +486,13 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
                     }else
                         return;
                 }else{
+                    _deleteDiscountRecordForGoods(jsonObject,num);
+
+                    if (GoodsInfoViewAdapter.isPromotion(jsonObject)){
+                        verifyPromotion(jsonObject,-1);
+                        price = jsonObject.getDoubleValue("price");
+                    }
+
                     Logger.d("price:%f",price);
                     jsonObject.put("xnum",current_num);
                     jsonObject.put("sale_amt",Utils.formatDouble(current_num * price,4));
@@ -495,11 +533,10 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
     protected void updateSaleGoodsInfo(double value,int type){//type 0 修改数量 1修改价格 2打折 3赠送
         final JSONObject json = getCurrentContent();
         double  discount_amt = 0.0,original_price = 0.0,original_amt = 0.0,new_price = 0.0,xnum = 0.0,current_discount_amt = 0.0,current_sale_amt = 0.0,new_discount = 1.0;
-        int discount_type = 0;
+        int discount_type = -1;
 
         original_price = Utils.getNotKeyAsNumberDefault(json,"original_price",1.0);
 
-        final JSONArray  discount_details = new JSONArray();;
         switch (type){
             case 0:
                 if (value <= 0){
@@ -518,14 +555,11 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
                     original_amt = Utils.formatDouble(xnum * original_price,4);
                     current_sale_amt = xnum * new_price;
 
-                    discount_amt = original_amt - current_sale_amt;
-                    current_discount_amt = discount_amt - json.getDoubleValue("discount_amt");
+                    current_discount_amt = discount_amt = original_amt - current_sale_amt;
 
                     json.put("discount_amt", Utils.formatDouble(discount_amt,2));
                     json.put("xnum",Utils.formatDouble(xnum,3));
                     json.put("original_amt",original_amt);
-
-                    discount_type = json.getIntValue("discount_type");
                 }
                 break;
             case 1:
@@ -541,15 +575,14 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
                 }
 
                 if(!d_discount){
-                    deleteDiscountRecordForGoods(json,0);
+                    _deleteDiscountRecordForGoods(json,0);
                 }
                 xnum = json.getDoubleValue("xnum");
                 original_amt = xnum * original_price;
 
                 current_sale_amt = xnum * new_price;
 
-                discount_amt = Utils.formatDouble(original_amt - current_sale_amt,2);
-                current_discount_amt = discount_amt - json.getDoubleValue("discount_amt");
+                current_discount_amt = discount_amt = Utils.formatDouble(original_amt - current_sale_amt,4);
 
                 json.put("discount", new_discount);
                 json.put("discount_amt", discount_amt);
@@ -560,9 +593,9 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
                 if (isNotParticipateDiscount(json))return;
 
                 if (Utils.equalDouble(value / 10,1.0)){
-                    deleteDiscountRecordForType(AbstractSaleGoodsAdapter.DISCOUNT_TYPE.M_DISCOUNT);
-                    deleteDiscountRecordForType(AbstractSaleGoodsAdapter.DISCOUNT_TYPE.A_DISCOUNT);
-                    deleteDiscountRecordForType(AbstractSaleGoodsAdapter.DISCOUNT_TYPE.PRESENT);
+                    _deleteDiscountRecordForType(AbstractSaleGoodsAdapter.DISCOUNT_TYPE.M_DISCOUNT);
+                    _deleteDiscountRecordForType(AbstractSaleGoodsAdapter.DISCOUNT_TYPE.A_DISCOUNT);
+                    _deleteDiscountRecordForType(AbstractSaleGoodsAdapter.DISCOUNT_TYPE.PRESENT);
                     return;
                 }
 
@@ -574,7 +607,7 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
                 discount_type = AbstractSaleGoodsAdapter.DISCOUNT_TYPE.M_DISCOUNT;
 
                 if (!d_discount){
-                    deleteDiscountRecordForGoods(json,0);
+                    _deleteDiscountRecordForGoods(json,0);
                 }
 
                 current_sale_amt = original_amt * new_discount;
@@ -582,15 +615,14 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
 
                 Logger.d("current_sale_amt :%f,xnum:%f,new_discount:%f",current_sale_amt,xnum,new_discount);
 
-                discount_amt = Utils.formatDouble(original_amt - current_sale_amt,4);
-                current_discount_amt = discount_amt - json.getDoubleValue("discount_amt");
+                current_discount_amt = discount_amt = Utils.formatDouble(original_amt - current_sale_amt,4);
 
                 json.put("discount", new_discount);
                 json.put("discount_amt", discount_amt);
                 json.put("price",new_price);
                 break;
         }
-        json.put("discount_type",discount_type);
+
         json.put("sale_amt",Utils.formatDouble(current_sale_amt,4));
 
         if (!Utils.equalDouble(current_discount_amt,0.0)){
@@ -598,11 +630,11 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
             discount_json.put("gp_id",json.getIntValue("gp_id"));
             discount_json.put("barcode_id",json.getIntValue("barcode_id"));
             discount_json.put("sale_type",json.getIntValue("sale_type"));
+            discount_json.put("discount_type",discount_type);
             discount_json.put("price",current_discount_amt);
-            discount_details.add(discount_json);
 
             //处理商品优惠明细
-            addDiscountRecords(discount_type,discount_details);
+            addDiscountRecord(json,discount_json);
         }
         notifyDataSetChanged();
     }
@@ -642,7 +674,7 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
         if (!object.isEmpty()){
             if (code = verifyPresentPermissions()){
                 if (Utils.getNotKeyAsNumberDefault(object,"discount_type",-1) == DISCOUNT_TYPE.PRESENT){
-                    deleteDiscountRecordForType(DISCOUNT_TYPE.PRESENT);
+                    _deleteDiscountRecordForType(DISCOUNT_TYPE.PRESENT);
                 }else
                     if (MyDialog.showMessageToModalDialog(mContext,String.format(Locale.CHINA,"是否赠送商品:%s?",Html.fromHtml(object.getString("goods_title")))) == 1){
                         updateSaleGoodsInfo(0,3);
@@ -657,10 +689,9 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
         double  discount_amt = 0.0,original_amt = 0.0,new_price = 0.0,xnum = 1.0,current_discount_amt = 0.0,current_sale_amt = 0.0,new_discount = 1.0;
         int discount_type = AbstractSaleGoodsAdapter.DISCOUNT_TYPE.A_DISCOUNT;
         if (Utils.equalDouble(value / 10,1.0)){//discount 1.0 还原价格并清除折扣记录
-            deleteDiscountRecordForType(discount_type);
+            _deleteDiscountRecordForType(discount_type);
         }else{
             JSONObject discount_json,json;
-            final JSONArray discount_details = new JSONArray();
             final boolean d_dis = d_discount;
             for(int i = 0,length = mDatas.size();i < length;i++){
                 json  = mDatas.getJSONObject(i);
@@ -675,7 +706,7 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
                 if (d_dis){
                     new_discount = Utils.getNotKeyAsNumberDefault(json,"discount",1.0) / 10 * value;
                 }else{
-                    deleteDiscountRecordForGoods(json,0);
+                    _deleteDiscountRecordForGoods(json,0);
                 }
                 current_sale_amt = original_amt * new_discount;
 
@@ -686,7 +717,6 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
                 json.put("discount",Utils.formatDouble(new_discount,4));
                 json.put("discount_amt", discount_amt);
                 json.put("price",new_price);
-                json.put("discount_type",discount_type);
                 json.put("sale_amt",Utils.formatDouble(current_sale_amt,4));
 
                 if (!Utils.equalDouble(current_discount_amt,0.0)){
@@ -694,13 +724,13 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
                     discount_json.put("gp_id",json.getIntValue("gp_id"));
                     discount_json.put("barcode_id",json.getIntValue("barcode_id"));
                     discount_json.put("sale_type",json.getIntValue("sale_type"));
+                    discount_json.put("discount_type",discount_type);
                     discount_json.put("price",current_discount_amt);
-                    discount_details.add(discount_json);
+
+                    //处理商品优惠明细
+                    addDiscountRecord(json,discount_json);
                 }
             }
-            //处理商品优惠明细
-            if (!discount_details.isEmpty())
-                addDiscountRecords(discount_type,discount_details);
         }
         notifyDataSetChanged();
 
@@ -731,17 +761,19 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
         return mDiscountRecords;
     }
     public void deleteMolDiscountRecord(){
-        deleteDiscountRecordForType(AbstractSaleGoodsAdapter.DISCOUNT_TYPE.AUTO_MOL);
-        deleteDiscountRecordForType(AbstractSaleGoodsAdapter.DISCOUNT_TYPE.M_MOL);
+        _deleteDiscountRecordForType(AbstractSaleGoodsAdapter.DISCOUNT_TYPE.AUTO_MOL);
+        _deleteDiscountRecordForType(AbstractSaleGoodsAdapter.DISCOUNT_TYPE.M_MOL);
     }
     public void deleteVipDiscountRecord(){
-        deleteDiscountRecordForType(AbstractSaleGoodsAdapter.DISCOUNT_TYPE.V_DISCOUNT);
+        _deleteDiscountRecordForType(DISCOUNT_TYPE.V_DISCOUNT);
+        _deleteDiscountRecordForType(DISCOUNT_TYPE.PROMOTION);
     }
     public void deleteAllDiscountRecord(){
-        deleteDiscountRecordForType(AbstractSaleGoodsAdapter.DISCOUNT_TYPE.A_DISCOUNT);
+        _deleteDiscountRecordForType(AbstractSaleGoodsAdapter.DISCOUNT_TYPE.A_DISCOUNT);
     }
     public String discountRecordsToString() {
         final StringBuilder stringBuilder = new StringBuilder();
+        generateDiscountRecords();
         if (!mDiscountRecords.isEmpty()) {
             for (int i = 0, size = mDiscountRecords.size(); i < size; i++) {
                 final JSONObject record = mDiscountRecords.getJSONObject(i);
@@ -751,6 +783,68 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
             }
         }
         return stringBuilder.toString();
+    }
+    private void generateDiscountRecords(){
+        boolean isDiscountTypeExist = false;
+        JSONArray discount_records;
+        JSONObject goods,ok_discount_record,goods_discount_record;
+        int goods_id,discount_type;
+
+        double new_discount_amt = 0.0;
+
+        mDiscountRecords.clear();
+
+        for (int i = 0,size = mDatas.size();i < size;i ++){
+            goods = mDatas.getJSONObject(i);
+            discount_records = Utils.getNullObjectAsEmptyJsonArray(goods,"discount_records");
+            for (int j = 0,len = discount_records.size() ;j  < len;j ++){
+                isDiscountTypeExist = false;
+                goods_discount_record = discount_records.getJSONObject(j);
+                goods_id = getGoodsId(goods_discount_record);
+                discount_type = goods_discount_record.getIntValue("discount_type");
+                new_discount_amt = goods_discount_record.getDoubleValue("price");
+
+                for (int k = 0,k_size = mDiscountRecords.size();k < k_size;k ++){
+                    ok_discount_record = mDiscountRecords.getJSONObject(k);
+
+                    if (ok_discount_record.getIntValue("discount_type") == discount_type){
+                        isDiscountTypeExist = true;
+                        final JSONArray details = Utils.getNullObjectAsEmptyJsonArray(ok_discount_record,"details");
+                        boolean details_exist = false;
+                        for (int p = 0,p_size = details.size();p < p_size ;p ++){
+                            final JSONObject detail = details.getJSONObject(p);
+                            if (goods_id== getGoodsId(detail)){
+                                detail.put("price",detail.getDoubleValue("price") + new_discount_amt);
+                                details_exist  = true;
+                                break;
+                            }
+                        }
+                        if (!details_exist){
+                            details.add(goods_discount_record);
+                        }
+
+                        double discount_money = ok_discount_record.getDoubleValue("discount_money");
+                        ok_discount_record.put("discount_money",discount_money + new_discount_amt);
+                        ok_discount_record.put("details",details.toString());
+                        break;
+                    }
+                }
+                if (!isDiscountTypeExist){
+                    final JSONObject record = new JSONObject();
+                    final JSONArray details = new JSONArray();
+
+                    details.add(goods_discount_record);
+
+                    record.put("discount_type",discount_type);
+                    record.put("type",mOrderType);
+                    record.put("relevant_id","");
+                    record.put("discount_money",Utils.formatDouble(new_discount_amt,4));
+                    record.put("details",details.toString());
+                    mDiscountRecords.add(record);
+                }
+            }
+        }
+        Logger.d_json(mDiscountRecords.toString());
     }
     private String getDiscountName(int discount_type){
         switch (discount_type) {
@@ -785,7 +879,6 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
         double discount ,new_price = 0.0,original_price,discount_amt = 0.0,xnum = 1.0,current_discount_amt = 0.0,original_amt = 0.0,current_sale_amt = 0.0,new_discount = 1.0;
         if (vip != null){
             JSONObject jsonObject,discount_json;
-            JSONArray discount_details = new JSONArray();
             for (int i = 0,length = mDatas.size();i < length;i++){
                 jsonObject = mDatas.getJSONObject(i);
 
@@ -805,7 +898,7 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
                     case 1://会员价
                         new_price = Utils.formatDouble(jsonObject.getDoubleValue("yh_price"),4);
                         if (!d_discount){
-                            deleteDiscountRecordForGoods(jsonObject,0);
+                            _deleteDiscountRecordForGoods(jsonObject,0);
                         }
                         if (!Utils.equalDouble(original_price,0.0))new_discount = new_price / original_price;
 
@@ -817,17 +910,15 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
                         if (d_discount){
                             new_discount *= discount;
                         }else{
-                            deleteDiscountRecordForGoods(jsonObject,0);
+                            _deleteDiscountRecordForGoods(jsonObject,0);
                         }
                         current_sale_amt = original_amt * new_discount;
 
                         new_price = Utils.formatDouble(current_sale_amt / xnum,4);
                         break;
                 }
-                discount_amt = Utils.formatDouble(original_amt - current_sale_amt,4);
-                current_discount_amt = discount_amt - jsonObject.getDoubleValue("discount_amt");
+                current_discount_amt = discount_amt = Utils.formatDouble(original_amt - current_sale_amt,4);
 
-                jsonObject.put("discount_type", AbstractSaleGoodsAdapter.DISCOUNT_TYPE.V_DISCOUNT);
                 jsonObject.put("discount", new_discount);
                 jsonObject.put("discount_amt", discount_amt);
                 jsonObject.put("price",new_price);
@@ -838,13 +929,15 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
                     discount_json = new JSONObject();
                     discount_json.put("gp_id",jsonObject.getIntValue("gp_id"));
                     discount_json.put("barcode_id",jsonObject.getIntValue("barcode_id"));
-                    discount_json.put("price",Utils.formatDouble(current_discount_amt,2));
-                    discount_details.add(discount_json);
+                    discount_json.put("sale_type",jsonObject.getIntValue("sale_type"));
+                    discount_json.put("discount_type", AbstractSaleGoodsAdapter.DISCOUNT_TYPE.V_DISCOUNT);
+                    discount_json.put("price",Utils.formatDouble(current_discount_amt,4));
+
+                    //处理商品优惠明细
+                    addDiscountRecord(jsonObject,discount_json);
+
                 }
             }
-            //处理商品优惠明细
-            if (!discount_details.isEmpty())
-                addDiscountRecords(AbstractSaleGoodsAdapter.DISCOUNT_TYPE.V_DISCOUNT,discount_details);
 
             notifyDataSetChanged();
         }
@@ -915,7 +1008,7 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
         boolean isDiscountTypeExist = false;
         JSONObject record_json,original_goods,new_goods;
         int ori_id,new_id;
-        double new_discount_amt = 0.0;
+        double new_discount_amt = 0.0,new_discount_price = 0.0;
         for (Object record_obj : mDiscountRecords){
             if (record_obj instanceof JSONObject){
                 record_json = (JSONObject)record_obj;
@@ -935,7 +1028,12 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
                             original_goods = original_details.getJSONObject(j);
                             ori_id = getGoodsId(original_goods);
                             if (new_id == ori_id){
-                                new_goods.put("price",Utils.formatDouble(original_goods.getDoubleValue("price") + new_discount_amt,4));
+                                new_discount_price  = original_goods.getDoubleValue("price");
+                                if (GoodsInfoViewAdapter.isPromotion(original_goods)){//促销保存的是当前记录的总金额
+                                    new_discount_amt -= new_discount_price;
+                                    new_goods.put("price",Utils.formatDouble( new_discount_amt,4));
+                                }else
+                                    new_goods.put("price",Utils.formatDouble(new_discount_price + new_discount_amt,4));
                                 original_details.remove(j);
                                 break;
                             }
@@ -967,6 +1065,29 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
         }
     }
 
+    private void _deleteDiscountRecordForGoods(final JSONObject object,double del_num){
+        JSONObject discount_goods;
+        double discount_money = 0.0,xnum = Utils.getNotKeyAsNumberDefault(object,"xnum",1.0),current_discount_amt = 0.0;
+        final JSONArray discount_records = Utils.getNullObjectAsEmptyJsonArray(object,"discount_records");
+
+        if (Utils.equalDouble(del_num,0.0) || Utils.equalDouble(xnum,del_num)){
+            discount_records.clear();
+            object.put("discount_amt",0.0);
+        }else {
+            for (int j = discount_records.size() - 1;j >= 0 ;j--){
+                discount_goods = discount_records.getJSONObject(j);
+                if (getGoodsId(discount_goods) == getGoodsId(object)){
+                    //更新销售商品信息
+                    discount_money = discount_goods.getDoubleValue("price");
+
+                    current_discount_amt = Utils.formatDouble(discount_money / xnum * del_num,4);
+                    discount_goods.put("price",discount_money - current_discount_amt);
+
+                    object.put("discount_amt",Utils.formatDouble(object.getDoubleValue("discount_amt") - current_discount_amt,4));
+                }
+            }
+        }
+    }
     private void deleteDiscountRecordForGoods(final JSONObject object,double del_num){
         JSONObject record_json,discount_goods;
         double old_discount_money = 0.0;
@@ -1003,10 +1124,39 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
             }
         }
     }
+
+    private void _deleteDiscountRecordForType(int discount_type){
+        JSONObject discount_goods,goods;
+        JSONArray discount_records;
+
+        for (int k = 0,size = mDatas.size();k < size;k++){
+            goods = mDatas.getJSONObject(k);
+            discount_records = Utils.getNullObjectAsEmptyJsonArray(goods,"discount_records");
+            for (int j = discount_records.size() - 1;j >= 0;j --){
+                discount_goods = discount_records.getJSONObject(j);
+                if (getGoodsId(discount_goods) == getGoodsId(goods) && discount_goods.getIntValue("discount_type") == discount_type){
+
+                    double discount_money = discount_goods.getDoubleValue("price"),
+                            sale_amt = goods.getDoubleValue("sale_amt") + discount_money,
+                            xnum =Utils.getNotKeyAsNumberDefault(goods,"xnum",0.0),
+                            price = Utils.equalDouble(xnum,0.0) ? 0 : sale_amt / xnum,
+                            original_price = Utils.getNotKeyAsNumberDefault(goods,"original_price",0.0);
+
+                    goods.put("price",price);
+                    goods.put("sale_amt",Utils.formatDouble(sale_amt,4));
+                    goods.put("discount",Utils.equalDouble(original_price,0.0) ? 0 : price / original_price);
+                    goods.put("discount_amt",Utils.formatDouble(goods.getDoubleValue("discount_amt") - discount_money,4));
+
+                    discount_records.remove(j);
+                }
+            }
+        }
+    }
+
     private void deleteDiscountRecordForType(int discount_type){
         JSONObject record_json,discount_goods,goods;
         if (!mDiscountRecords.isEmpty()){
-            for (int i = 0;i < mDiscountRecords.size();i++){
+            for (int i = mDiscountRecords.size() - 1;i >= 0;i--){
                 record_json = mDiscountRecords.getJSONObject(i);
                 if (discount_type == record_json.getIntValue("discount_type")){
                     record_json = (JSONObject) mDiscountRecords.remove(i);
@@ -1069,10 +1219,9 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
         Logger.d("mol_amt:%f,type:%d",mol_amt,type);
 
         JSONObject object,discount_obj;
-        final JSONArray discount_details = new JSONArray();
         int sale_record = mDatas.size();
         double per_record_mol_amt = 0.0, o_per_record_mol_amt = getPerRecordMolAmt(mol_amt,sale_record),original_sale_amt = 0.0,new_discount = 0.0
-                ,xnum = 0.0,new_price = 0.0,current_sale_amt = 0.0;
+                ,xnum = 0.0,new_price = 0.0,current_sale_amt = 0.0,discount_amt = 0.0;
 
         //Utils.sortJsonArrayFromDoubleCol(mDatas,"sale_amt");
 
@@ -1097,8 +1246,10 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
             discount_obj.put("gp_id",object.getIntValue("gp_id"));
             discount_obj.put("barcode_id",object.getIntValue("barcode_id"));
             discount_obj.put("sale_type",object.getIntValue("sale_type"));
+            discount_obj.put("discount_type",type);
             discount_obj.put("price",per_record_mol_amt);//单品折扣金额
-            discount_details.add(discount_obj);
+            addDiscountRecord(object,discount_obj);
+
 
             xnum = Utils.getNotKeyAsNumberDefault(object,"xnum",1.0);
 
@@ -1107,7 +1258,6 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
             object.put("discount", new_discount);
             object.put("discount_amt", Utils.formatDouble(per_record_mol_amt + object.getDoubleValue("discount_amt"),4));
             object.put("price",new_price);
-            object.put("discount_type",type);
             object.put("sale_amt",current_sale_amt);
 
             Logger.d("%f -= %f:%f",mol_amt,per_record_mol_amt,mol_amt - per_record_mol_amt);
@@ -1122,9 +1272,7 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
                 }
             }
         }
-        if (!discount_details.isEmpty()){
-            addDiscountRecords(type,discount_details);
-        }
+
         notifyDataSetChanged();
     }
 
@@ -1176,7 +1324,6 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
     }
     private void addFullReduce(double reduce_money,double sale_amt){
         JSONObject object,discount_obj;
-        final JSONArray discount_details = new JSONArray();
         int sale_record = mDatas.size();
         double per_goods_dis_amt = 0.0, percent = Utils.formatDouble(reduce_money / sale_amt,4),original_sale_amt = 0.0,new_discount = 0.0,
                 xnum = 0.0,new_price = 0.0,current_sale_amt = 0.0;
@@ -1205,8 +1352,9 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
             discount_obj.put("gp_id",object.getIntValue("gp_id"));
             discount_obj.put("barcode_id",object.getIntValue("barcode_id"));
             discount_obj.put("sale_type",object.getIntValue("sale_type"));
+            discount_obj.put("discount_type", AbstractSaleGoodsAdapter.DISCOUNT_TYPE.FULL_REDUCE);
             discount_obj.put("price",per_goods_dis_amt);//单品折扣金额
-            discount_details.add(discount_obj);
+            addDiscountRecord(object,discount_obj);
 
             xnum = Utils.getNotKeyAsNumberDefault(object,"xnum",1.0);
 
@@ -1218,9 +1366,7 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
             object.put("discount_type", AbstractSaleGoodsAdapter.DISCOUNT_TYPE.FULL_REDUCE);
             object.put("sale_amt",current_sale_amt);
         }
-        if (!discount_details.isEmpty()){
-            addDiscountRecords(AbstractSaleGoodsAdapter.DISCOUNT_TYPE.FULL_REDUCE,discount_details);
-        }
+
         notifyDataSetChanged();
     }
 
@@ -1261,7 +1407,7 @@ public abstract class AbstractSaleGoodsAdapter extends RecyclerView.Adapter<Abst
 
     public void deleteFullReduceRecord(){
         if(mFullReduceRecord != null)mFullReduceRecord = null;
-        deleteDiscountRecordForType(AbstractSaleGoodsAdapter.DISCOUNT_TYPE.FULL_REDUCE);
+        _deleteDiscountRecordForType(AbstractSaleGoodsAdapter.DISCOUNT_TYPE.FULL_REDUCE);
     }
 
     public boolean splitCombinationalGoods(final JSONArray arrays,int gp_id,double gp_price,double gp_num,StringBuilder err){
