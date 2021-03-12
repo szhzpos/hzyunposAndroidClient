@@ -5,10 +5,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.utils.Utils;
 import java.util.Locale;
@@ -25,7 +25,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class MobileCategoryContentAdapter extends AbstractDataAdapter<MobileCategoryContentAdapter.MyViewHolder>{
+public class MobileCategoryContentAdapter extends AbstractDataAdapter<MobileCategoryContentAdapter.MyViewHolder> {
 
     public MobileCategoryContentAdapter(final MainActivity activity){
         super(activity);

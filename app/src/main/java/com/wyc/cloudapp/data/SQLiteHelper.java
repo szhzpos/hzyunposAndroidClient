@@ -1555,7 +1555,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    order_code        VARCHAR,\n" +
                 "    cards_id          INTEGER PRIMARY KEY AUTOINCREMENT\n" +
                 "                              UNIQUE\n" +
-                ")",sql_fullreduce_info = "CREATE TABLE IF NOT EXISTS fullreduce_info (\n" +
+                ")",sql_fullreduce_info = "CREATE TABLE IF NOT EXISTS fullreduce_info (\n" +//阶梯满减
                 "    full_id    VARCHAR PRIMARY KEY\n" +
                 "                       NOT NULL,\n" +
                 "    title      VARCHAR,\n" +
@@ -1566,7 +1566,24 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    end_time   VARCHAR,\n" +
                 "    starttime  NUMERIC,\n" +
                 "    endtime    NUMERIC\n" +
-                ");",sql_promotion_info = "CREATE TABLE IF NOT EXISTS promotion_info (\n" +//零售特价促销
+                ");",sql_fullreduce_info_new = "CREATE TABLE fullreduce_info_new (\n" +//新满减
+                "    tlp_id             INTEGER PRIMARY KEY\n" +
+                "                               NOT NULL,\n" +
+                "    promotion_type     INTEGER,\n" +
+                "    type_detail_id     INTEGER,\n" +
+                "    promotion_object   INTEGER,\n" +
+                "    promotion_grade_id INTEGER,\n" +
+                "    cumulation_give    INTEGER,\n" +
+                "    buyfull_money      NUMERIC,\n" +
+                "    reduce_money       NUMERIC,\n" +
+                "    start_date         INTEGER,\n" +
+                "    end_date           INTEGER,\n" +
+                "    promotion_week     VARCHAR,\n" +
+                "    begin_time         VARCHAR,\n" +
+                "    end_time           VARCHAR,\n" +
+                "    status             INTEGER,\n" +
+                "    xtype              INTEGER\n" +
+                ");\n",sql_promotion_info = "CREATE TABLE IF NOT EXISTS promotion_info (\n" +//零售特价促销
                 "    tlp_id        INTEGER PRIMARY KEY\n" +
                 "                            NOT NULL,\n" +
                 "    tlpb_id      INTEGER,\n" +
@@ -1646,6 +1663,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         list.add(sql_fullreduce_info);
         list.add(sql_promotion_info);
         list.add(sql_step_promotion_info);
+        list.add(sql_fullreduce_info_new);
 
         try {
             db.beginTransaction();

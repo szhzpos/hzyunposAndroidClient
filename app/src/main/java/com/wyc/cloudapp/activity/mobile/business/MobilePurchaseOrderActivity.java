@@ -2,19 +2,14 @@ package com.wyc.cloudapp.activity.mobile.business;
 
 import android.os.Bundle;
 
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
 import com.wyc.cloudapp.adapter.business.MobilePurchaseOrderAdapter;
 import com.wyc.cloudapp.adapter.business.MobilePurchaseOrderDetailsAdapter;
-import com.wyc.cloudapp.adapter.report.AbstractDataAdapter;
-import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.utils.Utils;
-
-import java.util.Locale;
 
 /*采购订货单*/
 public class MobilePurchaseOrderActivity extends AbstractMobileBusinessOrderActivity {

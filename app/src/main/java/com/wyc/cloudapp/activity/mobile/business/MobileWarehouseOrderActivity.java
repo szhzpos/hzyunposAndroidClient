@@ -12,7 +12,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
 import com.wyc.cloudapp.adapter.business.MobileWarehouseOrderAdapter;
 import com.wyc.cloudapp.adapter.business.MobileWarehouseOrderDetailsAdapter;
-import com.wyc.cloudapp.adapter.report.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;

@@ -138,7 +138,7 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
             if (!object.isEmpty()){
 
                 CharSequence goods_title = Utils.getNullStringAsEmpty(object,"goods_title");
-                if (GoodsInfoViewAdapter.getPromotionInfo(object,mContext.getStoreId(),Utils.getNullOrEmptyStringAsDefault(mContext.getVipInfo(),"grade_id","-1"))){
+                if (GoodsInfoViewAdapter.getPromotionInfo(object,mContext.getStoreId(),mContext.getVipGradeId())){
 
                     if (GoodsInfoViewAdapter.isPromotion(object))
                         goods_title = Html.fromHtml(goods_title + "<font color='red'><size value='14'>(促销)</size></font> ",null,new FontSizeTagHandler(mContext));

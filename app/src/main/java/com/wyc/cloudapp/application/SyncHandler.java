@@ -48,7 +48,7 @@ final class SyncHandler extends Handler {
     private static List<Integer> getBasicsDataMessageIds(){
         return Arrays.asList(MessageID.SYNC_CASHIER_ID/*收银员*/,MessageID.SYNC_GOODS_CATEGORY_ID/*商品类别*/,MessageID.SYNC_PAY_METHOD_ID/*支付方式*/,MessageID.SYNC_STORES_ID/*仓库信息*/,
                 MessageID.SYNC_GP_INFO_ID/*组合商品*/,MessageID.SYNC_GOODS_ID/*商品信息*/,MessageID.SYNC_FULLREDUCE_ID/*满减信息*/,MessageID.SYNC_SALES_INFO_ID/*营业员信息*/,
-                MessageID.SYNC_SALE_OPERATOR_INFO_ID/*经办人信息*/,MessageID.SYNC_PROMOTION_ID/*促销信息*/,MessageID.SYNC_STEP_PROMOTION_ID/*阶梯促销*/);
+                MessageID.SYNC_SALE_OPERATOR_INFO_ID/*经办人信息*/,MessageID.SYNC_PROMOTION_ID/*促销信息*/,MessageID.SYNC_STEP_PROMOTION_ID/*阶梯促销*/,MessageID.SYNC_STEP_FULLREDUCE_ID/*阶梯满减*/);
     }
 
     void initParameter(final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){
@@ -150,9 +150,19 @@ final class SyncHandler extends Handler {
                     object.put("stores_id",stores_id);
                     break;
                 case MessageID.SYNC_FULLREDUCE_ID:
+                    mFunc = this::up_fullreduce;
+                    table_name = "fullreduce_info_new";
+                    table_cls = new String[]{"tlp_id","promotion_type","type_detail_id","promotion_object","promotion_grade_id","cumulation_give","buyfull_money","reduce_money","start_date"
+                            ,"end_date","promotion_week","begin_time","end_time","status","xtype"};
+                    sys_name = "正在同步满减";
+                    url = base_url + "/api/promotion/get_promotion_fullreduce";
+                    object.put("stores_id",stores_id);
+                    object.put("pos_num",pos_num);
+                    break;
+                case MessageID.SYNC_STEP_FULLREDUCE_ID:
                     table_name = "fullreduce_info";
                     table_cls = new String[]{"full_id","title","modes","fold","rule","start_time","end_time","starttime","endtime"};
-                    sys_name = "正在同步满减";
+                    sys_name = "正在同步阶梯满减";
                     url = base_url + "/api/promotion/fullreduce_info";
                     object.put("stores_id",stores_id);
                     object.put("type",1);
@@ -249,7 +259,7 @@ final class SyncHandler extends Handler {
                         case "y":
                             final JSONArray data;
                             final StringBuilder err = new StringBuilder();
-                            if (msg.what == MessageID.SYNC_FULLREDUCE_ID){
+                            if (msg.what == MessageID.SYNC_STEP_FULLREDUCE_ID){
                                 if (SQLiteHelper.execDelete("fullreduce_info",null,null,err) < 0){
                                     code = false;
                                     data = new JSONArray();
@@ -280,6 +290,7 @@ final class SyncHandler extends Handler {
                                         break;
                                     case MessageID.SYNC_PROMOTION_ID:
                                     case MessageID.SYNC_STEP_PROMOTION_ID:
+                                    case MessageID.SYNC_FULLREDUCE_ID:
                                     case MessageID.SYNC_PAY_METHOD_ID:
                                     case MessageID.SYNC_GOODS_CATEGORY_ID:
                                     case MessageID.SYNC_SALES_INFO_ID:
@@ -685,7 +696,7 @@ final class SyncHandler extends Handler {
             object = datas.getJSONObject(k);
             goods_ids.add(object.getIntValue("barcode_id"));
             img_url_info = object.getString("img_url");
-            if (!img_url_info.equals("")){
+            if (!"".equals(img_url_info)){
                 img_file_name = img_url_info.substring(img_url_info.lastIndexOf("/") + 1);
                 File file = new File(CustomApplication.getGoodsImgSavePath() + img_file_name);
                 if (!file.exists()){
@@ -886,6 +897,31 @@ final class SyncHandler extends Handler {
                 success = "y".equals(object.getString("status"));
             }
             if (!success)Logger.e("标记已获取阶梯促销信息错误:" + object.getString("info"));
+        }
+    }
+    private void up_fullreduce(final JSONArray datas) throws JSONException{
+        if (datas != null && !datas.isEmpty()){
+            JSONObject object;
+            final String url = mUrl + "/api/promotion/up_promotion_fullreduce";
+
+            final JSONArray tlp_ids = new JSONArray();
+            for (int k = 0,length = datas.size();k < length;k++) {
+                object = datas.getJSONObject(k);
+                tlp_ids.add(object.getIntValue("tlp_id"));
+            }
+
+            object = new JSONObject();
+            object.put("appid",mAppId);
+            object.put("tlp_ids",tlp_ids);
+            object.put("pos_num",mPosNum);
+
+            object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,mAppSecret),true);
+            boolean success;
+            if (success = (object.getIntValue("flag") == 1)){
+                object = JSON.parseObject(object.getString("info"));
+                success = "y".equals(object.getString("status"));
+            }
+            if (!success)Logger.e("标记已获满减信息错误:" + object.getString("info"));
         }
     }
 

@@ -272,7 +272,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
                 if (isWeighBarcode){
                     code = parseElectronicBarcode(object,weigh_barcode_info);
                 }else {
-                    code = getPromotionInfo(object,mContext.getStoreId(),Utils.getNullOrEmptyStringAsDefault(mContext.getVipInfo(),"grade_id","-1"));
+                    code = getPromotionInfo(object,mContext.getStoreId(),mContext.getVipGradeId());
                 }
             }
         }
@@ -288,10 +288,10 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
 
         final String brand_id  = goods.getString("brand_id"),gs_id = goods.getString("gs_id"),category_id = goods.getString("path"),barcode_id = goods.getString("barcode_id");
 
-        final String where_sql = "where ((type_detail_id = '"+ barcode_id +"' and promotion_type=1 ) or " +
+        final String where_sql = "where  status = 1 and ((type_detail_id = '"+ barcode_id +"' and promotion_type=1 ) or " +
                 "(instr('" + category_id +"' ,type_detail_id||'@') > 0 and promotion_type=2 )" +
                 "  or (type_detail_id = '"+ gs_id +"' and promotion_type=3 )  or (type_detail_id = '" + brand_id +"' and promotion_type= 4)) and " +
-                "(promotion_object = 0 or ((promotion_object = 2 and "+ grade_id +" > 0) or promotion_grade_id = "+ grade_id +")) and status = 1 and " +
+                "(promotion_object = 0 or ((promotion_object = 2 and "+ grade_id +" > 0) or promotion_grade_id = "+ grade_id +")) and " +
                 "stores_id = " + stores_id + " and date(start_date, 'unixepoch', 'localtime') || ' ' ||begin_time  <= datetime('now', 'localtime') \n" +
                 " and datetime('now', 'localtime') <= date(end_date, 'unixepoch', 'localtime') || ' ' ||end_time and \n" +
                 "promotion_week like '%' ||case strftime('%w','now' ) when 0 then 7 else strftime('%w','now' ) end||'%'";
@@ -367,7 +367,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
             object.put("sale_amt",amt);
             object.put(W_G_MARK,weigh_barcode_info);
 
-            code = getPromotionInfo(object,mContext.getStoreId(),Utils.getNullOrEmptyStringAsDefault(mContext.getVipInfo(),"grade_id","-1"));
+            code = getPromotionInfo(object,mContext.getStoreId(),mContext.getVipGradeId());
         }else {
             object.put("info",barcodeRuleObj.getAsString("info"));
         }

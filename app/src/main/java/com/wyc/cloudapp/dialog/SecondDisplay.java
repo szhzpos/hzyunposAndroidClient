@@ -26,6 +26,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.SaleActivity;
+import com.wyc.cloudapp.adapter.AbstractSaleGoodsAdapter;
 import com.wyc.cloudapp.adapter.NormalSaleGoodsAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -122,28 +123,17 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
     }
 
     private void initSaleGoodsView(){
-        mNormalSaleGoodsAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                super.onChanged();
-                JSONArray datas = mNormalSaleGoodsAdapter.getDatas();
-                double sale_sum_num = 0.0,sale_sum_amount = 0.0;
-                if (datas.size() != 0){
-                    if (mShowBannerImg) mShowBannerImg = false;
-                    for (int i = 0,length = datas.size();i < length;i ++){
-                        JSONObject jsonObject = datas.getJSONObject(i);
-                        sale_sum_num += jsonObject.getDoubleValue("xnum");
-                        sale_sum_amount += jsonObject.getDoubleValue("sale_amt");
-                    }
-                    mSaleSumNum.setText(String.format(Locale.CANADA,"%.3f",sale_sum_num));
-                    mSaleSumAmount.setText(String.format(Locale.CANADA,"%.2f",sale_sum_amount));
-                    mSaleGoodsView.scrollToPosition(mNormalSaleGoodsAdapter.getCurrentItemIndex());
-                }else{
-                    mCurrentBarcodeId = 0;
-                    if (!mShowBannerImg) mShowBannerImg = true;
-                }
-                displayGoodsImg();
+        mNormalSaleGoodsAdapter.setDataListener((total_num, total_sale_amt, total_discount_amt) -> {
+            if (!mNormalSaleGoodsAdapter.isEmpty()){
+                if (mShowBannerImg) mShowBannerImg = false;
+                mSaleSumNum.setText(String.format(Locale.CANADA,"%.3f",total_num));
+                mSaleSumAmount.setText(String.format(Locale.CANADA,"%.2f",total_sale_amt));
+                mSaleGoodsView.scrollToPosition(mNormalSaleGoodsAdapter.getCurrentItemIndex());
+            }else{
+                mCurrentBarcodeId = 0;
+                if (!mShowBannerImg) mShowBannerImg = true;
             }
+            displayGoodsImg();
         });
         mSaleGoodsView = findViewById(R.id.sec_sale_goods_list);
         mSaleGoodsView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
@@ -189,7 +179,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
         if (array == null){
             array = new JSONArray();
         }
-        mNormalSaleGoodsAdapter.setDatas(array);
+        mNormalSaleGoodsAdapter.setDataForArray(array);
         notifyChange(0);
         return this;
     }

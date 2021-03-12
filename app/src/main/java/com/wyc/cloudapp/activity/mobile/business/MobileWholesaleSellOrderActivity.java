@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
 import com.wyc.cloudapp.adapter.business.MobilePurchaseOrderAdapter;
-import com.wyc.cloudapp.adapter.report.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 
 public class MobileWholesaleSellOrderActivity extends AbstractMobileBusinessOrderActivity {
     @Override

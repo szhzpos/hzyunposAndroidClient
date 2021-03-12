@@ -13,11 +13,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
-import com.wyc.cloudapp.adapter.report.AbstractDataAdapter;
-import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.utils.Utils;
-
-import java.time.chrono.MinguoDate;
 
 /**
  * @ProjectName: CloudApp

@@ -48,6 +48,7 @@ import com.wyc.cloudapp.CustomizationView.ScaleView;
 import com.wyc.cloudapp.CustomizationView.TmpOrderButton;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.MobileNavigationActivity;
+import com.wyc.cloudapp.adapter.AbstractSaleGoodsAdapter;
 import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -486,30 +487,16 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     }
     private void initSaleGoodsAdapter(){
         mSaleGoodsRecyclerView = findViewById(R.id.sale_goods_list);
-        mSaleGoodsAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged(){
-                final JSONArray datas = mSaleGoodsAdapter.getDatas();
-                double sale_sum_num = 0.0,sale_sum_amount = 0.0,dis_sum_amt = 0.0;
+        mSaleGoodsAdapter.setDataListener((total_num, total_sale_amt, total_discount_amt) -> {
+            mSaleSumNumTv.setText(String.format(Locale.CANADA,"%.3f",total_num));
+            mSaleSumAmtTv.setText(String.format(Locale.CANADA,"%.2f",total_sale_amt));
+            mDisSumAmtTv.setText(String.format(Locale.CANADA,"%.2f",total_discount_amt));
 
-                for (int i = 0,length = datas.size();i < length;i ++){
-                    final JSONObject jsonObject = datas.getJSONObject(i);
-                    sale_sum_num += jsonObject.getDouble("xnum");
-                    sale_sum_amount += jsonObject.getDouble("sale_amt");
-                    dis_sum_amt += jsonObject.getDouble("discount_amt");
-                }
+            mSaleGoodsRecyclerView.scrollToPosition(mSaleGoodsAdapter.getCurrentItemIndex());
 
-                setScaleCurrent((float) sale_sum_num * 1000);
-
-                mSaleSumNumTv.setText(String.format(Locale.CANADA,"%.3f",sale_sum_num));
-                mSaleSumAmtTv.setText(String.format(Locale.CANADA,"%.2f",sale_sum_amount));
-                mDisSumAmtTv.setText(String.format(Locale.CANADA,"%.2f",dis_sum_amt));
-
-                mSaleGoodsRecyclerView.scrollToPosition(mSaleGoodsAdapter.getCurrentItemIndex());
-
-                if (mSecondDisplay != null)mSecondDisplay.notifyChange(mSaleGoodsAdapter.getCurrentItemIndex());
-            }
+            if (mSecondDisplay != null)mSecondDisplay.notifyChange(mSaleGoodsAdapter.getCurrentItemIndex());
         });
+
         SuperItemDecoration.registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray_subtransparent)));
         mSaleGoodsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
         mSaleGoodsRecyclerView.setAdapter(mSaleGoodsAdapter);
@@ -661,7 +648,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
             if (isAdjustPriceMode()){
                 MyDialog.ToastMessage(mSaleGoodsRecyclerView,"调价模式不允许挂单操作!",activity,null);
             }else {
-                final JSONArray datas = mSaleGoodsAdapter.getDatas();
+                final JSONArray datas = mSaleGoodsAdapter.getData();
                 final HangBillDialog hangBillDialog = new HangBillDialog(activity);
                 if (Utils.JsonIsNotEmpty(datas)){
                     final StringBuilder err = new StringBuilder();
@@ -789,9 +776,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
             vip_name_tv.setText(getText(R.string.space_sz));
             vip_phone_num_tv.setText(getText(R.string.space_sz));
         }
-        if (!mSaleGoodsAdapter.getDatas().isEmpty()){
-            mSaleGoodsAdapter.deleteVipDiscountRecord();
-        }
+        mSaleGoodsAdapter.deleteVipDiscountRecord();
         reSizeSaleGoodsView();
     }
     @Override
@@ -822,7 +807,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         mSecondDisplay = SecondDisplay.getInstantiate(this);
         if (null != mSecondDisplay){
             if (mApplication.isConnection())mSecondDisplay.loadAdImg(mUrl,mAppId, mAppSecret);
-            mSecondDisplay.setDatas(mSaleGoodsAdapter.getDatas()).setNavigationInfo(mApplication.getStoreInfo()).show();
+            mSecondDisplay.setDatas(mSaleGoodsAdapter.getData()).setNavigationInfo(mApplication.getStoreInfo()).show();
         }
     }
     @Override

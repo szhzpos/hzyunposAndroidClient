@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.adapter.report;
+package com.wyc.cloudapp.adapter;
 
 import android.view.View;
 

@@ -53,20 +53,20 @@ public class SaleActivity extends MainActivity{
     }
 
     public void fullReduceDiscount(){
-        mSaleGoodsAdapter.fullReduceDiscount();
+        mSaleGoodsAdapter.stepFullReduceDiscount();
     }
 
     public void deleteFullReduce(){
-        mSaleGoodsAdapter.deleteFullReduceRecord();
+        mSaleGoodsAdapter.deleteStepFullReduceRecord();
     }
 
     public JSONObject getFullReduceRecord(){
-        return mSaleGoodsAdapter.getFullReduceRecord();
+        return mSaleGoodsAdapter.getStepFullReduceRecord();
     }
 
     @Override
     public JSONArray getSaleData(){
-        return mSaleGoodsAdapter.getDatas();
+        return mSaleGoodsAdapter.getData();
     }
 
     public JSONArray getDiscountRecords(){
@@ -126,6 +126,9 @@ public class SaleActivity extends MainActivity{
 
     public JSONObject getVipInfo(){
         return mVipInfo;
+    }
+    public String getVipGradeId(){
+        return Utils.getNullOrEmptyStringAsDefault(mVipInfo,"grade_id","-1");
     }
     public JSONObject getSaleManId(){
         return mSaleManInfo;

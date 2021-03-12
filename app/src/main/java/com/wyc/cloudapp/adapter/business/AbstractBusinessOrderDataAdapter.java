@@ -8,7 +8,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.activity.mobile.business.AbstractMobileBusinessOrderActivity;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
-import com.wyc.cloudapp.adapter.report.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 
 /**
  * @ProjectName: CloudApp

@@ -2,7 +2,6 @@ package com.wyc.cloudapp.adapter.report;
 
 import android.app.ProgressDialog;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -17,6 +16,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.activity.mobile.report.MobileStockQueryActivity;
+import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.JEventLoop;
@@ -24,7 +24,7 @@ import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
-import java.io.UnsupportedEncodingException;
+
 import java.util.Locale;
 
 /**

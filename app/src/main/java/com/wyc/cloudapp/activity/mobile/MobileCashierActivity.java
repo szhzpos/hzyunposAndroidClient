@@ -29,6 +29,7 @@ import com.wyc.cloudapp.CustomizationView.InterceptLinearLayout;
 import com.wyc.cloudapp.CustomizationView.TmpOrderButton;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.SaleActivity;
+import com.wyc.cloudapp.adapter.AbstractSaleGoodsAdapter;
 import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
 import com.wyc.cloudapp.decoration.GoodsInfoItemDecoration;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
@@ -137,7 +138,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
     }
     private void hangOrder(final View btn){
         final TmpOrderButton tmp_order = (TmpOrderButton)btn;
-        final JSONArray datas = mSaleGoodsAdapter.getDatas();
+        final JSONArray datas = mSaleGoodsAdapter.getData();
         final HangBillDialog hangBillDialog = new HangBillDialog(this);
         if (Utils.JsonIsNotEmpty(datas)){
             final StringBuilder err = new StringBuilder();
@@ -465,22 +466,10 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
 
     private void initSaleGoodsAdapter(){
         final RecyclerView mSaleGoodsRecyclerView = findViewById(R.id.mobile_sale_goods_list);
-        mSaleGoodsAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged(){
-                final JSONArray datas = mSaleGoodsAdapter.getDatas();
-                double sale_sum_num = 0.0,sale_sum_amount = 0.0,dis_sum_amt = 0.0;
-
-                for (int i = 0,length = datas.size();i < length;i ++){
-                    final JSONObject jsonObject = datas.getJSONObject(i);
-                    sale_sum_num += jsonObject.getDouble("xnum");
-                    sale_sum_amount += jsonObject.getDouble("sale_amt");
-                    dis_sum_amt += jsonObject.getDouble("discount_amt");
-                }
-                mSaleSumAmtTv.setText(String.format(Locale.CANADA,"%.2f",sale_sum_amount));
-                if (mBasketView != null)mBasketView.update(sale_sum_num);
-                mSaleGoodsRecyclerView.scrollToPosition(mSaleGoodsAdapter.getCurrentItemIndex());
-            }
+        mSaleGoodsAdapter.setDataListener((total_num, total_sale_amt, total_discount_amt) -> {
+            mSaleSumAmtTv.setText(String.format(Locale.CANADA,"%.2f",total_sale_amt));
+            if (mBasketView != null)mBasketView.update(total_num);
+            mSaleGoodsRecyclerView.scrollToPosition(mSaleGoodsAdapter.getCurrentItemIndex());
         });
         SuperItemDecoration.registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray_subtransparent)));
         mSaleGoodsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
@@ -545,9 +534,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
         if (null != vip_name_tv){
             vip_name_tv.setText(getText(R.string.space_sz));
         }
-        if (!mSaleGoodsAdapter.getDatas().isEmpty()){
-            mSaleGoodsAdapter.deleteVipDiscountRecord();
-        }
+        mSaleGoodsAdapter.deleteVipDiscountRecord();
     }
 
     @Override
