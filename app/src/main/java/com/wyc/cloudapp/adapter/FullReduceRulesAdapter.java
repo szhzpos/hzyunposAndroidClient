@@ -14,20 +14,20 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.utils.Utils;
 
-public class FullReduceRulesAdapter extends RecyclerView.Adapter<FullReduceRulesAdapter.MyViewHolder> {
-    private JSONArray mDatas;
-    private Context mContext;
-
+public class FullReduceRulesAdapter extends AbstractDataAdapter<FullReduceRulesAdapter.MyViewHolder> {
+    private final Context mContext;
+    private int mMaxMoneyIndex;
     public FullReduceRulesAdapter(Context context,final JSONArray datas){
         mContext = context;
         mDatas = datas;
     }
 
-    static class MyViewHolder extends RecyclerView.ViewHolder{
-        TextView rule_des_tv,diff_amt_des_tv;
+    static class MyViewHolder extends AbstractDataAdapter.SuperViewHolder{
+        TextView rule_des_tv,diff_amt_des_tv,name;
         ImageView status_img;
         MyViewHolder(@NonNull View itemView) {
             super(itemView);
+            name = itemView.findViewById(R.id.fullReduce_name);
             rule_des_tv = itemView.findViewById(R.id.rule_des_tv);
             diff_amt_des_tv = itemView.findViewById(R.id.diff_amt_des_tv);
             status_img = itemView.findViewById(R.id.status_img);
@@ -44,12 +44,15 @@ public class FullReduceRulesAdapter extends RecyclerView.Adapter<FullReduceRules
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         if (mDatas != null){
+            position = mDatas.size() -1 - position;
             final JSONObject object = mDatas.getJSONObject(position);
+            holder.name.setText(Utils.getNullStringAsEmpty(object,"title"));
             holder.rule_des_tv.setText(Utils.getNullStringAsEmpty(object,"rule_des"));
 
             int status = object.getIntValue("status");
             switch (status){
                 case 1:
+                    mMaxMoneyIndex = position;
                     if (holder.diff_amt_des_tv.getVisibility() == View.VISIBLE)holder.diff_amt_des_tv.setVisibility(View.GONE);
                     if (holder.status_img.getVisibility() == View.GONE)holder.status_img.setVisibility(View.VISIBLE);
                     holder.status_img.setBackground(mContext.getResources().getDrawable(R.drawable.selected,null));
@@ -69,9 +72,7 @@ public class FullReduceRulesAdapter extends RecyclerView.Adapter<FullReduceRules
         }
     }
 
-    @Override
-    public int getItemCount() {
-        return mDatas == null ? 0: mDatas.size();
+    public int getMaxMoneyIndex() {
+        return mMaxMoneyIndex;
     }
-
 }

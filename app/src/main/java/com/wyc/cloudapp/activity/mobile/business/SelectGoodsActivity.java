@@ -143,10 +143,11 @@ public class SelectGoodsActivity extends AbstractMobileActivity {
     }
 
     static public class CategoryAdapter extends AbstractDataAdapter<CategoryAdapter.MyViewHolder> implements View.OnClickListener{
+        final MainActivity mContext;
         private View mCurrentItemView;
 
         public CategoryAdapter(MainActivity activity) {
-            super(activity);
+            mContext = activity;
         }
 
         @Override
@@ -228,9 +229,10 @@ public class SelectGoodsActivity extends AbstractMobileActivity {
     }
 
     static public class GoodsAdapter extends AbstractDataAdapter<GoodsAdapter.MyViewHolder> implements View.OnClickListener{
+        final MainActivity mContext;
         private OnSelectFinish onSelectFinish;
         public GoodsAdapter(MainActivity activity) {
-            super(activity);
+            mContext = activity;
         }
 
         @Override

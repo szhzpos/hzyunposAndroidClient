@@ -152,7 +152,7 @@ final class SyncHandler extends Handler {
                 case MessageID.SYNC_FULLREDUCE_ID:
                     mFunc = this::up_fullreduce;
                     table_name = "fullreduce_info_new";
-                    table_cls = new String[]{"tlp_id","promotion_type","type_detail_id","promotion_object","promotion_grade_id","cumulation_give","buyfull_money","reduce_money","start_date"
+                    table_cls = new String[]{"tlp_id","tlpb_id","title","promotion_type","type_detail_id","promotion_object","promotion_grade_id","cumulation_give","buyfull_money","reduce_money","start_date"
                             ,"end_date","promotion_week","begin_time","end_time","status","xtype"};
                     sys_name = "正在同步满减";
                     url = base_url + "/api/promotion/get_promotion_fullreduce";

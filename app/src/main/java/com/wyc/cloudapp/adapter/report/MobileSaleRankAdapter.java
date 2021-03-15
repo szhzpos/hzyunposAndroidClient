@@ -26,8 +26,8 @@ import com.wyc.cloudapp.utils.Utils;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class MobileSaleRankAdapter extends AbstractDataAdapter<MobileSaleRankAdapter.MyViewHolder> {
-
+public final class MobileSaleRankAdapter extends AbstractDataAdapter<MobileSaleRankAdapter.MyViewHolder> {
+    private final MainActivity mContext;
     static class MyViewHolder extends AbstractTableDataAdapter.SuperViewHolder {
         TextView goods_name_tv,sale_num_tv,sale_amt_tv;
         MyViewHolder(View itemView) {
@@ -39,7 +39,7 @@ public class MobileSaleRankAdapter extends AbstractDataAdapter<MobileSaleRankAda
     }
 
     public MobileSaleRankAdapter(MainActivity context) {
-        super(context);
+        mContext = context;
     }
 
     @Override

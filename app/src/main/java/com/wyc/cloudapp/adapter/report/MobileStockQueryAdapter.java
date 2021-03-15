@@ -40,12 +40,12 @@ import java.util.Locale;
  * @Version: 1.0
  */
 public class MobileStockQueryAdapter extends AbstractDataAdapter<MobileStockQueryAdapter.MyViewHolder> {
-
+    final MainActivity mContext;
     private int mDataSize = 0, mOffset = 0,mLimit = 50,mTotalRows = 0;
     private JSONObject mPreQueryCondition;
 
     public MobileStockQueryAdapter(final MainActivity activity){
-        super(activity);
+        mContext = activity;
         mDataSize = getItemCount();
     }
 

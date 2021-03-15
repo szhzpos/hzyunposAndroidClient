@@ -1569,6 +1569,8 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 ");",sql_fullreduce_info_new = "CREATE TABLE fullreduce_info_new (\n" +//新满减
                 "    tlp_id             INTEGER PRIMARY KEY\n" +
                 "                               NOT NULL,\n" +
+                "    tlpb_id             INTEGER ," +
+                "    title           VARCHAR,\n" +
                 "    promotion_type     INTEGER,\n" +
                 "    type_detail_id     INTEGER,\n" +
                 "    promotion_object   INTEGER,\n" +

@@ -252,7 +252,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
 
     public boolean getSingleGoods(@NonNull JSONObject object, final String weigh_barcode_info, final String id){
         final String full_sql,sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,only_coding,ifnull(type,0) type," +
-                "brand_id,gs_id,a.category_id,b.path path,retail_price,retail_price price,tc_rate,tc_mode,tax_rate,ps_price,cost_price,trade_price,buying_price,yh_mode,yh_price," +
+                "brand_id,gs_id,a.category_id category_id,b.path path,retail_price,retail_price price,tc_rate,tc_mode,tax_rate,ps_price,cost_price,trade_price,buying_price,yh_mode,yh_price," +
                 "metering_id,conversion from barcode_info a inner join shop_category b on a.category_id = b.category_id where goods_status = 1 and barcode_status = 1 and ";
 
         boolean isWeighBarcode = weigh_barcode_info != null && weigh_barcode_info.length() != 0;

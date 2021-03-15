@@ -534,12 +534,14 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                 if (null != recyclerView){
                     recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
                     recyclerView.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
-                    recyclerView.setAdapter(new FullReduceRulesAdapter(mContext,object.getJSONArray("rules_des")));
+
+                    final FullReduceRulesAdapter adapter = new FullReduceRulesAdapter(mContext,object.getJSONArray("rules_des"));
+                    recyclerView.setAdapter(adapter);
+                    recyclerView.post(()-> recyclerView.scrollToPosition(adapter.getMaxMoneyIndex()));
                 }
                 final TextView name = fullReduce_des_layout.findViewById(R.id.fullreduce_name_tv),time = fullReduce_des_layout.findViewById(R.id.fullreduce_time_tv);
                 if (null != name && time != null){
                     name.setText(object.getString("name"));
-                    time.setText(object.getString("time"));
                 }
 
                 final LinearLayout payed_amt_info = findViewById(R.id.payed_amt_info);

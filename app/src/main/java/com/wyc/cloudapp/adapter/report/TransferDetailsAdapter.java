@@ -30,7 +30,7 @@ import java.util.Locale;
  * @Version: 1.0
  */
 public class TransferDetailsAdapter extends AbstractDataAdapter<TransferDetailsAdapter.MyViewHolder> {
-
+    private final MainActivity mContext;
     static class MyViewHolder extends AbstractTableDataAdapter.SuperViewHolder {
         TextView pay_name_tv,pay_money_tv,order_num_tv;
         MyViewHolder(View itemView) {
@@ -42,7 +42,7 @@ public class TransferDetailsAdapter extends AbstractDataAdapter<TransferDetailsA
     }
 
     public TransferDetailsAdapter(final MainActivity context,final JSONArray array) {
-        super(context);
+         mContext = context;
          mDatas = array;
     }
 

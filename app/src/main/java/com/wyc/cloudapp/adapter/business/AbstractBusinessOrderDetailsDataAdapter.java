@@ -29,11 +29,13 @@ import com.wyc.cloudapp.utils.Utils;
  * @Version: 1.0
  */
 public abstract class AbstractBusinessOrderDetailsDataAdapter<T extends AbstractTableDataAdapter.SuperViewHolder > extends AbstractDataAdapter<T> {
+    protected MainActivity mContext;
+
     private View mCurrentItemView;
     private int mCurrentItemIndex = -1;
     private OnItemSelectListener mSelectListener;
     public AbstractBusinessOrderDetailsDataAdapter(MainActivity activity) {
-        super(activity);
+        mContext = activity;
     }
 
     @CallSuper

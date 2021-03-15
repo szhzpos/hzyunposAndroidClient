@@ -16,12 +16,14 @@ import com.wyc.cloudapp.utils.Utils;
 * 重写getCurrentRecord可改变默认行为。
 * */
 public abstract class AbstractTableDataAdapter<T extends AbstractTableDataAdapter.SuperViewHolder> extends AbstractDataAdapter<T> {
+    protected MainActivity mContext;
+
     protected View mCurrentItemView;
     private int mCurrentItemIndex = -1;
     private ItemClickCallBack mItemClickCallback;
 
     public AbstractTableDataAdapter(MainActivity activity) {
-        super(activity);
+        mContext = activity;
     }
 
     @CallSuper

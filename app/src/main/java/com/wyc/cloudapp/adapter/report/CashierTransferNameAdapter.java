@@ -31,6 +31,7 @@ import java.util.Locale;
  * @Version: 1.0
  */
 public class CashierTransferNameAdapter extends AbstractDataAdapter<CashierTransferNameAdapter.MyViewHolder> {
+    final MainActivity mContext;
     private View.OnClickListener mListener;
     static class MyViewHolder extends AbstractTableDataAdapter.SuperViewHolder {
         TextView cas_name,transfer_id,trans_time;
@@ -43,7 +44,7 @@ public class CashierTransferNameAdapter extends AbstractDataAdapter<CashierTrans
     }
 
     public CashierTransferNameAdapter(final MainActivity context) {
-        super(context);
+        mContext = context;
     }
 
     @Override

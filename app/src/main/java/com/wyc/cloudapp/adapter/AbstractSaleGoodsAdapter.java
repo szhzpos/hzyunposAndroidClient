@@ -1,7 +1,6 @@
 package com.wyc.cloudapp.adapter;
 
 import android.app.Dialog;
-import android.os.Build;
 import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,6 @@ import android.widget.Toast;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSON;
@@ -30,14 +28,10 @@ import com.wyc.cloudapp.utils.FontSizeTagHandler;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<AbstractSaleGoodsAdapter.MyViewHolder> {
     protected SaleActivity mContext;
@@ -54,13 +48,31 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
     private double mTotalOriginalAmt;
     private OnDataChange mDataListener;
 
-    private List<FullReduceRule> mFullReduceRules;
+    private JSONArray mFullReduceRuleGroup;
 
     public AbstractSaleGoodsAdapter(final SaleActivity context){
-        super(context);
         mContext = context;
         mDatas = new JSONArray();
         mDiscountRecords = new JSONArray();
+
+        registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged(){
+                final JSONArray datas = mDatas;
+                double n1 = 0.0,n2 = 0.0,n3 = 0.0,n4 = 0.0;
+                for (int i = 0,length = datas.size();i < length;i ++){
+                    final JSONObject jsonObject = datas.getJSONObject(i);
+                    n1 += jsonObject.getDouble("xnum");
+                    n2 += jsonObject.getDouble("sale_amt");
+                    n3 += jsonObject.getDouble("discount_amt");
+                    n4 += jsonObject.getDouble("original_amt");
+                }
+                mTotalSaleAmt = n2;
+                mTotalDiscountAmt = n3;
+                mTotalOriginalAmt = n4;
+                if (mDataListener != null)mDataListener.onChange(n1,n2,n3);
+            }
+        });
     }
 
     protected final static class DISCOUNT_TYPE {
@@ -137,27 +149,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
         }
     }
 
-    @Override
-    public void registerAdapterDataObserver(@NonNull RecyclerView.AdapterDataObserver observer) {
-        super.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged(){
-                final JSONArray datas = mDatas;
-                double n1 = 0.0,n2 = 0.0,n3 = 0.0,n4 = 0.0;
-                for (int i = 0,length = datas.size();i < length;i ++){
-                    final JSONObject jsonObject = datas.getJSONObject(i);
-                    n1 += jsonObject.getDouble("xnum");
-                    n2 += jsonObject.getDouble("sale_amt");
-                    n3 += jsonObject.getDouble("discount_amt");
-                    n4 += jsonObject.getDouble("original_amt");
-                }
-                mTotalSaleAmt = n2;
-                mTotalDiscountAmt = n3;
-                mTotalOriginalAmt = n4;
-                if (mDataListener != null)mDataListener.onChange(n1,n2,n3);
-            }
-        });
-    }
+
     public interface OnDataChange{
         void onChange(double num,double sale_amt,double discount_amt);
     }
@@ -353,7 +345,6 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
 
 
             final JSONArray promotion_rules = Utils.getNullObjectAsEmptyJsonArray(object,"promotion_rules");
-            Logger.d_json(promotion_rules.toString());
 
             JSONObject rule,satisfy_rule;
             boolean isSatisfy  =false;
@@ -948,7 +939,6 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
 
                 }
             }
-
             notifyDataSetChanged();
         }
     }
@@ -1317,19 +1307,22 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                         final JSONObject rule_json = rules.getJSONObject(i);
                         full_money = rule_json.getDoubleValue("full_money");
                         if (sale_amt >= full_money){
-                            reduce_money = rule_json.getDoubleValue("reduce_money");
-
+                            if (fold == 2){
+                                int counts = (int) (sale_amt / full_money);
+                                reduce_money = counts * reduce_money;
+                                rule_json.put("reduce_money",reduce_money);
+                            }
                             rule_json.put("status",1);
                             break;
                         }
                     }
 
+                    rules.addAll(calculateAmtForRule());
+                    Utils.sortJsonArrayFromDoubleCol(rules,"reduce_money");
+
                     generateStepFullReduceDes(sale_amt,full_reduce_obj,rules);
 
-                    if (fold == 2){
-                        int counts = (int) (sale_amt / full_money);
-                        reduce_money = counts * reduce_money;
-                    }
+
                     if (!Utils.equalDouble(reduce_money,0.0)) addStepFullReduceDiscount(reduce_money,sale_amt);
                 }
             }
@@ -1384,20 +1377,26 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
     }
 
     private void generateStepFullReduceDes(double sale_amt, final @NonNull JSONObject object, final @NonNull JSONArray rules){
-        final String name = String.format(Locale.CHINA,"%s(%s)",getDiscountName(AbstractSaleGoodsAdapter.DISCOUNT_TYPE.FULL_REDUCE),object.getString("title")),
-                time =  String.format(Locale.CHINA,"%s至%s",object.getString("start_time"),object.getString("end_time"));
+        final String name = String.format(Locale.CHINA,"%s(%s)",getDiscountName(AbstractSaleGoodsAdapter.DISCOUNT_TYPE.FULL_REDUCE),object.getString("title"));
         final JSONArray rules_des = new JSONArray();
         JSONObject rule_obj,tmp;
-        double full_money = 0.0;
-        for (int i = 0,size = rules.size();i < size;i++){
+        double full_money = 0.0,reduce_money = 0.0,max_reduce_money = 0.0;
+        for (int i = rules.size() - 1;i >= 0;i --){
             tmp = rules.getJSONObject(i);
             rule_obj = new JSONObject();
 
             full_money = tmp.getDoubleValue("full_money");
-            rule_obj.put("rule_des",mContext.getString(R.string.fullreduce_des_sz,String.valueOf(full_money),tmp.getString("reduce_money")));
+            reduce_money = tmp.getDoubleValue("reduce_money");
+            rule_obj.put("rule_des",mContext.getString(R.string.fullreduce_des_sz,String.valueOf(full_money),String.valueOf(reduce_money)));
+            rule_obj.put("title",tmp.containsKey("title") ? tmp.getString("title") : name);
 
             if (sale_amt >= full_money){
                 if (tmp.containsKey("status")){
+                    if (reduce_money > max_reduce_money){
+                        max_reduce_money = reduce_money;
+                    }else {
+                        continue;
+                    }
                     rule_obj.put("status",tmp.getIntValue("status"));
                 }else
                     rule_obj.put("status",2);
@@ -1408,9 +1407,10 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
 
             rules_des.add(rule_obj);
         }
+        Logger.d_json(rules.toString());
+
         mStepFullReduceRecord = new JSONObject();
-        mStepFullReduceRecord.put("name",name);
-        mStepFullReduceRecord.put("time",time);
+        mStepFullReduceRecord.put("name","满减促销方案");
         mStepFullReduceRecord.put("rules_des",rules_des);
     }
 
@@ -1426,7 +1426,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
     private void getFullReduceInfo(final String grade_id){
         /*在使用会员、清空会员时调用刷新满减信息*/
         final StringBuilder err = new StringBuilder();
-        final String sql = "SELECT tlp_id,type_detail_id,promotion_type,promotion_object,promotion_grade_id,cumulation_give,buyfull_money,reduce_money FROM fullreduce_info_new where status = 1 and " +
+        final String sql = "SELECT tlpb_id,title,type_detail_id,promotion_type,promotion_object,promotion_grade_id,cumulation_give,buyfull_money,reduce_money FROM fullreduce_info_new where status = 1 and " +
                 "(promotion_object = 0 or ((promotion_object = 2 and "+ grade_id +" > 0) or promotion_grade_id = "+ grade_id +")) and " +
                 "date(start_date, 'unixepoch', 'localtime') || ' ' ||begin_time  <= datetime('now', 'localtime') \n" +
                 " and datetime('now', 'localtime') <= date(end_date, 'unixepoch', 'localtime') || ' ' ||end_time and \n" +
@@ -1435,39 +1435,116 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
         Logger.d("ReduceInfo_sql:%s",sql);
         final JSONArray array = SQLiteHelper.getListToJson(sql,err);
         if (null != array){
-            mFullReduceRules = array.toJavaList(FullReduceRule.class);
-            Logger.d(mFullReduceRules.toString());
-
-            groupingFullReducePlan();
+            groupingFullReducePlan(array.toJavaList(FullReduceRule.class));
         }else {
             Toast.makeText(mContext,"初始化满减信息错误:" + err,Toast.LENGTH_LONG).show();
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private void groupingFullReducePlan(){
-        Map<Integer,List<FullReduceRule>> groups = mFullReduceRules.parallelStream().collect(Collectors.groupingBy(FullReduceRule::getPromotion_type));
+    private void groupingFullReducePlan(final List<FullReduceRule> fullReduceRules){
+        JSONObject ruleObj;
+        JSONArray detail_ids;
+        mFullReduceRuleGroup = new JSONArray();
+        for (FullReduceRule rule : fullReduceRules){
+            boolean isExist = false;
+            for (int i = 0,size = mFullReduceRuleGroup.size();i < size;i ++){
+                ruleObj = mFullReduceRuleGroup.getJSONObject(i);
+                if (ruleObj.getIntValue("tlpb_id") == rule.getTlpb_id()){
+                    detail_ids = Utils.getNullObjectAsEmptyJsonArray(ruleObj,"detail_ids");
+                    detail_ids.add(rule.getType_detail_id());
+                    isExist = true;
+                    break;
+                }
+            }
+            if (!isExist){
 
-        Logger.d(groups.toString());
-    }
+                ruleObj = new JSONObject();
+                ruleObj.put("tlpb_id",rule.getTlpb_id());
+                ruleObj.put("title",rule.getTitle());
+                ruleObj.put("promotion_type",rule.getPromotion_type());
+                ruleObj.put("cumulation_give",rule.getCumulation_give());
+                ruleObj.put("full_money",rule.getBuyfull_money());
+                ruleObj.put("reduce_money",rule.getReduce_money());
 
-    private void getFullReduceForGoods(final JSONObject goods){
-        final String brand_id  = goods.getString("brand_id"),gs_id = goods.getString("gs_id"),category_id = goods.getString("path"),barcode_id = goods.getString("barcode_id");
-        final List<FullReduceRule> filter = new ArrayList<>();
-        for (FullReduceRule rule : mFullReduceRules){
-            boolean c = (rule.getPromotion_type() == 0) || (String.valueOf(rule.getType_detail_id()).equals(barcode_id) && rule.getPromotion_type() == 1) ||
-                        (String.valueOf(rule.getType_detail_id()).contains(category_id) && rule.getPromotion_type() == 2) ||
-                        (String.valueOf(rule.getType_detail_id()).equals(gs_id) && rule.getPromotion_type() == 3) ||
-                        (String.valueOf(rule.getType_detail_id()).equals(brand_id) && rule.getPromotion_type() == 4);
-            if (c){
-                filter.add(rule);
+                detail_ids = new JSONArray();
+                detail_ids.add(rule.getType_detail_id());
+                ruleObj.put("detail_ids",detail_ids);
+
+                mFullReduceRuleGroup.add(ruleObj);
             }
         }
-        if (!filter.isEmpty()){
-            Collections.sort(filter);
-            final FullReduceRule rule = filter.get(0);
+    }
 
-
+    private JSONArray calculateAmtForRule(){
+        /* promotion_type 0全场促销,1时是商品id,2为类别id,3货商id,4品牌id*/
+        double plan_amt = 0.0;
+        JSONArray detail_ids;
+        String value_key = null;
+        JSONObject goods,rule;
+        int promotion_type = -1;
+        String detail_id,id;
+        final JSONArray rules = Utils.JsondeepCopy(mFullReduceRuleGroup);
+        for (int i = 0,size = rules.size();i < size;i ++){
+            rule = rules.getJSONObject(i);
+            promotion_type = Utils.getNotKeyAsNumberDefault(rule,"promotion_type",-1);
+            switch (promotion_type){
+                case 1:
+                    value_key = "barcode_id";
+                    break;
+                case 2:
+                    value_key = "category_id";
+                    break;
+                case 3:
+                    value_key = "gs_id";
+                    break;
+                case 4:
+                    value_key = "brand_id";
+                    break;
+                default:
+                    plan_amt = mTotalSaleAmt;
+                    value_key = null;
+            }
+            if (value_key != null){
+                detail_ids = rule.getJSONArray("detail_ids");
+                plan_amt = 0.0;
+                for (int j = 0,len = detail_ids.size();j < len;j ++){
+                    detail_id = detail_ids.getString(j);
+                    for (int k = 0,k_len = mDatas.size();k < k_len;k++){
+                        goods = mDatas.getJSONObject(k);
+                        if (promotion_type == 2){//类别要判断path
+                            id = Utils.getNullStringAsEmpty(goods,"path");
+                            if (id.contains(detail_id + "@")){
+                                plan_amt += goods.getDoubleValue("sale_amt");
+                            }
+                        }else {
+                            id = Utils.getNullStringAsEmpty(goods,value_key);
+                            if (id.equals(detail_id)){
+                                plan_amt += goods.getDoubleValue("sale_amt");
+                            }
+                        }
+                    }
+                }
+                calculateReduceMoney(rule,plan_amt);
+            }else {
+                calculateReduceMoney(rule,plan_amt);
+            }
+        }
+        Logger.d_json(rules.toString());
+        return rules;
+    }
+    private void calculateReduceMoney(final JSONObject rule,double sale_amt){
+        double full_money = rule.getDoubleValue("full_money");
+        if (Utils.notLessDouble(sale_amt,full_money)){
+            rule.put("status",1);
+            int cumulation_give = rule.getIntValue("cumulation_give");
+            double reduce_money = rule.getDoubleValue("reduce_money");
+            if (cumulation_give == 1 && !Utils.equalDouble(full_money,0.0)){
+                int times =  (int) (sale_amt / full_money);
+                if (times > 1){
+                    reduce_money *= ((double) times);
+                    rule.put("reduce_money",reduce_money);
+                }
+            }
         }
     }
 

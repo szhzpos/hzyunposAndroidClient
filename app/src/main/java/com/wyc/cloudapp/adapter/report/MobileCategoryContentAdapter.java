@@ -25,10 +25,10 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class MobileCategoryContentAdapter extends AbstractDataAdapter<MobileCategoryContentAdapter.MyViewHolder> {
-
+public final class MobileCategoryContentAdapter extends AbstractDataAdapter<MobileCategoryContentAdapter.MyViewHolder> {
+    final MainActivity mContext;
     public MobileCategoryContentAdapter(final MainActivity activity){
-        super(activity);
+        mContext = activity;
     }
 
     @NonNull

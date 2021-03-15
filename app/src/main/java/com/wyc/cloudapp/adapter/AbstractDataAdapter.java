@@ -23,12 +23,7 @@ import com.wyc.cloudapp.logger.Logger;
  * @Version: 1.0
  */
 public abstract class AbstractDataAdapter <T extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<T> {
-    protected MainActivity mContext;
     protected JSONArray mDatas;
-
-    public AbstractDataAdapter(MainActivity activity){
-        mContext = activity;
-    }
 
     public static class SuperViewHolder extends RecyclerView.ViewHolder {
         public SuperViewHolder(View itemView) {

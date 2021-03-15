@@ -6,7 +6,7 @@
     </shape>
 </item>
 <item
-    android:top="@dimen/size_0.5">
+    android:top="@dimen/size_half">
     <shape>
         <solid android:color="@color/white" />
     </shape>

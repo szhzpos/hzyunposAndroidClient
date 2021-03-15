@@ -30,10 +30,11 @@ import java.util.Locale;
  * @Version: 1.0
  */
 public class MobileCategoryNameAdapter extends AbstractDataAdapter<MobileCategoryNameAdapter.MyViewHolder> {
+    final MainActivity mContext;
     private View.OnClickListener mItemListener;
     private final Drawable drawable;
     public MobileCategoryNameAdapter(MainActivity context) {
-        super(context);
+        mContext = context;
         drawable = context.getDrawable(R.drawable.small_fold);
         if (drawable != null) drawable.setBounds(0, 0, drawable.getIntrinsicWidth() / 2 , drawable.getIntrinsicHeight() / 2 );
     }

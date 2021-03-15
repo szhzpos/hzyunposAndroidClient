@@ -29,7 +29,7 @@ import java.util.Locale;
  * @Version: 1.0
  */
 public class CashierTransferContentAdapter extends AbstractDataAdapter<CashierTransferContentAdapter.MyViewHolder> {
-
+    final MainActivity mContext;
     static class MyViewHolder extends AbstractTableDataAdapter.SuperViewHolder {
         TextView sum_money,sj_money,order_money,order_num,refund_money,refund_num,recharge_money,recharge_num,oncecard_money,oncecard_num;
         MyViewHolder(View itemView) {
@@ -49,7 +49,7 @@ public class CashierTransferContentAdapter extends AbstractDataAdapter<CashierTr
     }
 
     public CashierTransferContentAdapter(final MainActivity activity) {
-        super(activity);
+        mContext = activity;
     }
 
     @Override

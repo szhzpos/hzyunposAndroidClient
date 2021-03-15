@@ -17,7 +17,8 @@ import java.util.Locale;
  * @Version: 1.0
  */
 public class FullReduceRule implements Comparable<FullReduceRule> {
-    int tlp_id;
+    int tlpb_id;
+    String title;
     int type_detail_id;
     int promotion_type;
     int promotion_object;
@@ -25,12 +26,20 @@ public class FullReduceRule implements Comparable<FullReduceRule> {
     double buyfull_money;
     double reduce_money;
 
-    public void setTlp_id(int tlp_id) {
-        this.tlp_id = tlp_id;
+    public void setTlpb_id(int tlp_id) {
+        this.tlpb_id = tlp_id;
     }
 
-    public int getTlp_id() {
-        return tlp_id;
+    public int getTlpb_id() {
+        return tlpb_id;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     public void setType_detail_id(int type_detail_id) {
@@ -84,7 +93,7 @@ public class FullReduceRule implements Comparable<FullReduceRule> {
     @NonNull
     @Override
     public String toString() {
-        return String.format(Locale.CHINA,"tlp_id:%d,buyfull_money:%f,reduce_money:%f",tlp_id,buyfull_money,reduce_money);
+        return String.format(Locale.CHINA,"tlpb_id:%d,buyfull_money:%f,reduce_money:%f",tlpb_id,buyfull_money,reduce_money);
     }
 
     @Override

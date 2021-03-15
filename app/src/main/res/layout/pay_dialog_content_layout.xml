@@ -182,9 +182,10 @@
                 android:id="@+id/fullreduce_name_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/bottom_separator"
                 android:gravity="center"
                 android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_12" />
+                android:textSize="@dimen/font_size_14" />
 
             <TextView
                 android:id="@+id/fullreduce_time_tv"
@@ -195,7 +196,8 @@
                 android:background="@drawable/bottom_separator"
                 android:gravity="center"
                 android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_12" />
+                android:textSize="@dimen/font_size_12"
+                android:visibility="gone" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/fullreduce_list"
