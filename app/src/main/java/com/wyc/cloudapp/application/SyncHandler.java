@@ -48,7 +48,8 @@ final class SyncHandler extends Handler {
     private static List<Integer> getBasicsDataMessageIds(){
         return Arrays.asList(MessageID.SYNC_CASHIER_ID/*收银员*/,MessageID.SYNC_GOODS_CATEGORY_ID/*商品类别*/,MessageID.SYNC_PAY_METHOD_ID/*支付方式*/,MessageID.SYNC_STORES_ID/*仓库信息*/,
                 MessageID.SYNC_GP_INFO_ID/*组合商品*/,MessageID.SYNC_GOODS_ID/*商品信息*/,MessageID.SYNC_FULLREDUCE_ID/*满减信息*/,MessageID.SYNC_SALES_INFO_ID/*营业员信息*/,
-                MessageID.SYNC_SALE_OPERATOR_INFO_ID/*经办人信息*/,MessageID.SYNC_PROMOTION_ID/*促销信息*/,MessageID.SYNC_STEP_PROMOTION_ID/*阶梯促销*/,MessageID.SYNC_STEP_FULLREDUCE_ID/*阶梯满减*/);
+                MessageID.SYNC_SALE_OPERATOR_INFO_ID/*经办人信息*/,MessageID.SYNC_PROMOTION_ID/*促销信息*/,MessageID.SYNC_STEP_PROMOTION_ID/*阶梯促销*/,MessageID.SYNC_STEP_FULLREDUCE_ID/*阶梯满减*/,
+                MessageID.SYNC_BUY_X_GIVE_X_ID,MessageID.SYNC_BUY_FULL_GIVE_X_ID);
     }
 
     void initParameter(final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){
@@ -166,6 +167,26 @@ final class SyncHandler extends Handler {
                     url = base_url + "/api/promotion/fullreduce_info";
                     object.put("stores_id",stores_id);
                     object.put("type",1);
+                    break;
+                case MessageID.SYNC_BUY_X_GIVE_X_ID:
+                    mFunc = this::up_buy_x_give_x;
+                    table_name = "buy_x_give_x";
+                    table_cls = new String[]{"tlp_id","tlpb_id","promotion_type","promotion_object","promotion_grade_id","cumulation_give","xnum_buy","xnum_give","markup_price","barcode_id"
+                            ,"barcode_id_give","start_date","end_date","promotion_week","begin_time","end_time","status","xtype"};
+                    sys_name = "正在同步买X送X";
+                    url = base_url + "/api/promotion/get_promotion_buyx_givex";
+                    object.put("stores_id",stores_id);
+                    object.put("pos_num",pos_num);
+                    break;
+                case MessageID.SYNC_BUY_FULL_GIVE_X_ID:
+                    mFunc = this::up_buy_full_give_x;
+                    table_name = "buyfull_give_x";
+                    table_cls = new String[]{"tlp_id","tlpb_id","title","type_detail_id","promotion_type","promotion_object","promotion_grade_id","cumulation_give","fullgive_way","give_way","item_discount","buyfull_money"
+                            ,"givex_goods_info","start_date","end_date","promotion_week","begin_time","end_time","status","xtype"};
+                    sys_name = "正在同步买满送X";
+                    url = base_url + "/api/promotion/get_promotion_buyfull_givex";
+                    object.put("stores_id",stores_id);
+                    object.put("pos_num",pos_num);
                     break;
                 case MessageID.SYNC_SALES_INFO_ID:
                     mFunc = this::up_sales;
@@ -924,6 +945,59 @@ final class SyncHandler extends Handler {
             if (!success)Logger.e("标记已获满减信息错误:" + object.getString("info"));
         }
     }
+
+    private void up_buy_x_give_x(final JSONArray datas) throws JSONException{
+        if (datas != null && !datas.isEmpty()){
+            JSONObject object;
+            final String url = mUrl + "/api/promotion/up_promotion_buyx_givex";
+
+            final JSONArray tlp_ids = new JSONArray();
+            for (int k = 0,length = datas.size();k < length;k++) {
+                object = datas.getJSONObject(k);
+                tlp_ids.add(object.getIntValue("tlp_id"));
+            }
+
+            object = new JSONObject();
+            object.put("appid",mAppId);
+            object.put("tlp_ids",tlp_ids);
+            object.put("pos_num",mPosNum);
+
+            object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,mAppSecret),true);
+            boolean success;
+            if (success = (object.getIntValue("flag") == 1)){
+                object = JSON.parseObject(object.getString("info"));
+                success = "y".equals(object.getString("status"));
+            }
+            if (!success)Logger.e("标记已获买X送X信息错误:" + object.getString("info"));
+        }
+    }
+
+    private void up_buy_full_give_x(final JSONArray datas) throws JSONException{
+        if (datas != null && !datas.isEmpty()){
+            JSONObject object;
+            final String url = mUrl + "/api/promotion/up_promotion_buyfull_givex";
+
+            final JSONArray tlp_ids = new JSONArray();
+            for (int k = 0,length = datas.size();k < length;k++) {
+                object = datas.getJSONObject(k);
+                tlp_ids.add(object.getIntValue("tlp_id"));
+            }
+
+            object = new JSONObject();
+            object.put("appid",mAppId);
+            object.put("tlp_ids",tlp_ids);
+            object.put("pos_num",mPosNum);
+
+            object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,mAppSecret),true);
+            boolean success;
+            if (success = (object.getIntValue("flag") == 1)){
+                object = JSON.parseObject(object.getString("info"));
+                success = "y".equals(object.getString("status"));
+            }
+            if (!success)Logger.e("标记已获买满送X信息错误:" + object.getString("info"));
+        }
+    }
+
 
     void stop(){
         sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_THREAD_QUIT_ID));

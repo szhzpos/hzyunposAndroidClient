@@ -67,6 +67,8 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
     private Window mWindow;
     private boolean isPayMethodMol = false,isManualMol = false;
     private final CustomProgressDialog mProgressDialog;
+    private FullReduceRulesAdapter mFullReduceRuleAdapter;
+
     public AbstractSettlementDialog(final SaleActivity context, final String title){
         super(context,title);
         mProgressDialog = new CustomProgressDialog(context);
@@ -535,9 +537,9 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                     recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
                     recyclerView.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
 
-                    final FullReduceRulesAdapter adapter = new FullReduceRulesAdapter(mContext,object.getJSONArray("rules_des"));
-                    recyclerView.setAdapter(adapter);
-                    recyclerView.post(()-> recyclerView.scrollToPosition(adapter.getMaxMoneyIndex()));
+                    mFullReduceRuleAdapter = new FullReduceRulesAdapter(mContext);
+                    mFullReduceRuleAdapter.setDataForArray(object.getJSONArray("rules_des"));
+                    recyclerView.setAdapter(mFullReduceRuleAdapter);
                 }
                 final TextView name = fullReduce_des_layout.findViewById(R.id.fullreduce_name_tv),time = fullReduce_des_layout.findViewById(R.id.fullreduce_time_tv);
                 if (null != name && time != null){
@@ -679,9 +681,17 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         mZlAmtEt.setText(String.format(Locale.CHINA,"%.2f",mZlAmt));
 
         showDiscountDescription();
+        showFullReduce();
 
         mCashMoneyEt.selectAll();
     }
+
+    private void showFullReduce(){
+        if (mFullReduceRuleAdapter != null){
+            mFullReduceRuleAdapter.setDataForArray(Utils.getNullObjectAsEmptyJsonArray(mContext.getFullReduceRecord(),"rules_des"));
+        }
+    }
+
     private void clearContent(){
         mOrder_amt = 0.0;
         mDiscount_amt = 0.0;

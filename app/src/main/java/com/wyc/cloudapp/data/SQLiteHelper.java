@@ -1632,8 +1632,49 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    begin_time      VARCHAR,\n" +
                 "    end_time        VARCHAR,\n" +
                 "    xtype           INTEGER\n" +
-                ");\n";
-
+                ");\n",sql_buy_x_give_x = "CREATE TABLE IF NOT EXISTS buy_x_give_x (\n" +
+                "    tlp_id             INTEGER PRIMARY KEY\n" +
+                "                               NOT NULL,\n" +
+                "    tlpb_id     INTEGER," +
+                "    promotion_type     INTEGER,\n" +
+                "    promotion_object   INTEGER,\n" +
+                "    promotion_grade_id INTEGER,\n" +
+                "    cumulation_give    INTEGER,\n" +
+                "    xnum_buy    REAL,\n" +
+                "    xnum_give    REAL,\n" +
+                "    markup_price    REAL,\n" +
+                "    barcode_id   INTEGER,\n" +
+                "    barcode_id_give   INTEGER,\n" +
+                "    start_date         INTEGER,\n" +
+                "    end_date           INTEGER,\n" +
+                "    promotion_week     VARCHAR,\n" +
+                "    begin_time         VARCHAR,\n" +
+                "    end_time           VARCHAR,\n" +
+                "    status             INTEGER,\n" +
+                "    xtype              INTEGER\n" +
+                ");\n",sql_buyfull_give_x = "CREATE TABLE IF NOT EXISTS buyfull_give_x (\n" +
+                "    tlp_id             INTEGER PRIMARY KEY\n" +
+                "                               NOT NULL,\n" +
+                "    tlpb_id     INTEGER,                  \n" +
+                "    title     VARCHAR,\n" +
+                "    type_detail_id     INTEGER,\n" +
+                "    promotion_type     INTEGER,\n" +
+                "    promotion_object   INTEGER,\n" +
+                "    promotion_grade_id INTEGER,\n" +
+                "    cumulation_give    INTEGER,\n" +
+                "    fullgive_way    INTEGER,\n" +
+                "    give_way    INTEGER,\n" +
+                "    item_discount    INTEGER,\n" +
+                "    buyfull_money    REAL,\n" +
+                "    givex_goods_info  VARCHAR,\n" +
+                "    start_date         INTEGER,\n" +
+                "    end_date           INTEGER,\n" +
+                "    promotion_week     VARCHAR,\n" +
+                "    begin_time         VARCHAR,\n" +
+                "    end_time           VARCHAR,\n" +
+                "    status             INTEGER,\n" +
+                "    xtype              INTEGER\n" +
+                ");";
         list.add(sql_shop_stores);
         list.add(sql_shop_category);
         list.add(sql_barcode_info);
@@ -1666,6 +1707,8 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         list.add(sql_promotion_info);
         list.add(sql_step_promotion_info);
         list.add(sql_fullreduce_info_new);
+        list.add(sql_buy_x_give_x);
+        list.add(sql_buyfull_give_x);
 
         try {
             db.beginTransaction();

@@ -27,7 +27,7 @@
 
     <TextView
         android:id="@+id/diff_amt_des_tv"
-        android:layout_width="@dimen/size_128"
+        android:layout_width="@dimen/size_108"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
         android:textAlignment="center"

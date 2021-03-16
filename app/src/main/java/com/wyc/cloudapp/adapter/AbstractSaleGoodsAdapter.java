@@ -19,6 +19,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.bean.FullReduceRule;
 import com.wyc.cloudapp.adapter.bean.PromotionRule;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -28,6 +29,7 @@ import com.wyc.cloudapp.utils.FontSizeTagHandler;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -41,14 +43,15 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
     private final JSONArray mDiscountRecords;
     private int mOrderType = 1;//订单类型 1线下 2线上
     private boolean mSingleRefundStatus = false,d_discount = false;//d_discount是否折上折
-    private JSONObject mStepFullReduceRecord;
+    private JSONObject mFullReduceDescription;
 
     private double mTotalSaleAmt;
     private double mTotalDiscountAmt;
     private double mTotalOriginalAmt;
     private OnDataChange mDataListener;
 
-    private JSONArray mFullReduceRuleGroup;
+    private JSONArray mFullReduceRules;
+    private JSONObject mBuyXgiveXRule;
 
     public AbstractSaleGoodsAdapter(final SaleActivity context){
         mContext = context;
@@ -708,7 +711,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
         if (mOrderType != 1)mOrderType = 1;
         mDiscountRecords.fluentClear();
         mDatas.fluentClear();
-        if(mStepFullReduceRecord != null) mStepFullReduceRecord = null;
+        if(mFullReduceDescription != null) mFullReduceDescription = null;
 
         notifyDataSetChanged();
     }
@@ -731,8 +734,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
         _deleteDiscountRecordForType(AbstractSaleGoodsAdapter.DISCOUNT_TYPE.M_MOL);
     }
     public void deleteVipDiscountRecord(){
-        getFullReduceInfo("-1");
-        if (!isEmpty()){
+        if (initDiscountRules("-1") && !isEmpty()){
             _deleteDiscountRecordForType(DISCOUNT_TYPE.V_DISCOUNT);
             _deleteDiscountRecordForType(DISCOUNT_TYPE.PROMOTION);
         }
@@ -839,10 +841,14 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
 
     private String getDiscountNames(int[] types){
         final StringBuilder sb = new StringBuilder();
+        String name;
         if (types != null){
             for (int type : types){
-                if (sb.length() > 0)sb.append(",");
-                sb.append(getDiscountName(type));
+                name = getDiscountName(type);
+                if (Utils.isNotEmpty(name)){
+                    if (sb.length() > 0)sb.append(",");
+                    sb.append(name);
+                }
             }
         }
         return sb.toString();
@@ -875,10 +881,8 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
     }
 
     public void updateGoodsInfoToVip(final JSONObject vip){
-        getFullReduceInfo(mContext.getVipGradeId());
-
-        double discount ,new_price = 0.0,original_price,discount_amt = 0.0,xnum = 1.0,current_discount_amt = 0.0,original_amt = 0.0,current_sale_amt = 0.0,new_discount = 1.0;
-        if (vip != null){
+        if (initDiscountRules(mContext.getVipGradeId()) && vip != null){
+            double discount ,new_price = 0.0,original_price,discount_amt = 0.0,xnum = 1.0,current_discount_amt = 0.0,original_amt = 0.0,current_sale_amt = 0.0,new_discount = 1.0;
             JSONObject jsonObject,discount_json;
             for (int i = 0,length = mDatas.size();i < length;i++){
                 jsonObject = mDatas.getJSONObject(i);
@@ -1281,14 +1285,24 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
         notifyDataSetChanged();
     }
 
-    public void stepFullReduceDiscount(){
+    //满减优惠
+    public void fullReduceDiscount(){
+        final JSONArray rules = calculateAmtForStepFullReduceRule();
+        rules.addAll(calculateAmtForFullReduceRule());
+        Utils.sortJsonArrayFromDoubleCol(rules,"reduce_money");
+        generateFullReduceDesAndAddDiscount(rules);
+    }
+
+    private JSONArray calculateAmtForStepFullReduceRule(){
         final StringBuilder err = new StringBuilder();
+        final JSONArray new_rules = new JSONArray();
         final JSONArray array = SQLiteHelper.getListToJson("select * from fullreduce_info where starttime <= datetime('now') <= endtime",err);
         if (null != array){
             if (!array.isEmpty()){
                 final JSONObject full_reduce_obj = array.getJSONObject(0);
                 final JSONArray rules = JSON.parseArray(Utils.getNullOrEmptyStringAsDefault(full_reduce_obj,"rule","[]"));
                 if (!rules.isEmpty()){
+                    final String name = full_reduce_obj.getString("title");
                     Utils.sortJsonArrayFromDoubleCol(rules,"full_money");
                     int modes = full_reduce_obj.getIntValue("modes"),fold = full_reduce_obj.getIntValue("fold");
                     double sale_amt = 0.0;
@@ -1303,41 +1317,112 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                     Logger.d("fold:%d,modes:%d,sale_amt:%f",fold,modes,sale_amt);
 
                     double reduce_money = 0.0,full_money = 0.0;
-                    for (int i = rules.size() - 1;i >= 0;i--){
-                        final JSONObject rule_json = rules.getJSONObject(i);
+                    int index = -1,size = rules.size();
+                    JSONObject rule_json;
+                    for (int i = size - 1;i >= 0;i--){
+                        rule_json = rules.getJSONObject(i);
                         full_money = rule_json.getDoubleValue("full_money");
+                        reduce_money = rule_json.getDoubleValue("reduce_money");
                         if (sale_amt >= full_money){
                             if (fold == 2){
                                 int counts = (int) (sale_amt / full_money);
                                 reduce_money = counts * reduce_money;
                                 rule_json.put("reduce_money",reduce_money);
                             }
+                            rule_json.put("sale_amt",sale_amt);
+                            rule_json.put("title",name);
                             rule_json.put("status",1);
+                            new_rules.add(rule_json);
+                            index = i;
                             break;
                         }
                     }
-
-                    rules.addAll(calculateAmtForRule());
-                    Utils.sortJsonArrayFromDoubleCol(rules,"reduce_money");
-
-                    generateStepFullReduceDes(sale_amt,full_reduce_obj,rules);
-
-
-                    if (!Utils.equalDouble(reduce_money,0.0)) addStepFullReduceDiscount(reduce_money,sale_amt);
+                    if (index == -1){//没有找到，说明阶梯都不满足则保存最小的阶梯用于提示。
+                        rule_json = rules.getJSONObject(0);
+                        rule_json.put("sale_amt",sale_amt);
+                        rule_json.put("title",name);
+                        new_rules.add(rule_json);
+                    }else {
+                        //如果找到并且不是最后一个则需要保存满足阶梯的后一个用于提示。
+                        if (index < size -1){
+                            rule_json = rules.getJSONObject(index + 1);
+                            rule_json.put("sale_amt",sale_amt);
+                            rule_json.put("title",name);
+                            new_rules.add(rule_json);
+                        }
+                    }
                 }
             }
         }else {
             MyDialog.displayErrorMessage(mContext, "满减优惠错误:" + err);
         }
+        return new_rules;
     }
-    private void addStepFullReduceDiscount(double reduce_money, double sale_amt){
-        JSONObject object,discount_obj;
+
+    private void addFullReduceDiscount(@NonNull final JSONObject rule){
+        JSONObject goods;
         int sale_record = mDatas.size();
+        double reduce_money = rule.getDoubleValue("reduce_money"),sale_amt = rule.getDoubleValue("sale_amt");
+
+        int promotion_type = rule.getIntValue("promotion_type");
+        String value_key,id,detail_id;
+
+        switch (promotion_type){
+            case 1:
+                value_key = "barcode_id";
+                break;
+            case 2:
+                value_key = "category_id";
+                break;
+            case 3:
+                value_key = "gs_id";
+                break;
+            case 4:
+                value_key = "brand_id";
+                break;
+            default:
+                value_key = null;
+        }
+        if (value_key != null){
+            final JSONArray detail_ids = Utils.getNullObjectAsEmptyJsonArray(rule,"detail_ids");
+            int size = detail_ids.size();
+            final List<Integer> indexes = new ArrayList<>();
+
+            for (int i = 0;i < sale_record;i++){
+                goods = mDatas.getJSONObject(i);
+                //如果不是全场满减则需要根据规则范围查找满足的商品
+                for (int j = 0;j < size ; j ++){
+                    detail_id = detail_ids.getString(j);
+                    if (promotion_type == 2){//类别要判断path
+                        id = Utils.getNullStringAsEmpty(goods,"path");
+                        if (id.contains(detail_id + "@")){
+                            indexes.add(i);
+                        }
+                    }else {
+                        id = Utils.getNullStringAsEmpty(goods,value_key);
+                        if (id.equals(detail_id)){
+                            indexes.add(i);
+                        }
+                    }
+                }
+            }
+            if (!indexes.isEmpty())addFullReduceDiscount(mDatas,indexes,reduce_money,sale_amt);
+        }else {
+            addFullReduceDiscount(mDatas,null,reduce_money,sale_amt);
+        }
+        notifyDataSetChanged();
+    }
+
+    private void addFullReduceDiscount(final JSONArray data,List<Integer> indexes,double reduce_money, double sale_amt){
+        /*indexes 当为null时全场促销否则其值为需要分摊满减金额商品的索引*/
+
+        JSONObject object,discount_obj;
+        int sale_record = indexes != null ? indexes.size() :data.size();
         double per_goods_dis_amt = 0.0, percent = Utils.formatDouble(reduce_money / sale_amt,4),original_sale_amt = 0.0,new_discount = 0.0,
                 xnum = 0.0,new_price = 0.0,current_sale_amt = 0.0;
 
         for (int i = 0;i < sale_record;i++){
-            object = mDatas.getJSONObject(i);
+            object = data.getJSONObject( indexes != null? indexes.get(i) : i);
 
             original_sale_amt = object.getDoubleValue("sale_amt");
             if (Utils.equalDouble(original_sale_amt,0.0))continue;
@@ -1372,58 +1457,54 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
             object.put("discount_type", AbstractSaleGoodsAdapter.DISCOUNT_TYPE.FULL_REDUCE);
             object.put("sale_amt",current_sale_amt);
         }
-
-        notifyDataSetChanged();
     }
 
-    private void generateStepFullReduceDes(double sale_amt, final @NonNull JSONObject object, final @NonNull JSONArray rules){
-        final String name = String.format(Locale.CHINA,"%s(%s)",getDiscountName(AbstractSaleGoodsAdapter.DISCOUNT_TYPE.FULL_REDUCE),object.getString("title"));
+    private void generateFullReduceDesAndAddDiscount(final @NonNull JSONArray rules){
         final JSONArray rules_des = new JSONArray();
-        JSONObject rule_obj,tmp;
-        double full_money = 0.0,reduce_money = 0.0,max_reduce_money = 0.0;
+        JSONObject rule_obj,tmp,finded_rule = null;
+        double full_money = 0.0,reduce_money = 0.0,max_reduce_money = 0.0,sale_amt = 0.0;
         for (int i = rules.size() - 1;i >= 0;i --){
             tmp = rules.getJSONObject(i);
             rule_obj = new JSONObject();
 
             full_money = tmp.getDoubleValue("full_money");
             reduce_money = tmp.getDoubleValue("reduce_money");
-            rule_obj.put("rule_des",mContext.getString(R.string.fullreduce_des_sz,String.valueOf(full_money),String.valueOf(reduce_money)));
-            rule_obj.put("title",tmp.containsKey("title") ? tmp.getString("title") : name);
-
-            if (sale_amt >= full_money){
-                if (tmp.containsKey("status")){
-                    if (reduce_money > max_reduce_money){
-                        max_reduce_money = reduce_money;
-                    }else {
-                        continue;
-                    }
-                    rule_obj.put("status",tmp.getIntValue("status"));
-                }else
-                    rule_obj.put("status",2);
+            sale_amt = tmp.getDoubleValue("sale_amt");
+            int status = tmp.getIntValue("status");
+            if (status == 1){
+                if (reduce_money > max_reduce_money){
+                    max_reduce_money = reduce_money;
+                    finded_rule = tmp;
+                }else {
+                    continue;
+                }
+                rule_obj.put("status",status);
             }else {
                 rule_obj.put("status",3);
                 rule_obj.put("diff_amt_des",mContext.getString(R.string.diff_des_sz,String.format(Locale.CHINA,"%.2f",full_money -sale_amt)));
             }
 
+            rule_obj.put("rule_des",mContext.getString(R.string.fullreduce_des_sz,String.valueOf(full_money),String.valueOf(reduce_money)));
+            rule_obj.put("title",tmp.getString("title"));
             rules_des.add(rule_obj);
         }
-        Logger.d_json(rules.toString());
+        if (finded_rule != null)addFullReduceDiscount(finded_rule);
 
-        mStepFullReduceRecord = new JSONObject();
-        mStepFullReduceRecord.put("name","满减促销方案");
-        mStepFullReduceRecord.put("rules_des",rules_des);
+        mFullReduceDescription = new JSONObject();
+        mFullReduceDescription.put("name","满减促销方案");
+        mFullReduceDescription.put("rules_des",rules_des);
     }
 
-    public JSONObject getStepFullReduceRecord(){
-        return mStepFullReduceRecord;
+    public JSONObject getFullReduceDes(){
+        return mFullReduceDescription;
     }
 
-    public void deleteStepFullReduceRecord(){
-        if(mStepFullReduceRecord != null) mStepFullReduceRecord = null;
+    public void deleteFullReduceDiscount(){
+        if(mFullReduceDescription != null) mFullReduceDescription = null;
         _deleteDiscountRecordForType(AbstractSaleGoodsAdapter.DISCOUNT_TYPE.FULL_REDUCE);
     }
 
-    private void getFullReduceInfo(final String grade_id){
+    private boolean getFullReduceInfo(final String grade_id){
         /*在使用会员、清空会员时调用刷新满减信息*/
         final StringBuilder err = new StringBuilder();
         final String sql = "SELECT tlpb_id,title,type_detail_id,promotion_type,promotion_object,promotion_grade_id,cumulation_give,buyfull_money,reduce_money FROM fullreduce_info_new where status = 1 and " +
@@ -1435,20 +1516,22 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
         Logger.d("ReduceInfo_sql:%s",sql);
         final JSONArray array = SQLiteHelper.getListToJson(sql,err);
         if (null != array){
-            groupingFullReducePlan(array.toJavaList(FullReduceRule.class));
+            CustomApplication.execute(()-> groupingFullReducePlan(array.toJavaList(FullReduceRule.class)));
+            return true;
         }else {
             Toast.makeText(mContext,"初始化满减信息错误:" + err,Toast.LENGTH_LONG).show();
         }
+        return false;
     }
 
     private void groupingFullReducePlan(final List<FullReduceRule> fullReduceRules){
         JSONObject ruleObj;
         JSONArray detail_ids;
-        mFullReduceRuleGroup = new JSONArray();
+        mFullReduceRules = new JSONArray();
         for (FullReduceRule rule : fullReduceRules){
             boolean isExist = false;
-            for (int i = 0,size = mFullReduceRuleGroup.size();i < size;i ++){
-                ruleObj = mFullReduceRuleGroup.getJSONObject(i);
+            for (int i = 0, size = mFullReduceRules.size(); i < size; i ++){
+                ruleObj = mFullReduceRules.getJSONObject(i);
                 if (ruleObj.getIntValue("tlpb_id") == rule.getTlpb_id()){
                     detail_ids = Utils.getNullObjectAsEmptyJsonArray(ruleObj,"detail_ids");
                     detail_ids.add(rule.getType_detail_id());
@@ -1470,12 +1553,12 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                 detail_ids.add(rule.getType_detail_id());
                 ruleObj.put("detail_ids",detail_ids);
 
-                mFullReduceRuleGroup.add(ruleObj);
+                mFullReduceRules.add(ruleObj);
             }
         }
     }
 
-    private JSONArray calculateAmtForRule(){
+    private JSONArray calculateAmtForFullReduceRule(){
         /* promotion_type 0全场促销,1时是商品id,2为类别id,3货商id,4品牌id*/
         double plan_amt = 0.0;
         JSONArray detail_ids;
@@ -1483,8 +1566,9 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
         JSONObject goods,rule;
         int promotion_type = -1;
         String detail_id,id;
-        final JSONArray rules = Utils.JsondeepCopy(mFullReduceRuleGroup);
-        for (int i = 0,size = rules.size();i < size;i ++){
+        boolean isFinded = false;
+        final JSONArray rules = Utils.JsondeepCopy(mFullReduceRules);
+        for (int i = rules.size() - 1;i >= 0;i --){
             rule = rules.getJSONObject(i);
             promotion_type = Utils.getNotKeyAsNumberDefault(rule,"promotion_type",-1);
             switch (promotion_type){
@@ -1507,6 +1591,8 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
             if (value_key != null){
                 detail_ids = rule.getJSONArray("detail_ids");
                 plan_amt = 0.0;
+                isFinded = false;
+
                 for (int j = 0,len = detail_ids.size();j < len;j ++){
                     detail_id = detail_ids.getString(j);
                     for (int k = 0,k_len = mDatas.size();k < k_len;k++){
@@ -1515,16 +1601,22 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                             id = Utils.getNullStringAsEmpty(goods,"path");
                             if (id.contains(detail_id + "@")){
                                 plan_amt += goods.getDoubleValue("sale_amt");
+                                isFinded = true;
                             }
                         }else {
                             id = Utils.getNullStringAsEmpty(goods,value_key);
                             if (id.equals(detail_id)){
                                 plan_amt += goods.getDoubleValue("sale_amt");
+                                isFinded = true;
                             }
                         }
                     }
                 }
-                calculateReduceMoney(rule,plan_amt);
+                if (isFinded){
+                    calculateReduceMoney(rule,plan_amt);//只有计算了销售金额的方案才需要计算满减金额
+                }else {
+                    rules.remove(i);
+                }
             }else {
                 calculateReduceMoney(rule,plan_amt);
             }
@@ -1546,7 +1638,67 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                 }
             }
         }
+        rule.put("sale_amt",sale_amt);
     }
+
+    private boolean initDiscountRules(final String grade_id){
+        /*初始化折扣规则 包括满减 、买X送X*/
+        return getFullReduceInfo(grade_id) && getBuyXgiveXInfo(grade_id);
+    }
+
+    //买X送X优惠
+    private boolean getBuyXgiveXInfo(final String grade_id){
+        /*在使用会员、清空会员时调用刷新信息*/
+        final StringBuilder err = new StringBuilder();
+        final String sql = "SELECT tlp_id,cumulation_give,xnum_buy,xnum_give,markup_price,barcode_id,barcode_id_give FROM buy_x_give_x where status = 1 and " +
+                "(promotion_object = 0 or ((promotion_object = 2 and "+ grade_id +" > 0) or promotion_grade_id = "+ grade_id +")) and " +
+                "date(start_date, 'unixepoch', 'localtime') || ' ' ||begin_time  <= datetime('now', 'localtime') \n" +
+                " and datetime('now', 'localtime') <= date(end_date, 'unixepoch', 'localtime') || ' ' ||end_time and \n" +
+                "promotion_week like '%' ||case strftime('%w','now' ) when 0 then 7 else strftime('%w','now' ) end||'%'";
+
+        Logger.d("ReduceInfo_sql:%s",sql);
+        final JSONArray array = SQLiteHelper.getListToJson(sql,err);
+        if (null != array){
+            buyXgiveXGroup(array);
+            Logger.d_json(array.toString());
+            return true;
+        }else {
+            Toast.makeText(mContext,"初始化满减信息错误:" + err,Toast.LENGTH_LONG).show();
+        }
+        return false;
+    }
+
+    private void buyXgiveXGroup(final JSONArray array){
+        final JSONObject rule = new JSONObject();
+        JSONObject barcode;
+        String barcode_id;
+        JSONArray groups;
+        for (int i = 0,size = array.size();i < size; i++){
+            barcode = array.getJSONObject(i);
+            barcode_id = Utils.getNullStringAsEmpty(barcode,"barcode_id");
+            if (rule.containsKey(barcode_id)){
+                groups = Utils.getNullObjectAsEmptyJsonArray(rule,barcode_id);
+                groups.add(barcode);
+            }else {
+                groups = new JSONArray();
+                groups.add(barcode);
+                rule.put(barcode_id,groups);
+            }
+        }
+        mBuyXgiveXRule = rule;
+        Logger.d_json(rule.toString());
+    }
+    private void addbuyXgiveXDiscount(final JSONObject goods){
+        final String barcode_id = goods.getString("barcode_id");
+        if (mBuyXgiveXRule.containsKey(barcode_id)){
+            final JSONArray rules = mBuyXgiveXRule.getJSONArray(barcode_id);
+            for (int i = 0,size = rules.size();i < size;i ++){
+                final JSONObject rule = rules.getJSONObject(i);
+
+            }
+        }
+    }
+
 
     public boolean splitCombinationalGoods(final JSONArray arrays,int gp_id,double gp_price,double gp_num,StringBuilder err){
         final String sql = "select b.xnum xnum,(b.xnum * b.retail_price / a.amt) * " + gp_price +" / case b.xnum when 0 then 1 else b.xnum end price," +

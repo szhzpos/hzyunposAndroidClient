@@ -53,15 +53,15 @@ public class SaleActivity extends MainActivity{
     }
 
     public void fullReduceDiscount(){
-        mSaleGoodsAdapter.stepFullReduceDiscount();
+        mSaleGoodsAdapter.fullReduceDiscount();
     }
 
     public void deleteFullReduce(){
-        mSaleGoodsAdapter.deleteStepFullReduceRecord();
+        mSaleGoodsAdapter.deleteFullReduceDiscount();
     }
 
     public JSONObject getFullReduceRecord(){
-        return mSaleGoodsAdapter.getStepFullReduceRecord();
+        return mSaleGoodsAdapter.getFullReduceDes();
     }
 
     @Override
