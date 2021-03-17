@@ -17,7 +17,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.SaleActivity;
-import com.wyc.cloudapp.activity.mobile.business.SelectGoodsActivity;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -140,7 +139,7 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
                 CharSequence goods_title = Utils.getNullStringAsEmpty(object,"goods_title");
                 if (GoodsInfoViewAdapter.getPromotionInfo(object,mContext.getStoreId(),mContext.getVipGradeId())){
 
-                    if (GoodsInfoViewAdapter.isPromotion(object))
+                    if (GoodsInfoViewAdapter.isSpecialPromotion(object))
                         goods_title = Html.fromHtml(goods_title + "<font color='red'><size value='14'>(促销)</size></font> ",null,new FontSizeTagHandler(mContext));
 
                     final TextView name = findViewById(R.id.w_g_name),unit = findViewById(R.id.unit_name);

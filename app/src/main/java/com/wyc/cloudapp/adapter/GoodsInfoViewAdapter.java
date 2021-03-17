@@ -29,7 +29,7 @@ import java.util.Locale;
 
 public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdapter.MyViewHolder> implements View.OnClickListener {
     public static final int SPAN_COUNT = 5,MOBILE_SPAN_COUNT = 1;
-    public static final String W_G_MARK = "IWG";//计重、计份并且通过扫条码选择的商品标志
+    public static final String W_G_MARK = "IWG",SALE_TYPE = "ST";//计重、计份并且通过扫条码选择的商品标志
     private final SaleActivity mContext;
     private JSONArray mDatas;
     private OnGoodsSelectListener mSelectListener;
@@ -51,10 +51,6 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         set_selected_status(v);
         Utils.disableView(v,300);
         if (mSelectListener != null)mSelectListener.onSelect(getSelectGoodsByIndex());
-    }
-
-    final static class SALE_TYPE{
-        static final int COMMON = 0,SPECIAL_PROMOTION = 1;
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -168,7 +164,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
 
     public void loadGoodsByCategoryId(final String id){
         try {
-            setDatas(Integer.valueOf(id));
+            setDatas(Integer.parseInt(id));
         }catch (NumberFormatException e){
             e.printStackTrace();
         }
@@ -320,7 +316,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         JSONArray array;
         if (code = (array = SQLiteHelper.getListToJson(sql,err)) != null){
             if (!array.isEmpty()){
-                goods.put("sale_type",SALE_TYPE.SPECIAL_PROMOTION);//1 零售特价促销 以及 零售阶梯特价促销
+                makeSpecialPromotionSaleType(goods);
                 goods.put("promotion_rules",array);
             }
         }else {
@@ -330,8 +326,32 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         return code;
     }
 
-    public static boolean isPromotion(final JSONObject goods){
-        return goods.getIntValue("sale_type") == GoodsInfoViewAdapter.SALE_TYPE.SPECIAL_PROMOTION;
+    public static int getSaleType(final JSONObject goods){
+        return Utils.getNotKeyAsNumberDefault(goods,SALE_TYPE,0);
+    }
+
+    public static boolean isSpecialPromotion(final JSONObject goods){
+        return  0 != (getSaleType(goods) & 0x2);
+    }
+    public static void makeSpecialPromotionSaleType(final JSONObject goods){
+        /*零售特价与正常销售不兼容*/
+        if (null != goods)goods.put(SALE_TYPE,((getSaleType(goods) & 0xFFFFFFFE) | 0x2));
+    }
+
+    public static void makeCommonSaleType(final JSONObject goods){
+        /*正常销售与零售特价、买X送X不兼容*/
+        if (null != goods)goods.put(SALE_TYPE,0x1);
+    }
+    public static boolean isCommon(final JSONObject goods){
+        return  0 != (getSaleType(goods) & 0x1);
+    }
+
+    public static void makeBuyXGiveX(final JSONObject goods){
+        /*买X送X与正常销售不兼容*/
+        if (null != goods)goods.put(SALE_TYPE,((getSaleType(goods) & 0xFFFFFFFE) | 0x4));
+    }
+    public static boolean isBuyXGiveX(final JSONObject goods){
+        return  0 != (getSaleType(goods) & 0x4);
     }
 
     private boolean parseElectronicBarcode(@NonNull final JSONObject object,@NonNull final String weigh_barcode_info){

@@ -86,8 +86,8 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                              5 => '会员折扣',
                              6 => '整单折扣',
                              7 => '自动抹零',
-                             8 => '手动抹零',*/
-        static final int FULL_REDUCE = 1,PRESENT = 2,PROMOTION = 3,M_DISCOUNT = 4,V_DISCOUNT = 5,A_DISCOUNT = 6,AUTO_MOL =7,M_MOL = 8;
+                             8 => '手动抹零',9 => '买满赠',10 => '满送',*/
+        static final int FULL_REDUCE = 1,PRESENT = 2,PROMOTION = 3,M_DISCOUNT = 4,V_DISCOUNT = 5,A_DISCOUNT = 6,AUTO_MOL =7,M_MOL = 8,BUY_FULL = 9,BUY_X_GIVE_X = 10;
     }
 
     protected static class MyViewHolder extends AbstractDataAdapter.SuperViewHolder {
@@ -121,8 +121,8 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
     public void onBindViewHolder(@NonNull AbstractSaleGoodsAdapter.MyViewHolder myViewHolder, int i) {
         final JSONObject goods_info = mDatas.getJSONObject(i);
         if (goods_info != null){
-            myViewHolder.discount_sign.setText(getDiscountNames(getGoodsLastDiscountTypes(goods_info,new int[]{DISCOUNT_TYPE.PRESENT,DISCOUNT_TYPE.PROMOTION})));
-            myViewHolder.discount_sign.setTag(goods_info.getIntValue("sale_type"));
+            myViewHolder.discount_sign.setText(getDiscountNames(getGoodsLastDiscountTypes(goods_info,new int[]{DISCOUNT_TYPE.PRESENT,DISCOUNT_TYPE.PROMOTION,DISCOUNT_TYPE.BUY_X_GIVE_X})));
+            myViewHolder.discount_sign.setTag(GoodsInfoViewAdapter.getSaleType(goods_info));
 
             myViewHolder.row_id.setText(String.format(Locale.CHINA,"%s%s",i + 1,"、"));
             myViewHolder.goods_id.setText(goods_info.getString("goods_id"));
@@ -177,24 +177,34 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
     };
 
     protected void addSaleGoods(@NonNull JSONObject goods,double num,boolean isBarcodeWeighingGoods){
-        final JSONObject copy = verifyPromotion(goods,num);
+        JSONObject copy = verifyPromotion(goods,num);
         if (copy != null){
             double diff_xnum = copy.getDoubleValue("xnum");
             addSaleGoods(copy,diff_xnum,isBarcodeWeighingGoods);//拆分超过促销数量的商品
             num -= diff_xnum;
             if (Utils.equalDouble(num,0.0))return;
         }
+
+        //处理买X送X
+        copy = addBuyXgiveXDiscount(goods,num);
+        if (copy != null){
+            if (!copy.isEmpty()){
+                double diff_xnum = copy.getDoubleValue("xnum");
+                addSaleGoods(copy,diff_xnum,isBarcodeWeighingGoods);
+            }
+        }
+
         mContext.clearSearchEt();
 
-        int barcode_id = goods.getIntValue("barcode_id"),gp_id = goods.getIntValue("gp_id"),discount_type = -1,sale_type = goods.getIntValue("sale_type");
+        int discount_type = -1;
         double  sale_price,discount = 1.0,discount_amt = 0.0,new_price = 0.0,current_sale_amt = 0.0,current_discount_amt = 0.0,original_price = 0.0,original_amt = 0.0,sum_xnum = 0.0;
-        boolean exist = false,isPromotion = (sale_type == GoodsInfoViewAdapter.SALE_TYPE.SPECIAL_PROMOTION);
+        boolean exist = false,isPromotion = GoodsInfoViewAdapter.isSpecialPromotion(goods);
         JSONObject tmp_obj;
 
         for (int i = 0,length = mDatas.size();i < length;i++){
             tmp_obj = mDatas.getJSONObject(i);
 
-            if (barcode_id == tmp_obj.getIntValue("barcode_id") && gp_id == tmp_obj.getIntValue("gp_id") && sale_type == tmp_obj.getIntValue("sale_type")){
+            if (isSameGoods(goods,tmp_obj)){
                 exist = true;
 
                 original_price = tmp_obj.getDoubleValue("original_price");
@@ -212,7 +222,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
 
                 discount_amt = current_discount_amt = original_amt - current_sale_amt;
 
-                Logger.d("new_price:%f,original_price:%f,current_sale_amt:%f,original_amt:%f,current_discount_amt:%f,sum_xnum:%f",new_price,original_price,current_sale_amt,original_amt,current_discount_amt,sum_xnum);
+                Logger.d("new_price:%f,original_price:%f,current_sale_amt:%f,original_amt:%f,current_discount_amt:%f,sum_xnum:%f,num:%f",new_price,original_price,current_sale_amt,original_amt,current_discount_amt,sum_xnum,num);
 
                 tmp_obj.put("discount_amt", discount_amt);
                 tmp_obj.put("xnum",Utils.formatDouble(sum_xnum,4));
@@ -232,7 +242,11 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
             if (isPromotion){//促销商品
                 if (!Utils.equalDouble(original_price,0.0))discount = sale_price / original_price;
                 discount_type = DISCOUNT_TYPE.PROMOTION;
+            }else  if (GoodsInfoViewAdapter.isBuyXGiveX(goods)){//买X送X
+                if (!Utils.equalDouble(original_price,0.0))discount = sale_price / original_price;
+                discount_type = DISCOUNT_TYPE.BUY_X_GIVE_X;
             }
+
             if (isBarcodeWeighingGoods){
                 original_amt = goods.getDoubleValue("sale_amt");
             }else{
@@ -286,8 +300,16 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
             goods.put("sale_amt",Utils.formatDouble(current_sale_amt,4));
             goods.put("original_amt",original_amt);
 
-            mDatas.add(goods);
-            mCurrentItemIndex = mDatas.size() - 1;
+            if (GoodsInfoViewAdapter.isBuyXGiveX(goods)){
+                if (mCurrentItemIndex == mDatas.size() -1){
+                    mDatas.add(goods);
+                }else{
+                    mDatas.add((mCurrentItemIndex += 1),goods);
+                }
+            }else {
+                mDatas.add(goods);
+                mCurrentItemIndex = mDatas.size() - 1;
+            }
         }
         //处理优惠记录
         if (!Utils.equalDouble(current_discount_amt,0.0) && discount_type != -1){
@@ -295,7 +317,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
             discount_json.put("gp_id",goods.getIntValue("gp_id"));
             discount_json.put("barcode_id",goods.getIntValue("barcode_id"));
             discount_json.put("discount_type",discount_type);
-            discount_json.put("sale_type",goods.getIntValue("sale_type"));
+            discount_json.put(GoodsInfoViewAdapter.SALE_TYPE,GoodsInfoViewAdapter.getSaleType(goods));
             discount_json.put("price",current_discount_amt);
 
             //处理商品优惠明细
@@ -303,6 +325,19 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
         }
 
         this.notifyDataSetChanged();
+    }
+    private boolean isSameGoods(final JSONObject o,final JSONObject o2){
+        return Utils.getNotKeyAsNumberDefault(o,"barcode_id",-1) == Utils.getNotKeyAsNumberDefault(o2,"barcode_id",-1) &&
+                Utils.getNotKeyAsNumberDefault(o,"gp_id",-1) == Utils.getNotKeyAsNumberDefault(o2,"gp_id",-1) &&
+                GoodsInfoViewAdapter.getSaleType(o) == GoodsInfoViewAdapter.getSaleType(o2) &&
+                getBuyXGiveX(o) == getBuyXGiveX(o2);
+    }
+    private void markBuyXGiveX(final JSONObject give_obj,int buy_x_barcode_id){
+        /*BUY_X_ID 做买X送X促销的商品barcode_id  参数give_obj是被送商品对象*/
+        if (null != give_obj)give_obj.put("BUY_X_ID",buy_x_barcode_id);
+    }
+    private int getBuyXGiveX(final JSONObject goods){
+        return Utils.getNotKeyAsNumberDefault(goods,"BUY_X_ID",-1);
     }
 
     private int getGoodsLastDiscountType(final JSONObject object){
@@ -331,16 +366,14 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
         goods.put("discount_records",discount_records);
     }
 
+
     private JSONObject verifyPromotion(final @NonNull JSONObject object,double num){
         JSONObject tmp_obj;
-        int sale_type = object.getIntValue("sale_type");
-        if (sale_type == GoodsInfoViewAdapter.SALE_TYPE.SPECIAL_PROMOTION){
-
-            int barcode_id = object.getIntValue("barcode_id"),gp_id = object.getIntValue("gp_id");
+        if (GoodsInfoViewAdapter.isSpecialPromotion(object)){
             double sum_xnum = 0.0,diff_xnum = 0.0,new_price = 0.0;
             for (int i = 0,length = mDatas.size();i < length;i++) {
                 tmp_obj = mDatas.getJSONObject(i);
-                if (sale_type == tmp_obj.getIntValue("sale_type") && barcode_id == tmp_obj.getIntValue("barcode_id") && gp_id == tmp_obj.getIntValue("gp_id")){
+                if (isSameGoods(object,tmp_obj)){
                     sum_xnum  += tmp_obj.getDoubleValue("xnum");
                 }
             }
@@ -382,7 +415,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                      satisfy_rule = new JSONObject();
                      satisfy_rule.put("tlp_id",rule.getIntValue("tlp_id"));
                      satisfy_rule.put("lower_limit_num",lower_limit_num);
-                     satisfy_rule.put("upper_limit_num",upper_limit_num);
+                     satisfy_rule.put("upper_limit_num",3);
                      satisfy_rule.put("price",new_price);
                      satisfy_rules.add(satisfy_rule);
                  }
@@ -390,7 +423,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
 
             Logger.d_json(satisfy_rules.toString());
             if (satisfy_rules.isEmpty()){
-                object.put("sale_type",GoodsInfoViewAdapter.SALE_TYPE.COMMON);
+                GoodsInfoViewAdapter.makeCommonSaleType(object);
             }else {
                 List<PromotionRule> lists = satisfy_rules.toJavaList(PromotionRule.class);
                 Collections.sort(lists);
@@ -405,13 +438,14 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                 }else if ((diff_xnum = sum_xnum  - limit_xnum) > 0){
                     final JSONObject copy = Utils.JsondeepCopy(object);
                     double ori_price = copy.getDoubleValue("retail_price");
-                    copy.put("sale_type",GoodsInfoViewAdapter.SALE_TYPE.COMMON);
+
+                    GoodsInfoViewAdapter.makeCommonSaleType(copy);
+                    _deleteDiscountRecordForGoods(copy,0);
+
                     copy.put("price",ori_price);
                     copy.put("xnum",diff_xnum);
                     copy.put("sale_amt",diff_xnum * ori_price);
-                    if (AbstractSaleGoodsAdapter.DISCOUNT_TYPE.PROMOTION == copy.getIntValue("discount_type")){
-                        copy.remove("discount_type");
-                    }
+
                     Logger.d("diff_xnum:%f",diff_xnum);
 
                     return copy;
@@ -426,10 +460,12 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
 
     public void deleteSaleGoods(int index,double num){
         int size = mDatas.size();
+        JSONObject jsonObject;
         if (0 <= index && index < size){
             if (num == 0){//等于0删除整条记录
                 if (verifyDeletePermissions()){
                     mDatas.remove(index);
+                    deleteBuyXGiveXGoods();
                     if (mCurrentItemIndex == index){//如果删除的是当前选择的item则重置当前index以及View
                         if (index == size - 1){
                             mCurrentItemIndex--;
@@ -441,11 +477,12 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                 }else
                     return;
             }else{
-                final JSONObject jsonObject = mDatas.getJSONObject(index);
+                jsonObject = mDatas.getJSONObject(index);
                 double current_num = jsonObject.getDoubleValue("xnum"),price = jsonObject.getDoubleValue("price");
                 if ((current_num = current_num - num) <= 0){
                     if (verifyDeletePermissions()){
                         mDatas.remove(index);
+                        deleteBuyXGiveXGoods();
                         if (index == size - 1){
                             mCurrentItemIndex--;
                         }else{
@@ -457,7 +494,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                 }else{
                     _deleteDiscountRecordForGoods(jsonObject,num);
 
-                    if (GoodsInfoViewAdapter.isPromotion(jsonObject)){
+                    if (GoodsInfoViewAdapter.isSpecialPromotion(jsonObject)){
                         verifyPromotion(jsonObject,-1);
                         price = jsonObject.getDoubleValue("price");
                     }
@@ -466,8 +503,12 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                     jsonObject.put("xnum",current_num);
                     jsonObject.put("sale_amt",Utils.formatDouble(current_num * price,4));
                     jsonObject.put("original_amt",Utils.formatDouble(current_num * jsonObject.getDoubleValue("original_price"),2));
+
+
+                    addBuyXgiveXDiscount(jsonObject,0);
                 }
             }
+
             notifyDataSetChanged();
         }
     }
@@ -512,7 +553,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                     deleteSaleGoods(getCurrentItemIndex(),value);
                 }else{
                     double ori_xnum = json.getDoubleValue("xnum");
-                    final JSONObject copy_obj = verifyPromotion(json,value - ori_xnum);
+                    JSONObject copy_obj = verifyPromotion(json,value - ori_xnum);
                     if (copy_obj != null){
                         double diff_xnum = copy_obj.getDoubleValue("xnum");
                         addSaleGoods(copy_obj,diff_xnum,!Utils.getNullStringAsEmpty(copy_obj,GoodsInfoViewAdapter.W_G_MARK).isEmpty());
@@ -531,6 +572,15 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                     json.put("discount_amt", Utils.formatDouble(discount_amt,2));
                     json.put("xnum",Utils.formatDouble(xnum,3));
                     json.put("original_amt",original_amt);
+
+                    //处理买X送X
+                    copy_obj = addBuyXgiveXDiscount(json,0);
+                    if (copy_obj != null){
+                        if (!copy_obj.isEmpty()){
+                            double diff_xnum = copy_obj.getDoubleValue("xnum");
+                            addSaleGoods(copy_obj,diff_xnum,!Utils.getNullStringAsEmpty(copy_obj,GoodsInfoViewAdapter.W_G_MARK).isEmpty());
+                        }
+                    }
                 }
                 break;
             case 1:
@@ -600,13 +650,14 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
             final JSONObject discount_json = new JSONObject();
             discount_json.put("gp_id",json.getIntValue("gp_id"));
             discount_json.put("barcode_id",json.getIntValue("barcode_id"));
-            discount_json.put("sale_type",json.getIntValue("sale_type"));
+            discount_json.put(GoodsInfoViewAdapter.SALE_TYPE,GoodsInfoViewAdapter.getSaleType(json));
             discount_json.put("discount_type",discount_type);
             discount_json.put("price",current_discount_amt);
 
             //处理商品优惠明细
             addDiscountRecord(json,discount_json);
         }
+
         notifyDataSetChanged();
     }
 
@@ -694,7 +745,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                     discount_json = new JSONObject();
                     discount_json.put("gp_id",json.getIntValue("gp_id"));
                     discount_json.put("barcode_id",json.getIntValue("barcode_id"));
-                    discount_json.put("sale_type",json.getIntValue("sale_type"));
+                    discount_json.put(GoodsInfoViewAdapter.SALE_TYPE,GoodsInfoViewAdapter.getSaleType(json));
                     discount_json.put("discount_type",discount_type);
                     discount_json.put("price",current_discount_amt);
 
@@ -819,22 +870,26 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
     }
     private String getDiscountName(int discount_type){
         switch (discount_type) {
-            case AbstractSaleGoodsAdapter.DISCOUNT_TYPE.FULL_REDUCE:
+            case DISCOUNT_TYPE.FULL_REDUCE:
                 return "全场满减";
-            case AbstractSaleGoodsAdapter.DISCOUNT_TYPE.PRESENT:
+            case DISCOUNT_TYPE.PRESENT:
                 return "赠送";
-            case AbstractSaleGoodsAdapter.DISCOUNT_TYPE.M_DISCOUNT:
+            case DISCOUNT_TYPE.M_DISCOUNT:
                 return "手动折扣";
-            case AbstractSaleGoodsAdapter.DISCOUNT_TYPE.PROMOTION:
+            case DISCOUNT_TYPE.PROMOTION:
                 return "促销";
-            case AbstractSaleGoodsAdapter.DISCOUNT_TYPE.V_DISCOUNT:
+            case DISCOUNT_TYPE.V_DISCOUNT:
                 return "会员折扣";
-            case AbstractSaleGoodsAdapter.DISCOUNT_TYPE.A_DISCOUNT:
+            case DISCOUNT_TYPE.A_DISCOUNT:
                 return "整单折扣";
-            case AbstractSaleGoodsAdapter.DISCOUNT_TYPE.AUTO_MOL:
+            case DISCOUNT_TYPE.AUTO_MOL:
                 return "自动抹零";
-            case AbstractSaleGoodsAdapter.DISCOUNT_TYPE.M_MOL:
+            case DISCOUNT_TYPE.M_MOL:
                 return "手动抹零";
+            case DISCOUNT_TYPE.BUY_FULL:
+                return "买满赠";
+            case DISCOUNT_TYPE.BUY_X_GIVE_X:
+                return "买送";
         }
         return "";
     }
@@ -934,7 +989,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                     discount_json = new JSONObject();
                     discount_json.put("gp_id",jsonObject.getIntValue("gp_id"));
                     discount_json.put("barcode_id",jsonObject.getIntValue("barcode_id"));
-                    discount_json.put("sale_type",jsonObject.getIntValue("sale_type"));
+                    discount_json.put(GoodsInfoViewAdapter.SALE_TYPE,GoodsInfoViewAdapter.getSaleType(jsonObject));
                     discount_json.put("discount_type", AbstractSaleGoodsAdapter.DISCOUNT_TYPE.V_DISCOUNT);
                     discount_json.put("price",Utils.formatDouble(current_discount_amt,4));
 
@@ -947,9 +1002,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
         }
     }
     private boolean isNotParticipateDiscount(final JSONObject goods){
-        if (null != goods)
-            return  goods.getIntValue("sale_type") == GoodsInfoViewAdapter.SALE_TYPE.SPECIAL_PROMOTION;
-        return true;
+        return goods == null || GoodsInfoViewAdapter.isSpecialPromotion(goods);
     }
 
     public String generateOrderCode(final String pos_num, int order_type){
@@ -986,7 +1039,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
             for (int i = 0,length = mDatas.size();i < length;i ++){
                 final JSONObject json = mDatas.getJSONObject(i);
                 if (id.equals(json.getString("goods_id")) && barcode_id.equals(json.getString("barcode_id")) &&
-                        gp_id.equals(json.getString("gp_id")) && sale_type == json.getIntValue("sale_type")){
+                        gp_id.equals(json.getString("gp_id")) && sale_type == GoodsInfoViewAdapter.getSaleType(json)){
                     mCurrentItemIndex = i;
                     return;
                 }
@@ -1034,7 +1087,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                             ori_id = getGoodsId(original_goods);
                             if (new_id == ori_id){
                                 new_discount_price  = original_goods.getDoubleValue("price");
-                                if (GoodsInfoViewAdapter.isPromotion(original_goods)){//促销保存的是当前记录的总金额
+                                if (GoodsInfoViewAdapter.isSpecialPromotion(original_goods)){//促销保存的是当前记录的总金额
                                     new_discount_amt -= new_discount_price;
                                     new_goods.put("price",Utils.formatDouble( new_discount_amt,4));
                                 }else
@@ -1077,6 +1130,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
 
         if (Utils.equalDouble(del_num,0.0) || Utils.equalDouble(xnum,del_num)){
             discount_records.clear();
+            object.put("discount",1.0);
             object.put("discount_amt",0.0);
         }else {
             for (int j = discount_records.size() - 1;j >= 0 ;j--){
@@ -1105,7 +1159,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                 old_discount_money = record_json.getDoubleValue("discount_money");
                 for (int j = 0;j < details.size();j++){
                     discount_goods = details.getJSONObject(j);
-                    if (getGoodsId(discount_goods) == getGoodsId(object) && discount_goods.getIntValue("sale_type") == object.getIntValue("sale_type")){
+                    if (isSameGoods(discount_goods,object)){
                         //更新销售商品信息
                         double discount_money = discount_goods.getDoubleValue("price"),xnum =Utils.getNotKeyAsNumberDefault(object,"xnum",1.0),current_discount_amt = 0.0;
 
@@ -1175,7 +1229,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                         discount_goods = details.getJSONObject(j);
                         for (int k = 0,size = mDatas.size();k < size;k++){
                             goods = mDatas.getJSONObject(k);
-                            if (getGoodsId(discount_goods) == getGoodsId(goods) && discount_goods.getIntValue("sale_type") == goods.getIntValue("sale_type")){
+                            if (isSameGoods(discount_goods,goods)){
 
                                 double discount_money = discount_goods.getDoubleValue("price"),
                                         sale_amt = goods.getDoubleValue("sale_amt") + discount_money,
@@ -1254,7 +1308,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
             discount_obj = new JSONObject();
             discount_obj.put("gp_id",object.getIntValue("gp_id"));
             discount_obj.put("barcode_id",object.getIntValue("barcode_id"));
-            discount_obj.put("sale_type",object.getIntValue("sale_type"));
+            discount_obj.put(GoodsInfoViewAdapter.SALE_TYPE,GoodsInfoViewAdapter.getSaleType(object));
             discount_obj.put("discount_type",type);
             discount_obj.put("price",per_record_mol_amt);//单品折扣金额
             addDiscountRecord(object,discount_obj);
@@ -1442,7 +1496,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
             discount_obj = new JSONObject();
             discount_obj.put("gp_id",object.getIntValue("gp_id"));
             discount_obj.put("barcode_id",object.getIntValue("barcode_id"));
-            discount_obj.put("sale_type",object.getIntValue("sale_type"));
+            discount_obj.put(GoodsInfoViewAdapter.SALE_TYPE,GoodsInfoViewAdapter.getSaleType(object));
             discount_obj.put("discount_type", AbstractSaleGoodsAdapter.DISCOUNT_TYPE.FULL_REDUCE);
             discount_obj.put("price",per_goods_dis_amt);//单品折扣金额
             addDiscountRecord(object,discount_obj);
@@ -1688,15 +1742,88 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
         mBuyXgiveXRule = rule;
         Logger.d_json(rule.toString());
     }
-    private void addbuyXgiveXDiscount(final JSONObject goods){
-        final String barcode_id = goods.getString("barcode_id");
-        if (mBuyXgiveXRule.containsKey(barcode_id)){
-            final JSONArray rules = mBuyXgiveXRule.getJSONArray(barcode_id);
-            for (int i = 0,size = rules.size();i < size;i ++){
-                final JSONObject rule = rules.getJSONObject(i);
+    private JSONObject addBuyXgiveXDiscount(@NonNull final JSONObject goods,double num){
+        if (!GoodsInfoViewAdapter.isBuyXGiveX(goods)){
+            final String barcode_id = goods.getString("barcode_id");
+            if (mBuyXgiveXRule.containsKey(barcode_id)){
+                JSONObject rule,old_goods;
+                double sum_xnum = 0.0,xnum_buy = 0.0;
 
+                int length = mDatas.size();
+                for (int i = 0;i < length;i++) {
+                    old_goods = mDatas.getJSONObject(i);
+                    if (isSameGoods(goods,old_goods)){
+                        sum_xnum  += old_goods.getDoubleValue("xnum");
+                    }
+                }
+                sum_xnum += num;
+
+                final JSONArray rules = mBuyXgiveXRule.getJSONArray(barcode_id);
+                for (int i = 0,size = rules.size();i < size;i ++){
+                    rule = rules.getJSONObject(i);
+                    xnum_buy = rule.getDoubleValue("xnum_buy");
+                    if (Utils.notLessDouble(sum_xnum,xnum_buy)){
+                        final JSONObject give_obj = Utils.JsondeepCopy(goods);
+                        double give_num = rule.getDoubleValue("xnum_give"),markup_price = rule.getDoubleValue("markup_price");
+
+                        _deleteDiscountRecordForGoods(give_obj,0);
+                        GoodsInfoViewAdapter.makeBuyXGiveX(give_obj);
+
+                        boolean code = nextGoodsIsBuyXGiveX();
+                        if (!code || (rule.getIntValue("cumulation_give") == 1 && ((int)(sum_xnum / xnum_buy)) > 1)){
+                            give_obj.put("price",markup_price);
+                            give_obj.put("xnum",give_num);
+
+                            return give_obj;
+                        }
+                        return null;
+                    }else {
+                        if (nextGoodsIsBuyXGiveX()){
+                            deleteSaleGoods(getCurrentItemIndex() + 1,0);
+                        }
+                    }
+                }
             }
         }
+        return null;
+    }
+
+    private boolean nextGoodsIsBuyXGiveX(){
+        int length = mDatas.size();
+        int index = length == 1 ? 0 : mCurrentItemIndex + 1;
+        if (0 <= index && index <= length - 1){
+            final JSONObject next = mDatas.getJSONObject(index);
+            return GoodsInfoViewAdapter.isBuyXGiveX(next);
+        }
+        return false;
+    }
+
+    private void deleteBuyXGiveXGoods(){
+        int index = mCurrentItemIndex;
+        if (0 <= index && index <= mDatas.size() - 1){
+            final JSONObject next = mDatas.getJSONObject(index);
+            if (GoodsInfoViewAdapter.isBuyXGiveX(next)){
+                deleteSaleGoods(index,0);
+            }
+        }
+    }
+
+
+    private void addBuyXgiveXGoods(final JSONObject give_obj){
+        if (mCurrentItemIndex == mDatas.size() -1){
+            mDatas.add(give_obj);
+        }else
+            mDatas.add(mCurrentItemIndex + 1,give_obj);
+
+        final JSONObject discount_json = new JSONObject();
+        discount_json.put("gp_id",give_obj.getIntValue("gp_id"));
+        discount_json.put("barcode_id",give_obj.getIntValue("barcode_id"));
+        discount_json.put("discount_type",DISCOUNT_TYPE.BUY_X_GIVE_X);
+        discount_json.put(GoodsInfoViewAdapter.SALE_TYPE,GoodsInfoViewAdapter.getSaleType(give_obj));
+        discount_json.put("price",give_obj.getDoubleValue("discount_amt"));
+
+        //处理商品优惠明细
+        addDiscountRecord(give_obj,discount_json);
     }
 
 
