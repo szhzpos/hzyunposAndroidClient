@@ -530,6 +530,9 @@ public final class Utils {
     public static boolean notLessDouble(double a,double b){
         return equalDouble(a,b) || a - b > 0.0001;
     }
+    public static boolean notGreaterDouble(double a,double b){
+        return equalDouble(a,b) || a - b < 0.0001;
+    }
 
     public static void showTimePickerDialog(final Context context, final TextView tv, Calendar calendar) {
         new TimePickerDialog( context,3,

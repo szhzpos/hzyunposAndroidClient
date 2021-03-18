@@ -63,7 +63,7 @@ final class SyncHandler extends Handler {
 
     List<String> getSyncDataTableName(){
         return Arrays.asList("shop_category","shop_stores","barcode_info","pay_method","cashier_info","fullreduce_info","sales_info",
-                "promotion_info","sale_operator_info","goods_group", "goods_group_info");
+                "promotion_info","sale_operator_info","goods_group", "goods_group_info","buyfull_give_x","buy_x_give_x","step_promotion_info");
     }
 
     @Override

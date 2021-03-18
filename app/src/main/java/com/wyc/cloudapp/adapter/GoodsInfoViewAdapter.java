@@ -303,7 +303,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
 
                 "select tlp_id,2 tj_type,way,xnum_one,0.0 limit_xnum_one,case way when 1 then case when promotion_price_one < "+ price + " then promotion_price_one else " + price +" end " +
                 "when 2 then promotion_price_one/10.0 *"+ price +" end promotion_price_one," +
-                "xnum_two,0.0 limit_xnum_two,case way when 1 then case when promotion_price_one < "+ price + " then promotion_price_one else " + price +" end " +
+                "xnum_two,0.0 limit_xnum_two,case way when 1 then case when promotion_price_two < "+ price + " then promotion_price_two else " + price +" end " +
                 "when 2 then promotion_price_two/10.0 *"+ price +" end promotion_price_two," +
                 "xnum_three,0.0 limit_xnum_three,case way when 1 then case when promotion_price_three < "+ price + " then promotion_price_three else " + price +" end " +
                 "when 2 then promotion_price_three/10.0 *"+ price +" end promotion_price_three," +

@@ -667,6 +667,9 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                             JSONObject barcode_id_obj,goods_info;
                             for (int i = 0,length = array.size();i < length;i ++){
                                 barcode_id_obj = array.getJSONObject(i);
+
+                                if (GoodsInfoViewAdapter.isBuyXGiveX(barcode_id_obj))continue;//跳过存买X送X商品
+
                                 if (barcode_id_obj != null){
                                     goods_info = new JSONObject();
                                     if (mGoodsInfoViewAdapter.getSingleGoods(goods_info,barcode_id_obj.getString(GoodsInfoViewAdapter.W_G_MARK),mGoodsInfoViewAdapter.getGoodsId(barcode_id_obj))){

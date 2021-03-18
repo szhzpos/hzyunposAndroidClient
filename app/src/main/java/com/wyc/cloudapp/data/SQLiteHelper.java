@@ -1431,6 +1431,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "sale_amt     NUMERIC (18, 4) NOT NULL,\n" +
                 "discount  NUMERIC (18, 4) NOT NULL,\n" +
                 "discount_amt NUMERIC (18, 4) NOT NULL,\n" +
+                "" + GoodsInfoViewAdapter.SALE_TYPE +"  INT     NOT NULL,\n" +
                 "sale_man          VARCHAR (4),\n" +
                 "cas_id        VARCHAR (4)     NOT NULL,\n" +
                 "remark         VARCHAR (50),\n" +

@@ -165,11 +165,7 @@ public class SaleActivity extends MainActivity{
 
     @CallSuper
     public void addOneSaleGoods(){
-        final JSONObject object = Utils.JsondeepCopy(mSaleGoodsAdapter.getCurrentContent());
-        if (!object.isEmpty()){
-            object.put("xnum",1.0);
-            mSaleGoodsAdapter.addSaleGoods(object);
-        }
+        mSaleGoodsAdapter.addCurrentGoods(1);
     }
 
     //以下方法子类重写

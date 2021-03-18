@@ -373,7 +373,7 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
         if (mGetListener != null && mHbDetailCursorAdapter != null){
             if (mCurrentHangId != null){
                 final StringBuilder err = new StringBuilder();
-                final JSONArray barcode_ids = SQLiteHelper.getListToJson("SELECT barcode_id,only_coding,gp_id,"+ GoodsInfoViewAdapter.W_G_MARK +",sale_price price,xnum,sale_amt FROM hangbill_detail where hang_id = " + mCurrentHangId, err);
+                final JSONArray barcode_ids = SQLiteHelper.getListToJson("SELECT barcode_id,only_coding,gp_id,"+ GoodsInfoViewAdapter.W_G_MARK +","+ GoodsInfoViewAdapter.SALE_TYPE +",sale_price price,xnum,sale_amt FROM hangbill_detail where hang_id = " + mCurrentHangId, err);
                 if (null != barcode_ids) {
                     final JSONObject object = new JSONObject();
                     if (SQLiteHelper.execSql(object,"SELECT ifnull(card_code,'') card_code FROM hangbill where hang_id = " + mCurrentHangId)){
@@ -433,6 +433,7 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
                     for (int i = 0,length = array.size();i < length; i++){
                         tmp_obj = new JSONObject();
                         data = array.getJSONObject(i);
+
                         amt += data.getDouble("sale_amt");
 
                         tmp_obj.put("hang_id",hang_id);
@@ -449,6 +450,7 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
                         tmp_obj.put("xnum",data.getDouble("xnum"));
                         tmp_obj.put("unit_name",data.getString("unit_name"));
                         tmp_obj.put("sale_amt",data.getDouble("sale_amt"));
+                        tmp_obj.put(GoodsInfoViewAdapter.SALE_TYPE,data.getIntValue(GoodsInfoViewAdapter.SALE_TYPE));
                         tmp_obj.put("discount",data.getDouble("discount") * 100);
                         tmp_obj.put("discount_amt",data.getDouble("discount_amt"));
                         tmp_obj.put("sale_man",data.getString("sale_man"));
