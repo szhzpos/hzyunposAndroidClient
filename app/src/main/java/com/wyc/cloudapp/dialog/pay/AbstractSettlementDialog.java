@@ -509,10 +509,16 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
     }
 
     public boolean initPayContent(){
+        final StringBuilder err = new StringBuilder();
         calculateMolAmt(PayMethodViewAdapter.getPayMethod(PayMethodViewAdapter.getDefaultPayMethodId()),false);
-        fullReduceDiscount();
-        calculatePayContent();
-        return true;
+        if (fullReduceDiscount(err)){
+            calculatePayContent();
+            return true;
+        }else {
+            MyDialog.showErrorMessageToModalDialog(mContext,err.toString());
+            setCodeAndExit(0);
+        }
+        return false;
     }
     private void refreshPayContent(){
         if (initPayContent()){
@@ -520,8 +526,8 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             if (null != mPayDetailViewAdapter && !mPayDetailViewAdapter.getDatas().isEmpty())mPayDetailViewAdapter.notifyDataSetChanged();
         }
     }
-    private void fullReduceDiscount(){
-        mContext.fullReduceDiscount();
+    private boolean fullReduceDiscount(final StringBuilder err){
+        return mContext.fullReduceDiscount(err);
     }
     private void deleteFullReduceDiscount(){
         mContext.deleteFullReduce();

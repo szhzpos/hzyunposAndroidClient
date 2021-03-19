@@ -251,7 +251,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
                 "brand_id,gs_id,a.category_id category_id,b.path path,retail_price,retail_price price,tc_rate,tc_mode,tax_rate,ps_price,cost_price,trade_price,buying_price,yh_mode,yh_price," +
                 "metering_id,conversion from barcode_info a inner join shop_category b on a.category_id = b.category_id where goods_status = 1 and barcode_status = 1 and ";
 
-        boolean isWeighBarcode = weigh_barcode_info != null && weigh_barcode_info.length() != 0;
+        boolean isWeighBarcode = Utils.isNotEmpty(weigh_barcode_info);
         if (isWeighBarcode){
             full_sql = sql + "only_coding = '" + id + "'";
         }else
@@ -294,14 +294,14 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
 
         double price = goods.getDoubleValue("retail_price");
 
-        final String sql = "select tlp_id,1 tj_type,way,0.0 xnum_one,limit_xnum limit_xnum_one,case way when 1 then case when promotion_price < "+ price + " then promotion_price else " + price +" end " +
-                "when 2 then promotion_price/10.0 *"+ price +" end promotion_price_one,0.0 xnum_two,0.0 limit_xnum_two,0.0 promotion_price_two,0.0 xnum_three,0.0 limit_xnum_three,0.0 promotion_price_three," +
-                "0.0 xnum_four,0.0 limit_xnum_four,0.0 promotion_price_four," +
-                "0.0 xnum_five,0.0 limit_xnum_five,0.0 promotion_price_five from promotion_info " + where_sql +
+        final String sql = "select tlp_id,1 tj_type,type_detail_id,promotion_type,way,-1.0 xnum_one,-1.0 limit_xnum_one,0.0 promotion_price_one,-1.0 xnum_two,0.0 limit_xnum_two,0.0 promotion_price_two,-1.0 xnum_three,0.0 limit_xnum_three,0.0 promotion_price_three," +
+                "-1.0 xnum_four,0.0 limit_xnum_four,0.0 promotion_price_four," +
+                "-1.0 xnum_five,limit_xnum limit_xnum_five,case way when 1 then case when promotion_price < "+ price + " then promotion_price else " + price +" end "+
+                "when 2 then promotion_price/10.0 *"+ price +" end promotion_price_five from promotion_info " + where_sql +
 
                 " union all " +
 
-                "select tlp_id,2 tj_type,way,xnum_one,0.0 limit_xnum_one,case way when 1 then case when promotion_price_one < "+ price + " then promotion_price_one else " + price +" end " +
+                "select tlp_id,2 tj_type,type_detail_id,promotion_type,way,xnum_one,0.0 limit_xnum_one,case way when 1 then case when promotion_price_one < "+ price + " then promotion_price_one else " + price +" end " +
                 "when 2 then promotion_price_one/10.0 *"+ price +" end promotion_price_one," +
                 "xnum_two,0.0 limit_xnum_two,case way when 1 then case when promotion_price_two < "+ price + " then promotion_price_two else " + price +" end " +
                 "when 2 then promotion_price_two/10.0 *"+ price +" end promotion_price_two," +

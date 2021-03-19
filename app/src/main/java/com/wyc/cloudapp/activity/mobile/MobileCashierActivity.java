@@ -217,12 +217,13 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
             if (!mSaleGoodsAdapter.isEmpty()){
                 if (!getSingleRefundStatus()){
                     final AbstractSettlementDialog dialog = new MobileSettlementDialog(this,getString(R.string.affirm_pay_sz));
-                    dialog.initPayContent();
-                    if (mVipInfo != null)dialog.setVipInfo(mVipInfo,true);
-                    if (dialog.exec() == 1){
-                        mApplication.sync_retail_order();
-                        resetOrderInfo();
-                        MyDialog.ToastMessage("结账成功!",this,null);
+                    if (dialog.initPayContent()){
+                        if (mVipInfo != null)dialog.setVipInfo(mVipInfo,true);
+                        if (dialog.exec() == 1){
+                            mApplication.sync_retail_order();
+                            resetOrderInfo();
+                            MyDialog.ToastMessage("结账成功!",this,null);
+                        }
                     }
                 }else {
                     final RefundDialog refundDialog = new RefundDialog(this,"");

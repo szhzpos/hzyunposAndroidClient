@@ -749,16 +749,17 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
             if (!mSaleGoodsAdapter.isEmpty()){
                 if (!getSingleRefundStatus()){
                     final AbstractSettlementDialog dialog = new NormalSettlementDialog(this,getString(R.string.affirm_pay_sz));
-                    dialog.initPayContent();
-                    if (mVipInfo != null)dialog.setVipInfo(mVipInfo,true);
-                    if (dialog.exec() == 1){
-                        mApplication.sync_retail_order();
-                        showLastOrderInfo();
-                        resetOrderInfo();
-                        MyDialog.SnackbarMessage(getWindow(),"结账成功！", mOrderCodeTv);
-                    }else {
-                        //取消之后重置订单号
-                        resetOrderCode();
+                    if (dialog.initPayContent()){
+                        if (mVipInfo != null)dialog.setVipInfo(mVipInfo,true);
+                        if (dialog.exec() == 1){
+                            mApplication.sync_retail_order();
+                            showLastOrderInfo();
+                            resetOrderInfo();
+                            MyDialog.SnackbarMessage(getWindow(),"结账成功！", mOrderCodeTv);
+                        }else {
+                            //取消之后重置订单号
+                            resetOrderCode();
+                        }
                     }
                 }else {
                     final RefundDialog refundDialog = new RefundDialog(this,"");
@@ -879,6 +880,11 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     }
     public void setScaleCurrent(float v){
         if (mScaleView != null)mScaleView.setCurrentValue(v);
+    }
+
+    @Override
+    public boolean findGoodsByBarcodeId(@NonNull final JSONObject out_goods,final String barcode_id){
+        return mGoodsInfoViewAdapter.getSingleGoods(out_goods,null,barcode_id);
     }
 
     @Override

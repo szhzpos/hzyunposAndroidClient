@@ -52,8 +52,8 @@ public class SaleActivity extends MainActivity{
         mSaleGoodsAdapter.manualMol(mol_amt);
     }
 
-    public void fullReduceDiscount(){
-        mSaleGoodsAdapter.fullReduceDiscount();
+    public boolean fullReduceDiscount(final StringBuilder err){
+        return mSaleGoodsAdapter.fullReduceDiscount(err);
     }
 
     public void deleteFullReduce(){
@@ -181,4 +181,8 @@ public class SaleActivity extends MainActivity{
     public boolean containGoods(){
         return false;
     };
+
+    public boolean findGoodsByBarcodeId(@NonNull final JSONObject goods,final String barcode_id){
+        return false;
+    }
 }
