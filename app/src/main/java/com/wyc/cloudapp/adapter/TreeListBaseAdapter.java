@@ -52,9 +52,9 @@ public abstract class TreeListBaseAdapter<T extends TreeListBaseAdapter.MyViewHo
         mDatas = new JSONArray();
     }
 
-    public TreeListBaseAdapter(Context context,boolean sigle){
+    public TreeListBaseAdapter(Context context,boolean single){
         this(context);
-        mSingleSel = sigle;
+        mSingleSel = single;
     }
 
     static abstract class MyViewHolder extends RecyclerView.ViewHolder {
@@ -65,12 +65,12 @@ public abstract class TreeListBaseAdapter<T extends TreeListBaseAdapter.MyViewHo
         ViewStub content;
         MyViewHolder(View itemView) {
             super(itemView);
-            row_id = itemView.findViewById(R.id.row_id);
-            icon = itemView.findViewById(R.id.item_ico);
-            mul_cb = itemView.findViewById(R.id.multiple_cb);
-            single_rb = itemView.findViewById(R.id.single_rb);
-            item_id = itemView.findViewById(R.id.item_id);
-            content = itemView.findViewById(R.id.content_view);
+            row_id = findViewById(R.id.row_id);
+            icon = findViewById(R.id.item_ico);
+            mul_cb = findViewById(R.id.multiple_cb);
+            single_rb = findViewById(R.id.single_rb);
+            item_id = findViewById(R.id.item_id);
+            content = findViewById(R.id.content_view);
             content.setLayoutResource(getContentResourceId());
             content.inflate();
         }
@@ -83,14 +83,18 @@ public abstract class TreeListBaseAdapter<T extends TreeListBaseAdapter.MyViewHo
 
     protected final View getView(){
         View itemView = View.inflate(mContext, R.layout.tree_item_layout, null);
-        itemView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.height_50)));
+        itemView.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.height_50)));
         return itemView;
     }
 
     abstract void bindContent(@NonNull T holder,final JSONObject object);
+    protected int clickItemIndex(){
+        return 0;
+    }
 
     @Override
     public final void onBindViewHolder(@NonNull T holder, int position) {
+        final int old_pos = position;
         final JSONObject item = mDatas.getJSONObject(position);
         if (item != null){
 
@@ -152,6 +156,10 @@ public abstract class TreeListBaseAdapter<T extends TreeListBaseAdapter.MyViewHo
             holder.itemView.setTag(item);
 
             bindContent(holder,item);
+
+            if (old_pos == clickItemIndex()){
+                holder.itemView.callOnClick();
+            }
         }
     }
 
@@ -164,13 +172,19 @@ public abstract class TreeListBaseAdapter<T extends TreeListBaseAdapter.MyViewHo
         if (mItemClick != null && mCurrentItemView == holder.itemView)setViewBackgroundColor(mCurrentItemView,false);
     }
 
-    public void setDatas(final JSONArray datas,final JSONArray items){
+    public void setData(final JSONArray datas, final JSONArray items){
         if (datas != null)mDatas = datas;
 
         setSelectedItem(items);
 
         notifyDataSetChanged();
     }
+
+    public void setData(final JSONArray data,boolean singleSel){
+        mSingleSel = singleSel;
+        setData(data,null);
+    }
+
     private final CompoundButton.OnCheckedChangeListener checkedChangeListener = (buttonView, isChecked) -> {
         final View v = (View) buttonView.getParent();
         final TextView row_id_tv = v.findViewById(R.id.row_id);
@@ -295,7 +309,7 @@ public abstract class TreeListBaseAdapter<T extends TreeListBaseAdapter.MyViewHo
                 selected_color = mContext.getColor(R.color.listSelected);
                 text_color = mContext.getColor(R.color.white);
             } else {
-                text_color = mContext.getColor(R.color.lightBlue);
+                text_color = mContext.getColor(R.color.text_color);
                 selected_color = mContext.getColor(R.color.white);
             }
             view.setBackgroundColor(selected_color);
@@ -457,6 +471,5 @@ public abstract class TreeListBaseAdapter<T extends TreeListBaseAdapter.MyViewHo
         }
         return new JSONObject();
     }
-
 }
 

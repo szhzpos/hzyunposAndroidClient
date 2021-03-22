@@ -309,6 +309,8 @@ final class SyncHandler extends Handler {
                                         }
                                     }
                                         break;
+                                    case MessageID.SYNC_BUY_FULL_GIVE_X_ID:
+                                    case MessageID.SYNC_BUY_X_GIVE_X_ID:
                                     case MessageID.SYNC_PROMOTION_ID:
                                     case MessageID.SYNC_STEP_PROMOTION_ID:
                                     case MessageID.SYNC_FULLREDUCE_ID:
@@ -354,6 +356,24 @@ final class SyncHandler extends Handler {
                                                     if ((current_page++ <= max_page)){
                                                         Logger.d("current_page:%d,max_page:%d",current_page,max_page);
                                                         sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_SALES_INFO_ID,current_page));
+                                                    }
+                                                }else if (MessageID.SYNC_FULLREDUCE_ID == msg.what){
+                                                    up_fullreduce(data);
+                                                    if ((current_page++ <= max_page)){
+                                                        Logger.d("current_page:%d,max_page:%d",current_page,max_page);
+                                                        sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_FULLREDUCE_ID,current_page));
+                                                    }
+                                                }else if (MessageID.SYNC_BUY_X_GIVE_X_ID == msg.what){
+                                                    up_buy_x_give_x(data);
+                                                    if ((current_page++ <= max_page)){
+                                                        Logger.d("current_page:%d,max_page:%d",current_page,max_page);
+                                                        sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_BUY_X_GIVE_X_ID,current_page));
+                                                    }
+                                                }else if (MessageID.SYNC_BUY_FULL_GIVE_X_ID == msg.what){
+                                                    up_buy_full_give_x(data);
+                                                    if ((current_page++ <= max_page)){
+                                                        Logger.d("current_page:%d,max_page:%d",current_page,max_page);
+                                                        sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_BUY_FULL_GIVE_X_ID,current_page));
                                                     }
                                                 }
                                             }
@@ -808,10 +828,10 @@ final class SyncHandler extends Handler {
         object.put("pos_num",mPosNum);
         object.put("stores_id",mStoresId);
 
-        final JSONObject retJson = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,mAppSecret),true);
+        object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,mAppSecret),true);
         boolean success;
-        if (success = (retJson.getIntValue("flag") == 1)){
-            object = JSON.parseObject(retJson.getString("info"));
+        if (success = (object.getIntValue("flag") == 1)){
+            object = JSON.parseObject(object.getString("info"));
             success = "y".equals(object.getString("status"));
         }
         if (!success)Logger.e("清空已同步数据错误:%s",object.getString("info"));

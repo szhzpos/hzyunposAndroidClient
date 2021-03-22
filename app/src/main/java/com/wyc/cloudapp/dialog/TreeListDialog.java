@@ -39,7 +39,7 @@ public class TreeListDialog extends AbstractDialogContext {
     private void initList(){
         final RecyclerView item_list = findViewById(R.id.item_list);
         final TreeListAdapter listAdapter = new TreeListAdapter(mContext,mSingleSelection);
-        listAdapter.setDatas(mDatas,mSelectedItems);
+        listAdapter.setData(mDatas,mSelectedItems);
         item_list.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
         item_list.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
         item_list.setAdapter(listAdapter);

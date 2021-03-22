@@ -56,6 +56,10 @@ public class SaleActivity extends MainActivity{
         return mSaleGoodsAdapter.fullReduceDiscount(err);
     }
 
+    public JSONArray buyFullGiveXDiscount(final StringBuilder err){
+        return mSaleGoodsAdapter.buyFullGiveXDiscount(err);
+    }
+
     public void deleteFullReduce(){
         mSaleGoodsAdapter.deleteFullReduceDiscount();
     }
@@ -86,7 +90,7 @@ public class SaleActivity extends MainActivity{
     }
 
     public void deleteGoodsRecord(){
-        mSaleGoodsAdapter.deleteSaleGoods(mSaleGoodsAdapter.getCurrentItemIndex(),0);
+        mSaleGoodsAdapter.deleteSaleGoods(mSaleGoodsAdapter.getCurrentItemIndex());
     }
 
     public void alterGoodsPrice(){
@@ -160,7 +164,7 @@ public class SaleActivity extends MainActivity{
 
     @CallSuper
     public void minusOneGoods(){
-        if (mSaleGoodsAdapter != null)mSaleGoodsAdapter.deleteSaleGoods(mSaleGoodsAdapter.getCurrentItemIndex(),1);
+        mSaleGoodsAdapter.addCurrentGoods(-1);
     }
 
     @CallSuper

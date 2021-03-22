@@ -557,4 +557,8 @@
     <string name="auditing_hints">正在审核单据…</string>
     <string name="upload_order_success_hints">上传成功</string>
     <string name="ask_audit_hints">是否审核?</string>
+
+    <!--买满赠方案选择对话框-->
+    <string name="rule_name">促销方案名称</string>
+    <string name="add_price">加价</string>
 </resources>

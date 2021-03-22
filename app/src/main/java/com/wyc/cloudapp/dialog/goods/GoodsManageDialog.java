@@ -86,7 +86,7 @@ public final class GoodsManageDialog extends AbstractDialogSaleActivity {
         all.put("item_name","所有类别");
         array.add(0,all);
 
-        listAdapter.setDatas(array,null);
+        listAdapter.setData(array,null);
         item_list.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
         item_list.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
         item_list.setAdapter(listAdapter);

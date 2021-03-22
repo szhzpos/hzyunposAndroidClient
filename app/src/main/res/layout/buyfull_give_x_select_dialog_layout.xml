@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:padding="@dimen/margin_5">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@drawable/round_border_sub_gray"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/table_header_height"
+            android:background="@color/table_header_color"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="@dimen/width_45"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingTop="@dimen/margin_8"
+                android:paddingBottom="@dimen/margin_8"
+                android:text="@string/row_id_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingTop="@dimen/margin_8"
+                android:paddingBottom="@dimen/margin_8"
+                android:text="@string/rule_name"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rule_list"
+            android:layout_width="@dimen/width_208"
+            android:layout_height="@dimen/tree_list_h"
+            android:layout_marginEnd="@dimen/margin_2"
+            android:background="@drawable/round_border_sub_gray"
+            android:paddingStart="@dimen/margin_1"
+            android:paddingEnd="@dimen/margin_1" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/round_border_sub_gray"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/rule_description_tv"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/table_header_height"
+            android:gravity="center"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_18" />
+
+        <LinearLayout
+            android:id="@+id/order_header"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/table_header_height"
+            android:background="@color/table_header_color"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="@dimen/width_128"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/size_30"
+                android:gravity="center"
+                android:paddingTop="@dimen/margin_8"
+                android:paddingBottom="@dimen/margin_8"
+                android:text="@string/manage_barcode_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:layout_width="@dimen/width_208"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/margin_5"
+                android:layout_marginEnd="@dimen/margin_5"
+                android:gravity="center"
+                android:paddingTop="@dimen/margin_8"
+                android:paddingBottom="@dimen/margin_8"
+                android:text="@string/manage_name_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:layout_width="@dimen/width_45"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingTop="@dimen/margin_8"
+                android:paddingBottom="@dimen/margin_8"
+                android:text="@string/unit_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:layout_width="@dimen/width_88"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingTop="@dimen/margin_8"
+                android:paddingBottom="@dimen/margin_8"
+                android:text="@string/sec_num_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:layout_width="@dimen/width_88"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingTop="@dimen/margin_8"
+                android:paddingBottom="@dimen/margin_8"
+                android:text="@string/add_price"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:layout_width="@dimen/width_128"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingTop="@dimen/margin_8"
+                android:paddingBottom="@dimen/margin_8"
+                android:text="@string/remark_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/table_body"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -549,4 +549,8 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
             mScanCallback = new WeakReference<>(callback);
         }
     }
+    @Override
+    public boolean findGoodsByBarcodeId(@NonNull final JSONObject out_goods,final String barcode_id){
+        return mGoodsInfoViewAdapter.getSingleGoods(out_goods,null,barcode_id);
+    }
 }

@@ -6,13 +6,28 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 
+import java.util.List;
 
-public class TreeListAdapter extends TreeListBaseAdapter<TreeListAdapter.MyViewHolder> {
-    public TreeListAdapter(Context context, boolean single) {
+/**
+ * @ProjectName: CloudApp
+ * @Package: com.wyc.cloudapp.adapter
+ * @ClassName: BuyFullGiveXRuleAdapter
+ * @Description: 买满赠送规则适配器
+ * @Author: wyc
+ * @CreateDate: 2021/3/22 17:23
+ * @UpdateUser: 更新者
+ * @UpdateDate: 2021/3/22 17:23
+ * @UpdateRemark: 更新说明
+ * @Version: 1.0
+ */
+public class BuyFullGiveXRuleAdapter extends TreeListBaseAdapter<BuyFullGiveXRuleAdapter.MyViewHolder> {
+
+    public BuyFullGiveXRuleAdapter(Context context, boolean single) {
         super(context, single);
     }
     static class MyViewHolder extends TreeListBaseAdapter.MyViewHolder {
@@ -32,6 +47,7 @@ public class TreeListAdapter extends TreeListBaseAdapter<TreeListAdapter.MyViewH
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new MyViewHolder(getView());
     }
+
     @Override
     void bindContent(@NonNull MyViewHolder holder, JSONObject object) {
         holder.textView.setText(object.getString("item_name"));
@@ -39,6 +55,6 @@ public class TreeListAdapter extends TreeListBaseAdapter<TreeListAdapter.MyViewH
 
     @Override
     protected int clickItemIndex() {
-        return -1;
+        return 0;
     }
 }

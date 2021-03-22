@@ -39,6 +39,7 @@ import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
+import com.wyc.cloudapp.dialog.goods.BuyFullGiveXSelectDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
@@ -510,15 +511,26 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
 
     public boolean initPayContent(){
         final StringBuilder err = new StringBuilder();
-        calculateMolAmt(PayMethodViewAdapter.getPayMethod(PayMethodViewAdapter.getDefaultPayMethodId()),false);
-        if (fullReduceDiscount(err)){
-            calculatePayContent();
-            return true;
-        }else {
-            MyDialog.showErrorMessageToModalDialog(mContext,err.toString());
-            setCodeAndExit(0);
+        final JSONArray rules = buyFullGiveXDiscount(err);
+        if (null != rules){
+            if (!rules.isEmpty()){
+                final BuyFullGiveXSelectDialog dialog = new BuyFullGiveXSelectDialog(mContext,rules);
+                if (dialog.exec() == 1){
+
+                }
+            }
+            calculateMolAmt(PayMethodViewAdapter.getPayMethod(PayMethodViewAdapter.getDefaultPayMethodId()),false);
+            if (fullReduceDiscount(err)){
+                calculatePayContent();
+                return true;
+            }
         }
+        MyDialog.showErrorMessageToModalDialog(mContext,err.toString());
+        setCodeAndExit(0);
         return false;
+    }
+    private JSONArray buyFullGiveXDiscount(final StringBuilder err){
+        return mContext.buyFullGiveXDiscount(err);
     }
     private void refreshPayContent(){
         if (initPayContent()){
