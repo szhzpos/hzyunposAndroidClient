@@ -37,6 +37,7 @@ import com.wyc.cloudapp.decoration.PayMethodItemDecoration;
 import com.wyc.cloudapp.decoration.SuperItemDecoration;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
+import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
 import com.wyc.cloudapp.dialog.goods.BuyFullGiveXSelectDialog;
@@ -46,6 +47,7 @@ import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.FontSizeTagHandler;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
+import com.wyc.cloudapp.utils.http.HttpUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -133,14 +135,13 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
     @Override
     public void onDetachedFromWindow(){
         super.onDetachedFromWindow();
-        if (!Utils.equalDouble(mMolAmt,0.0)){
-            mMolAmt = 0.0;
-            mContext.deleteMolDiscountRecord();
-        }
+        deleteMolDiscountRecord();
         if (!Utils.equalDouble(mDiscount_amt,0.0)){
             mContext.deleteFullReduce();
             mContext.deleteAllDiscountRecord();
+            deleteBuyFullGiveXDiscount();
         }
+
     }
     @Override
     protected void updatePrintIcon() {
@@ -161,10 +162,12 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                         new FontSizeTagHandler(mContext)),String.format(Locale.CHINA,"%.2f",10.0),1.0,10.0);
                 dialog.setYesOnclickListener(myDialog -> {
                     if (mContext.allDiscount(myDialog.getContent())){
+                        myDialog.dismiss();
+
                         deleteFullReduceDiscount();
                         deleteMolDiscountRecord();
+                        deleteBuyFullGiveXDiscount();
                         refreshPayContent();
-                        myDialog.dismiss();
                     }
                 }).show();
             });
@@ -182,6 +185,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                     vipInfoDialog.setYesOnclickListener(dialog -> {
                         deleteFullReduceDiscount();
                         deleteMolDiscountRecord();
+                        deleteBuyFullGiveXDiscount();
                         setVipInfo(dialog.getVip(),false);
                         dialog.dismiss();
                     }).show();
@@ -230,9 +234,20 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                                 return;
                             }
                             if (mContext.verifyDiscountPermissions(1 - mol_amt / mActual_amt,null)){
+                                deleteMolDiscountRecord();
+                                deleteBuyFullGiveXDiscount();
                                 mContext.manualMol(mol_amt);
-                                calculatePayContent();
-                                refreshContent();
+                                final StringBuilder err = new StringBuilder();
+                                final JSONArray rules = buyFullGiveXDiscount(err);
+                                if (null != rules){
+                                    if (!rules.isEmpty()){
+                                        final BuyFullGiveXSelectDialog dialog = new BuyFullGiveXSelectDialog(mContext,rules);
+                                        dialog.exec();
+                                    }
+                                    calculatePayContent();
+                                    refreshContent();
+                                }else
+                                    MyDialog.displayErrorMessage(mContext,err.toString());
                             }
                         }
                         myDialog.dismiss();
@@ -515,9 +530,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         if (null != rules){
             if (!rules.isEmpty()){
                 final BuyFullGiveXSelectDialog dialog = new BuyFullGiveXSelectDialog(mContext,rules);
-                if (dialog.exec() == 1){
-
-                }
+                dialog.exec();
             }
             calculateMolAmt(PayMethodViewAdapter.getPayMethod(PayMethodViewAdapter.getDefaultPayMethodId()),false);
             if (fullReduceDiscount(err)){
@@ -532,6 +545,10 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
     private JSONArray buyFullGiveXDiscount(final StringBuilder err){
         return mContext.buyFullGiveXDiscount(err);
     }
+    private void  deleteBuyFullGiveXDiscount(){
+        mContext.deleteBuyFullGiveXDiscount();
+    }
+
     private void refreshPayContent(){
         if (initPayContent()){
             refreshContent();
@@ -792,6 +809,50 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             sales_data.add(tmp_json);
         }
 
+        //计算会员积分
+        if (mVip != null){
+            final JEventLoop loop = new JEventLoop();
+            final JSONArray goods_list_json = new JSONArray();
+            JSONObject sale_goods,integral_goods;
+
+            for (int i = 0,size = sales_data.size();i < size;i ++){
+                integral_goods = new JSONObject();
+                sale_goods = sales_data.getJSONObject(i);
+
+                integral_goods.put("price",sale_goods.getDoubleValue("price"));
+                integral_goods.put("xnum",sale_goods.getDoubleValue("xnum"));
+                integral_goods.put("barcode_id",sale_goods.getString("barcode_id"));
+
+                goods_list_json.add(integral_goods);
+            }
+
+            CustomApplication.execute(()->{
+                final JSONObject object = new JSONObject();
+                object.put("appid",mContext.getAppId());
+                object.put("member_id",mVip.getString("member_id"));
+                object.put("goods_list_json",goods_list_json);
+                final String sz_param = HttpRequest.generate_request_parm(object,mContext.getAppSecret());
+                final JSONObject retJson = HttpUtils.sendPost(mContext.getUrl() + "/api/point/get_point",sz_param,true);
+                if (HttpUtils.checkRequestSuccess(retJson)){
+                    final JSONObject info_obj = JSONObject.parseObject(retJson.getString("info"));
+                    if (HttpUtils.checkBusinessSuccess(info_obj)){
+                        final JSONObject data = Utils.getNullObjectAsEmptyJson(info_obj,"data");
+                        Logger.d_json(data.toString());
+                        mVip.put("integral_info",data);
+                        loop.done(1);
+                    }else {
+                        info.put("info",info_obj.getString("info"));
+                        loop.done(0);
+                    }
+                }else {
+                    info.put("info",retJson.getString("info"));
+                    loop.done(0);
+                }
+            });
+            if (loop.exec() == 0){
+                return false;
+            }
+        }
         //处理优惠记录
         discount_records = Utils.JsondeepCopy(mContext.getDiscountRecords());
         for (int i = 0,size = discount_records.size();i < size;i++){
@@ -858,6 +919,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             order_info.put("mobile",mVip.getString("mobile"));
             order_info.put("name",mVip.getString("name"));
             order_info.put("card_code",mVip.getString("card_code"));
+            order_info.put("integral_info",mVip.getString("integral_info"));
         }
         order_info.put("sc_ids",Utils.getNullStringAsEmpty(mContext.getSaleManId(),"id"));
         order_info.put("sc_tc_money",0.00);
@@ -879,7 +941,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         final JSONObject data = new JSONObject();
         final List<String>  tables = Arrays.asList("retail_order","retail_order_goods","retail_order_pays","discount_record"),
                 retail_order_cols = Arrays.asList("stores_id","order_code","discount","discount_price","total","cashier_id","addtime","pos_code","order_status","pay_status","pay_time","upload_status",
-                        "upload_time","transfer_status","transfer_time","is_rk","mobile","name","card_code","sc_ids","sc_tc_money","member_id","discount_money","zl_money","ss_money","remark","zk_cashier_id"),
+                        "upload_time","transfer_status","transfer_time","is_rk","mobile","name","card_code","integral_info","sc_ids","sc_tc_money","member_id","discount_money","zl_money","ss_money","remark","zk_cashier_id"),
                 retail_order_goods_cols = Arrays.asList("order_code","barcode_id","xnum","price","buying_price","retail_price","trade_price","cost_price","ps_price","tax_rate","tc_mode","tc_rate","gp_id",
                         "zk_cashier_id","total_money",GoodsInfoViewAdapter.W_G_MARK,"conversion","barcode","y_price"),
                 retail_order_pays_cols = Arrays.asList("order_code","pay_method","pay_money","pay_time","pay_status","pay_serial_no","pay_code","remark","is_check","zk_money","pre_sale_money","give_change_money",
@@ -1385,6 +1447,18 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             }
             info.append(line).append(new_line_2).append(new_line).append(new_line_d);
 
+            //会员积分信息
+            final JSONObject integral_info = Utils.getNullObjectAsEmptyJson(order_info,"integral_info");
+            if (!integral_info.isEmpty()){
+                info.append(context.getString(R.string.vip_name_colon_sz)).append(Utils.getNullOrEmptyStringAsDefault(order_info,"vip_name","")).append(new_line);
+                double point_num = Utils.getNotKeyAsNumberDefault(integral_info,"point_num",0.0);
+                info.append(context.getString(R.string.current_vip_integral)).append(point_num).append(new_line);
+                info.append(context.getString(R.string._vip_integral)).append(Utils.getNotKeyAsNumberDefault(integral_info,"points_sum",0.0) + point_num).append(new_line);
+
+                info.append(line).append(new_line_2).append(new_line).append(new_line_d);
+            }
+
+
             if (footer_c.isEmpty()){
                 info.append(context.getString(R.string.b_f_hotline_sz)).append(Utils.getNullOrEmptyStringAsDefault(order_info,"telphone","")).append(new_line);
                 info.append(context.getString(R.string.b_f_stores_address_sz)).append(Utils.getNullOrEmptyStringAsDefault(order_info,"region","")).append(new_line);
@@ -1434,7 +1508,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
 
     private static boolean getPrintOrderInfo(final String order_code,final JSONObject order_info) {
         boolean code = false;
-        if (SQLiteHelper.execSql(order_info, "SELECT a.order_code,b.cas_name,a.pos_code pos_num,a.stores_id,c.stores_name,datetime(a.addtime, 'unixepoch', 'localtime') oper_time,c.telphone,c.region" +
+        if (SQLiteHelper.execSql(order_info, "SELECT a.order_code,a.name vip_name,a.integral_info,b.cas_name,a.pos_code pos_num,a.stores_id,c.stores_name,datetime(a.addtime, 'unixepoch', 'localtime') oper_time,c.telphone,c.region" +
                 " FROM retail_order a  left join cashier_info b on a.cashier_id = b.cas_id\n" +
                 "left join shop_stores c on a.stores_id = c.stores_id where a.order_code = '" + order_code + "'")) {
             final StringBuilder err = new StringBuilder();

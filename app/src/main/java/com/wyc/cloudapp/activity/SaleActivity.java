@@ -28,6 +28,10 @@ public class SaleActivity extends MainActivity{
 
     protected void addSaleGoods(final @NonNull JSONObject jsonObject){}
 
+    public void addBuyFullGiveGoods(final @NonNull JSONObject goods){
+        mSaleGoodsAdapter.addSaleGoods(goods);
+    }
+
     public boolean allDiscount(double v){
         return mSaleGoodsAdapter.allDiscount(v);
     }
@@ -58,6 +62,9 @@ public class SaleActivity extends MainActivity{
 
     public JSONArray buyFullGiveXDiscount(final StringBuilder err){
         return mSaleGoodsAdapter.buyFullGiveXDiscount(err);
+    }
+    public void deleteBuyFullGiveXDiscount(){
+        mSaleGoodsAdapter.deleteBuyFullGiveXDiscount();
     }
 
     public void deleteFullReduce(){

@@ -1313,6 +1313,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    card_code       CHAR,\n" +
                 "    name            CHAR,\n" +
                 "    mobile          CHAR,\n" +
+                "    integral_info          VARCHAR,\n" +
                 "    is_rk           INT     DEFAULT (2),\n" +
                 "    transfer_time   INT,\n" +
                 "    transfer_status INT     DEFAULT (1),\n" +

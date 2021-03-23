@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
     android:orientation="horizontal"
     android:padding="@dimen/margin_5">
 
@@ -16,16 +17,6 @@
             android:layout_height="@dimen/table_header_height"
             android:background="@color/table_header_color"
             android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="@dimen/width_45"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:paddingTop="@dimen/margin_8"
-                android:paddingBottom="@dimen/margin_8"
-                android:text="@string/row_id_sz"
-                android:textColor="@color/white"
-                android:textSize="@dimen/font_size_18" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -44,7 +35,6 @@
             android:layout_width="@dimen/width_208"
             android:layout_height="@dimen/tree_list_h"
             android:layout_marginEnd="@dimen/margin_2"
-            android:background="@drawable/round_border_sub_gray"
             android:paddingStart="@dimen/margin_1"
             android:paddingEnd="@dimen/margin_1" />
 
@@ -139,7 +129,46 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/table_body"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="300dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_50"
+            android:layout_marginTop="@dimen/margin_2"
+            android:layout_marginBottom="@dimen/margin_5"
+            android:orientation="horizontal">
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/t_ok"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/width_88"
+                android:layout_height="match_parent"
+                android:background="@drawable/button_blue"
+                android:text="@string/OK"
+                android:textColor="@color/blue_white"
+                android:textSize="@dimen/font_size_18" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5" />
+
+            <Button
+                android:id="@+id/t_cancel"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/width_88"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/margin_8"
+                android:background="@drawable/button_blue"
+                android:text="@string/cancel"
+                android:textColor="@color/blue_white"
+                android:textSize="@dimen/font_size_18" />
+        </LinearLayout>
 
     </LinearLayout>
 

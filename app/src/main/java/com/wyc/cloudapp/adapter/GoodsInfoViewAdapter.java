@@ -353,6 +353,13 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     public static boolean isBuyXGiveX(final JSONObject goods){
         return  0 != (getSaleType(goods) & 0x4);
     }
+    public static void makeBuyFullGiveX(final JSONObject goods){
+        /*买满送X与正常销售不兼容*/
+        if (null != goods)goods.put(SALE_TYPE,((getSaleType(goods) & 0xFFFFFFFE) | 0x8));
+    }
+    public static boolean isBuyFullGiveX(final JSONObject goods){
+        return  0 != (getSaleType(goods) & 0x8);
+    }
 
     private boolean parseElectronicBarcode(@NonNull final JSONObject object,@NonNull final String weigh_barcode_info){
         boolean code = true;

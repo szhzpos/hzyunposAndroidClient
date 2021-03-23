@@ -11,6 +11,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.SaleActivity;
+import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
@@ -64,8 +65,12 @@ public class BuyFullGiveXGoodsAdapter extends TreeListBaseAdapter<BuyFullGiveXGo
         final JSONObject content = object.getJSONObject("content");
         if (null != content){
             final JSONObject goods = new JSONObject();
-            if (mContext.findGoodsByBarcodeId(goods,content.getString("barcode_id"))){
-                holder._barcode_tv.setText(goods.getString("barcode"));
+            if (findBuyFullGiveGoodsByBarcodeId(goods,content.getString("barcode_id"))){
+                if (Utils.lessThan7Inches(mContext))
+                    holder._barcode_tv.setVisibility(View.GONE);
+                else
+                    holder._barcode_tv.setText(goods.getString("barcode"));
+
                 holder._name_tv.setText(goods.getString("goods_title"));
                 holder._unit_name_tv.setText(goods.getString("unit_name"));
                 holder._num_tv.setText(String.format(Locale.CHINA,"%.2f",content.getDoubleValue("xnum_give")));
@@ -77,29 +82,18 @@ public class BuyFullGiveXGoodsAdapter extends TreeListBaseAdapter<BuyFullGiveXGo
         }
     }
 
+    public boolean findBuyFullGiveGoodsByBarcodeId(final JSONObject out,final String barcode_id){
+        final String  sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,only_coding,ifnull(type,0) type," +
+                "brand_id,gs_id,a.category_id category_id,b.path path,retail_price,retail_price price,tc_rate,tc_mode,tax_rate,ps_price,cost_price,trade_price,buying_price,yh_mode,yh_price," +
+                "metering_id,conversion from barcode_info a inner join shop_category b on a.category_id = b.category_id where goods_status = 1 and barcode_status = 1 and  barcode_id = " + barcode_id + " UNION select gp_id ,-1 goods_id,ifnull(gp_title,'') goods_title,ifnull(unit_name,'') unit_name, -1 barcode_id,ifnull(gp_code,'') barcode,-1 only_coding,ifnull(type,0) type," +
+                    "'' brand_id,'' gs_id, '' category_id,'' path,gp_price retail_price,gp_price price,0 tc_rate,0 tc_mode,0 tax_rate,0 ps_price,0 cost_price,0 trade_price,gp_price buying_price,0 yh_mode,0 yh_price,1 metering_id,1 conversion from goods_group \n" +
+                    "where status = 1 and gp_id = " + barcode_id;
+       return SQLiteHelper.execSql(out,sql);
+    }
 
 
     @Override
     protected int clickItemIndex() {
         return -1;
-    }
-    public static JSONArray formatPresentGoods(final JSONArray array){
-        final JSONArray data = new JSONArray();
-        if (null != array){
-            JSONObject object;
-            for (int i = 0,size = array.size();i < size;i++){
-                final JSONObject tmp = array.getJSONObject(i);
-                final String id = Utils.getNullStringAsEmpty(tmp,"barcode_id");
-
-                object = new JSONObject();
-                object.put("level",0);
-                object.put("unfold",false);
-                object.put("isSel",false);
-                object.put("item_id",id);
-                object.put("content",tmp);
-                data.add(object);
-            }
-        }
-        return data;
     }
 }

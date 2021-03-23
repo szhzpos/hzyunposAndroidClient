@@ -66,6 +66,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                     n3 += jsonObject.getDouble("discount_amt");
                     n4 += jsonObject.getDouble("original_amt");
                 }
+                mTotalSaleNum = n1;
                 mTotalSaleAmt = n2;
                 mTotalDiscountAmt = n3;
                 mTotalOriginalAmt = n4;
@@ -117,7 +118,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
     public void onBindViewHolder(@NonNull AbstractSaleGoodsAdapter.MyViewHolder myViewHolder, int i) {
         final JSONObject goods_info = mDatas.getJSONObject(i);
         if (goods_info != null){
-            myViewHolder.discount_sign.setText(getDiscountNames(getGoodsLastDiscountTypes(goods_info,new int[]{DISCOUNT_TYPE.PRESENT,DISCOUNT_TYPE.PROMOTION,DISCOUNT_TYPE.BUY_X_GIVE_X})));
+            myViewHolder.discount_sign.setText(getDiscountNames(getGoodsLastDiscountTypes(goods_info,new int[]{DISCOUNT_TYPE.PRESENT,DISCOUNT_TYPE.PROMOTION,DISCOUNT_TYPE.BUY_X_GIVE_X,DISCOUNT_TYPE.BUY_FULL})));
             myViewHolder.discount_sign.setTag(GoodsInfoViewAdapter.getSaleType(goods_info));
 
             myViewHolder.row_id.setText(String.format(Locale.CHINA,"%s%s",i + 1,"、"));
@@ -169,7 +170,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
     }
 
     public void addSaleGoods(final JSONObject goods){
-        addSaleGoods(goods,1,false);
+        addSaleGoods(goods,Utils.getNotKeyAsNumberDefault(goods,"xnum",1),false);
     };
 
     protected final void addSaleGoods(@NonNull JSONObject goods,double num,boolean isBarcodeWeighingGoods){
@@ -234,6 +235,9 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
             }else  if (GoodsInfoViewAdapter.isBuyXGiveX(goods)){//买X送X
                 if (!Utils.equalDouble(original_price,0.0))discount = sale_price / original_price;
                 discount_type = DISCOUNT_TYPE.BUY_X_GIVE_X;
+            }else  if (GoodsInfoViewAdapter.isBuyFullGiveX(goods)){//买满送X
+                if (!Utils.equalDouble(original_price,0.0))discount = sale_price / original_price;
+                discount_type = DISCOUNT_TYPE.BUY_FULL;
             }
 
             if (isBarcodeWeighingGoods){
@@ -366,7 +370,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
 
 
     private double verifyPromotion(final @NonNull JSONObject object,double num){
-        if (GoodsInfoViewAdapter.isSpecialPromotion(object) && !GoodsInfoViewAdapter.isBuyXGiveX(object)){
+        if (GoodsInfoViewAdapter.isSpecialPromotion(object) && !GoodsInfoViewAdapter.isBuyXGiveX(object) && !GoodsInfoViewAdapter.isBuyFullGiveX(object)){
             double sum_xnum = 0.0,diff_xnum = 0.0,new_price = 0.0;
             JSONObject tmp_obj;
 
@@ -818,8 +822,8 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
         return mDiscountRecords;
     }
     public void deleteMolDiscountRecord(){
-        _deleteDiscountRecordForType(AbstractSaleGoodsAdapter.DISCOUNT_TYPE.AUTO_MOL);
-        _deleteDiscountRecordForType(AbstractSaleGoodsAdapter.DISCOUNT_TYPE.M_MOL);
+        _deleteDiscountRecordForType(DISCOUNT_TYPE.AUTO_MOL);
+        _deleteDiscountRecordForType(DISCOUNT_TYPE.M_MOL);
     }
     public void deleteVipDiscountRecord(){
         if (!isEmpty()){
@@ -1034,7 +1038,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
         }
     }
     private boolean isNotParticipateDiscount(final JSONObject goods){
-        return goods == null || GoodsInfoViewAdapter.isSpecialPromotion(goods) || GoodsInfoViewAdapter.isBuyXGiveX(goods);
+        return goods == null || GoodsInfoViewAdapter.isSpecialPromotion(goods) || GoodsInfoViewAdapter.isBuyXGiveX(goods) || GoodsInfoViewAdapter.isBuyFullGiveX(goods);
     }
 
     public String generateOrderCode(final String pos_num, int order_type){
@@ -1763,7 +1767,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
     }
 
     private boolean addBuyXgiveXDiscount(@NonNull final JSONObject goods,double num){
-        if (!GoodsInfoViewAdapter.isBuyXGiveX(goods)){
+        if (!GoodsInfoViewAdapter.isBuyXGiveX(goods) && !GoodsInfoViewAdapter.isBuyFullGiveX(goods)){
             final StringBuilder err = new StringBuilder();
             final JSONObject rule_group = buyXgiveXGroup(getBuyXgiveXInfo(err));
             if (null != rule_group){
@@ -1805,13 +1809,13 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                                     if (next != null){
                                         if (String.valueOf(getBuyXGiveXGoodsBuyId(next)).equals(barcode_id)){
                                             if (!Utils.equalDouble(give_num,next.getDoubleValue("xnum"))){
-                                                next.put("xnum",give_num);
-                                                addSaleGoods(next,0,!Utils.getNullStringAsEmpty(next,GoodsInfoViewAdapter.W_G_MARK).isEmpty());
+                                                next.put("xnum",0);
+                                                addSaleGoods(next,give_num,!Utils.getNullStringAsEmpty(next,GoodsInfoViewAdapter.W_G_MARK).isEmpty());
                                             }
                                         }else {
                                             markBuyXGiveXGoodsId(give_obj,barcode_id);
-                                            next.put("xnum",give_num);
-                                            addSaleGoods(next,0,!Utils.getNullStringAsEmpty(next,GoodsInfoViewAdapter.W_G_MARK).isEmpty());
+                                            next.put("xnum",0);
+                                            addSaleGoods(next,give_num,!Utils.getNullStringAsEmpty(next,GoodsInfoViewAdapter.W_G_MARK).isEmpty());
                                         }
                                     }else {
                                         markBuyXGiveXGoodsId(give_obj,barcode_id);
@@ -1845,6 +1849,15 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
     public JSONArray buyFullGiveXDiscount(@NonNull final StringBuilder err){
         return getBuyFullGiveXInfo(err);
     }
+    public void deleteBuyFullGiveXDiscount(){
+        for (int i = mDatas.size() - 1;i >= 0;i --){
+            final JSONObject goods = mDatas.getJSONObject(i);
+            if (GoodsInfoViewAdapter.isBuyFullGiveX(goods)){
+                mDatas.remove(i);
+            }
+        }
+        notifyDataSetChanged();
+    }
 
     private @Nullable JSONArray getBuyFullGiveXInfo(final StringBuilder err){
         final String grade_id = mContext.getVipGradeId();
@@ -1858,7 +1871,6 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
         Logger.d("ReduceInfo_sql:%s",sql);
         final JSONArray array = SQLiteHelper.getListToJson(sql,err);
         if (null != array){
-            Logger.d_json(array.toString());
             return filterBuyFullGiveXRule(groupBuyFullGiveXPlan(array));
         }
         return null;
@@ -1886,7 +1898,6 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                 buyFullGiveXRules.add(old_ruleObj);
             }
         }
-        Logger.d_json(buyFullGiveXRules.toString());
         return buyFullGiveXRules;
     }
     private JSONArray filterBuyFullGiveXRule(final JSONArray rules){
@@ -1944,21 +1955,43 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                     }
                 }
             }
+            int cumulation_give = rule.getIntValue("cumulation_give");
             switch (fullgive_way){
                 case 1://金额
                     if (Utils.notLessDouble(total_amt,buyfull_money)){
+                        if (cumulation_give == 1){
+                            int times = (int) (total_amt / buyfull_money);
+                            if (times > 1){
+                                accumulationBuyFullGiveXGoods(rule,times);
+                            }
+                        }
                         new_rules.add(rule);
                     }
                     break;
                 case 2://数量
                     if (Utils.notLessDouble(total_num,buyfull_money)){
+                        if (cumulation_give == 1){
+                            int times = (int) (total_num / buyfull_money);
+                            if (times > 1){
+                                accumulationBuyFullGiveXGoods(rule,times);
+                            }
+                        }
                         new_rules.add(rule);
                     }
                     break;
                 default://只处理按数量或者金额，其他情况不处理
             }
         }
+        Logger.d_json(new_rules.toString());
         return new_rules;
+    }
+    private void accumulationBuyFullGiveXGoods(final JSONObject rule,int times){
+        final JSONArray givex_goods_info = Utils.getNullObjectAsEmptyJsonArray(rule,"givex_goods_info");
+        for (int i = givex_goods_info.size() -1;i >= 0;i --){
+            final JSONObject goods = givex_goods_info.getJSONObject(i);
+            goods.put("xnum_give",goods.getDoubleValue("xnum_give") * times);
+        }
+        rule.put("givex_goods_info",givex_goods_info);
     }
 
 

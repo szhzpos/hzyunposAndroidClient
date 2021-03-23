@@ -370,6 +370,11 @@ public final class Utils {
             final Object obj = object.get(key);
             if (obj instanceof JSONObject){
                 return (JSONObject) obj;
+            }else if (obj instanceof String){
+                final String sz = (String)obj;
+                if (sz.startsWith("{") && sz.endsWith("}")){
+                    return JSONObject.parseObject(sz);
+                }
             }
         }
         return new JSONObject();
@@ -379,6 +384,11 @@ public final class Utils {
             final Object obj = object.get(key);
             if (obj instanceof JSONArray){
                 return (JSONArray) obj;
+            }else if (obj instanceof String){
+                final String sz = (String)obj;
+                if (sz.startsWith("[") && sz.endsWith("]")){
+                    return JSONArray.parseArray(sz);
+                }
             }
         }
         return new JSONArray();

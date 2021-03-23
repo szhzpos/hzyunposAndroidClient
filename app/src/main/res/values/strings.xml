@@ -243,6 +243,8 @@
     <string name="b_f_zl_sz">@string/cash_zl_sz</string>
     <string name="b_f_hotline_sz">@string/hotline_sz</string>
     <string name="b_f_stores_address_sz">@string/stores_address_sz</string>
+    <string name="current_vip_integral">本次积分：</string>
+    <string name="_vip_integral">累计积分：</string>
 
     <string name="action_sz">操作</string>
     <string name="o_back_sz">退货</string>
