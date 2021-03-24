@@ -17,8 +17,9 @@ import java.util.Locale;
  * @Version: 1.0
  */
 public class PromotionRule implements Comparable<PromotionRule> {
-    int tlp_id;
+    int tlp_id,promotion_type;
     double price,upper_limit_num,lower_limit_num;
+    String type_detail_id;
 
     public void setTlp_id(int tlp_id) {
         this.tlp_id = tlp_id;
@@ -50,6 +51,22 @@ public class PromotionRule implements Comparable<PromotionRule> {
 
     public double getUpper_limit_num() {
         return upper_limit_num;
+    }
+
+    public void setPromotion_type(int promotion_type) {
+        this.promotion_type = promotion_type;
+    }
+
+    public int getPromotion_type() {
+        return promotion_type;
+    }
+
+    public void setType_detail_id(String type_detail_id) {
+        this.type_detail_id = type_detail_id;
+    }
+
+    public String getType_detail_id() {
+        return type_detail_id;
     }
 
     @Override

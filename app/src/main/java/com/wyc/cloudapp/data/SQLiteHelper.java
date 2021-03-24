@@ -1578,8 +1578,8 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    promotion_object   INTEGER,\n" +
                 "    promotion_grade_id INTEGER,\n" +
                 "    cumulation_give    INTEGER,\n" +
-                "    buyfull_money      NUMERIC,\n" +
-                "    reduce_money       NUMERIC,\n" +
+                "    buyfull_money      REAL,\n" +
+                "    reduce_money       REAL,\n" +
                 "    start_date         INTEGER,\n" +
                 "    end_date           INTEGER,\n" +
                 "    promotion_week     VARCHAR,\n" +
@@ -1595,11 +1595,11 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    type_detail_id      INTEGER,\n" +
                 "    status          INTEGER,\n" +
                 "    way             INTEGER,\n" +
-                "    limit_xnum      INTEGER,\n" +
+                "    limit_xnum      REAL,\n" +
                 "    promotion_object INTEGER,\n" +
                 "    promotion_grade_id INTEGER,\n" +
                 "    promotion_type INTEGER,\n" +
-                "    promotion_price NUMERIC,\n" +
+                "    promotion_price REAL,\n" +
                 "    stores_id       INTEGER,\n" +
                 "    start_date      VARCHAR,\n" +
                 "    end_date        VARCHAR,\n" +
@@ -1617,16 +1617,16 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    promotion_object INTEGER,\n" +
                 "    promotion_grade_id INTEGER,\n" +
                 "    promotion_type INTEGER,\n" +
-                "    xnum_one NUMERIC,\n" +
-                "    promotion_price_one NUMERIC,\n" +
-                "    xnum_two NUMERIC,\n" +
-                "    promotion_price_two NUMERIC,\n" +
-                "    xnum_three NUMERIC,\n" +
-                "    promotion_price_three NUMERIC,\n" +
-                "    xnum_four NUMERIC,\n" +
-                "    promotion_price_four NUMERIC,\n" +
-                "    xnum_five NUMERIC,\n" +
-                "    promotion_price_five NUMERIC,\n" +
+                "    xnum_one REAL,\n" +
+                "    promotion_price_one REAL,\n" +
+                "    xnum_two REAL,\n" +
+                "    promotion_price_two REAL,\n" +
+                "    xnum_three REAL,\n" +
+                "    promotion_price_three REAL,\n" +
+                "    xnum_four REAL,\n" +
+                "    promotion_price_four REAL,\n" +
+                "    xnum_five REAL,\n" +
+                "    promotion_price_five REAL,\n" +
                 "    stores_id       INTEGER,\n" +
                 "    start_date      VARCHAR,\n" +
                 "    end_date        VARCHAR,\n" +

@@ -381,11 +381,11 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
             JSONObject rule,satisfy_rule;
             boolean isSatisfy  =false;
             double upper_limit_num = 0.0,lower_limit_num = 0.0;
-            String value_key;
+            String value_key,type_detail_id,id;
             final JSONArray satisfy_rules = new JSONArray();
             for (int i = 0,size = promotion_rules.size();i < size;i ++){
-
-                 rule = promotion_rules.getJSONObject(i);
+                sum_xnum = 0.0;
+                rule = promotion_rules.getJSONObject(i);
 
                 int promotion_type = Utils.getNotKeyAsNumberDefault(rule,"promotion_type",-1);
                 switch (promotion_type){
@@ -401,28 +401,17 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                     default://默认按商品
                         value_key = "barcode_id";
                 }
-                if (!"barcode_id".equals(value_key)){
-                    for (int k = 0,length = mDatas.size();k < length;k++) {
-                        tmp_obj = mDatas.getJSONObject(k);
-                        String type_detail_id,id;
-                        if (promotion_type == 2){//类别要判断path
-                            type_detail_id = Utils.getNullStringAsEmpty(rule,"path");
-                            id = Utils.getNullStringAsEmpty(tmp_obj,"path");
-                            if (id.contains(type_detail_id + "@")){
-                                sum_xnum  += tmp_obj.getDoubleValue("xnum");
-                            }
-                        }else {
-                            id = Utils.getNullStringAsEmpty(tmp_obj,value_key);
-                            type_detail_id = Utils.getNullStringAsEmpty(rule,value_key);
-                            if (id.equals(type_detail_id)){
-                                sum_xnum  += tmp_obj.getDoubleValue("xnum");
-                            }
+                type_detail_id = Utils.getNullStringAsEmpty(rule,"type_detail_id");
+                for (int k = 0,length = mDatas.size();k < length;k++) {
+                    tmp_obj = mDatas.getJSONObject(k);
+                    if (promotion_type == 2){//类别要判断path
+                        id = Utils.getNullStringAsEmpty(tmp_obj,"path");
+                        if (id.contains(type_detail_id + "@")){
+                            sum_xnum  += tmp_obj.getDoubleValue("xnum");
                         }
-                    }
-                }else {
-                    for (int k = 0,length = mDatas.size();k < length;k++) {
-                        tmp_obj = mDatas.getJSONObject(k);
-                        if (isSameGoodsWithId(object,tmp_obj)){
+                    }else {
+                        id = Utils.getNullStringAsEmpty(tmp_obj,value_key);
+                        if (id.equals(type_detail_id)){
                             sum_xnum  += tmp_obj.getDoubleValue("xnum");
                         }
                     }
@@ -460,6 +449,8 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                      satisfy_rule.put("tlp_id",rule.getIntValue("tlp_id"));
                      satisfy_rule.put("lower_limit_num",lower_limit_num);
                      satisfy_rule.put("upper_limit_num",upper_limit_num);
+                     satisfy_rule.put("promotion_type",promotion_type);
+                     satisfy_rule.put("type_detail_id",type_detail_id);
                      satisfy_rule.put("price",new_price);
                      satisfy_rules.add(satisfy_rule);
                  }
@@ -482,10 +473,40 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
 
 
                 double current_promotion_xnum = 0.0;
-                for (int k = 0,length = mDatas.size();k < length;k++) {//如果商品不累加则需要循环遍历
+/*                for (int k = 0,length = mDatas.size();k < length;k++) {//如果商品不累加则需要循环遍历
                     tmp_obj = mDatas.getJSONObject(k);
                     if (GoodsInfoViewAdapter.isSpecialPromotion(tmp_obj) && isSameGoodsWithId(tmp_obj,getCurrentContent())){
                         current_promotion_xnum += tmp_obj.getDoubleValue("xnum");
+                    }
+                }*/
+
+                int promotion_type = promotionRule.getPromotion_type();
+                switch (promotion_type){
+                    case 2:
+                        value_key = "category_id";
+                        break;
+                    case 3:
+                        value_key = "gs_id";
+                        break;
+                    case 4:
+                        value_key = "brand_id";
+                        break;
+                    default://默认按商品
+                        value_key = "barcode_id";
+                }
+                type_detail_id = promotionRule.getType_detail_id();
+                for (int k = 0,length = mDatas.size();k < length;k++) {
+                    tmp_obj = mDatas.getJSONObject(k);
+                    if (promotion_type == 2){//类别要判断path
+                        id = Utils.getNullStringAsEmpty(tmp_obj,"path");
+                        if (id.contains(type_detail_id + "@")){
+                            current_promotion_xnum  += tmp_obj.getDoubleValue("xnum");
+                        }
+                    }else {
+                        id = Utils.getNullStringAsEmpty(tmp_obj,value_key);
+                        if (id.equals(type_detail_id)){
+                            current_promotion_xnum  += tmp_obj.getDoubleValue("xnum");
+                        }
                     }
                 }
                 current_promotion_xnum += num;
