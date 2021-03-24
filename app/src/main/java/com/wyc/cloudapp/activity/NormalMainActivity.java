@@ -811,7 +811,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         mSecondDisplay = SecondDisplay.getInstantiate(this);
         if (null != mSecondDisplay){
             if (mApplication.isConnection())mSecondDisplay.loadAdImg(mUrl,mAppId, mAppSecret);
-            mSecondDisplay.setDatas(mSaleGoodsAdapter.getData()).setNavigationInfo(mApplication.getStoreInfo()).show();
+            mSecondDisplay.setDatas(mSaleGoodsAdapter.getData()).show();
         }
     }
     @Override

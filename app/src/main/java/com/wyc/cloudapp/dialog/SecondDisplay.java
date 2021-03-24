@@ -47,7 +47,6 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
     private final NormalSaleGoodsAdapter mNormalSaleGoodsAdapter;
     private RecyclerView mSaleGoodsView;
     private SaleActivity mContext;
-    private JSONObject mStoreInfo;
     private TextView mSaleSumNum,mSaleSumAmount;
     private int mShowAdImgTimes = 0,mShowInterval = 5;//mShowAdImgTimes显示图片次数
     private volatile String[] mAdFileNames;
@@ -59,8 +58,9 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
     private long loseTime = 0;
     private int mBannerTextX = 0;
     private Bitmap mBannerBitmap = null;
-    private Rect mBottomRect;
+    private Rect mBottomRect,mSurfaceRect,mBitmapRect;
     private volatile boolean mShowBannerImg = true;
+
     private SecondDisplay(SaleActivity outerContext, Display display) {
         super(outerContext, display);
         mContext = outerContext;
@@ -96,6 +96,8 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         showAdImg();
+        mSurfaceRect = new Rect(0,0,mSurface.getWidth(),mSurface.getHeight());
+        mBitmapRect = new Rect();
     }
 
     @Override
@@ -110,7 +112,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
 
     private void initSurfaceView(){
         mSurface.setZOrderOnTop(true);
-        mSurface.setBackgroundColor(mContext.getColor(R.color.white));
+        mSurface.setBackgroundColor(mContext.getColor(R.color.transparent));
         mSurfaceHolder = mSurface.getHolder();
         mSurfaceHolder.addCallback(this);
 
@@ -163,18 +165,14 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
         }
     }
     private void initNavigationInfo(){
-        if (mStoreInfo != null){
-            final TextView stores_name = findViewById(R.id.store_name),stores_hotline = findViewById(R.id.sec_stores_hotline),
-            stores_addr = findViewById(R.id.sec_stores_addr);
-            stores_name.setText(mStoreInfo.getString("stores_name"));
-            stores_hotline.setText(mStoreInfo.getString("telphone"));
-            stores_addr.setText(mStoreInfo.getString("region"));
-        }
+        final JSONObject mStoreInfo = CustomApplication.self().getStoreInfo();
+        final TextView stores_name = findViewById(R.id.store_name),stores_hotline = findViewById(R.id.sec_stores_hotline),
+                stores_addr = findViewById(R.id.sec_stores_addr);
+        stores_name.setText(mStoreInfo.getString("stores_name"));
+        stores_hotline.setText(mStoreInfo.getString("telphone"));
+        stores_addr.setText(mStoreInfo.getString("region"));
     }
-    public SecondDisplay setNavigationInfo(JSONObject object){
-        mStoreInfo = object;
-        return this;
-    }
+
     public SecondDisplay setDatas(JSONArray array){
         if (array == null){
             array = new JSONArray();
@@ -298,17 +296,17 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
     }
 
 
-
     private final Runnable showAdImgRunnable = ()->{
         if (mAdFileNames != null) {
             final Canvas canvas = mSurfaceHolder.lockCanvas();
-            final Rect rect = new Rect(0,0,mSurface.getWidth(),mSurface.getHeight() - 32);
+            final Rect rect = mSurfaceRect;
             if (System.currentTimeMillis() - loseTime >= mShowInterval * 1000 && mShowBannerImg){
                 mBannerBitmap = BitmapFactory.decodeFile(mAdFilePath + mAdFileNames[mShowAdImgTimes++ % mAdFileNames.length]);
                 loseTime = System.currentTimeMillis();
             }
             if (mBannerBitmap != null){
-                canvas.drawBitmap(mBannerBitmap,new Rect(0,0,mBannerBitmap.getWidth(),mBannerBitmap.getHeight()),rect,null);
+                mBitmapRect.set(0,0,mBannerBitmap.getWidth(),mBannerBitmap.getHeight());
+                canvas.drawBitmap(mBannerBitmap,mBitmapRect,rect,null);
             }
             final Paint paint = mPaint;
 

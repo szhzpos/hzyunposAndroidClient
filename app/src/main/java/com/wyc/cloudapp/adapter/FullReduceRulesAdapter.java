@@ -17,7 +17,6 @@ import com.wyc.cloudapp.utils.Utils;
 
 public class FullReduceRulesAdapter extends AbstractDataAdapter<FullReduceRulesAdapter.MyViewHolder> {
     private final Context mContext;
-    private int mMaxMoneyIndex;
     public FullReduceRulesAdapter(Context context){
         mContext = context;
     }
@@ -44,14 +43,13 @@ public class FullReduceRulesAdapter extends AbstractDataAdapter<FullReduceRulesA
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         if (mDatas != null){
-            final JSONObject object = mDatas.getJSONObject(mDatas.size() -1 - position);
+            final JSONObject object = mDatas.getJSONObject(position);
             holder.name.setText(Utils.getNullStringAsEmpty(object,"title"));
             holder.rule_des_tv.setText(Utils.getNullStringAsEmpty(object,"rule_des"));
 
             int status = object.getIntValue("status");
             switch (status){
                 case 1:
-                    mMaxMoneyIndex = position;
                     if (holder.diff_amt_des_tv.getVisibility() == View.VISIBLE)holder.diff_amt_des_tv.setVisibility(View.INVISIBLE);
                     if (holder.status_img.getVisibility() == View.INVISIBLE)holder.status_img.setVisibility(View.VISIBLE);
                     holder.status_img.setBackground(mContext.getResources().getDrawable(R.drawable.selected,null));
@@ -69,10 +67,5 @@ public class FullReduceRulesAdapter extends AbstractDataAdapter<FullReduceRulesA
             }
 
         }
-    }
-
-    public int getMaxMoneyIndex() {
-        Logger.d("mMaxMoneyIndex:%d",mMaxMoneyIndex);
-        return mMaxMoneyIndex;
     }
 }

@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
@@ -452,8 +453,9 @@ public final class CustomApplication extends Application {
             super.afterExecute(r, t);
             if (t == null && r instanceof Future<?>) {
                 try {
-                    ((Future<?>) r).get();
-                } catch (ExecutionException | InterruptedException ee) {
+                    final Future<?> future = (Future<?>) r;
+                    if (future.isDone())future.get();
+                } catch (ExecutionException | CancellationException | InterruptedException ee) {
                     t = ee.getCause();
                 }
             }

@@ -765,6 +765,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
 
         final String order_code = mContext.getOrderCode(),stores_id = mContext.getStoreId(),zk_cashier_id = mContext.getPermissionCashierId();
         final StringBuilder err = new StringBuilder();
+        boolean hasVip = mVip != null;
         //处理销售明细
         sales_data = Utils.JsondeepCopy(mContext.getSaleData());//不能直接获取引用，需要重新复制一份否则会修改原始数据；如果业务不能正常完成，之前数据会遭到破坏
         for(int i = 0;i < sales_data.size();i ++){
@@ -810,7 +811,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         }
 
         //计算会员积分
-        if (mVip != null){
+        if (hasVip && CustomApplication.self().isConnection()){
             final JEventLoop loop = new JEventLoop();
             final JSONArray goods_list_json = new JSONArray();
             JSONObject sale_goods,integral_goods;
@@ -914,7 +915,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         order_info.put("transfer_status",1);//交班状态（1未交班，2已交班）
         order_info.put("transfer_time",0);
         order_info.put("is_rk",2);//是否已经扣减库存（1是，2否）
-        if (mVip != null){
+        if (hasVip){
             order_info.put("member_id",mVip.getString("member_id"));
             order_info.put("mobile",mVip.getString("mobile"));
             order_info.put("name",mVip.getString("name"));

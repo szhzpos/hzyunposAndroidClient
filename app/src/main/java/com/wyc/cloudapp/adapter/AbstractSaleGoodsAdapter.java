@@ -332,6 +332,8 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
             discount_type = DISCOUNT_TYPE.PROMOTION;
         }else  if (GoodsInfoViewAdapter.isBuyXGiveX(goods)){//买X送X
             discount_type = DISCOUNT_TYPE.BUY_X_GIVE_X;
+        }else  if (GoodsInfoViewAdapter.isBuyFullGiveX(goods)){//买满送X
+            discount_type = DISCOUNT_TYPE.BUY_FULL;
         }else {
             final JSONArray array = Utils.getNullObjectAsEmptyJsonArray(goods,"discount_records");
             if (!array.isEmpty()){
@@ -1384,7 +1386,6 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
             final JSONArray rules = calculateAmtForFullReduceRule(err);
             if (null != rules){
                 step_rules.addAll(rules);
-                Utils.sortJsonArrayFromDoubleCol(step_rules,"reduce_money");
                 generateFullReduceDesAndAddDiscount(step_rules);
                 notifyDataSetChanged();
                 return true;
@@ -1553,6 +1554,8 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
         final JSONArray rules_des = new JSONArray();
         JSONObject rule_obj,tmp,finded_rule = null;
         double full_money = 0.0,reduce_money = 0.0,max_reduce_money = 0.0,sale_amt = 0.0;
+
+        Utils.sortJsonArrayFromDoubleCol(rules,"reduce_money");
         for (int i = rules.size() - 1;i >= 0;i --){
             tmp = rules.getJSONObject(i);
             rule_obj = new JSONObject();
@@ -1573,12 +1576,14 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                 rule_obj.put("status",3);
                 rule_obj.put("diff_amt_des",mContext.getString(R.string.diff_des_sz,String.format(Locale.CHINA,"%.2f",full_money -sale_amt)));
             }
-
+            rule_obj.put("full_money",full_money);
             rule_obj.put("rule_des",mContext.getString(R.string.fullreduce_des_sz,String.valueOf(full_money),String.valueOf(reduce_money)));
             rule_obj.put("title",tmp.getString("title"));
             rules_des.add(rule_obj);
         }
         if (finded_rule != null)addFullReduceDiscount(finded_rule);
+
+        Utils.sortJsonArrayFromDoubleCol(rules_des,"full_money");
 
         mFullReduceDescription = new JSONObject();
         mFullReduceDescription.put("name","满减促销方案");
