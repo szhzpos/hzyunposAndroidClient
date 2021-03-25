@@ -92,7 +92,7 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
             final JSONObject goods_type_info = mDatas.getJSONObject(i);
             myViewHolder.category_id.setText(goods_type_info.getString("category_id"));
             myViewHolder.category_name.setText(goods_type_info.getString("name"));
-            if (i == 1 && mFirstLoad && !mContext.containGoods()){//一级分类触发第二个类别查询
+            if (i == 1 && mFirstLoad && !mContext.containGoods() && mSecLevelGoodsCategoryView != null){//一级分类触发第二个类别查询
                 mFirstLoad = false;
                 myViewHolder.itemView.callOnClick();
             }
@@ -196,6 +196,10 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
                 if (categorys != null)categorys.add(item_json);
             }
         }
+    }
+
+    public static boolean getCategoryPath(final JSONObject out,final String id){
+        return SQLiteHelper.execSql(out,"SELECT path FROM shop_category where category_id = '"+ id +"'");
     }
 
 }
