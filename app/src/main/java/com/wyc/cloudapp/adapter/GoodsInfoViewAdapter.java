@@ -380,7 +380,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
                 }
                 price = (Utils.equalDouble(weight,0.0) ? 0 : amt / weight);
             }else{
-                price = object.getDoubleValue("price");
+                price = object.getDoubleValue("retail_price");
                 if (metering_id == 0){//计重
                     xnum = (Utils.equalDouble(price,0.0) ? 0.0 : amt / price);
                 }else{//计份
@@ -399,6 +399,9 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
             object.put("info",barcodeRuleObj.getAsString("info"));
         }
         return code;
+    }
+    public static boolean isBarcodeWeighingGoods(final JSONObject goods){
+        return Utils.isNotEmpty(goods.getString(GoodsInfoViewAdapter.W_G_MARK));
     }
 
     public String getGoodsId(final JSONObject jsonObject){

@@ -538,10 +538,16 @@ public final class Utils {
         return Math.abs(a - b) < 0.00001;
     }
     public static boolean notLessDouble(double a,double b){
-        return equalDouble(a,b) || a - b > 0.0001;
+        return equalDouble(a,b) || greaterDouble(a,b);
     }
     public static boolean notGreaterDouble(double a,double b){
-        return equalDouble(a,b) || a - b < 0.0001;
+        return equalDouble(a,b) || lessDouble(a,b);
+    }
+    public static boolean greaterDouble(double a,double b){
+        return a - b > 0.00001;
+    }
+    public static boolean lessDouble(double a,double b){
+        return a - b < -0.00001;
     }
 
     public static void showTimePickerDialog(final Context context, final TextView tv, Calendar calendar) {

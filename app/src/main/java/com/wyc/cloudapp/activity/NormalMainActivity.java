@@ -854,8 +854,8 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     @Override
     protected void addSaleGoods(final @NonNull JSONObject jsonObject){
         final JSONObject content = new JSONObject();
-        final String weigh_barcode_info = (String) jsonObject.remove(GoodsInfoViewAdapter.W_G_MARK);//删除称重标志否则重新选择商品时不弹出称重界面
-        if (mGoodsInfoViewAdapter.getSingleGoods(content,weigh_barcode_info,mGoodsInfoViewAdapter.getGoodsId(jsonObject))){
+        final String id = mGoodsInfoViewAdapter.getGoodsId(jsonObject);//删除称重标志否则重新选择商品时不弹出称重界面
+        if (mGoodsInfoViewAdapter.getSingleGoods(content,jsonObject.getString(GoodsInfoViewAdapter.W_G_MARK),id)){
             hideLastOrderInfo();
             mSaleGoodsAdapter.addSaleGoods(content);
         }else{

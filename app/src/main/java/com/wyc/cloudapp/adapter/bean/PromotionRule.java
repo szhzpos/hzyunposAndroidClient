@@ -2,6 +2,8 @@ package com.wyc.cloudapp.adapter.bean;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -17,9 +19,12 @@ import java.util.Locale;
  * @Version: 1.0
  */
 public class PromotionRule implements Comparable<PromotionRule> {
-    int tlp_id,promotion_type;
-    double price,upper_limit_num,lower_limit_num;
-    String type_detail_id;
+    private int tlp_id,promotion_type;
+    private double price,upper_limit_num,lower_limit_num;
+    private String type_detail_id;
+    private double sum_sale_xnum;
+    private double current_promotion_xnum;
+    private double current_goods_num;
 
     public void setTlp_id(int tlp_id) {
         this.tlp_id = tlp_id;
@@ -67,6 +72,30 @@ public class PromotionRule implements Comparable<PromotionRule> {
 
     public String getType_detail_id() {
         return type_detail_id;
+    }
+
+    public void setSum_sale_xnum(double sum_sale_xnum) {
+        this.sum_sale_xnum = sum_sale_xnum;
+    }
+
+    public double getSum_sale_xnum() {
+        return sum_sale_xnum;
+    }
+
+    public void setCurrent_promotion_xnum(double current_promotion_xnum) {
+        this.current_promotion_xnum = current_promotion_xnum;
+    }
+
+    public double getCurrent_promotion_xnum() {
+        return current_promotion_xnum;
+    }
+
+    public void setCurrent_goods_num(double current_goods_num) {
+        this.current_goods_num = current_goods_num;
+    }
+
+    public double getCurrent_goods_num() {
+        return current_goods_num;
     }
 
     @Override
