@@ -92,7 +92,7 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
             final JSONObject goods_type_info = mDatas.getJSONObject(i);
             myViewHolder.category_id.setText(goods_type_info.getString("category_id"));
             myViewHolder.category_name.setText(goods_type_info.getString("name"));
-            if (i == 1 && mFirstLoad && !mContext.containGoods() && mSecLevelGoodsCategoryView != null){//一级分类触发第二个类别查询
+            if (i == 1 && mFirstLoad && !mContext.containGoods() && (Utils.lessThan7Inches(mContext) || mSecLevelGoodsCategoryView != null)){//一级分类触发第二个类别查询
                 mFirstLoad = false;
                 myViewHolder.itemView.callOnClick();
             }
