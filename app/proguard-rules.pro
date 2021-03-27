@@ -163,3 +163,9 @@
 -keepclassmembers class * {
     @android.support.annotation.Keep *;
 }
+-keepclassmembers class * implements java.io.Serializable { *; }
+# FastJson 混淆代码
+-dontwarn com.alibaba.fastjson.**
+-keep class com.alibaba.fastjson.** { *; }
+-keepattributes Signature
+-keepattributes *Annotation*
