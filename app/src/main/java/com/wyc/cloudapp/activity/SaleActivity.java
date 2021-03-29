@@ -97,7 +97,7 @@ public class SaleActivity extends MainActivity{
     }
 
     public void deleteGoodsRecord(){
-        mSaleGoodsAdapter.deleteSaleGoods(mSaleGoodsAdapter.getCurrentItemIndex());
+        mSaleGoodsAdapter.addCurrentGoods(-Utils.getNotKeyAsNumberDefault(mSaleGoodsAdapter.getCurrentContent(),"xnum",0.0));
     }
 
     public void alterGoodsPrice(){
