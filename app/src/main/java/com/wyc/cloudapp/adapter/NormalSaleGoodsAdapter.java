@@ -110,7 +110,7 @@ public final class NormalSaleGoodsAdapter extends AbstractSaleGoodsAdapter {
             if (dialog != null)
                 dialog.setYesOnclickListener(myDialog -> {
                     double content = myDialog.getContent();
-                    if (!verifyDiscountPermissions(content,type))return;
+                    if (verifyDiscountPermissions(content, type))return;
 
                     updateSaleGoodsInfoPromotion(content,type);
                     myDialog.dismiss();

@@ -598,6 +598,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                 sum_sale_xnum = 0.0;
                 current_promotion_xnum = 0.0;
                 current_goods_num = 0.0;
+                current_goods_promotion_num = 0.0;
                 not_promotion_barcode_ids = new JSONArray();
 
                 rule = promotion_rules.getJSONObject(i);
@@ -810,8 +811,8 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                         addSaleGoods(copy,num,isBarcodeWeighingGoods);
                     }
                 }
+                return true;
             }
-            return true;
         }
         return false;
     }
@@ -877,7 +878,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
             if (dialog != null)
                 dialog.setYesOnclickListener(myDialog -> {
                     double content = myDialog.getContent();
-                    if (!verifyDiscountPermissions(content,type))return;
+                    if (verifyDiscountPermissions(content, type))return;
 
                     updateSaleGoodsInfoPromotion(content,type);
                     myDialog.dismiss();
@@ -999,7 +1000,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
         notifyDataSetChanged();
     }
 
-    protected boolean verifyDiscountPermissions(double content,int type){
+    protected final boolean verifyDiscountPermissions(double content,int type){
         if (2 == type || 1 == type){
             if (type == 1){
                 double price;
@@ -1013,11 +1014,11 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                 }else
                     content = content / price * 10;
             }
-            return mContext.verifyDiscountPermissions(content / 10,null);
+            return !mContext.verifyDiscountPermissions(content / 10, null);
         } else  if (0 == type && Utils.equalDouble(content,0.0))
-            return verifyDeletePermissions();
+            return !verifyDeletePermissions();
 
-        return true;
+        return false;
     }
 
     private boolean verifyPresentPermissions(){
@@ -1692,9 +1693,9 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                 final JSONObject full_reduce_obj = array.getJSONObject(0);
                 final JSONArray rules = JSON.parseArray(Utils.getNullOrEmptyStringAsDefault(full_reduce_obj,"rule","[]"));
                 if (!rules.isEmpty()){
-                    final String name = full_reduce_obj.getString("title");
                     Utils.sortJsonArrayFromDoubleCol(rules,"full_money");
                     int modes = full_reduce_obj.getIntValue("modes"),fold = full_reduce_obj.getIntValue("fold");
+                    final String name = full_reduce_obj.getString("title");
                     double sale_amt = 0.0;
                     switch (modes){
                         case 1:
@@ -1713,6 +1714,10 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                         rule_json = rules.getJSONObject(i);
                         full_money = rule_json.getDoubleValue("full_money");
                         reduce_money = rule_json.getDoubleValue("reduce_money");
+
+                        rule_json.put("des_reduce_money",reduce_money);
+                        rule_json.put("fold",fold);
+
                         if (sale_amt >= full_money){
                             if (fold == 2){
                                 int counts = (int) (sale_amt / full_money);
@@ -1842,7 +1847,8 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
     private void generateFullReduceDesAndAddDiscount(final @NonNull JSONArray rules){
         final JSONArray rules_des = new JSONArray();
         JSONObject rule_obj,tmp,finded_rule = null;
-        double full_money = 0.0,reduce_money = 0.0,max_reduce_money = 0.0,sale_amt = 0.0;
+        double full_money = 0.0,reduce_money = 0.0,max_reduce_money = 0.0,sale_amt = 0.0,des_reduce_money = 0.0;
+        int fold = 0,status;
 
         Utils.sortJsonArrayFromDoubleCol(rules,"reduce_money");
         for (int i = rules.size() - 1;i >= 0;i --){
@@ -1851,8 +1857,12 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
 
             full_money = tmp.getDoubleValue("full_money");
             reduce_money = tmp.getDoubleValue("reduce_money");
+            des_reduce_money = tmp.getDoubleValue("des_reduce_money");
             sale_amt = tmp.getDoubleValue("sale_amt");
-            int status = tmp.getIntValue("status");
+            status = tmp.getIntValue("status");
+            fold = tmp.getIntValue("fold");
+
+
             if (status == 1){
                 if (reduce_money > max_reduce_money){
                     max_reduce_money = reduce_money;
@@ -1860,13 +1870,15 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                 }else {
                     continue;
                 }
+                // 满减fold 为1时累加，阶梯满减fold为2时累加
                 rule_obj.put("status",status);
             }else {
                 rule_obj.put("status",3);
                 rule_obj.put("diff_amt_des",mContext.getString(R.string.diff_des_sz,String.format(Locale.CHINA,"%.2f",full_money -sale_amt)));
             }
             rule_obj.put("full_money",full_money);
-            rule_obj.put("rule_des",mContext.getString(R.string.fullreduce_des_sz,String.valueOf(full_money),String.valueOf(reduce_money)));
+            rule_obj.put("fold",fold);
+            rule_obj.put("rule_des",mContext.getString(R.string.fullreduce_des_sz,String.valueOf(full_money),String.valueOf(des_reduce_money)));
             rule_obj.put("title",tmp.getString("title"));
             rules_des.add(rule_obj);
         }
@@ -1925,7 +1937,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                 ruleObj.put("tlpb_id",rule.getTlpb_id());
                 ruleObj.put("title",rule.getTitle());
                 ruleObj.put("promotion_type",rule.getPromotion_type());
-                ruleObj.put("cumulation_give",rule.getCumulation_give());
+                ruleObj.put("fold",rule.getCumulation_give());
                 ruleObj.put("full_money",rule.getBuyfull_money());
                 ruleObj.put("reduce_money",rule.getReduce_money());
 
@@ -1947,7 +1959,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
         JSONObject goods,rule;
         int promotion_type = -1;
         String detail_id,id;
-        boolean isFinded = false;
+        boolean isFounded = false;
 
         final JSONArray rules = getFullReduceInfo(err);
         if (null != rules){
@@ -1974,7 +1986,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                 if (value_key != null){
                     detail_ids = rule.getJSONArray("detail_ids");
                     plan_amt = 0.0;
-                    isFinded = false;
+                    isFounded = false;
 
                     for (int j = 0,len = detail_ids.size();j < len;j ++){
                         detail_id = detail_ids.getString(j);
@@ -1984,18 +1996,18 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                                 id = Utils.getNullStringAsEmpty(goods,"path");
                                 if (id.contains(detail_id + "@")){
                                     plan_amt += goods.getDoubleValue("sale_amt");
-                                    isFinded = true;
+                                    isFounded = true;
                                 }
                             }else {
                                 id = Utils.getNullStringAsEmpty(goods,value_key);
                                 if (id.equals(detail_id)){
                                     plan_amt += goods.getDoubleValue("sale_amt");
-                                    isFinded = true;
+                                    isFounded = true;
                                 }
                             }
                         }
                     }
-                    if (isFinded){
+                    if (isFounded){
                         calculateReduceMoney(rule,plan_amt);//只有计算了销售金额的方案才需要计算满减金额
                     }else {
                         rules.remove(i);
@@ -2009,19 +2021,22 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
     }
     private void calculateReduceMoney(final JSONObject rule,double sale_amt){
         double full_money = rule.getDoubleValue("full_money");
+        double reduce_money = rule.getDoubleValue("reduce_money");
+
+        rule.put("des_reduce_money",reduce_money);
+        rule.put("sale_amt",sale_amt);
+
         if (Utils.notLessDouble(sale_amt,full_money)){
             rule.put("status",1);
-            int cumulation_give = rule.getIntValue("cumulation_give");
-            double reduce_money = rule.getDoubleValue("reduce_money");
+            int cumulation_give = rule.getIntValue("fold");
             if (cumulation_give == 1 && !Utils.equalDouble(full_money,0.0)){
                 int times =  (int) (sale_amt / full_money);
                 if (times > 1){
-                    reduce_money *= ((double) times);
+                    reduce_money *= times;
                     rule.put("reduce_money",reduce_money);
                 }
             }
         }
-        rule.put("sale_amt",sale_amt);
     }
 
     //买X送X优惠
