@@ -13,26 +13,31 @@
         android:orientation="horizontal"
         android:padding="@dimen/margin_5">
 
-        <TextView
-            android:id="@+id/store_name"
+        <ImageView
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:textColor="@color/white"
-            android:textSize="@dimen/font_size_18" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="@dimen/margin_8"
+            android:background="@drawable/main"
+            android:contentDescription="@string/cashier_desk_sz" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
         <LinearLayout
             android:id="@+id/extra_info"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_height="wrap_content"
                 android:gravity="end"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -50,28 +55,37 @@
                     android:textSize="@dimen/font_size_16" />
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/store_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_18"
+                android:gravity="center_vertical"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18" />
+
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="end"
-                android:orientation="horizontal">
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_18"
+                android:orientation="horizontal"
+                android:visibility="visible">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:gravity="bottom"
                     android:text="@string/hotline_sz"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_14" />
 
                 <TextView
                     android:id="@+id/sec_stores_hotline"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:gravity="bottom"
                     android:textAlignment="viewEnd"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/font_size_16" />
+                    android:textSize="@dimen/font_size_14"
+                    android:visibility="visible" />
             </LinearLayout>
 
         </LinearLayout>
@@ -84,7 +98,7 @@
         android:orientation="horizontal">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/main_middle_left_width"
             android:layout_height="match_parent"
             android:layout_margin="@dimen/margin_2"
             android:background="@drawable/round_border_sub_gray"
@@ -97,7 +111,6 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/textView27"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="start|center_vertical"
@@ -108,7 +121,6 @@
                     android:textSize="@dimen/sec_sale_header_font_size" />
 
                 <TextView
-                    android:id="@+id/textView28"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="start|center_vertical"
@@ -119,7 +131,6 @@
                     android:textSize="@dimen/sec_sale_header_font_size" />
 
                 <TextView
-                    android:id="@+id/textView29"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -132,7 +143,6 @@
                     android:textSize="@dimen/sec_sale_header_font_size" />
 
                 <TextView
-                    android:id="@+id/textView30"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -143,7 +153,6 @@
                     android:textSize="@dimen/sec_sale_header_font_size" />
 
                 <TextView
-                    android:id="@+id/textView31"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -158,7 +167,7 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/sec_sale_goods_list"
-                android:layout_width="288dp"
+                android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_margin="@dimen/margin_1"
                 android:layout_weight="1" />
@@ -174,7 +183,6 @@
                 android:paddingEnd="@dimen/margin_5">
 
                 <TextView
-                    android:id="@+id/textView16"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/num_colon_sz"
@@ -195,7 +203,6 @@
                     android:layout_weight="1" />
 
                 <TextView
-                    android:id="@+id/textView18"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/amt_sz"

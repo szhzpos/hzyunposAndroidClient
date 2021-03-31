@@ -560,27 +560,20 @@ public final class RefundDialog extends AbstractDialogMainActivity {
                             break;
                         case 1:
                             retJson = JSON.parseObject(retJson.getString("info"));
+                            final ContentValues values = new ContentValues();
                             switch (retJson.getString("status")){
                                 case "n":
-                                    code = false;
+                                    values.put("upload_status",3);
                                     err.append(retJson.getString("info"));
                                     break;
                                 case "y":
-                                    Logger.d_json(retJson.toJSONString());
-                                    final String ret_order_code = Utils.getNullStringAsEmpty(retJson,"order_code"),ret_ro_code = Utils.getNullStringAsEmpty(retJson,"ro_code");
-                                    if (code = (ret_order_code.equals(order_code) && ret_ro_code.equals(ro_code))){
-                                        final ContentValues values = new ContentValues();
-                                        values.put("upload_status",2);
-                                        values.put("upload_time",System.currentTimeMillis() / 1000);
-                                        int rows = SQLiteHelper.execUpdateSql("refund_order",values,"ifnull(order_code,'') = ? and ro_code = ?",new String[]{order_code,ro_code},err);
-                                        code = rows > 0;
-                                        if (rows == 0)err.append("未更新任何数据！");
-                                    }else {
-                                        err.append("上传成功，但返回订单号与上传的订单号不一致！");
-                                        Logger.e("退货单:%s,ret_order_code:%s,order_code:%s,ret_ro_code:%s,ro_code:%s",err,ret_order_code,order_code,ret_ro_code,ro_code);
-                                    }
+                                    values.put("upload_status",2);
                                     break;
                             }
+                            values.put("upload_time",System.currentTimeMillis() / 1000);
+                            int rows = SQLiteHelper.execUpdateSql("refund_order",values,"ifnull(order_code,'') = ? and ro_code = ?",new String[]{order_code,ro_code},err);
+                            code = rows > 0;
+                            if (rows == 0)err.append("未更新任何数据！");
                             break;
                     }
                 } else {
@@ -589,7 +582,7 @@ public final class RefundDialog extends AbstractDialogMainActivity {
                 }
             }
         }
-        return code;
+        return code && err.length() == 0;
     }
     private boolean updateFromRefundResult(JSONArray refund_money_info,final String order_code,final String ro_code,final StringBuilder err){
         final List<String> update_sqls_list = new ArrayList<>();

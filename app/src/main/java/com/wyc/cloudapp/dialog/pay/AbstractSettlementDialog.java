@@ -1344,7 +1344,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         final String store_name = Utils.getNullStringAsEmpty(format_info,"s_n"),pos_num = Utils.getNullOrEmptyStringAsDefault(order_info,"pos_num",""),
                 cas_name = Utils.getNullOrEmptyStringAsDefault(order_info,"cas_name",""),footer_c = Utils.getNullStringAsEmpty(format_info,"f_c"),
                 new_line = "\n",//Printer.commandToStr(Printer.NEW_LINE);
-                new_line_16 = Printer.commandToStr(Printer.LINE_SPACING_16),
+                new_line_4 = Printer.commandToStr(Printer.LINE_SPACING_16),
                 new_line_2 = Printer.commandToStr(Printer.LINE_SPACING_2),new_line_d = Printer.commandToStr(Printer.LINE_SPACING_DEFAULT),
                 line = context.getString(R.string.line_58);
 
@@ -1380,28 +1380,18 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                     xnum = info_obj.getDoubleValue("xnum");
                     discount_amt = Utils.formatDouble(info_obj.getDoubleValue("discount_amt"),2);
 
-                    if (i > 0) {
-                        info.append(new_line_d);
-                    }
-
-                    info.append(Printer.commandToStr(Printer.BOLD)).append(Utils.getNullStringAsEmpty(info_obj,"goods_title")).append(new_line).append(Printer.commandToStr(Printer.BOLD_CANCEL));
+                    info.append(Printer.commandToStr(Printer.BOLD)).append(Utils.getNullStringAsEmpty(info_obj,"goods_title")).append(new_line_2).append(new_line).append(Printer.commandToStr(Printer.BOLD_CANCEL));
                     info.append(Printer.printTwoData(1,Utils.getNullStringAsEmpty(info_obj,"barcode"),
                             Printer.printThreeData(16,String.format(Locale.CHINA, "%.2f", info_obj.getDoubleValue("price")),
                                     type == 2 ? String.valueOf(xnum) : String.valueOf((int) xnum),String.format(Locale.CHINA, "%.2f", info_obj.getDoubleValue("sale_amt")))));
 
                     if (!Utils.equalDouble(discount_amt, 0.0)) {
-
                         sum_dis_amt += discount_amt;
-
-                        info.append(new_line).append(Printer.printTwoData(1, context.getString(R.string.b_f_ori_price_sz).concat(Utils.getNullStringAsEmpty(info_obj,"original_price")),
+                        info.append(new_line_2).append(new_line).append(Printer.printTwoData(1, context.getString(R.string.b_f_ori_price_sz).concat(Utils.getNullStringAsEmpty(info_obj,"original_price")),
                                 context.getString(R.string.b_f_disco_sz).concat(String.format(Locale.CHINA, "%.2f", discount_amt))));
                     }
                     if (i + 1 != size)
-                        info.append(new_line_16);
-                    else
-                        info.append(new_line_2);
-
-                    info.append(new_line);
+                        info.append(new_line).append(new_line);
                 }
             }
             info.append(line).append(new_line_2).append(new_line).append(new_line_d);
@@ -1440,7 +1430,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                     }
                 }
                 if (i + 1 != size)
-                    info.append(new_line_16);
+                    info.append(new_line_4);
                 else
                     info.append(new_line_2);
 

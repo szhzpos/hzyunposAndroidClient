@@ -546,22 +546,22 @@ final class SyncHandler extends Handler {
                                             break;
                                         case 1:
                                             retJson = JSON.parseObject(retJson.getString("info"));
+                                            final ContentValues values = new ContentValues();
                                             switch (retJson.getString("status")){
                                                 case "n":
-                                                    code = false;
+                                                    values.put("upload_status",3);
                                                     err.append(retJson.getString("info"));
                                                     break;
                                                 case "y":
-                                                    final ContentValues values = new ContentValues();
                                                     values.put("upload_status",2);
-                                                    values.put("upload_time",System.currentTimeMillis() / 1000);
-                                                    int rows = SQLiteHelper.execUpdateSql("retail_order",values,"order_code = ?",new String[]{order_code},err);
-                                                    code = rows > 0;
-                                                    if (rows == 0){
-                                                        err.append("未更新任何数据！");
-                                                        Logger.e("销售单:%s,order_code:%s",err,order_code);
-                                                    }
                                                     break;
+                                            }
+                                            values.put("upload_time",System.currentTimeMillis() / 1000);
+                                            int rows = SQLiteHelper.execUpdateSql("retail_order",values,"order_code = ?",new String[]{order_code},err);
+                                            code = rows > 0;
+                                            if (rows == 0){
+                                                err.append("未更新任何数据！");
+                                                Logger.e("销售单:%s,order_code:%s",err,order_code);
                                             }
                                             break;
                                     }
@@ -575,7 +575,7 @@ final class SyncHandler extends Handler {
                 }
             }
         }
-        if (!code){
+        if (!code || err.length() > 0){
             Logger.e("上传销售单据错误：%s",err);
             CustomApplication.sendMessage(MessageID.TRANSFERSTATUS_ID,false);
         }
@@ -594,12 +594,13 @@ final class SyncHandler extends Handler {
         final JSONArray transfer_sum_arr = SQLiteHelper.getListToJson(transfer_sum_sql,err);
         if (null != transfer_sum_arr){
             final StringBuilder sz_ti_code = new StringBuilder(),sql_sb = new StringBuilder();
-
+            String ti_code;
             JSONObject transfer_sum_obj;
             for (int i = 0,size = transfer_sum_arr.size();i < size;i++){
                 transfer_sum_obj = transfer_sum_arr.getJSONObject(i);
+                ti_code = transfer_sum_obj.getString("ti_code");
 
-                sz_ti_code.delete(0,sz_ti_code.length()).append(details_where_sql).append("'").append(transfer_sum_obj.getString("ti_code")).append("'");
+                sz_ti_code.delete(0,sz_ti_code.length()).append(details_where_sql).append("'").append(ti_code).append("'");
                 Logger.d("sz_ti_code:%s",sz_ti_code);
 
                 if (sz_ti_code.length() != 0){
@@ -642,18 +643,19 @@ final class SyncHandler extends Handler {
                                 break;
                             case 1:
                                 retJson = JSON.parseObject(retJson.getString("info"));
+                                final ContentValues values = new ContentValues();
                                 switch (retJson.getString("status")){
                                     case "n":
+                                        values.put("upload_status",3);
                                         err.append(retJson.getString("info")).append(" sz_ti_code:").append(sz_ti_code);
                                         break;
                                     case "y":
-                                        final String ti_code = retJson.getString("ti_code");
-                                        final ContentValues values = new ContentValues();
-                                        values.put("upload_time",System.currentTimeMillis() / 1000);
+                                        ti_code = retJson.getString("ti_code");
                                         values.put("upload_status",2);
-                                        SQLiteHelper.execUpdateSql("transfer_info",values,"ti_code = ?",new String[]{ti_code},err);
                                         break;
                                 }
+                                values.put("upload_time",System.currentTimeMillis() / 1000);
+                                SQLiteHelper.execUpdateSql("transfer_info",values,"ti_code = ?",new String[]{ti_code},err);
                                 break;
                         }
                     }

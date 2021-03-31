@@ -126,10 +126,10 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
 
     private void initSaleGoodsView(){
         mNormalSaleGoodsAdapter.setDataListener((total_num, total_sale_amt, total_discount_amt) -> {
+            mSaleSumNum.setText(String.format(Locale.CANADA,"%.3f",total_num));
+            mSaleSumAmount.setText(String.format(Locale.CANADA,"%.2f",total_sale_amt));
             if (!mNormalSaleGoodsAdapter.isEmpty()){
                 if (mShowBannerImg) mShowBannerImg = false;
-                mSaleSumNum.setText(String.format(Locale.CANADA,"%.3f",total_num));
-                mSaleSumAmount.setText(String.format(Locale.CANADA,"%.2f",total_sale_amt));
                 mSaleGoodsView.scrollToPosition(mNormalSaleGoodsAdapter.getCurrentItemIndex());
             }else{
                 mCurrentBarcodeId = 0;
@@ -312,7 +312,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
 
             //图片边框
             paint.setStyle(Paint.Style.STROKE);
-            paint.setStrokeWidth(1);
+            paint.setStrokeWidth(Utils.dpToPx(mContext,1));
             paint.setColor(mContext.getColor(R.color.blue));
             canvas.drawRect(rect,paint);
             //底部区域

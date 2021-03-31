@@ -230,7 +230,8 @@ public class PrintFormatFragment extends AbstractParameterFragment {
             content.put("parameter_desc",parameter_desc);
         }else{
             if (SQLiteHelper.getLocalParameter(parameter_id,object)){
-                fzrg.check(object.getIntValue("f_z"));
+                id = object.getIntValue("f_z");
+                fzrg.check(id);
                 stores_name.setText(Utils.getNullStringAsEmpty(object,"s_n"));
                 footer_c.setText(Utils.getNullStringAsEmpty(object,"f_c"));
                 p_count.setText(Utils.getNullOrEmptyStringAsDefault(object,"p_c","1"));
@@ -312,7 +313,9 @@ public class PrintFormatFragment extends AbstractParameterFragment {
         }else{
             boolean code = SQLiteHelper.getLocalParameter("c_f_info",object);
             if (code){
-                fzrg.check(object.getIntValue("f_z"));
+                int id = object.getIntValue("f_z");
+                if (id == 0)id = R.id.f_58;//默认58
+                fzrg.check(id);
                 stores_name_et.setText(Utils.getNullStringAsEmpty(object,"s_n"));
                 footer_c_et.setText(Utils.getNullStringAsEmpty(object,"f_c"));
                 p_count_et.setText(Utils.getNullOrEmptyStringAsDefault(object,"p_c","1"));
@@ -365,8 +368,10 @@ public class PrintFormatFragment extends AbstractParameterFragment {
                         case R.id.usb_p:
                             startUSBDiscoveryAndAuth(vals[0],vals[1]);
                             break;
+                        default:
+                            status_id = R.id.usb_p;//默认usb
                     }
-                }
+                }else  status_id = R.id.usb_p;//默认usb
                 radioGroup.check(status_id);
                 mPrintIdAdapter.clear();
                 mPrintIdAdapter.add(printer_info);
