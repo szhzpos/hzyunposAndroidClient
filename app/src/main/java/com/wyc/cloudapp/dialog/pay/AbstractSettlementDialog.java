@@ -1344,7 +1344,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         final String store_name = Utils.getNullStringAsEmpty(format_info,"s_n"),pos_num = Utils.getNullOrEmptyStringAsDefault(order_info,"pos_num",""),
                 cas_name = Utils.getNullOrEmptyStringAsDefault(order_info,"cas_name",""),footer_c = Utils.getNullStringAsEmpty(format_info,"f_c"),
                 new_line = "\n",//Printer.commandToStr(Printer.NEW_LINE);
-                new_line_4 = Printer.commandToStr(Printer.LINE_SPACING_16),
+                new_line_10 = Printer.commandToStr(Printer.LINE_SPACING_10),
                 new_line_2 = Printer.commandToStr(Printer.LINE_SPACING_2),new_line_d = Printer.commandToStr(Printer.LINE_SPACING_DEFAULT),
                 line = context.getString(R.string.line_58);
 
@@ -1360,7 +1360,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             info.append(Printer.printTwoData(1, context.getString(R.string.b_f_jh_sz).concat(pos_num), context.getString(R.string.b_f_cashier_sz).concat(cas_name))).append(new_line);
             info.append(context.getString(R.string.b_f_order_sz)).append(Utils.getNullStringAsEmpty(order_info,"order_code")).append(new_line).append(new_line);
 
-            info.append(context.getString(R.string.b_f_header_sz).replace("-"," ")).append(new_line_2).append(new_line).append(line).append(new_line_2).append(new_line).append(new_line_d);
+            info.append(context.getString(R.string.b_f_header_sz).replace("-"," ")).append(new_line_2).append(new_line).append(line).append(new_line);
             //商品明细
             JSONObject info_obj;
             double discount_amt = 0.0, xnum = 0.0,order_amt = 0.0,actual_amt = 0.0,sum_dis_amt = 0.0;
@@ -1380,18 +1380,18 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                     xnum = info_obj.getDoubleValue("xnum");
                     discount_amt = Utils.formatDouble(info_obj.getDoubleValue("discount_amt"),2);
 
-                    info.append(Printer.commandToStr(Printer.BOLD)).append(Utils.getNullStringAsEmpty(info_obj,"goods_title")).append(new_line_2).append(new_line).append(Printer.commandToStr(Printer.BOLD_CANCEL));
+                    if (i != 0)info.append(new_line_10);
+
+                    info.append(Printer.commandToStr(Printer.BOLD)).append(Utils.getNullStringAsEmpty(info_obj,"goods_title")).append(new_line).append(new_line_d).append(Printer.commandToStr(Printer.BOLD_CANCEL));
                     info.append(Printer.printTwoData(1,Utils.getNullStringAsEmpty(info_obj,"barcode"),
                             Printer.printThreeData(16,String.format(Locale.CHINA, "%.2f", info_obj.getDoubleValue("price")),
-                                    type == 2 ? String.valueOf(xnum) : String.valueOf((int) xnum),String.format(Locale.CHINA, "%.2f", info_obj.getDoubleValue("sale_amt")))));
+                                    type == 2 ? String.valueOf(xnum) : String.valueOf((int) xnum),String.format(Locale.CHINA, "%.2f", info_obj.getDoubleValue("sale_amt"))))).append(new_line);
 
                     if (!Utils.equalDouble(discount_amt, 0.0)) {
                         sum_dis_amt += discount_amt;
-                        info.append(new_line_2).append(new_line).append(Printer.printTwoData(1, context.getString(R.string.b_f_ori_price_sz).concat(Utils.getNullStringAsEmpty(info_obj,"original_price")),
-                                context.getString(R.string.b_f_disco_sz).concat(String.format(Locale.CHINA, "%.2f", discount_amt))));
+                        info.append(Printer.printTwoData(1, context.getString(R.string.b_f_ori_price_sz).concat(Utils.getNullStringAsEmpty(info_obj,"original_price")),
+                                context.getString(R.string.b_f_disco_sz).concat(String.format(Locale.CHINA, "%.2f", discount_amt)))).append(new_line);
                     }
-                    if (i + 1 != size)
-                        info.append(new_line).append(new_line);
                 }
             }
             info.append(line).append(new_line_2).append(new_line).append(new_line_d);
@@ -1401,7 +1401,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
 
             info.append(Printer.printTwoData(1, context.getString(R.string.b_f_rec_sz).concat(String.format(Locale.CHINA, "%.2f", order_amt - sum_dis_amt)),
                     context.getString(R.string.b_f_disco_sz).concat(String.format(Locale.CHINA, "%.2f", sum_dis_amt)))).
-                    append(new_line_2).append(new_line).append(line).append(new_line_2).append(new_line).append(new_line_d);
+                    append(new_line_2).append(new_line_2).append(new_line).append(line);
 
             //支付方式
             double zl = 0.0, pamt = 0.0;
@@ -1410,31 +1410,27 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                 info_obj = pays.getJSONObject(i);
                 zl = info_obj.getDoubleValue("pzl");
                 pamt = info_obj.getDoubleValue("pamt");
-                info.append(Utils.getNullOrEmptyStringAsDefault(info_obj,"name","")).append("：").append(pamt - zl).append("元").append(new_line);
 
-                info.append(context.getString(R.string.b_f_yus_sz)).append(pamt);
+                if (i != 0)info.append(new_line_10);
+
+                info.append(Utils.getNullOrEmptyStringAsDefault(info_obj,"name","")).append("：").append(pamt - zl).append("元").append(new_line).append(new_line_d);
+                info.append(context.getString(R.string.b_f_yus_sz)).append(pamt).append(new_line);
+
                 if (!Utils.equalDouble(zl, 0.0)) {
-                    info.append(",").append(context.getString(R.string.b_f_zl_sz)).append(zl);
+                    info.append(",").append(context.getString(R.string.b_f_zl_sz)).append(zl).append(new_line);
                 }
                 if (info_obj.containsKey("xnote")) {
                     final JSONArray xnotes = JSON.parseArray(Utils.getNullOrEmptyStringAsDefault(info_obj,"xnote","[]"));
                     if (xnotes != null) {
                         int length = xnotes.size();
                         if (length > 0) {
-                            info.append(new_line);
                             for (int j = 0; j < length; j++) {
-                                if (j + 1 != length)
+                                if (i > 0 && j + 1 != length)
                                     info.append(xnotes.getString(j)).append(new_line);
                             }
                         }
                     }
                 }
-                if (i + 1 != size)
-                    info.append(new_line_4);
-                else
-                    info.append(new_line_2);
-
-                info.append(new_line).append(new_line_d);
             }
             info.append(line).append(new_line_2).append(new_line).append(new_line_d);
 

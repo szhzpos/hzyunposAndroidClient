@@ -619,7 +619,7 @@ public final class RefundDialog extends AbstractDialogMainActivity {
         final String store_name = Utils.getNullStringAsEmpty(format_info,"s_n"),pos_num = Utils.getNullOrEmptyStringAsDefault(order_info,"pos_num",""),
                 cas_name = Utils.getNullOrEmptyStringAsDefault(order_info,"cas_name",""),footer_c = Utils.getNullStringAsEmpty(format_info,"f_c"),
                 new_line = "\r\n",//Printer.commandToStr(Printer.NEW_LINE);
-                new_line_16 = Printer.commandToStr(Printer.LINE_SPACING_16),
+                new_line_10 = Printer.commandToStr(Printer.LINE_SPACING_10),
                 new_line_2 = Printer.commandToStr(Printer.LINE_SPACING_2),new_line_d = Printer.commandToStr(Printer.LINE_SPACING_DEFAULT),
                 line = "--------------------------------";
 
@@ -634,7 +634,7 @@ public final class RefundDialog extends AbstractDialogMainActivity {
             info.append(Printer.printTwoData(1, context.getString(R.string.b_f_jh_sz).concat(pos_num), context.getString(R.string.b_f_cashier_sz).concat(cas_name))).append(new_line);
             info.append(context.getString(R.string.b_f_order_sz)).append(Utils.getNullStringAsEmpty(order_info,"ro_code")).append(new_line).append(new_line);
 
-            info.append(context.getString(R.string.b_f_header_sz).replace("-"," ")).append(new_line_2).append(new_line).append(line).append(new_line_2).append(new_line).append(new_line_d);
+            info.append(context.getString(R.string.b_f_header_sz).replace("-"," ")).append(new_line_2).append(new_line).append(line).append(new_line);
             //商品明细
             JSONObject info_obj;
             double refund_num = 0.0,refund_amt = 0.0,refund_sum_amt = 0.0,refund_price;
@@ -654,27 +654,18 @@ public final class RefundDialog extends AbstractDialogMainActivity {
                     refund_amt = refund_num * refund_price;
                     refund_sum_amt += refund_amt;
 
-                    if (i > 0) {
-                        info.append(new_line_d);
-                    }
+                    if (i != 0)info.append(new_line_10);
 
-                    info.append(Printer.commandToStr(Printer.BOLD)).append(Utils.getNullStringAsEmpty(info_obj,"goods_title")).append(new_line).append(Printer.commandToStr(Printer.BOLD_CANCEL));
+                    info.append(Printer.commandToStr(Printer.BOLD)).append(Utils.getNullStringAsEmpty(info_obj,"goods_title")).append(new_line).append(new_line_d).append(Printer.commandToStr(Printer.BOLD_CANCEL));
                     info.append(Printer.printTwoData(1,Utils.getNullStringAsEmpty(info_obj,"barcode"),
-                            Printer.printThreeData(16,String.format(Locale.CHINA,"%.2f",refund_price), type == 2 ? String.valueOf(refund_num) : String.valueOf((int) refund_num),String.format(Locale.CHINA,"%.2f",refund_amt))));
+                            Printer.printThreeData(16,String.format(Locale.CHINA,"%.2f",refund_price), type == 2 ? String.valueOf(refund_num) : String.valueOf((int) refund_num),String.format(Locale.CHINA,"%.2f",refund_amt)))).append(new_line);;
 
-                    if (i + 1 != size)
-                        info.append(new_line_16);
-                    else
-                        info.append(new_line_2);
-
-                    info.append(new_line);
                 }
             }
             info.append(line).append(new_line_2).append(new_line).append(new_line_d);
 
             info.append(Printer.printTwoData(1, context.getString(R.string.refund_amt_sz).concat("：").concat(String.format(Locale.CHINA, "%.2f",Utils.formatDouble(refund_sum_amt,2)))
-                    , context.getString(R.string.b_f_units_sz).concat(String.valueOf(units_num)))).append(new_line).
-                    append(new_line_2).append(line).append(new_line_2).append(new_line_d);
+                    , context.getString(R.string.b_f_units_sz).concat(String.valueOf(units_num)))).append(new_line_2).append(new_line).append(line);
 
             //支付方式
             double pamt = 0.0;
@@ -682,15 +673,10 @@ public final class RefundDialog extends AbstractDialogMainActivity {
             for (int i = 0, size = pays.size(); i < size; i++) {
                 info_obj = pays.getJSONObject(i);
 
+                if (i != 0)info.append(new_line_10);
+
                 pamt = info_obj.getDoubleValue("pay_money");
-                info.append(Utils.getNullOrEmptyStringAsDefault(info_obj,"pay_method_name","")).append("：").append(pamt).append("元");
-
-                if (i + 1 != size)
-                    info.append(new_line_16);
-                else
-                    info.append(new_line_2);
-
-                info.append(new_line).append(new_line_d);
+                info.append(Utils.getNullOrEmptyStringAsDefault(info_obj,"pay_method_name","")).append("：").append(pamt).append("元").append(new_line).append(new_line_d);
             }
             info.append(line).append(new_line_2).append(new_line).append(new_line_d);
             if (footer_c.isEmpty()){

@@ -121,10 +121,10 @@ public final class Printer {
      * 设置行间距
      */
     public static final byte[] LINE_SPACING_DEFAULT = {0x1b, 0x32};
-    public static final byte[] LINE_SPACING_8 = {0x1b,0x33};
+    public static final byte[] LINE_SPACING_10 = {0x1b,0x33,0x10};
+    public static final byte[] LINE_SPACING_16 = {0x1b,0x33,0x16};
     public static final byte[] LINE_SPACING_4 = {0x1b,0x33,0x04};
     public static final byte[] LINE_SPACING_2 = {0x1b,0x33,0x02};
-    public static final byte[] LINE_SPACING_16 = {0x1b,0x33,0x59};
     /**
      * 换行
      */

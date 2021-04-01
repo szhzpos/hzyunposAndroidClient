@@ -92,7 +92,8 @@ public abstract class AbstractTransferDialog extends AbstractDialogMainActivity 
     private void transferSuccess(){
         final CustomApplication app = CustomApplication.self();
         app.sync_transfer_order();
-        MyDialog dialog = new MyDialog(mContext,"交班成功！");
+        MyDialog dialog = new MyDialog(mContext,"");
+        dialog.setMessage("交班成功！");
         dialog.setYesOnclickListener(mContext.getString(R.string.OK), myDialog -> {
             dismiss();
             myDialog.dismiss();
@@ -228,7 +229,7 @@ public abstract class AbstractTransferDialog extends AbstractDialogMainActivity 
             info.append(context.getString(R.string.t_f_s_sz)).append(no_visible ? asterisk : String.format(Locale.CHINA,"%.2f",order_money - refund_money)).append(new_line);
             info.append(line).append(new_line);
 
-            info.append(context.getString(R.string.t_f_cash_sz)).append("：").append(no_visible ? asterisk : order_info.getDoubleValue("sj_money")).append(new_line);
+            info.append(context.getString(R.string.t_f_cash_sz)).append("：").append(no_visible ? asterisk :String.format(Locale.CHINA,"%.2f", order_info.getDoubleValue("sj_money"))).append(new_line);
             info.append(context.getString(R.string.t_f_cashbox_sz)).append(order_info.getDoubleValue("cashbox_money")).append(new_line);
 
             info.append(line).append(new_line_2).append(new_line).append(new_line_d);
