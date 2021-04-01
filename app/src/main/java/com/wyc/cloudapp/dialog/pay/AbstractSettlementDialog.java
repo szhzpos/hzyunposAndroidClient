@@ -1338,7 +1338,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
 
     private static String c_format_58(final Context context, final JSONObject format_info, final JSONObject order_info, boolean is_open_cash_box){
 
-        final StringBuilder info = new StringBuilder();
+        final StringBuilder info = new StringBuilder(),out = new StringBuilder();
         int print_count = Utils.getNotKeyAsNumberDefault(format_info,"p_c",1),footer_space = Utils.getNotKeyAsNumberDefault(format_info,"f_s",5);
 
         final String store_name = Utils.getNullStringAsEmpty(format_info,"s_n"),pos_num = Utils.getNullOrEmptyStringAsDefault(order_info,"pos_num",""),
@@ -1352,6 +1352,12 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             info.append(Printer.commandToStr(Printer.OPEN_CASHBOX));
 
         while (print_count-- > 0) {//打印份数
+            if (info.length() > 0){
+                info.append(new_line).append(new_line);
+                out.append(info);
+                continue;
+            }
+
             info.append(Printer.commandToStr(Printer.DOUBLE_HEIGHT)).append(Printer.commandToStr(Printer.ALIGN_CENTER))
                     .append(store_name.length() == 0 ? Utils.getNullStringAsEmpty(order_info,"stores_name") : store_name).append(Printer.commandToStr(Printer.NORMAL)).append(new_line).append(new_line).
                     append(Printer.commandToStr(Printer.ALIGN_LEFT));
@@ -1437,7 +1443,28 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             //会员积分信息
             final JSONObject integral_info = Utils.getNullObjectAsEmptyJson(order_info,"integral_info");
             if (!integral_info.isEmpty()){
-                info.append(context.getString(R.string.vip_name_colon_sz)).append(Utils.getNullOrEmptyStringAsDefault(order_info,"vip_name","")).append(new_line);
+                if (!SQLiteHelper.getLocalParameter("MEMBER_PARAMETER",integral_info))Logger.d("查询会员参数错误:%s",integral_info.getString("info"));
+                String vip_name = Utils.getNullOrEmptyStringAsDefault(order_info,"vip_name",""),card_code = Utils.getNullOrEmptyStringAsDefault(order_info,"card_code","");
+
+                if (Utils.getNotKeyAsNumberDefault(integral_info,"member_secret_protect",0) == 1){
+                    if (vip_name.length() > 2)
+                        vip_name = vip_name.replace(vip_name.substring(1),Printer.REPLACEMENT);
+                    else {
+                        vip_name = vip_name.concat(Printer.REPLACEMENT);
+                    }
+                    int len = card_code.length();
+                    if (len <= 3){
+                        card_code = card_code.concat(Printer.REPLACEMENT);
+                    }else if (len <= 7){
+                        card_code = card_code.replace(card_code.substring(3,len - 1),"***");
+                    }else {
+                        card_code = card_code.replace(card_code.substring(3,7),"***");
+                    }
+                }
+
+                info.append(context.getString(R.string.vip_name_colon_sz)).append(vip_name).append(new_line);
+                info.append(context.getString(R.string.m_vip_colon_sz)).append(card_code).append(new_line);
+
                 double point_num = Utils.getNotKeyAsNumberDefault(integral_info,"point_num",0.0);
                 info.append(context.getString(R.string.current_vip_integral)).append(point_num).append(new_line);
                 info.append(context.getString(R.string._vip_integral)).append(Utils.getNotKeyAsNumberDefault(integral_info,"points_sum",0.0) + point_num).append(new_line);
@@ -1452,17 +1479,11 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             }else {
                 info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(footer_c);
             }
-
             for (int i = 0; i < footer_space; i++) info.append(" ").append(new_line);
-
-            if (print_count > 0){
-                info.append(new_line).append(new_line).append(new_line);
-            }
         }
+        out.append(info);
 
-        Logger.d(info);
-
-        return info.toString();
+        return out.toString();
     }
     public static String get_print_content(final MainActivity context, final String order_code, boolean is_open_cash_box){
         String content = "";
@@ -1495,7 +1516,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
 
     private static boolean getPrintOrderInfo(final String order_code,final JSONObject order_info) {
         boolean code = false;
-        if (SQLiteHelper.execSql(order_info, "SELECT a.order_code,a.name vip_name,a.integral_info,b.cas_name,a.pos_code pos_num,a.stores_id,c.stores_name,datetime(a.addtime, 'unixepoch', 'localtime') oper_time,c.telphone,c.region" +
+        if (SQLiteHelper.execSql(order_info, "SELECT a.order_code,a.name vip_name,a.card_code,a.integral_info,b.cas_name,a.pos_code pos_num,a.stores_id,c.stores_name,datetime(a.addtime, 'unixepoch', 'localtime') oper_time,c.telphone,c.region" +
                 " FROM retail_order a  left join cashier_info b on a.cashier_id = b.cas_id\n" +
                 "left join shop_stores c on a.stores_id = c.stores_id where a.order_code = '" + order_code + "'")) {
             final StringBuilder err = new StringBuilder();

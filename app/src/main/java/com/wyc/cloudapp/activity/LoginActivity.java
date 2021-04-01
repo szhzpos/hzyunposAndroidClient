@@ -592,6 +592,12 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
                                                     _json.put("parameter_desc","收银抹零参数");
                                                     params.add(_json);
 
+                                                    _json = new JSONObject();
+                                                    _json.put("parameter_id","MEMBER_PARAMETER");
+                                                    _json.put("parameter_content",info_json.getJSONObject("member_parameter"));
+                                                    _json.put("parameter_desc","会员参数");
+                                                    params.add(_json);
+
                                                     if (SQLiteHelper.execSQLByBatchFromJson(params,"local_parameter",null,err,1)){
                                                         CustomApplication.sendMessage(MessageID.LOGIN_OK_ID);
                                                     }else {

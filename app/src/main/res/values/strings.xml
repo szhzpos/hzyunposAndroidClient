@@ -397,7 +397,7 @@
     <string name="m_refund_order_id_sz">退货单号：</string>
     <string name="refund_type_colon_sz">退货方式：</string>
     <string name="m_order_time_sz">订单时间：</string>
-    <string name="m_vip_no_colon_sz">会员卡号：</string>
+    <string name="m_vip_colon_sz">会员卡号：</string>
     <string name="m_vip_mobile_sz">会员手机：</string>
     <string name="vip_name_colon_sz">会员姓名：</string>
     <string name="give_amt_colon_sz">@string/present_amt_colon_sz</string>

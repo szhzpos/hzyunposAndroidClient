@@ -51,6 +51,7 @@ import static android.content.Context.WINDOW_SERVICE;
 public final class Printer {
     private static ImageView mICO;
     private static final String  CHARACTER_SET = "GB2312";
+    public static final String REPLACEMENT = "***";
     public static final byte[][] byteCommands = {
             { 0x1b, 0x4d, 0x00 },// 标准ASCII字体
             { 0x1b, 0x4d, 0x01 },// 压缩ASCII字体
