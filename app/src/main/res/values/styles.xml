@@ -12,7 +12,7 @@
 
     <style name="splashTheme" parent="AppTheme">
         <item name="android:windowContentTransitions">false</item>
-        <item name="android:windowBackground">@drawable/logobg</item>
+        <item name="android:windowBackground">@drawable/splash</item>
     </style>
 
     <style name="MyDialog" parent="Base.ThemeOverlay.AppCompat.Dialog">
