@@ -173,7 +173,6 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
             }
             return false;
         });
-        _search_content.postDelayed(_search_content::requestFocus,300);
         mSearchContent = _search_content;
     }
 
@@ -247,8 +246,6 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
             mVip_card_id.setText(object.getString("card_code"));
             mVip_balance.setText(String.format(Locale.CHINA,"%.2f",object.getDouble("money_sum")));
             mVip_integral.setText(String.format(Locale.CHINA,"%.2f",object.getDouble("points_sum")));
-
-            mChargeAmtEt.postDelayed(()-> mChargeAmtEt.requestFocus(),300);
         }
     }
 

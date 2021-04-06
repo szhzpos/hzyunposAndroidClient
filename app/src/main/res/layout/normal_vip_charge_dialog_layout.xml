@@ -15,7 +15,7 @@
         android:background="@drawable/round_border_sub_gray"
         android:drawableEnd="@drawable/r_card"
         android:ems="10"
-        android:focusable="true"
+        android:focusable="auto"
         android:hint="@string/vip_search_hint_sz"
         android:importantForAutofill="no"
         android:inputType="textPersonName"
@@ -258,6 +258,7 @@
             android:background="@drawable/edit_text_style"
             android:drawableEnd="@drawable/content"
             android:ems="10"
+            android:focusable="true"
             android:gravity="center_vertical"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16" />
@@ -308,12 +309,14 @@
             android:autofillHints=""
             android:background="@drawable/edit_text_style"
             android:ems="10"
-            android:inputType="textPersonName|numberDecimal"
+            android:focusable="auto"
+            android:inputType="numberDecimal"
             android:selectAllOnFocus="true"
-            app:showSoftKeyboard="true"
             android:text="@string/zero_p_z_sz"
             android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16" />
+            android:textSize="@dimen/font_size_16"
+            app:onFocusTime="0"
+            app:showSoftKeyboard="true" />
 
         <TextView
             android:layout_width="@dimen/size_82"
@@ -331,13 +334,14 @@
             android:autofillHints=""
             android:background="@drawable/edit_text_style"
             android:ems="10"
+            android:focusable="auto"
             android:inputType="numberDecimal"
             android:selectAllOnFocus="true"
-            app:onFocusTime="0"
-            app:showSoftKeyboard="true"
             android:text="@string/zero_p_z_sz"
             android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16" />
+            android:textSize="@dimen/font_size_16"
+            app:onFocusTime="0"
+            app:showSoftKeyboard="true" />
     </LinearLayout>
 
     <LinearLayout

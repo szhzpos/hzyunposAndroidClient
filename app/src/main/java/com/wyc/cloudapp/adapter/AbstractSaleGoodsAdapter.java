@@ -255,40 +255,45 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
             new_price = sale_price;
 
             final JSONObject vip = mContext.getVipInfo();
-            if (!isPromotion && vip != null){//暂定促销商品不参与其他优惠活动
+            if (isParticipateVipDiscount(goods) && vip != null){
+                double vip_price_or_discount = 0.0;
+
                 goods.put("card_code",vip.getString("card_code"));
                 goods.put("name",vip.getString("name"));
                 goods.put("mobile",vip.getString("mobile"));
                 switch (goods.getIntValue("yh_mode")){
                     case 0://无优惠
-                        discount  = 1.0;
-                        new_price = sale_price;
-                        current_sale_amt = original_amt * discount;;
+                        //直接取商品现有折扣
                         break;
                     case 1://会员价
-                        new_price = Utils.formatDouble(goods.getDoubleValue("yh_price"),4);
-                        current_sale_amt = new_price * num;
-                        if (!Utils.equalDouble(original_amt,0)){
-                            discount  = current_sale_amt / original_amt;
+                        vip_price_or_discount = Utils.formatDouble(goods.getDoubleValue("yh_price"),4);
+                        if (Utils.lessDouble(vip_price_or_discount,new_price)){
+                            new_price = vip_price_or_discount;
+                            if (!Utils.equalDouble(original_price,0)){
+                                discount  = new_price / original_price;
+                            }
+                            _deleteGoodsDiscountRecordWithType(goods,discount_type);
+                            GoodsInfoViewAdapter.makeCommonSaleType(goods);
+                            discount_type = AbstractSaleGoodsAdapter.DISCOUNT_TYPE.V_DISCOUNT;
                         }
                         break;
                     case 2://会员折扣
-                        if (d_discount){
-                            discount  *= Utils.getNotKeyAsNumberDefault(vip,"discount",10.0) / 10;
-                        }else {
-                            discount  = Utils.getNotKeyAsNumberDefault(vip,"discount",10.0) / 10;
-                        }
-                        current_sale_amt = original_amt * discount;
-
-                        if (!Utils.equalDouble(num,0)){
-                            new_price = Utils.formatDouble(current_sale_amt / num,4);
+                        vip_price_or_discount = Utils.getNotKeyAsNumberDefault(vip,"discount",10.0) / 10;
+                        if (Utils.lessDouble(vip_price_or_discount,discount)){
+                            if (d_discount){
+                                discount  *= vip_price_or_discount;
+                            }else {
+                                discount  = vip_price_or_discount;
+                            }
+                            new_price = original_price * discount;
+                            _deleteGoodsDiscountRecordWithType(goods,discount_type);
+                            GoodsInfoViewAdapter.makeCommonSaleType(goods);
+                            discount_type = AbstractSaleGoodsAdapter.DISCOUNT_TYPE.V_DISCOUNT;
                         }
                         break;
                 }
-                discount_type = AbstractSaleGoodsAdapter.DISCOUNT_TYPE.V_DISCOUNT;
-            }else {
-                current_sale_amt = original_amt * discount;
             }
+            current_sale_amt = original_amt * discount;
 
             discount_amt = current_discount_amt = original_amt - current_sale_amt;
 
@@ -714,9 +719,9 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                 Logger.d(lists.toString());
 
                 final PromotionRule promotionRule = lists.get(0);
-                double limit_xnum = promotionRule.getUpper_limit_num();
+                double limit_xnum = promotionRule.getUpper_limit_num(),price = promotionRule.getPrice();
 
-                object.put("price",promotionRule.getPrice());
+                object.put("price",price);
 
                 current_promotion_xnum = promotionRule.getCurrent_sum_promotion_xnum();
                 current_goods_num = promotionRule.getCurrent_goods_num();
@@ -1121,6 +1126,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
         if (!isEmpty()){
             _deleteDiscountRecordForType(DISCOUNT_TYPE.V_DISCOUNT);
             _deleteDiscountRecordForType(DISCOUNT_TYPE.PROMOTION);
+            _deleteDiscountRecordForType(DISCOUNT_TYPE.BUY_X_GIVE_X);
         }
     }
     public void deleteAllDiscountRecord(){
@@ -1276,46 +1282,70 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
     public void updateGoodsInfoToVip(final JSONObject vip){
         if (vip != null){
             double discount ,new_price = 0.0,original_price,discount_amt = 0.0,xnum = 1.0,current_discount_amt = 0.0,original_amt = 0.0,current_sale_amt = 0.0,new_discount = 1.0;
-            JSONObject jsonObject,discount_json;
+            JSONObject jsonObject;
+            double vip_price_or_discount = 0.0;
+            int discount_type = -1;
             for (int i = 0,length = mDatas.size();i < length;i++){
                 jsonObject = mDatas.getJSONObject(i);
 
-                if (isNotParticipateDiscount(jsonObject))continue;
+                if (!isParticipateVipDiscount(jsonObject))continue;
 
+                GoodsInfoViewAdapter.getPromotionInfo(jsonObject,mContext.getStoreId(),mContext.getVipGradeId());//用当前会员刷新零售特价促销信息
+                verifyPromotion_8(jsonObject,0);
+                if (!addBuyXgiveXDiscount(jsonObject,0))return;
+
+                discount_type = getGoodsLastDiscountType(jsonObject);
                 discount = Utils.getNotKeyAsNumberDefault(jsonObject,"discount",1.0);
-                xnum = Utils.getNotKeyAsNumberDefault(jsonObject,"xnum",1.0);
                 original_price = jsonObject.getDoubleValue("original_price");
+                xnum = Utils.getNotKeyAsNumberDefault(jsonObject,"xnum",1.0);
                 original_amt = Utils.formatDouble(xnum * original_price,4);
+                new_price = Utils.getNotKeyAsNumberDefault(jsonObject,"price",1.0);
+
+                if (GoodsInfoViewAdapter.isSpecialPromotion(jsonObject)){//促销商品
+                    if (!Utils.equalDouble(original_price,0.0))discount = new_price / original_price;
+                    discount_type = DISCOUNT_TYPE.PROMOTION;
+                }else  if (GoodsInfoViewAdapter.isBuyXGiveX(jsonObject)){//买X送X
+                    if (!Utils.equalDouble(original_price,0.0))discount = new_price / original_price;
+                    discount_type = DISCOUNT_TYPE.BUY_X_GIVE_X;
+                }else  if (GoodsInfoViewAdapter.isBuyFullGiveX(jsonObject)){//买满送X
+                    if (!Utils.equalDouble(original_price,0.0))discount = new_price / original_price;
+                    discount_type = DISCOUNT_TYPE.BUY_FULL;
+                }
 
                 switch (jsonObject.getIntValue("yh_mode")){
                     case 0://无优惠
-                        new_discount  = 1.0;
-                        new_price = original_price;
-                        current_sale_amt = original_amt;
+                        //直接取商品现有折扣
                         break;
                     case 1://会员价
-                        new_price = Utils.formatDouble(jsonObject.getDoubleValue("yh_price"),4);
-                        if (!d_discount){
-                            _deleteDiscountRecordForGoods(jsonObject,0);
+                        vip_price_or_discount = Utils.formatDouble(jsonObject.getDoubleValue("yh_price"),4);
+                        if (Utils.lessDouble(vip_price_or_discount,new_price)){
+                            new_price = vip_price_or_discount;
+                            if (!Utils.equalDouble(original_price,0)){
+                                discount  = new_price / original_price;
+                            }
+                            _deleteGoodsDiscountRecordWithType(jsonObject,discount_type);
+                            GoodsInfoViewAdapter.makeCommonSaleType(jsonObject);
+                            discount_type = AbstractSaleGoodsAdapter.DISCOUNT_TYPE.V_DISCOUNT;
                         }
-                        if (!Utils.equalDouble(original_price,0.0))new_discount = new_price / original_price;
-
-                        current_sale_amt = xnum * new_price;
                         break;
                     case 2://会员折扣
-                        Logger.d_json(vip.toString());
-                        new_discount = Utils.getNotKeyAsNumberDefault(vip,"discount",10.0) / 10;
-                        if (d_discount){
-                            new_discount *= discount;
-                        }else{
-                            _deleteDiscountRecordForGoods(jsonObject,0);
+                        vip_price_or_discount = Utils.getNotKeyAsNumberDefault(vip,"discount",10.0) / 10;
+                        if (Utils.lessDouble(vip_price_or_discount,discount)){
+                            if (d_discount){
+                                discount  *= vip_price_or_discount;
+                            }else {
+                                discount  = vip_price_or_discount;
+                            }
+                            new_price = original_price * discount;
+                            _deleteGoodsDiscountRecordWithType(jsonObject,discount_type);
+                            GoodsInfoViewAdapter.makeCommonSaleType(jsonObject);
+                            discount_type = AbstractSaleGoodsAdapter.DISCOUNT_TYPE.V_DISCOUNT;
                         }
-                        current_sale_amt = original_amt * new_discount;
-
-                        new_price = Utils.formatDouble(current_sale_amt / xnum,4);
                         break;
                 }
-                current_discount_amt = discount_amt = Utils.formatDouble(original_amt - current_sale_amt,4);
+                current_sale_amt = original_amt * discount;
+
+                current_discount_amt = discount_amt = original_amt - current_sale_amt;
 
                 jsonObject.put("discount", new_discount);
                 jsonObject.put("discount_amt", discount_amt);
@@ -1324,13 +1354,17 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                 jsonObject.put("original_amt",original_amt);
 
                 //处理商品优惠明细
-                addDiscountRecord(jsonObject,DISCOUNT_TYPE.V_DISCOUNT,current_discount_amt);
+                addDiscountRecord(jsonObject,discount_type,current_discount_amt);
             }
             notifyDataSetChanged();
         }
     }
     private boolean isNotParticipateDiscount(final JSONObject goods){
         return goods == null || GoodsInfoViewAdapter.isSpecialPromotion(goods) || GoodsInfoViewAdapter.isBuyXGiveX(goods) || GoodsInfoViewAdapter.isBuyFullGiveX(goods);
+    }
+
+    private boolean isParticipateVipDiscount(final JSONObject goods){//零售特价、正常商品参与会员折扣采取最低价优先
+        return GoodsInfoViewAdapter.isCommon(goods) || GoodsInfoViewAdapter.isSpecialPromotion(goods);
     }
 
     public String generateOrderCode(final String pos_num, int order_type){
@@ -1522,7 +1556,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
     }
 
     private void _deleteDiscountRecordForType(int discount_type){
-        for (int k = 0,size = mDatas.size();k < size;k++){
+        for (int k = mDatas.size() - 1;k >= 0;k--){
             _deleteGoodsDiscountRecordWithType(mDatas.getJSONObject(k),discount_type);
         }
         notifyDataSetChanged();
@@ -1545,8 +1579,15 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                 goods.put("discount",Utils.equalDouble(original_price,0.0) ? 0 : price / original_price);
                 goods.put("discount_amt",Utils.formatDouble(goods.getDoubleValue("discount_amt") - discount_money,4));
 
+                if (discount_type == DISCOUNT_TYPE.PROMOTION){
+                    GoodsInfoViewAdapter.clearSpecialPromotionSaleType(goods);
+                }
                 discount_records.remove(j);
             }
+        }
+
+        if (discount_records.isEmpty() && GoodsInfoViewAdapter.isBuyXGiveX(goods)){//删除买X送X商品
+            mDatas.remove(goods);
         }
     }
 
@@ -2109,6 +2150,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapter<Abstr
                                 GoodsInfoViewAdapter.makeBuyXGiveX(give_obj);
                                 markBuyXGiveXGoodsId(give_obj,barcode_id);
                                 give_obj.put("price",markup_price);
+
                                 boolean isBarcodeWeighingGoods = Utils.isNotEmpty(give_obj.getString(GoodsInfoViewAdapter.W_G_MARK));
 
                                 final JSONObject next = verifyIndex(index) ? mDatas.getJSONObject(index) : null;

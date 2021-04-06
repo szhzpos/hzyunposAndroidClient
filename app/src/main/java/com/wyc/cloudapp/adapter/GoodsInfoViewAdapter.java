@@ -260,6 +260,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
                     "where status = 1 and gp_id = " + id;
         boolean code =  SQLiteHelper.execSql(object,full_sql);
         if (code){
+            makeCommonSaleType(object);
             if (mPriceAdjustMode){
                 code = false;
                 final GoodsPriceAdjustDialog priceAdjustDialog = new GoodsPriceAdjustDialog(mContext,object);
@@ -336,6 +337,9 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     public static void makeSpecialPromotionSaleType(final JSONObject goods){
         /*零售特价与正常销售不兼容*/
         if (null != goods)goods.put(SALE_TYPE,((getSaleType(goods) & 0xFFFFFFFE) | 0x2));
+    }
+    public static void clearSpecialPromotionSaleType(final JSONObject goods){//清除零售特价标志
+        if (null != goods)goods.put(SALE_TYPE,getSaleType(goods) & 0xFFFFFFFD);
     }
 
     public static void makeCommonSaleType(final JSONObject goods){

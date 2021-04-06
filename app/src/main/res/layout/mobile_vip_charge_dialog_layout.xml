@@ -295,6 +295,7 @@
                     android:background="@drawable/edit_text_style"
                     android:inputType="textPersonName|numberDecimal"
                     android:selectAllOnFocus="true"
+                    app:onFocusTime="0"
                     app:showSoftKeyboard="true"
                     android:text="@string/zero_p_z_sz"
                     android:textColor="@color/text_color"

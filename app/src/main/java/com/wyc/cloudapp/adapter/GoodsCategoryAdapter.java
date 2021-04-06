@@ -26,6 +26,7 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
     private GoodsCategoryAdapter mChildGoodsCategoryAdapter;
     private final RecyclerView mSecLevelGoodsCategoryView;
     private boolean mChildShow = false,mFirstLoad = true;
+    private String mCategoryId;
     public GoodsCategoryAdapter(SaleActivity context, RecyclerView v){
         mContext = context;
         mSecLevelGoodsCategoryView = v;
@@ -34,30 +35,20 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
 
     @Override
     public void onClick(View view) {
-        TextView name,category_id;
-        final Resources resources = mContext.getResources();
-        int white = resources.getColor(R.color.white,null),blue = resources.getColor(R.color.blue,null);
+        TextView category_id;
         if (null != mCurrentItemView){
             if (mCurrentItemView != view){
-                mCurrentItemView.setBackgroundColor(white);
-                name = mCurrentItemView.findViewById(R.id.category_name);
-                name.setTextColor(blue);
-
-                mCurrentItemView = view;
-                mCurrentItemView.setBackgroundColor(blue);
-                name = mCurrentItemView.findViewById(R.id.category_name);
-                name.setTextColor(white);
+                setViewBackgroundColor(mCurrentItemView,false);
+                setViewBackgroundColor(view,true);
             }
         }else{
-            view.setBackgroundColor(blue);
-            name = view.findViewById(R.id.category_name);
-            name.setTextColor(white);
-            mCurrentItemView = view;
+            setViewBackgroundColor(view,true);
         }
 
         category_id = view.findViewById(R.id.category_id);
         if (category_id != null){
-            mContext.loadGoods(category_id.getText().toString());
+            mCategoryId = category_id.getText().toString();
+            mContext.loadGoods(mCategoryId);
             showSecGoodsType();
         }
     }
@@ -70,6 +61,31 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
             category_id = itemView.findViewById(R.id.category_id);
             category_name =  itemView.findViewById(R.id.category_name);
         }
+    }
+
+    @Override
+    public void onViewRecycled (MyViewHolder holder){
+        if (holder.itemView == mCurrentItemView){
+            setViewBackgroundColor(mCurrentItemView,false);
+        }
+    }
+
+    protected void setViewBackgroundColor(final View view, boolean s){
+        TextView name;
+        final Resources resources = mContext.getResources();
+        int white = resources.getColor(R.color.white,null),blue = resources.getColor(R.color.blue,null);
+        int text_color,backgroundColor;
+        if (s){
+            text_color = white;
+            backgroundColor = blue;
+        }else {
+            text_color = blue;
+            backgroundColor = white;
+        }
+        view.setBackgroundColor(backgroundColor);
+        name = view.findViewById(R.id.category_name);
+        name.setTextColor(text_color);
+        if (mCurrentItemView != view)mCurrentItemView = view;
     }
 
     @NonNull
@@ -90,7 +106,14 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
         if (mDatas != null){
             final JSONObject goods_type_info = mDatas.getJSONObject(i);
-            myViewHolder.category_id.setText(goods_type_info.getString("category_id"));
+
+            final String category_id =Utils.getNullStringAsEmpty(goods_type_info,"category_id");
+            myViewHolder.category_id.setText(category_id);
+
+            if (category_id.equals(mCategoryId)){
+                setViewBackgroundColor(myViewHolder.itemView,true);
+            }
+
             myViewHolder.category_name.setText(goods_type_info.getString("name"));
             if (i == 1 && mFirstLoad && !mContext.containGoods() && (Utils.lessThan7Inches(mContext) || mSecLevelGoodsCategoryView != null)){//一级分类触发第二个类别查询
                 mFirstLoad = false;

@@ -13,8 +13,10 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
 import android.text.Editable;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
@@ -38,6 +40,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.BuildConfig;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.MobileNavigationActivity;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -395,29 +398,36 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
         if (mProgressDialog.isShowing())mProgressDialog.dismiss();
     }
     private void checkSelfPermission(){
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            if ((ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))){
-                final MyDialog dialog = new MyDialog(mSelf,"提示信息");
-                dialog.setMessage("APP不能存储数据,请设置允许APP读写手机存储权限").setNoOnclickListener("退出", myDialog -> {
-                    dialog.dismiss();
-                    LoginActivity.this.finish();
-                }).setYesOnclickListener("重新获取",(MyDialog myDialog)->{
-                    myDialog.dismiss();
-                    ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},REQUEST_STORAGE_PERMISSIONS );
-                }).show();
-            }else {
-                if (isFirstRequestPermissions){
-                    isFirstRequestPermissions = false;
-                    ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},REQUEST_STORAGE_PERMISSIONS );
-                }else
-                    MyDialog.displayAskMessage(this, "用户已经禁用存储读写权限，是否手动授权?", myDialog -> {
-                        final Intent intent = new Intent();
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        intent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
-                        intent.setData(Uri.fromParts("package", getPackageName(), null));
-                        startActivity(intent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+            if (!Environment.isExternalStorageManager()){
+                final Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                startActivity(intent);
+            }
+        }else {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                if ((ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))) {
+                    final MyDialog dialog = new MyDialog(mSelf, "提示信息");
+                    dialog.setMessage("APP不能存储数据,请设置允许APP读写手机存储权限").setNoOnclickListener("退出", myDialog -> {
+                        dialog.dismiss();
+                        LoginActivity.this.finish();
+                    }).setYesOnclickListener("重新获取", (MyDialog myDialog) -> {
                         myDialog.dismiss();
-                    }, myDialog -> LoginActivity.this.finish());
+                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_STORAGE_PERMISSIONS);
+                    }).show();
+                } else {
+                    if (isFirstRequestPermissions) {
+                        isFirstRequestPermissions = false;
+                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_STORAGE_PERMISSIONS);
+                    } else
+                        MyDialog.displayAskMessage(this, "用户已经禁用存储读写权限，是否手动授权?", myDialog -> {
+                            final Intent intent = new Intent();
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
+                            intent.setData(Uri.fromParts("package", getPackageName(), null));
+                            startActivity(intent);
+                            myDialog.dismiss();
+                        }, myDialog -> LoginActivity.this.finish());
+                }
             }
         }
     }
