@@ -1349,7 +1349,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                 line = context.getString(R.string.line_58);
 
         if (is_open_cash_box)//开钱箱
-            info.append(Printer.commandToStr(Printer.OPEN_CASHBOX));
+            out.append(Printer.commandToStr(Printer.OPEN_CASHBOX));
 
         while (print_count-- > 0) {//打印份数
             if (info.length() > 0){
