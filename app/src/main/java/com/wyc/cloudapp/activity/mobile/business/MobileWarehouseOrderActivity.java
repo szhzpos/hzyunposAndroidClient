@@ -45,52 +45,18 @@ public final class MobileWarehouseOrderActivity extends AbstractMobileBusinessOr
         return MobileAddWarehouseOrderActivity.class;
     }
 
-    public static class MobileAddWarehouseOrderActivity extends AbstractMobileAddOrderActivity {
-        public static final int SELECT_ORDER_CODE = 12;
-        private TextView mPurchaseOrderCodeTv;
+    public static class MobileAddWarehouseOrderActivity extends AbstractMobileQuerySourceOrderActivity {
         @Override
-        protected int getContentLayoutId() {
-            return R.layout.activity_mobile_add_warehouse_order;
-        }
-
-        @Override
-        protected void initView() {
-            super.initView();
-            initSourceOrder();
+        protected void launchSourceActivity() {
+            final Intent intent = new Intent();
+            intent.setClass(this,MobilePurchaseOrderActivity.class);
+            intent.putExtra("title",getString(R.string.select_anything_hint,getString(R.string.purchase_order_sz)));
+            intent.putExtra("FindSource",true);
+            startActivityForResult(intent,SELECT_ORDER_CODE);
         }
 
         @Override
-        protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-            super.onActivityResult(requestCode, resultCode, data);
-            if (resultCode == RESULT_OK ){
-                if (requestCode == SELECT_ORDER_CODE){
-                    queryPurchaseOrderInfo(data.getStringExtra("order_id"));
-                }
-            }
-        }
-
-        @Override
-        protected boolean hasSource() {
-            return null != mPurchaseOrderCodeTv && !mPurchaseOrderCodeTv.getText().toString().isEmpty();
-        }
-
-        private void initSourceOrder(){
-            mPurchaseOrderCodeTv = findViewById(R.id.m_source_order_tv);
-            mPurchaseOrderCodeTv.setOnClickListener(v -> {
-                if (!isDetailsEmpty()){
-                    if (MyDialog.showMessageToModalDialog(this,"已存在商品明细，是否替换？") == 0){
-                        return;
-                    }
-                }
-                final Intent intent = new Intent();
-                intent.setClass(this,MobilePurchaseOrderActivity.class);
-                intent.putExtra("title",getString(R.string.select_anything_hint,getString(R.string.purchase_order_sz)));
-                intent.putExtra("FindSource",true);
-                startActivityForResult(intent,SELECT_ORDER_CODE);
-            });
-        }
-
-        private void queryPurchaseOrderInfo(final String id){
+        protected void querySourceOrderInfo(final String id){
             final JSONObject parameterObj = new JSONObject();
             parameterObj.put("appid",getAppId());
             parameterObj.put("stores_id",getStoreId());
@@ -119,24 +85,17 @@ public final class MobileWarehouseOrderActivity extends AbstractMobileBusinessOr
         }
 
         private void showPurchaseOrderInfo(final JSONObject object){
-            setView(mPurchaseOrderCodeTv,Utils.getNullStringAsEmpty(object,"cgd_id"),Utils.getNullStringAsEmpty(object,"cgd_code"));
+            setSourceOrder(Utils.getNullStringAsEmpty(object,"cgd_id"),Utils.getNullStringAsEmpty(object,"cgd_code"));
             setWarehouse(object);
             setView(mSaleOperatorTv,Utils.getNullStringAsEmpty(object,"cg_pt_user_id"),Utils.getNullStringAsEmpty(object,"cg_user_cname"));
             setView(mSupplierTV,Utils.getNullStringAsEmpty(object,"gs_id"),Utils.getNullStringAsEmpty(object,"gs_name"));
 
             setOrderDetailsWithSourceOrder(Utils.getNullObjectAsEmptyJsonArray(object,"goods_list"));
         }
-        private void setWarehouse(final JSONObject order){
-            final JSONObject object = new JSONObject();
-            if (SQLiteHelper.execSql(object,String.format(Locale.CHINA,"SELECT stores_name,stores_id,wh_id FROM shop_stores where wh_id = '%s'",Utils.getNullStringAsEmpty(order,"wh_id")))){
-                if (object.isEmpty()){
-                    Toast.makeText(this,"仓库对应门店信息不存在!",Toast.LENGTH_SHORT).show();
-                }else{
-                    setView(mWarehouseTv,Utils.getNullStringAsEmpty(object,"stores_id"),Utils.getNullStringAsEmpty(object,"stores_name"));
-                }
-            }else {
-                Toast.makeText(this,"查询门店信息错误," + object.getString("info"),Toast.LENGTH_SHORT).show();
-            }
+
+         @Override
+        protected int getContentLayoutId() {
+            return R.layout.activity_mobile_add_warehouse_order;
         }
 
         @Override
@@ -151,7 +110,7 @@ public final class MobileWarehouseOrderActivity extends AbstractMobileBusinessOr
         protected void showOrder() {
             super.showOrder();
             setView(mOrderCodeTv, "", Utils.getNullStringAsEmpty(mOrderInfo, "rkd_code"));
-            setView(mPurchaseOrderCodeTv,Utils.getNullStringAsEmpty(mOrderInfo,"cgd_id"),Utils.getNullStringAsEmpty(mOrderInfo,"cgd_code"));
+            setSourceOrder(Utils.getNullStringAsEmpty(mOrderInfo,"cgd_id"),Utils.getNullStringAsEmpty(mOrderInfo,"cgd_code"));
         }
 
         @Override
@@ -170,7 +129,7 @@ public final class MobileWarehouseOrderActivity extends AbstractMobileBusinessOr
 
             upload_obj.put("rkd_code",mOrderCodeTv.getText().toString());
             upload_obj.put("rkd_id",Utils.getNullStringAsEmpty(mOrderInfo,"cgd_id"));
-            upload_obj.put("cgd_code",mPurchaseOrderCodeTv.getText());
+            upload_obj.put("cgd_code",getSourceOrder());
             upload_obj.put("goods_list_json",getGoodsList());
 
             object.put("api","/api/rkd/add");

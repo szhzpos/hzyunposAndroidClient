@@ -8,6 +8,76 @@
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_35"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/margin_8"
+        android:paddingEnd="@dimen/margin_0"
+        android:text="@string/archive_sz"
+        android:textColor="@color/blue"
+        android:textSize="@dimen/font_size_18"
+        android:visibility="visible" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_88"
+        android:background="@drawable/round_border_sub_gray"
+        android:orientation="vertical"
+        android:padding="@dimen/margin_1">
+
+        <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            android:id="@+id/goods_record_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:drawableTop="@drawable/distribution_warehouse"
+            android:tag="activity.mobile.business.MobileSelectGoodsActivity"
+            android:text="@string/goods_record_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toStartOf="@id/vip_record_tv"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:verSpacing="@dimen/margin_5" />
+
+        <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            android:id="@+id/vip_record_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/left_right_separator"
+            android:drawableTop="@drawable/distribution_warehousing"
+            android:gravity="center"
+            android:text="@string/vip_record_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toStartOf="@id/vip_record_tv2"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@id/goods_record_tv"
+            app:layout_constraintTop_toTopOf="parent"
+            app:verSpacing="@dimen/margin_5" />
+
+        <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            android:id="@+id/vip_record_tv2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/wholesale_refund"
+            android:gravity="center"
+            android:tag="activity.mobile.MobileCashierActivity"
+            android:text="@string/wholesale_refund_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@id/vip_record_tv"
+            app:layout_constraintTop_toTopOf="parent"
+            app:verSpacing="@dimen/margin_8" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="@dimen/height_35"
         android:gravity="center_vertical"
@@ -64,7 +134,7 @@
             android:layout_height="match_parent"
             android:drawableTop="@drawable/refund_order"
             android:gravity="center"
-            android:tag="activity.mobile.business.MobilePurchaseRefundOrderActivity--"
+            android:tag="activity.mobile.business.MobilePurchaseRefundOrderActivity"
             android:text="@string/purchase_refund_order_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
@@ -242,7 +312,6 @@
             android:id="@+id/distribution_warehouse_tv"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:drawableTop="@drawable/distribution_warehouse"
             android:text="@string/distribution_warehouse_sz"
             android:textColor="@color/text_color"

@@ -87,7 +87,7 @@ public class AppUpdateService extends Service {
                             update_error(info_json.getString("info"));
                             break;
                         case "y":
-                            final JSONArray file_list = JSON.parseArray(Utils.getNullOrEmptyStringAsDefault(info_json,"file_list","[]"));
+                            final JSONArray file_list = Utils.getNullObjectAsEmptyJsonArray(info_json,"file_list");
                             if (file_list.isEmpty()){
                                 check_ver_intent.putExtra("status",SUCCESS_STATUS);
                                 sendBroadcast(check_ver_intent);

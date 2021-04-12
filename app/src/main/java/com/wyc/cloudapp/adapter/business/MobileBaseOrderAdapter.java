@@ -47,10 +47,10 @@ public abstract class MobileBaseOrderAdapter extends AbstractBusinessOrderDataAd
 
     @NonNull
     @Override
-    public MobilePurchaseOrderAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = View.inflate(mContext, R.layout.mobile_purchase_order_content_layout, null);
         itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT));
-        return new MobilePurchaseOrderAdapter.MyViewHolder(itemView);
+        return new MyViewHolder(itemView);
     }
 
     @Override

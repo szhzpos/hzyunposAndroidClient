@@ -327,7 +327,7 @@ public final class Utils {
     public static String getNullOrEmptyStringAsDefault(@Nullable final JSONObject object,final String key, final String default_v){
         if (object != null){
             final String value = object.getString(key);
-            if (value != null && !"".equals(value)){
+            if (isNotEmpty(value)){
                 return value;
             }
         }

@@ -21,19 +21,20 @@ import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.TreeListDialog;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
 import java.util.Locale;
 
-public class AddGoodsInfoDialog extends AbstractDialogSaleActivity {
+public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
     private String mBarcode;
     private EditText mBarcodeEt,mNameEt,mPurPriceEt,mRetailPriceEt,mCategoryEt,mUnitEt,mGoodsAttrEt,mItemIdEt, mMeteringEt,mSupplierEt,mVipPriceEt;
     private JSONArray mUnitList,mCategoryList,mSupplierList;
     private OnFinishListener mFinishListener;
     private JSONObject mCurrentCategory;
-    public AddGoodsInfoDialog(@NonNull SaleActivity context) {
+    public AddGoodsInfoDialog(@NonNull MainActivity context) {
         super(context, context.getString(R.string.a_goods_sz));
     }
 
@@ -121,7 +122,7 @@ public class AddGoodsInfoDialog extends AbstractDialogSaleActivity {
         mCategoryEt = category_et;
     }
 
-    void setCurrentCategory(final JSONObject object){
+    public void setCurrentCategory(final JSONObject object){
         mCurrentCategory = object;
     }
 

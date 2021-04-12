@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.text.method.ReplacementTransformationMethod;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -26,8 +25,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.activity.mobile.business.AbstractMobileAddOrderActivity;
-import com.wyc.cloudapp.activity.mobile.business.SelectGoodsActivity;
+import com.wyc.cloudapp.activity.mobile.business.MobileSelectGoodsActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
@@ -258,9 +256,9 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
                 int size = barcode_ids.size();
                 if (size != 0){
                     if (size > 1){
-                        final Intent intent = new Intent(mContext, SelectGoodsActivity.class);
+                        final Intent intent = new Intent(mContext, MobileSelectGoodsActivity.class);
                         intent.putExtra("barcode",barcode);
-                        mContext.startActivityForResult(intent,SelectGoodsActivity.SELECT_GOODS_CODE);
+                        mContext.startActivityForResult(intent, MobileSelectGoodsActivity.SELECT_GOODS_CODE);
                         setCodeAndExit(0);
                     }else {
                         mContentObj = new JSONObject();

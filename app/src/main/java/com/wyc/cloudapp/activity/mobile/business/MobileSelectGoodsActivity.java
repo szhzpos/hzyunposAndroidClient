@@ -31,24 +31,48 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.decoration.GoodsInfoItemDecoration;
 import com.wyc.cloudapp.decoration.SuperItemDecoration;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.goods.AddGoodsInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
-public class SelectGoodsActivity extends AbstractMobileActivity {
+public class MobileSelectGoodsActivity extends AbstractMobileActivity {
     public static final int SELECT_GOODS_CODE = 0x147;
     private GoodsAdapter mGoodsInfoAdapter;
+    private CategoryAdapter mGoodsCategoryAdapter;
     private EditText mSearchContentEt;
+    private boolean isSelect = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED);
-        setMiddleText(getString(R.string.select_goods_label));
+        initTitle();
 
         initGoodsCategory();
         initGoodsInfo();
         initSearchContent();
 
         checkSearch();
+    }
+
+    private void initTitle(){
+        final Intent intent = getIntent();
+        if (intent != null){
+            setMiddleText(intent.getStringExtra("title"));
+            isSelect = intent.getBooleanExtra("isSel",false);
+        }
+        setRightText(getString(R.string.a_goods_sz));
+        setRightListener(v -> {
+            if (AddGoodsInfoDialog.verifyGoodsAddPermissions(this)){
+                final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(this);
+                final JSONObject category = mGoodsCategoryAdapter.CategoryObj;
+                addGoodsInfoDialog.setCurrentCategory(category);
+                addGoodsInfoDialog.setFinishListener(barcode -> {
+                    addGoodsInfoDialog.dismiss();
+                    loadGoods(category.getString("item_id"));
+                });
+                addGoodsInfoDialog.show();
+            }
+        });
     }
 
     @Override
@@ -117,10 +141,12 @@ public class SelectGoodsActivity extends AbstractMobileActivity {
         SuperItemDecoration.registerGlobalLayoutToRecyclerView(business_goods_info_list,getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration());
 
         mGoodsInfoAdapter.setOnSelectFinish(barcode_id -> {
-            final Intent intent = new Intent();
-            intent.putExtra("barcode_id",barcode_id);
-            setResult(RESULT_OK,intent);
-            finish();
+            if (isSelect){
+                final Intent intent = new Intent();
+                intent.putExtra("barcode_id",barcode_id);
+                setResult(RESULT_OK,intent);
+                finish();
+            }
         });
 
         business_goods_info_list.setAdapter(mGoodsInfoAdapter);
@@ -128,7 +154,7 @@ public class SelectGoodsActivity extends AbstractMobileActivity {
 
     private void initGoodsCategory(){
         final RecyclerView goods_type_view = findViewById(R.id.business_goods_type_list);
-        final CategoryAdapter mGoodsCategoryAdapter = new CategoryAdapter(this);
+        mGoodsCategoryAdapter = new CategoryAdapter(this);
         goods_type_view.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
         mGoodsCategoryAdapter.setDatas(-2);//业务单据商品选择不加载组合商品
         goods_type_view.setAdapter(mGoodsCategoryAdapter);
@@ -142,40 +168,42 @@ public class SelectGoodsActivity extends AbstractMobileActivity {
         return Utils.getNullStringAsEmpty(object,"goods_title");
     }
 
-    static public class CategoryAdapter extends AbstractDataAdapter<CategoryAdapter.MyViewHolder> implements View.OnClickListener{
+    static private class CategoryAdapter extends AbstractDataAdapter<CategoryAdapter.MyViewHolder> implements View.OnClickListener{
         final MainActivity mContext;
         private View mCurrentItemView;
-
+        private final JSONObject CategoryObj = new JSONObject();
         public CategoryAdapter(MainActivity activity) {
             mContext = activity;
         }
 
         @Override
         public void onClick(View view) {
-            TextView name,category_id;
-            final Resources resources = mContext.getResources();
-            int white = resources.getColor(R.color.white,null),blue = resources.getColor(R.color.blue,null);
-            if (null != mCurrentItemView){
-                if (mCurrentItemView != view){
-                    mCurrentItemView.setBackgroundColor(white);
-                    name = mCurrentItemView.findViewById(R.id.category_name);
-                    name.setTextColor(blue);
+            TextView name_tv = view.findViewById(R.id.category_name),category_id = view.findViewById(R.id.category_id);
+            if (category_id != null && name_tv != null){
+                final Resources resources = mContext.getResources();
+                int white = resources.getColor(R.color.white,null),blue = resources.getColor(R.color.blue,null);
+                if (null != mCurrentItemView){
+                    if (mCurrentItemView != view){
+                        mCurrentItemView.setBackgroundColor(white);
+                        name_tv = mCurrentItemView.findViewById(R.id.category_name);
+                        name_tv.setTextColor(blue);
 
+                        mCurrentItemView = view;
+                        mCurrentItemView.setBackgroundColor(blue);
+                        name_tv = view.findViewById(R.id.category_name);
+                        name_tv.setTextColor(white);
+                    }
+                }else{
+                    view.setBackgroundColor(blue);
+                    name_tv.setTextColor(white);
                     mCurrentItemView = view;
-                    mCurrentItemView.setBackgroundColor(blue);
-                    name = mCurrentItemView.findViewById(R.id.category_name);
-                    name.setTextColor(white);
                 }
-            }else{
-                view.setBackgroundColor(blue);
-                name = view.findViewById(R.id.category_name);
-                name.setTextColor(white);
-                mCurrentItemView = view;
-            }
+                final String id = category_id.getText().toString(),name = name_tv.getText().toString();
 
-            category_id = view.findViewById(R.id.category_id);
-            if (category_id != null){
-                ((SelectGoodsActivity)mContext).loadGoods(category_id.getText().toString());
+                CategoryObj.put("item_id",id);
+                CategoryObj.put("item_name",name);
+
+                ((MobileSelectGoodsActivity)mContext).loadGoods(id);
             }
         }
 
@@ -228,7 +256,7 @@ public class SelectGoodsActivity extends AbstractMobileActivity {
         }
     }
 
-    static public class GoodsAdapter extends AbstractDataAdapter<GoodsAdapter.MyViewHolder> implements View.OnClickListener{
+    static private class GoodsAdapter extends AbstractDataAdapter<GoodsAdapter.MyViewHolder> implements View.OnClickListener{
         final MainActivity mContext;
         private OnSelectFinish onSelectFinish;
         public GoodsAdapter(MainActivity activity) {

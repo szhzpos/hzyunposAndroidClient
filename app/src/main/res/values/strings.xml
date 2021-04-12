@@ -353,7 +353,7 @@
     <string name="manage_category_sz">所属分类</string>
     <string name="manage_goods_attr_sz">商品属性</string>
     <string name="manage_goods_status_sz">商品状态</string>
-    <string name="archive_sz">看板</string>
+    <string name="business_info_sz">看板</string>
     <string name="mobile_business_sz">业务</string>
     <string name="casher_desk_sz">收银台</string>
     <string name="report_sz">报表</string>
@@ -438,6 +438,7 @@
     <string name="auto_size_sz">自动选择</string>
 
     <!-- 业务功能-->
+    <string name="archive_sz">档案</string>
     <string name="purchase_sz">采购</string>
     <string name="purchase_order_sz">采购订货单</string>
     <string name="warehouse_order_sz">采购入库单</string>
@@ -456,6 +457,8 @@
     <string name="audited_sz">已审核</string>
     <string name="saved_sz">已保存</string>
     <string name="unaudited_sz">未审核</string>
+    <string name="goods_record_sz">商品档案</string>
+    <string name="vip_record_sz">会员档案</string>
 
     <!--新增业务订单-->
     <string name="pick_goods_sz">选商品</string>

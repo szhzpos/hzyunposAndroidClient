@@ -86,7 +86,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK ){
-            if (requestCode == SelectGoodsActivity.SELECT_GOODS_CODE) {
+            if (requestCode == MobileSelectGoodsActivity.SELECT_GOODS_CODE) {
                 if (null != data){
                     final String barcode_id = data.getStringExtra("barcode_id");
                     Logger.d("barcode_id:%s",barcode_id);
@@ -126,7 +126,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
             int index = mAdapter.isExist(object);
             if (index >= 0 && !modify){
                 mDetailsView.scrollToPosition(index);
-                MyDialog.displayAskMessage(this, String.format(Locale.CHINA,"<%s>已存在，是否继续？",SelectGoodsActivity.getGoodsName(object)), myDialog -> {
+                MyDialog.displayAskMessage(this, String.format(Locale.CHINA,"<%s>已存在，是否继续？", MobileSelectGoodsActivity.getGoodsName(object)), myDialog -> {
                     mAdapter.addDetails(mAdapter.updateGoodsDetail(object),index,false);
                     myDialog.dismiss();
                 }, MyDialog::dismiss);
@@ -347,7 +347,10 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                     generateOrderCode();
                 }
             }else if (id == R.id.m_pick_goods_btn){
-                startActivityForResult(new Intent(AbstractMobileAddOrderActivity.this,SelectGoodsActivity.class),SelectGoodsActivity.SELECT_GOODS_CODE);
+                final Intent intent = new Intent(AbstractMobileAddOrderActivity.this, MobileSelectGoodsActivity.class);
+                intent.putExtra("title",getString(R.string.select_goods_label));
+                intent.putExtra("isSel",true);
+                startActivityForResult(intent, MobileSelectGoodsActivity.SELECT_GOODS_CODE);
             }else if (id == R.id.m_business_scan_btn){
                 final BusinessSelectGoodsDialog dialog = new BusinessSelectGoodsDialog(AbstractMobileAddOrderActivity.this);
                 if (dialog.exec() == 1){
@@ -426,9 +429,9 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
 
             String sz_param = HttpRequest.generate_request_parm(param_obj,getAppSecret()),api = condition.getString("api"),err = "";
             final JSONObject retJson = HttpUtils.sendPost(getUrl() + api,sz_param,true);
+            Logger.d_json(retJson.toString());
             if (HttpUtils.checkRequestSuccess(retJson)){
                 final JSONObject info = JSON.parseObject(retJson.getString("info"));
-                Logger.d_json(retJson.toString());
                 if (HttpUtils.checkBusinessSuccess(info)){
                     CustomApplication.runInMainThread(()->{
                         resetBusinessOrderInfo();

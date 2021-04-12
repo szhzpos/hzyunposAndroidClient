@@ -169,3 +169,7 @@
 -keep class com.alibaba.fastjson.** { *; }
 -keepattributes Signature
 -keepattributes *Annotation*
+
+
+-keep class com.wyc.cloudapp.dialog.serialScales.* { *; }
+-keep class com.wyc.cloudapp.dialog.barcodeScales.* { *; }

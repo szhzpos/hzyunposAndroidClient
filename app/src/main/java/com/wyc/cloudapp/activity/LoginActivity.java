@@ -434,7 +434,7 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
     private void show_shop_info(){
         final JSONObject param = CustomApplication.getConnParam();
         if (Utils.JsonIsNotEmpty(param)){
-            final JSONObject shop_info = JSON.parseObject(Utils.getNullOrEmptyStringAsDefault(param,"storeInfo","{}"));
+            final JSONObject shop_info = Utils.getNullObjectAsEmptyJson(param,"storeInfo");
             shop_info.put("shop_id",Utils.getNullStringAsEmpty(param,"shop_id"));
             shop_info.put("shop_name",String.format("%s%s%s%s",Utils.getNullStringAsEmpty(shop_info,"stores_name"),"[",Utils.getNullStringAsEmpty(shop_info,"stores_id"),"]"));
             show_shop_info(shop_info);

@@ -9,6 +9,7 @@ import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.activity.mobile.business.AbstractMobileBusinessOrderActivity;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
+import com.wyc.cloudapp.utils.Utils;
 
 /**
  * @ProjectName: CloudApp
@@ -31,18 +32,15 @@ public abstract class AbstractBusinessOrderDataAdapter<T extends AbstractTableDa
     @Override
     public void onClick(View v) {
         if (mContext instanceof AbstractMobileBusinessOrderActivity){
-            final String order_id = (String) v.getTag();
-
             final AbstractMobileBusinessOrderActivity activity = (AbstractMobileBusinessOrderActivity)mContext;
+
+            final Intent intent = new Intent();
+            intent.putExtra("order_id",Utils.getViewTagValue(v,""));
             if (activity.isFindSourceOrderId()){
-                final Intent intent = new Intent();
-                intent.putExtra("order_id",order_id);
                 activity.setResult(Activity.RESULT_OK,intent);
                 activity.finish();
             }else {
-                final Intent intent = new Intent();
                 intent.setClass(activity, activity.jumpAddTarget());
-                intent.putExtra("order_id",order_id);
                 intent.putExtra("title", mContext.getString(R.string.order_detail_sz));
                 activity.startActivity(intent);
             }

@@ -29,7 +29,7 @@
             android:layout_weight="1"
             android:drawableTop="@drawable/m_bottom_1"
             android:gravity="center"
-            android:text="@string/archive_sz"
+            android:text="@string/business_info_sz"
             android:textColor="@color/mobile_fun_view_no_click"
             android:textSize="@dimen/font_size_14"
             app:animType="1"
