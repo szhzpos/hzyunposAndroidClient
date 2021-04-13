@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.adapter;
 
+import android.os.Looper;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -8,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONArray;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.logger.Logger;
 
 /**
@@ -38,7 +40,10 @@ public abstract class AbstractDataAdapter <T extends RecyclerView.ViewHolder> ex
 
     public void setDataForArray(final JSONArray array){
         mDatas = array;
-        notifyDataSetChanged();
+        if (Looper.myLooper() != Looper.getMainLooper()){
+            CustomApplication.runInMainThread(this::notifyDataSetChanged);
+        }else
+            notifyDataSetChanged();
     }
     public JSONArray getData(){
         return mDatas;

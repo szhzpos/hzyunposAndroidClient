@@ -387,21 +387,17 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                         auditOrder();
                     }else
                         CustomApplication.runInMainThread(()->{
-                            mProgressDialog.dismiss();
                             resetBusinessOrderInfo();
                             Toast.makeText(this,getString(R.string.upload_order_success_hints),Toast.LENGTH_LONG).show();
                         });
                 }else {
-                    mProgressDialog.dismiss();
                     err = info.getString("info");
                 }
-            }else {
-                mProgressDialog.dismiss();
-                err = retJson.getString("info");
             }
             if (Utils.isNotEmpty(err)){
                 MyDialog.ToastMessageInMainThread("上传业务单据错误:" + err);
             }
+            mProgressDialog.dismiss();
         });
     }
 
@@ -440,8 +436,6 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                 }else {
                     err = info.getString("info");
                 }
-            }else {
-                err = retJson.getString("info");
             }
             if (Utils.isNotEmpty(err)){
                 MyDialog.ToastMessageInMainThread("审核单据错误:" + err);
@@ -616,8 +610,6 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                         e.printStackTrace();
                         MyDialog.ToastMessageInMainThread(e.getMessage());
                     }
-                }else {
-                    MyDialog.ToastMessageInMainThread(retJson.getString("info"));
                 }
                 progressDialog.dismiss();
             });

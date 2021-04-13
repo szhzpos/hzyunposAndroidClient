@@ -77,8 +77,6 @@ public final class MobileWarehouseOrderActivity extends AbstractMobileBusinessOr
                         e.printStackTrace();
                         MyDialog.ToastMessageInMainThread(e.getMessage());
                     }
-                }else {
-                    MyDialog.ToastMessageInMainThread(retJson.getString("info"));
                 }
                 progressDialog.dismiss();
             });

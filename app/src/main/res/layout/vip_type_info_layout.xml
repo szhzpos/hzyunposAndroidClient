@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
@@ -18,12 +18,10 @@
 
     <TextView
         android:id="@+id/category_name"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:paddingStart="@dimen/margin_12"
-        android:paddingEnd="@dimen/margin_12"
         android:textAlignment="center"
         android:textColor="@color/blue"
-        android:textSize="@dimen/fun_button_font_size_16" />
+        android:textSize="@dimen/font_size_18" />
 </LinearLayout>

@@ -19,7 +19,10 @@ import java.util.Locale;
 
 public final class GoodsManageViewAdapter extends AbstractTableDataAdapter<GoodsManageViewAdapter.MyViewHolder> {
     private String mWhereCondition;
-    private int mCurrentPage,mAllRowsForQueryCondition,mDataSize,mPerPageRows = 50;
+    private int mCurrentPage;
+    private int mAllRowsForQueryCondition;
+    private int mDataSize;
+    private final int mPerPageRows = 50;
     public GoodsManageViewAdapter(SaleActivity context){
         super(context);
         mDatas = new JSONArray();

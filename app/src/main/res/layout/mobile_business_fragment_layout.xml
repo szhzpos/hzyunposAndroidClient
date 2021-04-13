@@ -49,6 +49,7 @@
             android:background="@drawable/left_right_separator"
             android:drawableTop="@drawable/distribution_warehousing"
             android:gravity="center"
+            android:tag="activity.mobile.business.MobileVipManageActivity"
             android:text="@string/vip_record_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"

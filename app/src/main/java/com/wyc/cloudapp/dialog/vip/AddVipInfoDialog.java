@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.view.View;
 import android.widget.AdapterView;
@@ -21,10 +22,12 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
@@ -33,7 +36,7 @@ import com.wyc.cloudapp.utils.http.HttpRequest;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 
-public class AddVipInfoDialog extends AbstractDialogSaleActivity {
+public class AddVipInfoDialog extends AbstractDialogMainActivity {
     private EditText m_vip_p_num_et, m_card_id_et, m_vip_name_et, m_vip_birthday_et;
     private onYesOnclickListener mYesOnclickListener;//确定按钮被点击了的监听器
     private String mVipGradeId,mMemberId;
@@ -43,7 +46,7 @@ public class AddVipInfoDialog extends AbstractDialogSaleActivity {
     private Spinner m_vip_sex;
     private JSONObject mVip;
 
-    AddVipInfoDialog(@NonNull SaleActivity context, final String title, final JSONObject vip) {//如果vip为null则新增会员，否则修改会员
+    public AddVipInfoDialog(@NonNull MainActivity context, final String title, final JSONObject vip) {//如果vip为null则新增会员，否则修改会员
         super(context,title);
         mVip = vip;
     }
@@ -57,7 +60,7 @@ public class AddVipInfoDialog extends AbstractDialogSaleActivity {
         m_vip_sex = findViewById(R.id.n_vip_sex);
 
         mProgressDialog = new CustomProgressDialog(mContext);
-        mHandler = new Myhandler(this);
+        mHandler = new Myhandler(Looper.myLooper(),this);
 
         initCancelBtn();
         initOkBtn();
@@ -80,6 +83,10 @@ public class AddVipInfoDialog extends AbstractDialogSaleActivity {
         if (mVip != null){
             showVipInfo();
         }
+    }
+
+    public static boolean verifyVipModifyOrAddPermissions(final MainActivity context){
+        return context.verifyPermissions("22",null);
     }
 
     private void initCancelBtn(){
@@ -134,12 +141,7 @@ public class AddVipInfoDialog extends AbstractDialogSaleActivity {
             // 直接创建一个DatePickerDialog对话框实例，并将它显示出来
             new DatePickerDialog(view.getContext(),
                     // 绑定监听器
-                    new DatePickerDialog.OnDateSetListener() {
-                        @Override
-                        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                            et.setText(String.format(Locale.CHINA,"%d-%02d-%02d", view.getYear(), view.getMonth() + 1,view.getDayOfMonth()));
-                        }
-                    }
+                    (view1, year, monthOfYear, dayOfMonth) -> et.setText(String.format(Locale.CHINA,"%d-%02d-%02d", view1.getYear(), view1.getMonth() + 1, view1.getDayOfMonth()))
                     // 设置初始日期
                     , c.get(Calendar.YEAR), c.get(Calendar.MONTH), c
                     .get(Calendar.DAY_OF_MONTH)).show();});
@@ -181,6 +183,7 @@ public class AddVipInfoDialog extends AbstractDialogSaleActivity {
     }
     private void queryVipLevel(){
         mProgressDialog.setMessage("正在查询会员级别...").show();
+        mProgressDialog.setCancelable(false);
         CustomApplication.execute(()->{
             String url = mContext.getUrl() + "/api/member/get_member_grade",sz_param;
             JSONObject object = new JSONObject(),ret_json;
@@ -214,7 +217,7 @@ public class AddVipInfoDialog extends AbstractDialogSaleActivity {
     }
     private void initVipLevel(final JSONArray array){
         final Spinner m_vip_level = findViewById(R.id.n_vip_level);
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext,R.layout.drop_down_style);
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(mContext, R.layout.drop_down_style);
 
         if (array.size() != 0){
             mVipGradeId = array.getJSONObject(0).getString("grade_id");
@@ -293,8 +296,9 @@ public class AddVipInfoDialog extends AbstractDialogSaleActivity {
     }
 
     private static class Myhandler extends Handler {
-        private WeakReference<AddVipInfoDialog> weakHandler;
-        private Myhandler(AddVipInfoDialog dialog){
+        private final WeakReference<AddVipInfoDialog> weakHandler;
+        private Myhandler(Looper looper,AddVipInfoDialog dialog){
+            super(looper);
             this.weakHandler = new WeakReference<>(dialog);
         }
         public void handleMessage(@NonNull Message msg){

@@ -40,7 +40,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileActivity {
     private GoodsAdapter mGoodsInfoAdapter;
     private CategoryAdapter mGoodsCategoryAdapter;
     private EditText mSearchContentEt;
-    private boolean isSelect = false;
+    private static boolean isSelectMode = false;//true 选择商品模式
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +58,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileActivity {
         final Intent intent = getIntent();
         if (intent != null){
             setMiddleText(intent.getStringExtra("title"));
-            isSelect = intent.getBooleanExtra("isSel",false);
+            isSelectMode = intent.getBooleanExtra("isSel",false);
         }
         setRightText(getString(R.string.a_goods_sz));
         setRightListener(v -> {
@@ -141,7 +141,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileActivity {
         SuperItemDecoration.registerGlobalLayoutToRecyclerView(business_goods_info_list,getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration());
 
         mGoodsInfoAdapter.setOnSelectFinish(barcode_id -> {
-            if (isSelect){
+            if (isSelectMode){
                 final Intent intent = new Intent();
                 intent.putExtra("barcode_id",barcode_id);
                 setResult(RESULT_OK,intent);
@@ -156,7 +156,10 @@ public class MobileSelectGoodsActivity extends AbstractMobileActivity {
         final RecyclerView goods_type_view = findViewById(R.id.business_goods_type_list);
         mGoodsCategoryAdapter = new CategoryAdapter(this);
         goods_type_view.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
-        mGoodsCategoryAdapter.setDatas(-2);//业务单据商品选择不加载组合商品
+        if (isSelectMode)
+            mGoodsCategoryAdapter.setDatas(-2);//业务单据商品选择不加载组合商品
+        else
+            mGoodsCategoryAdapter.setDatas(0);
         goods_type_view.setAdapter(mGoodsCategoryAdapter);
     }
 
@@ -220,7 +223,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileActivity {
         @NonNull
         @Override
         public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            final View itemView = View.inflate(mContext, R.layout.goods_type_info_content_layout, null);
+            final View itemView = View.inflate(mContext, R.layout.goods_type_info_layout, null);
             itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) mContext.getResources().getDimension(R.dimen.height_50)));
             itemView.setOnClickListener(this);
             return new MyViewHolder(itemView);
@@ -243,7 +246,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileActivity {
                     mDatas = SQLiteHelper.getListToJson("select category_id,name from shop_category where parent_id='0' and status = 1 union select -1 category_id,'组合商品' name ",0,0,false,err);
                     break;
                 case -2:
-                    mDatas = SQLiteHelper.getListToJson("select category_id,name from shop_category where parent_id='0'",0,0,false,err);
+                    mDatas = SQLiteHelper.getListToJson("select category_id,name from shop_category where parent_id='0' and status = 1",0,0,false,err);
                     break;
                 default:
                     mDatas = SQLiteHelper.getListToJson("select category_id,name from shop_category where depth = 2 and status = 1 and parent_id=" + parent_id,0,0,false,err);
@@ -315,7 +318,12 @@ public class MobileSelectGoodsActivity extends AbstractMobileActivity {
 
                 myViewHolder.barcode_id.setText(goods_info.getString("barcode_id"));
                 myViewHolder.barcode.setText(goods_info.getString("barcode"));
-                myViewHolder.price.setText(goods_info.getString("price"));
+
+                if (isSelectMode)
+                    myViewHolder.price.setText(goods_info.getString("price"));
+                else {
+                    myViewHolder.price.setText(goods_info.getString("retail_price"));
+                }
 
                 goods_title.setText(goods_info.getString("goods_title"));
                 if(goods_title.getCurrentTextColor() != mContext.getResources().getColor(R.color.good_name_color,null)){
@@ -338,11 +346,11 @@ public class MobileSelectGoodsActivity extends AbstractMobileActivity {
             final String sql;
             if (-1 == id){
                 sql = "select gp_id,-1 goods_id,ifnull(gp_title,'') goods_title,'' unit_id,ifnull(unit_name,'') unit_name,\n" +
-                        " -1  barcode_id,ifnull(gp_code,'') barcode,type,gp_price price,ifnull(img_url,'') img_url from goods_group \n" +
+                        " -1  barcode_id,ifnull(gp_code,'') barcode,type,gp_price price,gp_price retail_price,ifnull(img_url,'') img_url from goods_group \n" +
                         "where status = 1";
             }else{
                 sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(case type when 2 then only_coding else barcode end,'') barcode," +
-                        "type,buying_price price,ifnull(img_url,'') img_url from barcode_info where (goods_status = 1 and barcode_status = 1) and category_id in (select category_id from shop_category where path like '%" + id +"%')";
+                        "type,buying_price price,retail_price,ifnull(img_url,'') img_url from barcode_info where (goods_status = 1 and barcode_status = 1) and category_id in (select category_id from shop_category where path like '%" + id +"%')";
             }
 
             mDatas = SQLiteHelper.getListToJson(sql,0,0,false,err);
@@ -370,7 +378,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileActivity {
             Logger.d("full_sql:%s",full_sql);
 
             if (array != null){
-                if (autoSelect && array.size() == 1){
+                if (isSelectMode && autoSelect && array.size() == 1){
                     if (onSelectFinish != null)onSelectFinish.onFinish(array.getJSONObject(0).getString("barcode_id"));
                 }else {
                     mDatas = array;

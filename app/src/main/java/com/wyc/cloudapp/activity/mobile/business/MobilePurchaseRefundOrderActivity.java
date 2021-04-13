@@ -75,8 +75,6 @@ public class MobilePurchaseRefundOrderActivity extends AbstractMobileBusinessOrd
                         e.printStackTrace();
                         MyDialog.ToastMessageInMainThread(e.getMessage());
                     }
-                }else {
-                    MyDialog.ToastMessageInMainThread(retJson.getString("info"));
                 }
                 progressDialog.dismiss();
             });

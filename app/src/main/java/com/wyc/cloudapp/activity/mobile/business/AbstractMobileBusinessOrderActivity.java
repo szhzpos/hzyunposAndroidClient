@@ -211,8 +211,6 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
                         e.printStackTrace();
                         runOnUiThread(()-> MyDialog.ToastMessage(e.getMessage(),this,null));
                     }
-                }else {
-                    runOnUiThread(()-> MyDialog.ToastMessage(retJson.getString("info"),this,null));
                 }
                 progressDialog.dismiss();
             });

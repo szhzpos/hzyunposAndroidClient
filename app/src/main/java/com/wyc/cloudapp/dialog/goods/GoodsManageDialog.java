@@ -103,9 +103,9 @@ public final class GoodsManageDialog extends AbstractDialogSaleActivity {
     private void initConditionSpinner(){
         final Spinner spinner = findViewById(R.id._condition_spinner);
         final ArrayAdapter<String> adapter = new ArrayAdapter<>(mContext,R.layout.drop_down_style);
-        adapter.add("商品条码");
+        adapter.add(mContext.getString(R.string.barcode_sz));
         adapter.add("商品货号");
-        adapter.add("商品名称");
+        adapter.add(mContext.getString(R.string.g_name_sz));
         adapter.add("助 记 码");
         spinner.setAdapter(adapter);
         mConditionSpinner = spinner;

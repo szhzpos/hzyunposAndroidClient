@@ -128,13 +128,17 @@
         android:padding="@dimen/margin_5">
 
         <TextView
-            android:id="@+id/textView26"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/birth_sz"
             android:textColor="@color/lightBlue"
             android:textSize="@dimen/font_size_16" />
+
+        <Spinner
+            android:id="@+id/birthday_type"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
 
         <EditText
             android:id="@+id/n_vip_birthday"

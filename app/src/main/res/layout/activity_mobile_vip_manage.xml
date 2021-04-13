@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context=".activity.mobile.MobileCashierActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_50"
+        android:layout_marginBottom="@dimen/margin_5"
+        android:orientation="horizontal">
+
+        <Spinner
+            android:id="@+id/_spinner"
+            android:layout_width="@dimen/size_128"
+            android:layout_height="match_parent"
+            android:foreground="@drawable/spinner_style" />
+
+        <EditText
+            android:id="@+id/vip_search_et"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_50"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/margin_2"
+            android:background="@drawable/round_border_sub_gray"
+            android:drawableEnd="@drawable/search"
+            android:drawablePadding="@dimen/margin_8"
+            android:ems="10"
+            android:hint="@string/vip_search_hint_sz"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            android:padding="@dimen/margin_5"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_18" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/top_separator"
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/margin_2">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/vip_type_list"
+            android:layout_width="@dimen/size_128"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/margin_1"
+            android:background="@drawable/right_bule_separator"
+            android:padding="@dimen/margin_1">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/vip_record_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -106,14 +106,12 @@ public final class VipInfoDialog extends AbstractDialogSaleActivity {
             });
     }
 
-    private boolean verifyVipModifyOrAddPermissions(){
-        return mContext.verifyPermissions("22",null);
-    }
+
     private void initModifyBtn(){
         final Button modifiyBtn = findViewById(R.id.vip_modify);
         if (null != modifiyBtn)
             modifiyBtn.setOnClickListener(view -> {
-                if (verifyVipModifyOrAddPermissions()){
+                if (AddVipInfoDialog.verifyVipModifyOrAddPermissions(mContext)){
                     if (mVip != null){
                         final AddVipInfoDialog dialog = new AddVipInfoDialog(mContext,mContext.getString(R.string.modify_vip_sz),mVip);
                         dialog.setOnShowListener(dialog12 -> mSearchContent.clearFocus());
@@ -133,7 +131,7 @@ public final class VipInfoDialog extends AbstractDialogSaleActivity {
         final Button add_btn = findViewById(R.id.vip_add);
         if (null != add_btn){
             add_btn.setOnClickListener(view -> {
-                if (verifyVipModifyOrAddPermissions()){
+                if (AddVipInfoDialog.verifyVipModifyOrAddPermissions(mContext)){
                     final AddVipInfoDialog dialog = new AddVipInfoDialog(mContext,mContext.getString(R.string.add_vip_sz),null);
                     dialog.setOnShowListener(dialog12 -> mSearchContent.clearFocus());
                     dialog.setOnDismissListener(dialog1 -> mSearchContent.postDelayed(()->{mSearchContent.requestFocus();},300));

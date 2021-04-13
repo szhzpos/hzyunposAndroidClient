@@ -55,7 +55,7 @@ public class LinearItemDecoration extends SuperItemDecoration {
             final View child = parent.getChildAt(i);
             final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
             final int top = child.getBottom() + params.bottomMargin + Math.round(child.getTranslationY());
-            final int bottom = (top + mSpace);
+            final int bottom = (top + (mSpace >> 1));
             c.drawLine(left,bottom,right,bottom,mPaint);
         }
     }
