@@ -156,6 +156,11 @@ public final class Logger {
       printer.json(json);
   }
 
+  public static void d_json(@Nullable Object json) {
+    if (BuildConfig.DEBUG)
+      printer.json(json.toString());
+  }
+
 
   /**
    * Formats the given xml content and print it

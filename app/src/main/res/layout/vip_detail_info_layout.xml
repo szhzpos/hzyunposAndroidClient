@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/dot_round_shape"
+    android:padding="@dimen/margin_5"
+    android:visibility="visible">
+
+    <TextView
+        android:id="@+id/name_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:text="@string/name_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toStartOf="@id/sex_text"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/vip_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toEndOf="@id/name_text"
+        app:layout_constraintTop_toTopOf="@id/name_text" />
+
+    <TextView
+        android:id="@+id/sex_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/size_28"
+        android:text="@string/vip_six_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toEndOf="@id/vip_p_num"
+        app:layout_constraintTop_toTopOf="@id/p_num_text" />
+
+    <TextView
+        android:id="@+id/vip_sex"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toEndOf="@id/sex_text"
+        app:layout_constraintTop_toTopOf="@id/sex_text" />
+
+    <TextView
+        android:id="@+id/p_num_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_8"
+        android:text="@string/vip_ph_num_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/name_text" />
+
+    <TextView
+        android:id="@+id/vip_p_num"
+        android:layout_width="@dimen/width_118"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toEndOf="@id/p_num_text"
+        app:layout_constraintTop_toTopOf="@id/p_num_text" />
+
+    <TextView
+        android:id="@+id/id_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/vip_card_id_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/vip_card_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toEndOf="@id/id_text"
+        app:layout_constraintTop_toTopOf="@id/id_text" />
+
+    <TextView
+        android:id="@+id/balance_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_8"
+        android:text="@string/vip_balance_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toStartOf="@id/p_num_text"
+        app:layout_constraintTop_toBottomOf="@id/vip_grade_tv" />
+
+    <TextView
+        android:id="@+id/vip_balance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toEndOf="@id/balance_text"
+        app:layout_constraintTop_toTopOf="@id/balance_text" />
+
+    <TextView
+        android:id="@+id/integral_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/vip_integral_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toStartOf="@id/discount_text"
+        app:layout_constraintTop_toTopOf="@id/balance_text" />
+
+    <TextView
+        android:id="@+id/vip_integral"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toEndOf="@id/integral_text"
+        app:layout_constraintTop_toTopOf="@id/integral_text" />
+
+    <TextView
+        android:id="@+id/vip_grade_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/grade_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/p_num_text" />
+
+    <TextView
+        android:id="@+id/vip_grade_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toEndOf="@id/vip_grade_text"
+        app:layout_constraintTop_toTopOf="@id/vip_grade_text" />
+
+    <TextView
+        android:id="@+id/discount_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/vip_discount_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toStartOf="@id/sex_text"
+        app:layout_constraintTop_toTopOf="@id/vip_grade_text" />
+
+    <TextView
+        android:id="@+id/vip_discount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toEndOf="@id/discount_text"
+        app:layout_constraintTop_toTopOf="@id/discount_text" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -27,8 +27,10 @@
             android:autofillHints=""
             android:background="@color/transparent"
             android:ems="10"
+            android:hint="@string/vip_search_hint_sz"
             android:inputType="number"
-            android:textColor="@color/text_color" />
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
     </LinearLayout>
 
     <LinearLayout
@@ -54,8 +56,10 @@
             android:background="@color/transparent"
             android:drawableEnd="@drawable/r_card"
             android:ems="10"
+            android:hint="@string/input_card_id_sz"
             android:inputType="number"
-            android:textColor="@color/text_color" />
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
 
     </LinearLayout>
 
@@ -146,8 +150,10 @@
             android:layout_height="match_parent"
             android:background="@color/transparent"
             android:ems="10"
+            android:hint="@string/input_birthday_hint_sz"
             android:inputType="none"
-            android:textColor="@color/text_color" />
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
     </LinearLayout>
 
     <LinearLayout

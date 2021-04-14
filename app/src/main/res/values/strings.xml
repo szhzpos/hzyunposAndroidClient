@@ -83,8 +83,12 @@
     <string name="pay_detail_v_num_sz">凭证号</string>
     <string name="cash_pay_sz">现金：</string>
     <string name="cash_zl_sz">找零：</string>
+
+    <!-- 新增会员 -->
     <string name="vip_dialog_title_sz">会员信息</string>
     <string name="vip_search_hint_sz">请输入会员手机号</string>
+    <string name="input_birthday_hint_sz">请输入会员生日</string>
+    <string name="input_card_id_sz">请输入会员卡号</string>
     <string name="vip_six_sz">性别：</string>
     <string name="vip_ph_num_sz">手机：</string>
     <string name="vip_card_id_sz">卡号：</string>
@@ -101,6 +105,8 @@
     <string name="modify_vip_sz">修改会员</string>
     <string name="vip_charge_sz">会员充值</string>
     <string name="c_amt_hint_sz">请输入充值金额</string>
+    <string name="vip_info_detail_sz">会员详情</string>
+
     <string name="ten_sz">10</string>
     <string name="twenty_sz">20</string>
     <string name="fifty_sz">50</string>

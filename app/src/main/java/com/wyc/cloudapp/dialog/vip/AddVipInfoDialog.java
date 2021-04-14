@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -29,6 +31,7 @@ import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -42,31 +45,36 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
     private String mVipGradeId,mMemberId;
     private CustomProgressDialog mProgressDialog;
     private Myhandler mHandler;
-    private String mSex;
-    private Spinner m_vip_sex;
+    private String mSex,mBirthdayType;
     private JSONObject mVip;
+    private JSONArray mVipGrade;
 
     public AddVipInfoDialog(@NonNull MainActivity context, final String title, final JSONObject vip) {//如果vip为null则新增会员，否则修改会员
         super(context,title);
         mVip = vip;
     }
+
+    public AddVipInfoDialog(@NonNull MainActivity context, final String title, final JSONArray grade) {
+        super(context,title);
+        mVipGrade = grade;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
-        m_vip_p_num_et = findViewById(R.id.n_vip_p_num);
         m_card_id_et = findViewById(R.id.n_card_id);
         m_vip_name_et = findViewById(R.id.n_vip_name);
-        m_vip_sex = findViewById(R.id.n_vip_sex);
 
         mProgressDialog = new CustomProgressDialog(mContext);
         mHandler = new Myhandler(Looper.myLooper(),this);
 
         initCancelBtn();
         initOkBtn();
+        initVipPhoneNum();
         initVipBirthdayEt();
         initVipSex();
-
+        initBirthdayTypeSex();
     }
 
     @Override
@@ -77,8 +85,14 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
     @Override
     public void onAttachedToWindow(){
         super.onAttachedToWindow();
-        //查询会员级别
-        queryVipLevel();
+
+        if (mVipGrade == null){
+            //查询会员级别
+            queryVipLevel();
+        }else {
+            initVipLevel();
+        }
+
         //显示会员信息
         if (mVip != null){
             showVipInfo();
@@ -99,10 +113,22 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
         if (null != ok_btn)
             ok_btn.setOnClickListener(view -> {
                 if (m_vip_p_num_et.length() < 11){
-                    MyDialog.ToastMessage("请填写会员手机号！",mContext,getWindow());
-                }else{
-                    addVipInfo();
+                    m_vip_p_num_et.requestFocus();
+                    MyDialog.ToastMessage(m_vip_p_num_et.getHint().toString(),mContext,getWindow());
+                    return;
                 }
+                if (m_card_id_et.length() == 0){
+                    m_card_id_et.requestFocus();
+                    MyDialog.ToastMessage(m_card_id_et.getHint().toString(),mContext,getWindow());
+                    return;
+                }
+                if (m_vip_birthday_et.length() == 0){
+                    m_vip_birthday_et.requestFocus();
+                    MyDialog.ToastMessage(m_vip_birthday_et.getHint().toString(),mContext,getWindow());
+                    return;
+                }
+
+                addVipInfo();
             });
     }
 
@@ -116,6 +142,7 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
         }
         mVip.put("mobile",phone_num);
         mVip.put("name", m_vip_name_et.getText());
+        mVip.put("birthday_type",mBirthdayType);
         mVip.put("birthday", m_vip_birthday_et.getText());
         mVip.put("card_code", m_card_id_et.getText());
         mVip.put("grade_id",mVipGradeId);
@@ -131,6 +158,28 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
     }
     public interface onYesOnclickListener {
         void onYesClick(AddVipInfoDialog dialog);
+    }
+
+    private void initVipPhoneNum(){
+        m_vip_p_num_et = findViewById(R.id.n_vip_p_num);
+        m_vip_p_num_et.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (mVip == null){
+                    m_card_id_et.setText(s);
+                }
+            }
+        });
     }
 
     private void initVipBirthdayEt(){
@@ -165,6 +214,7 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
             arrayAdapter.add(sz_male);
             arrayAdapter.add(sz_woman);
         }
+        Spinner m_vip_sex = findViewById(R.id.n_vip_sex);
         m_vip_sex.setAdapter(arrayAdapter);
         m_vip_sex.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -181,6 +231,40 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
             }
         });
     }
+
+    private void initBirthdayTypeSex(){
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext,R.layout.drop_down_style);
+
+        arrayAdapter.add("农历");
+        arrayAdapter.add("阴历");
+
+        Spinner b_type = findViewById(R.id.birthday_type);
+        b_type.setAdapter(arrayAdapter);
+        b_type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0){
+                    mBirthdayType = "2";
+                }else {
+                    mBirthdayType = "1";
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        if (mVip != null){
+            if ("1".equals(mVip.getString("birthday_type"))){
+                b_type.setSelection(1);
+            }else{
+                b_type.setSelection(0);
+            }
+        }
+    }
+
     private void queryVipLevel(){
         mProgressDialog.setMessage("正在查询会员级别...").show();
         mProgressDialog.setCancelable(false);
@@ -203,7 +287,8 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
                                 mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"查询会员级别错误：" + ret_json.getString("info")).sendToTarget();
                                 break;
                             case "y":
-                                mHandler.obtainMessage(MessageID.QUERY_VIP_LEVEL_ID,JSON.parseArray(ret_json.getString("grade_list"))).sendToTarget();
+                                mVipGrade = JSON.parseArray(ret_json.getString("grade_list"));
+                                mHandler.obtainMessage(MessageID.QUERY_VIP_LEVEL_ID).sendToTarget();
                                 break;
                         }
                         break;
@@ -215,30 +300,34 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
 
         });
     }
-    private void initVipLevel(final JSONArray array){
+    private void initVipLevel(){
         final Spinner m_vip_level = findViewById(R.id.n_vip_level);
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(mContext, R.layout.drop_down_style);
 
-        if (array.size() != 0){
-            mVipGradeId = array.getJSONObject(0).getString("grade_id");
-            for(int i = 0,length = array.size();i < length;i++){
-                JSONObject object = array.getJSONObject(i);
+        final JSONArray array = mVipGrade;
+        int selectIndex = 0,size = array.size();
+        if (size != 0){
+            for(int i = 0;i < size;i++){
+                final JSONObject object = array.getJSONObject(i);
                 arrayAdapter.add(object.getString("grade_name"));
+                if (object.containsKey("sel")){
+                    selectIndex = i;
+                }
             }
             m_vip_level.setAdapter(arrayAdapter);
             m_vip_level.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    JSONObject jsonObject = array.getJSONObject(position);
-                    if (jsonObject != null)
-                        mVipGradeId = jsonObject.getString("grade_id");
+                    mVipGradeId = Utils.getNullStringAsEmpty(array.getJSONObject(position),"grade_id");
                 }
                 @Override
                 public void onNothingSelected(AdapterView<?> parent) {
 
                 }
             });
+            m_vip_level.setSelection(selectIndex);
         }
+
     }
     private void addVipInfo(){
         mProgressDialog.setMessage("正在上传会员信息...").refreshMessage().show();
@@ -311,9 +400,7 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
                         MyDialog.ToastMessage(msg.obj.toString(),dialog.mContext,dialog.getWindow());
                     break;
                 case MessageID.QUERY_VIP_LEVEL_ID:
-                    if (msg.obj instanceof JSONArray){
-                        dialog.initVipLevel((JSONArray) msg.obj);
-                    }
+                    dialog.initVipLevel();
                     break;
                     case MessageID.ADD_VIP_INFO_ID:
                         if (msg.obj instanceof String)

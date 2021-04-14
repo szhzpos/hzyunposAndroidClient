@@ -4,13 +4,13 @@ import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Looper;
-import android.text.method.ReplacementTransformationMethod;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -30,6 +30,7 @@ import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.vip.AddVipInfoDialog;
+import com.wyc.cloudapp.dialog.vip.VipDetailInfoWindow;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -148,7 +149,10 @@ public class MobileVipManageActivity extends AbstractMobileActivity {
         setRightText(getString(R.string.add_vip_sz));
         setRightListener(v -> {
             if (AddVipInfoDialog.verifyVipModifyOrAddPermissions(this)){
-                final AddVipInfoDialog addVipInfoDialog = new AddVipInfoDialog(MobileVipManageActivity.this,getString(R.string.add_vip_sz),null);
+                final JSONArray array = Utils.JsondeepCopy(mVipCategoryAdapter.getData());
+                array.remove(0);
+
+                final AddVipInfoDialog addVipInfoDialog = new AddVipInfoDialog(MobileVipManageActivity.this,getString(R.string.add_vip_sz),array);
                 addVipInfoDialog.setYesOnclickListener(dialog -> {
                     final JSONObject object = dialog.getVipInfo();
                 }).show();
@@ -156,7 +160,7 @@ public class MobileVipManageActivity extends AbstractMobileActivity {
         });
     }
 
-    private final static class VipRecordAdapter extends AbstractDataAdapter<VipRecordAdapter.MyViewHolder>{
+    private final static class VipRecordAdapter extends AbstractDataAdapter<VipRecordAdapter.MyViewHolder> implements View.OnClickListener{
         private final MainActivity mContext;
         private int mCurrentRow;
         private int mCategoryId,mVagueType;
@@ -177,31 +181,44 @@ public class MobileVipManageActivity extends AbstractMobileActivity {
         @Override
         public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
             int size = mDatas.size();
-            if (position < size){
+            if (position < size){//由于mDatas 赋值与取值不在同一线程，有可能出现数组越界，所以得加个判断
                 final JSONObject vip = mDatas.getJSONObject(position);
                 holder.vip_name.setText(vip.getString("name"));
                 holder.card_code_tv.setText(vip.getString("card_code"));
                 holder.phone_num_tv.setText(vip.getString("mobile"));
                 holder.integral_tv.setText(vip.getString("points_sum"));
                 holder.balance_tv.setText(vip.getString("money_sum"));
+                holder.detail_btn.setTag(vip);
+                holder.detail_btn.setOnClickListener(this);
 
-                if (isReload && position + 3 == size){
+                if (isReload && position + 5 == size){
                     reload();
                 }
             }
         }
 
+        @Override
+        public void onClick(View v) {
+            final JSONObject object = Utils.getViewTagValue(v);
+            final VipDetailInfoWindow detailInfoDialog = new VipDetailInfoWindow(mContext,object);
+            detailInfoDialog.showAsDropDown(v);
+        }
+
         static class MyViewHolder extends AbstractDataAdapter.SuperViewHolder {
             private final TextView vip_name,card_code_tv,phone_num_tv,integral_tv,balance_tv;
+            private final Button detail_btn;
             MyViewHolder(View itemView) {
                 super(itemView);
                 vip_name = itemView.findViewById(R.id.vip_name);
-                card_code_tv =  itemView.findViewById(R.id.card_code_tv);
-                phone_num_tv =  itemView.findViewById(R.id.phone_num_tv);
-                integral_tv =  itemView.findViewById(R.id.integral_tv);
-                balance_tv =  itemView.findViewById(R.id.balance_tv);
+                card_code_tv =  findViewById(R.id.card_code_tv);
+                phone_num_tv =  findViewById(R.id.phone_num_tv);
+                integral_tv =  findViewById(R.id.integral_tv);
+                balance_tv =  findViewById(R.id.balance_tv);
+
+                detail_btn = findViewById(R.id.detail_btn);
             }
         }
+
 
         private void loadVipForCategoryId(int id){
             mCurrentRow = 0;
@@ -243,7 +260,7 @@ public class MobileVipManageActivity extends AbstractMobileActivity {
                         object.put("name",mQueryContent);
                         break;
                 }
-                object.put("limit",5);
+                object.put("limit",50);
                 object.put("offset",mCurrentRow);
 
                 object = HttpUtils.sendPost(mContext.getUrl() + "/api/member/get_member_list",HttpRequest.generate_request_parm(object,mContext.getAppSecret()),true);
@@ -347,12 +364,29 @@ public class MobileVipManageActivity extends AbstractMobileActivity {
                     mCurrentItemView = view;
                 }
                 try {
-                    ((MobileVipManageActivity)mContext).loadVipForCategoryId(Integer.parseInt(category_id.getText().toString()));
+                    int id = Integer.parseInt(category_id.getText().toString());
+                    signSelectCategory(id);
+
+                    ((MobileVipManageActivity)mContext).loadVipForCategoryId(id);
                 }catch (NumberFormatException e){
                     MyDialog.ToastMessageInMainThread(e.getMessage());
                 }
             }
         }
+
+        private void signSelectCategory(int id){
+            if (mDatas != null){
+                for (int i = 0,size = mDatas.size();i < size;i++){
+                    final JSONObject object = mDatas.getJSONObject(i);
+                    if (id == object.getIntValue("grade_id")){
+                        object.put("sel",true);
+                    }else {
+                        object.remove("sel");
+                    }
+                }
+            }
+        }
+
     }
 
 }

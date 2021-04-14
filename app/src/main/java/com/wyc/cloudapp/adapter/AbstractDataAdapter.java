@@ -3,6 +3,7 @@ package com.wyc.cloudapp.adapter;
 import android.os.Looper;
 import android.view.View;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,6 +31,10 @@ public abstract class AbstractDataAdapter <T extends RecyclerView.ViewHolder> ex
     public static class SuperViewHolder extends RecyclerView.ViewHolder {
         public SuperViewHolder(View itemView) {
             super(itemView);
+        }
+
+        protected <T extends View> T  findViewById(@IdRes int id){
+            return itemView.findViewById(id);
         }
 
         @Override

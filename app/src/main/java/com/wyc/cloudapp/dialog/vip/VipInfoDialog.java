@@ -132,7 +132,7 @@ public final class VipInfoDialog extends AbstractDialogSaleActivity {
         if (null != add_btn){
             add_btn.setOnClickListener(view -> {
                 if (AddVipInfoDialog.verifyVipModifyOrAddPermissions(mContext)){
-                    final AddVipInfoDialog dialog = new AddVipInfoDialog(mContext,mContext.getString(R.string.add_vip_sz),null);
+                    final AddVipInfoDialog dialog = new AddVipInfoDialog(mContext,mContext.getString(R.string.add_vip_sz),(JSONObject) null);
                     dialog.setOnShowListener(dialog12 -> mSearchContent.clearFocus());
                     dialog.setOnDismissListener(dialog1 -> mSearchContent.postDelayed(()->{mSearchContent.requestFocus();},300));
                     dialog.setYesOnclickListener(dialog13 -> {
