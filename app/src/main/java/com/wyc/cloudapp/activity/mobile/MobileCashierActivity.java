@@ -1,7 +1,6 @@
 package com.wyc.cloudapp.activity.mobile;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ReplacementTransformationMethod;
@@ -10,7 +9,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -29,7 +27,6 @@ import com.wyc.cloudapp.CustomizationView.InterceptLinearLayout;
 import com.wyc.cloudapp.CustomizationView.TmpOrderButton;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.SaleActivity;
-import com.wyc.cloudapp.adapter.AbstractSaleGoodsAdapter;
 import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
 import com.wyc.cloudapp.decoration.GoodsInfoItemDecoration;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
@@ -44,13 +41,12 @@ import com.wyc.cloudapp.dialog.pay.MobileSettlementDialog;
 import com.wyc.cloudapp.dialog.pay.AbstractSettlementDialog;
 import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 
-import static com.wyc.cloudapp.utils.MessageID.PAY_REQUEST_CODE;
+import static com.wyc.cloudapp.constants.MessageID.PAY_REQUEST_CODE;
 
 public class MobileCashierActivity extends SaleActivity implements View.OnClickListener {
     private static final int CODE_REQUEST_CODE = 0x000000bb;

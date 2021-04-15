@@ -107,27 +107,7 @@ public final class RefundOrderAdapter extends AbstractQueryDataAdapter<RefundOrd
             final TextView order_code_tv = mCurrentItemView.findViewById(R.id.retail_order_code);
             if (null != order_code_tv){
                 final String sz_order_code = order_code_tv.getText().toString(),
-                        sql = "SELECT \n" +
-                        "       a.remark," +
-                        "       a.card_code," +
-                        "       a.name vip_name," +
-                        "       a.mobile," +
-                        "       a.transfer_status s_e_status,\n" +
-                        "       case a.transfer_status when 1 then '未交班' when 2 then '已交班' else '其他' end s_e_status_name,\n" +
-                        "       a.upload_status,\n" +
-                        "       case a.upload_status when 1 then '未上传' when 2 then '已上传' else '其他' end upload_status_name,\n" +
-                        "       a.pay_status,\n" +
-                        "       case a.pay_status when 1 then '未支付' when 2 then '已支付' else '支付中' end pay_status_name,\n" +
-                        "       a.order_status,\n" +
-                        "       case a.order_status when 1 then '未付款' when 2 then '已付款' when 3 then '已取消' when 4 then '已退货' else '其他'  end order_status_name,\n" +
-                        "       datetime(a.addtime, 'unixepoch', 'localtime') oper_time,\n" +
-                        "       a.remark,\n" +
-                        "       a.cashier_id,\n" +
-                        "       b.cas_name,\n" +
-                        "       a.discount_price reality_amt,\n" +
-                        "       a.total order_amt,\n" +
-                        "       a.order_code\n" +
-                        "  FROM retail_order a left join cashier_info b on a.cashier_id = b.cas_id where order_code = '" + sz_order_code + "'";
+                        sql = RetailOrderAdapter.getQuery() +" where order_code = '" + sz_order_code + "'";
 
                 if (!SQLiteHelper.execSql(retail_order_info,sql)){
                     MyDialog.ToastMessage("查询零售单据错误：" + retail_order_info.getString("info"),mContext,null);
@@ -161,7 +141,7 @@ public final class RefundOrderAdapter extends AbstractQueryDataAdapter<RefundOrd
                 "case type when 1 then '整单退货' when 2 then '部分退货' when 3 then '单品退货' else '其他' end refund_type_name,order_status refund_status,\n" +
                 "case order_status when 1 then '未退货' when 2 then '已退货' else '其他' end refund_status_name,upload_status,\n" +
                 " case a.transfer_status when 1 then '未交班' when 2 then '已交班' else '其他' end s_e_status_name,\n" +
-                "case upload_status when 1 then '未上传' when 2 then '已上传' else '其他' end upload_status_name,cashier_id,b.cas_name,\n" +
+                "case upload_status when 1 then '未上传' when 2 then '已上传' when 3 then '失败' else '其他' end upload_status_name,cashier_id,b.cas_name,\n" +
                 "datetime(a.addtime, 'unixepoch', 'localtime') oper_time FROM refund_order a left join cashier_info b on a.cashier_id = b.cas_id " + where_sql;
 
         Logger.d("sql:%s",sql);

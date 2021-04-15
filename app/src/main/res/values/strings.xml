@@ -185,6 +185,8 @@
     <string name="hangbill_sz">挂单</string>
     <string name="to_checkout_sz">去结账</string>
     <string name="del_hang_bill">删除挂单</string>
+
+    <!-- 条码秤窗口 -->
     <string name="add_scale_sz">新增秤</string>
     <string name="del_scale_sz">删除秤</string>
     <string name="d_to_scale_sz">下发传秤</string>
@@ -205,6 +207,8 @@
     <string name="g_price_sz">价格：</string>
     <string name="name_sz">名称：</string>
     <string name="weigh_sz">重量：</string>
+
+    <!-- 零售单查询窗口 -->
     <string name="query_time_sz">查询时间</string>
     <string name="to_sz">至</string>
     <string name="query_sz">查询</string>
@@ -232,6 +236,7 @@
     <string name="barcode_colon_sz">条码：</string>
     <string name="item_no_colon_sz">货号：</string>
     <string name="unit_colon_sz">单位：</string>
+    <string name="reupload_sz">重传</string>
 
     <!-- 结账单 -->
     <string name="line_58">--------------------------------</string>

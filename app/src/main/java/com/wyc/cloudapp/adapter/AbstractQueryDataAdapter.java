@@ -42,7 +42,7 @@ public abstract class AbstractQueryDataAdapter<T extends AbstractTableDataAdapte
                         final TextView tv = ((TextView) child);
                         switch (tv.getId()) {
                             case R.id.order_code:
-                            case R.id.sale_refund:
+                            case R.id.order_action:
                             case R.id.retail_order_code:
                             case R.id.refund_order_code:
                             case R.id.pay_m_name:

@@ -4,13 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -29,15 +26,13 @@ import com.wyc.cloudapp.mobileFragemt.BoardFragment;
 import com.wyc.cloudapp.mobileFragemt.MobileCashierDeskFragment;
 import com.wyc.cloudapp.mobileFragemt.MyFragment;
 import com.wyc.cloudapp.mobileFragemt.ReportFragment;
-import com.wyc.cloudapp.utils.MessageID;
+import com.wyc.cloudapp.constants.MessageID;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Stack;
 
-import static com.wyc.cloudapp.utils.MessageID.PAY_REQUEST_CODE;
+import static com.wyc.cloudapp.constants.MessageID.PAY_REQUEST_CODE;
 
 public final class MobileNavigationActivity extends AbstractMobileActivity implements CustomApplication.MessageCallback {
     private FragmentManager mFragmentManager;

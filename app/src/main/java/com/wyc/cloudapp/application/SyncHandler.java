@@ -12,10 +12,12 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.constants.RetailOrderStatus;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.MessageID;
+import com.wyc.cloudapp.constants.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
@@ -25,7 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static com.wyc.cloudapp.utils.MessageID.SYNC_DIS_INFO_ID;
+import static com.wyc.cloudapp.constants.MessageID.SYNC_DIS_INFO_ID;
 
 final class SyncHandler extends Handler {
     private final HttpRequest mHttp;
@@ -235,7 +237,11 @@ final class SyncHandler extends Handler {
                     testNetworkStatus();
                     return;
                 case MessageID.UPLOAD_ORDER_ID:
-                    uploadRetailOrderInfo(app_id,base_url,appSecret);
+                    boolean reupload = false;
+                    if (msg.obj instanceof Boolean){
+                        reupload =  (Boolean) msg.obj;
+                    }
+                    uploadRetailOrderInfo(app_id,base_url,appSecret,reupload);
                     return;
                 case MessageID.UPLOAD_TRANS_ORDER_ID:
                     uploadTransferOrderInfo(app_id,base_url,appSecret);
@@ -468,16 +474,17 @@ final class SyncHandler extends Handler {
     void sync_order_info(){
         startUploadRefundOrder();
         startUploadTransferOrder();
-        startUploadRetailOrder();
+        startUploadRetailOrder(false);
 
         CustomApplication.sendMessageAtFrontOfQueue(MessageID.START_SYNC_ORDER_INFO_ID);
         CustomApplication.sendMessage(MessageID.FINISH_SYNC_ORDER_INFO_ID);
     }
 
-    private void uploadRetailOrderInfo(final String appid,final String url,final String appSecret) {
+    /*@param reupload true只会上传 上传状态失败的订单 false 只上传 未上传的订单*/
+    private void uploadRetailOrderInfo(final String appid,final String url,final String appSecret,boolean reupload) {
         final StringBuilder err = new StringBuilder(),order_gp_ids = new StringBuilder();
         final String sql_orders = "SELECT discount_money,sc_ids sc_id,card_code,member_id,name,mobile,transfer_time,transfer_status,pay_time,pay_status,order_status,pos_code,addtime,cashier_id,total,\n" +
-                "discount_price,order_code,stores_id,spare_param1,spare_param2,replace(remark,'&','') remark FROM retail_order where order_status = 2 and pay_status = 2 and upload_status = 1 limit 200",
+                "discount_price,order_code,stores_id,spare_param1,spare_param2,replace(remark,'&','') remark FROM retail_order where order_status = 2 and pay_status = 2 and upload_status = " + (reupload ? RetailOrderStatus.UPLOAD_ERROR : RetailOrderStatus.UN_UPLOAD) +" limit 200",
                 sql_goods_detail = "select conversion,zk_cashier_id,gp_id,tc_rate,tc_mode,tax_rate,ps_price,cost_price,trade_price,retail_price,buying_price,price,xnum,barcode_id from retail_order_goods where order_code = '%1'",
                 sql_pays_detail = "select print_info,return_code,card_no,xnote,discount_money,give_change_money,pre_sale_money,zk_money,is_check,remark,pay_code,pay_serial_no,pay_status,pay_time,pay_money,pay_method,order_code from retail_order_pays where order_code = '%1'",
                 sql_combination_goods = "SELECT b.retail_price,a.xnum,c.gp_price,c.gp_id,d.zk_cashier_id,d.order_code FROM  goods_group_info a LEFT JOIN  barcode_info b on a.barcode_id = b.barcode_id\n" +
@@ -495,7 +502,7 @@ final class SyncHandler extends Handler {
 
         if (code = null != (orders = SQLiteHelper.getListToJson(sql_orders,err))){
             if (!orders.isEmpty()){
-                startUploadRetailOrder();
+                startUploadRetailOrder(reupload);
                 for (int i = 0,size = orders.size();i < size;i++){
                     order_gp_ids.delete(0,order_gp_ids.length());
 
@@ -549,11 +556,14 @@ final class SyncHandler extends Handler {
                                             final ContentValues values = new ContentValues();
                                             switch (retJson.getString("status")){
                                                 case "n":
-                                                    values.put("upload_status",3);
+                                                    values.put("upload_status", RetailOrderStatus.UPLOAD_ERROR);
                                                     err.append(retJson.getString("info"));
+                                                    if (reupload){
+                                                        MyDialog.ToastMessageInMainThread(err.toString());
+                                                    }
                                                     break;
                                                 case "y":
-                                                    values.put("upload_status",2);
+                                                    values.put("upload_status", RetailOrderStatus.UPLOADED);
                                                     break;
                                             }
                                             values.put("upload_time",System.currentTimeMillis() / 1000);
@@ -1048,9 +1058,9 @@ final class SyncHandler extends Handler {
             postDelayed(this::startNetworkTest,1000);
         }
     }
-    void startUploadRetailOrder(){
+    void startUploadRetailOrder(boolean reupload){
         if (mCurrentNetworkStatusCode == HttpURLConnection.HTTP_OK){
-            sendMessageAtFrontOfQueue(obtainMessage(MessageID.UPLOAD_ORDER_ID));
+            sendMessageAtFrontOfQueue(obtainMessage(MessageID.UPLOAD_ORDER_ID,reupload));
         }
     }
     void startUploadTransferOrder(){

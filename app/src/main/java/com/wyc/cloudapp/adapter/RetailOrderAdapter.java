@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.constants.RetailOrderStatus;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
@@ -17,7 +19,6 @@ import com.wyc.cloudapp.dialog.orderDialog.AbstractRetailOrderDetailsDialog;
 import com.wyc.cloudapp.dialog.orderDialog.NormalRetailOrderDetailsDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
@@ -29,7 +30,7 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
     }
 
     static class MyViewHolder extends AbstractQueryDataAdapter.SuperViewHolder {
-        TextView row_id,order_code,order_amt,reality_amt,order_status,pay_status,s_e_status,cas_name,upload_status,oper_time;
+        TextView row_id,order_code,order_amt,reality_amt,order_status,pay_status,s_e_status,cas_name,upload_status,oper_time,order_action;
         MyViewHolder(View itemView) {
             super(itemView);
             row_id = itemView.findViewById(R.id.row_id);
@@ -42,6 +43,7 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
             cas_name = itemView.findViewById(R.id.cas_name);
             upload_status = itemView.findViewById(R.id.upload_status);
             oper_time = itemView.findViewById(R.id.oper_time);
+            order_action = findViewById(R.id.order_action);
         }
     }
     @NonNull
@@ -49,6 +51,9 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = View.inflate(mContext, R.layout.retail_order_content_layout, null);
         itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int) mContext.getResources().getDimension(R.dimen.table_row_height)));
+
+        itemView.setOnTouchListener(touchListener);
+
         return new MyViewHolder(itemView);
     }
 
@@ -78,11 +83,16 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
 
                 holder.cas_name.setText(order_info.getString("cas_name"));
 
+                int upload_status = order_info.getIntValue("upload_status");
+                if (upload_status == RetailOrderStatus.UPLOAD_ERROR){
+                    holder.order_action.setText(R.string.reupload_sz);
+                }
                 holder.upload_status.setText(order_info.getString("upload_status_name"));
+                holder.upload_status.setTag(upload_status);
 
                 holder.oper_time.setText(order_info.getString("oper_time"));
 
-                holder.itemView.setOnTouchListener(touchListener);
+                holder.itemView.setTag(order_info);//保存订单信息
             }
         }
     }
@@ -97,14 +107,19 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
     private final View.OnTouchListener touchListener = (v, event) -> {
         if (event.getAction() == MotionEvent.ACTION_DOWN){
             setCurrentItemView(v);
-            final TextView order_code_tv = v.findViewById(R.id.order_code),sale_refund_tv = v.findViewById(R.id.sale_refund),order_status_tv = v.findViewById(R.id.order_status);
+            final TextView order_code_tv = v.findViewById(R.id.order_code),order_action = v.findViewById(R.id.order_action),order_status_tv = v.findViewById(R.id.order_status);
+
+            final JSONObject cur_order = (JSONObject) v.getTag();
+
             if (isClickView(order_code_tv,event.getX(),event.getY())){
-                final AbstractRetailOrderDetailsDialog retailOrderDetailsDialog = new NormalRetailOrderDetailsDialog(mContext,getCurrentOrder());
+                final AbstractRetailOrderDetailsDialog retailOrderDetailsDialog = new NormalRetailOrderDetailsDialog(mContext,cur_order);
                 retailOrderDetailsDialog.show();
-            }else if (isClickView(sale_refund_tv,event.getX(),event.getY())){
-                int order_status = Utils.getViewTagValue(order_status_tv,-1);
-                if (order_status == 2 || order_status == 88){
-                    sale_refund_tv.post(()->{
+            }else if (isClickView(order_action,event.getX(),event.getY())){
+                int order_status = cur_order.getIntValue("order_status"),upload_status = cur_order.getIntValue("upload_status");
+                if (upload_status == RetailOrderStatus.UPLOAD_ERROR){//启动重传
+                    CustomApplication.self().reuplaod_retail_order();
+                }else if (order_status == 2 || order_status == 88){
+                    order_action.post(()->{
                         if (RefundDialog.verifyRefundPermission(mContext)){
                             if (mContext.getSingleRefundStatus())mContext.setSingleRefundStatus(false);
                             final RefundDialog refundDialog = new RefundDialog(mContext,order_code_tv.getText().toString());
@@ -123,7 +138,17 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
     @Override
     public void setDatas(final String where_sql){
         final StringBuilder err = new StringBuilder();
-        final String sql = "SELECT \n" +
+        final String sql = getQuery() + where_sql;
+
+        Logger.d("sql:%s",sql);
+        mDatas = SQLiteHelper.getListToJson(sql,err);
+        if (mDatas != null){
+            notifyDataSetChanged();
+        }else
+            MyDialog.ToastMessage("加载销售单据错误：" + err,mContext,null);
+    }
+    public static String getQuery(){
+        return "SELECT \n" +
                 "       a.remark," +
                 "       a.card_code," +
                 "       a.name vip_name," +
@@ -131,7 +156,7 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
                 "       a.transfer_status s_e_status,\n" +
                 "       case a.transfer_status when 1 then '未交班' when 2 then '已交班' else '其他' end s_e_status_name,\n" +
                 "       a.upload_status,\n" +
-                "       case a.upload_status when 1 then '未上传' when 2 then '已上传' else '其他' end upload_status_name,\n" +
+                "       case a.upload_status when 1 then '未上传' when 2 then '已上传' when 3 then '失败' else '其他' end upload_status_name,\n" +
                 "       a.pay_status,\n" +
                 "       case a.pay_status when 1 then '未支付' when 2 then '已支付' when 3 then '支付中' else '其他' end pay_status_name,\n" +
                 "       a.order_status,\n" +
@@ -143,13 +168,6 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
                 "       a.discount_price reality_amt,\n" +
                 "       a.total order_amt,\n" +
                 "       a.order_code\n" +
-                "  FROM retail_order a left join cashier_info b on a.cashier_id = b.cas_id " + where_sql;
-
-        Logger.d("sql:%s",sql);
-        mDatas = SQLiteHelper.getListToJson(sql,err);
-        if (mDatas != null){
-            notifyDataSetChanged();
-        }else
-            MyDialog.ToastMessage("加载销售单据错误：" + err,mContext,null);
+                "  FROM retail_order a left join cashier_info b on a.cashier_id = b.cas_id ";
     }
 }

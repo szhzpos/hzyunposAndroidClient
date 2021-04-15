@@ -32,6 +32,7 @@ import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.PayDetailViewAdapter;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.constants.RetailOrderStatus;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.decoration.PayMethodItemDecoration;
 import com.wyc.cloudapp.decoration.SuperItemDecoration;
@@ -910,7 +911,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         order_info.put("order_status",1);//订单状态（1未付款，2已付款，3已取消，4已退货）
         order_info.put("pay_status",1);//支付状态（1未支付，2已支付，3支付中）
         order_info.put("pay_time",time);
-        order_info.put("upload_status",1);//上传状态（1未上传，2已上传）
+        order_info.put("upload_status", RetailOrderStatus.UN_UPLOAD);//上传状态（1未上传，2已上传）
         order_info.put("upload_time",0);
         order_info.put("transfer_status",1);//交班状态（1未交班，2已交班）
         order_info.put("transfer_time",0);

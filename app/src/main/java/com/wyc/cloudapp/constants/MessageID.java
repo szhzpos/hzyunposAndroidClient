@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.utils;
+package com.wyc.cloudapp.constants;
 
 public final  class MessageID {
     private MessageID(){

@@ -207,7 +207,7 @@ public abstract class AbstractQuerySuperDialog extends AbstractDialogMainActivit
             order_status_et.setOnClickListener(etClickListener);
         }
     }
-    private View.OnClickListener etClickListener = this::showChooseDialog;
+    private final View.OnClickListener etClickListener = this::showChooseDialog;
     private void showChooseDialog(final @NonNull View et){
         if (et instanceof EditText){
             String title = "";
@@ -228,7 +228,7 @@ public abstract class AbstractQuerySuperDialog extends AbstractDialogMainActivit
                     title = mContext.getString(R.string.s_e_status_sz);
                     break;
                 case R.id.upload_status_et:
-                    items = new String[]{"所有","未上传","已上传"};
+                    items = new String[]{"所有","未上传","已上传","失败"};
                     title = mContext.getString(R.string.upload_s_sz);
                     break;
                 case R.id.order_status_et:

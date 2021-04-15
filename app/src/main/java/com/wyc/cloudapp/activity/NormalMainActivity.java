@@ -30,7 +30,6 @@ import android.widget.PopupWindow;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -47,8 +46,6 @@ import com.wyc.cloudapp.CustomizationView.InterceptLinearLayout;
 import com.wyc.cloudapp.CustomizationView.ScaleView;
 import com.wyc.cloudapp.CustomizationView.TmpOrderButton;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.mobile.MobileNavigationActivity;
-import com.wyc.cloudapp.adapter.AbstractSaleGoodsAdapter;
 import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -73,7 +70,7 @@ import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
 import com.wyc.cloudapp.print.Printer;
-import com.wyc.cloudapp.utils.MessageID;
+import com.wyc.cloudapp.constants.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 

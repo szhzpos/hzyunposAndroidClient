@@ -23,11 +23,10 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
-import com.wyc.cloudapp.utils.MessageID;
+import com.wyc.cloudapp.constants.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 

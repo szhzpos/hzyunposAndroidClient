@@ -1,11 +1,9 @@
 package com.wyc.cloudapp.application;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Environment;
@@ -16,19 +14,17 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.AndroidLogAdapter;
 import com.wyc.cloudapp.logger.DiskLogAdapter;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.MessageID;
+import com.wyc.cloudapp.constants.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.io.File;
@@ -284,7 +280,11 @@ public final class CustomApplication extends Application {
     }
 
     public void sync_retail_order(){
-        mSyncManagement.sync_retail_order();
+        mSyncManagement.sync_retail_order(false);
+    }
+
+    public void reuplaod_retail_order(){
+        mSyncManagement.sync_retail_order(true);
     }
 
     public void start_sync(boolean b){

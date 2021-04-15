@@ -16,7 +16,7 @@ import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.activity.mobile.MobileCashierActivity;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.MessageID;
+import com.wyc.cloudapp.constants.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 
 public class PayMethodDialogImp extends AbstractPayDialog implements MobileCashierActivity.ScanCallback {

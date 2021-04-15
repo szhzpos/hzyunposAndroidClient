@@ -24,6 +24,7 @@ import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
 import com.wyc.cloudapp.adapter.RefundDialogAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.constants.RefundOrderStatus;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -563,11 +564,11 @@ public final class RefundDialog extends AbstractDialogMainActivity {
                             final ContentValues values = new ContentValues();
                             switch (retJson.getString("status")){
                                 case "n":
-                                    values.put("upload_status",3);
+                                    values.put("upload_status", RefundOrderStatus.UPLOAD_ERROR);
                                     err.append(retJson.getString("info"));
                                     break;
                                 case "y":
-                                    values.put("upload_status",2);
+                                    values.put("upload_status",RefundOrderStatus.UPLOADED);
                                     break;
                             }
                             values.put("upload_time",System.currentTimeMillis() / 1000);

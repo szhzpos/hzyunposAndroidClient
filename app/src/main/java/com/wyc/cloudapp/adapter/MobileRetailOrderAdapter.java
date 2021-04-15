@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.constants.RetailOrderStatus;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.orderDialog.AbstractMobileQueryDialog;
@@ -28,7 +30,7 @@ public final class MobileRetailOrderAdapter extends AbstractQueryDataAdapter<Mob
     }
 
     static class MyViewHolder extends AbstractQueryDataAdapter.SuperViewHolder {
-        TextView  order_code,goods_num,order_amt,order_status,cas_name,oper_time,m_vip_label,m_retail_order_detail,m_refund_retail_order;
+        TextView  order_code,goods_num,order_amt,order_status,cas_name,oper_time,m_vip_label,m_retail_order_detail,m_action_retail_order;
         MyViewHolder(View itemView) {
             super(itemView);
             order_code = itemView.findViewById(R.id.order_code);
@@ -40,7 +42,7 @@ public final class MobileRetailOrderAdapter extends AbstractQueryDataAdapter<Mob
             m_vip_label = itemView.findViewById(R.id.m_vip_label);
 
             m_retail_order_detail = itemView.findViewById(R.id.m_retail_order_detail);
-            m_refund_retail_order = itemView.findViewById(R.id.m_refund_retail_order);
+            m_action_retail_order = itemView.findViewById(R.id.m_action_retail_order);
         }
     }
     @NonNull
@@ -83,6 +85,11 @@ public final class MobileRetailOrderAdapter extends AbstractQueryDataAdapter<Mob
                 }
                 holder.m_vip_label.setText(vip_name);
 
+                int upload_status = order_info.getIntValue("upload_status");
+                if (upload_status == RetailOrderStatus.UPLOAD_ERROR){
+                    holder.m_action_retail_order.setText(R.string.reupload_sz);
+                }
+
                 holder.itemView.setOnTouchListener(touchListener);
             }
         }
@@ -102,15 +109,17 @@ public final class MobileRetailOrderAdapter extends AbstractQueryDataAdapter<Mob
     private final View.OnTouchListener touchListener = (v, event) -> {
         if (event.getAction() == MotionEvent.ACTION_DOWN){
             setCurrentItemViewAndIndex(v);
-            final TextView details_btn = v.findViewById(R.id.m_retail_order_detail),refund_btn = v.findViewById(R.id.m_refund_retail_order);
+            final TextView details_btn = v.findViewById(R.id.m_retail_order_detail),refund_btn = v.findViewById(R.id.m_action_retail_order);
 
             final JSONObject curr = getCurrentOrder();
             if (isClickView(details_btn,event.getX(),event.getY())){
                 final MobileRetailOrderDetailsDialog retailOrderDetailsDialog = new MobileRetailOrderDetailsDialog(mContext,curr);
                 retailOrderDetailsDialog.show();
             }else if (isClickView(refund_btn,event.getX(),event.getY())){
-                int order_status = Utils.getNotKeyAsNumberDefault(curr,"order_status",-1);
-                if (order_status == 2 || order_status == 88){
+                int order_status = Utils.getNotKeyAsNumberDefault(curr,"order_status",-1),upload_status = Utils.getNotKeyAsNumberDefault(curr,"upload_status",-1);
+                if (upload_status == RetailOrderStatus.UPLOAD_ERROR){
+                    CustomApplication.self().reuplaod_retail_order();
+                }else if (order_status == 2 || order_status == 88){
                     refund_btn.post(()->{
                         if (RefundDialog.verifyRefundPermission(mContext)){
                             if (mContext.getSingleRefundStatus())mContext.setSingleRefundStatus(false);
@@ -140,29 +149,7 @@ public final class MobileRetailOrderAdapter extends AbstractQueryDataAdapter<Mob
     @Override
     public void setDatas(final String where_sql){
         final StringBuilder err = new StringBuilder();
-        final String sql = "SELECT \n" +
-                "       a.remark," +
-                "       a.card_code," +
-                "       a.name vip_name," +
-                "       a.mobile," +
-                "       a.transfer_status s_e_status,\n" +
-                "       case a.transfer_status when 1 then '未交班' when 2 then '已交班' else '其他' end s_e_status_name,\n" +
-                "       a.upload_status,\n" +
-                "       case a.upload_status when 1 then '未上传' when 2 then '已上传' else '其他' end upload_status_name,\n" +
-                "       a.pay_status,\n" +
-                "       case a.pay_status when 1 then '未支付' when 2 then '已支付' when 3 then '支付中' else '其他' end pay_status_name,\n" +
-                "       a.order_status,\n" +
-                "       case a.order_status when 1 then '未付款' when 2 then '已付款' when 3 then '已取消' when 4 then '已退货' when 88 then '部分退货' else '其他'  end order_status_name,\n" +
-                "       datetime(a.addtime, 'unixepoch', 'localtime') oper_time,\n" +
-                "       a.remark,\n" +
-                "       a.cashier_id,\n" +
-                "       b.cas_name,\n" +
-                "       a.discount_price reality_amt,\n" +
-                "       a.total order_amt,\n" +
-                "       a.order_code,\n" +
-                "       ifnull(c.sc_name,'') sc_name,\n" +
-                "       (select sum(c.xnum) from retail_order_goods c where c.order_code = a.order_code) xnum\n" +
-                "  FROM retail_order a left join cashier_info b on a.cashier_id = b.cas_id left join  sales_info c on a.sc_ids = c.sc_id " + where_sql + " order by a.addtime desc";
+        final String sql = RetailOrderAdapter.getQuery() + where_sql + " order by a.addtime desc";
 
         Logger.d("sql:%s",sql);
         mDatas = SQLiteHelper.getListToJson(sql,err);

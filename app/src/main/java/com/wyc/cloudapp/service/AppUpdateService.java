@@ -18,7 +18,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.MessageID;
+import com.wyc.cloudapp.constants.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;

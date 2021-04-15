@@ -1,10 +1,9 @@
 package com.wyc.cloudapp.application;
 
-import android.os.Handler;
 import android.os.Looper;
 
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.MessageID;
+import com.wyc.cloudapp.constants.MessageID;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -84,9 +83,9 @@ class SyncManagement extends Thread {
         mSyncHandler.sync_order_info();
     }
 
-    void sync_retail_order(){
+    void sync_retail_order(boolean reupload){
         acquireHandler();
-        mSyncHandler.startUploadRetailOrder();
+        mSyncHandler.startUploadRetailOrder(reupload);
     }
 
     void sync_transfer_order(){

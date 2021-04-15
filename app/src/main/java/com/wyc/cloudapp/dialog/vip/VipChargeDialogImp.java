@@ -26,7 +26,7 @@ import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.pay.AbstractPayDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
-import com.wyc.cloudapp.utils.MessageID;
+import com.wyc.cloudapp.constants.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
