@@ -148,16 +148,23 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
     protected abstract JSONObject generateAuditCondition();
     protected abstract String getOrderIDKey();
 
-
     @CallSuper
     protected JSONObject generateUploadCondition(){
         final JSONObject upload_obj = new JSONObject();
         upload_obj.put("pt_user_id",getPtUserId());
         upload_obj.put("gs_id", Utils.getViewTagValue(mSupplierTV,""));
-        upload_obj.put("cg_pt_user_id",Utils.getViewTagValue(mSaleOperatorTv,""));
+        upload_obj.put(getSaleOperatorKey(),Utils.getViewTagValue(mSaleOperatorTv,""));
         upload_obj.put("remark",mRemarkEt.getText().toString());
 
         return upload_obj;
+    }
+
+    protected String getSaleOperatorKey(){
+        return "cg_pt_user_id";
+    }
+
+    protected String getSaleOperatorNameKey(){
+        return "cg_user_cname";
     }
 
     @CallSuper
@@ -171,6 +178,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
         initOrderDetailsList();
         initFooterView();
         initFunctionBtn();
+
     }
 
     protected final boolean isAudit(){
@@ -213,7 +221,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
 
         final JSONObject object = mOrderInfo;
         setView(mSupplierTV, Utils.getNullStringAsEmpty(object, "gs_id"), Utils.getNullStringAsEmpty(object, "gs_name"));
-        setView(mSaleOperatorTv, Utils.getNullStringAsEmpty(object, "cg_pt_user_id"), Utils.getNullStringAsEmpty(object, "cg_user_cname"));
+        setView(mSaleOperatorTv, Utils.getNullStringAsEmpty(object, getSaleOperatorKey()), Utils.getNullStringAsEmpty(object, getSaleOperatorNameKey()));
         setView(mDateTv, "", Utils.getNullStringAsEmpty(object, "add_datetime"));
         setView(mRemarkEt, "", Utils.getNullStringAsEmpty(object, "remark"));
 
@@ -221,9 +229,11 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
 
         mAdapter.setDataForArray(Utils.getNullObjectAsEmptyJsonArray(mOrderInfo,"goods_list"));
     }
-    protected void setView(@NonNull final TextView view, final String id, final String name){
-        view.setTag(id);
-        view.setText(name);
+    protected void setView(final TextView view, final String id, final String name){
+        if (view != null){
+            view.setTag(id);
+            view.setText(name);
+        }
     }
 
     private boolean isShowOrder(){
@@ -446,18 +456,19 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
 
     private void initSupplier(){//初始化供应商
         final TextView business_supplier_tv = findViewById(R.id.m_business_supplier_tv);
-        final String sup = getString(R.string.supplier_colon_sz);
-        business_supplier_tv.setOnClickListener(v -> v.post(()->{
-            final TreeListDialog treeListDialog = new TreeListDialog(this,sup.substring(0,sup.length() - 1));
-            treeListDialog.setDatas(mSupplierList,null,true);
-            if (treeListDialog.exec() == 1){
-                final JSONObject object = treeListDialog.getSingleContent();
-                business_supplier_tv.setText(object.getString("item_name"));
-                business_supplier_tv.setTag(object.getString("item_id"));
-            }
-        }));
-
-        mSupplierTV = business_supplier_tv;
+        if (null != business_supplier_tv){
+            final String sup = getString(R.string.supplier_colon_sz);
+            business_supplier_tv.setOnClickListener(v -> v.post(()->{
+                final TreeListDialog treeListDialog = new TreeListDialog(this,sup.substring(0,sup.length() - 1));
+                treeListDialog.setDatas(mSupplierList,null,true);
+                if (treeListDialog.exec() == 1){
+                    final JSONObject object = treeListDialog.getSingleContent();
+                    business_supplier_tv.setText(object.getString("item_name"));
+                    business_supplier_tv.setTag(object.getString("item_id"));
+                }
+            }));
+            mSupplierTV = business_supplier_tv;
+        }
     }
 
     private void initStores(){
@@ -594,7 +605,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
             parameterObj.put("appid",getAppId());
             parameterObj.put("stores_id",getStoreId());
             parameterObj.put("pt_user_id",getPtUserId());
-            parameterObj.put(condition.getString("id_name"),id);
+            parameterObj.put(getOrderIDKey(),id);
 
             final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,getString(R.string.hints_query_data_sz));
             CustomApplication.execute(()->{

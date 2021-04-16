@@ -38,7 +38,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
-        <activity android:name=".activity.mobile.business.MobileVipManageActivity" android:windowSoftInputMode="adjustResize|stateUnchanged" />
+        <activity android:name=".activity.mobile.business.MobileOtherWarehouseOrderActivity" />
+        <activity android:name=".activity.mobile.business.MobileOtherWarehouseOrderActivity$MobileAddOtherWarehouseOrderActivity" />
+        <activity
+            android:name=".activity.mobile.business.MobileVipManageActivity"
+            android:windowSoftInputMode="adjustResize|stateUnchanged" />
         <activity android:name=".activity.mobile.business.MobileSelectGoodsActivity" />
         <activity android:name=".activity.mobile.report.MobileCashierTransfer" />
         <activity android:name=".activity.mobile.report.MobileCashierTransfer$TransferDetailsActivity" />

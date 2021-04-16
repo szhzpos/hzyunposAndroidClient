@@ -578,4 +578,7 @@
     <!--买满赠方案选择对话框-->
     <string name="rule_name">促销方案名称</string>
     <string name="add_price">加价</string>
+
+    <!--其他出入库类型 -->
+    <string name="out_in_warehouse">出入库类型：</string>
 </resources>

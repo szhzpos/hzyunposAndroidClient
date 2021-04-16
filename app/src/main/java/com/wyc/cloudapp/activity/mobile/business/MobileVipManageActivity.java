@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Looper;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -201,7 +202,7 @@ public class MobileVipManageActivity extends AbstractMobileActivity {
         public void onClick(View v) {
             final JSONObject object = Utils.getViewTagValue(v);
             final VipDetailInfoWindow detailInfoDialog = new VipDetailInfoWindow(mContext,object);
-            detailInfoDialog.showAsDropDown(v);
+            detailInfoDialog.showAtLocation(mContext.getWindow().getDecorView(), Gravity.CENTER,0,0);
         }
 
         static class MyViewHolder extends AbstractDataAdapter.SuperViewHolder {
@@ -314,7 +315,7 @@ public class MobileVipManageActivity extends AbstractMobileActivity {
         @Override
         public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             final View itemView = View.inflate(mContext, R.layout.vip_type_info_layout, null);
-            itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) mContext.getResources().getDimension(R.dimen.height_50)));
+            itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) mContext.getResources().getDimension(R.dimen.height_40)));
             itemView.setOnClickListener(this);
             return new MyViewHolder(itemView);
         }

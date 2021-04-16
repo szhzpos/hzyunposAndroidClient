@@ -100,7 +100,6 @@ public final class MobileWarehouseOrderActivity extends AbstractMobileBusinessOr
         protected JSONObject generateQueryCondition() {
             final JSONObject condition = new JSONObject();
             condition.put("api","/api/rkd/xinfo");
-            condition.put("id_name","rkd_id");
             return condition;
         }
 

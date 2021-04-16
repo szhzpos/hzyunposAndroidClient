@@ -47,7 +47,6 @@ public class MobilePurchaseOrderActivity extends AbstractMobileBusinessOrderActi
         protected JSONObject generateQueryCondition() {
             final JSONObject condition = new JSONObject();
             condition.put("api","/api/cgd/xinfo");
-            condition.put("id_name","cgd_id");
             return condition;
         }
 
@@ -72,7 +71,7 @@ public class MobilePurchaseOrderActivity extends AbstractMobileBusinessOrderActi
             final JSONObject upload_obj = super.generateUploadCondition(),object = new JSONObject();
 
             upload_obj.put("cgd_code",mOrderCodeTv.getText().toString());
-            upload_obj.put("cgd_id",Utils.getNullStringAsEmpty(mOrderInfo,"cgd_id"));
+            upload_obj.put("cgd_id",Utils.getNullStringAsEmpty(mOrderInfo,getOrderIDKey()));
             upload_obj.put("total",Double.parseDouble(mSumAmtTv.getText().toString()));
             upload_obj.put("validity_time",getOrderValidityDate());
             upload_obj.put("goods_list_json",getGoodsList());

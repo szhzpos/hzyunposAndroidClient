@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:padding="@dimen/margin_5">
+
+    <TextView
+        android:id="@+id/order_code_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CG2021022200001"
+        android:textColor="@color/black"
+        android:textSize="@dimen/font_size_18"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/wh_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_5"
+        android:text="@string/warehouse_sz"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toStartOf="@id/order_code_tv"
+        app:layout_constraintTop_toBottomOf="@id/order_code_tv" />
+
+    <TextView
+        android:id="@+id/wh_name_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="总仓"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toEndOf="@id/wh_label"
+        app:layout_constraintTop_toTopOf="@id/wh_label" />
+
+    <TextView
+        android:id="@+id/audit_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/audited_sz"
+        android:textColor="@color/mobile_order_status"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/amt_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/currency_symbol_sz"
+        android:textColor="@color/orange_1"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintEnd_toStartOf="@id/amt_tv"
+        app:layout_constraintTop_toTopOf="@id/amt_tv" />
+
+    <TextView
+        android:id="@+id/amt_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="888"
+        android:textColor="@color/orange_1"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/date_tv" />
+
+    <TextView
+        android:id="@+id/date_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_5"
+        android:text="2021-02-22 14:45:46"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/wh_label" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

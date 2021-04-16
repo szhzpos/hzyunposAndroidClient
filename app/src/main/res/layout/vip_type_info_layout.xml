@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="@dimen/size_95"
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
@@ -21,7 +21,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
+        android:lines="1"
+        android:paddingStart="@dimen/margin_5"
+        android:paddingEnd="@dimen/margin_5"
+        android:singleLine="false"
         android:textAlignment="center"
         android:textColor="@color/blue"
-        android:textSize="@dimen/font_size_18" />
+        android:textSize="@dimen/font_size_14" />
 </LinearLayout>

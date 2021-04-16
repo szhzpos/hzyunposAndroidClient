@@ -197,12 +197,16 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
                         if (HttpUtils.checkBusinessSuccess(info)){
                             final JSONArray data = Utils.getNullObjectAsEmptyJsonArray(info,"data");
                             if (isFindSourceOrderId()){
+                                //采购入库单查询来源采购订货单时，如果rk_status==3 完全入库的情况从显示列表中删除
                                 for (int i = data.size()-1; i >=0; i--) {
                                     if (data.getJSONObject(i).getIntValue("rk_status") == 3){
                                         data.remove(i);
                                     }
                                 }
                             }
+
+                            Logger.d_json(data);
+
                             runOnUiThread(()-> mAdapter.setDataForArray(data));
                         }else {
                             throw new JSONException(info.getString("info"));

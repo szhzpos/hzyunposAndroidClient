@@ -53,6 +53,7 @@
     <dimen name="width_80">@dimen/size_80</dimen>
     <dimen name="width_328">@dimen/size_328</dimen>
     <dimen name="width_118">@dimen/size_118</dimen>
+    <dimen name="width_108">108dp</dimen>
     <dimen name="mobile_transfer_amt_width">148dp</dimen>
     <dimen name="width_208">@dimen/size_208</dimen>
     <dimen name="width_128">@dimen/size_128</dimen>

@@ -232,7 +232,7 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext,R.layout.drop_down_style);
 
         arrayAdapter.add("农历");
-        arrayAdapter.add("阴历");
+        arrayAdapter.add("新历");
 
         Spinner b_type = findViewById(R.id.birthday_type);
         b_type.setAdapter(arrayAdapter);

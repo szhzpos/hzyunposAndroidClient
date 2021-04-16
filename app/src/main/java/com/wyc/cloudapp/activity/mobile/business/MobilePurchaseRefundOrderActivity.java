@@ -99,7 +99,6 @@ public class MobilePurchaseRefundOrderActivity extends AbstractMobileBusinessOrd
         protected JSONObject generateQueryCondition() {
             final JSONObject condition = new JSONObject();
             condition.put("api","/api/thd/xinfo");
-            condition.put("id_name","cgd_id");
             return condition;
         }
 

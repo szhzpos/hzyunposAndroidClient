@@ -245,6 +245,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:drawableTop="@drawable/other_inventory"
+            android:tag="activity.mobile.business.MobileOtherWarehouseOrderActivity"
             android:text="@string/other_inventory_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"

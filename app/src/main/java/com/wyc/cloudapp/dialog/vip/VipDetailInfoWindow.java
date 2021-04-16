@@ -1,7 +1,10 @@
 package com.wyc.cloudapp.dialog.vip;
 
 import android.app.Activity;
+import android.graphics.Point;
 import android.os.Bundle;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
@@ -66,9 +69,16 @@ public class VipDetailInfoWindow extends PopupWindow {
     }
 
     @Override
-    public void showAsDropDown(View anchor) {
-        super.showAsDropDown(anchor);
+    public void showAtLocation(View anchor,int gravity,int x,int y) {
+        initWidth();
+        super.showAtLocation(anchor,gravity,x, y);
         setBackgroundAlpha(0.5f);
+    }
+    private void initWidth(){
+        final Display d = mContext.getDisplay(); // 获取屏幕宽、高用
+        final Point point = new Point();
+        d.getSize(point);
+        setWidth((int) (point.x * 0.8));
     }
 
     private void setBackgroundAlpha(float bgAlpha) {

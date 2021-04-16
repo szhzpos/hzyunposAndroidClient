@@ -9,6 +9,8 @@ import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.method.ReplacementTransformationMethod;
 import android.view.KeyEvent;
@@ -27,6 +29,7 @@ import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.decoration.GoodsInfoItemDecoration;
 import com.wyc.cloudapp.decoration.SuperItemDecoration;
@@ -224,7 +227,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileActivity {
         @Override
         public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             final View itemView = View.inflate(mContext, R.layout.goods_type_info_layout, null);
-            itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) mContext.getResources().getDimension(R.dimen.height_50)));
+            itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) mContext.getResources().getDimension(R.dimen.height_40)));
             itemView.setOnClickListener(this);
             return new MyViewHolder(itemView);
         }
@@ -311,7 +314,18 @@ public class MobileSelectGoodsActivity extends AbstractMobileActivity {
             if (mDatas != null){
                 final JSONObject goods_info = mDatas.getJSONObject(position);
                 final TextView goods_title = myViewHolder.goods_title;
-                myViewHolder.goods_img.setVisibility(View.GONE);
+
+                final String img_url = Utils.getNullStringAsEmpty(goods_info,"img_url");
+                if (!"".equals(img_url)){
+                    final String szImage = img_url.substring(img_url.lastIndexOf("/") + 1);
+                    CustomApplication.execute(()->{
+                        final Bitmap bitmap = BitmapFactory.decodeFile(CustomApplication.getGoodsImgSavePath() + szImage);
+                        myViewHolder.goods_img.post(()-> myViewHolder.goods_img.setImageBitmap(bitmap));
+                    });
+                }else{
+                    myViewHolder.goods_img.setImageDrawable(mContext.getDrawable(R.drawable.nodish));
+                }
+
                 myViewHolder.goods_id.setText(goods_info.getString("goods_id"));
                 myViewHolder.gp_id.setText(goods_info.getString("gp_id"));
                 myViewHolder.unit_name.setText(goods_info.getString("unit_name"));

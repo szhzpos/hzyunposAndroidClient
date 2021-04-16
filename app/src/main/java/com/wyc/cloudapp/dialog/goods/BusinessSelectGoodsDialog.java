@@ -301,9 +301,13 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
         mPriceEt.requestFocus();
         mPriceEt.post(()->mPriceEt.selectAll());
         mPriceEt.setText(String.valueOf(price));
-
-        mUnitTv.setTag(object.getString("stock_unit_id"));
-        mUnitTv.setText(object.getString("stock_unit_name"));
+        if (isModify){
+            mUnitTv.setTag(object.getString("unit_id"));
+            mUnitTv.setText(object.getString("unit_name"));
+        }else {
+            mUnitTv.setTag(object.getString("stock_unit_id"));
+            mUnitTv.setText(object.getString("stock_unit_name"));
+        }
     }
 
     public static boolean selectGoodsWithBarcodeId(final JSONObject object,final String barcode_id){

@@ -48,7 +48,7 @@ public abstract class MobileBaseOrderAdapter extends AbstractBusinessOrderDataAd
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = View.inflate(mContext, R.layout.mobile_purchase_order_content_layout, null);
+        View itemView = View.inflate(mContext, R.layout.mobile_business_order_content_layout, null);
         itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT));
         return new MyViewHolder(itemView);
     }
@@ -59,7 +59,7 @@ public abstract class MobileBaseOrderAdapter extends AbstractBusinessOrderDataAd
 
         holder.order_code_tv.setOnClickListener(this);
 
-        holder.gs_name_tv.setText(object.getString("gs_name"));
+        if (holder.gs_name_tv != null)holder.gs_name_tv.setText(object.getString("gs_name"));
         holder.wh_name_tv.setText(mContext.getStoreName());
         holder.audit_tv.setText("1".equals(object.getString("sh_status")) ? mContext.getString(R.string.unaudited_sz) : mContext.getString(R.string.audited_sz));
         holder.amt_tv.setText(String.format(Locale.CHINA,"%.2f", Utils.getNotKeyAsNumberDefault(object,"total",0.0)));
