@@ -116,6 +116,12 @@ public abstract class AbstractBusinessOrderDetailsDataAdapter<T extends Abstract
             notifyDataSetChanged();
         }
     }
+    public void deleteDetails(){
+        if (mDatas != null && 0 <= mCurrentItemIndex && mCurrentItemIndex < mDatas.size()){
+            mDatas.remove(mCurrentItemIndex);
+            notifyDataSetChanged();
+        }
+    }
     public int isExist(final JSONObject object){
         int size = 0;
         if (null == mDatas || (size = mDatas.size()) == 0 || null == object)return -1;

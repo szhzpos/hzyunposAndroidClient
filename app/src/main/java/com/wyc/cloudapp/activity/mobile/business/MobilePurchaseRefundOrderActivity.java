@@ -32,6 +32,11 @@ public class MobilePurchaseRefundOrderActivity extends AbstractMobileBusinessOrd
     }
 
     @Override
+    protected String getPermissionId() {
+        return "47";
+    }
+
+    @Override
     protected JSONObject generateQueryCondition() {
         final JSONObject condition = new JSONObject();
         condition.put("api","/api/thd/xlist");
@@ -96,7 +101,7 @@ public class MobilePurchaseRefundOrderActivity extends AbstractMobileBusinessOrd
         }
 
         @Override
-        protected JSONObject generateQueryCondition() {
+        protected JSONObject generateQueryDetailCondition() {
             final JSONObject condition = new JSONObject();
             condition.put("api","/api/thd/xinfo");
             return condition;

@@ -25,7 +25,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.mobile.business.AbstractMobileAddOrderActivity;
 import com.wyc.cloudapp.activity.mobile.business.MobileSelectGoodsActivity;
+import com.wyc.cloudapp.activity.mobile.business.MobileWholesaleBaseActivity;
+import com.wyc.cloudapp.constants.WholesalePriceType;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
@@ -53,6 +56,7 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
     private EditText mBarcodeEt,mNumEt,mPriceEt;
     private TextView mItemNoTv,mNameTv,mAmtTv,mUnitTv;
     private boolean isModify = false,hasSourceOrder = false;
+    private static int mPriceType = WholesalePriceType.BUYING_PRICE;
     public BusinessSelectGoodsDialog(@NonNull MainActivity context) {
         super(context, context.getString(R.string.scan_code_label));
     }
@@ -66,6 +70,9 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
             mContentObj = Utils.JsondeepCopy(object);
         }
         hasSourceOrder = source;
+        if (context instanceof MobileWholesaleBaseActivity){
+            mPriceType = ((MobileWholesaleBaseActivity)context).getCustomerPriceType();
+        }
     }
 
     @Override
@@ -262,7 +269,7 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
                         setCodeAndExit(0);
                     }else {
                         mContentObj = new JSONObject();
-                        if (selectGoodsWithBarcodeId(mContentObj,barcode_ids.getString(0))){
+                        if (selectGoodsWithBarcodeId(mContentObj,barcode_ids.getString(0),mPriceType)){
                             Logger.d_json(mContentObj.toString());
                             showGoods();
                         }else {
@@ -310,21 +317,46 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
         }
     }
 
-    public static boolean selectGoodsWithBarcodeId(final JSONObject object,final String barcode_id){
+    public static boolean selectGoodsWithBarcodeId(final JSONObject object,final String barcode_id,final int price_type){
+        String key;
+        switch (price_type){//1零售价，2优惠价，3配送价，4批发价，5参考进货价
+            case WholesalePriceType.RETAIL_PRICE:
+                key = "ps_price,cost_price,trade_price,buying_price,retail_price price";
+                break;
+            case WholesalePriceType.COST_PRICE:
+                key = "ps_price,cost_price price,trade_price,buying_price,retail_price";
+                break;
+            case WholesalePriceType.PS_PRICE:
+                key = "ps_price price,cost_price,trade_price,buying_price,retail_price";
+                break;
+            case WholesalePriceType.TRADE_PRICE:
+                key = "ps_price,cost_price,trade_price price,buying_price,retail_price";
+                break;
+            default:
+                key = "ps_price,cost_price,trade_price,buying_price price,retail_price";
+        }
+
         final String sql = "SELECT points_max_money,stock_unit_name,stock_unit_id,conversion,attr_code,\n" +
                 "       attr_name,attr_id,mnemonic_code,yh_price,tax_rate,category_id,barcode_status,\n" +
                 "       type,origin,brand,goods_status,shelf_life,metering_id,category_name,\n" +
-                "       specifi,unit_name,unit_id,ps_price,cost_price,trade_price,buying_price price,\n" +
-                "       retail_price,only_coding,goods_title,barcode,barcode_id,goods_id\n" +
+                "       specifi,unit_name,unit_id,"+ key +",only_coding,goods_title,barcode,barcode_id,goods_id\n" +
                 "  FROM barcode_info where barcode_id = '"+ barcode_id +"'";
 
         return  SQLiteHelper.execSql(object,sql);
     }
 
     private void initBtn(){
-        final Button ok_btn = findViewById(R.id.ok_btn),cancel_btn = findViewById(R.id.cancel_btn);
+        final Button ok_btn = findViewById(R.id.ok_btn),cancel_btn = findViewById(R.id.cancel_btn),del_btn = findViewById(R.id.del_btn);
         ok_btn.setOnClickListener(this);
         cancel_btn.setOnClickListener(this);
+
+        if (isModify && mContext instanceof AbstractMobileAddOrderActivity){
+            del_btn.setVisibility(View.VISIBLE);
+            del_btn.setOnClickListener(v -> {
+                ((AbstractMobileAddOrderActivity)mContext).deleteDetails();
+                dismiss();
+            });
+        }
     }
 
     @Override

@@ -23,6 +23,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:drawableEnd="@drawable/small_fold"
-        android:gravity="center_vertical" />
+        android:gravity="center_vertical"
+        android:textColor="@color/text_color" />
 
 </LinearLayout>

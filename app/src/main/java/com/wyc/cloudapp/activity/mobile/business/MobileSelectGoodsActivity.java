@@ -30,6 +30,7 @@ import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.constants.WholesalePriceType;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.decoration.GoodsInfoItemDecoration;
 import com.wyc.cloudapp.decoration.SuperItemDecoration;
@@ -44,6 +45,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileActivity {
     private CategoryAdapter mGoodsCategoryAdapter;
     private EditText mSearchContentEt;
     private static boolean isSelectMode = false;//true 选择商品模式
+    private static int mPriceType = WholesalePriceType.BUYING_PRICE;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +64,8 @@ public class MobileSelectGoodsActivity extends AbstractMobileActivity {
         if (intent != null){
             setMiddleText(intent.getStringExtra("title"));
             isSelectMode = intent.getBooleanExtra("isSel",false);
+            mPriceType = intent.getIntExtra("price_type",WholesalePriceType.BUYING_PRICE);
+            Logger.d("mPriceType:%d",mPriceType);
         }
         setRightText(getString(R.string.a_goods_sz));
         setRightListener(v -> {
@@ -333,9 +337,25 @@ public class MobileSelectGoodsActivity extends AbstractMobileActivity {
                 myViewHolder.barcode_id.setText(goods_info.getString("barcode_id"));
                 myViewHolder.barcode.setText(goods_info.getString("barcode"));
 
-                if (isSelectMode)
-                    myViewHolder.price.setText(goods_info.getString("price"));
-                else {
+                if (isSelectMode) {
+                    String key = "price";
+                    switch (mPriceType){//1零售价，2优惠价，3配送价，4批发价，5参考进货价
+                        case WholesalePriceType.RETAIL_PRICE:
+                            key = "retail_price";
+                            break;
+                        case WholesalePriceType.COST_PRICE:
+                            key = "cost_price";
+                            break;
+                        case WholesalePriceType.PS_PRICE:
+                            key = "ps_price";
+                            break;
+                        case WholesalePriceType.TRADE_PRICE:
+                            key = "trade_price";
+                            break;
+                        default:
+                    }
+                    myViewHolder.price.setText(goods_info.getString(key));
+                }else {
                     myViewHolder.price.setText(goods_info.getString("retail_price"));
                 }
 
@@ -354,17 +374,20 @@ public class MobileSelectGoodsActivity extends AbstractMobileActivity {
             }
         }
 
+        private final String common_sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(case type when 2 then only_coding else barcode end,'') barcode," +
+                "type,buying_price price,retail_price,cost_price,ps_price,trade_price,ifnull(img_url,'') img_url from barcode_info " +
+                "where (goods_status = 1 and barcode_status = 1) and ";
+
         private void setDatas(int id){
 
             final StringBuilder err = new StringBuilder();
             final String sql;
             if (-1 == id){
                 sql = "select gp_id,-1 goods_id,ifnull(gp_title,'') goods_title,'' unit_id,ifnull(unit_name,'') unit_name,\n" +
-                        " -1  barcode_id,ifnull(gp_code,'') barcode,type,gp_price price,gp_price retail_price,ifnull(img_url,'') img_url from goods_group \n" +
+                        " -1  barcode_id,ifnull(gp_code,'') barcode,type,gp_price price,gp_price retail_price,0 cost_price,0 ps_price,0 trade_price,ifnull(img_url,'') img_url from goods_group \n" +
                         "where status = 1";
             }else{
-                sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(case type when 2 then only_coding else barcode end,'') barcode," +
-                        "type,buying_price price,retail_price,ifnull(img_url,'') img_url from barcode_info where (goods_status = 1 and barcode_status = 1) and category_id in (select category_id from shop_category where path like '%" + id +"%')";
+                sql = common_sql + " category_id in (select category_id from shop_category where path like '%" + id +"%')";
             }
 
             mDatas = SQLiteHelper.getListToJson(sql,0,0,false,err);
@@ -377,14 +400,11 @@ public class MobileSelectGoodsActivity extends AbstractMobileActivity {
 
         public void fuzzy_search_goods(@NonNull final String search_content,boolean autoSelect){
             final StringBuilder err = new StringBuilder();
-            final ContentValues barcodeRuleObj = new ContentValues();
-            String sql_where,full_sql,sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(case type when 2 then only_coding else barcode end,'') barcode,only_coding,type,retail_price price\n" +
-                    ",ifnull(img_url,'') img_url from barcode_info where (goods_status = 1 and barcode_status = 1) and %1";
-
+            String sql_where,full_sql;
 
             sql_where = "(barcode like '%" + search_content + "%' or only_coding like '%" + search_content +"%' or mnemonic_code like '%" + search_content +"%')";
-            full_sql = sql.replace("%1",sql_where) + " UNION select gp_id,-1 goods_id,ifnull(gp_title,'') goods_title,'' unit_id,ifnull(unit_name,'') unit_name,\n" +
-                    "-1 barcode_id,ifnull(gp_code,'') barcode,-1 only_coding,type,gp_price price,ifnull(img_url,'') img_url from goods_group \n" +
+            full_sql = common_sql + sql_where + " UNION select gp_id,-1 goods_id,ifnull(gp_title,'') goods_title,'' unit_id,ifnull(unit_name,'') unit_name,\n" +
+                    "-1 barcode_id,ifnull(gp_code,'') barcode,-1 only_coding,type,gp_price price,0 cost_price,0 ps_price,0 trade_price,ifnull(img_url,'') img_url from goods_group \n" +
                     "where status = '1' and " + sql_where;
 
             final JSONArray array  = SQLiteHelper.getListToJson(full_sql,0,0,false,err);

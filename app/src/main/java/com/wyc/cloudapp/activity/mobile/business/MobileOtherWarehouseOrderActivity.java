@@ -13,7 +13,7 @@ import com.wyc.cloudapp.adapter.business.MobileOtherWarehouseOrderAdapter;
 import com.wyc.cloudapp.adapter.business.MobileOtherWarehouseOrderDetailsAdapter;
 import com.wyc.cloudapp.dialog.TreeListDialog;
 import com.wyc.cloudapp.utils.Utils;
-
+/*其他出入库单*/
 public final class MobileOtherWarehouseOrderActivity extends AbstractMobileBusinessOrderActivity {
 
     @Override
@@ -31,6 +31,11 @@ public final class MobileOtherWarehouseOrderActivity extends AbstractMobileBusin
     @Override
     public Class<?> jumpAddTarget() {
         return MobileAddOtherWarehouseOrderActivity.class;
+    }
+
+    @Override
+    protected String getPermissionId() {
+        return "12";
     }
 
     public static final class MobileAddOtherWarehouseOrderActivity extends AbstractMobileAddOrderActivity{
@@ -130,7 +135,7 @@ public final class MobileOtherWarehouseOrderActivity extends AbstractMobileBusin
         }
 
         @Override
-        protected JSONObject generateQueryCondition() {
+        protected JSONObject generateQueryDetailCondition() {
             final JSONObject condition = new JSONObject();
             condition.put("api","/api/bgd/xinfo");
             return condition;

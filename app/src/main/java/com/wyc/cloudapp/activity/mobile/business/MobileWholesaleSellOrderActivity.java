@@ -7,11 +7,16 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
 import com.wyc.cloudapp.adapter.business.MobilePurchaseOrderAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
-
+/*批发销售单*/
 public class MobileWholesaleSellOrderActivity extends AbstractMobileBusinessOrderActivity {
     @Override
     protected MobilePurchaseOrderAdapter getAdapter() {
         return null;
+    }
+
+    @Override
+    protected String getPermissionId() {
+        return "41";
     }
 
     @Override
@@ -32,7 +37,7 @@ public class MobileWholesaleSellOrderActivity extends AbstractMobileBusinessOrde
         }
 
         @Override
-        protected JSONObject generateQueryCondition() {
+        protected JSONObject generateQueryDetailCondition() {
             return null;
         }
 

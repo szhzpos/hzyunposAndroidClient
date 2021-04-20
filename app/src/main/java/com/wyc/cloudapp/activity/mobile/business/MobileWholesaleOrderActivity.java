@@ -1,22 +1,40 @@
 package com.wyc.cloudapp.activity.mobile.business;
 
 import android.os.Bundle;
+import android.widget.TextView;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
-import com.wyc.cloudapp.adapter.business.MobilePurchaseOrderAdapter;
+import com.wyc.cloudapp.adapter.business.MobileAddWholesaleOrderDetailAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.business.MobileWholesaleOrderAdapter;
+import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.TreeListDialog;
+import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.Utils;
+import com.wyc.cloudapp.utils.http.HttpRequest;
+import com.wyc.cloudapp.utils.http.HttpUtils;
 
+/*批发订货单*/
 public final class MobileWholesaleOrderActivity extends AbstractMobileBusinessOrderActivity {
     @Override
-    protected MobilePurchaseOrderAdapter getAdapter() {
-        return null;
+    protected MobileWholesaleOrderAdapter getAdapter() {
+        return new MobileWholesaleOrderAdapter(this);
     }
 
     @Override
     protected JSONObject generateQueryCondition() {
-        return null;
+        final JSONObject condition = new JSONObject();
+        condition.put("api","/api/pfdhd/xlist");
+        return condition;
+    }
+
+    @Override
+    protected String getPermissionId() {
+        return "39";
     }
 
     @Override
@@ -24,46 +42,83 @@ public final class MobileWholesaleOrderActivity extends AbstractMobileBusinessOr
         return MobileAddWholesaleOrderActivity.class;
     }
 
-    public static final class MobileAddWholesaleOrderActivity extends AbstractMobileAddOrderActivity {
+    public static final class MobileAddWholesaleOrderActivity extends MobileWholesaleBaseActivity {
 
         @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-        }
-
-        @Override
-        protected JSONObject generateQueryCondition() {
-            return null;
+        protected JSONObject generateQueryDetailCondition() {
+            final JSONObject condition = new JSONObject();
+            condition.put("api","/api/pfdhd/xinfo");
+            return condition;
         }
 
         @Override
         protected void showOrder() {
             super.showOrder();
+            setView(mDateTv, "",Utils.formatDataWithTimestamp(mOrderInfo.getLongValue("addtime") * 1000));
+            setView(mOrderCodeTv, "",Utils.getNullStringAsEmpty(mOrderInfo,"order_code"));
         }
 
         @Override
         protected AbstractBusinessOrderDetailsDataAdapter<? extends AbstractDataAdapter.SuperViewHolder> getAdapter() {
-            return null;
+            return new MobileAddWholesaleOrderDetailAdapter(this);
+        }
+
+        @Override
+        protected String getSaleOperatorKey() {
+            return "js_pt_user_id";
+        }
+        @Override
+        protected String getSaleOperatorNameKey() {
+            return "js_pt_user_name";
         }
 
         @Override
         protected String generateOrderCodePrefix() {
-            return null;
+            return "PD";
         }
 
         @Override
         protected JSONObject generateUploadCondition() {
-            return null;
+            final JSONObject upload_obj = super.generateUploadCondition(),object = new JSONObject();
+            upload_obj.remove("gs_id");
+
+            upload_obj.put("order_code",mOrderCodeTv.getText().toString());
+            upload_obj.put("order_id", Utils.getNullStringAsEmpty(mOrderInfo,getOrderIDKey()));
+            upload_obj.put("c_s_id",getCustomerId());
+            upload_obj.put("goods_list_json",getGoodsList());
+
+            object.put("api","/api/pfdhd/add");
+            object.put("upload_obj",upload_obj);
+            return object;
+        }
+
+        private JSONArray getGoodsList(){
+            final JSONArray array = getOrderDetails(),data = new JSONArray();
+
+            for (int i = 0,size = array.size();i < size;i ++){
+                final JSONObject object = new JSONObject(),old_obj = array.getJSONObject(i);
+                object.put("xnum",old_obj.getDoubleValue("xnum"));
+                object.put("price",old_obj.getDoubleValue("price"));
+                object.put("xnote","");
+                object.put("barcode_id",old_obj.getString("barcode_id"));
+                object.put("goods_id",old_obj.getString("goods_id"));
+                object.put("conversion",old_obj.getString("conversion"));
+                data.add(object);
+            }
+
+            return data;
         }
 
         @Override
         protected JSONObject generateAuditCondition() {
-            return null;
+            final JSONObject condition = new JSONObject();
+            condition.put("api","/api/pfdhd/sh");
+            return condition;
         }
 
         @Override
         protected String getOrderIDKey() {
-            return null;
+            return "order_id";
         }
 
         @Override

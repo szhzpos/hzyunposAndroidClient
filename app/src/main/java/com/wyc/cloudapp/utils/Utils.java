@@ -687,4 +687,8 @@ public final class Utils {
         return sz != null && !sz.isEmpty();
     }
 
+    public static String formatDataWithTimestamp(long t){
+        return new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(t );
+    }
+
 }

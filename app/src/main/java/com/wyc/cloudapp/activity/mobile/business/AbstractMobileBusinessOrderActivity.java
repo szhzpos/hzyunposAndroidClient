@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -47,6 +48,13 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //验证权限
+        if (!verifyPermission()){
+            finish();
+            return;
+        }
+
         mParameterObj = new JSONObject();
 
         initQueryTimeBtn();
@@ -60,6 +68,13 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
     protected abstract AbstractDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> getAdapter();
     protected abstract JSONObject generateQueryCondition();
     public abstract Class<?> jumpAddTarget();
+    protected abstract String getPermissionId();
+
+    private boolean verifyPermission(){
+        boolean code = verifyPermissions(getPermissionId(),null,false);
+        if (!code) Toast.makeText(this,"当前操作员没有此功能权限!",Toast.LENGTH_LONG).show();
+        return code;
+    }
 
     @Override
     protected int getContentLayoutId() {

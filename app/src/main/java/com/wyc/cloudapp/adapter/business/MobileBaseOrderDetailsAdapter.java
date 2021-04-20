@@ -62,7 +62,7 @@ public class MobileBaseOrderDetailsAdapter extends AbstractBusinessOrderDetailsD
         holder.barcode_tv.setText(object.getString("barcode"));
         holder.name_tv.setText(object.getString("goods_title"));
 
-        double num = Utils.getNotKeyAsNumberDefault(object, "xnum", 0.0), price = Utils.getNotKeyAsNumberDefault(object, "price", 0.0);
+        double num = Utils.getNotKeyAsNumberDefault(object, "xnum", 0.0), price = Utils.getNotKeyAsNumberDefault(object, getPriceKey(), 0.0);
         holder.num_tv.setText(String.format(Locale.CHINA, "%.2f", num));
         holder.price_tv.setText(String.format(Locale.CHINA, "%.2f/%s", price, object.getString("unit_name")));
         holder.amt_tv.setText(String.format(Locale.CHINA, "￥%.2f", price * num));

@@ -30,6 +30,10 @@ public class MobilePurchaseOrderActivity extends AbstractMobileBusinessOrderActi
         condition.put("api","/api/cgd/xlist");
         return condition;
     }
+    @Override
+    protected String getPermissionId() {
+        return "10";
+    }
 
     @Override
     public Class<?> jumpAddTarget() {
@@ -44,7 +48,7 @@ public class MobilePurchaseOrderActivity extends AbstractMobileBusinessOrderActi
         }
 
         @Override
-        protected JSONObject generateQueryCondition() {
+        protected JSONObject generateQueryDetailCondition() {
             final JSONObject condition = new JSONObject();
             condition.put("api","/api/cgd/xinfo");
             return condition;

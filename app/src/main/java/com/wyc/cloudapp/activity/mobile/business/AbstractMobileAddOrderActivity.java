@@ -24,6 +24,7 @@ import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.constants.WholesalePriceType;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
@@ -61,7 +62,6 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
         initTitle();
         initView();
 
-        getSupplier();
         CustomApplication.runInMainThread(this::queryData);
     }
 
@@ -91,7 +91,13 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                     final String barcode_id = data.getStringExtra("barcode_id");
                     Logger.d("barcode_id:%s",barcode_id);
                     final JSONObject object = new JSONObject();
-                    if (BusinessSelectGoodsDialog.selectGoodsWithBarcodeId(object,barcode_id)){
+
+                    int price_type = WholesalePriceType.BUYING_PRICE;
+                    if (this instanceof MobileWholesaleBaseActivity){
+                        price_type = ((MobileWholesaleBaseActivity)this).getCustomerPriceType();
+                    }
+
+                    if (BusinessSelectGoodsDialog.selectGoodsWithBarcodeId(object,barcode_id,price_type)){
                         addGoodsDetails(object,false);
                     }else {
                         MyDialog.ToastMessage(object.getString("info"),this,getWindow());
@@ -142,7 +148,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
         }
     }
 
-    protected abstract JSONObject generateQueryCondition();
+    protected abstract JSONObject generateQueryDetailCondition();
     protected abstract AbstractBusinessOrderDetailsDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> getAdapter();
     protected abstract String generateOrderCodePrefix();
     protected abstract JSONObject generateAuditCondition();
@@ -357,9 +363,13 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                     generateOrderCode();
                 }
             }else if (id == R.id.m_pick_goods_btn){
-                final Intent intent = new Intent(AbstractMobileAddOrderActivity.this, MobileSelectGoodsActivity.class);
+                AbstractMobileAddOrderActivity activity = AbstractMobileAddOrderActivity.this;
+                final Intent intent = new Intent(activity, MobileSelectGoodsActivity.class);
                 intent.putExtra("title",getString(R.string.select_goods_label));
                 intent.putExtra("isSel",true);
+                if (activity instanceof MobileWholesaleBaseActivity){
+                    intent.putExtra("price_type",((MobileWholesaleBaseActivity)activity).getCustomerPriceType());
+                }
                 startActivityForResult(intent, MobileSelectGoodsActivity.SELECT_GOODS_CODE);
             }else if (id == R.id.m_business_scan_btn){
                 final BusinessSelectGoodsDialog dialog = new BusinessSelectGoodsDialog(AbstractMobileAddOrderActivity.this);
@@ -468,6 +478,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                 }
             }));
             mSupplierTV = business_supplier_tv;
+            getSupplier();
         }
     }
 
@@ -580,6 +591,12 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
         }
     }
 
+    public void deleteDetails(){
+        if (mAdapter != null){
+            mAdapter.deleteDetails();
+        }
+    }
+
     private void initFooterView(){
         mSumNumTv = findViewById(R.id.business_sum_num_tv);
         mSumAmtTv = findViewById(R.id.business_sum_amt_tv);
@@ -599,7 +616,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
     }
 
     private void query(final String id){
-        final JSONObject condition = generateQueryCondition();
+        final JSONObject condition = generateQueryDetailCondition();
         if (null != condition){
             final JSONObject parameterObj = new JSONObject();
             parameterObj.put("appid",getAppId());

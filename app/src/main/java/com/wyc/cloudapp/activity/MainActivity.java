@@ -99,6 +99,12 @@ public class MainActivity extends BaseActivity {
     public boolean verifyPermissions(final String per_id,final String requested_cas_code){
         return verifyPermissions(per_id,requested_cas_code,true);
     }
+
+    /*
+    *@param per_id 权限编号
+    *@param requested_cas_code 授权操作员编号。当当前操作员没有权限时可以通过此参数获取其他操作员的权限
+    *@param isShow 是否显示授权界面
+    * */
     public boolean verifyPermissions(final String per_id,final String requested_cas_code,boolean isShow){
         boolean code = false;
         final JSONObject mCashierInfo = mApplication.getCashierInfo(),mStoreInfo = mApplication.getStoreInfo();

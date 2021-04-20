@@ -173,7 +173,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:drawableTop="@drawable/wholesale"
-            android:tag="activity.mobile.business.MobileWholesaleOrderActivity--"
+            android:tag="activity.mobile.business.MobileWholesaleOrderActivity"
             android:text="@string/wholesale_order_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"

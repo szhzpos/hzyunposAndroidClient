@@ -23,7 +23,7 @@ import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
 
 import java.util.Locale;
-
+/*采购入库单*/
 public final class MobileWarehouseOrderActivity extends AbstractMobileBusinessOrderActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +33,12 @@ public final class MobileWarehouseOrderActivity extends AbstractMobileBusinessOr
     protected MobileWarehouseOrderAdapter getAdapter() {
         return new MobileWarehouseOrderAdapter(this);
     }
+
+    @Override
+    protected String getPermissionId() {
+        return "11";
+    }
+
     @Override
     protected JSONObject generateQueryCondition() {
         final JSONObject condition = new JSONObject();
@@ -97,7 +103,7 @@ public final class MobileWarehouseOrderActivity extends AbstractMobileBusinessOr
         }
 
         @Override
-        protected JSONObject generateQueryCondition() {
+        protected JSONObject generateQueryDetailCondition() {
             final JSONObject condition = new JSONObject();
             condition.put("api","/api/rkd/xinfo");
             return condition;

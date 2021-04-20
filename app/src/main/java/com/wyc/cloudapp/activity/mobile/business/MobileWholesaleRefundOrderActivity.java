@@ -7,7 +7,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
 import com.wyc.cloudapp.adapter.business.MobilePurchaseOrderAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
-
+/*批发退货单*/
 public class MobileWholesaleRefundOrderActivity extends AbstractMobileBusinessOrderActivity {
     @Override
     protected MobilePurchaseOrderAdapter getAdapter() {
@@ -17,6 +17,11 @@ public class MobileWholesaleRefundOrderActivity extends AbstractMobileBusinessOr
     @Override
     protected JSONObject generateQueryCondition() {
         return null;
+    }
+
+    @Override
+    protected String getPermissionId() {
+        return "42";
     }
 
     @Override
@@ -31,7 +36,7 @@ public class MobileWholesaleRefundOrderActivity extends AbstractMobileBusinessOr
         }
 
         @Override
-        protected JSONObject generateQueryCondition() {
+        protected JSONObject generateQueryDetailCondition() {
             return null;
         }
 
