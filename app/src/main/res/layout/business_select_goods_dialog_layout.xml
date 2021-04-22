@@ -241,7 +241,7 @@
         android:layout_height="@dimen/height_45"
         android:background="@drawable/round_shape_main_color"
         android:text="@string/delete_sz"
-        android:textColor="@color/white_pink"
+        android:textColor="@color/orange_1"
         android:textSize="@dimen/font_size_18"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"

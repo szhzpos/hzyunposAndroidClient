@@ -581,4 +581,6 @@
 
     <!--其他出入库类型 -->
     <string name="out_in_warehouse">出入库类型：</string>
+
+    <string name="not_found_hint">Not found content view…</string>
 </resources>

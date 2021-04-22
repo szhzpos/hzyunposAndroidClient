@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.adapter.business;
 
+import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -8,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.CustomizationView.SwipeLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
@@ -48,9 +50,20 @@ public class MobileBaseOrderDetailsAdapter extends AbstractBusinessOrderDetailsD
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        final View itemView = View.inflate(mContext, R.layout.mobile_business_order_details_content_layout, null);
+        final SwipeLayout itemView = (SwipeLayout) View.inflate(mContext, R.layout.swipe_container_layout, null);
+        itemView.addMenuItem(mContext.getString(R.string.delete_sz), v -> {
+            setCurrentItemIndex(Utils.getViewTagValue(itemView,-1));
+            deleteDetails();
+        }, Color.RED);
         itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT));
         return new MyViewHolder(itemView);
+    }
+
+    @Override
+    public void onViewRecycled(@NonNull MyViewHolder holder) {
+        if (holder.itemView instanceof SwipeLayout){
+            ((SwipeLayout)holder.itemView).closeRightMenu();
+        }
     }
 
     @Override

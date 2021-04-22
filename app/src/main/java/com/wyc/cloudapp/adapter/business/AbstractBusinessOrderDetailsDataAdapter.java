@@ -45,7 +45,7 @@ public abstract class AbstractBusinessOrderDetailsDataAdapter<T extends Abstract
         if (mCurrentItemIndex == position){
             setSelectStatus(holder.itemView);
         }
-        holder.itemView.setOnClickListener(mListener);
+        if (!holder.itemView.hasOnClickListeners())holder.itemView.setOnClickListener(mListener);
     }
 
     private final View.OnClickListener mListener = v -> {
@@ -57,6 +57,10 @@ public abstract class AbstractBusinessOrderDetailsDataAdapter<T extends Abstract
 
     private JSONObject item(){
         return (mDatas == null || mCurrentItemIndex == -1 || mCurrentItemIndex >= mDatas.size()) ? null : mDatas.getJSONObject(mCurrentItemIndex);
+    }
+
+    protected void setCurrentItemIndex(int index){
+        mCurrentItemIndex = index;
     }
 
     public interface OnItemSelectListener{
