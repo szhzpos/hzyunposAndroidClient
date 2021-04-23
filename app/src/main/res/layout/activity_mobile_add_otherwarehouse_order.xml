@@ -42,6 +42,7 @@
             android:layout_weight="1"
             android:drawableEnd="@drawable/small_fold"
             android:gravity="center_vertical"
+            android:hint="@string/out_in_warehouse_hint"
             android:textColor="@color/text_color" />
     </LinearLayout>
 

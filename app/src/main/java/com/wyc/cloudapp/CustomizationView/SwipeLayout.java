@@ -1,18 +1,5 @@
 package com.wyc.cloudapp.CustomizationView;
 
-/**
- * @ProjectName: CloudApp
- * @Package: com.wyc.cloudapp.CustomizationView
- * @ClassName: SwipeLayout
- * @Description: java类作用描述
- * @Author: wyc
- * @CreateDate: 2021/4/22 9:48
- * @UpdateUser: 更新者
- * @UpdateDate: 2021/4/22 9:48
- * @UpdateRemark: 更新说明
- * @Version: 1.0
- */
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -151,7 +138,7 @@ public class SwipeLayout extends FrameLayout {
             case MotionEvent.ACTION_DOWN:
                 mLastXMove = mXDown = ev.getX();
                 if (mXDown + getScrollX() < mContentView.getRight())
-                    return true;
+                    return onTouchEvent(ev);
                 break;
             case MotionEvent.ACTION_MOVE:
                 mXMove = ev.getX();
@@ -209,17 +196,16 @@ public class SwipeLayout extends FrameLayout {
 
     @Override
     protected void onLayout(boolean changed, int left, int t, int right, int bottom) {
-        if (mContentView != null){
+        if (changed){
             int contentViewWidth = mContentView.getMeasuredWidthAndState(),contentViewHeight = mContentView.getMeasuredHeightAndState();
             LayoutParams lp = (LayoutParams) mContentView.getLayoutParams();
             int start = getPaddingLeft();
             int top = getPaddingTop() + lp.topMargin ;
             mContentView.layout(start, top, start + contentViewWidth, top + contentViewHeight);
-        }
-        if (mMenuLayout != null){
+
             int menuViewWidth = mMenuLayout.getMeasuredWidthAndState(),menuViewHeight = mMenuLayout.getMeasuredHeightAndState();
-            LayoutParams lp = (LayoutParams) mMenuLayout.getLayoutParams();
-            int top = getPaddingTop() + lp.topMargin ;
+            lp = (LayoutParams) mMenuLayout.getLayoutParams();
+            top = getPaddingTop() + lp.topMargin ;
             int parentViewWidth = getMeasuredWidthAndState();
             mMenuLayout.layout(parentViewWidth, top, parentViewWidth + menuViewWidth, top + menuViewHeight);
 

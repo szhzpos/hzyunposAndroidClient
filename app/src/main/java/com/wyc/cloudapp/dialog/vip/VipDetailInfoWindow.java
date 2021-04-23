@@ -78,7 +78,7 @@ public class VipDetailInfoWindow extends PopupWindow {
         final Display d = mContext.getDisplay(); // 获取屏幕宽、高用
         final Point point = new Point();
         d.getSize(point);
-        setWidth((int) (point.x * 0.8));
+        setWidth((int) (point.x * 0.95));
     }
 
     private void setBackgroundAlpha(float bgAlpha) {

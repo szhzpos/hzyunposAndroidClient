@@ -147,6 +147,9 @@ public final class CustomApplication extends Application {
     public String getStoreId(){
         return Utils.getNullStringAsEmpty(mStoreInfo,"stores_id");
     }
+    public String getWhId(){
+        return Utils.getNullStringAsEmpty(mStoreInfo,"wh_id");
+    }
     public String getStoreIdWithSharedPreferences(){
         final JSONObject conn_param = getConnParam();
         if (conn_param.isEmpty()){

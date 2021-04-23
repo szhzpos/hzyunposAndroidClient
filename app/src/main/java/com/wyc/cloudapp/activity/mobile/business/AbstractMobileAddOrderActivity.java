@@ -242,7 +242,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
         }
     }
 
-    private boolean isShowOrder(){
+    protected boolean isShowOrder(){
         final Intent intent = getIntent();
         return null != intent && intent.hasExtra("order_id");
     }
@@ -328,7 +328,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                 array.add(object);
 
                 //
-                if ("0000".equals(Utils.getNullStringAsEmpty(tmp,"gs_code")) && mSupplierTV != null){
+                if (!isShowOrder() && "0000".equals(Utils.getNullStringAsEmpty(tmp,"gs_code")) && mSupplierTV != null){
                     mSupplierTV.post(()->{
                         mSupplierTV.setText(name);
                         mSupplierTV.setTag(id);

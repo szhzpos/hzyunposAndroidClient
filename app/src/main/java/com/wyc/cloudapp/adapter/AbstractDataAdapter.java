@@ -39,7 +39,7 @@ public abstract class AbstractDataAdapter <T extends RecyclerView.ViewHolder> ex
 
         @Override
         protected void finalize(){
-            //Logger.d(getClass().getName() + " finalized");
+            Logger.d(getClass().getName() + " finalized");
         }
     }
 

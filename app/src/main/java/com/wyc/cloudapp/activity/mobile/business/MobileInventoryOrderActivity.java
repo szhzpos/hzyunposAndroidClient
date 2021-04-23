@@ -1,5 +1,9 @@
 package com.wyc.cloudapp.activity.mobile.business;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,18 +13,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.CustomizationView.InterceptLinearLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
-import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDataAdapter;
+import com.wyc.cloudapp.adapter.business.MobileInventoryOrderAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
@@ -39,13 +41,13 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.TimeZone;
 
-public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobileActivity {
+public class MobileInventoryOrderActivity extends AbstractMobileActivity {
     private long mStartTime = 0,mEndTime = 0;
-    private Button mCurrentDateBtn,mCurrentAuditStatusBtn;
+    private Button mCurrentDateBtn;
     private TextView mStartDateTv,mEndDateTv;
     private AbstractDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> mAdapter;
     private JSONObject mParameterObj;
-    private boolean isFirstLoad = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,33 +61,26 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
         mParameterObj = new JSONObject();
 
         initQueryTimeBtn();
-        initAuditBtn();
         initEndDateAndTime();
         initStartDateAndTime();
         initOrderList();
         initTitle();
     }
 
-    protected abstract AbstractBusinessOrderDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> getAdapter();
-    protected abstract JSONObject generateQueryCondition();
-    public abstract Class<?> jumpAddTarget();
-    protected abstract String getPermissionId();
+    public Class<?> jumpAddTarget() {
+        return MobileWarehouseOrderActivity.MobileAddWarehouseOrderActivity.class;
+    }
 
     private boolean verifyPermission(){
-        boolean code = verifyPermissions(getPermissionId(),null,false);
+        boolean code = verifyPermissions("43",null,false);
         if (!code) Toast.makeText(this,"当前操作员没有此功能权限!",Toast.LENGTH_LONG).show();
         return code;
     }
 
     @Override
-    protected int getContentLayoutId() {
-        return R.layout.activity_mobile_business_order;
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
-        if (mCurrentDateBtn != null && !isFirstLoad)mCurrentDateBtn.callOnClick();
+        if (mCurrentDateBtn != null )mCurrentDateBtn.callOnClick();
     }
 
     private void initTitle(){
@@ -97,7 +92,7 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
     private void add(){
         final CharSequence title = getRightText().toString() + getMiddleText();
         final Intent intent = new Intent();
-        intent.setClass(this, jumpAddTarget());
+        intent.setClass(this, null);
         intent.putExtra("title", title);
         try {
             startActivity(intent);
@@ -173,7 +168,7 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
             }
         }
 
-        if (!isFirstLoad)query();
+        query();
 
         if (btn != mCurrentDateBtn){
             btn.setTextColor(white);
@@ -190,122 +185,49 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
     };
 
     private void query(){
-        final JSONObject condition = generateQueryCondition();
-        if (null != condition){
-            final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
 
-            mParameterObj.put("appid",getAppId());
-            mParameterObj.put("stores_id",getStoreId());
-            mParameterObj.put("pt_user_id",getPtUserId());
-            mParameterObj.put("begin_time",sdf.format(new Date(mStartTime)));
-            mParameterObj.put("end_time",sdf.format(new Date(mEndTime)));
+        mParameterObj.put("appid",getAppId());
+        mParameterObj.put("wh_id",getWhId());
+        mParameterObj.put("pt_user_id",getPtUserId());
+        mParameterObj.put("begin_time",sdf.format(new Date(mStartTime)));
+        mParameterObj.put("end_time",sdf.format(new Date(mEndTime)));
 
-            final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,getString(R.string.hints_query_data_sz));
-            CustomApplication.execute(()->{
-                final String param =  HttpRequest.generate_request_parm(mParameterObj,getAppSecret());
+        final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,getString(R.string.hints_query_data_sz));
+        CustomApplication.execute(()->{
+            final String param =  HttpRequest.generate_request_parm(mParameterObj,getAppSecret());
 
-                Logger.d("业务查询参数:%s",param);
+            Logger.d("业务查询参数:%s",param);
 
-                final JSONObject retJson = HttpUtils.sendPost(getUrl() + condition.getString("api"),param,true);
-                if (HttpUtils.checkRequestSuccess(retJson)){
-                    try {
-                        final JSONObject info = JSONObject.parseObject(retJson.getString("info"));
-                        if (HttpUtils.checkBusinessSuccess(info)){
-                            final JSONArray data = Utils.getNullObjectAsEmptyJsonArray(info,"data");
-                            if (isFindSourceOrderId()){
-                                //采购入库单查询来源采购订货单时，如果rk_status==3 完全入库的情况从显示列表中删除
-                                for (int i = data.size()-1; i >=0; i--) {
-                                    if (orderIsNotShow(data.getJSONObject(i))){
-                                        data.remove(i);
-                                    }
-                                }
-                            }
+            final JSONObject retJson = HttpUtils.sendPost(getUrl() + "/api/inventory/spd_list",param,true);
+            if (HttpUtils.checkRequestSuccess(retJson)){
+                try {
+                    final JSONObject info = JSONObject.parseObject(retJson.getString("info"));
+                    if (HttpUtils.checkBusinessSuccess(info)){
+                        final JSONArray data = Utils.getNullObjectAsEmptyJsonArray(info,"data");
+                        Logger.d_json(data);
 
-                            Logger.d_json(data);
-
-                            runOnUiThread(()-> mAdapter.setDataForArray(data));
-                        }else {
-                            throw new JSONException(info.getString("info"));
-                        }
-                    }catch (JSONException e){
-                        e.printStackTrace();
-                        MyDialog.ToastMessageInMainThread(e.getMessage());
+                        runOnUiThread(()-> mAdapter.setDataForArray(data));
+                    }else {
+                        throw new JSONException(info.getString("info"));
                     }
+                }catch (JSONException e){
+                    e.printStackTrace();
+                    MyDialog.ToastMessageInMainThread(e.getMessage());
                 }
-                progressDialog.dismiss();
-            });
-        }
+            }
+            progressDialog.dismiss();
+        });
     }
 
     protected boolean orderIsNotShow(final JSONObject order){
         /*
-        * 判断线上返回的订单信息是否需要显示
-        *
-        * 默认实现采购入库单查询来源采购订货单时，如果rk_status==3 完全入库的情况从显示列表中删除
-        * */
+         * 判断线上返回的订单信息是否需要显示
+         *
+         * 默认实现采购入库单查询来源采购订货单时，如果rk_status==3 完全入库的情况从显示列表中删除
+         * */
         return order != null && order.getIntValue("rk_status") == 3;
     }
-
-    private void initAuditBtn(){
-        final InterceptLinearLayout audit_btn_layout = findViewById(R.id.audit_btn_layout);
-        final Button m_all_btn = audit_btn_layout.findViewById(R.id.m_all_btn);
-        audit_btn_layout.post(()->{
-            float corner_size = audit_btn_layout.getHeight() / 2.0f;
-            audit_btn_layout.setForeground(DrawableUtil.createDrawable(new float[]{corner_size,corner_size,corner_size,corner_size,corner_size,corner_size,corner_size,corner_size}
-                    ,getColor(R.color.transparent), Utils.dpToPx(this,1),getColor(R.color.blue)));
-        });
-        audit_btn_layout.setClickListener(mAuditStatusClickListener);
-        if (isFindSourceOrderId()){//如果是查找来源单号则隐藏审核查询条件。
-            final Button audit_btn = audit_btn_layout.findViewById(R.id.m_audit_btn);
-            audit_btn.post(audit_btn::callOnClick);
-            audit_btn_layout.setVisibility(View.GONE);
-        }else
-            m_all_btn.post(m_all_btn::callOnClick);
-    }
-
-    public boolean isFindSourceOrderId(){
-        final Intent result = getIntent();
-        return result != null && result.getBooleanExtra("FindSource",false);
-    }
-
-    private final View.OnClickListener mAuditStatusClickListener = v -> {
-        final Button btn = (Button) v;
-
-        int white = getColor(R.color.white),text_color = getColor(R.color.text_color),blue = getColor(R.color.blue);
-        final int id = btn.getId();
-
-        float corner_size = (float) (btn.getHeight() / 2.0);
-        float[] corners = new float[8];
-
-        if (id == R.id.m_all_btn){
-            corners[0] = corners[1] =  corners[6] = corners[7] = corner_size;
-            mParameterObj.remove("sh_status");
-        }else if (id == R.id.m_unaudited_btn){
-            mParameterObj.put("sh_status",1);
-        }else if (id == R.id.m_audit_btn){
-            corners[2] = corners[3] =  corners[4] = corners[5] = corner_size;
-            mParameterObj.put("sh_status",2);
-        }
-        //请求数据
-        if (isFirstLoad){
-            isFirstLoad = false;
-            query();
-        }else
-            mCurrentDateBtn.callOnClick();
-
-        if (btn != mCurrentAuditStatusBtn){
-            btn.setTextColor(white);
-            btn.setBackground(DrawableUtil.createDrawable(corners,blue,0,blue));
-            if (null != mCurrentAuditStatusBtn){
-                mCurrentAuditStatusBtn.setTextColor(text_color);
-                if (mCurrentAuditStatusBtn.getId() == R.id.m_unaudited_btn){
-                    mCurrentAuditStatusBtn.setBackground(getDrawable(R.drawable.left_right_separator));
-                }else
-                    mCurrentAuditStatusBtn.setBackground(DrawableUtil.createDrawable(corners,white,0,blue));
-            }
-            mCurrentAuditStatusBtn = btn;
-        }
-    };
 
 
     private void setStartTime(final Calendar calendar){
@@ -339,10 +261,15 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
     private void initOrderList(){
         final RecyclerView order_list = findViewById(R.id.m_order_list);
         if (null != order_list){
-            mAdapter = getAdapter();
+            mAdapter = new MobileInventoryOrderAdapter(this);
             order_list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
             order_list.setAdapter(mAdapter);
             order_list.addItemDecoration(new LinearItemDecoration(this.getColor(R.color.gray_subtransparent)));
         }
+    }
+
+    @Override
+    protected int getContentLayoutId() {
+        return R.layout.activity_mobile_inventory_order;
     }
 }

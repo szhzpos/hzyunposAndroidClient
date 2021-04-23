@@ -70,6 +70,9 @@ public class MainActivity extends BaseActivity {
     public String getStoreId(){
         return mApplication.getStoreId();
     }
+    public String getWhId(){
+        return mApplication.getWhId();
+    }
     public String getPermissionCashierId(){
         if ("".equals(mPermissionCashierId))return mApplication.getCashierInfo().getString("cas_id");
         return mPermissionCashierId;

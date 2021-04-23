@@ -53,12 +53,11 @@ public final class MobileWarehouseOrderActivity extends AbstractMobileBusinessOr
 
     public static class MobileAddWarehouseOrderActivity extends AbstractMobileQuerySourceOrderActivity {
         @Override
-        protected void launchSourceActivity() {
-            final Intent intent = new Intent();
+        protected Intent launchSourceActivity() {
+            final Intent intent = super.launchSourceActivity();
             intent.setClass(this,MobilePurchaseOrderActivity.class);
             intent.putExtra("title",getString(R.string.select_anything_hint,getString(R.string.purchase_order_sz)));
-            intent.putExtra("FindSource",true);
-            startActivityForResult(intent,SELECT_ORDER_CODE);
+            return intent;
         }
 
         @Override

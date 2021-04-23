@@ -50,12 +50,11 @@ public class MobilePurchaseRefundOrderActivity extends AbstractMobileBusinessOrd
 
     public static class MobileAddPurchaseRefundOrderActivity extends AbstractMobileQuerySourceOrderActivity {
         @Override
-        protected void launchSourceActivity() {
-            final Intent intent = new Intent();
+        protected Intent launchSourceActivity() {
+            final Intent intent = super.launchSourceActivity();
             intent.setClass(this,MobileWarehouseOrderActivity.class);
             intent.putExtra("title",getString(R.string.select_anything_hint,getString(R.string.warehouse_order_sz)));
-            intent.putExtra("FindSource",true);
-            startActivityForResult(intent,SELECT_ORDER_CODE);
+            return intent;
         }
 
         @Override

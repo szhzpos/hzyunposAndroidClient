@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.activity.mobile.business;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -33,6 +34,17 @@ public final class MobileWholesaleOrderActivity extends AbstractMobileBusinessOr
     }
 
     @Override
+    protected boolean orderIsNotShow(final JSONObject order){
+        /*
+         * 判断线上返回的订单信息是否需要显示
+         *
+         * 3全部发货 4己退货的情况从显示列表中删除
+         * */
+        int status = order.getIntValue("rk_status");
+        return order != null && (status == 3 || status == 4);
+    }
+
+    @Override
     protected String getPermissionId() {
         return "39";
     }
@@ -54,22 +66,12 @@ public final class MobileWholesaleOrderActivity extends AbstractMobileBusinessOr
         @Override
         protected void showOrder() {
             super.showOrder();
-            setView(mDateTv, "",Utils.formatDataWithTimestamp(mOrderInfo.getLongValue("addtime") * 1000));
             setView(mOrderCodeTv, "",Utils.getNullStringAsEmpty(mOrderInfo,"order_code"));
         }
 
         @Override
         protected AbstractBusinessOrderDetailsDataAdapter<? extends AbstractDataAdapter.SuperViewHolder> getAdapter() {
             return new MobileAddWholesaleOrderDetailAdapter(this);
-        }
-
-        @Override
-        protected String getSaleOperatorKey() {
-            return "js_pt_user_id";
-        }
-        @Override
-        protected String getSaleOperatorNameKey() {
-            return "js_pt_user_name";
         }
 
         @Override
@@ -103,6 +105,7 @@ public final class MobileWholesaleOrderActivity extends AbstractMobileBusinessOr
                 object.put("barcode_id",old_obj.getString("barcode_id"));
                 object.put("goods_id",old_obj.getString("goods_id"));
                 object.put("conversion",old_obj.getString("conversion"));
+                object.put("unit_id",old_obj.getString("unit_id"));
                 data.add(object);
             }
 
@@ -124,6 +127,16 @@ public final class MobileWholesaleOrderActivity extends AbstractMobileBusinessOr
         @Override
         protected int getContentLayoutId() {
             return R.layout.activity_mobile_add_wholesale_order;
+        }
+
+        @Override
+        protected void querySourceOrderInfo(String order_id) {
+
+        }
+
+        @Override
+        protected Intent launchSourceActivity() {
+            return super.launchSourceActivity();
         }
     }
 }

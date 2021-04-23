@@ -8,6 +8,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
+import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDataAdapter;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
 import com.wyc.cloudapp.adapter.business.MobileOtherWarehouseOrderAdapter;
 import com.wyc.cloudapp.adapter.business.MobileOtherWarehouseOrderDetailsAdapter;
@@ -17,7 +18,7 @@ import com.wyc.cloudapp.utils.Utils;
 public final class MobileOtherWarehouseOrderActivity extends AbstractMobileBusinessOrderActivity {
 
     @Override
-    protected AbstractDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> getAdapter() {
+    protected AbstractBusinessOrderDataAdapter<? extends AbstractDataAdapter.SuperViewHolder> getAdapter() {
         return new MobileOtherWarehouseOrderAdapter(this);
     }
 

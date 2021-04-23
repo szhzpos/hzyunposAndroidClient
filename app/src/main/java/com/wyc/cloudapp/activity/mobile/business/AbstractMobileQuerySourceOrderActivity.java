@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.CallSuper;
+
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -58,14 +60,15 @@ public abstract class AbstractMobileQuerySourceOrderActivity extends AbstractMob
 
     private void initSourceOrder(){
         mSourceOrderCodeTv = findViewById(R.id.m_source_order_tv);
-        mSourceOrderCodeTv.setOnClickListener(v -> {
-            if (!isDetailsEmpty()){
-                if (MyDialog.showMessageToModalDialog(this,"已存在商品明细，是否替换？") == 0){
-                    return;
+        if (null != mSourceOrderCodeTv)
+            mSourceOrderCodeTv.setOnClickListener(v -> {
+                if (!isDetailsEmpty()){
+                    if (MyDialog.showMessageToModalDialog(this,"已存在商品明细，是否替换？") == 0){
+                        return;
+                    }
                 }
-            }
-            launchSourceActivity();
-        });
+                startActivityForResult(launchSourceActivity(),SELECT_ORDER_CODE);
+            });
     }
 
     protected void setWarehouse(final JSONObject order){
@@ -82,5 +85,11 @@ public abstract class AbstractMobileQuerySourceOrderActivity extends AbstractMob
     }
 
     protected abstract void querySourceOrderInfo(final String order_id);
-    protected abstract void launchSourceActivity();
+
+    @CallSuper
+    protected Intent launchSourceActivity(){
+        final Intent intent = new Intent();
+        intent.putExtra("FindSource",true);
+        return intent;
+    }
 }

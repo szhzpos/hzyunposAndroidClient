@@ -3,10 +3,12 @@ package com.wyc.cloudapp.adapter.business;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
+import android.widget.Toast;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.activity.mobile.business.AbstractMobileBusinessOrderActivity;
+import com.wyc.cloudapp.activity.mobile.business.MobileInventoryOrderActivity;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.utils.Utils;
@@ -31,11 +33,11 @@ public abstract class AbstractBusinessOrderDataAdapter<T extends AbstractTableDa
 
     @Override
     public void onClick(View v) {
+        final Intent intent = new Intent();
+        intent.putExtra("order_id",Utils.getViewTagValue(v,""));
         if (mContext instanceof AbstractMobileBusinessOrderActivity){
             final AbstractMobileBusinessOrderActivity activity = (AbstractMobileBusinessOrderActivity)mContext;
 
-            final Intent intent = new Intent();
-            intent.putExtra("order_id",Utils.getViewTagValue(v,""));
             if (activity.isFindSourceOrderId()){
                 activity.setResult(Activity.RESULT_OK,intent);
                 activity.finish();
@@ -44,7 +46,12 @@ public abstract class AbstractBusinessOrderDataAdapter<T extends AbstractTableDa
                 intent.putExtra("title", mContext.getString(R.string.order_detail_sz));
                 activity.startActivity(intent);
             }
+        }else if (mContext instanceof MobileInventoryOrderActivity){
+            final MobileInventoryOrderActivity activity = (MobileInventoryOrderActivity)mContext;
+            intent.setClass(activity, activity.jumpAddTarget());
+            intent.putExtra("title", mContext.getString(R.string.order_detail_sz));
+            activity.startActivity(intent);
         }else
-            throw new IllegalArgumentException("mContext must extends AbstractMobileBusinessOrderActivity!");
+            Toast.makeText(mContext,mContext.getLocalClassName() + "未实现详情功能...",Toast.LENGTH_LONG).show();
     }
 }

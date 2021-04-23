@@ -56,7 +56,6 @@ public class MobileWholesaleOrderAdapter extends MobileBaseOrderAdapter {
         holder.order_code_tv.setText(Html.fromHtml("<u>" + object.getString("order_code") + "</u>"));
         holder.order_code_tv.setTag(object.getString("order_id"));
         holder.date_tv.setText(Utils.formatDataWithTimestamp(object.getLongValue("addtime") * 1000));
-
     }
 
 }

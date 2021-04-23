@@ -2,6 +2,7 @@
 <com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/business_add_main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
@@ -11,10 +12,16 @@
     android:paddingEnd="@dimen/margin_8"
     android:paddingBottom="@dimen/margin_5"
     app:ItemPadding="@dimen/margin_5">
-    <include layout="@layout/business_order_function_button_layout"/>
-    <include layout="@layout/business_order_customer_layout"/>
-    <include layout="@layout/business_order_common_layout"/>
 
-    <include layout="@layout/business_order_remark_layout"/>
-    <include layout="@layout/business_order_details_area_layout"/>
+    <include layout="@layout/business_order_function_button_layout" />
+
+    <include layout="@layout/business_order_customer_layout" />
+
+    <include layout="@layout/business_order_common_layout" />
+
+    <include layout="@layout/business_source_order_layout" />
+
+    <include layout="@layout/business_order_remark_layout" />
+
+    <include layout="@layout/business_order_details_area_layout" />
 </com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout>

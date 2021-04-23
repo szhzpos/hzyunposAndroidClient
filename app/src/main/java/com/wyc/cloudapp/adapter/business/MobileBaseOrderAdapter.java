@@ -57,7 +57,7 @@ public abstract class MobileBaseOrderAdapter extends AbstractBusinessOrderDataAd
     public final void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         final JSONObject object = mDatas.getJSONObject(position);
 
-        holder.order_code_tv.setOnClickListener(this);
+        if (!holder.order_code_tv.hasOnClickListeners())holder.order_code_tv.setOnClickListener(this);
 
         if (holder.gs_name_tv != null)holder.gs_name_tv.setText(object.getString("gs_name"));
         holder.wh_name_tv.setText(mContext.getStoreName());
