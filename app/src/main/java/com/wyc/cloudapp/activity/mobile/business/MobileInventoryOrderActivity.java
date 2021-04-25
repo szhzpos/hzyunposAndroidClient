@@ -1,9 +1,5 @@
 package com.wyc.cloudapp.activity.mobile.business;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +9,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
@@ -21,7 +20,6 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
-import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDataAdapter;
 import com.wyc.cloudapp.adapter.business.MobileInventoryOrderAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
@@ -68,7 +66,7 @@ public class MobileInventoryOrderActivity extends AbstractMobileActivity {
     }
 
     public Class<?> jumpAddTarget() {
-        return MobileWarehouseOrderActivity.MobileAddWarehouseOrderActivity.class;
+        return MobileInventoryAddOrderActivity.class;
     }
 
     private boolean verifyPermission(){
@@ -92,7 +90,7 @@ public class MobileInventoryOrderActivity extends AbstractMobileActivity {
     private void add(){
         final CharSequence title = getRightText().toString() + getMiddleText();
         final Intent intent = new Intent();
-        intent.setClass(this, null);
+        intent.setClass(this, MobileInventoryAddOrderActivity.class);
         intent.putExtra("title", title);
         try {
             startActivity(intent);
@@ -204,10 +202,7 @@ public class MobileInventoryOrderActivity extends AbstractMobileActivity {
                 try {
                     final JSONObject info = JSONObject.parseObject(retJson.getString("info"));
                     if (HttpUtils.checkBusinessSuccess(info)){
-                        final JSONArray data = Utils.getNullObjectAsEmptyJsonArray(info,"data");
-                        Logger.d_json(data);
-
-                        runOnUiThread(()-> mAdapter.setDataForArray(data));
+                        runOnUiThread(()-> mAdapter.setDataForArray(Utils.getNullObjectAsEmptyJsonArray(info,"data")));
                     }else {
                         throw new JSONException(info.getString("info"));
                     }

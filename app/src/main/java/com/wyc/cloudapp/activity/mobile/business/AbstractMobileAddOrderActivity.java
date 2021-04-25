@@ -48,9 +48,10 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
     private JSONArray mSupplierList;
     private RecyclerView mDetailsView;
     private CustomProgressDialog mProgressDialog;
+    private TextView mSumNumTv,mSumAmtTv;
 
     protected JSONObject mOrderInfo;
-    protected TextView mSupplierTV,mSaleOperatorTv,mWarehouseTv,mOrderCodeTv,mDateTv,mRemarkEt,mSumNumTv,mSumAmtTv;
+    protected TextView mSupplierTV,mSaleOperatorTv,mWarehouseTv,mOrderCodeTv,mDateTv,mRemarkEt;
 
     private WeakReference<ScanCallback> mScanCallback;
     private String mOrderID;
@@ -365,10 +366,10 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
             }else if (id == R.id.m_pick_goods_btn){
                 AbstractMobileAddOrderActivity activity = AbstractMobileAddOrderActivity.this;
                 final Intent intent = new Intent(activity, MobileSelectGoodsActivity.class);
-                intent.putExtra("title",getString(R.string.select_goods_label));
-                intent.putExtra("isSel",true);
+                intent.putExtra(MobileSelectGoodsActivity.TITLE_KEY,getString(R.string.select_goods_label));
+                intent.putExtra(MobileSelectGoodsActivity.IS_SEL_KEY,true);
                 if (activity instanceof MobileWholesaleBaseActivity){
-                    intent.putExtra("price_type",((MobileWholesaleBaseActivity)activity).getCustomerPriceType());
+                    intent.putExtra(MobileSelectGoodsActivity.PRICE_TYPE_KEY,((MobileWholesaleBaseActivity)activity).getCustomerPriceType());
                 }
                 startActivityForResult(intent, MobileSelectGoodsActivity.SELECT_GOODS_CODE);
             }else if (id == R.id.m_business_scan_btn){
@@ -426,6 +427,8 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
             mProgressDialog = CustomProgressDialog.showProgress(this,mess);
         else
             mProgressDialog.setMessage(mess).refreshMessage();
+
+        if (!mProgressDialog.isShowing())mProgressDialog.show();
     }
 
     private void auditOrder(){
@@ -586,14 +589,9 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
 
     private void modifyGoodsDetails(@NonNull JSONObject object) {
         final BusinessSelectGoodsDialog dialog = new BusinessSelectGoodsDialog(this,hasSource(),object);
+        dialog.setDelListener(v -> mAdapter.deleteDetails());
         if (dialog.exec() == 1){
             addGoodsDetails(dialog.getContentObj(),true);
-        }
-    }
-
-    public void deleteDetails(){
-        if (mAdapter != null){
-            mAdapter.deleteDetails();
         }
     }
 

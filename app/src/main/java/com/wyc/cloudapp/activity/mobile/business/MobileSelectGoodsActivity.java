@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -17,7 +16,6 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -25,7 +23,6 @@ import android.widget.TextView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
@@ -40,16 +37,22 @@ import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 public class MobileSelectGoodsActivity extends AbstractMobileActivity {
+    public static final String TITLE_KEY = "title",IS_SEL_KEY = "isSel",PRICE_TYPE_KEY = "price_type",TASK_CATEGORY_KEY = "taskCategory",SEARCH_KEY = "barcode";
+
     public static final int SELECT_GOODS_CODE = 0x147;
     private GoodsAdapter mGoodsInfoAdapter;
     private CategoryAdapter mGoodsCategoryAdapter;
     private EditText mSearchContentEt;
-    private static boolean isSelectMode = false;//true 选择商品模式
+    /*true 商品选择模式*/
+    private static boolean isSelectMode = false;
     private static int mPriceType = WholesalePriceType.BUYING_PRICE;
+    /*需要过滤商品类别*/
+    private String mGoodsCategory;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED);
+
+        initExtra();
         initTitle();
 
         initGoodsCategory();
@@ -58,14 +61,21 @@ public class MobileSelectGoodsActivity extends AbstractMobileActivity {
 
         checkSearch();
     }
+    private void initExtra(){
+        final Intent intent = getIntent();
+        if (intent != null){
+            isSelectMode = intent.getBooleanExtra(IS_SEL_KEY,false);
+            mPriceType = intent.getIntExtra(PRICE_TYPE_KEY,WholesalePriceType.BUYING_PRICE);
+            mGoodsCategory = intent.getStringExtra(TASK_CATEGORY_KEY);
+
+            Logger.d("priceType:%d,taskCategory：%s",mPriceType, mGoodsCategory);
+        }
+    }
 
     private void initTitle(){
         final Intent intent = getIntent();
         if (intent != null){
-            setMiddleText(intent.getStringExtra("title"));
-            isSelectMode = intent.getBooleanExtra("isSel",false);
-            mPriceType = intent.getIntExtra("price_type",WholesalePriceType.BUYING_PRICE);
-            Logger.d("mPriceType:%d",mPriceType);
+            setMiddleText(intent.getStringExtra(TITLE_KEY));
         }
         setRightText(getString(R.string.a_goods_sz));
         setRightListener(v -> {
@@ -128,7 +138,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileActivity {
     private void checkSearch(){
         final Intent intent = getIntent();
         if (intent != null){
-            final String barcode = intent.getStringExtra("barcode");
+            final String barcode = intent.getStringExtra(SEARCH_KEY);
             if (Utils.isNotEmpty(barcode) && mSearchContentEt != null){
                 mSearchContentEt.setText(barcode);
                 mSearchContentEt.post(()->search(barcode));
@@ -179,10 +189,10 @@ public class MobileSelectGoodsActivity extends AbstractMobileActivity {
     }
 
     static private class CategoryAdapter extends AbstractDataAdapter<CategoryAdapter.MyViewHolder> implements View.OnClickListener{
-        final MainActivity mContext;
+        final MobileSelectGoodsActivity mContext;
         private View mCurrentItemView;
         private final JSONObject CategoryObj = new JSONObject();
-        public CategoryAdapter(MainActivity activity) {
+        public CategoryAdapter(MobileSelectGoodsActivity activity) {
             mContext = activity;
         }
 
@@ -213,7 +223,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileActivity {
                 CategoryObj.put("item_id",id);
                 CategoryObj.put("item_name",name);
 
-                ((MobileSelectGoodsActivity)mContext).loadGoods(id);
+                mContext.loadGoods(id);
             }
         }
 
@@ -253,7 +263,10 @@ public class MobileSelectGoodsActivity extends AbstractMobileActivity {
                     mDatas = SQLiteHelper.getListToJson("select category_id,name from shop_category where parent_id='0' and status = 1 union select -1 category_id,'组合商品' name ",0,0,false,err);
                     break;
                 case -2:
-                    mDatas = SQLiteHelper.getListToJson("select category_id,name from shop_category where parent_id='0' and status = 1",0,0,false,err);
+                    if (Utils.isNotEmpty(mContext.mGoodsCategory)){
+                        mDatas = SQLiteHelper.getListToJson("select category_id,name from shop_category where status = 1 and category_id in("+ mContext.mGoodsCategory +")",0,0,false,err);
+                    }else
+                        mDatas = SQLiteHelper.getListToJson("select category_id,name from shop_category where parent_id='0' and status = 1",0,0,false,err);
                     break;
                 default:
                     mDatas = SQLiteHelper.getListToJson("select category_id,name from shop_category where depth = 2 and status = 1 and parent_id=" + parent_id,0,0,false,err);
@@ -267,9 +280,9 @@ public class MobileSelectGoodsActivity extends AbstractMobileActivity {
     }
 
     static private class GoodsAdapter extends AbstractDataAdapter<GoodsAdapter.MyViewHolder> implements View.OnClickListener{
-        final MainActivity mContext;
+        final MobileSelectGoodsActivity mContext;
         private OnSelectFinish onSelectFinish;
-        public GoodsAdapter(MainActivity activity) {
+        public GoodsAdapter(MobileSelectGoodsActivity activity) {
             mContext = activity;
         }
 
@@ -403,6 +416,9 @@ public class MobileSelectGoodsActivity extends AbstractMobileActivity {
             String sql_where,full_sql;
 
             sql_where = "(barcode like '%" + search_content + "%' or only_coding like '%" + search_content +"%' or mnemonic_code like '%" + search_content +"%')";
+            if (Utils.isNotEmpty(mContext.mGoodsCategory)){
+                sql_where = sql_where.concat(" and category_id in (" + mContext.mGoodsCategory +")");
+            }
             full_sql = common_sql + sql_where + " UNION select gp_id,-1 goods_id,ifnull(gp_title,'') goods_title,'' unit_id,ifnull(unit_name,'') unit_name,\n" +
                     "-1 barcode_id,ifnull(gp_code,'') barcode,-1 only_coding,type,gp_price price,0 cost_price,0 ps_price,0 trade_price,ifnull(img_url,'') img_url from goods_group \n" +
                     "where status = '1' and " + sql_where;

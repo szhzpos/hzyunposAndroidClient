@@ -41,7 +41,7 @@ public class MobilePurchaseOrderActivity extends AbstractMobileBusinessOrderActi
     }
 
     public static class MobileAddPurchaseOrderActivity extends AbstractMobileAddOrderActivity {
-
+        private double mTotal;
         @Override
         protected int getContentLayoutId() {
             return R.layout.activity_mobile_add_purchase_order;
@@ -76,9 +76,9 @@ public class MobilePurchaseOrderActivity extends AbstractMobileBusinessOrderActi
 
             upload_obj.put("cgd_code",mOrderCodeTv.getText().toString());
             upload_obj.put("cgd_id",Utils.getNullStringAsEmpty(mOrderInfo,getOrderIDKey()));
-            upload_obj.put("total",Double.parseDouble(mSumAmtTv.getText().toString()));
             upload_obj.put("validity_time",getOrderValidityDate());
             upload_obj.put("goods_list_json",getGoodsList());
+            upload_obj.put("total",mTotal);
 
             object.put("api","/api/cgd/add");
             object.put("upload_obj",upload_obj);
@@ -99,12 +99,17 @@ public class MobilePurchaseOrderActivity extends AbstractMobileBusinessOrderActi
 
         private JSONArray getGoodsList(){
             final JSONArray array = getOrderDetails(),data = new JSONArray();
-
+            double xnum = 0.0,price = 0.0;
             for (int i = 0,size = array.size();i < size;i ++){
                 final JSONObject object = new JSONObject(),old_obj = array.getJSONObject(i);
 
-                object.put("xnum",old_obj.getDoubleValue("xnum"));
-                object.put("price",old_obj.getDoubleValue("price"));
+                xnum = old_obj.getDoubleValue("xnum");
+                price = old_obj.getDoubleValue("price");
+
+                mTotal += xnum * price;
+
+                object.put("xnum",xnum);
+                object.put("price",price);
                 object.put("xnote","");
                 object.put("barcode_id",old_obj.getString("barcode_id"));
                 object.put("goods_id",old_obj.getString("goods_id"));

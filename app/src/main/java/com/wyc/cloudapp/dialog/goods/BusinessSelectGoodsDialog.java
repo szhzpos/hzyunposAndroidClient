@@ -17,6 +17,7 @@ import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -25,7 +26,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.activity.mobile.business.AbstractMobileAddOrderActivity;
 import com.wyc.cloudapp.activity.mobile.business.MobileSelectGoodsActivity;
 import com.wyc.cloudapp.activity.mobile.business.MobileWholesaleBaseActivity;
 import com.wyc.cloudapp.constants.WholesalePriceType;
@@ -57,6 +57,10 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
     private TextView mItemNoTv,mNameTv,mAmtTv,mUnitTv;
     private boolean isModify = false,hasSourceOrder = false;
     private static int mPriceType = WholesalePriceType.BUYING_PRICE;
+    private View.OnClickListener mDelListener;
+    /*需要过滤商品类别*/
+    private String mGoodsCategory;
+
     public BusinessSelectGoodsDialog(@NonNull MainActivity context) {
         super(context, context.getString(R.string.scan_code_label));
     }
@@ -73,6 +77,14 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
         if (context instanceof MobileWholesaleBaseActivity){
             mPriceType = ((MobileWholesaleBaseActivity)context).getCustomerPriceType();
         }
+    }
+
+    public void setGoodsCategory(String category) {
+        this.mGoodsCategory = category;
+    }
+
+    public void setDelListener(View.OnClickListener listener) {
+        this.mDelListener = listener;
     }
 
     @Override
@@ -140,15 +152,18 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
     private void initView(){
         mItemNoTv = findViewById(R.id.item_no_tv);
         mNameTv = findViewById(R.id.name_tv);
-        mAmtTv = findViewById(R.id.amt_tv);
         mNumEt = findViewById(R.id.num_tv);
-        mPriceEt = findViewById(R.id.price_tv);
         mUnitTv = findViewById(R.id.unit_tv);
-
         mNumEt.setOnFocusChangeListener(this);
-        mPriceEt.setOnFocusChangeListener(this);
+
+        final LinearLayout price_amt_layout = findViewById(R.id.price_and_amt_layout);
+        if (price_amt_layout != null){
+            mPriceEt = findViewById(R.id.price_tv);
+            mAmtTv = findViewById(R.id.amt_tv);
+            mPriceEt.setOnFocusChangeListener(this);
+        }
     }
-    private final TextWatcher mTextWatcherWithNum = new TextWatcher() {
+    protected final TextWatcher mTextWatcherWithNum = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -179,12 +194,12 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
                 }catch (NumberFormatException e){
                     e.printStackTrace();
                 }
-                mAmtTv.setText(String.format(Locale.CHINA,"%.3f",price * num));
+                if (null != mAmtTv)mAmtTv.setText(String.format(Locale.CHINA,"%.3f",price * num));
             }
         }
     };
 
-    private final TextWatcher mTextWatcherWithPrice = new TextWatcher() {
+    protected final TextWatcher mTextWatcherWithPrice = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -249,22 +264,25 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
             }
             return false;
         });
-        search.requestFocus();
-
         mBarcodeEt = search;
     }
 
     private void searchGoods(){
         final String barcode = mBarcode;
         if (Utils.isNotEmpty(barcode)){
+            String where_sql = " where barcode = '" + barcode + "'";
+            if (Utils.isNotEmpty(mGoodsCategory)){
+                where_sql = where_sql.concat(" and category_id in ("+ mGoodsCategory +")");
+            }
             final StringBuilder err = new StringBuilder();
-            final JSONArray barcode_ids = SQLiteHelper.getListToValue("select barcode_id from barcode_info where barcode = '" + barcode + "'",err);
+            final JSONArray barcode_ids = SQLiteHelper.getListToValue("select barcode_id from barcode_info" + where_sql,err);
             if (barcode_ids != null){
                 int size = barcode_ids.size();
                 if (size != 0){
                     if (size > 1){
                         final Intent intent = new Intent(mContext, MobileSelectGoodsActivity.class);
-                        intent.putExtra("barcode",barcode);
+                        intent.putExtra(MobileSelectGoodsActivity.SEARCH_KEY,barcode);
+                        intent.putExtra(MobileSelectGoodsActivity.IS_SEL_KEY,true);
                         mContext.startActivityForResult(intent, MobileSelectGoodsActivity.SELECT_GOODS_CODE);
                         setCodeAndExit(0);
                     }else {
@@ -305,9 +323,12 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
         mNameTv.setText(object.getString("goods_title"));
         mNumEt.setText(String.valueOf(num));
 
-        mPriceEt.requestFocus();
-        mPriceEt.post(()->mPriceEt.selectAll());
-        mPriceEt.setText(String.valueOf(price));
+        if (mPriceEt != null){
+            mPriceEt.post(()->mPriceEt.selectAll());
+            mPriceEt.setText(String.valueOf(price));
+        }else
+            mNumEt.requestFocus();
+
         if (isModify){
             mUnitTv.setTag(object.getString("unit_id"));
             mUnitTv.setText(object.getString("unit_name"));
@@ -315,7 +336,9 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
             mUnitTv.setTag(object.getString("stock_unit_id"));
             mUnitTv.setText(object.getString("stock_unit_name"));
         }
+
     }
+
 
     public static boolean selectGoodsWithBarcodeId(final JSONObject object,final String barcode_id,final int price_type){
         String key;
@@ -350,10 +373,10 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
         ok_btn.setOnClickListener(this);
         cancel_btn.setOnClickListener(this);
 
-        if (isModify && mContext instanceof AbstractMobileAddOrderActivity){
+        if (isModify && mDelListener != null){
             del_btn.setVisibility(View.VISIBLE);
             del_btn.setOnClickListener(v -> {
-                ((AbstractMobileAddOrderActivity)mContext).deleteDetails();
+                mDelListener.onClick(v);
                 dismiss();
             });
         }
@@ -378,7 +401,7 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
         if (object != null){
             double new_price = 0.00,new_num = 0.00;
             try {
-                new_price = Double.parseDouble(mPriceEt.getText().toString());
+                if (mPriceEt != null)new_price = Double.parseDouble(mPriceEt.getText().toString());
                 new_num = Double.parseDouble(mNumEt.getText().toString());
             }catch (NumberFormatException e){
                 e.printStackTrace();
