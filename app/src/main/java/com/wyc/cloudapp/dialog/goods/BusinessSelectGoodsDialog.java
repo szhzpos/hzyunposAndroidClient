@@ -324,6 +324,7 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
         mNumEt.setText(String.valueOf(num));
 
         if (mPriceEt != null){
+            mPriceEt.requestFocus();
             mPriceEt.post(()->mPriceEt.selectAll());
             mPriceEt.setText(String.valueOf(price));
         }else
@@ -336,7 +337,6 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
             mUnitTv.setTag(object.getString("stock_unit_id"));
             mUnitTv.setText(object.getString("stock_unit_name"));
         }
-
     }
 
 

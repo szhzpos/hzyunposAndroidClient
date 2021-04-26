@@ -238,7 +238,7 @@ public class MobileInventoryAddOrderActivity extends AbstractMobileActivity {
             int index = mAdapter.isExist(object);
             if (index >= 0 && !modify){
                 mDetailsView.scrollToPosition(index);
-                MyDialog.displayAskMessage(this, String.format(Locale.CHINA,"<%s>已存在，是否继续？", MobileSelectGoodsActivity.getGoodsName(object)), myDialog -> {
+                MyDialog.displayAskMessage(this, getString(R.string.ask_exist_hints, MobileSelectGoodsActivity.getGoodsName(object)), myDialog -> {
                     mAdapter.addDetails(mAdapter.updateGoodsDetail(object),index,false);
                     myDialog.dismiss();
                 }, MyDialog::dismiss);

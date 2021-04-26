@@ -11,8 +11,7 @@
     android:paddingTop="@dimen/margin_5"
     android:paddingEnd="@dimen/margin_8"
     android:paddingBottom="@dimen/margin_5"
-    app:ItemPadding="@dimen/margin_5"
-    tools:context=".activity.mobile.business.MobileAddPurchaseOrderActivity">
+    app:ItemPadding="@dimen/margin_5">
 
     <include layout="@layout/business_order_function_button_layout" />
 

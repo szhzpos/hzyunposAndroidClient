@@ -40,8 +40,9 @@ public final class MobileWholesaleOrderActivity extends AbstractMobileBusinessOr
          *
          * 3全部发货 4己退货的情况从显示列表中删除
          * */
+        if (order == null)return false;
         int status = order.getIntValue("rk_status");
-        return order != null && (status == 3 || status == 4);
+        return status == 3 || status == 4;
     }
 
     @Override

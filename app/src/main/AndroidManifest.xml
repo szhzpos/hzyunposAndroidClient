@@ -38,14 +38,24 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
-        <activity android:name=".activity.mobile.business.MobileInventoryAddOrderActivity" android:windowSoftInputMode="adjustResize|stateUnchanged" />
+        <activity
+            android:name=".activity.mobile.business.MobileTransferInOrderDetailActivity"
+            android:windowSoftInputMode="adjustResize|stateUnchanged" />
+        <activity android:name=".activity.mobile.business.MobileTransferInOrderActivity" />
+        <activity android:name=".activity.mobile.business.MobileTransferOutOrderActivity" />
+        <activity android:name=".activity.mobile.business.MobileTransferOutOrderActivity$MobileAddTransferOutOrderActivity" />
+        <activity
+            android:name=".activity.mobile.business.MobileInventoryAddOrderActivity"
+            android:windowSoftInputMode="adjustResize|stateUnchanged" />
         <activity android:name=".activity.mobile.business.MobileInventoryOrderActivity" />
         <activity android:name=".activity.mobile.business.MobileOtherWarehouseOrderActivity" />
         <activity android:name=".activity.mobile.business.MobileOtherWarehouseOrderActivity$MobileAddOtherWarehouseOrderActivity" />
         <activity
             android:name=".activity.mobile.business.MobileVipManageActivity"
             android:windowSoftInputMode="adjustResize|stateUnchanged" />
-        <activity android:name=".activity.mobile.business.MobileSelectGoodsActivity" android:windowSoftInputMode="adjustResize|stateUnchanged" />
+        <activity
+            android:name=".activity.mobile.business.MobileSelectGoodsActivity"
+            android:windowSoftInputMode="adjustResize|stateUnchanged" />
         <activity android:name=".activity.mobile.report.MobileCashierTransfer" />
         <activity android:name=".activity.mobile.report.MobileCashierTransfer$TransferDetailsActivity" />
         <activity android:name=".activity.mobile.report.MobileStockQueryActivity" />

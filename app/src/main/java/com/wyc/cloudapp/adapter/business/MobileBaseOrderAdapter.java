@@ -27,7 +27,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public abstract class MobileBaseOrderAdapter extends AbstractBusinessOrderDataAdapter<MobileBaseOrderAdapter.MyViewHolder>  {
+public abstract class MobileBaseOrderAdapter<T  extends MobileBaseOrderAdapter.MyViewHolder> extends AbstractBusinessOrderDataAdapter<T>  {
     public MobileBaseOrderAdapter(MainActivity activity) {
         super(activity);
     }
@@ -47,14 +47,14 @@ public abstract class MobileBaseOrderAdapter extends AbstractBusinessOrderDataAd
 
     @NonNull
     @Override
-    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public T onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = View.inflate(mContext, R.layout.mobile_business_order_content_layout, null);
         itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT));
-        return new MyViewHolder(itemView);
+        return (T) new MyViewHolder(itemView);
     }
 
     @Override
-    public final void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+    public final void onBindViewHolder(@NonNull T holder, int position) {
         final JSONObject object = mDatas.getJSONObject(position);
 
         if (!holder.order_code_tv.hasOnClickListeners())holder.order_code_tv.setOnClickListener(this);
@@ -68,5 +68,5 @@ public abstract class MobileBaseOrderAdapter extends AbstractBusinessOrderDataAd
         bindViewHolder(holder,object);
     }
 
-    abstract void bindViewHolder(MyViewHolder holder,final JSONObject object);
+    abstract void bindViewHolder(T holder,final JSONObject object);
 }

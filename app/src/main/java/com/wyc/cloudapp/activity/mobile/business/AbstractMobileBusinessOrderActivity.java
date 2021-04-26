@@ -43,7 +43,7 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
     private long mStartTime = 0,mEndTime = 0;
     private Button mCurrentDateBtn,mCurrentAuditStatusBtn;
     private TextView mStartDateTv,mEndDateTv;
-    private AbstractDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> mAdapter;
+    private AbstractBusinessOrderDataAdapter<? extends AbstractBusinessOrderDataAdapter.SuperViewHolder> mAdapter;
     private JSONObject mParameterObj;
     private boolean isFirstLoad = true;
     @Override

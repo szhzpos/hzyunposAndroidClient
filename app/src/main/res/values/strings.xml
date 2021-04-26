@@ -576,6 +576,8 @@
     <string name="auditing_hints">正在审核单据…</string>
     <string name="upload_order_success_hints">上传成功</string>
     <string name="ask_audit_hints">是否审核?</string>
+    <string name="ask_exist_hints">%1$s已存在，是否继续?</string>
+
 
     <!--买满赠方案选择对话框-->
     <string name="rule_name">促销方案名称</string>
@@ -591,4 +593,12 @@
     <string name="inventory_way">盘点方式：</string>
     <string name="inventory_task_code">任务单号：</string>
 
+    <!--调出单-->
+    <string name="transfer_out_wh">调出门店：</string>
+    <string name="transfer_in_wh">调入门店：</string>
+
+    <string name="confirm_receipt">确认收货</string>
+    <string name="confirmed_receipt">已收货</string>
+    <string name="unconfirm_receipt">未收货</string>
+    <string name="confirming_hints">正在确认收货…</string>
 </resources>

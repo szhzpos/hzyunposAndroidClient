@@ -17,7 +17,7 @@ import com.wyc.cloudapp.activity.MainActivity;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class MobilePurchaseRefundOrderAdapter extends MobileBaseOrderAdapter {
+public class MobilePurchaseRefundOrderAdapter extends MobileBaseOrderAdapter<MobileBaseOrderAdapter.MyViewHolder> {
     public MobilePurchaseRefundOrderAdapter(MainActivity activity) {
         super(activity);
     }
