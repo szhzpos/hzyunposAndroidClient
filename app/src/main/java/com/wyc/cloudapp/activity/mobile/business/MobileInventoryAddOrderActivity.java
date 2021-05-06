@@ -439,7 +439,7 @@ public class MobileInventoryAddOrderActivity extends AbstractMobileActivity {
                 try {
                     final JSONObject info = JSONObject.parseObject(retJson.getString("info"));
                     if (HttpUtils.checkBusinessSuccess(info)){
-                        final JSONArray data = Utils.getNullObjectAsEmptyJsonArray(info,"xlist");
+                        final JSONArray data = Utils.getNullObjectAsEmptyJsonArray(info,"data");
                         if (data.isEmpty()){
                             CustomApplication.runInMainThread(()-> Toast.makeText(MobileInventoryAddOrderActivity.this,"当前没有盘点任务...",Toast.LENGTH_LONG).show());
                         }else {
@@ -459,10 +459,13 @@ public class MobileInventoryAddOrderActivity extends AbstractMobileActivity {
         mInventoryTaskTv.setTag(task.getString("pcd_task_id"));
 
         final String task_mode = task.getString("task_mode");
-        mInventoryWayTv.setText("1".equals(task_mode) ? "全部盘点" : "部分盘点");
+        mInventoryWayTv.setText(getInventoryModeName(task_mode));
         mInventoryWayTv.setTag(task_mode);
 
         mTaskCategory = task.getString("task_category");
+    }
+    public static String getInventoryModeName(final String id){
+        return "1".equals(id) ? "全部盘点" : "2".equals(id) ? "部分盘点" : CustomApplication.self().getString(R.string.other_sz);
     }
 
     private void query(final String id){

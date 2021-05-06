@@ -15,7 +15,7 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.TreeListDialog;
 import com.wyc.cloudapp.utils.Utils;
-
+/*调出单*/
 public class MobileTransferOutOrderActivity extends AbstractMobileBusinessOrderActivity {
 
     @Override

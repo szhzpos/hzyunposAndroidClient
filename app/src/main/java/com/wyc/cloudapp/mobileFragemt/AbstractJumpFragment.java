@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -39,6 +40,9 @@ public abstract class AbstractJumpFragment extends AbstractMobileFragment {
                 function_linearLayout = (ViewGroup)getRootView() ;
 
             if (function_linearLayout != null) {
+                if (function_linearLayout instanceof ScrollView && function_linearLayout.getChildCount() != 0)
+                    function_linearLayout = (ViewGroup) function_linearLayout.getChildAt(0);
+
                 int _count = function_linearLayout.getChildCount(), child_count;
                 for (int i = 0; i < _count; i++) {
                     final View child = function_linearLayout.getChildAt(i);

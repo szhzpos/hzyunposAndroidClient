@@ -40,6 +40,7 @@ import java.util.Objects;
 import java.util.TimeZone;
 
 public class MobileInventoryOrderActivity extends AbstractMobileActivity {
+    public static String WH_ID_KEY = "wh_id";
     private long mStartTime = 0,mEndTime = 0;
     private Button mCurrentDateBtn;
     private TextView mStartDateTv,mEndDateTv;
@@ -186,7 +187,7 @@ public class MobileInventoryOrderActivity extends AbstractMobileActivity {
         final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
 
         mParameterObj.put("appid",getAppId());
-        mParameterObj.put("wh_id",getWhId());
+        mParameterObj.put(WH_ID_KEY,getWhId());
         mParameterObj.put("pt_user_id",getPtUserId());
         mParameterObj.put("begin_time",sdf.format(new Date(mStartTime)));
         mParameterObj.put("end_time",sdf.format(new Date(mEndTime)));

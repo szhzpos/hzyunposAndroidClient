@@ -38,6 +38,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
+        <activity android:name=".activity.mobile.business.MobileInventoryTaskActivity"></activity>
         <activity
             android:name=".activity.mobile.business.MobileTransferInOrderDetailActivity"
             android:windowSoftInputMode="adjustResize|stateUnchanged" />

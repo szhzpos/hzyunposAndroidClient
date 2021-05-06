@@ -5,35 +5,41 @@ import android.os.Bundle;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDataAdapter;
-import com.wyc.cloudapp.adapter.business.MobileTransferInOrderAdapter;
-/*调入单*/
-public class MobileTransferInOrderActivity extends AbstractMobileBusinessOrderActivity {
+import com.wyc.cloudapp.adapter.business.MobileInventoryTaskAdapter;
+
+/*盘点任务*/
+public class MobileInventoryTaskActivity extends AbstractMobileBusinessOrderActivity {
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRightText("");
-        setRightListener(v -> {});
     }
 
     @Override
     protected AbstractBusinessOrderDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> getAdapter() {
-        return new MobileTransferInOrderAdapter(this);
+        return new MobileInventoryTaskAdapter(this);
     }
 
     @Override
     protected JSONObject generateQueryCondition() {
         final JSONObject condition = new JSONObject();
-        condition.put("api","/api/api_move_in/xlist");
+        condition.put(MobileInventoryOrderActivity.WH_ID_KEY,getWhId());
+        condition.put("api","/api/inventory/task_order_list");
         return condition;
     }
 
     @Override
+    protected String getStatusKey() {
+        return "status";
+    }
+
+    @Override
     public Class<?> jumpAddTarget() {
-        return MobileTransferInOrderDetailActivity.class;
+        return null;
     }
 
     @Override
     protected String getPermissionId() {
-        return "46";
+        return "10";
     }
 }

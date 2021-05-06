@@ -463,6 +463,8 @@
     <string name="inventory_sz">库存</string>
     <string name="other_inventory_sz">其他出入库</string>
     <string name="inventory_order_sz">实盘录入</string>
+    <string name="inventory_task_not_colon">盘点任务</string>
+    <string name="inventory_audit_sz">盘点审核</string>
     <string name="chain_sz">连锁</string>
     <string name="distribution_warehouse_sz">配送出库单</string>
     <string name="distribution_warehousing_sz">配送入库单</string>
@@ -472,6 +474,10 @@
     <string name="unaudited_sz">未审核</string>
     <string name="goods_record_sz">商品档案</string>
     <string name="vip_record_sz">会员档案</string>
+
+    <string name="wait_audited_sz">待审核</string>
+    <string name="notInventory_sz">待盘点</string>
+    <string name="inventoried_sz">已盘点</string>
 
     <!--新增业务订单-->
     <string name="pick_goods_sz">选商品</string>

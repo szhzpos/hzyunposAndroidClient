@@ -195,6 +195,10 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
             final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
 
             mParameterObj.put("appid",getAppId());
+
+            if (condition.containsKey(MobileInventoryOrderActivity.WH_ID_KEY))
+                mParameterObj.put(MobileInventoryOrderActivity.WH_ID_KEY,condition.getString(MobileInventoryOrderActivity.WH_ID_KEY));
+
             mParameterObj.put("stores_id",getStoreId());
             mParameterObj.put("pt_user_id",getPtUserId());
             mParameterObj.put("begin_time",sdf.format(new Date(mStartTime)));
@@ -248,24 +252,37 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
 
     private void initAuditBtn(){
         final InterceptLinearLayout audit_btn_layout = findViewById(R.id.audit_btn_layout);
-        final Button m_all_btn = audit_btn_layout.findViewById(R.id.m_all_btn);
+        final Button m_all_btn = audit_btn_layout.findViewById(R.id.m_all_btn),audit_btn = audit_btn_layout.findViewById(R.id.m_audit_btn);
         audit_btn_layout.post(()->{
             float corner_size = audit_btn_layout.getHeight() / 2.0f;
             audit_btn_layout.setForeground(DrawableUtil.createDrawable(new float[]{corner_size,corner_size,corner_size,corner_size,corner_size,corner_size,corner_size,corner_size}
                     ,getColor(R.color.transparent), Utils.dpToPx(this,1),getColor(R.color.blue)));
         });
-        audit_btn_layout.setClickListener(mAuditStatusClickListener);
         if (isFindSourceOrderId()){//如果是查找来源单号则隐藏审核查询条件。
-            final Button audit_btn = audit_btn_layout.findViewById(R.id.m_audit_btn);
             audit_btn.post(audit_btn::callOnClick);
             audit_btn_layout.setVisibility(View.GONE);
         }else
             m_all_btn.post(m_all_btn::callOnClick);
+
+        //盘点任务列表
+        if (this instanceof MobileInventoryTaskActivity){
+            final Button notInventory_btn = audit_btn_layout.findViewById(R.id.notInventory_btn),unaudited_btn = audit_btn_layout.findViewById(R.id.m_unaudited_btn);
+            notInventory_btn.setVisibility(View.VISIBLE);
+
+            audit_btn.setText(getString(R.string.inventoried_sz));
+            unaudited_btn.setText(getString(R.string.wait_audited_sz));
+        }
+
+        audit_btn_layout.setClickListener(mAuditStatusClickListener);
     }
 
     public boolean isFindSourceOrderId(){
         final Intent result = getIntent();
         return result != null && result.getBooleanExtra("FindSource",false);
+    }
+
+    protected String getStatusKey(){
+        return "sh_status";
     }
 
     private final View.OnClickListener mAuditStatusClickListener = v -> {
@@ -276,15 +293,23 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
 
         float corner_size = (float) (btn.getHeight() / 2.0);
         float[] corners = new float[8];
-
+        final String status = getStatusKey();
         if (id == R.id.m_all_btn){
             corners[0] = corners[1] =  corners[6] = corners[7] = corner_size;
-            mParameterObj.remove("sh_status");
+            mParameterObj.remove(status);
         }else if (id == R.id.m_unaudited_btn){
-            mParameterObj.put("sh_status",1);
+            if (this instanceof MobileInventoryTaskActivity){
+                mParameterObj.put(status,2);
+            }else
+                mParameterObj.put(status,1);
         }else if (id == R.id.m_audit_btn){
             corners[2] = corners[3] =  corners[4] = corners[5] = corner_size;
-            mParameterObj.put("sh_status",2);
+            if (this instanceof MobileInventoryTaskActivity){
+                mParameterObj.put(status,3);
+            }else
+                mParameterObj.put(status,2);
+        }else if (id == R.id.notInventory_btn){
+            mParameterObj.put(status,1);
         }
         //请求数据
         if (isFirstLoad){
