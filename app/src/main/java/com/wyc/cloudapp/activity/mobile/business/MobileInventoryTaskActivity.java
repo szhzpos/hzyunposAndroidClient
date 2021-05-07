@@ -23,7 +23,7 @@ public class MobileInventoryTaskActivity extends AbstractMobileBusinessOrderActi
     @Override
     protected JSONObject generateQueryCondition() {
         final JSONObject condition = new JSONObject();
-        condition.put(MobileInventoryOrderActivity.WH_ID_KEY,getWhId());
+        condition.put(MobilePracticalInventoryOrderActivity.WH_ID_KEY,getWhId());
         condition.put("api","/api/inventory/task_order_list");
         return condition;
     }
@@ -35,11 +35,11 @@ public class MobileInventoryTaskActivity extends AbstractMobileBusinessOrderActi
 
     @Override
     public Class<?> jumpAddTarget() {
-        return null;
+        return MobileInventoryAddTaskActivity.class;
     }
 
     @Override
     protected String getPermissionId() {
-        return "10";
+        return "48";
     }
 }

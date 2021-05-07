@@ -474,10 +474,7 @@
     <string name="unaudited_sz">未审核</string>
     <string name="goods_record_sz">商品档案</string>
     <string name="vip_record_sz">会员档案</string>
-
-    <string name="wait_audited_sz">待审核</string>
-    <string name="notInventory_sz">待盘点</string>
-    <string name="inventoried_sz">已盘点</string>
+    <string name="upload_business_order_hint_sz">上传业务单据错误:%1$s!</string>
 
     <!--新增业务订单-->
     <string name="pick_goods_sz">选商品</string>
@@ -607,4 +604,11 @@
     <string name="confirmed_receipt">已收货</string>
     <string name="unconfirm_receipt">未收货</string>
     <string name="confirming_hints">正在确认收货…</string>
+
+    <!--盘点任务-->
+    <string name="wait_audited_sz">待审核</string>
+    <string name="notInventory_sz">待盘点</string>
+    <string name="inventoried_sz">已盘点</string>
+    <string name="inventoried_category_sz">盘点类别：</string>
+    <string name="hint_input_task_name">请输入盘点任务名称</string>
 </resources>

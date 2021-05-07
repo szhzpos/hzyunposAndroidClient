@@ -23,7 +23,7 @@ import com.wyc.cloudapp.activity.MainActivity;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class MobileOtherWarehouseOrderAdapter extends MobileBaseOrderAdapter {
+public class MobileOtherWarehouseOrderAdapter extends MobileBaseOrderAdapter<MobileBaseOrderAdapter.MyViewHolder> {
     public MobileOtherWarehouseOrderAdapter(MainActivity activity) {
         super(activity);
     }

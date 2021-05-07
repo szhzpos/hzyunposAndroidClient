@@ -11,10 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.activity.mobile.business.MobileInventoryAddOrderActivity;
-import com.wyc.cloudapp.activity.mobile.business.MobileInventoryOrderActivity;
+import com.wyc.cloudapp.activity.mobile.business.MobilePracticalInventoryAddOrderActivity;
 import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
-import com.wyc.cloudapp.utils.Utils;
 
 /**
  * @ProjectName: CloudApp
@@ -33,7 +31,7 @@ public class MobileInventoryTaskAdapter extends AbstractBusinessOrderDataAdapter
         super(activity);
     }
 
-    static class MyViewHolder extends AbstractQueryDataAdapter.SuperViewHolder {
+    protected static class MyViewHolder extends AbstractQueryDataAdapter.SuperViewHolder {
         TextView inventory_task_tv,inventory_task_code_tv,inventory_wh_name_tv,inventory_way_tv,date_tv,status_tv;
         MyViewHolder(View itemView) {
             super(itemView);
@@ -59,13 +57,14 @@ public class MobileInventoryTaskAdapter extends AbstractBusinessOrderDataAdapter
         final JSONObject object = mDatas.getJSONObject(position);
 
         holder.inventory_task_tv.setText(object.getString("task_name"));
-        holder.inventory_task_tv.setTag(object.getString("pcd_task_id"));
+
         if (!holder.inventory_task_code_tv.hasOnClickListeners())holder.inventory_task_code_tv.setOnClickListener(this);
         holder.inventory_task_code_tv.setText(Html.fromHtml("<u>" + object.getString("pcd_task_code") + "</u>"));
+        holder.inventory_task_code_tv.setTag(object.toString());
 
         holder.status_tv.setText(object.getString("status_name"));
         holder.inventory_wh_name_tv.setText(mContext.getStoreName());
-        holder.inventory_way_tv.setText(MobileInventoryAddOrderActivity.getInventoryModeName(object.getString("task_mode")));
+        holder.inventory_way_tv.setText(MobilePracticalInventoryAddOrderActivity.getInventoryModeName(object.getString("task_mode")));
         holder.date_tv.setText(object.getString("addtime"));
     }
 }

@@ -38,14 +38,14 @@ import com.wyc.cloudapp.utils.http.HttpUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.Locale;
-
-public class MobileInventoryAddOrderActivity extends AbstractMobileActivity {
+/*新增实盘数据录入单*/
+public class MobilePracticalInventoryAddOrderActivity extends AbstractMobileActivity {
     private AbstractBusinessOrderDetailsDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> mAdapter;
     private RecyclerView mDetailsView;
     private TextView mSaleOperatorTv;
     private TextView mOrderCodeTv;
     private TextView mDateTv;
-    private TextView mRemarkEt,mWarehouseTv;
+    private TextView mRemarkEt;
     private TextView mSumNumTv;
     private TextView mInventoryTaskTv,mInventoryWayTv;
     private CustomProgressDialog mProgressDialog;
@@ -118,12 +118,9 @@ public class MobileInventoryAddOrderActivity extends AbstractMobileActivity {
 
 
     private void initStores(){
-        mWarehouseTv = findViewById(R.id.m_business_warehouse_tv);
-        setWarehouse(getStoreId(),getStoreName());
-    }
-    private void setWarehouse(final String id,final String name){
-        mWarehouseTv.setTag(id);
-        mWarehouseTv.setText(name);
+        TextView warehouseTv = findViewById(R.id.m_business_warehouse_tv);
+        warehouseTv.setTag(getStoreId());
+        warehouseTv.setText(getStoreName());
     }
 
     private void initSaleOperator(){
@@ -273,13 +270,13 @@ public class MobileInventoryAddOrderActivity extends AbstractMobileActivity {
                     generateOrderCode();
                 }
             }else if (id == R.id.m_pick_goods_btn){
-                final Intent intent = new Intent(MobileInventoryAddOrderActivity.this, MobileSelectGoodsActivity.class);
+                final Intent intent = new Intent(MobilePracticalInventoryAddOrderActivity.this, MobileSelectGoodsActivity.class);
                 intent.putExtra(MobileSelectGoodsActivity.TITLE_KEY,getString(R.string.select_goods_label));
                 intent.putExtra(MobileSelectGoodsActivity.IS_SEL_KEY,true);
                 intent.putExtra(MobileSelectGoodsActivity.TASK_CATEGORY_KEY,mTaskCategory);
                 startActivityForResult(intent, MobileSelectGoodsActivity.SELECT_GOODS_CODE);
             }else if (id == R.id.m_business_scan_btn){
-                final BusinessSelectGoodsDialog dialog = new SelectGoodsDialog(MobileInventoryAddOrderActivity.this);
+                final BusinessSelectGoodsDialog dialog = new SelectGoodsDialog(MobilePracticalInventoryAddOrderActivity.this);
                 dialog.setGoodsCategory(mTaskCategory);
                 if (dialog.exec() == 1){
                     addGoodsDetails(dialog.getContentObj(),false);
@@ -347,7 +344,7 @@ public class MobileInventoryAddOrderActivity extends AbstractMobileActivity {
             param_obj.put("pcd_task_id",Utils.getViewTagValue(mInventoryTaskTv,""));
 
             final String pcd_id = Utils.getNullStringAsEmpty(mOrderInfo,"pcd_id");
-            if (Utils.isNotEmpty(pcd_id))param_obj.put("pcd_id",Utils.getNullStringAsEmpty(mOrderInfo,"pcd_id"));
+            if (Utils.isNotEmpty(pcd_id))param_obj.put("pcd_id",pcd_id);
             param_obj.put("pcd_code",mOrderCodeTv.getText().toString());
 
             param_obj.put("pt_user_id",getPtUserId());
@@ -373,7 +370,7 @@ public class MobileInventoryAddOrderActivity extends AbstractMobileActivity {
                 }
             }
             if (Utils.isNotEmpty(err)){
-                MyDialog.ToastMessageInMainThread("上传业务单据错误:" + err);
+                MyDialog.ToastMessageInMainThread(getString(R.string.upload_business_order_hint_sz,err));
             }
             mProgressDialog.dismiss();
         });
@@ -441,7 +438,7 @@ public class MobileInventoryAddOrderActivity extends AbstractMobileActivity {
                     if (HttpUtils.checkBusinessSuccess(info)){
                         final JSONArray data = Utils.getNullObjectAsEmptyJsonArray(info,"data");
                         if (data.isEmpty()){
-                            CustomApplication.runInMainThread(()-> Toast.makeText(MobileInventoryAddOrderActivity.this,"当前没有盘点任务...",Toast.LENGTH_LONG).show());
+                            CustomApplication.runInMainThread(()-> Toast.makeText(MobilePracticalInventoryAddOrderActivity.this,"当前没有盘点任务...",Toast.LENGTH_LONG).show());
                         }else {
                             CustomApplication.runInMainThread(()->setInventoryTask(data.getJSONObject(0)));
                         }
@@ -465,7 +462,17 @@ public class MobileInventoryAddOrderActivity extends AbstractMobileActivity {
         mTaskCategory = task.getString("task_category");
     }
     public static String getInventoryModeName(final String id){
-        return "1".equals(id) ? "全部盘点" : "2".equals(id) ? "部分盘点" : CustomApplication.self().getString(R.string.other_sz);
+        final JSONArray array = getInventoryWay();
+        for (int i = 0,size = array.size();i < size;i ++){
+            final JSONObject object = array.getJSONObject(i);
+            if (object.getString("item_id").equals(id)){
+                return object.getString("item_name");
+            }
+        }
+        return CustomApplication.self().getString(R.string.other_sz);
+    }
+    public static JSONArray getInventoryWay(){
+        return JSONArray.parseArray("[{\"item_id\":1,\"item_name\":\"全部盘点\"},{\"item_id\":2,\"item_name\":\"部分盘点\"}]");
     }
 
     private void query(final String id){

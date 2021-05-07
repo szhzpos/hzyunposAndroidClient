@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/business_add_main_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/margin_8"
+    android:paddingTop="@dimen/margin_5"
+    android:paddingEnd="@dimen/margin_8"
+    android:paddingBottom="@dimen/margin_5"
+    app:ItemPadding="@dimen/margin_5">
+
+    <com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout
+        android:id="@+id/business_function_btn_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_45"
+        android:orientation="horizontal"
+        android:showDividers="middle"
+        app:ItemPadding="@dimen/margin_5">
+
+        <Button
+            android:id="@+id/m_business_save_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/round_shape_main_color"
+            android:text="@string/business_save_sz"
+            android:textColor="@color/white_pink"
+            android:textSize="@dimen/font_size_18"
+            android:visibility="visible" />
+
+        <Button
+            android:id="@+id/task_del_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/round_shape_main_color"
+            android:text="@string/delete_sz"
+            android:textColor="@color/white_pink"
+            android:textSize="@dimen/font_size_18"
+            android:visibility="visible" />
+    </com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/business_order_item_height"
+        android:background="@drawable/round_shape_blue"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/margin_8"
+        android:paddingTop="@dimen/margin_5"
+        android:paddingEnd="@dimen/margin_2"
+        android:paddingBottom="@dimen/margin_5">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@string/warehouse_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_14" />
+
+        <TextView
+            android:id="@+id/m_business_warehouse_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:lines="1"
+            android:textColor="@color/text_color" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/business_order_item_height"
+        android:background="@drawable/round_shape_blue"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/margin_8"
+        android:paddingTop="@dimen/margin_5"
+        android:paddingEnd="@dimen/margin_2"
+        android:paddingBottom="@dimen/margin_5">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@string/business_order_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_14" />
+
+        <TextView
+            android:id="@+id/m_business_order_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:textColor="@color/text_color" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/date_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/business_order_item_height"
+        android:background="@drawable/round_shape_blue"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/margin_8"
+        android:paddingTop="@dimen/margin_5"
+        android:paddingEnd="@dimen/margin_2"
+        android:paddingBottom="@dimen/margin_5"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@string/date_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_14" />
+
+        <TextView
+            android:id="@+id/m_business_date_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:textColor="@color/text_color" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/business_order_item_height"
+        android:background="@drawable/round_shape_blue"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/margin_8"
+        android:paddingTop="@dimen/margin_5"
+        android:paddingEnd="@dimen/margin_2"
+        android:paddingBottom="@dimen/margin_5">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@string/inventory_task"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_14" />
+
+        <EditText
+            android:id="@+id/inventory_task_name_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:autofillHints=""
+            android:background="@drawable/edit_text_style"
+            android:gravity="center_vertical"
+            android:hint="@string/hint_input_task_name"
+            android:inputType="text"
+            android:singleLine="true"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/business_order_item_height"
+        android:background="@drawable/round_shape_blue"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/margin_8"
+        android:paddingTop="@dimen/margin_5"
+        android:paddingEnd="@dimen/margin_2"
+        android:paddingBottom="@dimen/margin_5">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@string/inventory_way"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_14" />
+
+        <TextView
+            android:id="@+id/inventory_way_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableEnd="@drawable/small_fold"
+            android:gravity="center_vertical"
+            android:textColor="@color/text_color" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/category_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/business_order_item_height"
+        android:background="@drawable/round_shape_blue"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/margin_8"
+        android:paddingTop="@dimen/margin_5"
+        android:paddingEnd="@dimen/margin_2"
+        android:paddingBottom="@dimen/margin_5">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@string/inventoried_category_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_14" />
+
+        <TextView
+            android:id="@+id/inventory_category_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableEnd="@drawable/small_fold"
+            android:gravity="center_vertical"
+            android:textColor="@color/text_color" />
+
+    </LinearLayout>
+
+    <include layout="@layout/business_order_remark_layout" />
+
+</com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout>

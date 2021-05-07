@@ -157,8 +157,12 @@ public final class Logger {
   }
 
   public static void d_json(@Nullable Object json) {
-    if (BuildConfig.DEBUG)
-      printer.json(json.toString());
+    if (BuildConfig.DEBUG){
+      if (null != json)
+        printer.json(json.toString());
+      else
+        printer.e("null");
+    }
   }
 
 

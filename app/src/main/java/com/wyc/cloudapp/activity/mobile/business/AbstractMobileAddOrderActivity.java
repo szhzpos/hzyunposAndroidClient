@@ -416,7 +416,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                 }
             }
             if (Utils.isNotEmpty(err)){
-                MyDialog.ToastMessageInMainThread("上传业务单据错误:" + err);
+                MyDialog.ToastMessageInMainThread(getString(R.string.upload_business_order_hint_sz,err));
             }
             mProgressDialog.dismiss();
         });

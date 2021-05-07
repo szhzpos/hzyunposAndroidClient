@@ -311,7 +311,7 @@
                     android:layout_weight="1"
                     android:drawableTop="@drawable/inventory_audit"
                     android:gravity="center"
-                    android:tag="activity.mobile.MobileCashierActivity--"
+                    android:tag="activity.mobile.business.MobileInventoryOrderActivity"
                     android:text="@string/inventory_audit_sz"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/font_size_16"

@@ -38,7 +38,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
-        <activity android:name=".activity.mobile.business.MobileInventoryTaskActivity"></activity>
+        <activity android:name=".activity.mobile.business.MobileInventoryOrderDetailActivity"></activity>
+        <activity android:name=".activity.mobile.business.MobileInventoryOrderActivity" />
+        <activity android:name=".activity.mobile.business.MobileInventoryAddTaskActivity" />
+        <activity android:name=".activity.mobile.business.MobileInventoryTaskActivity" />
         <activity
             android:name=".activity.mobile.business.MobileTransferInOrderDetailActivity"
             android:windowSoftInputMode="adjustResize|stateUnchanged" />
@@ -46,9 +49,9 @@
         <activity android:name=".activity.mobile.business.MobileTransferOutOrderActivity" />
         <activity android:name=".activity.mobile.business.MobileTransferOutOrderActivity$MobileAddTransferOutOrderActivity" />
         <activity
-            android:name=".activity.mobile.business.MobileInventoryAddOrderActivity"
+            android:name=".activity.mobile.business.MobilePracticalInventoryAddOrderActivity"
             android:windowSoftInputMode="adjustResize|stateUnchanged" />
-        <activity android:name=".activity.mobile.business.MobileInventoryOrderActivity" />
+        <activity android:name=".activity.mobile.business.MobilePracticalInventoryOrderActivity" />
         <activity android:name=".activity.mobile.business.MobileOtherWarehouseOrderActivity" />
         <activity android:name=".activity.mobile.business.MobileOtherWarehouseOrderActivity$MobileAddOtherWarehouseOrderActivity" />
         <activity

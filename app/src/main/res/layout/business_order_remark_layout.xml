@@ -26,5 +26,6 @@
         android:background="@drawable/edit_text_style"
         android:gravity="center_vertical"
         android:singleLine="true"
-        android:textColor="@color/text_color" />
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
 </LinearLayout>
