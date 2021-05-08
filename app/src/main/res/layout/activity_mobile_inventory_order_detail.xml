@@ -1,9 +1,327 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/business_add_main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.mobile.business.MobileInventoryOrderDetailActivity">
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/margin_8"
+    android:paddingTop="@dimen/margin_5"
+    android:paddingEnd="@dimen/margin_8"
+    android:paddingBottom="@dimen/margin_5"
+    app:ItemPadding="@dimen/margin_5">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <Button
+        android:id="@+id/inventory_audit_btn"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/business_order_item_height"
+        android:background="@drawable/round_shape_main_color"
+        android:text="@string/audit_sz"
+        android:textColor="@color/white_pink"
+        android:textSize="@dimen/font_size_18"
+        android:visibility="visible" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/business_order_item_height"
+        android:background="@drawable/round_shape_blue"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/margin_8"
+        android:paddingTop="@dimen/margin_5"
+        android:paddingEnd="@dimen/margin_2"
+        android:paddingBottom="@dimen/margin_5">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@string/business_order_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_14" />
+
+        <TextView
+            android:id="@+id/m_business_order_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:textColor="@color/text_color" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/business_order_item_height"
+        android:background="@drawable/round_shape_blue"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/margin_8"
+        android:paddingTop="@dimen/margin_5"
+        android:paddingEnd="@dimen/margin_2"
+        android:paddingBottom="@dimen/margin_5">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@string/inventory_task"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_14" />
+
+        <TextView
+            android:id="@+id/inventory_task_name_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:autofillHints=""
+            android:background="@drawable/edit_text_style"
+            android:gravity="center_vertical"
+            android:singleLine="true"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@string/inventory_way"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_14" />
+
+        <TextView
+            android:id="@+id/inventory_way_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:textColor="@color/text_color" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/date_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/business_order_item_height"
+        android:background="@drawable/round_shape_blue"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/margin_8"
+        android:paddingTop="@dimen/margin_5"
+        android:paddingEnd="@dimen/margin_2"
+        android:paddingBottom="@dimen/margin_5"
+        android:visibility="visible">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@string/warehouse_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_14" />
+
+        <TextView
+            android:id="@+id/m_business_warehouse_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:lines="1"
+            android:textColor="@color/text_color" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@string/date_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_14" />
+
+        <TextView
+            android:id="@+id/m_business_date_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:textColor="@color/text_color" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/category_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/business_order_item_height"
+        android:background="@drawable/round_shape_blue"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/margin_8"
+        android:paddingTop="@dimen/margin_5"
+        android:paddingEnd="@dimen/margin_2"
+        android:paddingBottom="@dimen/margin_5"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@string/inventoried_category_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_14" />
+
+        <TextView
+            android:id="@+id/inventory_category_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:textColor="@color/text_color" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/business_order_item_height"
+        android:background="@drawable/round_shape_blue"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/margin_8"
+        android:paddingTop="@dimen/margin_5"
+        android:paddingEnd="@dimen/margin_8"
+        android:paddingBottom="@dimen/margin_5">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@string/remark_colon_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_14" />
+
+        <TextView
+            android:id="@+id/m_business_remark_et"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:autofillHints=""
+            android:background="@drawable/edit_text_style"
+            android:gravity="center_vertical"
+            android:singleLine="true"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/round_shape_main_color"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/height_30"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:text="@string/goods_i_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_16" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/height_30"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="@dimen/width_68"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/lock_stock_num_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_14" />
+
+                <TextView
+                    android:layout_width="@dimen/width_85"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/app_num_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_14" />
+
+                <TextView
+                    android:layout_width="@dimen/size_95"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/manual_num_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_14" />
+
+                <TextView
+                    android:layout_width="@dimen/width_75"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/Practical_sum_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_14" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/profit_and_loss_sum_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_14" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/details_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_45"
+            android:background="@drawable/round_shape_main_color"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/margin_8"
+            android:paddingEnd="@dimen/margin_8">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="@string/num_colon_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:id="@+id/business_sum_num_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="@string/zero_p_z_sz"
+                android:textColor="@color/orange_1"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                android:text="@string/total_colon_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:id="@+id/business_sum_amt_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical|end"
+                android:text="@string/zero_p_z_sz"
+                android:textColor="@color/orange_1"
+                android:textSize="@dimen/font_size_18" />
+        </LinearLayout>
+    </LinearLayout>
+</com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout>

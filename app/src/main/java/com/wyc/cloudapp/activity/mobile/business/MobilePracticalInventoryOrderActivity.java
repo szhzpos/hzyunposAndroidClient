@@ -43,7 +43,7 @@ public class MobilePracticalInventoryOrderActivity extends AbstractMobileActivit
     private long mStartTime = 0,mEndTime = 0;
     private Button mCurrentDateBtn;
     private TextView mStartDateTv,mEndDateTv;
-    private AbstractDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> mAdapter;
+    private MobileInventoryOrderAdapter mAdapter;
     private JSONObject mParameterObj;
 
     @Override

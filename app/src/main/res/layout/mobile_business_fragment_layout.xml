@@ -294,7 +294,7 @@
                     android:background="@drawable/left_right_separator"
                     android:drawableTop="@drawable/inventory_order_tv"
                     android:gravity="center"
-                    android:tag="activity.mobile.business.MobileInventoryOrderActivity"
+                    android:tag="activity.mobile.business.MobilePracticalInventoryOrderActivity"
                     android:text="@string/inventory_order_sz"
                     android:textColor="@color/text_color"
                     android:textSize="@dimen/font_size_16"

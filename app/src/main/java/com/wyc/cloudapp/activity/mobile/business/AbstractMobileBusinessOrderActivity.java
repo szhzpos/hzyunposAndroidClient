@@ -324,6 +324,8 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
                 mCurrentAuditStatusBtn.setTextColor(text_color);
                 if (mCurrentAuditStatusBtn.getId() == R.id.m_unaudited_btn){
                     mCurrentAuditStatusBtn.setBackground(getDrawable(R.drawable.left_right_separator));
+                }else if (mCurrentAuditStatusBtn.getId() == R.id.notInventory_btn){
+                    mCurrentAuditStatusBtn.setBackground(getDrawable(R.drawable.left_separator));
                 }else
                     mCurrentAuditStatusBtn.setBackground(DrawableUtil.createDrawable(corners,white,0,blue));
             }

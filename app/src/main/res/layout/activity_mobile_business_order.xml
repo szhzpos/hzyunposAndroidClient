@@ -117,7 +117,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="@drawable/left_right_separator"
+            android:background="@drawable/left_separator"
             android:text="@string/notInventory_sz"
             android:textSize="@dimen/font_size_16"
             android:visibility="gone" />

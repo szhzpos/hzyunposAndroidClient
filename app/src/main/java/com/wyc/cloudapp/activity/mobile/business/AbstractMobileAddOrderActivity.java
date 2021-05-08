@@ -269,7 +269,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                     runOnUiThread(()-> Toast.makeText(this,e.getLocalizedMessage(),Toast.LENGTH_LONG));
                 }
             }else {
-                runOnUiThread(()-> MyDialog.ToastMessage("查询订单编号错误:" + retJson.getString("info"),this,null));
+                runOnUiThread(()-> MyDialog.ToastMessage(getString(R.string.query_business_order_id_hint_sz,retJson.getString("info")),this,null));
             }
         });
     }
