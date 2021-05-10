@@ -36,7 +36,7 @@ import com.wyc.cloudapp.dialog.goods.AddGoodsInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
-public class MobileSelectGoodsActivity extends AbstractMobileActivity {
+public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity {
     public static final String TITLE_KEY = "title",IS_SEL_KEY = "isSel",PRICE_TYPE_KEY = "price_type",TASK_CATEGORY_KEY = "taskCategory",SEARCH_KEY = "barcode";
 
     public static final int SELECT_GOODS_CODE = 0x147;
@@ -53,7 +53,6 @@ public class MobileSelectGoodsActivity extends AbstractMobileActivity {
         super.onCreate(savedInstanceState);
 
         initExtra();
-        initTitle();
 
         initGoodsCategory();
         initGoodsInfo();
@@ -72,25 +71,25 @@ public class MobileSelectGoodsActivity extends AbstractMobileActivity {
         }
     }
 
-    private void initTitle(){
-        final Intent intent = getIntent();
-        if (intent != null){
-            setMiddleText(intent.getStringExtra(TITLE_KEY));
+    @Override
+    protected void add() {
+        if (AddGoodsInfoDialog.verifyGoodsAddPermissions(this)){
+            final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(this);
+            final JSONObject category = mGoodsCategoryAdapter.CategoryObj;
+            addGoodsInfoDialog.setCurrentCategory(category);
+            addGoodsInfoDialog.setFinishListener(barcode -> {
+                addGoodsInfoDialog.dismiss();
+                loadGoods(category.getString("item_id"));
+            });
+            addGoodsInfoDialog.show();
         }
-        setRightText(getString(R.string.a_goods_sz));
-        setRightListener(v -> {
-            if (AddGoodsInfoDialog.verifyGoodsAddPermissions(this)){
-                final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(this);
-                final JSONObject category = mGoodsCategoryAdapter.CategoryObj;
-                addGoodsInfoDialog.setCurrentCategory(category);
-                addGoodsInfoDialog.setFinishListener(barcode -> {
-                    addGoodsInfoDialog.dismiss();
-                    loadGoods(category.getString("item_id"));
-                });
-                addGoodsInfoDialog.show();
-            }
-        });
     }
+
+    @Override
+    protected String title() {
+        return getIntent().getStringExtra(TITLE_KEY);
+    }
+
 
     @Override
     protected int getContentLayoutId() {

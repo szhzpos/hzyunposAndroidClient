@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
@@ -11,7 +12,13 @@ import com.wyc.cloudapp.adapter.business.MobilePurchaseOrderAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.adapter.business.MobileWholesaleRefundOrderAdapter;
 import com.wyc.cloudapp.adapter.business.MobileWholesaleRefundOrderDetailAdapter;
+import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.dialog.CustomProgressDialog;
+import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
+import com.wyc.cloudapp.utils.http.HttpRequest;
+import com.wyc.cloudapp.utils.http.HttpUtils;
 
 /*批发退货单*/
 public class MobileWholesaleRefundOrderActivity extends AbstractMobileBusinessOrderActivity {
@@ -120,7 +127,36 @@ public class MobileWholesaleRefundOrderActivity extends AbstractMobileBusinessOr
 
         @Override
         protected void querySourceOrderInfo(String order_id) {
+            final JSONObject parameterObj = new JSONObject();
+            parameterObj.put("appid",getAppId());
+            parameterObj.put("stores_id",getStoreId());
+            parameterObj.put("pt_user_id",getPtUserId());
+            parameterObj.put("order_id",order_id);
 
+            final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,getString(R.string.hints_query_data_sz));
+            CustomApplication.execute(()->{
+                final JSONObject retJson = HttpUtils.sendPost(getUrl() + "/api/pfd/xinfo", HttpRequest.generate_request_parm(parameterObj,getAppSecret()),true);
+                if (HttpUtils.checkRequestSuccess(retJson)){
+                    try {
+                        final JSONObject info = JSONObject.parseObject(retJson.getString("info"));
+                        if (HttpUtils.checkBusinessSuccess(info)){
+                            Logger.d_json(info.getJSONObject("data").toString());
+                            runOnUiThread(()-> showWholesaleOrderInfo(info.getJSONObject("data")));
+                        }else throw new JSONException(info.getString("info"));
+                    }catch (JSONException e){
+                        e.printStackTrace();
+                        MyDialog.ToastMessageInMainThread(e.getMessage());
+                    }
+                }
+                progressDialog.dismiss();
+            });
+        }
+        private void showWholesaleOrderInfo(final JSONObject object){
+            setSourceOrder(Utils.getNullStringAsEmpty(object,"order_id"),Utils.getNullStringAsEmpty(object,"order_code"));
+            setWarehouse(object);
+            setView(mSaleOperatorTv,Utils.getNullStringAsEmpty(object,getSaleOperatorKey()),Utils.getNullStringAsEmpty(object,getSaleOperatorNameKey()));
+            setCustomer(Utils.getNullStringAsEmpty(object,"c_s_id"),Utils.getNullStringAsEmpty(object,"cs_xname"));
+            setOrderDetailsWithSourceOrder(Utils.getNullObjectAsEmptyJsonArray(object,"goods_list"));
         }
 
         @Override

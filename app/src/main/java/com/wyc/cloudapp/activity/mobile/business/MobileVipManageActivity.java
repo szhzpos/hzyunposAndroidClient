@@ -24,7 +24,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
@@ -37,7 +36,7 @@ import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
 
-public class MobileVipManageActivity extends AbstractMobileActivity {
+public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
     private VipCategoryAdapter mVipCategoryAdapter;
     private VipRecordAdapter mVipRecordAdapter;
     private EditText mSearchEt;
@@ -45,7 +44,6 @@ public class MobileVipManageActivity extends AbstractMobileActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initTitle();
         initVipCategory();
         initVipRecord();
 
@@ -103,8 +101,8 @@ public class MobileVipManageActivity extends AbstractMobileActivity {
         mSearchEt = search;
     }
 
-    private void loadVipForCategoryId(int id){
-        mVipRecordAdapter.loadVipForCategoryId(id);
+    private void loadVipForCategoryId(){
+        mVipRecordAdapter.loadVipForCategoryId(-1);
     }
 
     private void initVipCategory(){
@@ -122,6 +120,8 @@ public class MobileVipManageActivity extends AbstractMobileActivity {
         vip_record_list.addItemDecoration(new LinearItemDecoration(getColor(R.color.white)));
         mVipRecordAdapter = new VipRecordAdapter(this);
         vip_record_list.setAdapter(mVipRecordAdapter);
+
+        loadVipForCategoryId();
     }
 
     private void loadVipCategory(){
@@ -145,20 +145,21 @@ public class MobileVipManageActivity extends AbstractMobileActivity {
         });
     }
 
-    private void initTitle(){
-        setMiddleText(getString(R.string.vip_record_sz));
-        setRightText(getString(R.string.add_vip_sz));
-        setRightListener(v -> {
-            if (AddVipInfoDialog.verifyVipModifyOrAddPermissions(this)){
-                final JSONArray array = Utils.JsondeepCopy(mVipCategoryAdapter.getData());
-                array.remove(0);
+    @Override
+    protected void add() {
+        if (AddVipInfoDialog.verifyVipModifyOrAddPermissions(this)){
+            final JSONArray array = Utils.JsondeepCopy(mVipCategoryAdapter.getData());
+            array.remove(0);
+            final AddVipInfoDialog addVipInfoDialog = new AddVipInfoDialog(MobileVipManageActivity.this,getString(R.string.add_vip_sz),array);
+            addVipInfoDialog.setYesOnclickListener(dialog -> {
+                final JSONObject object = dialog.getVipInfo();
+            }).show();
+        }
+    }
 
-                final AddVipInfoDialog addVipInfoDialog = new AddVipInfoDialog(MobileVipManageActivity.this,getString(R.string.add_vip_sz),array);
-                addVipInfoDialog.setYesOnclickListener(dialog -> {
-                    final JSONObject object = dialog.getVipInfo();
-                }).show();
-            }
-        });
+    @Override
+    protected String title() {
+        return getString(R.string.vip_record_sz);
     }
 
     private final static class VipRecordAdapter extends AbstractDataAdapter<VipRecordAdapter.MyViewHolder> implements View.OnClickListener{
@@ -305,9 +306,9 @@ public class MobileVipManageActivity extends AbstractMobileActivity {
     }
 
     private final static class VipCategoryAdapter extends AbstractDataAdapter<VipCategoryAdapter.MyViewHolder> implements View.OnClickListener{
-        final MainActivity mContext;
+        final MobileVipManageActivity mContext;
         private View mCurrentItemView;
-        private VipCategoryAdapter(MainActivity mContext) {
+        private VipCategoryAdapter(MobileVipManageActivity mContext) {
             this.mContext = mContext;
         }
 
@@ -325,9 +326,6 @@ public class MobileVipManageActivity extends AbstractMobileActivity {
             final JSONObject object = mDatas.getJSONObject(position);
 
             final String grade_id = object.getString("grade_id");
-            if ("-1".equals(grade_id)){
-                holder.itemView.post(holder.itemView::callOnClick);
-            }
             holder.category_id.setText(grade_id);
             holder.category_name.setText(object.getString("grade_name"));
         }
@@ -368,7 +366,7 @@ public class MobileVipManageActivity extends AbstractMobileActivity {
                     int id = Integer.parseInt(category_id.getText().toString());
                     signSelectCategory(id);
 
-                    ((MobileVipManageActivity)mContext).loadVipForCategoryId(id);
+
                 }catch (NumberFormatException e){
                     MyDialog.ToastMessageInMainThread(e.getMessage());
                 }

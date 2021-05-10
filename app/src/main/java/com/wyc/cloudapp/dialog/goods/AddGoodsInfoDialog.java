@@ -1,9 +1,14 @@
 package com.wyc.cloudapp.dialog.goods;
 
+import android.graphics.Point;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -27,6 +32,8 @@ import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
 import java.util.Locale;
+
+import static android.content.Context.WINDOW_SERVICE;
 
 public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
     private String mBarcode;
@@ -71,6 +78,21 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
         getSupplier();
         getOnlycodeAndBarcode();
     }
+
+    @Override
+    protected void initWindowSize(){
+        final Display d = mContext.getDisplay(); // 获取屏幕宽、高用
+        final Point point = new Point();
+        d.getSize(point);
+        final Window dialogWindow = this.getWindow();
+        if (dialogWindow != null){
+            final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+            dialogWindow.setGravity(Gravity.CENTER);
+            lp.width = (int)(0.98 * point.x);
+            dialogWindow.setAttributes(lp);
+        }
+    }
+
     private void initUnit(){
         final EditText unit_et = findViewById(R.id.a_unit_et);
         unit_et.setOnClickListener(v -> {

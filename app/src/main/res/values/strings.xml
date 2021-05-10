@@ -474,6 +474,10 @@
     <string name="unaudited_sz">未审核</string>
     <string name="goods_record_sz">商品档案</string>
     <string name="vip_record_sz">会员档案</string>
+    <string name="category_sz">分类档案</string>
+    <string name="supplier_sz">货商档案</string>
+    <string name="customer_sz">客户档案</string>
+    <string name="vip_category_sz">会员类别</string>
     <string name="upload_business_order_hint_sz">上传业务单据错误:%1$s!</string>
     <string name="query_business_order_id_hint_sz">查询订单编号错误:%1$s!</string>
     <!--新增业务订单-->
@@ -611,7 +615,7 @@
     <string name="inventoried_sz">已盘点</string>
     <string name="inventoried_category_sz">盘点类别：</string>
     <string name="hint_input_task_name">请输入盘点任务名称</string>
-    
+
     <!--盘点审核-->
     <string name="lock_stock_num_sz">锁盘库存</string>
     <string name="app_num_sz">APP盘点数</string>

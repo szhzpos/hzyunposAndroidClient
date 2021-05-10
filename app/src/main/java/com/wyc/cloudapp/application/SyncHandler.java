@@ -96,7 +96,7 @@ final class SyncHandler extends Handler {
                     mFunc = this::up_category;
                     table_name = "shop_category";
                     sys_name = "正在同步商品类别";
-                    table_cls = new String[]{"category_id","name","parent_id","depth","path","status","sort"};
+                    table_cls = new String[]{"category_id","category_code","name","parent_id","depth","path","status","sort"};
                     url = base_url + "/api/scale/get_category_info";
                     object.put("pos_num",pos_num);
                     object.put("page",msg.obj);

@@ -50,7 +50,7 @@ import static android.database.Cursor.FIELD_TYPE_STRING;
  */
 
 public final class SQLiteHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
     private static volatile SQLiteDatabase mDb;
 
     private SQLiteHelper(Context context,final String databaseName){
@@ -128,6 +128,9 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             modify_list.add("ALTER TABLE shop_stores ADD COLUMN wh_id");
         }
 
+        if(!checkColumnExists(db,"shop_category","category_code")){
+            modify_list.add("ALTER TABLE shop_category ADD COLUMN category_code");
+        }
 
         try {
             db.beginTransaction();

@@ -398,7 +398,7 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
     private void checkSelfPermission(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
             if (!Environment.isExternalStorageManager()){
-                final Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                final Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
                 startActivity(intent);
             }
         }else {
