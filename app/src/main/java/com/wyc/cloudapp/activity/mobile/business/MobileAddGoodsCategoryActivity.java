@@ -11,6 +11,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.AddGoodsCategoryAdapter;
 import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
 import com.wyc.cloudapp.adapter.bean.TreeList;
+import com.wyc.cloudapp.dialog.business.AddGoodsCategoryDialog;
 import com.wyc.cloudapp.logger.Logger;
 
 import static com.wyc.cloudapp.activity.mobile.business.MobileSelectGoodsActivity.TITLE_KEY;
@@ -30,7 +31,11 @@ public class MobileAddGoodsCategoryActivity extends AbstractMobileBaseArchiveAct
 
     @Override
     protected void add() {
-
+        addCategory();
+    }
+    private void addCategory(){
+        final AddGoodsCategoryDialog dialog = new AddGoodsCategoryDialog(this);
+        dialog.show();
     }
 
     @Override

@@ -6,6 +6,7 @@ import android.text.method.ReplacementTransformationMethod;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -62,9 +63,14 @@ public abstract class AbstractMobileQueryDialog extends AbstractDialogMainActivi
     }
 
     @Override
-    protected void initWindowSize(){
-        fullScreen();
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
         initTodayBtn();
+    }
+
+    @Override
+    protected double getHeightRatio(){
+        return ViewGroup.LayoutParams.MATCH_PARENT;
     }
 
     private void initTodayBtn(){

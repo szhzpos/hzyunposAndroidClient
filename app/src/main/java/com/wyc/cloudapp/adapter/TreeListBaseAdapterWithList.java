@@ -1,9 +1,13 @@
 package com.wyc.cloudapp.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -18,8 +22,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
+import com.wyc.cloudapp.CustomizationView.SwipeLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.bean.TreeList;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.ArrayList;
@@ -84,11 +90,15 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
     }
 
     protected final View getView(){
-        View itemView = View.inflate(mContext, R.layout.tree_item_layout, null);
+        final SwipeLayout itemView = (SwipeLayout) View.inflate(mContext, R.layout.swipe_tree_item_layout, null);
+        itemView.addMenuItem(mContext.getString(R.string.delete_sz), v -> {
+            Logger.d("addMenuItem");
+        }, Color.RED);
         itemView.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.height_50)));
         return itemView;
     }
 
+    abstract int getContentLayoutId();
     abstract void bindContent(@NonNull T holder, final TreeList object);
     protected int clickItemIndex(){
         return 0;
@@ -98,70 +108,67 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
     public final void onBindViewHolder(@NonNull T holder, int position) {
         final int old_pos = position;
         final TreeList item = mDatas.get(position);
-        if (item != null){
+        holder.row_id.setText(String.valueOf(position));
 
-            holder.row_id.setText(String.valueOf(position));
+        boolean is_unfold = item.isUnfold();
+        boolean is_sel = item.isSel();
 
-            boolean is_unfold = item.isUnfold();
-            boolean is_sel = item.isSel();
-
-            final ImageView ico = holder.icon;
-            if ( (position += 1) == mDatas.size())position -= 1;
-            if (is_unfold || mDatas.get(position).getP_ref() == item || !item.getKids().isEmpty()){
-                if (ico.getVisibility() == View.GONE)ico.setVisibility(View.VISIBLE);
-                ico.setOnClickListener(unfoldIcoListener);
-                if (is_unfold){
-                    ico.setImageDrawable(mUnfoldDb);
-                }else {
-                    ico.setImageDrawable(mFoldDb);
-                }
+        final ImageView ico = holder.icon;
+        if ( (position += 1) == mDatas.size())position -= 1;
+        if (is_unfold || mDatas.get(position).getP_ref() == item || !item.getKids().isEmpty()){
+            if (ico.getVisibility() == View.INVISIBLE)ico.setVisibility(View.VISIBLE);
+            ico.setOnClickListener(unfoldIcoListener);
+            if (is_unfold){
+                ico.setImageDrawable(mUnfoldDb);
             }else {
-                if (ico.getVisibility() == View.VISIBLE)ico.setVisibility(View.GONE);
+                ico.setImageDrawable(mFoldDb);
             }
+        }else {
+            if (ico.getVisibility() == View.VISIBLE)ico.setVisibility(View.INVISIBLE);
+        }
 
-            final CheckBox item_sel_cb =  holder.mul_cb;
-            final RadioButton item_single_rb = holder.single_rb;
-            if (mItemClick  == null){
-                if (mSingleSel){
-                    item_sel_cb.setVisibility(View.GONE);
-                    item_sel_cb.setOnCheckedChangeListener(null);
+        final CheckBox item_sel_cb =  holder.mul_cb;
+        final RadioButton item_single_rb = holder.single_rb;
+        if (mItemClick  == null){
+            if (mSingleSel){
+                item_sel_cb.setVisibility(View.GONE);
+                item_sel_cb.setOnCheckedChangeListener(null);
 
-                    item_single_rb.setVisibility(View.VISIBLE);
-                    item_single_rb.setOnCheckedChangeListener(null);
-                    if (is_sel){
-                        if (!item_single_rb.isChecked())item_single_rb.setChecked(true);
-                    }else {
-                        if (item_single_rb.isChecked())item_single_rb.setChecked(false);
-                    }
-                    item_single_rb.setOnCheckedChangeListener(checkedChangeListener);
-                }else{
-                    item_single_rb.setVisibility(View.GONE);
-                    item_single_rb.setOnCheckedChangeListener(null);
-
-                    item_sel_cb.setVisibility(View.VISIBLE);
-                    item_sel_cb.setOnCheckedChangeListener(null);
-                    if (is_sel){
-                        if (!item_sel_cb.isChecked())item_sel_cb.setChecked(true);
-                    }else {
-                        if (item_sel_cb.isChecked())item_sel_cb.setChecked(false);
-                    }
-                    item_sel_cb.setOnCheckedChangeListener(checkedChangeListener);
+                item_single_rb.setVisibility(View.VISIBLE);
+                item_single_rb.setOnCheckedChangeListener(null);
+                if (is_sel){
+                    if (!item_single_rb.isChecked())item_single_rb.setChecked(true);
+                }else {
+                    if (item_single_rb.isChecked())item_single_rb.setChecked(false);
                 }
+                item_single_rb.setOnCheckedChangeListener(checkedChangeListener);
             }else{
-                if (is_sel)setViewBackgroundColor(mCurrentItemView = holder.itemView,true);
+                item_single_rb.setVisibility(View.GONE);
+                item_single_rb.setOnCheckedChangeListener(null);
+
+                item_sel_cb.setVisibility(View.VISIBLE);
+                item_sel_cb.setOnCheckedChangeListener(null);
+                if (is_sel){
+                    if (!item_sel_cb.isChecked())item_sel_cb.setChecked(true);
+                }else {
+                    if (item_sel_cb.isChecked())item_sel_cb.setChecked(false);
+                }
+                item_sel_cb.setOnCheckedChangeListener(checkedChangeListener);
             }
-            holder.item_id.setText(item.getItem_id());
+        }else{
+            if (is_sel)setViewBackgroundColor(mCurrentItemView = holder.itemView,true);
+        }
+        holder.item_id.setText(item.getItem_id());
 
 
-            holder.itemView.setPadding( 25 * item.getLevel(),0,0,0);
-            holder.itemView.setOnClickListener(itemListener);
-            holder.itemView.setTag(item);
+        holder.itemView.setPadding( 25 * item.getLevel(),0,0,0);
+        holder.itemView.setOnClickListener(itemListener);
+        holder.itemView.setTag(item);
 
-            bindContent(holder,item);
+        bindContent(holder,item);
 
-            if (old_pos == clickItemIndex()){
-                holder.itemView.callOnClick();
-            }
+        if (old_pos == clickItemIndex()){
+            holder.itemView.callOnClick();
         }
     }
 
@@ -175,7 +182,7 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
     }
 
     public void setData(final JSONArray datas, final JSONArray items){
-        if (datas != null)mDatas = JSON.parseObject(datas.toString(),new TypeReference<List<TreeList>>(TreeList.class) {}.getType());;
+        if (datas != null)mDatas = JSON.parseObject(datas.toString(),new TypeReference<List<TreeList>>(TreeList.class) {}.getType());
 
         setSelectedItem(items);
 
@@ -241,14 +248,12 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
             if (!unfold){
                 final List<TreeList> kids =  object.getKids();
                 object.setKids(null);
-                if (kids != null){
-                    boolean single = mSingleSel;
-                    TreeList item;
-                    for (int i = 0,size = kids.size();i < size;i++){
-                        item = kids.get(i);
-                        if (!single && !item.isSel())item.setSel(is_sel);
-                        mDatas.add(row_id + i + 1,item);
-                    }
+                boolean single = mSingleSel;
+                TreeList item;
+                for (int i = 0,size = kids.size();i < size;i++){
+                    item = kids.get(i);
+                    if (!single && !item.isSel())item.setSel(is_sel);
+                    mDatas.add(row_id + i + 1,item);
                 }
             }else {
                 foldChildren(object,row_id + 1);
@@ -283,14 +288,14 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
             if (mCurrentItemView != v){
                 if (null != mCurrentItemView){
                     obj = TreeList.getViewTagValue(mCurrentItemView);
-                    if (null != obj)obj.setSel(false);
+                    if (!obj.isEmpty())obj.setSel(false);
                 }
                 setViewBackgroundColor(mCurrentItemView,false);
                 mCurrentItemView = v;
                 setViewBackgroundColor(v,true);
             }
             obj = TreeList.getViewTagValue(v);
-            if (null != obj){
+            if (!obj.isEmpty()){
                 obj.setSel(true);
                 mItemClick.OnClick(obj);
             }
@@ -318,12 +323,12 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
                 selected_color = mContext.getColor(R.color.white);
             }
             view.setBackgroundColor(selected_color);
-            if (view instanceof LinearLayout){
-                final LinearLayout linearLayout = (LinearLayout)view;
-                int count = linearLayout.getChildCount();
+            final View content = view.findViewById(getContentLayoutId());
+            if (content instanceof ViewGroup){
+                final ViewGroup group = (ViewGroup)content;
                 View ch;
-                for (int i = 0;i < count;i++){
-                    ch = linearLayout.getChildAt(i);
+                for (int i = 0,count = group.getChildCount();i < count;i++){
+                    ch = group.getChildAt(i);
                     if (ch instanceof TextView){
                         ((TextView) ch).setTextColor(text_color);
                     }

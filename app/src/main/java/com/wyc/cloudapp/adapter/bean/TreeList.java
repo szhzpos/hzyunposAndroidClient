@@ -4,6 +4,8 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import com.wyc.cloudapp.utils.Utils;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,7 @@ public class TreeList implements Cloneable,Serializable {
     private boolean unfold;
     private boolean isSel;
     private String item_id;
+    private String code;
     private String item_name;
     private List<TreeList> kids;
 
@@ -74,6 +77,14 @@ public class TreeList implements Cloneable,Serializable {
         this.item_id = item_id;
     }
 
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
     public String getItem_name() {
         return item_name;
     }
@@ -107,6 +118,10 @@ public class TreeList implements Cloneable,Serializable {
             return (TreeList)o;
         }
         return new TreeList();
+    }
+
+    public boolean isEmpty(){
+        return item_id == null || "".equals(item_id);
     }
 
     @NonNull

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -71,20 +72,8 @@ public class BuyFullGiveXSelectDialog extends AbstractDialogSaleActivity {
         return R.layout.buyfull_give_x_select_dialog_layout;
     }
 
-    @Override
-    protected void initWindowSize() {
-        if (Utils.lessThan7Inches(mContext)){
-            final Display d = mContext.getDisplay(); // 获取屏幕宽、高用
-            final Point point = new Point();
-            d.getSize(point);
-            final Window dialogWindow = this.getWindow();
-            if (dialogWindow != null){
-                final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-                dialogWindow.setGravity(Gravity.CENTER);
-                lp.width = (int)(0.98 * point.x);
-                dialogWindow.setAttributes(lp);
-            }
-        }
+    protected double getWidthRatio(){
+        return 0.98;
     }
 
     private void initRuleList(){

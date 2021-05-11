@@ -1,15 +1,12 @@
 package com.wyc.cloudapp.activity.mobile.business;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -22,26 +19,18 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
-import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
 import com.wyc.cloudapp.adapter.business.MobileBaseOrderDetailsAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.constants.WholesalePriceType;
-import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.TreeListDialog;
-import com.wyc.cloudapp.dialog.goods.BusinessSelectGoodsDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
 
-import java.lang.ref.WeakReference;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Locale;
 
 public class MobileTransferInOrderDetailActivity extends AbstractMobileActivity {

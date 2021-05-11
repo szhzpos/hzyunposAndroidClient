@@ -6,6 +6,7 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -103,21 +104,8 @@ public class BarCodeScaleDownDialog extends AbstractDialogContext {
             });
     }
 
-    @Override
-    protected void initWindowSize(){
-        final WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
-        if (m != null){
-            Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
-            Point point = new Point();
-            d.getSize(point);
-            Window dialogWindow = this.getWindow();
-            if (dialogWindow != null){
-                WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-                dialogWindow.setGravity(Gravity.CENTER);
-                lp.height = (int)(0.8 * point.y);
-                dialogWindow.setAttributes(lp);
-            }
-        }
+    protected double getHeightRatio(){
+        return 0.8;
     }
 
     private void initRecyclerView(){

@@ -58,7 +58,7 @@ public class SwipeLayout extends FrameLayout {
             final TextView tv = new TextView(getContext());
             tv.setText(R.string.not_found_hint);
             mContentView = tv;
-        }else mContentView.setClickable(true);
+        }
         mContentView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         addView(mContentView);
         typedArray.recycle();
@@ -137,8 +137,6 @@ public class SwipeLayout extends FrameLayout {
         switch (ev.getAction()){
             case MotionEvent.ACTION_DOWN:
                 mLastXMove = mXDown = ev.getX();
-                if (mXDown + getScrollX() < mContentView.getRight())
-                    return onTouchEvent(ev);
                 break;
             case MotionEvent.ACTION_MOVE:
                 mXMove = ev.getX();
@@ -147,6 +145,10 @@ public class SwipeLayout extends FrameLayout {
                 if (diff > mTouchSlop){
                     return true;
                 }
+                break;
+            case MotionEvent.ACTION_UP:
+                if (mXDown + getScrollX() < mContentView.getRight())
+                    return false;
                 break;
         }
         return super.onInterceptTouchEvent(ev);

@@ -13,6 +13,7 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -117,20 +118,11 @@ public final class MyDialog extends AbstractDialogContext {
         initEvent();
     }
 
-    @Override
-    protected void initWindowSize(){
-        final Display d = mContext.getDisplay(); // 获取屏幕宽、高用
-        final Point point = new Point();
-        d.getSize(point);
-        final Window dialogWindow = this.getWindow();
-        final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-        dialogWindow.setGravity(Gravity.CENTER);
+    protected double getWidthRatio(){
         if (Utils.lessThan7Inches(mContext)){
-            lp.width = (int) (point.x * 0.95);
-        }else {
-            lp.width = Utils.dpToPx(mContext,368);
+            return  0.95;
         }
-        dialogWindow.setAttributes(lp);
+        return Utils.dpToPx(mContext,368);
     }
 
     @Override

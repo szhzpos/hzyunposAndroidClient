@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.dialog.goods;
+package com.wyc.cloudapp.dialog.baseDialog;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -383,17 +383,8 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
     }
 
     @Override
-    protected void initWindowSize() {
-        final Display d = mContext.getDisplay(); // 获取屏幕宽、高用
-        final Point point = new Point();
-        d.getSize(point);
-        final Window dialogWindow = this.getWindow();
-        if (dialogWindow != null){
-            final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-            dialogWindow.setGravity(Gravity.CENTER);
-            lp.width = (int)(0.98 * point.x);
-            dialogWindow.setAttributes(lp);
-        }
+    protected double getWidthRatio(){
+        return 0.98;
     }
 
     public JSONObject getContentObj() {

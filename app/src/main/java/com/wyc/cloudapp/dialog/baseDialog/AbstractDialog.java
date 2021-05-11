@@ -2,7 +2,10 @@ package com.wyc.cloudapp.dialog.baseDialog;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Point;
 import android.os.Bundle;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,7 +83,31 @@ public abstract class AbstractDialog extends Dialog {
     }
 
     protected void initWindowSize(){
+        final Display d = getContext().getDisplay(); // 获取屏幕宽、高用
+        final Point point = new Point();
+        d.getSize(point);
+        final Window dialogWindow = this.getWindow();
+        final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+        dialogWindow.setGravity(Gravity.CENTER);
+        double w = getWidthRatio(),h = getHeightRatio();
+        if (w < 0.0){
+            lp.width = (int) w;
+        }else {
+            lp.width = (int)(w * point.x);
+        }
+        if (h < 0.0){
+            lp.height = (int) h;
+        }else {
+            lp.height = (int)(h * point.y);
+        }
+        dialogWindow.setAttributes(lp);
+    }
 
+    protected double getWidthRatio(){
+        return ViewGroup.LayoutParams.WRAP_CONTENT;
+    }
+    protected double getHeightRatio(){
+        return ViewGroup.LayoutParams.WRAP_CONTENT;
     }
 
     protected final void fullScreen(){

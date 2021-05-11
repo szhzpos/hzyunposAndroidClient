@@ -4,6 +4,7 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
@@ -123,23 +124,13 @@ public final class GoodsManageDialog extends AbstractDialogSaleActivity {
         }
     }
 
-    @Override
-    protected void initWindowSize(){
-        final WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
-        if (m != null){
-            final Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
-            final Point point = new Point();
-            d.getSize(point);
-            final Window dialogWindow = this.getWindow();
-            if (dialogWindow != null){
-                final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-                dialogWindow.setGravity(Gravity.CENTER);
-                lp.width = (int)(0.98 * point.x);
-                lp.height = (int)(0.98 * point.y);
-                dialogWindow.setAttributes(lp);
-            }
-        }
+    protected double getWidthRatio(){
+        return 0.98;
     }
+    protected double getHeightRatio(){
+        return 0.98;
+    }
+
 
     private String getWhereCondition(){
         final String where_sz = " where ",and_sz = " and ",left_bracket = "(",status_sz = "barcode_status=";

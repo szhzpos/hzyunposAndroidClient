@@ -200,7 +200,7 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
         return categorys;
     }
     private static void generateDatas(final JSONObject parent,final JSONArray categorys,final StringBuilder err){
-        final JSONArray array = SQLiteHelper.getListToJson("SELECT  depth -1 level,category_id item_id, name item_name FROM shop_category where status = 1 and parent_id = " + Utils.getNullOrEmptyStringAsDefault(parent,"item_id","0") + " order by category_code",err);
+        final JSONArray array = SQLiteHelper.getListToJson("SELECT  depth -1 level,category_id item_id,category_code code, name item_name FROM shop_category where status = 1 and parent_id = " + Utils.getNullOrEmptyStringAsDefault(parent,"item_id","0") + " order by category_code",err);
         if (array != null){
             JSONObject item_json;
             JSONArray kids;

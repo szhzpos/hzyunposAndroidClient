@@ -30,7 +30,7 @@ import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.TreeListDialog;
-import com.wyc.cloudapp.dialog.goods.BusinessSelectGoodsDialog;
+import com.wyc.cloudapp.dialog.baseDialog.BusinessSelectGoodsDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;

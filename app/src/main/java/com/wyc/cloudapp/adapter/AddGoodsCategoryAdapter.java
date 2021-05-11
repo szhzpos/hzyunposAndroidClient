@@ -10,6 +10,9 @@ import androidx.annotation.NonNull;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.bean.TreeList;
+import com.wyc.cloudapp.logger.Logger;
+
+import java.util.Locale;
 
 /**
  * @ProjectName: CloudApp
@@ -27,6 +30,12 @@ public class AddGoodsCategoryAdapter extends TreeListBaseAdapterWithList<AddGood
     public AddGoodsCategoryAdapter(Context context, boolean single) {
         super(context, single);
     }
+
+    @Override
+    int getContentLayoutId() {
+        return R.id.content_layout;
+    }
+
     static class MyViewHolder extends TreeListBaseAdapterWithList.MyViewHolder {
         TextView textView;
         public MyViewHolder(@NonNull View itemView) {
@@ -35,7 +44,7 @@ public class AddGoodsCategoryAdapter extends TreeListBaseAdapterWithList<AddGood
         }
         @Override
         protected int getContentResourceId() {
-            return R.layout.single_text_layout;
+            return R.layout.mobile_add_goods_category_adapter;
         }
     }
 
@@ -46,7 +55,7 @@ public class AddGoodsCategoryAdapter extends TreeListBaseAdapterWithList<AddGood
     }
     @Override
     void bindContent(@NonNull MyViewHolder holder, TreeList object) {
-        holder.textView.setText(object.getItem_name());
+        holder.textView.setText(String.format(Locale.CHINA,"%s - %s",object.getCode(),object.getItem_name()));
     }
 
     @Override

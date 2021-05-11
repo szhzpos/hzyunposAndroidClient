@@ -622,4 +622,10 @@
     <string name="manual_num_sz">手工盘点数</string>
     <string name="Practical_sum_sz">实盘小计</string>
     <string name="profit_and_loss_sum_sz">盈亏数量</string>
+
+    <!--商品类别新增窗口-->
+    <string name="super_category_sz">上级类别：</string>
+    <string name="category_code_sz">类别编码：</string>
+    <string name="category_name_colon_sz">类别名称：</string>
+    <string name="new_category_sz">新增类别</string>
 </resources>

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -95,25 +96,12 @@ public class ConnSettingDialog extends AbstractDialogContext {
         });
     }
 
-    @Override
-    protected void initWindowSize(){
-        final WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
-        if (m != null){
-            final Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
-            final Point point = new Point();
-            d.getSize(point);
-            final Window dialogWindow = this.getWindow();
-            if (dialogWindow != null){
-                final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-                dialogWindow.setGravity(Gravity.CENTER);
-                double ratio = 0.4;
-                if (Utils.lessThan7Inches(mContext)) {
-                    ratio = 0.9;
-                }
-                lp.width = (int)(ratio * point.x); // 宽度
-                dialogWindow.setAttributes(lp);
-            }
+    protected double getWidthRatio(){
+        double ratio = 0.4;
+        if (Utils.lessThan7Inches(mContext)) {
+            ratio = 0.9;
         }
+        return ratio;
     }
 
     private boolean check_shop_id(final String shop_id,final JSONObject param){
