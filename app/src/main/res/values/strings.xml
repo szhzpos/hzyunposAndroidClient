@@ -628,4 +628,6 @@
     <string name="category_code_sz">类别编码：</string>
     <string name="category_name_colon_sz">类别名称：</string>
     <string name="new_category_sz">新增类别</string>
+    <string name="modify_category_sz">编辑类别</string>
+    <string name="hint_save_sz">正在保存…</string>
 </resources>

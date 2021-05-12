@@ -37,7 +37,7 @@
                 android:layout_height="0dp"
                 android:drawableTop="@drawable/category"
                 android:gravity="center"
-                android:tag="activity.mobile.business.MobileAddGoodsCategoryActivity"
+                android:tag="activity.mobile.business.MobileEditGoodsCategoryActivity"
                 android:text="@string/category_sz"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_16"

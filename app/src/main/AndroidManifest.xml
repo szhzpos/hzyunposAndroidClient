@@ -38,7 +38,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
-        <activity android:name=".activity.mobile.business.MobileAddGoodsCategoryActivity"></activity>
+        <activity android:name=".activity.mobile.business.MobileEditGoodsCategoryActivity"></activity>
         <activity android:name=".activity.mobile.business.MobileInventoryOrderDetailActivity" />
         <activity android:name=".activity.mobile.business.MobileInventoryOrderActivity" />
         <activity android:name=".activity.mobile.business.MobileInventoryAddTaskActivity" />

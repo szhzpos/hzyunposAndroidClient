@@ -4,8 +4,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
-import com.wyc.cloudapp.utils.Utils;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +13,7 @@ import java.util.Locale;
  * @ProjectName: CloudApp
  * @Package: com.wyc.cloudapp.adapter.bean
  * @ClassName: TreeList
- * @Description: java类作用描述
+ * @Description: 树形结构内容对象
  * @Author: wyc
  * @CreateDate: 2021/5/10 16:15
  * @UpdateUser: 更新者
@@ -23,24 +21,25 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class TreeList implements Cloneable,Serializable {
+public class TreeListItem implements Cloneable,Serializable {
         /*    Item{
             p_ref,level,unfold,isSel,item_id,item_name,kids; <p_ref , kids>存在上下级时必须存在
         }*/
-    private TreeList p_ref;
-    private int level;
-    private boolean unfold;
-    private boolean isSel;
-    private String item_id;
-    private String code;
-    private String item_name;
-    private List<TreeList> kids;
+    private TreeListItem p_ref;//父对象
+    private int level;//所属层
+    private boolean unfold;//是否折叠
+    private boolean isSel;//是否选中
+    private String item_id;//唯一标识
+    private String code;//外部标识
+    private String item_name;//名称
+    private List<TreeListItem> kids;//子对象数组
+    private int kid_num;
 
-    public TreeList getP_ref() {
+    public TreeListItem getP_ref() {
         return p_ref;
     }
 
-    public void setP_ref(TreeList p_ref) {
+    public void setP_ref(TreeListItem p_ref) {
         this.p_ref = p_ref;
     }
 
@@ -93,31 +92,31 @@ public class TreeList implements Cloneable,Serializable {
         this.item_name = item_name;
     }
 
-    public List<TreeList> getKids() {
+    public List<TreeListItem> getKids() {
         if (kids == null)return new ArrayList<>();
         return kids;
     }
 
-    public void setKids(List<TreeList> kids) {
+    public void setKids(List<TreeListItem> kids) {
         this.kids = kids;
     }
 
     @Override
-    public TreeList clone() {
-        TreeList o = null;
+    public TreeListItem clone() {
+        TreeListItem o = null;
         try {
-            o = (TreeList) super.clone();
+            o = (TreeListItem) super.clone();
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
         }
         return o;
     }
-    public static TreeList getViewTagValue(@NonNull final View v){
+    public static TreeListItem getViewTagValue(@NonNull final View v){
         final Object o = v.getTag();
-        if (o instanceof TreeList){
-            return (TreeList)o;
+        if (o instanceof TreeListItem){
+            return (TreeListItem)o;
         }
-        return new TreeList();
+        return new TreeListItem();
     }
 
     public boolean isEmpty(){

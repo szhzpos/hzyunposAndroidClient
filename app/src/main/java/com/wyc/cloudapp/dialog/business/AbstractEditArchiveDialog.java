@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 
 /**
@@ -24,9 +25,12 @@ import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public abstract class AbstractAddArchiveDialog extends AbstractDialogMainActivity {
-    public AbstractAddArchiveDialog(@NonNull MainActivity context, CharSequence title) {
+public abstract class AbstractEditArchiveDialog extends AbstractDialogMainActivity {
+    protected boolean modify;
+    private CustomProgressDialog mProgressDialog;
+    public AbstractEditArchiveDialog(@NonNull MainActivity context, CharSequence title, boolean b) {
         super(context, title);
+        modify = b;
     }
 
     @CallSuper
@@ -35,6 +39,19 @@ public abstract class AbstractAddArchiveDialog extends AbstractDialogMainActivit
         super.onCreate(savedInstanceState);
         initLayout();
         initBtn();
+    }
+    protected final void showProgress(){
+        final String mess = mContext.getString(R.string.hint_save_sz);
+        if (mProgressDialog == null)
+            mProgressDialog = CustomProgressDialog.showProgress(mContext,mess);
+        else
+            mProgressDialog.setMessage(mess).refreshMessage();
+
+        if (!mProgressDialog.isShowing())mProgressDialog.show();
+    }
+
+    protected final void dismissProgress(){
+        if (mProgressDialog != null && mProgressDialog.isShowing())mProgressDialog.dismiss();
     }
 
     private void initLayout(){
@@ -51,7 +68,7 @@ public abstract class AbstractAddArchiveDialog extends AbstractDialogMainActivit
 
     @Override
     protected double getWidthRatio(){
-        return 0.98;
+        return 0.90;
     }
 
     protected abstract int getLayout();

@@ -192,4 +192,5 @@
     <dimen name="stock_query_goods_name_w">@dimen/size_188</dimen>
     <dimen name="cashier_transfer_title_width">@dimen/width_88</dimen>
     <dimen name="business_order_item_height">@dimen/height_45</dimen>
+    <dimen name="add_archive_item_height">40dp</dimen>
 </resources>
