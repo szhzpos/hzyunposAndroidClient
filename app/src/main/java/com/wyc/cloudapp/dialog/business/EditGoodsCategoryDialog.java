@@ -38,6 +38,7 @@ public class EditGoodsCategoryDialog extends AbstractEditArchiveDialog {
     private EditText mCategoryNameEt;
     public EditGoodsCategoryDialog(@NonNull MobileEditGoodsCategoryActivity context, boolean m) {
         super(context, context.getString(m ? R.string.modify_category_sz :R.string.new_category_sz),m);
+        initDefaultSuperCategory();
     }
 
     @Override
@@ -78,9 +79,12 @@ public class EditGoodsCategoryDialog extends AbstractEditArchiveDialog {
                 try {
                     ret_obj = JSONObject.parseObject(ret_obj.getString("info"));
                     if (HttpUtils.checkBusinessSuccess(ret_obj)){
-                        if (!modify){
-                            ((MobileEditGoodsCategoryActivity)mContext).addCategory(ret_obj.getString("category_id"),category_code,category_name,mSuperCategory.getLevel() + 1);
-                        }
+                        final MobileEditGoodsCategoryActivity activity = ((MobileEditGoodsCategoryActivity)mContext);
+                        if (modify){
+                            activity.updateCategory(category_name);
+                        }else
+                            activity.addCategory(ret_obj.getString("category_id"),category_code,category_name,mSuperCategory.getLevel() + 1);
+
                         dismiss();
                     }else throw new JSONException(ret_obj.getString("info"));
                 }catch (JSONException e){
@@ -92,26 +96,32 @@ public class EditGoodsCategoryDialog extends AbstractEditArchiveDialog {
         });
     }
 
+    private void initDefaultSuperCategory(){
+        mSuperCategory = new TreeListItem();
+        mSuperCategory.setItem_id("0");
+        mSuperCategory.setCode("");
+        mSuperCategory.setLevel(-1);
+        mSuperCategory.setItem_name(mContext.getString(R.string.all_category_sz));
+    }
+
     private void initView(){
         mCategoryNameEt = findViewById(R.id.category_name_tv);
         mCategoryNameEt.requestFocus();
 
         final TextView super_category_tv = findViewById(R.id.super_category_tv),category_code_tv = findViewById(R.id.category_code_tv);
-        if (mSuperCategory != null){
-            final String name = mSuperCategory.getItem_name(),code = mSuperCategory.getCode();
-            super_category_tv.setText(String.format(Locale.CHINA,"%s[%s]",name,code));
-            if (modify){//修改模式下mSuperCategory就是要修改的内容
-                category_code_tv.setText(code);
-                mCategoryNameEt.setText(name);
-            }else {
-                category_code_tv.setText(generateCategoryCode());
-            }
+        final String name = mSuperCategory.getItem_name(),code = mSuperCategory.getCode();
+        super_category_tv.setText(Utils.isNotEmpty(code) ? String.format(Locale.CHINA,"%s[%s]",name,code) : name);
+        if (modify){//修改模式下mSuperCategory就是要修改的内容
+            category_code_tv.setText(code);
+            mCategoryNameEt.setText(name);
+        }else {
+            category_code_tv.setText(generateCategoryCode());
         }
         mCategoryCodeTv = category_code_tv;
     }
     private String generateCategoryCode(){
-        final String super_code = mSuperCategory.getCode(),
-                sql = "SELECT category_code FROM shop_category where category_code like '"+ super_code +"%' and parent_id="+ mSuperCategory.getItem_id() +" order by category_code desc limit 1";
+        String super_code = mSuperCategory.getCode(),
+                sql = "SELECT category_code FROM shop_category where category_code like '"+ (Utils.isNotEmpty(super_code) ? super_code : "%") +"%' and parent_id="+ mSuperCategory.getItem_id() +" order by category_code desc limit 1";
         final StringBuilder err = new StringBuilder();
         final String _code = SQLiteHelper.getString(sql,err);
         Logger.d("_code:%s,sql:%s",_code,sql);
@@ -137,6 +147,6 @@ public class EditGoodsCategoryDialog extends AbstractEditArchiveDialog {
     }
 
     public void setSuperCategory(TreeListItem category) {
-        this.mSuperCategory = category;
+        if (category != null)this.mSuperCategory = category;
     }
 }

@@ -3,6 +3,7 @@ package com.wyc.cloudapp.adapter.bean;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -33,7 +34,6 @@ public class TreeListItem implements Cloneable,Serializable {
     private String code;//外部标识
     private String item_name;//名称
     private List<TreeListItem> kids;//子对象数组
-    private int kid_num;
 
     public TreeListItem getP_ref() {
         return p_ref;

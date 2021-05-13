@@ -735,6 +735,8 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
                     } else {
                         CustomApplication.sendMessage(MessageID.LOGIN_ID_ERROR_ID, "不存在此用户！");
                     }
+                }else {
+                    if (mProgressDialog.isShowing())mProgressDialog.dismiss();
                 }
             }else {
                 CustomApplication.sendMessage(MessageID.DIS_ERR_INFO_ID, "离线登录，门店编号不能为空!");

@@ -10,6 +10,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.StrictMode;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,6 +20,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.squareup.leakcanary.LeakCanary;
+import com.wyc.cloudapp.BuildConfig;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.AndroidLogAdapter;
@@ -69,6 +72,8 @@ public final class CustomApplication extends Application {
     @Override
     public  void  onCreate(){
         super.onCreate();
+        setupLeakCanary();
+
         Logger.addLogAdapter(new AndroidLogAdapter());
         Logger.addLogAdapter(new DiskLogAdapter());//日志记录磁盘
         CrashHandler.getInstance().init(this);
@@ -78,6 +83,18 @@ public final class CustomApplication extends Application {
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+    }
+
+    private void setupLeakCanary() {
+        enabledStrictMode();
+        LeakCanary.install(this);
+    }
+
+    public static void enabledStrictMode() {
+        if (BuildConfig.DEBUG) {
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());
+            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll().penaltyLog().build());
+        }
     }
 
     public boolean initCashierInfoAndStoreInfo(final Context context){
@@ -517,14 +534,14 @@ public final class CustomApplication extends Application {
                     sql = "update local_parameter set parameter_content = '"+ object +"' where parameter_id = 'offline_time'";
                 }
             }else {
-                Toast.makeText(mApplication,object.getString("info"),Toast.LENGTH_LONG).show();
+                MyDialog.ToastMessageInMainThread(object.getString("info"));
             }
         }
         if (null != sql ){
             if (!SQLiteHelper.execSql(object,sql)){
                 final String err = "更新离线时间错误:" + object.getString("v");
                 Logger.e(err);
-                Toast.makeText(mApplication,err,Toast.LENGTH_LONG).show();
+                MyDialog.ToastMessageInMainThread(err);
             }
         }
     }

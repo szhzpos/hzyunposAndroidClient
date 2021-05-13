@@ -57,6 +57,10 @@ public class MobilePurchaseRefundOrderActivity extends AbstractMobileBusinessOrd
             return intent;
         }
 
+        protected String getSaleOperatorNameKey(){
+            return "js_user_name";
+        }
+
         @Override
         protected void querySourceOrderInfo(final String id){
             final JSONObject parameterObj = new JSONObject();
@@ -110,6 +114,7 @@ public class MobilePurchaseRefundOrderActivity extends AbstractMobileBusinessOrd
         protected void showOrder() {
             super.showOrder();
             setView(mOrderCodeTv, "", Utils.getNullStringAsEmpty(mOrderInfo, "cgd_code"));
+            setView(mDateTv, "",Utils.formatDataWithTimestamp(mOrderInfo.getLongValue("addtime") * 1000));
             setSourceOrder("",Utils.getNullStringAsEmpty(mOrderInfo,"out_cgd_code"));
         }
 
@@ -128,6 +133,7 @@ public class MobilePurchaseRefundOrderActivity extends AbstractMobileBusinessOrd
             final JSONObject upload_obj = super.generateUploadCondition(),object = new JSONObject();
 
             upload_obj.put("out_cgd_code",getSourceOrder());
+            upload_obj.put("cgd_code",mOrderCodeTv.getText());
             upload_obj.put("cgd_id",Utils.getNullStringAsEmpty(mOrderInfo,"cgd_id"));
             upload_obj.put("goods_list_json",getGoodsList());
 

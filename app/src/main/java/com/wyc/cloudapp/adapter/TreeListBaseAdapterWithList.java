@@ -268,10 +268,10 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
                     kids.add(mDatas.remove(index));
                     j--;
                 }else {
-                    parent.setKids(kids);
                     break;
                 }
             }
+            parent.setKids(kids);
         }
     }
 
@@ -360,40 +360,56 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
     }
 
     protected void addItemChildOfCurrent(final TreeListItem item){
-        int index = getCurrentIndex();
-        if (index >= 0 && index < mDatas.size()){
-            final TreeListItem cur = mDatas.get(index);
-            final List<TreeListItem> listItems = cur.getKids();
+        int level = item.getLevel();
+        if (0 == level){//顶层元素
+            mDatas.add(item);
+            notifyDataChange();
+        }else {
+            int index = getCurrentIndex(),size = mDatas.size();
+            if (index >= 0 && index < size){
+                final TreeListItem cur = mDatas.get(index);
+                final List<TreeListItem> listItems = cur.getKids();
 
-            item.setP_ref(cur);
-            cur.setSel(false);
+                item.setP_ref(cur);
+                cur.setSel(false);
 
-            if (!cur.isUnfold()){
-                listItems.add(item);
+                if (!cur.isUnfold()){
+                    listItems.add(item);
 
-                cur.setUnfold(true);
-                cur.setKids(null);
-                boolean is_sel = cur.isSel();
-                TreeListItem t;
-                for (int i = 0,size = listItems.size();i < size;i++){
-                    t = listItems.get(i);
-                    if (!mSingleSel && !t.isSel())t.setSel(is_sel);
-                    mDatas.add(index + i + 1,t);
+                    cur.setUnfold(true);
+                    cur.setKids(null);
+                    boolean is_sel = cur.isSel();
+                    TreeListItem t;
+                    for (int i = 0,list_size = listItems.size();i < list_size;i++){
+                        t = listItems.get(i);
+                        if (!mSingleSel && !t.isSel())t.setSel(is_sel);
+                        mDatas.add(index + i + 1,t);
+                    }
+                }else {
+                    index ++;
+                    if (index == size)
+                        mDatas.add(item);
+                    else
+                        mDatas.add(index,item);
                 }
-            }else {
-                index ++;
-                if (index == mDatas.size())
-                    mDatas.add(item);
-                else
-                    mDatas.add(index,item);
+                notifyDataChange();
             }
-            if (Looper.myLooper() == Looper.getMainLooper())
-                notifyDataSetChanged();
-            else CustomApplication.runInMainThread(this::notifyDataSetChanged);
         }
     }
 
+    public void updateCurrentItem(final String name){
+        final TreeListItem item = TreeListItem.getViewTagValue(mCurrentItemView);
+        if (!item.isEmpty()){
+            item.setItem_name(name);
+            notifyDataChange();
+        }
+    }
 
+    private void notifyDataChange(){
+        if (Looper.myLooper() == Looper.getMainLooper())
+            notifyDataSetChanged();
+        else CustomApplication.runInMainThread(this::notifyDataSetChanged);
+    }
 
     public interface OnItemClick{
         void OnClick(final TreeListItem object);

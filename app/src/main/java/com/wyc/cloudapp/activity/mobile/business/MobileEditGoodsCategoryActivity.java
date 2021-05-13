@@ -32,6 +32,7 @@ public class MobileEditGoodsCategoryActivity extends AbstractMobileBaseArchiveAc
 
     @Override
     protected void add() {
+        mCurrentCategory = null;
         editCategory(false);
     }
     public void editCategory(boolean modify){
@@ -57,5 +58,8 @@ public class MobileEditGoodsCategoryActivity extends AbstractMobileBaseArchiveAc
     }
     public void addCategory(final String id,final String code,final String name,int level){
         mAdapter.addCategory(id,code,name,level);
+    }
+    public void updateCategory(final String name){
+        mAdapter.updateCurrentItem(name);
     }
 }
