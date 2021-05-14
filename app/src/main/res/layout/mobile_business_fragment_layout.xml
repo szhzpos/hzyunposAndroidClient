@@ -69,7 +69,7 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:drawableTop="@drawable/supplier"
-                android:tag="activity.mobile.business.MobileSelectGoodsActivity"
+                android:tag="activity.mobile.business.MobileSupplierInfoActivity"
                 android:text="@string/supplier_sz"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_16"

@@ -67,7 +67,9 @@ public abstract class AbstractMobileQueryDialog extends AbstractDialogMainActivi
         super.onAttachedToWindow();
         initTodayBtn();
     }
-
+    protected double getWidthRatio(){
+        return ViewGroup.LayoutParams.MATCH_PARENT;
+    }
     @Override
     protected double getHeightRatio(){
         return ViewGroup.LayoutParams.MATCH_PARENT;

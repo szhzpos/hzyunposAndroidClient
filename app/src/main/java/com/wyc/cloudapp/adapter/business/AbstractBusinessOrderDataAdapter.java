@@ -25,7 +25,7 @@ import com.wyc.cloudapp.utils.Utils;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public abstract class AbstractBusinessOrderDataAdapter<T extends AbstractTableDataAdapter.SuperViewHolder > extends AbstractDataAdapter<T> implements View.OnClickListener {
+public abstract class AbstractBusinessOrderDataAdapter<T extends AbstractDataAdapter.SuperViewHolder > extends AbstractDataAdapter<T> implements View.OnClickListener {
     final MainActivity mContext;
     public AbstractBusinessOrderDataAdapter(MainActivity activity) {
         mContext = activity;

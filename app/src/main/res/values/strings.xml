@@ -44,6 +44,7 @@
     <string name="appId">appId：</string>
     <string name="appSecret">appSecret：</string>
     <string name="save_sz">保存</string>
+    <string name="save_and_new_sz">保存并新增</string>
     <string name="conn_dialog_title_sz">连接参数</string>
     <string name="loading_sz">加载中…</string>
     <string name="sec_sign_sz">s</string>
@@ -630,4 +631,22 @@
     <string name="new_category_sz">新增类别</string>
     <string name="modify_category_sz">编辑类别</string>
     <string name="hint_save_sz">正在保存…</string>
+    <!--货商信息-->
+    <string name="supplier_code_sz">货商编码</string>
+    <string name="supplier_name_sz">货商名称</string>
+    <string name="contacts_sz">联系人：</string>
+    <string name="phone_sz">电话：</string>
+    <string name="supplier_info">供应商基本信息</string>
+    <string name="supplier_code_colon_sz">货商编码：</string>
+    <string name="supplier_name_colon_sz">货商名称：</string>
+    <string name="supplier_addr_colon_sz">货商地址：</string>
+    <string name="new_supplier_sz">新增货商</string>
+    <string name="modify_supplier_sz">编辑货商</string>
+    <string name="supplier_setting">供应商设置</string>
+    <string name="supplier_cooperation_way_sz">合作方式：</string>
+    <string name="supplier_settlement_way_sz">结算方式：</string>
+    <string name="contacts_info">联系人信息</string>
+    <string name="job">&#160;&#160;&#160;&#160;&#160;&#160;职务1：</string>
+    <string name="name">&#160;&#160;&#160;&#160;&#160;&#160;姓名1：</string>
+    <string name="phone_1">&#160;&#160;&#160;&#160;&#160;&#160;电话1：</string>
 </resources>

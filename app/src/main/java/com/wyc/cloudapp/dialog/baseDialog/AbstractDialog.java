@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.Utils;
 
 import static android.content.Context.INPUT_METHOD_SERVICE;
 
@@ -90,12 +91,12 @@ public abstract class AbstractDialog extends Dialog {
         final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
         dialogWindow.setGravity(Gravity.CENTER);
         double w = getWidthRatio(),h = getHeightRatio();
-        if (w < 0.0){
+        if (w < 0.0 || Utils.greaterDouble(w,1.0)){
             lp.width = (int) w;
         }else {
             lp.width = (int)(w * point.x);
         }
-        if (h < 0.0){
+        if (h < 0.0|| Utils.greaterDouble(w,1.0)){
             lp.height = (int) h;
         }else {
             lp.height = (int)(h * point.y);
@@ -104,9 +105,11 @@ public abstract class AbstractDialog extends Dialog {
     }
 
     protected double getWidthRatio(){
+        //返回值： //小于0 是系统WRAP_CONTENT、MATCH_PARENT 在0到1直接为屏幕比例 大于1为具体大小
         return ViewGroup.LayoutParams.WRAP_CONTENT;
     }
     protected double getHeightRatio(){
+        //返回值： 小于0 是系统WRAP_CONTENT、MATCH_PARENT 在0到1直接为屏幕比例 大于1为具体大小
         return ViewGroup.LayoutParams.WRAP_CONTENT;
     }
 

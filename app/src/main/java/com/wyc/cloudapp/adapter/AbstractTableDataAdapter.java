@@ -15,7 +15,7 @@ import com.wyc.cloudapp.utils.Utils;
 * 表格数据适配器父类。对表格行选择操作统一实现，如需定制可重写setCurrentItemView、setViewBackgroundColor方法，setItemClickListener可设置回调，回调返回用JSON对象表示的当前行的数据，
 * 重写getCurrentRecord可改变默认行为。
 * */
-public abstract class AbstractTableDataAdapter<T extends AbstractTableDataAdapter.SuperViewHolder> extends AbstractDataAdapter<T> {
+public abstract class AbstractTableDataAdapter<T extends AbstractDataAdapter.SuperViewHolder> extends AbstractDataAdapter<T> {
     protected MainActivity mContext;
 
     protected View mCurrentItemView;
