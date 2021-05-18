@@ -119,7 +119,7 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
                 if (upload_status == RetailOrderStatus.UPLOAD_ERROR){//启动重传
                     CustomApplication.self().reuplaod_retail_order();
                 }else if (order_status == 2 || order_status == 88){
-                    order_action.post(()->{
+                    CustomApplication.runInMainThread(()->{
                         if (RefundDialog.verifyRefundPermission(mContext)){
                             if (mContext.getSingleRefundStatus())mContext.setSingleRefundStatus(false);
                             final RefundDialog refundDialog = new RefundDialog(mContext,order_code_tv.getText().toString());

@@ -2,37 +2,36 @@ package com.wyc.cloudapp.activity.mobile.business;
 
 import android.os.Bundle;
 import android.view.ViewStub;
-import android.widget.Button;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
+import com.wyc.cloudapp.dialog.MyDialog;
+
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public abstract class AbstractEditArchiveActivity extends AbstractMobileActivity {
-    protected boolean modify;
     private CustomProgressDialog mProgressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initLayout();
-        initBtn();
+
+        ButterKnife.bind(this);
     }
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        if (isExist() || MyDialog.showMessageToModalDialog(this,"是否退出?") == 1){
+            super.onBackPressed();
+        }
     }
 
     private void initLayout(){
         final ViewStub viewStub = findViewById(R.id.layout_content);
         viewStub.setLayoutResource(getLayout());
         viewStub.inflate();
-    }
-
-    private void initBtn(){
-        final Button ok_btn = findViewById(R.id.ok_btn),cancel_btn = findViewById(R.id.cancel_btn);
-        ok_btn.setOnClickListener(v -> sure());
-        cancel_btn.setOnClickListener(v -> onBackPressed());
     }
 
     protected final void showProgress(){
@@ -50,8 +49,11 @@ public abstract class AbstractEditArchiveActivity extends AbstractMobileActivity
     }
 
     protected abstract int getLayout();
+    @OnClick(R.id.ok_btn)
     protected abstract void sure();
-
+    @OnClick(R.id.cancel_btn)
+    protected abstract void saveAndAdd();
+    protected boolean isExist(){return true;}
 
     @Override
     protected int getContentLayoutId() {

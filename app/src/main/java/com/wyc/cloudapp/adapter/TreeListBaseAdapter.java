@@ -3,7 +3,6 @@ package com.wyc.cloudapp.adapter;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -18,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.utils.Utils;
 
 /**
@@ -199,7 +199,7 @@ public abstract class TreeListBaseAdapter<T extends TreeListBaseAdapter.MyViewHo
                     selectItem(object,row_id + 1,isChecked);
             }
         }
-        buttonView.post(this::notifyDataSetChanged);
+        CustomApplication.runInMainThread(this::notifyDataSetChanged);
     };
 
     private void clearSelected(){
@@ -250,7 +250,7 @@ public abstract class TreeListBaseAdapter<T extends TreeListBaseAdapter.MyViewHo
             }else {
                 foldChildren(object,row_id + 1);
             }
-            row_id_tv.post(this::notifyDataSetChanged);
+            CustomApplication.runInMainThread(this::notifyDataSetChanged);
         }
     };
     private void foldChildren(final JSONObject parent, int index){

@@ -33,18 +33,28 @@
             android:layout_height="match_parent"
             android:layout_marginStart="@dimen/margin_12"
             android:gravity="center_vertical"
+            android:text="@string/not_empty_sign"
+            android:textColor="@color/orange_1"
+            android:textSize="@dimen/font_size_18" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
             android:text="@string/supplier_code_colon_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_14" />
 
         <EditText
-            android:id="@+id/supplier_code_tv"
+            android:id="@+id/supplier_code_et"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/white"
             android:gravity="center_vertical"
             android:importantForAutofill="no"
-            android:inputType="text"
+            android:inputType="number"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_14" />
     </LinearLayout>
@@ -60,19 +70,29 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginStart="@dimen/margin_12"
+            android:gravity="center_vertical"
+            android:text="@string/not_empty_sign"
+            android:textColor="@color/orange_1"
+            android:textSize="@dimen/font_size_18" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:text="@string/supplier_name_colon_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_14" />
 
         <EditText
-            android:id="@+id/supplier_name_tv"
+            android:id="@+id/supplier_name_et"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/white"
             android:gravity="center_vertical"
             android:importantForAutofill="no"
             android:inputType="text"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_14" />
     </LinearLayout>
@@ -89,18 +109,29 @@
             android:layout_height="match_parent"
             android:layout_marginStart="@dimen/margin_12"
             android:gravity="center_vertical"
+            android:text="@string/not_empty_sign"
+            android:textColor="@color/orange_1"
+            android:textSize="@dimen/font_size_18"
+            android:visibility="invisible" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
             android:text="@string/supplier_addr_colon_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_14" />
 
         <EditText
-            android:id="@+id/supplier_addr_tv"
+            android:id="@+id/supplier_addr_et"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/white"
             android:gravity="center_vertical"
             android:importantForAutofill="no"
             android:inputType="text"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_14" />
     </LinearLayout>
@@ -127,11 +158,19 @@
             android:layout_height="match_parent"
             android:layout_marginStart="@dimen/margin_12"
             android:gravity="center_vertical"
+            android:text="@string/not_empty_sign"
+            android:textColor="@color/orange_1"
+            android:textSize="@dimen/font_size_18" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
             android:text="@string/supplier_cooperation_way_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_14" />
 
-        <EditText
+        <TextView
             android:id="@+id/supplier_co_way_tv"
             android:layout_width="@dimen/width_128"
             android:layout_height="match_parent"
@@ -139,7 +178,6 @@
             android:drawableEnd="@drawable/content"
             android:gravity="center_vertical"
             android:importantForAutofill="no"
-            android:inputType="text"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_14" />
     </LinearLayout>
@@ -156,11 +194,19 @@
             android:layout_height="match_parent"
             android:layout_marginStart="@dimen/margin_12"
             android:gravity="center_vertical"
+            android:text="@string/not_empty_sign"
+            android:textColor="@color/orange_1"
+            android:textSize="@dimen/font_size_18" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
             android:text="@string/supplier_settlement_way_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_14" />
 
-        <EditText
+        <TextView
             android:id="@+id/supplier_settlement_way_tv"
             android:layout_width="@dimen/width_128"
             android:layout_height="match_parent"
@@ -168,7 +214,6 @@
             android:drawableEnd="@drawable/content"
             android:gravity="center_vertical"
             android:importantForAutofill="no"
-            android:inputType="text"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_14" />
     </LinearLayout>
@@ -200,13 +245,15 @@
             android:textSize="@dimen/font_size_14" />
 
         <EditText
-            android:id="@+id/contacts_job_tv"
+            android:id="@+id/contacts_job_et"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/white"
             android:gravity="center_vertical"
             android:importantForAutofill="no"
             android:inputType="text"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_14" />
     </LinearLayout>
@@ -228,13 +275,15 @@
             android:textSize="@dimen/font_size_14" />
 
         <EditText
-            android:id="@+id/contacts_name_tv"
+            android:id="@+id/contacts_name_et"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/white"
             android:gravity="center_vertical"
             android:importantForAutofill="no"
             android:inputType="text"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_14" />
     </LinearLayout>
@@ -256,13 +305,15 @@
             android:textSize="@dimen/font_size_14" />
 
         <EditText
-            android:id="@+id/contacts_mobile_tv"
+            android:id="@+id/contacts_mobile_et"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/white"
             android:gravity="center_vertical"
             android:importantForAutofill="no"
             android:inputType="text"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_14" />
     </LinearLayout>

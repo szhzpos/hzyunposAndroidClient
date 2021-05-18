@@ -2,17 +2,13 @@ package com.wyc.cloudapp.dialog.baseDialog;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.view.Display;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -28,10 +24,10 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.activity.mobile.business.MobileSelectGoodsActivity;
 import com.wyc.cloudapp.activity.mobile.business.MobileWholesaleBaseActivity;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.constants.WholesalePriceType;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -325,7 +321,7 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
 
         if (mPriceEt != null){
             mPriceEt.requestFocus();
-            mPriceEt.post(()->mPriceEt.selectAll());
+            CustomApplication.runInMainThread(()->mPriceEt.selectAll());
             mPriceEt.setText(String.valueOf(price));
         }else
             mNumEt.requestFocus();

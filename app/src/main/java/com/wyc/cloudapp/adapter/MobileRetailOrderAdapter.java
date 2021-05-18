@@ -120,7 +120,7 @@ public final class MobileRetailOrderAdapter extends AbstractQueryDataAdapter<Mob
                 if (upload_status == RetailOrderStatus.UPLOAD_ERROR){
                     CustomApplication.self().reuplaod_retail_order();
                 }else if (order_status == 2 || order_status == 88){
-                    refund_btn.post(()->{
+                    CustomApplication.runInMainThread(()->{
                         if (RefundDialog.verifyRefundPermission(mContext)){
                             if (mContext.getSingleRefundStatus())mContext.setSingleRefundStatus(false);
                             final TextView order_code_tv = v.findViewById(R.id.order_code);

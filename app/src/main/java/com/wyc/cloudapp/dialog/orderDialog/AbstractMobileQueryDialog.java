@@ -22,6 +22,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.TreeListDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
@@ -78,7 +79,7 @@ public abstract class AbstractMobileQueryDialog extends AbstractDialogMainActivi
     private void initTodayBtn(){
         final Button today = findViewById(R.id.m_today_btn);
         today.setOnClickListener(mClickListener);
-        today.post(today::callOnClick);
+        CustomApplication.runInMainThread(today::callOnClick);
     }
 
     private void initOrderList(){
@@ -113,7 +114,7 @@ public abstract class AbstractMobileQueryDialog extends AbstractDialogMainActivi
         final LinearLayout query_time_btn_layout = findViewById(R.id.query_time_btn_layout);
         final Button yesterday = query_time_btn_layout.findViewById(R.id.m_yesterday_btn),
                 other = query_time_btn_layout.findViewById(R.id.m_other_btn);
-        query_time_btn_layout.post(()->{
+        CustomApplication.runInMainThread(()->{
             float corner_size = query_time_btn_layout.getHeight() / 2.0f;
             query_time_btn_layout.setForeground(DrawableUtil.createDrawable(new float[]{corner_size,corner_size,corner_size,corner_size,corner_size,corner_size,corner_size,corner_size}
                     ,mContext.getColor(R.color.transparent),Utils.dpToPx(mContext,1),mContext.getColor(R.color.blue)));
@@ -249,7 +250,7 @@ public abstract class AbstractMobileQueryDialog extends AbstractDialogMainActivi
         switch_condition.setOnClickListener(v -> {
             final TreeListDialog treeListDialog = new TreeListDialog(mContext,mContext.getString(R.string.query_way_sz));
             treeListDialog.setDatas(array,null,true);
-            switch_condition.post(()->{
+            CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
                     switch_condition.setTag(object.getIntValue("item_id"));

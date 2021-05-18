@@ -185,15 +185,15 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                     final JSONObject vip = array.getJSONObject(0);
                     Logger.d(vip);
                     loadChargePlan(Utils.getNullStringAsEmpty(vip,"openid"));
-                    mSearchContent.post(()-> showVipInfo(vip));
+                    CustomApplication.runInMainThread(()-> showVipInfo(vip));
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    mSearchContent.post(()-> {
+                    CustomApplication.runInMainThread(()-> {
                         restInfo();
                         MyDialog.ToastMessage(e.getMessage(),mContext,getWindow());
                     });
                 }
-                mSearchContent.post(()->mProgressDialog.dismiss());
+                CustomApplication.runInMainThread(()->mProgressDialog.dismiss());
             });
         }else{
             MyDialog.ToastMessage(mSearchContent,mSearchContent.getHint().toString(),mContext,getWindow());
@@ -308,7 +308,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
             final String charge_plan_sz = mContext.getString(R.string.charge_plan_sz);
             final TreeListDialog treeListDialog = new TreeListDialog(mContext,charge_plan_sz.substring(0,charge_plan_sz.length() - 1));
             treeListDialog.setDatas(mChargePlans,null,true);
-            mobile_charge_plan.post(()->{
+            CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     showChargePlan(treeListDialog.getSingleContent(),mobile_charge_plan);
                 }
@@ -352,7 +352,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
         object.put("item_name",default_item_name);
         array.add(object);
 
-        mChargePlanTv.post(()->{
+        CustomApplication.runInMainThread(()->{
             mChargePlanTv.setText(default_item_name);
             mChargePlanTv.setTag(-1);;
         });
@@ -533,7 +533,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
 
 
     private void showPayError(final String message){
-        mChargeAmtEt.post(()-> {
+        CustomApplication.runInMainThread(()-> {
             mProgressDialog.dismiss();
             clearPayCode(false);
             MyDialog.displayErrorMessage(mContext, message);
@@ -541,7 +541,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
     }
 
     private void chargeSuccess(final JSONObject member){
-        mChargeAmtEt.post(()->{
+        CustomApplication.runInMainThread(()->{
             mProgressDialog.dismiss();
             MyDialog.ToastMessage("充值成功！",mContext,getWindow());
             restChargeInfo();
@@ -595,9 +595,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
 
                 //保存单据
                 if (!SQLiteHelper.saveFormJson(member_order_info,"member_order_info",null,0,err)){
-                    mChargeAmtEt.post(()->{
-                        MyDialog.displayErrorMessage(mContext, err.toString());
-                    });
+                    CustomApplication.runInMainThread(()-> MyDialog.displayErrorMessage(mContext, err.toString()));
                     return;
                 }
 

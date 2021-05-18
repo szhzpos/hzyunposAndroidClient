@@ -127,7 +127,7 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractMobileActi
         final TextView business_operator_tv = findViewById(R.id.m_business_operator_tv);
         final String sz = getString(R.string.sale_operator_sz);
         final JSONArray array = getSaleOperator(business_operator_tv);
-        business_operator_tv.setOnClickListener(v -> v.post(()->{
+        business_operator_tv.setOnClickListener(v -> CustomApplication.runInMainThread(()->{
             final TreeListDialog treeListDialog = new TreeListDialog(this,sz.substring(0,sz.length() - 1));
             treeListDialog.setDatas(array,null,true);
             if (treeListDialog.exec() == 1){
@@ -322,7 +322,7 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractMobileActi
                 try {
                     final JSONObject info = JSON.parseObject(retJson.getString("info"));
                     if (HttpUtils.checkBusinessSuccess(info)){
-                        mOrderCodeTv.post(()-> mOrderCodeTv.setText(info.getString("code")));
+                        CustomApplication.runInMainThread(()-> mOrderCodeTv.setText(info.getString("code")));
                     }else {
                         runOnUiThread(()-> Toast.makeText(this,info.getString("info"),Toast.LENGTH_LONG));
                     }

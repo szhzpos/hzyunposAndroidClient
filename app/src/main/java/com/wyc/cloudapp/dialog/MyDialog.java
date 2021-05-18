@@ -249,7 +249,6 @@ public final class MyDialog extends AbstractDialogContext {
     }
 
     public static int showMessageToModalDialog(final Context context,final String message){
-        if (Looper.myLooper() == null)Looper.prepare();
         final MyDialog dialog = new MyDialog(context,"提示信息",IconType.ASK);
         dialog.setMessage(message).setYesOnclickListener("是", myDialog -> myDialog.setCodeAndExit(1)).setNoOnclickListener("否", myDialog -> myDialog.setCodeAndExit(0)).show();
         return dialog.exec();

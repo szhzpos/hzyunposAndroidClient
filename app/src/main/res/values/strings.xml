@@ -649,4 +649,5 @@
     <string name="job">&#160;&#160;&#160;&#160;&#160;&#160;职务1：</string>
     <string name="name">&#160;&#160;&#160;&#160;&#160;&#160;姓名1：</string>
     <string name="phone_1">&#160;&#160;&#160;&#160;&#160;&#160;电话1：</string>
+    <string name="not_empty_sign">*</string>
 </resources>

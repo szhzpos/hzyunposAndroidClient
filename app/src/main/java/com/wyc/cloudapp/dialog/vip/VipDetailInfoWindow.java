@@ -23,6 +23,8 @@ import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
+import static android.content.Context.WINDOW_SERVICE;
+
 /**
  * @ProjectName: CloudApp
  * @Package: com.wyc.cloudapp.dialog.vip
@@ -75,7 +77,8 @@ public class VipDetailInfoWindow extends PopupWindow {
         setBackgroundAlpha(0.5f);
     }
     private void initWidth(){
-        final Display d = mContext.getDisplay(); // 获取屏幕宽、高用
+        final WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);
+        final Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
         final Point point = new Point();
         d.getSize(point);
         setWidth((int) (point.x * 0.95));

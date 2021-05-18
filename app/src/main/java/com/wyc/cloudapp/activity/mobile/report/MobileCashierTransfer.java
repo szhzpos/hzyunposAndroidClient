@@ -58,7 +58,7 @@ public class MobileCashierTransfer extends AbstractReportActivity {
     public void onResume(){
         super.onResume();
         if (isFirst && null != mCurrentDateView){
-            mCurrentDateView.post(()-> mCurrentDateView.callOnClick());
+            CustomApplication.runInMainThread(()-> mCurrentDateView.callOnClick());
             isFirst = false;
         }
     }

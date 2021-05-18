@@ -187,7 +187,7 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
                                 mValue = num;
                                 if (mOnYesClick != null)mContext.runOnUiThread(()-> mOnYesClick.onYesClick(num));
                             }else
-                                if (null != mWvalueEt)mWvalueEt.post(()-> mWvalueEt.setText(String.format(Locale.CHINA,"%.3f",num)));
+                                if (null != mWvalueEt)CustomApplication.runInMainThread(()-> mWvalueEt.setText(String.format(Locale.CHINA,"%.3f",num)));
                         }
                         @Override
                         public void onError(String err) {

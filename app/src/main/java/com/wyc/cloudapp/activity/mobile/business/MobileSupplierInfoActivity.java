@@ -137,7 +137,7 @@ public class MobileSupplierInfoActivity extends AbstractMobileBaseArchiveActivit
 
     @Override
     protected void add() {
-        EditSupplierActivity.start(this,false);
+        EditSupplierActivity.start(this,false,null);
     }
 
     @Override

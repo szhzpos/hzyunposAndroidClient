@@ -201,7 +201,7 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
                     selectItem(object,row_id + 1,isChecked);
             }
         }
-        buttonView.post(this::notifyDataSetChanged);
+        CustomApplication.runInMainThread(this::notifyDataSetChanged);
     };
 
     private void clearSelected(){
@@ -251,7 +251,7 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
             }else {
                 foldChildren(object,row_id + 1);
             }
-            row_id_tv.post(this::notifyDataSetChanged);
+            CustomApplication.runInMainThread(this::notifyDataSetChanged);
         }
     };
     private void foldChildren(final TreeListItem parent, int index){

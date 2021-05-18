@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.dialog;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -8,8 +9,10 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.logger.Logger;
 
-public class CustomProgressDialog extends ProgressDialog
+public class CustomProgressDialog extends Dialog
 {
     private String szMessage;
     private TextView mMessage,mShowTimeView;
@@ -24,8 +27,6 @@ public class CustomProgressDialog extends ProgressDialog
     {
         super.onCreate(savedInstanceState);
         init();
-        //开始计时
-        startTimer();
     }
 
     private void init()
@@ -49,12 +50,14 @@ public class CustomProgressDialog extends ProgressDialog
     public void show()
     {
         super.show();
+        startTimer();
     }
 
     @Override
     public void dismiss(){
-        super.dismiss();
         szMessage = "";
+        stopTimer();
+        super.dismiss();
     }
 
     @Override
@@ -66,18 +69,16 @@ public class CustomProgressDialog extends ProgressDialog
     public void onDetachedFromWindow(){
         super.onDetachedFromWindow();
         if (mRestShowTime){
-            stopTimer();
             mShowTime = 0;
         }
     }
 
     private void startTimer(){
-        updateTime();
+        CustomApplication.postDelayed(runnable,0);
     }
 
     private void stopTimer(){
-        if (mShowTimeView != null)
-            mShowTimeView.removeCallbacks(null);
+        CustomApplication.removeCallbacks(runnable);
     }
 
     public CustomProgressDialog setMessage(final String m){
@@ -86,7 +87,7 @@ public class CustomProgressDialog extends ProgressDialog
     }
 
     public CustomProgressDialog refreshMessage(){
-        if (null != mMessage)mMessage.post(()-> mMessage.setText(szMessage));
+        CustomApplication.postAtFrontOfQueue(()-> mMessage.setText(szMessage));
         return this;
     }
 
@@ -100,11 +101,17 @@ public class CustomProgressDialog extends ProgressDialog
         setCanceledOnTouchOutside(b);
         return this;
     }
-    private void updateTime(){
-        mShowTimeView.setText(String.valueOf(++mShowTime));
-        if (mShowTime == 300)dismiss();
-        mShowTimeView.postDelayed(this::updateTime,1000);
-    }
+
+    private final Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            mShowTimeView.setText(String.valueOf(++mShowTime));
+            if (mShowTime == 300)
+                dismiss();
+            else
+                CustomApplication.postDelayed(runnable,1000);
+        }
+    };
     public static CustomProgressDialog showProgress(final Context context,final String message){
         final CustomProgressDialog progressDialog = new CustomProgressDialog(context);
         progressDialog.setMessage(message).show();

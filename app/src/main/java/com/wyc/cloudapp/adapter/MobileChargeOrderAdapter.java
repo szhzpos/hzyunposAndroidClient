@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.orderDialog.AbstractMobileQueryDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
@@ -110,7 +111,7 @@ public final class MobileChargeOrderAdapter extends AbstractChargeOrderAdapter<M
                 chargeOrderDetailsDialog.show();
             }else if (isClickView(refund_btn,event.getX(),event.getY())){
                 if (Utils.getNotKeyAsNumberDefault(getCurrentOrder(),"order_status",2) == 2){
-                    refund_btn.post(()->{
+                    CustomApplication.runInMainThread(()->{
                         if (RefundDialog.verifyRefundPermission(mContext)){
                             final TextView order_code_tv = v.findViewById(R.id.order_code);
                             AbstractVipChargeDialog.vipRefundAmt(mContext,order_code_tv.getText().toString());

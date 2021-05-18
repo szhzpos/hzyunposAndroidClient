@@ -1,7 +1,6 @@
 package com.wyc.cloudapp.dialog.orderDialog;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -59,7 +58,7 @@ public abstract class AbstractTransferDialog extends AbstractDialogMainActivity 
     protected void updatePrintIcon() {
         final Window window = getWindow();
         final View view = window.getDecorView();
-        view.post(()->{
+        CustomApplication.runInMainThread(()->{
             int[] ints = new int[2];
             view.getLocationOnScreen(ints);
             Printer.updatePrintIcon(mContext,ints[0] ,ints[1]);

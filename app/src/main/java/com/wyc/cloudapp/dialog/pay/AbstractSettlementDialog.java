@@ -148,7 +148,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
     protected void updatePrintIcon() {
         final Window window = getWindow();
         final View view = window.getDecorView();
-        view.post(()->{
+        CustomApplication.runInMainThread(()->{
             int[] ints = new int[2];
             view.getLocationOnScreen(ints);
             Printer.updatePrintIcon(mContext,ints[0] ,ints[1]);

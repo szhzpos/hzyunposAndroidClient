@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.icu.text.SimpleDateFormat;
 import android.net.wifi.WifiManager;
+import android.os.Bundle;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.InputType;
@@ -55,6 +56,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -421,6 +423,16 @@ public final class Utils {
             }
         }
         return new JSONObject();
+    }
+
+    public static Bundle JsonObj2Bundle(final JSONObject object){
+        final Bundle bundle = new Bundle();
+        if (null == object)return bundle;
+        final Set<String> keys = object.keySet();
+        for (String key : keys){
+            bundle.putString(key,object.getString(key));
+        }
+        return bundle;
     }
 
     public static String getUserIdAndPasswordCombinationOfMD5(final String content){

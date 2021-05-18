@@ -160,7 +160,7 @@ public class AddBarcodeScaleDialog extends AbstractDialogContext {
         editText.setOnClickListener(v -> {
             final TreeListDialog treeListDialog = new TreeListDialog(mContext,mContext.getString(R.string.d_category_sz));
             treeListDialog.setDatas(GoodsCategoryAdapter.getCategoryAsTreeListData(mContext),mCategoryInfo,false);
-            editText.post(()->{
+            CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final StringBuilder names = new StringBuilder();
                     mCategoryInfo = treeListDialog.getMultipleContent();

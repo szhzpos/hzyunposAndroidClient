@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.adapter.business;
 
+import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -7,11 +8,15 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.business.EditSupplierActivity;
 import com.wyc.cloudapp.activity.mobile.business.MobileSupplierInfoActivity;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.bean.Supplier;
+import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
@@ -57,13 +62,17 @@ public class MobileSupplierAdapter extends AbstractDataAdapter<MobileSupplierAda
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         final JSONObject object = mDatas.getJSONObject(position);
-        holder._supplier_tv.setText(String.format(Locale.CHINA,"%s-%s",object.getString("gs_code"),object.getString("gs_name")));
+        holder._supplier_tv.setText(String.format(Locale.CHINA,"%s-%s",object.getString("cs_code"),object.getString("cs_name")));
         holder.contacts_name_tv.setText(object.getString("name"));
         holder.phone_tv.setText(object.getString("mobile"));
         if (!holder._modify.hasOnClickListeners())holder._modify.setOnClickListener(this);
+        holder._modify.setTag(object);
     }
     @Override
     public void onClick(View v) {
-        EditSupplierActivity.start(mContext,true);
+        final JSONObject object = Utils.getViewTagValue(v);
+        Logger.d_json(object);
+        final Supplier supplier = object.toJavaObject(Supplier.class);
+        EditSupplierActivity.start(mContext,true,supplier);
     }
 }

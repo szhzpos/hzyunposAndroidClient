@@ -1,9 +1,7 @@
 package com.wyc.cloudapp.activity.mobile.report;
 
 import android.app.Activity;
-import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -65,7 +63,7 @@ public final class MobileDealQueryActivity extends AbstractReportActivity {
     public void onResume(){
         super.onResume();
         if (isFirst && null != mCurrentDateView){
-            mCurrentDateView.post(()-> mCurrentDateView.callOnClick());
+            CustomApplication.runInMainThread(()-> mCurrentDateView.callOnClick());
             isFirst = false;
         }
     }

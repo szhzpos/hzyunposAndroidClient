@@ -345,7 +345,7 @@ public final class CustomApplication extends Application {
     }
 
     public static void runInMainThread(Runnable r){
-        mApplication.myhandler.post(r);
+        if (!mApplication.myhandler.hasCallbacks(r)) mApplication.myhandler.post(r);
     }
 
     public static void sendMessage(int what){
@@ -365,12 +365,20 @@ public final class CustomApplication extends Application {
         mApplication.myhandler.postAtFrontOfQueue(r);
     }
 
+    public static void postDelayed(Runnable r, long delayMillis){
+        if (!mApplication.myhandler.hasCallbacks(r))mApplication.myhandler.postDelayed(r,delayMillis);
+    }
+    public static void removeCallbacks(Runnable r){
+        mApplication.myhandler.removeCallbacks(r);
+    }
+
     private static class Myhandler extends Handler {
         private final CustomApplication app;
         private Myhandler(Looper looper, final CustomApplication application){
             super(looper);
             app = application;
         }
+
         @Override
         public void handleMessage(@NonNull Message msg) {
             switch (msg.what){

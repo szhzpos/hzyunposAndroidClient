@@ -23,7 +23,6 @@ import android.widget.TextView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -140,7 +139,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
             final String barcode = intent.getStringExtra(SEARCH_KEY);
             if (Utils.isNotEmpty(barcode) && mSearchContentEt != null){
                 mSearchContentEt.setText(barcode);
-                mSearchContentEt.post(()->search(barcode));
+                CustomApplication.runInMainThread(()->search(barcode));
             }
         }
     }
@@ -336,7 +335,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
                     final String szImage = img_url.substring(img_url.lastIndexOf("/") + 1);
                     CustomApplication.execute(()->{
                         final Bitmap bitmap = BitmapFactory.decodeFile(CustomApplication.getGoodsImgSavePath() + szImage);
-                        myViewHolder.goods_img.post(()-> myViewHolder.goods_img.setImageBitmap(bitmap));
+                        CustomApplication.runInMainThread(()-> myViewHolder.goods_img.setImageBitmap(bitmap));
                     });
                 }else{
                     myViewHolder.goods_img.setImageDrawable(mContext.getDrawable(R.drawable.nodish));

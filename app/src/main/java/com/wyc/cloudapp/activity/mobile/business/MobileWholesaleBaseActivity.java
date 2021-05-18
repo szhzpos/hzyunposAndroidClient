@@ -63,7 +63,7 @@ public abstract class MobileWholesaleBaseActivity extends AbstractMobileQuerySou
             settlement_layout.setVisibility(View.VISIBLE);
             mSettlementWayTv = settlement_layout.findViewById(R.id.settlement_way_tv);
             final String sz = getString(R.string.settlement_way);
-            mSettlementWayTv.setOnClickListener(v -> v.post(()->{
+            mSettlementWayTv.setOnClickListener(v -> CustomApplication.runInMainThread(()->{
                 final TreeListDialog treeListDialog = new TreeListDialog(this,sz.substring(0,sz.length() - 1));
                 treeListDialog.setDatas(getSettlementTypes(),null,true);
                 if (treeListDialog.exec() == 1){
@@ -106,7 +106,7 @@ public abstract class MobileWholesaleBaseActivity extends AbstractMobileQuerySou
     private void initCustomer(){
         mBusinessCustomerTv = findViewById(R.id.m_business_customer_tv);
         final String sup = getString(R.string.customer_colon_sz);
-        mBusinessCustomerTv.setOnClickListener(v -> v.post(()->{
+        mBusinessCustomerTv.setOnClickListener(v -> CustomApplication.runInMainThread(()->{
             final TreeListDialog treeListDialog = new TreeListDialog(this,sup.substring(0,sup.length() - 1));
             treeListDialog.setDatas(mCustomerList,null,true);
             if (treeListDialog.exec() == 1){
@@ -164,7 +164,7 @@ public abstract class MobileWholesaleBaseActivity extends AbstractMobileQuerySou
                 //
                 if (!isShowOrder() && "0000".equals(Utils.getNullStringAsEmpty(tmp,"cs_code"))  && mBusinessCustomerTv != null){
 
-                    mBusinessCustomerTv.post(()->{
+                    CustomApplication.runInMainThread(()->{
                         mBusinessCustomerTv.setText(name);
                         mBusinessCustomerTv.setTag(id);
                         mPriceType = cs_kf_price;

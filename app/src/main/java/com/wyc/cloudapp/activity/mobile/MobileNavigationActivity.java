@@ -128,14 +128,12 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
     @Override
     public void onBackPressed(){
         if (mCurrentFragment instanceof MobileCashierDeskFragment){
-            if (null != mCashierDesk){
-                mCashierDesk.post(()->{
-                    if (MyDialog.showMessageToModalDialog(this,"是否退出?") == 1){
-                        super.onBackPressed();
-                        finish();
-                    }
-                });
-            }
+            CustomApplication.runInMainThread(()->{
+                if (MyDialog.showMessageToModalDialog(this,"是否退出?") == 1){
+                    super.onBackPressed();
+                    finish();
+                }
+            });
         }else {
             if (null != mCashierDesk)mCashierDesk.callOnClick();
         }

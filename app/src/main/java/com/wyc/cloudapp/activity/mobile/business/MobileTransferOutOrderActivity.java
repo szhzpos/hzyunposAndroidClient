@@ -11,6 +11,7 @@ import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDataAdapter;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
 import com.wyc.cloudapp.adapter.business.MobileBaseOrderDetailsAdapter;
 import com.wyc.cloudapp.adapter.business.MobileTransferOutOrderAdapter;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.TreeListDialog;
@@ -52,7 +53,7 @@ public class MobileTransferOutOrderActivity extends AbstractMobileBusinessOrderA
             final TextView transfer_in_wh_tv = findViewById(R.id.transfer_in_wh_tv);
             final String sz = getString(R.string.transfer_in_wh);
             final JSONArray array = getTransferInWarehouse(transfer_in_wh_tv);
-            transfer_in_wh_tv.setOnClickListener(v -> v.post(()->{
+            transfer_in_wh_tv.setOnClickListener(v -> CustomApplication.runInMainThread(()->{
                 final TreeListDialog treeListDialog = new TreeListDialog(this,sz.substring(0,sz.length() - 1));
                 treeListDialog.setDatas(array,null,true);
                 if (treeListDialog.exec() == 1){

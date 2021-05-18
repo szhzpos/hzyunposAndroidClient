@@ -26,7 +26,6 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.SaleActivity;
-import com.wyc.cloudapp.adapter.AbstractSaleGoodsAdapter;
 import com.wyc.cloudapp.adapter.NormalSaleGoodsAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -158,7 +157,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
                             mCurrentBarcodeId = barcode_id;
                         }
                     }else{
-                        mSurface.post(()->MyDialog.ToastMessage(object.getString("info"), mContext,getWindow()));
+                        CustomApplication.runInMainThread(()->MyDialog.ToastMessage(object.getString("info"), mContext,getWindow()));
                     }
                 });
             }

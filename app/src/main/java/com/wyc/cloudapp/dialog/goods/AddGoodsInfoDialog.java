@@ -1,15 +1,9 @@
 package com.wyc.cloudapp.dialog.goods;
 
-import android.graphics.Point;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.Display;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -20,7 +14,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
@@ -28,13 +21,10 @@ import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.TreeListDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
 import java.util.Locale;
-
-import static android.content.Context.WINDOW_SERVICE;
 
 public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
     private String mBarcode;
@@ -89,7 +79,7 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
         unit_et.setOnClickListener(v -> {
             final TreeListDialog treeListDialog = new TreeListDialog(mContext,mContext.getString(R.string.unit_sz));
             treeListDialog.setDatas(Utils.JsondeepCopy(mUnitList),null,true);
-            unit_et.post(()->{
+            CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
                     unit_et.setText(object.getString("item_name"));
@@ -111,7 +101,7 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
         category_et.setOnClickListener(v -> {
             final TreeListDialog treeListDialog = new TreeListDialog(mContext,mContext.getString(R.string.d_category_sz));
             treeListDialog.setDatas(Utils.JsondeepCopy(mCategoryList),null,true);
-            category_et.post(()->{
+            CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
                     category_et.setText(object.getString("item_name"));
@@ -145,7 +135,7 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
             final String sup = mContext.getString(R.string.a_supplier_sz);
             final TreeListDialog treeListDialog = new TreeListDialog(mContext,sup.substring(0,sup.length() - 1));
             treeListDialog.setDatas(Utils.JsondeepCopy(mSupplierList),null,true);
-            supplier_et.post(()->{
+            CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
                     supplier_et.setText(object.getString("item_name"));
@@ -181,7 +171,7 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
 
             treeListDialog.setDatas(array,null,true);
 
-            goods_attr_et.post(()->{
+            CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
                     final String id = object.getString("item_id");
@@ -230,7 +220,7 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
             array.add(obj);
 
             treeListDialog.setDatas(array,null,true);
-            metering_et.post(()->{
+            CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
                     metering_et.setText(object.getString("item_name"));
@@ -466,7 +456,7 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
 
                 //
                 if ("0000".equals(Utils.getNullStringAsEmpty(tmp,"gs_code")) && mSupplierEt != null){
-                    mSupplierEt.post(()->{
+                    CustomApplication.runInMainThread(()->{
                         mSupplierEt.setText(Utils.getNullStringAsEmpty(tmp,"gs_name"));
                         mSupplierEt.setTag(id);
                     });

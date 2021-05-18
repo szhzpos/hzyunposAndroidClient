@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.report.MobileSaleRankAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.JEventLoop;
@@ -60,7 +59,7 @@ public final class MobileSaleRankActivity extends AbstractReportActivity {
     @Override
     public void onResume(){
         super.onResume();
-        if (null != mToday)mToday.post(()-> mToday.callOnClick());
+        if (null != mToday)CustomApplication.runInMainThread(()-> mToday.callOnClick());
     }
 
     private void initOrderList(){

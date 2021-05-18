@@ -324,7 +324,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
             window.setOutsideTouchable(true);
             window.setBackgroundDrawable(getDrawable(R.color.transparent));
 
-            btn.post(()->{
+            CustomApplication.runInMainThread(()->{
                 final View contentView = window.getContentView();
                 contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
 
@@ -510,7 +510,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                     mGoodsCategoryAdapter.trigger_preView();
                 }else{
                     if (!mGoodsInfoViewAdapter.fuzzy_search_goods(content,true)) {
-                        search.post(()->{
+                        CustomApplication.runInMainThread(()->{
                             if (mApplication.isConnection() && AddGoodsInfoDialog.verifyGoodsAddPermissions(context)) {
                                 if (1 == MyDialog.showMessageToModalDialog(context,"未找到匹配商品，是否新增?")){
                                     final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(context);

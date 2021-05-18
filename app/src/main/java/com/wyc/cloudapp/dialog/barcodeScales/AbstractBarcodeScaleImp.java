@@ -79,7 +79,7 @@ public abstract class AbstractBarcodeScaleImp implements IBarCodeScale {
                 try {
                     IBarCodeScale barcodeScale = newInstance(scales_info.getString("s_class_id"));
                     if (null != view) {
-                        barcodeScale.setShowStatus(s -> view.post(() -> {
+                        barcodeScale.setShowStatus(s -> CustomApplication.runInMainThread(() -> {
                             view.setText(s);
                         }));
                     }
@@ -87,9 +87,7 @@ public abstract class AbstractBarcodeScaleImp implements IBarCodeScale {
                 } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
                     e.printStackTrace();
                     if (null != view) {
-                        view.post(() -> {
-                            view.setText(e.getMessage());
-                        });
+                        CustomApplication.runInMainThread(() -> view.setText(e.getMessage()));
                     }
                 }
                 return code;

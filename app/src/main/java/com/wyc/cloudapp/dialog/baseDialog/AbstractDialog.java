@@ -26,6 +26,7 @@ import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import static android.content.Context.INPUT_METHOD_SERVICE;
+import static android.content.Context.WINDOW_SERVICE;
 
 public abstract class AbstractDialog extends Dialog {
     protected CharSequence mTitle;
@@ -84,7 +85,8 @@ public abstract class AbstractDialog extends Dialog {
     }
 
     protected void initWindowSize(){
-        final Display d = getContext().getDisplay(); // 获取屏幕宽、高用
+        final WindowManager m = (WindowManager)getContext().getSystemService(WINDOW_SERVICE);
+        final Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
         final Point point = new Point();
         d.getSize(point);
         final Window dialogWindow = this.getWindow();

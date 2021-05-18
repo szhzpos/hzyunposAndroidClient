@@ -79,7 +79,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
     @Override
     protected void onStop() {
         super.onStop();
-        if (mProgressDialog != null && mProgressDialog.isShowing())mProgressDialog.dismiss();
+        if (mProgressDialog != null)mProgressDialog.dismiss();
     }
 
     @CallSuper
@@ -260,7 +260,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                 try {
                     final JSONObject info = JSON.parseObject(retJson.getString("info"));
                     if (HttpUtils.checkBusinessSuccess(info)){
-                        mOrderCodeTv.post(()-> mOrderCodeTv.setText(info.getString("code")));
+                        CustomApplication.runInMainThread(()-> mOrderCodeTv.setText(info.getString("code")));
                     }else {
                         runOnUiThread(()-> Toast.makeText(this,info.getString("info"),Toast.LENGTH_LONG));
                     }
@@ -330,7 +330,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
 
                 //
                 if (!isShowOrder() && "0000".equals(Utils.getNullStringAsEmpty(tmp,"gs_code")) && mSupplierTV != null){
-                    mSupplierTV.post(()->{
+                    CustomApplication.runInMainThread(()->{
                         mSupplierTV.setText(name);
                         mSupplierTV.setTag(id);
                     });
@@ -404,13 +404,14 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                 Logger.d_json(retJson.toString());
                 if (HttpUtils.checkBusinessSuccess(info)){
                     mOrderID = info.getString(getOrderIDKey());
-                    if (MyDialog.showMessageToModalDialog(this,String.format(Locale.CHINA,"%s,%s",getString(R.string.upload_order_success_hints),getString(R.string.ask_audit_hints))) == 1){
-                        auditOrder();
-                    }else
-                        CustomApplication.runInMainThread(()->{
+                    CustomApplication.runInMainThread(()->{
+                        if (MyDialog.showMessageToModalDialog(this,String.format(Locale.CHINA,"%s,%s",getString(R.string.upload_order_success_hints),getString(R.string.ask_audit_hints))) == 1){
+                            auditOrder();
+                        }else {
                             resetBusinessOrderInfo();
-                            Toast.makeText(this,getString(R.string.upload_order_success_hints),Toast.LENGTH_LONG).show();
-                        });
+                            Toast.makeText(this, getString(R.string.upload_order_success_hints), Toast.LENGTH_LONG).show();
+                        }
+                    });
                 }else {
                     err = info.getString("info");
                 }
@@ -429,6 +430,9 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
             mProgressDialog.setMessage(mess).refreshMessage();
 
         if (!mProgressDialog.isShowing())mProgressDialog.show();
+    }
+    private void dismissProgress(){
+        if (null != mProgressDialog)mProgressDialog.dismiss();
     }
 
     private void auditOrder(){
@@ -463,7 +467,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
             if (Utils.isNotEmpty(err)){
                 MyDialog.ToastMessageInMainThread("审核单据错误:" + err);
             }
-            mProgressDialog.dismiss();
+            dismissProgress();
         });
     }
 
@@ -471,7 +475,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
         final TextView business_supplier_tv = findViewById(R.id.m_business_supplier_tv);
         if (null != business_supplier_tv){
             final String sup = getString(R.string.supplier_colon_sz);
-            business_supplier_tv.setOnClickListener(v -> v.post(()->{
+            business_supplier_tv.setOnClickListener(v -> CustomApplication.runInMainThread(()->{
                 final TreeListDialog treeListDialog = new TreeListDialog(this,sup.substring(0,sup.length() - 1));
                 treeListDialog.setDatas(mSupplierList,null,true);
                 if (treeListDialog.exec() == 1){
@@ -496,7 +500,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
         final TextView business_operator_tv = findViewById(R.id.m_business_operator_tv);
         final String sz = getString(R.string.sale_operator_sz);
         final JSONArray array = getSaleOperator(business_operator_tv);
-        business_operator_tv.setOnClickListener(v -> v.post(()->{
+        business_operator_tv.setOnClickListener(v -> CustomApplication.runInMainThread(()->{
             final TreeListDialog treeListDialog = new TreeListDialog(this,sz.substring(0,sz.length() - 1));
             treeListDialog.setDatas(array,null,true);
             if (treeListDialog.exec() == 1){

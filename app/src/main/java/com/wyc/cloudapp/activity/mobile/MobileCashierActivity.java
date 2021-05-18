@@ -28,6 +28,7 @@ import com.wyc.cloudapp.CustomizationView.TmpOrderButton;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.decoration.GoodsInfoItemDecoration;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.decoration.SaleGoodsItemDecoration;
@@ -377,7 +378,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
 
     private boolean _search_goods(final String content){
         if (!mGoodsInfoViewAdapter.fuzzy_search_goods(content,true)) {
-            mSearchContent.post(()->{
+            CustomApplication.runInMainThread(()->{
                 if (mApplication.isConnection() && AddGoodsInfoDialog.verifyGoodsAddPermissions(this)) {
                     if (1 == MyDialog.showMessageToModalDialog(this,"未找到匹配商品，是否新增?")){
                         final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(this);

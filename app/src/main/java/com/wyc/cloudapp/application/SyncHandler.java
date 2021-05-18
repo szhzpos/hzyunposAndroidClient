@@ -7,6 +7,7 @@ import android.os.Looper;
 import android.os.Message;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -35,7 +36,6 @@ final class SyncHandler extends Handler {
     private volatile int mCurrentNetworkStatusCode = HttpURLConnection.HTTP_OK;
     private long mLoseTime = 0;
     private JSONObject mHeartbeat;
-    private Consumer<JSONArray> mFunc = (data)->{};
 
     private String mAppId, mAppSecret,mUrl,mPosNum,mOperId,mStoresId;
 
@@ -93,7 +93,6 @@ final class SyncHandler extends Handler {
                     }
                     return;
                 case MessageID.SYNC_GOODS_CATEGORY_ID:
-                    mFunc = this::up_category;
                     table_name = "shop_category";
                     sys_name = "正在同步商品类别";
                     table_cls = new String[]{"category_id","category_code","name","parent_id","depth","path","status","sort"};
@@ -109,7 +108,6 @@ final class SyncHandler extends Handler {
                     object.put("pt_user_id",oper_id);
                     break;
                 case MessageID.SYNC_GOODS_ID://商品信息
-                    mFunc = this::download_goods_img_and_upload_barcode_id;
                     table_name = "barcode_info";
                     sys_name = "正在同步商品";
                     table_cls = new String[]{"goods_id","barcode_id","barcode","goods_title","only_coding","retail_price","buying_price","trade_price","cost_price","ps_price",
@@ -123,7 +121,6 @@ final class SyncHandler extends Handler {
                     object.put("limit",100);
                     break;
                 case MessageID.SYNC_PAY_METHOD_ID://支付方式
-                    mFunc = this::download_pay_method_img_and_upload_pay_method;
                     table_name = "pay_method";
                     table_cls = new String[]{"pay_method_id","name","status","remark","is_check","shortcut_key","sort","xtype","pay_img","master_img",
                             "is_show_client","is_cardno","is_scan","wr_btn_img","unified_pay_order","unified_pay_query","rule","is_open","is_enable","is_moling","support"};
@@ -153,7 +150,6 @@ final class SyncHandler extends Handler {
                     object.put("stores_id",stores_id);
                     break;
                 case MessageID.SYNC_FULLREDUCE_ID:
-                    mFunc = this::up_fullreduce;
                     table_name = "fullreduce_info_new";
                     table_cls = new String[]{"tlp_id","tlpb_id","title","promotion_type","type_detail_id","promotion_object","promotion_grade_id","cumulation_give","buyfull_money","reduce_money","start_date"
                             ,"end_date","promotion_week","begin_time","end_time","status","xtype"};
@@ -171,7 +167,6 @@ final class SyncHandler extends Handler {
                     object.put("type",1);
                     break;
                 case MessageID.SYNC_BUY_X_GIVE_X_ID:
-                    mFunc = this::up_buy_x_give_x;
                     table_name = "buy_x_give_x";
                     table_cls = new String[]{"tlp_id","tlpb_id","promotion_type","promotion_object","promotion_grade_id","cumulation_give","xnum_buy","xnum_give","markup_price","barcode_id"
                             ,"barcode_id_give","start_date","end_date","promotion_week","begin_time","end_time","status","xtype"};
@@ -181,7 +176,6 @@ final class SyncHandler extends Handler {
                     object.put("pos_num",pos_num);
                     break;
                 case MessageID.SYNC_BUY_FULL_GIVE_X_ID:
-                    mFunc = this::up_buy_full_give_x;
                     table_name = "buyfull_give_x";
                     table_cls = new String[]{"tlp_id","tlpb_id","title","type_detail_id","promotion_type","promotion_object","promotion_grade_id","cumulation_give","fullgive_way","give_way","item_discount","buyfull_money"
                             ,"givex_goods_info","start_date","end_date","promotion_week","begin_time","end_time","status","xtype"};
@@ -191,7 +185,6 @@ final class SyncHandler extends Handler {
                     object.put("pos_num",pos_num);
                     break;
                 case MessageID.SYNC_SALES_INFO_ID:
-                    mFunc = this::up_sales;
                     table_name = "sales_info";
                     table_cls = new String[]{"sc_id","sc_name","sc_phone","stores_id","tc_mode","is_tc","tc_rate","sc_status","appids","sc_addtime"};
                     sys_name = "正在同步营业员";
@@ -201,7 +194,6 @@ final class SyncHandler extends Handler {
                     object.put("pos_num",pos_num);
                     break;
                 case MessageID.SYNC_PROMOTION_ID:
-                    mFunc = this::up_promotion;
                     table_name = "promotion_info";
                     table_cls = new String[]{"tlpb_id","tlp_id","barcode_id","type_detail_id","status","way","limit_xnum","promotion_object","promotion_grade_id","promotion_type","promotion_price","stores_id",
                             "start_date","end_date","promotion_week","begin_time","end_time","xtype"};
@@ -212,7 +204,6 @@ final class SyncHandler extends Handler {
                     object.put("pos_num",pos_num);
                     break;
                 case MessageID.SYNC_STEP_PROMOTION_ID:
-                    mFunc = this::up_step_promotion;
                     table_name = "step_promotion_info";
                     table_cls = new String[]{"tlpb_id","tlp_id","type_detail_id","status","way","promotion_object","promotion_grade_id","promotion_type",
                             "xnum_one","promotion_price_one","xnum_two","promotion_price_two","xnum_three","promotion_price_three","xnum_four","promotion_price_four","xnum_five","promotion_price_five",
@@ -260,7 +251,7 @@ final class SyncHandler extends Handler {
                 case MessageID.SYNC_THREAD_QUIT_ID://由于处理程序内部会发送消息，消息队列退出需在处理程序内部处理
                     if (mHttp != null)mHttp.clearConnection(HttpRequest.CLOSEMODE.BOTH);
                     this.removeCallbacksAndMessages(null);
-                    getLooper().quit();
+                    getLooper().quitSafely();
                     return;
 
             }
@@ -326,61 +317,59 @@ final class SyncHandler extends Handler {
                                     case MessageID.SYNC_GOODS_ID: {
                                         int max_page = info_json.getIntValue("max_page"),current_page = (int)msg.obj;
                                         if((code = SQLiteHelper.execSQLByBatchFromJson(data,table_name ,table_cls,err,1))){
-                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
-                                                mFunc.accept(data);
+                                            if (msg.what ==  MessageID.SYNC_GOODS_ID) {
+                                                download_goods_img_and_upload_barcode_id(data);//保存成功才能标记商品已获取
                                                 if ((current_page++ <= max_page)){
                                                     Logger.d("current_page:%d,max_page:%d",current_page,max_page);
-                                                    sendMessageAtFrontOfQueue(obtainMessage(msg.what,current_page));
+                                                    sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_GOODS_ID,current_page));
                                                 }
-                                            }else{
-                                                if (msg.what ==  MessageID.SYNC_GOODS_ID) {
-                                                    download_goods_img_and_upload_barcode_id(data);//保存成功才能标记商品已获取
-                                                    if ((current_page++ <= max_page)){
-                                                        Logger.d("current_page:%d,max_page:%d",current_page,max_page);
-                                                        sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_GOODS_ID,current_page));
-                                                    }
-                                                }else if (msg.what ==  MessageID.SYNC_GOODS_CATEGORY_ID){
-                                                    up_category(data);
-                                                    if ((current_page++ <= max_page)){
-                                                        Logger.d("current_page:%d,max_page:%d",current_page,max_page);
-                                                        sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_GOODS_CATEGORY_ID,current_page));
-                                                    }
-                                                }else if (msg.what ==  MessageID.SYNC_PAY_METHOD_ID){
-                                                    download_pay_method_img_and_upload_pay_method(data);
-                                                    if ((current_page++ <= max_page)){
-                                                        Logger.d("current_page:%d,max_page:%d",current_page,max_page);
-                                                        sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_PAY_METHOD_ID,current_page));
-                                                    }
-                                                }else if (msg.what == MessageID.SYNC_PROMOTION_ID){
-                                                    up_promotion(data);
-                                                    if ((current_page++ <= max_page)){
-                                                        Logger.d("current_page:%d,max_page:%d",current_page,max_page);
-                                                        sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_PROMOTION_ID,current_page));
-                                                    }
-                                                }else if (MessageID.SYNC_SALES_INFO_ID == msg.what){
-                                                    up_sales(data);
-                                                    if ((current_page++ <= max_page)){
-                                                        Logger.d("current_page:%d,max_page:%d",current_page,max_page);
-                                                        sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_SALES_INFO_ID,current_page));
-                                                    }
-                                                }else if (MessageID.SYNC_FULLREDUCE_ID == msg.what){
-                                                    up_fullreduce(data);
-                                                    if ((current_page++ <= max_page)){
-                                                        Logger.d("current_page:%d,max_page:%d",current_page,max_page);
-                                                        sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_FULLREDUCE_ID,current_page));
-                                                    }
-                                                }else if (MessageID.SYNC_BUY_X_GIVE_X_ID == msg.what){
-                                                    up_buy_x_give_x(data);
-                                                    if ((current_page++ <= max_page)){
-                                                        Logger.d("current_page:%d,max_page:%d",current_page,max_page);
-                                                        sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_BUY_X_GIVE_X_ID,current_page));
-                                                    }
-                                                }else if (MessageID.SYNC_BUY_FULL_GIVE_X_ID == msg.what){
-                                                    up_buy_full_give_x(data);
-                                                    if ((current_page++ <= max_page)){
-                                                        Logger.d("current_page:%d,max_page:%d",current_page,max_page);
-                                                        sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_BUY_FULL_GIVE_X_ID,current_page));
-                                                    }
+                                            }else if (msg.what ==  MessageID.SYNC_GOODS_CATEGORY_ID){
+                                                up_category(data);
+                                                if ((current_page++ <= max_page)){
+                                                    Logger.d("current_page:%d,max_page:%d",current_page,max_page);
+                                                    sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_GOODS_CATEGORY_ID,current_page));
+                                                }
+                                            }else if (msg.what ==  MessageID.SYNC_PAY_METHOD_ID){
+                                                download_pay_method_img_and_upload_pay_method(data);
+                                                if ((current_page++ <= max_page)){
+                                                    Logger.d("current_page:%d,max_page:%d",current_page,max_page);
+                                                    sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_PAY_METHOD_ID,current_page));
+                                                }
+                                            }else if (msg.what == MessageID.SYNC_PROMOTION_ID){
+                                                up_promotion(data);
+                                                if ((current_page++ <= max_page)){
+                                                    Logger.d("current_page:%d,max_page:%d",current_page,max_page);
+                                                    sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_PROMOTION_ID,current_page));
+                                                }
+                                            }else if (MessageID.SYNC_SALES_INFO_ID == msg.what){
+                                                up_sales(data);
+                                                if ((current_page++ <= max_page)){
+                                                    Logger.d("current_page:%d,max_page:%d",current_page,max_page);
+                                                    sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_SALES_INFO_ID,current_page));
+                                                }
+                                            }else if (MessageID.SYNC_FULLREDUCE_ID == msg.what){
+                                                up_fullreduce(data);
+                                                if ((current_page++ <= max_page)){
+                                                    Logger.d("current_page:%d,max_page:%d",current_page,max_page);
+                                                    sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_FULLREDUCE_ID,current_page));
+                                                }
+                                            }else if (MessageID.SYNC_BUY_X_GIVE_X_ID == msg.what){
+                                                up_buy_x_give_x(data);
+                                                if ((current_page++ <= max_page)){
+                                                    Logger.d("current_page:%d,max_page:%d",current_page,max_page);
+                                                    sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_BUY_X_GIVE_X_ID,current_page));
+                                                }
+                                            }else if (MessageID.SYNC_BUY_FULL_GIVE_X_ID == msg.what){
+                                                up_buy_full_give_x(data);
+                                                if ((current_page++ <= max_page)){
+                                                    Logger.d("current_page:%d,max_page:%d",current_page,max_page);
+                                                    sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_BUY_FULL_GIVE_X_ID,current_page));
+                                                }
+                                            }else if (MessageID.SYNC_STEP_PROMOTION_ID == msg.what){
+                                                up_step_promotion(data);
+                                                if ((current_page++ <= max_page)){
+                                                    Logger.d("current_page:%d,max_page:%d",current_page,max_page);
+                                                    sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_BUY_FULL_GIVE_X_ID,current_page));
                                                 }
                                             }
                                         }
@@ -674,7 +663,7 @@ final class SyncHandler extends Handler {
             }
         }
         if (err.length() != 0){
-            Logger.e("上传交班单据错误%s,ti_code:%s",err);
+            Logger.e("上传交班单据错误:%s",err);
             CustomApplication.sendMessage(MessageID.TRANSFERSTATUS_ID,false);
         }
     }

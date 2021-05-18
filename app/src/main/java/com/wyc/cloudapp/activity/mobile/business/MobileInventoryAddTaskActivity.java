@@ -156,7 +156,7 @@ public class MobileInventoryAddTaskActivity extends AbstractMobileActivity {
     private void initInventoryWay(){
         final TextView view = findViewById(R.id.inventory_way_tv);
         final String sz = getString(R.string.inventory_way);
-        view.setOnClickListener(v -> v.post(()->{
+        view.setOnClickListener(v -> CustomApplication.runInMainThread(()->{
             final TreeListDialog treeListDialog = new TreeListDialog(this,sz.substring(0,sz.length() - 1));
             treeListDialog.setDatas(MobilePracticalInventoryAddOrderActivity.getInventoryWay(),null,true);
             if (treeListDialog.exec() == 1){
@@ -176,7 +176,7 @@ public class MobileInventoryAddTaskActivity extends AbstractMobileActivity {
     private void initInventoryCategory(){
         final TextView view = findViewById(R.id.inventory_category_tv);
         final String sz = getString(R.string.inventoried_category_sz);
-        view.setOnClickListener(v -> v.post(()->{
+        view.setOnClickListener(v -> CustomApplication.runInMainThread(()->{
             final TreeListDialog treeListDialog = new TreeListDialog(this,sz.substring(0,sz.length() - 1));
             treeListDialog.setDatas(getInventoryCategory(null),null,false);
             if (treeListDialog.exec() == 1){
@@ -322,7 +322,7 @@ public class MobileInventoryAddTaskActivity extends AbstractMobileActivity {
                 try {
                     final JSONObject info = JSON.parseObject(retJson.getString("info"));
                     if (HttpUtils.checkBusinessSuccess(info)){
-                        mOrderCodeTv.post(()-> mOrderCodeTv.setText(info.getString("code")));
+                        CustomApplication.runInMainThread(()-> mOrderCodeTv.setText(info.getString("code")));
                     }else {
                         runOnUiThread(()-> Toast.makeText(this,info.getString("info"),Toast.LENGTH_LONG));
                     }
