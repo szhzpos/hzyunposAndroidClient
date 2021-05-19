@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/margin_12"
+    app:ItemPadding="@dimen/margin_8">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bottom_separator"
+        android:orientation="horizontal"
+        android:padding="@dimen/margin_8">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@string/vip_category_name_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <EditText
+            android:id="@+id/vip_category_tv"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/add_archive_item_height"
+            android:layout_weight="1"
+            android:background="@drawable/round_border_sub_gray"
+            android:gravity="center_vertical"
+            android:inputType="number"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bottom_separator"
+        android:orientation="horizontal"
+        android:padding="@dimen/margin_8">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@string/vip_discount_colon_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/vip_discount_tv"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/add_archive_item_height"
+                android:background="@drawable/round_border_sub_gray"
+                android:gravity="center_vertical"
+                android:inputType="numberDecimal"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/margin_5"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="@string/hint_vip_discount"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bottom_separator"
+        android:orientation="horizontal"
+        android:padding="@dimen/margin_8">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@string/vip_integral_ratio_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/vip_integral_ratio_tv"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/add_archive_item_height"
+                android:autofillHints=""
+                android:background="@drawable/round_border_sub_gray"
+                android:gravity="center_vertical"
+                android:inputType="text"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/margin_5"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="@string/hint_integral_multi"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bottom_separator"
+        android:orientation="horizontal"
+        android:padding="@dimen/margin_8">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:text="@string/vip_lowest_amt_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/vip_lowest_amt_tv"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/add_archive_item_height"
+                android:autofillHints=""
+                android:background="@drawable/round_border_sub_gray"
+                android:enabled="true"
+                android:gravity="center_vertical"
+                android:inputType="numberDecimal"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/margin_5"
+                android:text="@string/zero_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="@string/hint_lowest_amt_multi"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout>

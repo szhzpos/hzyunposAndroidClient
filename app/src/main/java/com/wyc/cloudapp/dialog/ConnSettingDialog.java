@@ -1,15 +1,8 @@
 package com.wyc.cloudapp.dialog;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.graphics.Point;
 import android.os.Bundle;
-import android.view.Display;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -26,8 +19,6 @@ import com.wyc.cloudapp.utils.Utils;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-
-import static android.content.Context.WINDOW_SERVICE;
 
 public class ConnSettingDialog extends AbstractDialogContext {
     private TextView mUrlTv, mAppIdTv, mAppSecretTv,mStore_nameTv;
@@ -128,7 +119,7 @@ public class ConnSettingDialog extends AbstractDialogContext {
                             final CustomProgressDialog customProgressDialog = new CustomProgressDialog(mContext);
                             customProgressDialog.setCancel(false).setMessage("正在备份数据库...").show();
                             CustomApplication.execute(()->{
-                                if (SQLiteHelper.backupDB(String.format(Locale.CHINA,"hzYunPos<%s>%s",Utils.getNullStringAsEmpty(param,"shop_id"), new SimpleDateFormat("yyyyMMddHHmmss", Locale.CHINA).format(new Date())),err)){
+                                if (SQLiteHelper.backupDBPublicDir(mContext,String.format(Locale.CHINA,"hzYunPos<%s>%s",Utils.getNullStringAsEmpty(param,"shop_id"), new SimpleDateFormat("yyyyMMddHHmmss", Locale.CHINA).format(new Date())),err)){
                                     loop.done(1);
                                 }else
                                     loop.done(0);

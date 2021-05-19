@@ -9,10 +9,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.widget.Toast;
+import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,20 +27,19 @@ import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.FileUtils;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import static android.database.Cursor.FIELD_TYPE_FLOAT;
 import static android.database.Cursor.FIELD_TYPE_INTEGER;
@@ -168,49 +169,44 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         return false;
     }
 
-    public static boolean backupDB(final String new_name,final StringBuilder err) {
-        final String file_absolute_path = Environment.getExternalStorageDirectory().getAbsolutePath();
-        final File db = new File(file_absolute_path + "/hzYunPos/");
+    public static boolean backupDBPublicDir(Context context, final String new_name, final StringBuilder err){
+        final String file_absolute_path = Environment.getExternalStorageDirectory().getAbsolutePath(),backup_name = new_name + ".zip",
+                file_name = file_absolute_path + "/hzYunPos/";
+
+        final File db = new File(file_name);
         boolean code = false;
+
+        OutputStream outputStream = null;
         try {
-            zipFile(db,file_absolute_path + File.separator + new_name + ".zip");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(MediaStore.Downloads.DISPLAY_NAME, backup_name);
+                contentValues.put(MediaStore.Downloads.MIME_TYPE, FileUtils.getMIMEType(backup_name));
+                contentValues.put(MediaStore.Downloads.DATE_TAKEN, System.currentTimeMillis());
+                Uri uri = context.getContentResolver().insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues);
+                outputStream = context.getContentResolver().openOutputStream(uri);
+            }else {
+                String dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString();
+                outputStream = new FileOutputStream(dir + backup_name);
+            }
+            FileUtils.zipFile(db,outputStream);
             Utils.deleteFile(db);
             closeDB();
             code = true;
-        } catch (IOException e) {
+        }catch (IOException e){
             e.printStackTrace();
             if (err != null)err.append(e.getMessage());
-        }
-        return code;
-    }
-
-    private static void zipFile(File dbFile, final String backup_name) throws IOException {
-        try (ZipOutputStream out = new ZipOutputStream( new FileOutputStream(backup_name));) {
-            zip(dbFile.listFiles(),"",out);
-        }
-    }
-    private static void zip(File[] files, String baseFolder, ZipOutputStream zos)throws IOException {
-        if (files != null){
-            ZipEntry entry = null;
-            int count = 0;
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    zip(file.listFiles(), file.getName() + File.separator, zos);
-                    continue;
-                }
-                entry = new ZipEntry(baseFolder + file.getName());
-
-                zos.putNextEntry(entry);
-
-                try( FileInputStream fis = new FileInputStream(file);) {
-                    final byte[] buffer = new byte[1024];
-                    while ((count = fis.read(buffer, 0, buffer.length)) != -1)
-                        zos.write(buffer, 0, count);
+        }finally {
+            if (outputStream != null){
+                try {
+                    outputStream.close();
+                }catch (IOException e){
+                    e.printStackTrace();
                 }
             }
         }
+       return code;
     }
-
 
     private static boolean checkColumnExists(SQLiteDatabase db,String tableName, String columnName) throws SQLiteException {
         boolean result = false ;
@@ -456,7 +452,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
     public static String getString(@NonNull String sql,StringBuilder err){
         String result;
         synchronized(SQLiteHelper.class){
-            try(Cursor cursor = mDb.rawQuery(sql,null);){
+            try(Cursor cursor = mDb.rawQuery(sql,null)){
                 result = rs2Txt(cursor);
             } catch (SQLiteException e) {
                 if (err != null)err.append(e.getMessage());
@@ -530,7 +526,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         ArrayList<Integer> coltypes=new ArrayList<Integer>();
 
         synchronized (SQLiteHelper.class){
-            try(Cursor cursor = mDb.rawQuery(sql,null);){
+            try(Cursor cursor = mDb.rawQuery(sql,null)){
                 // 获取列数
                 int columnCount = cursor.getColumnCount();
                 if(!cursor.moveToNext()) return true;
@@ -808,7 +804,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             }
         }
         return code;
-    };
+    }
     public static Cursor getCursor(final String sql,final String[] selectArgs){
         synchronized(SQLiteHelper.class){
             return mDb.rawQuery(sql,selectArgs);
@@ -884,8 +880,8 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
     private static List<Map<String,Object>> rs2List(Cursor cursor) {
 
         final List<Map<String,Object>> list = new ArrayList<>();
-        final ArrayList<String> colNames=new ArrayList<String>();
-        final ArrayList<Integer> coltypes=new ArrayList<Integer>();
+        final ArrayList<String> colNames= new ArrayList<>();
+        final ArrayList<Integer> coltypes= new ArrayList<>();
         Map<String,Object> map;
         // 获取列数
         int columnCount = cursor.getColumnCount();
@@ -922,8 +918,8 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
     private static JSONArray rs2Json(Cursor cursor, Integer minRow, Integer maxRow, boolean row) throws JSONException {
         // json数组
         final JSONArray array = new JSONArray();
-        final ArrayList<String> colNames=new ArrayList<String>();
-        final ArrayList<Integer> coltypes=new ArrayList<Integer>();
+        final ArrayList<String> colNames= new ArrayList<>();
+        final ArrayList<Integer> coltypes= new ArrayList<>();
         JSONObject jsonObj;
         int row_count = 0;
         // 获取列数
@@ -997,7 +993,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         if(row) {
             do {
                 row_count++;
-                if (row_count > minRow && row_count <= maxRow){
+                if (row_count > minRow && row_count <= 0){
                     for (int i = 0; i < columnCount; i++) {
                         if(coltypes.get(i) == FIELD_TYPE_FLOAT){
                             array.add(cursor.getDouble(i));
@@ -1035,8 +1031,8 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
     private static JSONArray rs2ContentValues(Cursor cursor, Integer minRow, Integer maxRow, boolean row) {
         // json数组
         JSONArray array = new JSONArray();
-        ArrayList<String> colNames=new ArrayList<String>();
-        ArrayList<Integer> coltypes=new ArrayList<Integer>();
+        ArrayList<String> colNames= new ArrayList<>();
+        ArrayList<Integer> coltypes= new ArrayList<>();
         ContentValues values;
         int  row_count = 0;
         // 获取列数

@@ -38,7 +38,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
-
+        <activity android:name=".activity.mobile.business.MobileVipCategoryInfoActivity"></activity>
+        <activity android:name=".activity.mobile.business.EditConsumerActivity" />
+        <activity
+            android:name=".activity.mobile.business.MobileConsumerInfoActivity"
+            android:windowSoftInputMode="adjustResize|stateUnchanged" />
         <activity android:name=".activity.mobile.business.EditSupplierActivity" />
         <activity android:name=".activity.mobile.business.AbstractEditArchiveActivity" />
         <activity

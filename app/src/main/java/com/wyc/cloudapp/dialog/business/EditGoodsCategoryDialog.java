@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.activity.mobile.business.MobileEditGoodsCategoryActivity;
 import com.wyc.cloudapp.adapter.bean.TreeListItem;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -49,7 +48,7 @@ public class EditGoodsCategoryDialog extends AbstractEditArchiveDialog {
 
     @Override
     protected int getLayout() {
-        return R.layout.add_goods_category_dialog;
+        return R.layout.edit_goods_category_dialog;
     }
 
     @Override

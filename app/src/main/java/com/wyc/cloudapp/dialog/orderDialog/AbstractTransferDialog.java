@@ -301,7 +301,7 @@ public abstract class AbstractTransferDialog extends AbstractDialogMainActivity 
                 order_info.put("refund_moneys",transfer_refund_arr);
                 order_info.put("recharge_moneys",transfer_recharge_arr);
                 order_info.put("oncecard_moneys",transfer_cards_arr);
-                order_info.put("giftcard_moneys",new JSONArray());
+                order_info.put("shopping_moneys",new JSONArray());
 
                 Logger.d_json(order_info.toJSONString());
 

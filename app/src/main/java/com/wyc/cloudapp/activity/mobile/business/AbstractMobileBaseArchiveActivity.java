@@ -5,6 +5,8 @@ import android.os.Bundle;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 
+import static com.wyc.cloudapp.activity.mobile.business.MobileSelectGoodsActivity.TITLE_KEY;
+
 /**
  * @ProjectName: CloudApp
  * @Package: com.wyc.cloudapp.activity.mobile.business
@@ -29,5 +31,7 @@ public abstract class AbstractMobileBaseArchiveActivity extends AbstractMobileAc
         setRightListener(v -> add());
     }
     protected abstract void add();
-    protected abstract String title();
+    protected String title(){
+        return getIntent().getStringExtra(TITLE_KEY);
+    }
 }

@@ -10,6 +10,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.adapter.bean.Consumer;
 import com.wyc.cloudapp.adapter.bean.Supplier;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -21,17 +22,17 @@ import com.wyc.cloudapp.utils.http.HttpUtils;
 import java.util.Locale;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 
-//编辑供应商
-public class EditSupplierActivity extends AbstractEditArchiveActivity {
-    private static final String KEY = "modify";
+/*编辑客户*/
+public class EditConsumerActivity extends AbstractEditArchiveActivity {
 
-    @BindView(R.id.supplier_code_et)
-    EditText mSupplierCode;
-    @BindView(R.id.supplier_name_et)
-    EditText mSupplierName;
-    @BindView(R.id.supplier_addr_et)
-    EditText mSupplierAddr;
+    @BindView(R.id.consumer_code_et)
+    EditText mConsumerCode;
+    @BindView(R.id.consumer_name_et)
+    EditText mConsumerName;
+    @BindView(R.id.consumer_addr_et)
+    EditText mConsumerAddr;
     @BindView(R.id.contacts_job_et)
     EditText mContactsJob;
     @BindView(R.id.contacts_name_et)
@@ -39,35 +40,35 @@ public class EditSupplierActivity extends AbstractEditArchiveActivity {
     @BindView(R.id.contacts_mobile_et)
     EditText mContactsMobile;
 
-    private TextView mSupplierCooperationWay,mSupplierSettlementWay;
+    private TextView mDefaultPrice,mConsumerSettlementWay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setMiddleText(getString(getIntent().getBooleanExtra(KEY,false) ? R.string.modify_supplier_sz : R.string.new_supplier_sz));
+        setMiddleText(getString(getIntent().getBooleanExtra("modify",false) ? R.string.modify_consumer_sz : R.string.new_consumer_sz));
 
-        initCooperationWay();
+        initDefaultPrice();
         initSettlementWay();
 
         initContent();
+
     }
 
     private void initSettlementWay(){
-        final TextView supplier_settlement_way_tv = findViewById(R.id.supplier_settlement_way_tv);
-        final JSONArray array = getSettlementWay();
-        supplier_settlement_way_tv.setOnClickListener(v -> {
+        final TextView consumer_settlement_way_tv = findViewById(R.id.consumer_settlement_way_tv);
+        consumer_settlement_way_tv.setOnClickListener(v -> {
             final String sz = getString(R.string.supplier_cooperation_way_sz);
             final TreeListDialog treeListDialog = new TreeListDialog(this,sz.substring(0,sz.length() - 1));
-            treeListDialog.setDatas(array,null,true);
+            treeListDialog.setDatas(getSettlementWay(),null,true);
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
-                    supplier_settlement_way_tv.setTag(object.getIntValue("item_id"));
-                    supplier_settlement_way_tv.setText(object.getString("item_name"));
+                    consumer_settlement_way_tv.setTag(object.getIntValue("item_id"));
+                    consumer_settlement_way_tv.setText(object.getString("item_name"));
                 }
             });
         });
-        mSupplierSettlementWay = supplier_settlement_way_tv;
+        mConsumerSettlementWay = consumer_settlement_way_tv;
 
         setDefaultSettlementWay();
     }
@@ -76,66 +77,67 @@ public class EditSupplierActivity extends AbstractEditArchiveActivity {
                 "{\"item_id\":4,\"item_name\":\"季结\"},{\"item_id\":5,\"item_name\":\"年结\"}]");
     }
     private void setDefaultSettlementWay(){
-        if (mSupplierSettlementWay != null){
+        if (mConsumerSettlementWay != null){
             final JSONObject default_way = getSettlementWay().getJSONObject(1);
-            mSupplierSettlementWay.setTag(default_way.getIntValue("item_id"));
-            mSupplierSettlementWay.setText(default_way.getString("item_name"));
+            mConsumerSettlementWay.setTag(default_way.getIntValue("item_id"));
+            mConsumerSettlementWay.setText(default_way.getString("item_name"));
         }
     }
 
-    private void initCooperationWay(){
-        final TextView supplier_co_way_tv = findViewById(R.id.supplier_co_way_tv);
-        final JSONArray array = getCooperationWay();
-        supplier_co_way_tv.setOnClickListener(v -> {
+    private void initDefaultPrice(){
+        final TextView default_price_tv = findViewById(R.id.default_price_tv);
+        default_price_tv.setOnClickListener(v -> {
             final String sz = getString(R.string.supplier_settlement_way_sz);
             final TreeListDialog treeListDialog = new TreeListDialog(this,sz.substring(0,sz.length() - 1));
-            treeListDialog.setDatas(array,null,true);
+            treeListDialog.setDatas(getDefaultPrice(),null,true);
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
-                    supplier_co_way_tv.setTag(object.getIntValue("item_id"));
-                    supplier_co_way_tv.setText(object.getString("item_name"));
+                    default_price_tv.setTag(object.getIntValue("item_id"));
+                    default_price_tv.setText(object.getString("item_name"));
                 }
             });
         });
-        mSupplierCooperationWay = supplier_co_way_tv;
+        mDefaultPrice = default_price_tv;
         setDefaultCooperationWay();
     }
-    private JSONArray getCooperationWay(){
-        return JSONArray.parseArray("[{\"item_id\":1,\"item_name\":\"联营\"},{\"item_id\":2,\"item_name\":\"购销\"},{\"item_id\":3,\"item_name\":\"租赁\"},{\"item_id\":4,\"item_name\":\"代销\"}]");
+    private JSONArray getDefaultPrice(){
+        /*1零售价，2优惠价，3配送价，4批发价*/
+        return JSONArray.parseArray("[{\"item_id\":1,\"item_name\":\"零售价\"},{\"item_id\":2,\"item_name\":\"优惠价\"},{\"item_id\":3,\"item_name\":\"配送价\"},{\"item_id\":4,\"item_name\":\"批发价\"}]");
     }
     private void setDefaultCooperationWay(){
-        if (null != mSupplierCooperationWay){
-            final JSONObject default_way = getCooperationWay().getJSONObject(1);
-            mSupplierCooperationWay.setTag(default_way.getIntValue("item_id"));
-            mSupplierCooperationWay.setText(default_way.getString("item_name"));
+        if (null != mDefaultPrice){
+            final JSONObject default_way = getDefaultPrice().getJSONObject(1);
+            mDefaultPrice.setTag(default_way.getIntValue("item_id"));
+            mDefaultPrice.setText(default_way.getString("item_name"));
         }
     }
 
     private void initContent(){
-        final Supplier supplier = getIntent().getParcelableExtra("obj");
-        if (supplier != null){
-            mSupplierCode.setTag(supplier.getC_s_id());
-            mSupplierCode.setText(supplier.getCs_code());
-            mSupplierCode.setEnabled(false);
+        final Consumer consumer = getIntent().getParcelableExtra("obj");
+        if (consumer != null){
+            mConsumerCode.setTag(consumer.getC_s_id());
+            mConsumerCode.setText(consumer.getCs_code());
+            mConsumerCode.setEnabled(false);
 
-            mSupplierName.requestFocus();
-            mSupplierName.setText(supplier.getCs_name());
-            mSupplierAddr.setText(supplier.getAddress());
-            mSupplierCooperationWay.setTag(supplier.getHz_method());
-            mSupplierCooperationWay.setText(supplier.getHz_method_name());
-            mSupplierSettlementWay.setTag(supplier.getSupplier_settlement_cycle_id());
-            mSupplierSettlementWay.setText(supplier.getSupplier_settlement_cycle_name());
-            mContactsJob.setText(supplier.getRoles());
-            mContactsName.setText(supplier.getName());
-            mContactsMobile.setText(supplier.getMobile());
+            mConsumerName.requestFocus();
+            mConsumerName.setText(consumer.getCs_name());
+            mConsumerAddr.setText(consumer.getAddress());
+            mDefaultPrice.setTag(consumer.getCs_kf_price());
+            mDefaultPrice.setText(consumer.getCs_kf_price_name());
+
+            mConsumerSettlementWay.setTag(consumer.getCustomer_settlement_cycle_id());
+            mConsumerSettlementWay.setText(consumer.getCustomer_settlement_cycle_name());
+            mContactsJob.setText(consumer.getRoles());
+            mContactsName.setText(consumer.getName());
+            mContactsMobile.setText(consumer.getMobile());
         }
     }
 
 
     @Override
     protected int getLayout() {
-        return R.layout.activity_edit_supplier;
+        return R.layout.activity_edit_consumer;
     }
 
     @Override
@@ -149,13 +151,13 @@ public class EditSupplierActivity extends AbstractEditArchiveActivity {
     }
 
     private void submit(boolean reset){
-        final String code = mSupplierCode.getText().toString(),name = mSupplierName.getText().toString();
+        final String code = mConsumerCode.getText().toString(),name = mConsumerName.getText().toString();
         if (code.isEmpty()){
-            MyDialog.ToastMessage(mSupplierCode,getString(R.string.not_empty_hint_sz,getString(R.string.supplier_code_sz)),this,getWindow());
+            MyDialog.ToastMessage(mConsumerCode,getString(R.string.not_empty_hint_sz,getString(R.string.consumer_code_sz)),this,getWindow());
             return;
         }
         if (name.isEmpty()){
-            MyDialog.ToastMessage(mSupplierName,getString(R.string.not_empty_hint_sz,getString(R.string.supplier_name_sz)),this,getWindow());
+            MyDialog.ToastMessage(mConsumerName,getString(R.string.not_empty_hint_sz,getString(R.string.consumer_name_sz)),this,getWindow());
             return;
         }
         showProgress();
@@ -165,16 +167,16 @@ public class EditSupplierActivity extends AbstractEditArchiveActivity {
             param.put("appid",getAppId());
             param.put("pt_user_id",getPtUserId());
             param.put("cs_name",name);
-            param.put("c_s_id", Utils.getViewTagValue(mSupplierCode,""));
+            param.put("c_s_id", Utils.getViewTagValue(mConsumerCode,""));
             param.put("cs_code",code);
-            param.put("address",mSupplierAddr.getText());
-            param.put("hz_method",Utils.getViewTagValue(mSupplierCooperationWay,-1));
-            param.put("supplier_settlement_cycle_id",Utils.getViewTagValue(mSupplierSettlementWay,-1));
+            param.put("address",mConsumerAddr.getText());
+            param.put("cs_kf_price",Utils.getViewTagValue(mDefaultPrice,-1));
+            param.put("customer_settlement_cycle_id",Utils.getViewTagValue(mConsumerSettlementWay,-1));
             param.put("name",mContactsName.getText());
             param.put("mobile",mContactsMobile.getText());
             param.put("roles",mContactsJob.getText());
 
-            JSONObject ret_obj = HttpUtils.sendPost(getUrl() + "/api/supplier_search/supplier_set", HttpRequest.generate_request_parm(param,getAppSecret()),true);
+            JSONObject ret_obj = HttpUtils.sendPost(getUrl() + "/api/supplier_search/customer_set", HttpRequest.generate_request_parm(param,getAppSecret()),true);
             if (HttpUtils.checkRequestSuccess(ret_obj)){
                 try {
                     ret_obj = JSONObject.parseObject(ret_obj.getString("info"));
@@ -195,11 +197,11 @@ public class EditSupplierActivity extends AbstractEditArchiveActivity {
 
     private void reset(){
         final String space = getString(R.string.space_sz);
-        mSupplierCode.setText(resetSupplierCode());
-        mSupplierCode.setTag(null);
+        mConsumerCode.setText(resetSupplierCode());
+        mConsumerCode.setTag(null);
 
-        mSupplierName.setText(space);
-        mSupplierAddr.setText(space);
+        mConsumerName.setText(space);
+        mConsumerAddr.setText(space);
         mContactsJob.setText(space);
         mContactsName.setText(space);
         mContactsMobile.setText(space);
@@ -207,8 +209,8 @@ public class EditSupplierActivity extends AbstractEditArchiveActivity {
         setDefaultSettlementWay();
     }
     private String resetSupplierCode(){
-        if (mSupplierCode == null)return "";
-        String code = mSupplierCode.getText().toString(),new_code = "";
+        if (mConsumerCode == null)return "";
+        String code = mConsumerCode.getText().toString(),new_code = "";
         try {
             new_code = String.format(Locale.CHINA,"%0"+ code.length() +"d",Integer.parseInt(code) + 1);
         }catch (NumberFormatException e){
@@ -219,13 +221,13 @@ public class EditSupplierActivity extends AbstractEditArchiveActivity {
 
     @Override
     protected boolean isExist() {
-        return mSupplierCode == null || mSupplierCode.getText().length() == 0;
+        return mConsumerCode == null || mConsumerCode.getText().length() == 0;
     }
 
-    public static void start(MobileSupplierInfoActivity context, boolean modify, final Parcelable obj){
+    public static void start(MobileConsumerInfoActivity context, boolean modify, final Parcelable obj){
         final Intent intent = new Intent();
-        intent.setClass(context,EditSupplierActivity.class);
-        intent.putExtra(KEY,modify);
+        intent.setClass(context,EditConsumerActivity.class);
+        intent.putExtra("key",modify);
         intent.putExtra("obj",obj);
         context.startActivity(intent);
     }

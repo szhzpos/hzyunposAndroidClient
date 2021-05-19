@@ -17,27 +17,25 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.adapter.business.MobileSupplierAdapter;
+import com.wyc.cloudapp.adapter.business.MobileConsumerAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
 
-import static com.wyc.cloudapp.activity.mobile.business.MobileSelectGoodsActivity.TITLE_KEY;
-
-public class MobileSupplierInfoActivity extends AbstractMobileBaseArchiveActivity {
-    private MobileSupplierAdapter mAdapter;
+/*客户信息*/
+public class MobileConsumerInfoActivity extends AbstractMobileBaseArchiveActivity {
+    private MobileConsumerAdapter mAdapter;
     private EditText mSearchContent;
     private Spinner mConditionSpinner;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initSearchContent();
-        initSupplierList();
+        initConsumerList();
         initConditionSpinner();
     }
 
@@ -78,13 +76,13 @@ public class MobileSupplierInfoActivity extends AbstractMobileBaseArchiveActivit
             param.put("appid",getAppId());
             if (Utils.isNotEmpty(keyword)){
                 if (xtype == 0){
-                    param.put("xtype","gs_code");
+                    param.put("xtype","cs_code");
                 }else {
-                    param.put("xtype","gs_name");
+                    param.put("xtype","cs_name");
                 }
                 param.put("keyword",keyword);
             }
-            JSONObject ret_obj = HttpUtils.sendPost(getUrl() + "/api/supplier_search/xlist", HttpRequest.generate_request_parm(param,getAppSecret()),true);
+            JSONObject ret_obj = HttpUtils.sendPost(getUrl() + "/api/supplier_search/customer_xlist", HttpRequest.generate_request_parm(param,getAppSecret()),true);
             if (HttpUtils.checkRequestSuccess(ret_obj)){
                 try {
                     ret_obj = JSONObject.parseObject(ret_obj.getString("info"));
@@ -101,9 +99,9 @@ public class MobileSupplierInfoActivity extends AbstractMobileBaseArchiveActivit
         });
     }
 
-    private void initSupplierList(){
-        final RecyclerView _supplier_list = findViewById(R.id._supplier_list);
-        mAdapter = new MobileSupplierAdapter(this);
+    private void initConsumerList(){
+        final RecyclerView _supplier_list = findViewById(R.id._consumer_list);
+        mAdapter = new MobileConsumerAdapter(this);
         _supplier_list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
         _supplier_list.setAdapter(mAdapter);
         _supplier_list.addItemDecoration(new LinearItemDecoration(this.getColor(R.color.gray_subtransparent),3));
@@ -112,8 +110,8 @@ public class MobileSupplierInfoActivity extends AbstractMobileBaseArchiveActivit
     private void initConditionSpinner(){
         final Spinner spinner = findViewById(R.id.spinner_);
         final ArrayAdapter<String> adapter = new ArrayAdapter<>(this,R.layout.drop_down_style);
-        adapter.add(getString(R.string.supplier_code_sz));
-        adapter.add(getString(R.string.supplier_name_sz));
+        adapter.add(getString(R.string.consumer_code_sz));
+        adapter.add(getString(R.string.consumer_name_sz));
         spinner.setAdapter(adapter);
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -129,14 +127,13 @@ public class MobileSupplierInfoActivity extends AbstractMobileBaseArchiveActivit
         });
         mConditionSpinner = spinner;
     }
-
     @Override
     protected int getContentLayoutId() {
-        return R.layout.activity_mobile_supplier_info;
+        return R.layout.activity_mobile_consumer_info;
     }
 
     @Override
     protected void add() {
-        EditSupplierActivity.start(this,false,null);
+        EditConsumerActivity.start(this,false,null);
     }
 }

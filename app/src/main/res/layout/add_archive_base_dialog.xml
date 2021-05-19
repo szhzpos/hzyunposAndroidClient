@@ -9,7 +9,7 @@
         android:id="@+id/layout_content"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout="@layout/add_goods_category_dialog"
+        android:layout="@layout/edit_goods_category_dialog"
         app:layout_constraintBottom_toTopOf="@id/ok_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

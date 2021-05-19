@@ -5,6 +5,7 @@ import android.view.ViewStub;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 
@@ -23,9 +24,11 @@ public abstract class AbstractEditArchiveActivity extends AbstractMobileActivity
 
     @Override
     public void onBackPressed() {
-        if (isExist() || MyDialog.showMessageToModalDialog(this,"是否退出?") == 1){
-            super.onBackPressed();
-        }
+        CustomApplication.runInMainThread(()->{
+            if (isExist() || MyDialog.showMessageToModalDialog(this,"是否退出?") == 1){
+                super.onBackPressed();
+            }
+        });
     }
 
     private void initLayout(){

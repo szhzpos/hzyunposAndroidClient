@@ -628,7 +628,7 @@ final class SyncHandler extends Handler {
                         data.put("refund_money",transfer_refund_arr);
                         data.put("recharge_money",transfer_recharge_arr);
                         data.put("oncecard_money",transfer_cards_arr);
-                        data.put("giftcard_money",new JSONArray());
+                        data.put("shopping_money",new JSONArray());
 
                         Logger.d_json(data.toJSONString());
 

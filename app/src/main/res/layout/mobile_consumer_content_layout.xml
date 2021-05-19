@@ -8,7 +8,7 @@
     android:padding="@dimen/margin_12">
 
     <TextView
-        android:id="@+id/_supplier_tv"
+        android:id="@+id/_consumer_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:singleLine="true"
@@ -25,12 +25,12 @@
         android:text="@string/contacts_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_14"
-        app:layout_constraintStart_toStartOf="@id/_supplier_tv"
-        app:layout_constraintTop_toBottomOf="@id/_supplier_tv" />
+        app:layout_constraintStart_toStartOf="@id/_consumer_tv"
+        app:layout_constraintTop_toBottomOf="@id/_consumer_tv" />
 
     <TextView
         android:id="@+id/contacts_name_tv"
-        android:layout_width="@dimen/width_88"
+        android:layout_width="@dimen/width_108"
         android:layout_height="wrap_content"
         android:text="门店自采货商"
         android:textColor="@color/text_color"
@@ -42,7 +42,7 @@
         android:id="@+id/phone_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_12"
+        android:layout_marginStart="@dimen/margin_18"
         android:text="@string/phone_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_14"
@@ -63,7 +63,7 @@
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="@dimen/size_30"
         android:layout_height="@dimen/size_30"
-        android:layout_marginEnd="@dimen/margin_12"
+        android:layout_marginEnd="@dimen/margin_18"
         android:background="@drawable/modify"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

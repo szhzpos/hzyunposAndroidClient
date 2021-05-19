@@ -85,12 +85,6 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
     }
 
     @Override
-    protected String title() {
-        return getIntent().getStringExtra(TITLE_KEY);
-    }
-
-
-    @Override
     protected int getContentLayoutId() {
         return R.layout.activity_select_goods;
     }
