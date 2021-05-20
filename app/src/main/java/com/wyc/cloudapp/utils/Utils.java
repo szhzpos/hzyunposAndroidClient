@@ -186,7 +186,7 @@ public final class Utils {
         textView.selectAll();
         InputMethodManager imm = (InputMethodManager)textView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(textView,0);
-        activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     }
 
     public static void setFocus(Activity activity, EditText textView,boolean isfocus){

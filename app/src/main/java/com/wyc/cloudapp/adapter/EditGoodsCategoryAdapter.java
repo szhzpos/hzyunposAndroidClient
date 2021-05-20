@@ -11,6 +11,7 @@ import com.wyc.cloudapp.CustomizationView.SwipeLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.business.MobileEditGoodsCategoryActivity;
 import com.wyc.cloudapp.adapter.bean.TreeListItem;
+import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
@@ -62,7 +63,8 @@ public class EditGoodsCategoryAdapter extends TreeListBaseAdapterWithList<EditGo
     }
     @Override
     void bindContent(@NonNull MyViewHolder holder, TreeListItem object) {
-        if (object.getCode().length() < 6) {
+        final String code = object.getCode();
+        if (Utils.isNotEmpty(code) && !"00".equals(code) && code.length() < 6) {
             if (!holder.add.hasOnClickListeners())
                 holder.add.setOnClickListener(v -> {
                     holder.itemView.callOnClick();

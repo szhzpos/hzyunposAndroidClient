@@ -9,6 +9,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.mobile.business.MobileVipCategoryInfoActivity;
 import com.wyc.cloudapp.adapter.bean.VipGrade;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -18,6 +19,9 @@ import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
 
 import java.util.Locale;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * @ProjectName: CloudApp
@@ -32,16 +36,24 @@ import java.util.Locale;
  * @Version: 1.0
  */
 public class EditVipCategoryDialog extends AbstractEditArchiveDialog {
-    private EditText mVipCategory,mVipDiscount,mVipIntegralRatio,mVipLowestAmt;
+    @BindView(R.id.vip_category_tv)
+    EditText mVipCategory;
+    @BindView(R.id.vip_discount_tv)
+    EditText mVipDiscount;
+    @BindView(R.id.vip_integral_ratio_tv)
+    EditText mVipIntegralRatio;
+    @BindView(R.id.vip_lowest_amt_tv)
+    EditText mVipLowestAmt;
+
     private VipGrade mCurObj;
-    public EditVipCategoryDialog(@NonNull MainActivity context, boolean m) {
+    public EditVipCategoryDialog(@NonNull MobileVipCategoryInfoActivity context, boolean m) {
         super(context, context.getString(m ? R.string.modify_vip_category_sz :R.string.new_vip_category_sz),m);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initView();
+        ButterKnife.bind(this);
     }
 
     @Override
@@ -54,6 +66,12 @@ public class EditVipCategoryDialog extends AbstractEditArchiveDialog {
             mVipIntegralRatio.setText(String.format(Locale.CHINA,"%.2f",mCurObj.getPoints_multiple()));
             mVipLowestAmt.setText(String.format(Locale.CHINA,"%.2f",mCurObj.getMin_recharge_money()));
         }
+        mVipCategory.postDelayed(()-> Utils.setFocus(mContext,mVipCategory),100);
+    }
+
+    @Override
+    public void dismiss() {
+        super.dismiss();
     }
 
     @Override
@@ -64,15 +82,6 @@ public class EditVipCategoryDialog extends AbstractEditArchiveDialog {
     public void setCurObj(VipGrade obj) {
         this.mCurObj = obj;
     }
-
-    private void initView(){
-        mVipCategory = findViewById(R.id.vip_category_tv);
-        mVipDiscount = findViewById(R.id.vip_discount_tv);
-        mVipIntegralRatio = findViewById(R.id.vip_integral_ratio_tv);
-        mVipLowestAmt = findViewById(R.id.vip_lowest_amt_tv);
-    }
-
-
 
     @Override
     protected int getLayout() {
@@ -108,13 +117,12 @@ public class EditVipCategoryDialog extends AbstractEditArchiveDialog {
         showProgress();
         CustomApplication.execute(()->{
             final String param_sz = HttpRequest.generate_request_parm(param_obj,mContext.getAppSecret());
-            JSONObject ret_obj = HttpUtils.sendPost(mContext.getUrl() + "/api/goods_set/category_set",param_sz,true);
+            JSONObject ret_obj = HttpUtils.sendPost(mContext.getUrl() + "/api/member/grade_set",param_sz,true);
             if (HttpUtils.checkRequestSuccess(ret_obj)){
                 try {
                     ret_obj = JSONObject.parseObject(ret_obj.getString("info"));
                     if (HttpUtils.checkBusinessSuccess(ret_obj)){
-                        Logger.d_json(ret_obj);
-                        dismiss();
+                        setCodeAndExit(1);
                     }else throw new JSONException(ret_obj.getString("info"));
                 }catch (JSONException e){
                     e.printStackTrace();
@@ -125,9 +133,11 @@ public class EditVipCategoryDialog extends AbstractEditArchiveDialog {
         });
     }
 
-    public static void start(MainActivity context, VipGrade grade,boolean modify){
+    public static void start(MobileVipCategoryInfoActivity context, VipGrade grade, boolean modify){
         final EditVipCategoryDialog dialog = new EditVipCategoryDialog(context,modify);
         dialog.setCurObj(grade);
-        dialog.show();
+        if(dialog.exec() == 1){
+            context.query();
+        }
     }
 }

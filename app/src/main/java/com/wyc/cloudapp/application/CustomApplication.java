@@ -60,6 +60,8 @@ public final class CustomApplication extends Application {
     private JSONObject mCashierInfo,mStoreInfo;
     private String mAppId, mAppSecret,mUrl;
 
+    private long OfflineTime = 0;//离线时间戳
+
     public CustomApplication(){
         super();
         mApplication = this;
@@ -385,13 +387,8 @@ public final class CustomApplication extends Application {
                 case MessageID.NETWORKSTATUS_ID:
                     if ((msg.obj instanceof Boolean)){
                         boolean code = (boolean) msg.obj;
-                        if (code){
-                            updateOfflineTime(-1);
-                        }else {
-                            updateOfflineTime(System.currentTimeMillis());
-                        }
-                        if (app.getAndSetNetworkStatus(code) != code){
-                            if (app.mCallback != null)app.mCallback.handleMessage(this,msg);
+                        if (app.getAndSetNetworkStatus(code) != code && app.mCallback != null){
+                            app.mCallback.handleMessage(this,msg);
                         }
                     }
                     break;
@@ -526,35 +523,40 @@ public final class CustomApplication extends Application {
         return code;
     }
 
-    private static void updateOfflineTime(long timestamp){
-        String sql = null;
-        final JSONObject object = new JSONObject();
-        if (timestamp <= 0){
-            sql = "delete from local_parameter where parameter_id = 'offline_time'";
-        }else {
-            boolean code = SQLiteHelper.getLocalParameter("offline_time",object);
-            if (code){
-                if (object.isEmpty()){
-                    object.put("v",timestamp);
-                    saveOfflineTime(mApplication,object);
-                }else {
-                    object.put("v",timestamp);
-                    sql = "update local_parameter set parameter_content = '"+ object +"' where parameter_id = 'offline_time'";
-                }
+    public static void updateOfflineTime(long timestamp){
+        if (mApplication.OfflineTime != timestamp){
+            mApplication.OfflineTime = timestamp;
+
+            String sql = null;
+            final JSONObject object = new JSONObject();
+            if (timestamp <= 0){
+                sql = "delete from local_parameter where parameter_id = 'offline_time'";
             }else {
-                MyDialog.ToastMessageInMainThread(object.getString("info"));
+                boolean code = SQLiteHelper.getLocalParameter("offline_time",object);
+                if (code){
+                    if (object.isEmpty()){
+                        object.put("v",timestamp);
+                        saveOfflineTime(mApplication,object);
+                    }else {
+                        object.put("v",timestamp);
+                        sql = "update local_parameter set parameter_content = '"+ object +"' where parameter_id = 'offline_time'";
+                    }
+                }else {
+                    MyDialog.ToastMessageInMainThread(object.getString("info"));
+                }
             }
-        }
-        if (null != sql ){
-            if (!SQLiteHelper.execSql(object,sql)){
-                final String err = "更新离线时间错误:" + object.getString("v");
-                Logger.e(err);
-                MyDialog.ToastMessageInMainThread(err);
+            if (null != sql ){
+                if (!SQLiteHelper.execSql(object,sql)){
+                    final String err = "更新离线时间错误:" + object.getString("v");
+                    Logger.e(err);
+                    MyDialog.ToastMessageInMainThread(err);
+                }
             }
         }
     }
     private static void saveOfflineTime(final Context context,final JSONObject object){
         final StringBuilder err = new StringBuilder();
+        mApplication.OfflineTime = object.getLongValue("v");
         if (!SQLiteHelper.saveLocalParameter("offline_time",object,"前台离线时间",err)){
             err.insert(0,"保存离线时间错误:");
             Logger.e(err.toString());

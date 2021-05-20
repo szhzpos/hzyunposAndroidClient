@@ -12,7 +12,6 @@ import com.wyc.cloudapp.adapter.EditGoodsCategoryAdapter;
 import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
 import com.wyc.cloudapp.adapter.bean.TreeListItem;
 import com.wyc.cloudapp.dialog.business.EditGoodsCategoryDialog;
-import com.wyc.cloudapp.logger.Logger;
 
 import static com.wyc.cloudapp.activity.mobile.business.MobileSelectGoodsActivity.TITLE_KEY;
 
@@ -37,7 +36,7 @@ public class MobileEditGoodsCategoryActivity extends AbstractMobileBaseArchiveAc
     }
     public void editCategory(boolean modify){
         final EditGoodsCategoryDialog dialog = new EditGoodsCategoryDialog(this,modify);
-        dialog.setSuperCategory(mCurrentCategory);
+        dialog.setCategory(mCurrentCategory);
         dialog.show();
     }
 

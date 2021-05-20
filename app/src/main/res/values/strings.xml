@@ -671,8 +671,8 @@
     <string name="vip_discount_colon_sz">会员折扣：</string>
     <string name="vip_integral_ratio_sz">积分倍率：</string>
     <string name="vip_lowest_amt_sz">最低充值：</string>
-    <string name="hint_vip_discount">例：85折,填写：8.5。若不打折,填写10。保留一位小数</string>
-    <string name="hint_integral_multi">如：1.2倍，0.9倍。0表示该级别会员不积分，默认为1</string>
-    <string name="hint_lowest_amt_multi">该级别会员自助充值每次最少要充值的金额。默认为0</string>
+    <string name="hint_vip_discount">例：85折,填写：8.5。不打折,填写10</string>
+    <string name="hint_integral_multi">0表示不积分，默认为1</string>
+    <string name="hint_lowest_amt_multi">充值每次最少要充值的金额。默认为0</string>
 
 </resources>

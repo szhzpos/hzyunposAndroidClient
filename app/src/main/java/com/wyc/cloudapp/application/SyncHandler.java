@@ -429,11 +429,13 @@ final class SyncHandler extends Handler {
         switch (retJson.getIntValue("flag")) {
             case 0:
                 if (mCurrentNetworkStatusCode != err_code){
+                    CustomApplication.updateOfflineTime(System.currentTimeMillis());
                     Logger.e("连接服务器错误：" + retJson.getString("info"));
                 }
                 CustomApplication.sendMessage(MessageID.NETWORKSTATUS_ID,false);
                 break;
             case 1:
+                CustomApplication.updateOfflineTime(-1);
                 CustomApplication.sendMessage(MessageID.NETWORKSTATUS_ID,true);
                 if (mCurrentNetworkStatusCode != HttpURLConnection.HTTP_OK){//如果之前网络响应状态不为OK,则重连成功
                     mCurrentNetworkStatusCode = HttpURLConnection.HTTP_OK;
@@ -444,7 +446,7 @@ final class SyncHandler extends Handler {
                 switch (info_json.getString("status")){
                     case "n":
                         CustomApplication.sendMessage(MessageID.NETWORKSTATUS_ID,false);
-                        Logger.e("网络检测错误：" + info_json.getString("info"));
+                        Logger.e("网络检测服务器错误：" + info_json.getString("info"));
                         break;
                     case "y":
                         if (System.currentTimeMillis() - mLoseTime >= syncInterval && mCurrentNetworkStatusCode == HttpURLConnection.HTTP_OK) {

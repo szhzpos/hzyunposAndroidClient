@@ -29,6 +29,7 @@ import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.constants.MessageID;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
@@ -81,7 +82,7 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
     @Override
     public void onAttachedToWindow(){
         super.onAttachedToWindow();
-
+        Logger.d_json(mVipGrade);
         if (mVipGrade == null){
             //查询会员级别
             queryVipLevel();
@@ -283,7 +284,7 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
                                 mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,"查询会员级别错误：" + ret_json.getString("info")).sendToTarget();
                                 break;
                             case "y":
-                                mVipGrade = JSON.parseArray(ret_json.getString("grade_list"));
+                                mVipGrade = JSON.parseArray(ret_json.getString("data"));
                                 mHandler.obtainMessage(MessageID.QUERY_VIP_LEVEL_ID).sendToTarget();
                                 break;
                         }

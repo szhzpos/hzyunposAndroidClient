@@ -32,17 +32,18 @@ import java.util.Locale;
  * @Version: 1.0
  */
 public class EditGoodsCategoryDialog extends AbstractEditArchiveDialog {
-    private TreeListItem mSuperCategory;
+    private TreeListItem mCategory;
     private TextView mCategoryCodeTv;
     private EditText mCategoryNameEt;
     public EditGoodsCategoryDialog(@NonNull MobileEditGoodsCategoryActivity context, boolean m) {
         super(context, context.getString(m ? R.string.modify_category_sz :R.string.new_category_sz),m);
-        initDefaultSuperCategory();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initDefaultSuperCategory();
+
         initView();
     }
 
@@ -82,7 +83,7 @@ public class EditGoodsCategoryDialog extends AbstractEditArchiveDialog {
                         if (modify){
                             activity.updateCategory(category_name);
                         }else
-                            activity.addCategory(ret_obj.getString("category_id"),category_code,category_name,mSuperCategory.getLevel() + 1);
+                            activity.addCategory(ret_obj.getString("category_id"),category_code,category_name, mCategory.getLevel() + 1);
 
                         dismiss();
                     }else throw new JSONException(ret_obj.getString("info"));
@@ -96,11 +97,19 @@ public class EditGoodsCategoryDialog extends AbstractEditArchiveDialog {
     }
 
     private void initDefaultSuperCategory(){
-        mSuperCategory = new TreeListItem();
-        mSuperCategory.setItem_id("0");
-        mSuperCategory.setCode("");
-        mSuperCategory.setLevel(-1);
-        mSuperCategory.setItem_name(mContext.getString(R.string.all_category_sz));
+        TreeListItem parent = new TreeListItem();
+        parent.setItem_id("0");
+        parent.setCode("");
+        parent.setLevel(-1);
+        parent.setItem_name(mContext.getString(R.string.all_category_sz));
+        if (mCategory == null){
+            mCategory = new TreeListItem();
+            mCategory.setP_ref(parent);
+        }else {
+            if (null == mCategory.getP_ref()){
+                mCategory.setP_ref(parent);
+            }
+        }
     }
 
     private void initView(){
@@ -108,23 +117,35 @@ public class EditGoodsCategoryDialog extends AbstractEditArchiveDialog {
         mCategoryNameEt.requestFocus();
 
         final TextView super_category_tv = findViewById(R.id.super_category_tv),category_code_tv = findViewById(R.id.category_code_tv);
-        final String name = mSuperCategory.getItem_name(),code = mSuperCategory.getCode();
-        super_category_tv.setText(Utils.isNotEmpty(code) ? String.format(Locale.CHINA,"%s[%s]",name,code) : name);
-        if (modify){//修改模式下mSuperCategory就是要修改的内容
+        String name = mCategory.getItem_name(),code = mCategory.getCode();
+
+        if (modify){
+            TreeListItem parent = mCategory.getP_ref();
+            if (null != parent){
+                final String p_name = parent.getItem_name(),p_code = parent.getCode();
+                super_category_tv.setText(Utils.isNotEmpty(p_code) ? String.format(Locale.CHINA,"%s[%s]",p_name,p_code) : p_name);
+            }
             category_code_tv.setText(code);
             mCategoryNameEt.setText(name);
         }else {
+            if (Utils.isNotEmpty(code))
+                super_category_tv.setText(String.format(Locale.CHINA,"%s[%s]",name,code));
+            else {
+                super_category_tv.setText(mContext.getString(R.string.all_category_sz));
+            }
             category_code_tv.setText(generateCategoryCode());
         }
         mCategoryCodeTv = category_code_tv;
     }
     private String generateCategoryCode(){
-        String super_code = mSuperCategory.getCode(),
-                sql = "SELECT category_code FROM shop_category where category_code like '"+ (Utils.isNotEmpty(super_code) ? super_code : "%") +"%' and parent_id="+ mSuperCategory.getItem_id() +" order by category_code desc limit 1";
+        String super_code = mCategory.getCode(),id = mCategory.getItem_id(),
+                sql = "SELECT category_code FROM shop_category where category_code like '"+ (Utils.isNotEmpty(super_code) ? super_code : "%") +"%' and parent_id="+ (Utils.isNotEmpty(id) ? id : 0) +" order by category_code desc limit 1";
         final StringBuilder err = new StringBuilder();
         final String _code = SQLiteHelper.getString(sql,err);
         Logger.d("_code:%s,sql:%s",_code,sql);
         if (null != _code){
+            if (null == super_code)super_code = "";
+
             int index = -1;
             if (!"".equals(_code)){
                 final String IDX = _code.substring(super_code.length());
@@ -145,7 +166,7 @@ public class EditGoodsCategoryDialog extends AbstractEditArchiveDialog {
         return "";
     }
 
-    public void setSuperCategory(TreeListItem category) {
-        if (category != null)this.mSuperCategory = category;
+    public void setCategory(TreeListItem category) {
+        this.mCategory = category;
     }
 }

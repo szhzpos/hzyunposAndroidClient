@@ -34,6 +34,12 @@ public class MobileVipCategoryInfoActivity extends AbstractMobileBaseArchiveActi
         query();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Logger.d(getClass().getName());
+    }
+
     private void initCategoryList(){
         final RecyclerView item_list = findViewById(R.id._category_list);
         mAdapter = new MobileVipCategoryAdapter(this);
@@ -42,7 +48,7 @@ public class MobileVipCategoryInfoActivity extends AbstractMobileBaseArchiveActi
         item_list.setAdapter(mAdapter);
     }
 
-    private void query(){
+    public void query(){
         final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,getString(R.string.hints_query_data_sz));
         CustomApplication.execute(()->{
             final JSONObject param = new JSONObject();

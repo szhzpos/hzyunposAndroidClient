@@ -132,7 +132,7 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
             if (HttpUtils.checkRequestSuccess(object)){
                 object = JSONObject.parseObject(object.getString("info"));
                 if (HttpUtils.checkBusinessSuccess(object)){
-                    final JSONArray array = Utils.getNullObjectAsEmptyJsonArray(object,"grade_list");
+                    final JSONArray array = Utils.getNullObjectAsEmptyJsonArray(object,"data");
                     object = new JSONObject();
                     object.put("grade_id",-1);
                     object.put("grade_name","全部");

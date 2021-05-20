@@ -458,7 +458,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                 if (HttpUtils.checkBusinessSuccess(info)){
                     CustomApplication.runInMainThread(()->{
                         resetBusinessOrderInfo();
-                        Toast.makeText(this,getString(R.string.audited_sz),Toast.LENGTH_LONG).show();
+                        Toast.makeText(mApplication,getString(R.string.audited_sz),Toast.LENGTH_LONG).show();
                     });
                 }else {
                     err = info.getString("info");

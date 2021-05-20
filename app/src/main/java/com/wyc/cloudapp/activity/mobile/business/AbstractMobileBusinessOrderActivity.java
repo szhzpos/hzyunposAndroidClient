@@ -109,13 +109,13 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
     private void initQueryTimeBtn(){
         final InterceptLinearLayout query_time_btn_layout = findViewById(R.id.query_time_btn_layout);
         final Button today = query_time_btn_layout.findViewById(R.id.m_today_btn);
-        CustomApplication.runInMainThread(()->{
+        query_time_btn_layout.post(()->{
             float corner_size = query_time_btn_layout.getHeight() / 2.0f;
             query_time_btn_layout.setForeground(DrawableUtil.createDrawable(new float[]{corner_size,corner_size,corner_size,corner_size,corner_size,corner_size,corner_size,corner_size}
                     ,getColor(R.color.transparent), Utils.dpToPx(this,1),getColor(R.color.blue)));
         });
         query_time_btn_layout.setClickListener(mClickListener);
-        CustomApplication.runInMainThread(today::callOnClick);
+        query_time_btn_layout.post(today::callOnClick);
     }
     private final View.OnClickListener mClickListener = v -> {
         final Button btn = (Button) v;
@@ -181,7 +181,7 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
                 if (mCurrentDateBtn.getId() == R.id.m_yesterday_btn){
                     mCurrentDateBtn.setBackground(getDrawable(R.drawable.left_right_separator));
                 }else
-                    mCurrentDateBtn.setBackground(DrawableUtil.createDrawable(corners,white,0,blue));
+                    mCurrentDateBtn.setBackgroundColor(white);
             }
             mCurrentDateBtn = btn;
         }
@@ -251,16 +251,16 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
     private void initAuditBtn(){
         final InterceptLinearLayout audit_btn_layout = findViewById(R.id.audit_btn_layout);
         final Button m_all_btn = audit_btn_layout.findViewById(R.id.m_all_btn),audit_btn = audit_btn_layout.findViewById(R.id.m_audit_btn);
-        CustomApplication.runInMainThread(()->{
+        audit_btn_layout.post(()->{
             float corner_size = audit_btn_layout.getHeight() / 2.0f;
             audit_btn_layout.setForeground(DrawableUtil.createDrawable(new float[]{corner_size,corner_size,corner_size,corner_size,corner_size,corner_size,corner_size,corner_size}
                     ,getColor(R.color.transparent), Utils.dpToPx(this,1),getColor(R.color.blue)));
         });
         if (isFindSourceOrderId()){//如果是查找来源单号则隐藏审核查询条件。
-            CustomApplication.runInMainThread(audit_btn::callOnClick);
+            audit_btn_layout.post(audit_btn::callOnClick);
             audit_btn_layout.setVisibility(View.GONE);
         }else
-            CustomApplication.runInMainThread(m_all_btn::callOnClick);
+            audit_btn_layout.post(m_all_btn::callOnClick);
 
         //盘点任务列表
         if (this instanceof MobileInventoryTaskActivity){
