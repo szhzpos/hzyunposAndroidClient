@@ -675,4 +675,8 @@
     <string name="hint_integral_multi">0表示不积分，默认为1</string>
     <string name="hint_lowest_amt_multi">充值每次最少要充值的金额。默认为0</string>
 
+    <!--编辑商品-->
+    <string name="add_goods">@string/a_goods_sz</string>
+    <string name="modify_goods">修改商品</string>
+
 </resources>

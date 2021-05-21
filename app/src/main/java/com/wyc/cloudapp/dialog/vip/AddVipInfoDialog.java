@@ -82,7 +82,6 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
     @Override
     public void onAttachedToWindow(){
         super.onAttachedToWindow();
-        Logger.d_json(mVipGrade);
         if (mVipGrade == null){
             //查询会员级别
             queryVipLevel();
@@ -302,29 +301,30 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(mContext, R.layout.drop_down_style);
 
         final JSONArray array = mVipGrade;
-        int selectIndex = 0,size = array.size();
-        if (size != 0){
-            for(int i = 0;i < size;i++){
-                final JSONObject object = array.getJSONObject(i);
-                arrayAdapter.add(object.getString("grade_name"));
-                if (object.containsKey("sel")){
-                    selectIndex = i;
+        if (array != null){
+            int selectIndex = 0,size = array.size();
+            if (size != 0){
+                for(int i = 0;i < size;i++){
+                    final JSONObject object = array.getJSONObject(i);
+                    arrayAdapter.add(object.getString("grade_name"));
+                    if (object.containsKey("sel")){
+                        selectIndex = i;
+                    }
                 }
+                m_vip_level.setAdapter(arrayAdapter);
+                m_vip_level.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        mVipGradeId = Utils.getNullStringAsEmpty(array.getJSONObject(position),"grade_id");
+                    }
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+                    }
+                });
+                m_vip_level.setSelection(selectIndex);
             }
-            m_vip_level.setAdapter(arrayAdapter);
-            m_vip_level.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    mVipGradeId = Utils.getNullStringAsEmpty(array.getJSONObject(position),"grade_id");
-                }
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-
-                }
-            });
-            m_vip_level.setSelection(selectIndex);
         }
-
     }
     private void addVipInfo(){
         mProgressDialog.setMessage("正在上传会员信息...").refreshMessage().show();

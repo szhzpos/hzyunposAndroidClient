@@ -296,7 +296,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
 
 
     private final Runnable showAdImgRunnable = ()->{
-        if (mAdFileNames != null) {
+        if (mAdFileNames != null && mAdFileNames.length > 0) {
             final Canvas canvas = mSurfaceHolder.lockCanvas();
             final Rect rect = mSurfaceRect;
             if (System.currentTimeMillis() - loseTime >= mShowInterval * 1000 && mShowBannerImg){

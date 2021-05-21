@@ -368,6 +368,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                 final Intent intent = new Intent(activity, MobileSelectGoodsActivity.class);
                 intent.putExtra(MobileSelectGoodsActivity.TITLE_KEY,getString(R.string.select_goods_label));
                 intent.putExtra(MobileSelectGoodsActivity.IS_SEL_KEY,true);
+                intent.putExtra(MobileSelectGoodsActivity.MODIFIABLE,false);
                 if (activity instanceof MobileWholesaleBaseActivity){
                     intent.putExtra(MobileSelectGoodsActivity.PRICE_TYPE_KEY,((MobileWholesaleBaseActivity)activity).getCustomerPriceType());
                 }

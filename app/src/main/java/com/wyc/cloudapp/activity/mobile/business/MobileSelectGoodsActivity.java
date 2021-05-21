@@ -35,8 +35,11 @@ import com.wyc.cloudapp.dialog.goods.AddGoodsInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity {
-    public static final String TITLE_KEY = "title",IS_SEL_KEY = "isSel",PRICE_TYPE_KEY = "price_type",TASK_CATEGORY_KEY = "taskCategory",SEARCH_KEY = "barcode";
+    public static final String TITLE_KEY = "title",IS_SEL_KEY = "isSel",PRICE_TYPE_KEY = "price_type",TASK_CATEGORY_KEY = "taskCategory",SEARCH_KEY = "barcode",MODIFIABLE = "modify";
 
     public static final int SELECT_GOODS_CODE = 0x147;
     private GoodsAdapter mGoodsInfoAdapter;
@@ -72,7 +75,8 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
 
     @Override
     protected void add() {
-        if (AddGoodsInfoDialog.verifyGoodsAddPermissions(this)){
+        MobileEditGoodInfoActivity.start(this,null);
+/*        if (AddGoodsInfoDialog.verifyGoodsAddPermissions(this)){
             final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(this);
             final JSONObject category = mGoodsCategoryAdapter.CategoryObj;
             addGoodsInfoDialog.setCurrentCategory(category);
@@ -81,7 +85,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
                 loadGoods(category.getString("item_id"));
             });
             addGoodsInfoDialog.show();
-        }
+        }*/
     }
 
     @Override
@@ -144,7 +148,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
 
     private void initGoodsInfo(){
         final RecyclerView business_goods_info_list = findViewById(R.id.business_goods_info_list);
-        mGoodsInfoAdapter = new GoodsAdapter(this);
+        mGoodsInfoAdapter = new GoodsAdapter(this,getIntent().getBooleanExtra(MODIFIABLE,true));
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(this,GoodsInfoViewAdapter.MOBILE_SPAN_COUNT);
         business_goods_info_list.setLayoutManager(gridLayoutManager);
         SuperItemDecoration.registerGlobalLayoutToRecyclerView(business_goods_info_list,getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration());
@@ -271,17 +275,26 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
         }
     }
 
-    static private class GoodsAdapter extends AbstractDataAdapter<GoodsAdapter.MyViewHolder> implements View.OnClickListener{
+    static class GoodsAdapter extends AbstractDataAdapter<GoodsAdapter.MyViewHolder> implements View.OnClickListener{
         final MobileSelectGoodsActivity mContext;
         private OnSelectFinish onSelectFinish;
+        private boolean modify;
         public GoodsAdapter(MobileSelectGoodsActivity activity) {
             mContext = activity;
+        }
+        public GoodsAdapter(MobileSelectGoodsActivity activity,boolean m){
+            this(activity);
+            modify = m;
         }
 
         @Override
         public void onClick(View v) {
-            final TextView tv = v.findViewById(R.id.barcode_id);
-            if (null != tv && onSelectFinish != null)onSelectFinish.onFinish(tv.getText().toString());
+            if (v.getId() == R.id.modify_){
+                MobileEditGoodInfoActivity.start(mContext,Utils.getViewTagValue(v,""));
+            }else {
+                final TextView tv = v.findViewById(R.id.barcode_id);
+                if (null != tv && onSelectFinish != null)onSelectFinish.onFinish(tv.getText().toString());
+            }
         }
 
         public interface OnSelectFinish{
@@ -293,18 +306,27 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
         }
 
         static class MyViewHolder extends AbstractDataAdapter.SuperViewHolder {
-            TextView gp_id,goods_id,goods_title,unit_name,barcode_id,barcode,price;
+            @BindView(R.id.gp_id)
+            TextView gp_id;
+            @BindView(R.id.goods_id)
+            TextView goods_id;
+            @BindView(R.id.goods_title)
+            TextView goods_title;
+            @BindView(R.id.unit_name)
+            TextView unit_name;
+            @BindView(R.id.barcode_id)
+            TextView barcode_id;
+            @BindView(R.id.barcode)
+            TextView barcode;
+            @BindView(R.id.sale_price)
+            TextView price;
+            @BindView(R.id.g_img)
             ImageView goods_img;
+            @BindView(R.id.modify_)
+            ImageView modify;
             MyViewHolder(View itemView) {
                 super(itemView);
-                goods_img = itemView.findViewById(R.id.g_img);
-                goods_id = itemView.findViewById(R.id.goods_id);
-                gp_id = itemView.findViewById(R.id.gp_id);
-                goods_title =  itemView.findViewById(R.id.goods_title);
-                unit_name =  itemView.findViewById(R.id.unit_name);
-                barcode_id =  itemView.findViewById(R.id.barcode_id);
-                barcode =  itemView.findViewById(R.id.barcode);
-                price =  itemView.findViewById(R.id.sale_price);
+                ButterKnife.bind(this,itemView);
             }
         }
 
@@ -368,6 +390,17 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
                 if(goods_title.getCurrentTextColor() != mContext.getResources().getColor(R.color.good_name_color,null)){
                     goods_title.setTextColor(mContext.getColor(R.color.good_name_color));//需要重新设置颜色；不然重用之后内容颜色为重用之前的。
                 }
+
+                if (modify){
+                    if (!myViewHolder.modify.hasOnClickListeners()){
+                        myViewHolder.modify.setVisibility(View.VISIBLE);
+                        myViewHolder.modify.setOnClickListener(this);
+                        myViewHolder.modify.setTag(goods_info.getString("barcode_id"));
+                    }
+                }else {
+                    myViewHolder.modify.setVisibility(View.GONE);
+                }
+
             }
         }
 
