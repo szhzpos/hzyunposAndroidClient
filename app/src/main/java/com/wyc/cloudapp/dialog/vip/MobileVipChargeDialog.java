@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.activity.mobile.MobileCashierActivity;
+import com.wyc.cloudapp.constants.ScanCallbackCode;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.constants.MessageID;
 
@@ -22,7 +23,7 @@ public class MobileVipChargeDialog extends AbstractVipChargeDialog implements Mo
             if (is_check != 2){
                 if (!mPayMethodSelected.containsKey(PAY_CODE_LABEL)){
                     final Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-                    mContext.startActivityForResult(intent, MessageID.PAY_REQUEST_CODE);
+                    mContext.startActivityForResult(intent, ScanCallbackCode.PAY_REQUEST_CODE);
                     mContext.setScanCallback(this);
                     return false;
                 }

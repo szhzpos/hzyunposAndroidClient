@@ -586,10 +586,7 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
                         break;
                     case "y":
                         final JSONArray new_goods = JSON.parseArray(Utils.getNullOrEmptyStringAsDefault(info,"data","[]"));
-                        final String[] table_cls = new String[]{"goods_id","barcode_id","barcode","goods_title","only_coding","retail_price","buying_price","trade_price","cost_price","ps_price",
-                                "unit_id","unit_name","specifi","category_name","metering_id","shelf_life","goods_status","brand","origin","type","goods_tare","barcode_status","category_id",
-                                "tax_rate","tc_mode","tc_rate","yh_mode","yh_price","mnemonic_code","image","attr_id","attr_name","attr_code","conversion","update_price","stock_unit_id","stock_unit_name","img_url"};
-                        code = SQLiteHelper.execSQLByBatchFromJson(new_goods,"barcode_info" ,table_cls,err,1);
+                        code = SQLiteHelper.execSQLByBatchFromJson(new_goods,"barcode_info" ,CustomApplication.getGoodsCols(),err,1);
                         break;
                 }
                 break;

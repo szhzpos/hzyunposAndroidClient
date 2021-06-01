@@ -1,12 +1,16 @@
 package com.wyc.cloudapp.activity.mobile.business;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
@@ -14,7 +18,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
@@ -29,12 +32,16 @@ import java.util.Locale;
 
 import butterknife.BindView;
 
+import static com.wyc.cloudapp.constants.ScanCallbackCode.CODE_REQUEST_CODE;
+
 public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
+    private static final String DEFAULT_SUPPLIER_CODE = "0000";
+
     private String mBarcodeId;
     private String mBarcode;
-    private EditText mBarcodeEt,mCategoryEt,mUnitEt,mGoodsAttrEt,mMeteringEt,mSupplierEt;
-    private JSONArray mUnitList,mCategoryList,mSupplierList;
-    private JSONObject mCurrentCategory;
+    private EditText mBarcodeEt,mGoodsAttrEt,mMeteringEt;
+    private TextView mBrandTv,mSupplierTv, mCategoryTv,mUnitTv;
+    private JSONArray mUnitList,mCategoryList,mSupplierList,mBrandList,mAttrList,meteringList;
 
     @BindView(R.id.a_name_et)
     EditText mNameEt;
@@ -46,6 +53,9 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     EditText mVipPriceEt;
     @BindView(R.id.a_pur_price_et)
     EditText mPurPriceEt;
+    @BindView(R.id.pf_price_et)
+    EditText pf_price_et;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +65,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
 
         initUnit();
         initCategory();
-
+        initBrand();
         initBarcode();
         initSupplier();
         initGoodsAttrAndMetering();
@@ -84,16 +94,16 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
                     if ("n".equals(Utils.getNullOrEmptyStringAsDefault(info_obj,"status","n"))){
                         runOnUiThread(()-> MyDialog.ToastMessage("查询供应商信息错误:" + info_obj.getString("info"),this,getWindow()));
                     }else{
-                        final JSONArray data = info_obj.getJSONArray("data");
-                        mSupplierList = parse_supplier_info_and_set_default(data);
+                        mSupplierList = info_obj.getJSONArray("data");
+                        runOnUiThread(this::setDefaultSupplier);
                     }
                     break;
             }
         });
     }
 
-    private JSONArray parse_supplier_info_and_set_default(final JSONArray suppliers){
-        final JSONArray array  = new JSONArray();
+    private JSONArray parse_supplier_info(){
+        final JSONArray array  = new JSONArray(),suppliers = mSupplierList;
         if (suppliers != null){
             JSONObject object;
             for (int i = 0,size = suppliers.size();i < size;i++){
@@ -106,21 +116,42 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
                 object.put("item_id",id);
                 object.put("item_name",Utils.getNullStringAsEmpty(tmp,"gs_name"));
                 array.add(object);
-
-                //
-                if ("0000".equals(Utils.getNullStringAsEmpty(tmp,"gs_code")) && mSupplierEt != null){
-                    CustomApplication.runInMainThread(()->{
-                        mSupplierEt.setText(Utils.getNullStringAsEmpty(tmp,"gs_name"));
-                        mSupplierEt.setTag(id);
-                    });
-                }
             }
         }
         return array;
     }
 
+    private JSONObject getDefaultSupplier(){
+        if (null == mSupplierList)return null;
+        for (int i = 0,size = mSupplierList.size();i < size;i ++){
+            final JSONObject object = mSupplierList.getJSONObject(i);
+            if (DEFAULT_SUPPLIER_CODE.equals(object.getString("gs_code"))){
+                return object;
+            }
+        }
+        return null;
+    }
+    private JSONObject getSupplierById(final String id){
+        if (null == mSupplierList)return null;
+        for (int i = 0,size = mSupplierList.size();i < size;i ++){
+            final JSONObject object = mSupplierList.getJSONObject(i);
+            if (Utils.getNullStringAsEmpty(object,"gs_id").equals(id)){
+                return object;
+            }
+        }
+        return null;
+    }
+
+    private void setDefaultSupplier(){
+        final JSONObject object = getDefaultSupplier();
+        if (null != object && null != mSupplierTv){
+            mSupplierTv.setText(object.getString("gs_name"));
+            mSupplierTv.setTag(object.getString("gs_id"));
+        }
+    }
+
     private void getGoodsInfoByBarcode(){
-        if (mBarcode == null || mBarcode.isEmpty())return;
+        if (!Utils.isNotEmpty(mBarcode))return;
 
         final CustomProgressDialog progressDialog = new CustomProgressDialog(this);
         final JEventLoop jEventLoop = new JEventLoop();
@@ -147,7 +178,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     }
     private void showGoodsInfo(final JSONObject info){
         final String unit_sz = Utils.getNullStringAsEmpty(info,"unit");
-        if (!unit_sz.isEmpty())mUnitEt.setText(unit_sz);
+        if (!unit_sz.isEmpty())mUnitTv.setText(unit_sz);
         mRetailPriceEt.setText(String.format(Locale.CHINA,"%.2f",info.getDoubleValue("price")));
 
         final String name = Utils.getNullStringAsEmpty(info,"name");
@@ -159,7 +190,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         }
     }
     private void initUnit(){
-        final EditText unit_et = findViewById(R.id.a_unit_et);
+        final TextView unit_et = findViewById(R.id.a_unit_et);
         unit_et.setOnClickListener(v -> {
             final TreeListDialog treeListDialog = new TreeListDialog(this,getString(R.string.unit_sz));
             treeListDialog.setDatas(Utils.JsondeepCopy(mUnitList),null,true);
@@ -171,18 +202,18 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
                 }
             });
         });
-        unit_et.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus)v.callOnClick();
-            Utils.hideKeyBoard(unit_et);
-        });
-        unit_et.setText("未定");
-        unit_et.setTag("");
-
-        mUnitEt = unit_et;
+        mUnitTv = unit_et;
+        setDefaultUnit();
+    }
+    private void setDefaultUnit(){
+        if (null != mUnitTv){
+            mUnitTv.setText("未定");
+            mUnitTv.setTag("");
+        }
     }
 
     private void initCategory(){
-        final EditText category_et = findViewById(R.id.a_category_et);
+        final TextView category_et = findViewById(R.id.a_category_et);
         category_et.setOnClickListener(v -> {
             final TreeListDialog treeListDialog = new TreeListDialog(this,getString(R.string.d_category_sz));
             treeListDialog.setDatas(Utils.JsondeepCopy(mCategoryList),null,true);
@@ -195,19 +226,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
                 }
             });
         });
-        category_et.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus)v.callOnClick();
-            Utils.hideKeyBoard(category_et);
-        });
-        if (mCurrentCategory == null){
-            category_et.setText("不定类");
-            category_et.setTag("7223");
-        }else{
-            category_et.setText(mCurrentCategory.getString("item_name"));
-            category_et.setTag(mCurrentCategory.getString("item_id"));
-        }
-
-        mCategoryEt = category_et;
+        mCategoryTv = category_et;
     }
 
     private void getOnlycodeAndBarcode(){
@@ -215,7 +234,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
             final HttpRequest httpRequest = new HttpRequest();
             final JSONObject object = new JSONObject();
             object.put("appid",getAppId());
-            object.put("category_id",Utils.getViewTagValue(mCategoryEt,"7223"));
+            object.put("category_id",Utils.getViewTagValue(mCategoryTv,"7223"));
             object.put("spec_id",Utils.getViewTagValue(mGoodsAttrEt,"1"));
 
             final String sz_param = HttpRequest.generate_request_parm(object,getAppSecret());
@@ -254,6 +273,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void initBarcode(){
         final EditText barcdoe_et = findViewById(R.id.a_barcode_et);
         if (barcdoe_et != null){
@@ -275,16 +295,40 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
                     mBarcode = s.toString();
                 }
             });
+            barcdoe_et.setOnTouchListener((view, motionEvent) -> {
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                    final float dx = motionEvent.getX();
+                    final int w = barcdoe_et.getWidth();
+                    if (dx > (w - barcdoe_et.getCompoundPaddingRight())) {
+                        barcdoe_et.requestFocus();
+                        final Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+                        startActivityForResult(intent, CODE_REQUEST_CODE);
+                    }
+                }
+                return false;
+            });
             mBarcodeEt = barcdoe_et;
         }
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent){
+        if (resultCode == RESULT_OK ){
+            final String _code = intent.getStringExtra("auth_code");
+            if (requestCode == CODE_REQUEST_CODE) {
+                mBarcode = _code;
+                getGoodsInfoByBarcode();
+            }
+        }
+        super.onActivityResult(requestCode,resultCode,intent);
+    }
+
     private void initSupplier(){
-        final EditText supplier_et = findViewById(R.id.a_supplier_et);
+        final TextView supplier_et = findViewById(R.id.a_supplier_et);
         supplier_et.setOnClickListener(v -> {
             final String sup = getString(R.string.a_supplier_sz);
             final TreeListDialog treeListDialog = new TreeListDialog(this,sup.substring(0,sup.length() - 1));
-            treeListDialog.setDatas(Utils.JsondeepCopy(mSupplierList),null,true);
+            treeListDialog.setDatas(Utils.JsondeepCopy(parse_supplier_info()),null,true);
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
@@ -294,11 +338,24 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
                 }
             });
         });
-        supplier_et.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus)v.callOnClick();
-            Utils.hideKeyBoard(supplier_et);
+        mSupplierTv = supplier_et;
+    }
+
+    private void initBrand(){
+        final TextView brand = findViewById(R.id.brand_et);
+        brand.setOnClickListener(v -> {
+            final String sup = getString(R.string.brand_sz);
+            final TreeListDialog treeListDialog = new TreeListDialog(this,sup.substring(0,sup.length() - 1));
+            treeListDialog.setDatas(Utils.JsondeepCopy(mBrandList),null,true);
+            CustomApplication.runInMainThread(()->{
+                if (treeListDialog.exec() == 1){
+                    final JSONObject object = treeListDialog.getSingleContent();
+                    brand.setText(object.getString("item_name"));
+                    brand.setTag(object.getIntValue("item_id"));
+                }
+            });
         });
-        mSupplierEt = supplier_et;
+        mBrandTv = brand;
     }
 
     private void getGoodsBase(){
@@ -322,10 +379,89 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
                         final JSONArray categorys = new JSONArray();
                         parse_category_info(Utils.getNullObjectAsEmptyJsonArray(data,"category"),null,0,categorys);
                         mCategoryList = categorys;
+                        runOnUiThread(this::setDefaultCategory);
+
+                        mBrandList = parse_brand_info(Utils.getNullObjectAsEmptyJsonArray(data,"brand"));
+                        runOnUiThread(this::setDefaultBrand);
                     }
                     break;
             }
         });
+    }
+
+    private JSONObject getDefaultCategory(){
+        if (mCategoryList != null) {
+            for (int i = 0,size = mCategoryList.size();i < size;i ++){
+                final JSONObject object = mCategoryList.getJSONObject(i);
+                if ("00".equals(object.getString("category_code"))){
+                    return object;
+                }
+            }
+        }
+        return null;
+    }
+    private JSONObject getCategoryByCode(final String id){
+        if (mCategoryList != null) {
+            for (int i = 0,size = mCategoryList.size();i < size;i ++){
+                final JSONObject object = mCategoryList.getJSONObject(i);
+                if (Utils.getNullStringAsEmpty(object,"category_id").equals(id)){
+                    return object;
+                }
+            }
+        }
+        return null;
+    }
+    private void setDefaultCategory(){
+        final JSONObject object = getDefaultCategory();
+        if (null != object && mCategoryTv != null){
+            mCategoryTv.setTag(object.getString("item_id"));
+            mCategoryTv.setText(object.getString("item_name"));
+        }
+    }
+
+    private JSONArray parse_brand_info(final JSONArray brands){
+        final JSONArray array  = new JSONArray();
+        if (brands != null){
+            JSONObject object,tmp;
+            for (int i = 0,size = brands.size();i < size;i++){
+                tmp = brands.getJSONObject(i);
+
+                final String id = Utils.getNullStringAsEmpty(tmp,"gb_id"),name = Utils.getNullStringAsEmpty(tmp,"gb_name");
+                object = new JSONObject();
+                object.put("level",0);
+                object.put("unfold",false);
+                object.put("isSel",false);
+                object.put("item_id",id);
+                object.put("item_name",name);
+                array.add(object);
+            }
+        }
+        return array;
+    }
+
+    private JSONObject getDefaultBrand(){
+        if (mBrandList != null && !mBrandList.isEmpty()){
+            return mBrandList.getJSONObject(0);
+        }
+        return null;
+    }
+    private JSONObject getBrandById(final String id){
+        if (mBrandList != null && !mBrandList.isEmpty()){
+            for(int i = 0,size = mBrandList.size();i < size;i ++){
+                final JSONObject object = mBrandList.getJSONObject(i);
+                if (Utils.getNullStringAsEmpty(object,"item_id").equals(id)){
+                    return object;
+                }
+            }
+        }
+        return null;
+    }
+    private void setDefaultBrand(){
+        final JSONObject object = getDefaultBrand();
+        if (null != object && mBrandTv != null){
+            mBrandTv.setText(object.getString("item_name"));
+            mBrandTv.setTag(object.getString("item_id"));
+        }
     }
 
     private JSONArray parse_unit_info(final JSONArray units){
@@ -358,6 +494,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
             item.put("unfold",false);
             item.put("isSel",false);
             item.put("item_id",category_json.getString("category_id"));
+            item.put("category_code",category_json.getString("category_code"));
             item.put("item_name",category_json.getString("name"));
 
             item.put("kids",new JSONArray());
@@ -380,23 +517,12 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
 
     private void initGoodsAttrAndMetering(){
         final EditText goods_attr_et = findViewById(R.id.a_goods_attr_et),metering_et = findViewById(R.id.a_metering_et);
+        setAttrList();
+        setMeteringList();
         goods_attr_et.setOnClickListener(v -> {
             final String attr = getString(R.string.a_goods_attr_sz);
             final TreeListDialog treeListDialog = new TreeListDialog(this,attr.substring(0,attr.length() - 1));
-            final JSONArray array = new JSONArray();
-            final JSONObject obj = new JSONObject();
-            obj.put("level",0);
-            obj.put("unfold",false);
-            obj.put("isSel",false);
-            obj.put("item_id","1");
-            obj.put("item_name","普通商品");
-            array.add(Utils.JsondeepCopy(obj));
-            obj.put("isSel",false);
-            obj.put("item_id","2");
-            obj.put("item_name","称重商品");
-            array.add(obj);
-
-            treeListDialog.setDatas(array,null,true);
+            treeListDialog.setDatas(mAttrList,null,true);
 
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
@@ -405,9 +531,12 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
                     goods_attr_et.setText(object.getString("item_name"));
                     goods_attr_et.setTag(id);
                     if ("2".equals(id)){
-                        metering_et.setText("计重");
-                        metering_et.setTag("0");
-                        metering_et.setVisibility(View.VISIBLE);
+                        final JSONObject obj = getMeteringById("0");
+                        if (null != obj){
+                            metering_et.setText(obj.getString("item_name"));
+                            metering_et.setTag(obj.getString("item_id"));
+                            metering_et.setVisibility(View.VISIBLE);
+                        }
                     }else{
                         metering_et.setVisibility(View.GONE);
                     }
@@ -421,32 +550,17 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
             if (hasFocus)v.callOnClick();
             Utils.hideKeyBoard(goods_attr_et);
         });
-        goods_attr_et.setText("普通商品");
-        goods_attr_et.setTag("1");
+        final JSONObject attr = getAttrById("1");
+        if (null != attr){
+            goods_attr_et.setText(attr.getString("item_name"));
+            goods_attr_et.setTag(attr.getString("item_id"));
+        }
         mGoodsAttrEt = goods_attr_et;
 
         metering_et.setOnClickListener(v -> {
-            final String attr = getString(R.string.a_goods_attr_sz);
-            final TreeListDialog treeListDialog = new TreeListDialog(this,attr.substring(0,attr.length() - 1));
-            final JSONArray array = new JSONArray();
-
-            final JSONObject obj = new JSONObject();
-            obj.put("level",0);
-            obj.put("unfold",false);
-            obj.put("isSel",true);
-            obj.put("item_id","0");
-            obj.put("item_name","计重");
-            array.add(Utils.JsondeepCopy(obj));
-            obj.put("isSel",false);
-            obj.put("item_id","1");
-            obj.put("item_name","计件");
-            array.add(Utils.JsondeepCopy(obj));
-            obj.put("isSel",false);
-            obj.put("item_id","2");
-            obj.put("item_name","定重");
-            array.add(obj);
-
-            treeListDialog.setDatas(array,null,true);
+            final String attr_sz = getString(R.string.a_goods_attr_sz);
+            final TreeListDialog treeListDialog = new TreeListDialog(this,attr_sz.substring(0,attr_sz.length() - 1));
+            treeListDialog.setDatas(meteringList,null,true);
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
@@ -462,6 +576,60 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         });
         mMeteringEt = metering_et;
     }
+    private void setAttrList(){
+        mAttrList = new JSONArray();
+        final JSONObject obj = new JSONObject();
+        obj.put("level",0);
+        obj.put("unfold",false);
+        obj.put("isSel",false);
+        obj.put("item_id","1");
+        obj.put("item_name","普通商品");
+        mAttrList.add(Utils.JsondeepCopy(obj));
+        obj.put("isSel",false);
+        obj.put("item_id","2");
+        obj.put("item_name","称重商品");
+        mAttrList.add(obj);
+    }
+    private void setMeteringList(){
+        meteringList = new JSONArray();
+        final JSONObject obj = new JSONObject();
+        obj.put("level",0);
+        obj.put("unfold",false);
+        obj.put("isSel",true);
+        obj.put("item_id","0");
+        obj.put("item_name","计重");
+        meteringList.add(Utils.JsondeepCopy(obj));
+        obj.put("isSel",false);
+        obj.put("item_id","1");
+        obj.put("item_name","计件");
+        meteringList.add(Utils.JsondeepCopy(obj));
+        obj.put("isSel",false);
+        obj.put("item_id","2");
+        obj.put("item_name","定重");
+        meteringList.add(obj);
+    }
+    private JSONObject getAttrById(final String id){
+        if (mAttrList != null){
+            for (int i = 0,size = mAttrList.size();i < size;i ++){
+                final JSONObject object = mAttrList.getJSONObject(i);
+                if (Utils.getNullStringAsEmpty(object,"item_id").equals(id)){
+                    return object;
+                }
+            }
+        }
+        return null;
+    }
+    private JSONObject getMeteringById(final String id){
+        if (meteringList != null){
+            for (int i = 0,size = meteringList.size();i < size;i ++){
+                final JSONObject object = meteringList.getJSONObject(i);
+                if (Utils.getNullStringAsEmpty(object,"item_id").equals(id)){
+                    return object;
+                }
+            }
+        }
+        return null;
+    }
 
     @Override
     protected int getLayout() {
@@ -470,12 +638,12 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
 
     @Override
     protected void sure() {
-        addGoods(generateParameter());
+        addGoods(generateParameter(),false);
     }
     private JSONObject generateParameter(){
         final JSONObject data = new JSONObject();
 
-        final String barcode = mBarcode,name = mNameEt.getText().toString(),category = mCategoryEt.getText().toString(),unit = mUnitEt.getText().toString(),only_coding = mItemIdEt.getText().toString();
+        final String barcode = mBarcode,name = mNameEt.getText().toString(),category = mCategoryTv.getText().toString(),unit = mUnitTv.getText().toString(),only_coding = mItemIdEt.getText().toString();
         if (barcode == null || barcode.isEmpty()){
             mBarcodeEt.requestFocus();
             MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.barcode_sz)),this,getWindow());
@@ -487,12 +655,12 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
             return data;
         }
         if (category.isEmpty()){
-            mCategoryEt.requestFocus();
+            mCategoryTv.requestFocus();
             MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.d_category_sz)),this,getWindow());
             return data;
         }
         if (unit.isEmpty()){
-            mUnitEt.requestFocus();
+            mUnitTv.requestFocus();
             MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.unit_sz)),this,getWindow());
             return data;
         }
@@ -504,13 +672,15 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
 
         data.put("attr_id",0);
         data.put("buying_price",mPurPriceEt.getText().toString());
-        data.put("category_id",Utils.getViewTagValue(mCategoryEt,""));
+        data.put("category_id",Utils.getViewTagValue(mCategoryTv,""));
         data.put("goods_title",name);
-        data.put("gs_id",Utils.getViewTagValue(mSupplierEt,0));
+        data.put("gs_id",Utils.getViewTagValue(mSupplierTv,0));
         data.put("spec_id",Utils.getViewTagValue(mGoodsAttrEt,"1"));
         data.put("only_coding",only_coding);
         data.put("cash_flow_mode",2);
         data.put("unit",unit);
+        data.put("current_goods",getCurPrice());
+        data.put("gb_id",Utils.getViewTagValue(mBrandTv,""));
 
         final JSONArray barcode_info = new JSONArray();
         final JSONObject goods = new JSONObject();
@@ -536,6 +706,12 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
 
         return data;
     }
+
+    private int getCurPrice(){
+        final RadioButton yes = findViewById(R.id.y);
+        return yes.isChecked() ? 1 : 0;
+    }
+
     private String getMetering(){
         if ("1".equals(Utils.getViewTagValue(mGoodsAttrEt,"1"))){
             return "0";
@@ -543,8 +719,8 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
             return Utils.getViewTagValue(mMeteringEt,"1");
     }
 
-    private boolean addGoods(final JSONObject data){
-        if (data.isEmpty())return false ;
+    private void addGoods(final JSONObject data,boolean reset){
+        if (data.isEmpty())return;
 
         final CustomProgressDialog progressDialog = new CustomProgressDialog(this);
         final JEventLoop loop = new JEventLoop();
@@ -586,8 +762,12 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         progressDialog.dismiss();
         if (code != 1){
             MyDialog.displayErrorMessage(this, "新增商品错误:" + err);
+        }else {
+            if (reset)
+                reset();
+            else
+                finish();
         }
-        return code == 1;
     }
 
     private boolean getNewGoodsAndSave(final HttpRequest httpRequest, final StringBuilder err){
@@ -613,10 +793,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
                         break;
                     case "y":
                         final JSONArray new_goods = JSON.parseArray(Utils.getNullOrEmptyStringAsDefault(info,"data","[]"));
-                        final String[] table_cls = new String[]{"goods_id","barcode_id","barcode","goods_title","only_coding","retail_price","buying_price","trade_price","cost_price","ps_price",
-                                "unit_id","unit_name","specifi","category_name","metering_id","shelf_life","goods_status","brand","origin","type","goods_tare","barcode_status","category_id",
-                                "tax_rate","tc_mode","tc_rate","yh_mode","yh_price","mnemonic_code","image","attr_id","attr_name","attr_code","conversion","update_price","stock_unit_id","stock_unit_name","img_url"};
-                        code = SQLiteHelper.execSQLByBatchFromJson(new_goods,"barcode_info" ,table_cls,err,1);
+                        code = SQLiteHelper.execSQLByBatchFromJson(new_goods,"barcode_info" , CustomApplication.getGoodsCols(),err,1);
                         break;
                 }
                 break;
@@ -626,10 +803,32 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
 
     @Override
     protected void saveAndAdd() {
-
+        addGoods(generateParameter(),true);
     }
+
+    private void reset(){
+        mNameEt.setText(R.string.space_sz);
+        resetCurPrice();
+        setDefaultSupplier();
+        setDefaultCategory();
+        setDefaultUnit();
+
+        mRetailPriceEt.setText(R.string.zero_p_z_sz);
+        mVipPriceEt.setText(R.string.zero_p_z_sz);
+        mPurPriceEt.setText(R.string.zero_p_z_sz);
+        pf_price_et.setText(R.string.zero_p_z_sz);
+        mUnitTv.setText("");
+
+        getOnlycodeAndBarcode();
+    }
+
+    private void resetCurPrice(){
+        final RadioButton n = findViewById(R.id.n);
+        if (!n.isChecked())n.setChecked(true);
+    }
+
     public static void start(Context context,final String barcode_id){
-        /*barcode_id 为空时 ，已新增模式打开*/
+        /*barcode_id 为空时 ，以新增模式打开*/
         Intent intent = new Intent(context,MobileEditGoodInfoActivity.class);
         intent.putExtra("barcodeId",barcode_id);
         context.startActivity(intent);

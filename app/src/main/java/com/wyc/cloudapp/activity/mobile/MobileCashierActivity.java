@@ -47,10 +47,10 @@ import com.wyc.cloudapp.utils.Utils;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 
-import static com.wyc.cloudapp.constants.MessageID.PAY_REQUEST_CODE;
+import static com.wyc.cloudapp.constants.ScanCallbackCode.PAY_REQUEST_CODE;
+import static com.wyc.cloudapp.constants.ScanCallbackCode.CODE_REQUEST_CODE;
 
 public class MobileCashierActivity extends SaleActivity implements View.OnClickListener {
-    private static final int CODE_REQUEST_CODE = 0x000000bb;
     private BasketView mBasketView;
     private EditText mSearchContent,mMobileSearchGoods;
     private GoodsInfoViewAdapter mGoodsInfoViewAdapter;

@@ -332,6 +332,10 @@ public final class CustomApplication extends Application {
         if (mSyncManagement != null) mSyncManagement.sync_refund_order();
     }
 
+    public static String[] getGoodsCols(){
+        return mApplication.mSyncManagement.getGoodsCols();
+    }
+
     public void resetSync(){
         mSyncManagement.rest();
     }

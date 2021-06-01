@@ -678,5 +678,8 @@
     <!--编辑商品-->
     <string name="add_goods">@string/a_goods_sz</string>
     <string name="modify_goods">修改商品</string>
-
+    <string name="pro_place_sz">产地：</string>
+    <string name="brand_sz">品牌：</string>
+    <string name="pf_price">批发价：</string>
+    <string name="cur_price">时价：</string>
 </resources>

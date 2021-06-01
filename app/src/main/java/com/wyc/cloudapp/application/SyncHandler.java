@@ -68,6 +68,13 @@ final class SyncHandler extends Handler {
                 "promotion_info","sale_operator_info","goods_group", "goods_group_info","buyfull_give_x","buy_x_give_x","step_promotion_info");
     }
 
+    String[] getGoodsCols(){
+        return new String[]{"goods_id","barcode_id","barcode","goods_title","only_coding","retail_price","buying_price","trade_price","cost_price","ps_price",
+                "unit_id","unit_name","specifi","category_name","metering_id","shelf_life","goods_status","origin","type","goods_tare","barcode_status","category_id",
+                "tax_rate","tc_mode","tc_rate","yh_mode","yh_price","mnemonic_code","image","attr_id","attr_name","attr_code","brand_id","brand","brand_code","gs_id","gs_code","gs_name",
+                "conversion","update_price","stock_unit_id","stock_unit_name","img_url"};
+    }
+
     @Override
     public void handleMessage(Message msg){
 
@@ -110,10 +117,7 @@ final class SyncHandler extends Handler {
                 case MessageID.SYNC_GOODS_ID://商品信息
                     table_name = "barcode_info";
                     sys_name = "正在同步商品";
-                    table_cls = new String[]{"goods_id","barcode_id","barcode","goods_title","only_coding","retail_price","buying_price","trade_price","cost_price","ps_price",
-                            "unit_id","unit_name","specifi","category_name","metering_id","shelf_life","goods_status","origin","type","goods_tare","barcode_status","category_id",
-                            "tax_rate","tc_mode","tc_rate","yh_mode","yh_price","mnemonic_code","image","attr_id","attr_name","attr_code","brand_id","brand","brand_code","gs_id","gs_code","gs_name",
-                            "conversion","update_price","stock_unit_id","stock_unit_name","img_url"};
+                    table_cls = getGoodsCols();
                     url = base_url + "/api/goods/get_goods_all";
                     object.put("stores_id",stores_id);
                     object.put("pos_num",pos_num);

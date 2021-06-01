@@ -32,7 +32,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.wyc.cloudapp.constants.MessageID.PAY_REQUEST_CODE;
+import static com.wyc.cloudapp.constants.ScanCallbackCode.PAY_REQUEST_CODE;
 
 public final class MobileNavigationActivity extends AbstractMobileActivity implements CustomApplication.MessageCallback {
     private FragmentManager mFragmentManager;

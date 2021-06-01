@@ -119,4 +119,9 @@ class SyncManagement extends Thread {
     private void acquireHandler(){
         if (mSyncHandler == null)mSyncHandler = getHandler();
     }
+
+    String[] getGoodsCols(){
+        acquireHandler();
+        return mSyncHandler.getGoodsCols();
+    }
 }
