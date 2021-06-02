@@ -51,7 +51,7 @@ import static android.database.Cursor.FIELD_TYPE_STRING;
  */
 
 public final class SQLiteHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
     private static volatile SQLiteDatabase mDb;
 
     private SQLiteHelper(Context context,final String databaseName){
@@ -126,11 +126,14 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             modify_list.add("ALTER TABLE pay_method ADD COLUMN is_moling INTEGER DEFAULT (1)");
         }
         if(!checkColumnExists(db,"shop_stores","wh_id")){
-            modify_list.add("ALTER TABLE shop_stores ADD COLUMN wh_id");
+            modify_list.add("ALTER TABLE shop_stores ADD COLUMN wh_id VARCHAR");
         }
 
         if(!checkColumnExists(db,"shop_category","category_code")){
-            modify_list.add("ALTER TABLE shop_category ADD COLUMN category_code");
+            modify_list.add("ALTER TABLE shop_category ADD COLUMN category_code VARCHAR");
+        }
+        if(!checkColumnExists(db,"barcode_info","current_goods")){
+            modify_list.add("ALTER TABLE barcode_info ADD COLUMN current_goods INTEGER DEFAULT (1)");
         }
 
         try {

@@ -22,6 +22,7 @@ import com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
+import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.constants.WholesalePriceType;
@@ -324,8 +325,8 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                 object.put("level",0);
                 object.put("unfold",false);
                 object.put("isSel",false);
-                object.put("item_id",id);
-                object.put("item_name",name);
+                object.put(TreeListBaseAdapter.COL_ID,id);
+                object.put(TreeListBaseAdapter.COL_NAME,name);
                 array.add(object);
 
                 //
@@ -481,8 +482,8 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                 treeListDialog.setDatas(mSupplierList,null,true);
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
-                    business_supplier_tv.setText(object.getString("item_name"));
-                    business_supplier_tv.setTag(object.getString("item_id"));
+                    business_supplier_tv.setText(object.getString(TreeListBaseAdapter.COL_NAME));
+                    business_supplier_tv.setTag(object.getString(TreeListBaseAdapter.COL_ID));
                 }
             }));
             mSupplierTV = business_supplier_tv;
@@ -506,8 +507,8 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
             treeListDialog.setDatas(array,null,true);
             if (treeListDialog.exec() == 1){
                 final JSONObject object = treeListDialog.getSingleContent();
-                business_operator_tv.setText(object.getString("item_name"));
-                business_operator_tv.setTag(object.getString("item_id"));
+                business_operator_tv.setText(object.getString(TreeListBaseAdapter.COL_NAME));
+                business_operator_tv.setTag(object.getString(TreeListBaseAdapter.COL_ID));
             }
         }));
 
@@ -527,8 +528,8 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                 object.put("level",0);
                 object.put("unfold",false);
                 object.put("isSel",false);
-                object.put("item_id",id);
-                object.put("item_name",name);
+                object.put(TreeListBaseAdapter.COL_ID,id);
+                object.put(TreeListBaseAdapter.COL_NAME,name);
                 data.add(object);
 
                 if (i == 0){

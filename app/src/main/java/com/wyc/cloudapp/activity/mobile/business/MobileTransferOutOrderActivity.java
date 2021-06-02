@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
+import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDataAdapter;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
 import com.wyc.cloudapp.adapter.business.MobileBaseOrderDetailsAdapter;
@@ -58,7 +59,7 @@ public class MobileTransferOutOrderActivity extends AbstractMobileBusinessOrderA
                 treeListDialog.setDatas(array,null,true);
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
-                    setTransferInWarehouse(object.getString("item_id"),object.getString("item_name"));
+                    setTransferInWarehouse(object.getString(TreeListBaseAdapter.COL_ID),object.getString(TreeListBaseAdapter.COL_NAME));
                 }
             }));
 
@@ -78,8 +79,8 @@ public class MobileTransferOutOrderActivity extends AbstractMobileBusinessOrderA
                     object.put("level",0);
                     object.put("unfold",false);
                     object.put("isSel",false);
-                    object.put("item_id",id);
-                    object.put("item_name",name);
+                    object.put(TreeListBaseAdapter.COL_ID,id);
+                    object.put(TreeListBaseAdapter.COL_NAME,name);
                     data.add(object);
 
                     if (i == 0){

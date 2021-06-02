@@ -20,6 +20,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
+import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
@@ -85,8 +86,8 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
         mobile_sale_man.setOnClickListener(v -> {
             final JSONObject object = showSaleInfo(mContext);
             if (object.isEmpty()){
-                mobile_sale_man.setTag(object.getString("item_id"));
-                mobile_sale_man.setText(object.getString("item_name"));
+                mobile_sale_man.setTag(object.getString(TreeListBaseAdapter.COL_ID));
+                mobile_sale_man.setText(object.getString(TreeListBaseAdapter.COL_NAME));
             }
         });
         mSaleManTv = mobile_sale_man;
@@ -101,8 +102,8 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
         object.put("level",0);
         object.put("unfold",false);
         object.put("isSel",false);
-        object.put("item_id","-1");
-        object.put("item_name","无营业员");
+        object.put(TreeListBaseAdapter.COL_ID,"-1");
+        object.put(TreeListBaseAdapter.COL_NAME,"无营业员");
 
         array.add(object);
         if (sales != null){
@@ -113,8 +114,8 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                 object.put("level",0);
                 object.put("unfold",false);
                 object.put("isSel",false);
-                object.put("item_id",id);
-                object.put("item_name",tmp.getString("sc_name"));
+                object.put(TreeListBaseAdapter.COL_ID,id);
+                object.put(TreeListBaseAdapter.COL_NAME,tmp.getString("sc_name"));
 
                 array.add(object);
             }
@@ -318,8 +319,8 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
     }
 
     private void showChargePlan(@NonNull final JSONObject object,final TextView mobile_charge_plan){
-        int item_id = object.getIntValue("item_id");
-        final String item_name = object.getString("item_name");
+        int item_id = object.getIntValue(TreeListBaseAdapter.COL_ID);
+        final String item_name = object.getString(TreeListBaseAdapter.COL_NAME);
 
         mobile_charge_plan.setText(item_name);
         mobile_charge_plan.setTag(item_id);
@@ -348,8 +349,8 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
         object.put("level",0);
         object.put("unfold",false);
         object.put("isSel",false);
-        object.put("item_id",-1);
-        object.put("item_name",default_item_name);
+        object.put(TreeListBaseAdapter.COL_ID,-1);
+        object.put(TreeListBaseAdapter.COL_NAME,default_item_name);
         array.add(object);
 
         CustomApplication.runInMainThread(()->{
@@ -365,8 +366,8 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                 object.put("level",0);
                 object.put("unfold",false);
                 object.put("isSel",false);
-                object.put("item_id",id);
-                object.put("item_name",tmp.getString("advstr"));
+                object.put(TreeListBaseAdapter.COL_ID,id);
+                object.put(TreeListBaseAdapter.COL_NAME,tmp.getString("advstr"));
                 object.put("money",tmp.getString("money"));
                 object.put("give_money",tmp.getString("give_money"));
 
@@ -416,11 +417,11 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
     public abstract void clearPayCode(boolean clearView);
 
     private void set_pay_method_and_check_scan(@NonNull final JSONObject object,final TextView mobile_pay_method){
-        final String _id = Utils.getNullStringAsEmpty(object,"item_id");
+        final String _id = Utils.getNullStringAsEmpty(object,TreeListBaseAdapter.COL_ID);
         mPayMethodSelected = get_pay_method(_id);
         if (mPayMethodSelected != null){
             mobile_pay_method.setTag(_id);
-            mobile_pay_method.setText(Utils.getNullStringAsEmpty(object,"item_name"));
+            mobile_pay_method.setText(Utils.getNullStringAsEmpty(object,TreeListBaseAdapter.COL_NAME));
 
             checkPayMethod();
         }
@@ -451,8 +452,8 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                 object.put("level",0);
                 object.put("unfold",false);
                 object.put("isSel",false);
-                object.put("item_id",id);
-                object.put("item_name",method.getString("name"));
+                object.put(TreeListBaseAdapter.COL_ID,id);
+                object.put(TreeListBaseAdapter.COL_NAME,method.getString("name"));
 
                 array.add(object);
             }

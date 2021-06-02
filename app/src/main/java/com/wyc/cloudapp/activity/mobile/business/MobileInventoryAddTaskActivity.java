@@ -16,6 +16,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
+import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
@@ -161,8 +162,8 @@ public class MobileInventoryAddTaskActivity extends AbstractMobileActivity {
             treeListDialog.setDatas(MobilePracticalInventoryAddOrderActivity.getInventoryWay(),null,true);
             if (treeListDialog.exec() == 1){
                 final JSONObject object = treeListDialog.getSingleContent();
-                final String way = object.getString("item_id");
-                setInventoryWay(way,object.getString("item_name"));
+                final String way = object.getString(TreeListBaseAdapter.COL_ID);
+                setInventoryWay(way,object.getString(TreeListBaseAdapter.COL_NAME));
                 noHideCategory(way);
             }
         }));
@@ -230,7 +231,7 @@ public class MobileInventoryAddTaskActivity extends AbstractMobileActivity {
                 if (ids.length() != 0){
                     ids.append(",");
                 }
-                ids.append(object.getString("item_id"));
+                ids.append(object.getString(TreeListBaseAdapter.COL_ID));
             }
         }
         return ids.toString();

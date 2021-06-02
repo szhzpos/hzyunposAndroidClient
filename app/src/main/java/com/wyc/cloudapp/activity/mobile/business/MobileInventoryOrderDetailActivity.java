@@ -18,6 +18,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
+import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.adapter.business.MobileInventoryAuditDetailAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -166,7 +167,7 @@ public class MobileInventoryOrderDetailActivity extends AbstractMobileActivity {
                 if (names.length() != 0){
                     names.append("|");
                 }
-                names.append(object.getString("item_name"));
+                names.append(object.getString(TreeListBaseAdapter.COL_NAME));
             }
         }
         return names.toString();

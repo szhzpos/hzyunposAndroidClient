@@ -48,6 +48,7 @@ import com.wyc.cloudapp.CustomizationView.TmpOrderButton;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
+import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.decoration.GoodsInfoItemDecoration;
@@ -347,9 +348,9 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                             }
                         }else if (id == R.id.pop_sale_man_btn){
                             final JSONObject object = AbstractVipChargeDialog.showSaleInfo(this);
-                            final String name = Utils.getNullStringAsEmpty(object,"item_name");
+                            final String name = Utils.getNullStringAsEmpty(object, TreeListBaseAdapter.COL_NAME);
                             mSaleManInfo = new JSONObject();
-                            mSaleManInfo.put("id",Utils.getNullStringAsEmpty(object,"item_id"));
+                            mSaleManInfo.put("id",Utils.getNullStringAsEmpty(object,TreeListBaseAdapter.COL_ID));
                             mSaleManInfo.put("name",name);
                             setSaleManView(name);
                             window.dismiss();

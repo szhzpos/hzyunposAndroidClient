@@ -17,6 +17,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
+import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.CustomePopupWindow;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -170,7 +171,7 @@ public class AddBarcodeScaleDialog extends AbstractDialogContext {
                             if (names.length() != 0){
                                 names.append(AbstractBarcodeScaleImp.CATEGORY_SEPARATE);
                             }
-                            names.append(object.getString("item_name"));
+                            names.append(object.getString(TreeListBaseAdapter.COL_NAME));
                         }
                     }
                     mGCategoryEt.setText(names);
@@ -267,8 +268,8 @@ public class AddBarcodeScaleDialog extends AbstractDialogContext {
             for (int i = 0,length = ids.length;i < length;i++){
                 object = new JSONObject();
                 sz_name = names[i];
-                object.put("item_id",ids[i]);
-                object.put("item_name",sz_name);
+                object.put(TreeListBaseAdapter.COL_ID,ids[i]);
+                object.put(TreeListBaseAdapter.COL_NAME,sz_name);
                 mCategoryInfo.add(object);
                 if (sb_name.length() != 0){
                     sb_name.append(AbstractBarcodeScaleImp.CATEGORY_SEPARATE);
@@ -313,8 +314,8 @@ public class AddBarcodeScaleDialog extends AbstractDialogContext {
                     if (ids.length() != 0){
                         ids.append(AbstractBarcodeScaleImp.CATEGORY_SEPARATE);
                     }
-                    names.append(tmp.getString("item_name"));
-                    ids.append(tmp.getString("item_id"));
+                    names.append(tmp.getString(TreeListBaseAdapter.COL_NAME));
+                    ids.append(tmp.getString(TreeListBaseAdapter.COL_ID));
                 }
             }
             object.put("g_c_name",names);

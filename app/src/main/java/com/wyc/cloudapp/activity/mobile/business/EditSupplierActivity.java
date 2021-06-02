@@ -10,6 +10,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.adapter.bean.Supplier;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -62,8 +63,8 @@ public class EditSupplierActivity extends AbstractEditArchiveActivity {
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
-                    supplier_settlement_way_tv.setTag(object.getIntValue("item_id"));
-                    supplier_settlement_way_tv.setText(object.getString("item_name"));
+                    supplier_settlement_way_tv.setTag(object.getIntValue(TreeListBaseAdapter.COL_ID));
+                    supplier_settlement_way_tv.setText(object.getString(TreeListBaseAdapter.COL_NAME));
                 }
             });
         });
@@ -78,8 +79,8 @@ public class EditSupplierActivity extends AbstractEditArchiveActivity {
     private void setDefaultSettlementWay(){
         if (mSupplierSettlementWay != null){
             final JSONObject default_way = getSettlementWay().getJSONObject(1);
-            mSupplierSettlementWay.setTag(default_way.getIntValue("item_id"));
-            mSupplierSettlementWay.setText(default_way.getString("item_name"));
+            mSupplierSettlementWay.setTag(default_way.getIntValue(TreeListBaseAdapter.COL_ID));
+            mSupplierSettlementWay.setText(default_way.getString(TreeListBaseAdapter.COL_NAME));
         }
     }
 
@@ -93,8 +94,8 @@ public class EditSupplierActivity extends AbstractEditArchiveActivity {
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
-                    supplier_co_way_tv.setTag(object.getIntValue("item_id"));
-                    supplier_co_way_tv.setText(object.getString("item_name"));
+                    supplier_co_way_tv.setTag(object.getIntValue(TreeListBaseAdapter.COL_ID));
+                    supplier_co_way_tv.setText(object.getString(TreeListBaseAdapter.COL_NAME));
                 }
             });
         });
@@ -107,8 +108,8 @@ public class EditSupplierActivity extends AbstractEditArchiveActivity {
     private void setDefaultCooperationWay(){
         if (null != mSupplierCooperationWay){
             final JSONObject default_way = getCooperationWay().getJSONObject(1);
-            mSupplierCooperationWay.setTag(default_way.getIntValue("item_id"));
-            mSupplierCooperationWay.setText(default_way.getString("item_name"));
+            mSupplierCooperationWay.setTag(default_way.getIntValue(TreeListBaseAdapter.COL_ID));
+            mSupplierCooperationWay.setText(default_way.getString(TreeListBaseAdapter.COL_NAME));
         }
     }
 

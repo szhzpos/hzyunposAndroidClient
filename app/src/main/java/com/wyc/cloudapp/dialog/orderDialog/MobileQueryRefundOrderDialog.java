@@ -9,6 +9,7 @@ import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.adapter.MobileRefundOrderAdapter;
+import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.utils.Utils;
 
 public final class MobileQueryRefundOrderDialog extends AbstractMobileQueryDialog {
@@ -50,8 +51,8 @@ public final class MobileQueryRefundOrderDialog extends AbstractMobileQueryDialo
                 object.put("level", 0);
                 object.put("unfold", false);
                 object.put("isSel", false);
-                object.put("item_id", i + 1);
-                object.put("item_name", sz[i]);
+                object.put(TreeListBaseAdapter.COL_ID, i + 1);
+                object.put(TreeListBaseAdapter.COL_NAME, sz[i]);
 
                 array.add(object);
             }

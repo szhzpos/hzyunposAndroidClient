@@ -28,6 +28,7 @@ import com.wyc.cloudapp.CustomizationView.TmpOrderButton;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
+import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.decoration.GoodsInfoItemDecoration;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
@@ -198,10 +199,10 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
                 final TextView sale_man_name = findViewById(R.id.sale_man_name);
                 final JSONObject object = AbstractVipChargeDialog.showSaleInfo(this);
 
-                final String name = Utils.getNullStringAsEmpty(object,"item_name");
+                final String name = Utils.getNullStringAsEmpty(object, TreeListBaseAdapter.COL_NAME);
 
                 mSaleManInfo = new JSONObject();
-                mSaleManInfo.put("id",Utils.getNullStringAsEmpty(object,"item_id"));
+                mSaleManInfo.put("id",Utils.getNullStringAsEmpty(object,TreeListBaseAdapter.COL_ID));
                 mSaleManInfo.put("name",name);
                 sale_man_name.setText(name);
             });

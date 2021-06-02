@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -18,6 +19,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
@@ -55,12 +57,17 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     EditText mPurPriceEt;
     @BindView(R.id.pf_price_et)
     EditText pf_price_et;
+    @BindView(R.id.place_et)
+    EditText place_et;
+
+    private boolean isModify;
+    private JSONObject mGoodsObj;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBarcodeId = getIntent().getStringExtra("barcodeId");
-        setMiddleText(getString(Utils.isNotEmpty(mBarcodeId) ? R.string.modify_goods : R.string.add_goods));
+        setMiddleText(getString((isModify = Utils.isNotEmpty(mBarcodeId)) ? R.string.modify_goods : R.string.add_goods));
         Logger.d("mBarcodeId:%s",mBarcodeId);
 
         initUnit();
@@ -74,7 +81,11 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         getGoodsBase();
         getGoodsInfoByBarcode();
         getSupplier();
-        getOnlycodeAndBarcode();
+        if (!isModify)getOnlycodeAndBarcode();
+
+        if (isModify){
+            getGoodsByBarcodeId();
+        }
     }
 
     private void getSupplier(){
@@ -113,8 +124,8 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
                 object.put("level",0);
                 object.put("unfold",false);
                 object.put("isSel",false);
-                object.put("item_id",id);
-                object.put("item_name",Utils.getNullStringAsEmpty(tmp,"gs_name"));
+                object.put(TreeListBaseAdapter.COL_ID,id);
+                object.put(TreeListBaseAdapter.COL_NAME,Utils.getNullStringAsEmpty(tmp,"gs_name"));
                 array.add(object);
             }
         }
@@ -131,20 +142,10 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         }
         return null;
     }
-    private JSONObject getSupplierById(final String id){
-        if (null == mSupplierList)return null;
-        for (int i = 0,size = mSupplierList.size();i < size;i ++){
-            final JSONObject object = mSupplierList.getJSONObject(i);
-            if (Utils.getNullStringAsEmpty(object,"gs_id").equals(id)){
-                return object;
-            }
-        }
-        return null;
-    }
 
     private void setDefaultSupplier(){
         final JSONObject object = getDefaultSupplier();
-        if (null != object && null != mSupplierTv){
+        if (!isModify && null != object && null != mSupplierTv){
             mSupplierTv.setText(object.getString("gs_name"));
             mSupplierTv.setTag(object.getString("gs_id"));
         }
@@ -197,8 +198,8 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
-                    unit_et.setText(object.getString("item_name"));
-                    unit_et.setTag(object.getString("item_id"));
+                    unit_et.setText(object.getString(TreeListBaseAdapter.COL_NAME));
+                    unit_et.setTag(object.getString(TreeListBaseAdapter.COL_ID));
                 }
             });
         });
@@ -220,8 +221,8 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
-                    category_et.setText(object.getString("item_name"));
-                    category_et.setTag(object.getString("item_id"));
+                    category_et.setText(object.getString(TreeListBaseAdapter.COL_NAME));
+                    category_et.setTag(object.getString(TreeListBaseAdapter.COL_ID));
                     getOnlycodeAndBarcode();
                 }
             });
@@ -332,8 +333,8 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
-                    supplier_et.setText(object.getString("item_name"));
-                    supplier_et.setTag(object.getIntValue("item_id"));
+                    supplier_et.setText(object.getString(TreeListBaseAdapter.COL_NAME));
+                    supplier_et.setTag(object.getIntValue(TreeListBaseAdapter.COL_ID));
                     mNameEt.requestFocus();
                 }
             });
@@ -350,8 +351,8 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
-                    brand.setText(object.getString("item_name"));
-                    brand.setTag(object.getIntValue("item_id"));
+                    brand.setText(object.getString(TreeListBaseAdapter.COL_NAME));
+                    brand.setTag(object.getIntValue(TreeListBaseAdapter.COL_ID));
                 }
             });
         });
@@ -400,22 +401,12 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         }
         return null;
     }
-    private JSONObject getCategoryByCode(final String id){
-        if (mCategoryList != null) {
-            for (int i = 0,size = mCategoryList.size();i < size;i ++){
-                final JSONObject object = mCategoryList.getJSONObject(i);
-                if (Utils.getNullStringAsEmpty(object,"category_id").equals(id)){
-                    return object;
-                }
-            }
-        }
-        return null;
-    }
+
     private void setDefaultCategory(){
         final JSONObject object = getDefaultCategory();
-        if (null != object && mCategoryTv != null){
-            mCategoryTv.setTag(object.getString("item_id"));
-            mCategoryTv.setText(object.getString("item_name"));
+        if (!isModify && null != object && mCategoryTv != null){
+            mCategoryTv.setTag(object.getString(TreeListBaseAdapter.COL_ID));
+            mCategoryTv.setText(object.getString(TreeListBaseAdapter.COL_NAME));
         }
     }
 
@@ -431,8 +422,8 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
                 object.put("level",0);
                 object.put("unfold",false);
                 object.put("isSel",false);
-                object.put("item_id",id);
-                object.put("item_name",name);
+                object.put(TreeListBaseAdapter.COL_ID,id);
+                object.put(TreeListBaseAdapter.COL_NAME,name);
                 array.add(object);
             }
         }
@@ -445,22 +436,12 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         }
         return null;
     }
-    private JSONObject getBrandById(final String id){
-        if (mBrandList != null && !mBrandList.isEmpty()){
-            for(int i = 0,size = mBrandList.size();i < size;i ++){
-                final JSONObject object = mBrandList.getJSONObject(i);
-                if (Utils.getNullStringAsEmpty(object,"item_id").equals(id)){
-                    return object;
-                }
-            }
-        }
-        return null;
-    }
+
     private void setDefaultBrand(){
         final JSONObject object = getDefaultBrand();
-        if (null != object && mBrandTv != null){
-            mBrandTv.setText(object.getString("item_name"));
-            mBrandTv.setTag(object.getString("item_id"));
+        if (!isModify && null != object && mBrandTv != null){
+            mBrandTv.setText(object.getString(TreeListBaseAdapter.COL_NAME));
+            mBrandTv.setTag(object.getString(TreeListBaseAdapter.COL_ID));
         }
     }
 
@@ -475,8 +456,8 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
                 object.put("level",0);
                 object.put("unfold",false);
                 object.put("isSel",false);
-                object.put("item_id",Utils.getNullStringAsEmpty(tmp,"unit_id"));
-                object.put("item_name",Utils.getNullStringAsEmpty(tmp,"unit_name"));
+                object.put(TreeListBaseAdapter.COL_ID,Utils.getNullStringAsEmpty(tmp,"unit_id"));
+                object.put(TreeListBaseAdapter.COL_NAME,Utils.getNullStringAsEmpty(tmp,"unit_name"));
                 array.add(object);
             }
         }
@@ -493,9 +474,9 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
             item.put("level",level);
             item.put("unfold",false);
             item.put("isSel",false);
-            item.put("item_id",category_json.getString("category_id"));
+            item.put(TreeListBaseAdapter.COL_ID,category_json.getString("category_id"));
             item.put("category_code",category_json.getString("category_code"));
-            item.put("item_name",category_json.getString("name"));
+            item.put(TreeListBaseAdapter.COL_NAME,category_json.getString("name"));
 
             item.put("kids",new JSONArray());
 
@@ -527,14 +508,14 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
-                    final String id = object.getString("item_id");
-                    goods_attr_et.setText(object.getString("item_name"));
+                    final String id = object.getString(TreeListBaseAdapter.COL_ID);
+                    goods_attr_et.setText(object.getString(TreeListBaseAdapter.COL_NAME));
                     goods_attr_et.setTag(id);
                     if ("2".equals(id)){
                         final JSONObject obj = getMeteringById("0");
                         if (null != obj){
-                            metering_et.setText(obj.getString("item_name"));
-                            metering_et.setTag(obj.getString("item_id"));
+                            metering_et.setText(obj.getString(TreeListBaseAdapter.COL_NAME));
+                            metering_et.setTag(obj.getString(TreeListBaseAdapter.COL_ID));
                             metering_et.setVisibility(View.VISIBLE);
                         }
                     }else{
@@ -552,8 +533,8 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         });
         final JSONObject attr = getAttrById("1");
         if (null != attr){
-            goods_attr_et.setText(attr.getString("item_name"));
-            goods_attr_et.setTag(attr.getString("item_id"));
+            goods_attr_et.setText(attr.getString(TreeListBaseAdapter.COL_NAME));
+            goods_attr_et.setTag(attr.getString(TreeListBaseAdapter.COL_ID));
         }
         mGoodsAttrEt = goods_attr_et;
 
@@ -564,8 +545,8 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
-                    metering_et.setText(object.getString("item_name"));
-                    metering_et.setTag(object.getString("item_id"));
+                    metering_et.setText(object.getString(TreeListBaseAdapter.COL_NAME));
+                    metering_et.setTag(object.getString(TreeListBaseAdapter.COL_ID));
                     mBarcodeEt.requestFocus();
                 }
             });
@@ -582,12 +563,12 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         obj.put("level",0);
         obj.put("unfold",false);
         obj.put("isSel",false);
-        obj.put("item_id","1");
-        obj.put("item_name","普通商品");
+        obj.put(TreeListBaseAdapter.COL_ID,"1");
+        obj.put(TreeListBaseAdapter.COL_NAME,"普通商品");
         mAttrList.add(Utils.JsondeepCopy(obj));
         obj.put("isSel",false);
-        obj.put("item_id","2");
-        obj.put("item_name","称重商品");
+        obj.put(TreeListBaseAdapter.COL_ID,"2");
+        obj.put(TreeListBaseAdapter.COL_NAME,"称重商品");
         mAttrList.add(obj);
     }
     private void setMeteringList(){
@@ -596,23 +577,23 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         obj.put("level",0);
         obj.put("unfold",false);
         obj.put("isSel",true);
-        obj.put("item_id","0");
-        obj.put("item_name","计重");
+        obj.put(TreeListBaseAdapter.COL_ID,"0");
+        obj.put(TreeListBaseAdapter.COL_NAME,"计重");
         meteringList.add(Utils.JsondeepCopy(obj));
         obj.put("isSel",false);
-        obj.put("item_id","1");
-        obj.put("item_name","计件");
+        obj.put(TreeListBaseAdapter.COL_ID,"1");
+        obj.put(TreeListBaseAdapter.COL_NAME,"计件");
         meteringList.add(Utils.JsondeepCopy(obj));
         obj.put("isSel",false);
-        obj.put("item_id","2");
-        obj.put("item_name","定重");
+        obj.put(TreeListBaseAdapter.COL_ID,"2");
+        obj.put(TreeListBaseAdapter.COL_NAME,"定重");
         meteringList.add(obj);
     }
     private JSONObject getAttrById(final String id){
         if (mAttrList != null){
             for (int i = 0,size = mAttrList.size();i < size;i ++){
                 final JSONObject object = mAttrList.getJSONObject(i);
-                if (Utils.getNullStringAsEmpty(object,"item_id").equals(id)){
+                if (Utils.getNullStringAsEmpty(object,TreeListBaseAdapter.COL_ID).equals(id)){
                     return object;
                 }
             }
@@ -623,7 +604,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         if (meteringList != null){
             for (int i = 0,size = meteringList.size();i < size;i ++){
                 final JSONObject object = meteringList.getJSONObject(i);
-                if (Utils.getNullStringAsEmpty(object,"item_id").equals(id)){
+                if (Utils.getNullStringAsEmpty(object,TreeListBaseAdapter.COL_ID).equals(id)){
                     return object;
                 }
             }
@@ -643,7 +624,8 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     private JSONObject generateParameter(){
         final JSONObject data = new JSONObject();
 
-        final String barcode = mBarcode,name = mNameEt.getText().toString(),category = mCategoryTv.getText().toString(),unit = mUnitTv.getText().toString(),only_coding = mItemIdEt.getText().toString();
+        final String barcode = mBarcode,name = mNameEt.getText().toString(),category = mCategoryTv.getText().toString(),unit = mUnitTv.getText().toString(),
+                only_coding = mItemIdEt.getText().toString(),supplier = mSupplierTv.getText().toString();
         if (barcode == null || barcode.isEmpty()){
             mBarcodeEt.requestFocus();
             MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.barcode_sz)),this,getWindow());
@@ -652,6 +634,11 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         if (name.isEmpty()){
             mNameEt.requestFocus();
             MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.g_name_sz)),this,getWindow());
+            return data;
+        }
+        if (supplier.isEmpty()){
+            mSupplierTv.requestFocus();
+            MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.supplier_setting)),this,getWindow());
             return data;
         }
         if (category.isEmpty()){
@@ -671,6 +658,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         }
 
         data.put("attr_id",0);
+        data.put("type",isModify ? 2 : 1);
         data.put("buying_price",mPurPriceEt.getText().toString());
         data.put("category_id",Utils.getViewTagValue(mCategoryTv,""));
         data.put("goods_title",name);
@@ -679,24 +667,25 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         data.put("only_coding",only_coding);
         data.put("cash_flow_mode",2);
         data.put("unit",unit);
-        data.put("current_goods",getCurPrice());
+        data.put("current_goods", getCurPriceFlag());
         data.put("gb_id",Utils.getViewTagValue(mBrandTv,""));
 
         final JSONArray barcode_info = new JSONArray();
         final JSONObject goods = new JSONObject();
         goods.put("barcode",barcode);
-        goods.put("mnemonic_code","");
-        goods.put("goods_spec_code","");
+        goods.put("mnemonic_code",Utils.getNullStringAsEmpty(mGoodsObj,"mnemonic_code"));
+        goods.put("goods_spec_code",Utils.getNullStringAsEmpty(mGoodsObj,"goods_spec_code"));
         goods.put("metering_id",getMetering());
         goods.put("retail_price",mRetailPriceEt.getText().toString());
         goods.put("sys_unit",unit);
-        goods.put("conversion",1);
-        goods.put("yh_mode",0);
+        goods.put("conversion",Utils.getNullOrEmptyStringAsDefault(mGoodsObj,"conversion","1"));
+        goods.put("yh_mode",Utils.getNotKeyAsNumberDefault(mGoodsObj,"yh_mode",0));
         goods.put("yh_price",mVipPriceEt.getText().toString());
         goods.put("cost_price",0);
         goods.put("ps_price",0);
-        goods.put("goods_id",0);
-        goods.put("barcode_id",0);
+        goods.put("trade_price",pf_price_et.getText().toString());
+        goods.put("goods_id",Utils.getNullStringAsEmpty(mGoodsObj,"goods_id"));
+        if (isModify)goods.put("barcode_id",mBarcodeId);
         goods.put("del_status",1);
 
         barcode_info.add(goods);
@@ -707,9 +696,18 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         return data;
     }
 
-    private int getCurPrice(){
+    private int getCurPriceFlag(){
         final RadioButton yes = findViewById(R.id.y);
         return yes.isChecked() ? 1 : 0;
+    }
+    private void setCurPriceFlag(boolean flag){
+        RadioButton rb;
+        if (flag){
+            rb = findViewById(R.id.y);
+        }else {
+            rb = findViewById(R.id.n);
+        }
+        rb.setChecked(true);
     }
 
     private String getMetering(){
@@ -720,6 +718,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     }
 
     private void addGoods(final JSONObject data,boolean reset){
+        Logger.d_json(data);
         if (data.isEmpty())return;
 
         final CustomProgressDialog progressDialog = new CustomProgressDialog(this);
@@ -761,7 +760,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         int code = loop.exec();
         progressDialog.dismiss();
         if (code != 1){
-            MyDialog.displayErrorMessage(this, "新增商品错误:" + err);
+            MyDialog.displayErrorMessage(this, "编辑商品错误:" + err);
         }else {
             if (reset)
                 reset();
@@ -807,6 +806,9 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     }
 
     private void reset(){
+        isModify = false;
+        mGoodsObj = null;
+
         mNameEt.setText(R.string.space_sz);
         resetCurPrice();
         setDefaultSupplier();
@@ -825,6 +827,66 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     private void resetCurPrice(){
         final RadioButton n = findViewById(R.id.n);
         if (!n.isChecked())n.setChecked(true);
+    }
+
+    private void getGoodsByBarcodeId(){
+        final StringBuilder sql = new StringBuilder("select ");
+        final String[] cols = CustomApplication.getGoodsCols();
+        for (int i = 0,size = cols.length;i < size;i ++){
+            sql.append(cols[i]);
+            if (i != size -1)sql.append(",");
+        }
+        sql.append(" from barcode_info where barcode_id = ").append(mBarcodeId);
+
+        mGoodsObj = new JSONObject();
+        if (SQLiteHelper.execSql(mGoodsObj,sql.toString())){
+            showGoods(mGoodsObj);
+        }else {
+            Toast.makeText(this,"查询商品信息错误..." + mGoodsObj.getString("info"),Toast.LENGTH_LONG).show();
+        }
+    }
+    private void showGoods(final JSONObject goods){
+
+        final JSONObject attr_obj = getAttrById(goods.getString("type"));
+        if (null != attr_obj){
+            String id = attr_obj.getString(TreeListBaseAdapter.COL_ID);
+            mGoodsAttrEt.setTag(id);
+            mGoodsAttrEt.setText(attr_obj.getString(TreeListBaseAdapter.COL_NAME));
+
+            if ("2".equals(id)){
+                final JSONObject obj = getMeteringById(goods.getString("metering_id"));
+                if (null != obj){
+                    mMeteringEt.setText(obj.getString(TreeListBaseAdapter.COL_NAME));
+                    mMeteringEt.setTag(obj.getString(TreeListBaseAdapter.COL_ID));
+                    mMeteringEt.setVisibility(View.VISIBLE);
+                }
+            }
+        }
+        setCurPriceFlag(goods.getIntValue("current_goods") == 1);
+
+        mBarcodeEt.setText(goods.getString("barcode"));
+        mNameEt.setText(goods.getString("goods_title"));
+
+        mSupplierTv.setTag(goods.getString("gs_id"));
+        mSupplierTv.setText(goods.getString("gs_name"));
+
+        mItemIdEt.setText(goods.getString("only_coding"));
+
+        mCategoryTv.setTag(goods.getString("category_id"));
+        mCategoryTv.setText(goods.getString("category_name"));
+
+        mBrandTv.setTag(goods.getString("brand_id"));
+        mBrandTv.setText(goods.getString("brand"));
+
+        mUnitTv.setTag(goods.getString("unit_id"));
+        mUnitTv.setText(goods.getString("unit_name"));
+
+        place_et.setText(goods.getString("origin"));
+
+        mPurPriceEt.setText(goods.getString("buying_price"));
+        pf_price_et.setText(goods.getString("trade_price"));
+        mRetailPriceEt.setText(goods.getString("retail_price"));
+        mVipPriceEt.setText(goods.getString("yh_price"));
     }
 
     public static void start(Context context,final String barcode_id){

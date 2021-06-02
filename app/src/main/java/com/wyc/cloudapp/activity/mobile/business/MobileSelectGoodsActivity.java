@@ -25,6 +25,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.constants.WholesalePriceType;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -76,16 +77,6 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
     @Override
     protected void add() {
         MobileEditGoodInfoActivity.start(this,null);
-/*        if (AddGoodsInfoDialog.verifyGoodsAddPermissions(this)){
-            final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(this);
-            final JSONObject category = mGoodsCategoryAdapter.CategoryObj;
-            addGoodsInfoDialog.setCurrentCategory(category);
-            addGoodsInfoDialog.setFinishListener(barcode -> {
-                addGoodsInfoDialog.dismiss();
-                loadGoods(category.getString("item_id"));
-            });
-            addGoodsInfoDialog.show();
-        }*/
     }
 
     @Override
@@ -216,8 +207,8 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
                 }
                 final String id = category_id.getText().toString(),name = name_tv.getText().toString();
 
-                CategoryObj.put("item_id",id);
-                CategoryObj.put("item_name",name);
+                CategoryObj.put(TreeListBaseAdapter.COL_ID,id);
+                CategoryObj.put(TreeListBaseAdapter.COL_NAME,name);
 
                 mContext.loadGoods(id);
             }
@@ -395,8 +386,8 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
                     if (!myViewHolder.modify.hasOnClickListeners()){
                         myViewHolder.modify.setVisibility(View.VISIBLE);
                         myViewHolder.modify.setOnClickListener(this);
-                        myViewHolder.modify.setTag(goods_info.getString("barcode_id"));
                     }
+                    myViewHolder.modify.setTag(goods_info.getString("barcode_id"));
                 }else {
                     myViewHolder.modify.setVisibility(View.GONE);
                 }

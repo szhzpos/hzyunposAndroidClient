@@ -107,7 +107,7 @@ public class BuyFullGiveXSelectDialog extends AbstractDialogSaleActivity {
                 object.put("level",0);
                 object.put("unfold",false);
                 object.put("isSel",mGiveWay == 0);
-                object.put("item_id",id);
+                object.put(TreeListBaseAdapter.COL_ID,id);
                 object.put("content",tmp);
                 data.add(object);
             }
@@ -163,8 +163,8 @@ public class BuyFullGiveXSelectDialog extends AbstractDialogSaleActivity {
                 object.put("level",0);
                 object.put("unfold",false);
                 object.put("isSel",false);
-                object.put("item_id",id);
-                object.put("item_name",name);
+                object.put(TreeListBaseAdapter.COL_ID,id);
+                object.put(TreeListBaseAdapter.COL_NAME,name);
                 data.add(object);
             }
         }

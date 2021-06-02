@@ -22,6 +22,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
+import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.TreeListDialog;
@@ -253,8 +254,8 @@ public abstract class AbstractMobileQueryDialog extends AbstractDialogMainActivi
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
-                    switch_condition.setTag(object.getIntValue("item_id"));
-                    switch_condition.setText(object.getString("item_name"));
+                    switch_condition.setTag(object.getIntValue(TreeListBaseAdapter.COL_ID));
+                    switch_condition.setText(object.getString(TreeListBaseAdapter.COL_NAME));
                 }
             });
         });
@@ -263,8 +264,8 @@ public abstract class AbstractMobileQueryDialog extends AbstractDialogMainActivi
         final JSONArray array = getConditionSwitchContent();
         if (!array.isEmpty()){
             final JSONObject object = array.getJSONObject(0);
-            view.setTag(object.getIntValue("item_id"));
-            view.setText(object.getString("item_name"));
+            view.setTag(object.getIntValue(TreeListBaseAdapter.COL_ID));
+            view.setText(object.getString(TreeListBaseAdapter.COL_NAME));
         }
         return array;
     }

@@ -14,6 +14,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
@@ -82,8 +83,8 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
-                    unit_et.setText(object.getString("item_name"));
-                    unit_et.setTag(object.getString("item_id"));
+                    unit_et.setText(object.getString(TreeListBaseAdapter.COL_NAME));
+                    unit_et.setTag(object.getString(TreeListBaseAdapter.COL_ID));
                 }
             });
         });
@@ -104,8 +105,8 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
-                    category_et.setText(object.getString("item_name"));
-                    category_et.setTag(object.getString("item_id"));
+                    category_et.setText(object.getString(TreeListBaseAdapter.COL_NAME));
+                    category_et.setTag(object.getString(TreeListBaseAdapter.COL_ID));
                     getOnlycodeAndBarcode();
                 }
             });
@@ -118,8 +119,8 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
             category_et.setText("不定类");
             category_et.setTag("7223");
         }else{
-            category_et.setText(mCurrentCategory.getString("item_name"));
-            category_et.setTag(mCurrentCategory.getString("item_id"));
+            category_et.setText(mCurrentCategory.getString(TreeListBaseAdapter.COL_NAME));
+            category_et.setTag(mCurrentCategory.getString(TreeListBaseAdapter.COL_ID));
         }
 
         mCategoryEt = category_et;
@@ -138,8 +139,8 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
-                    supplier_et.setText(object.getString("item_name"));
-                    supplier_et.setTag(object.getIntValue("item_id"));
+                    supplier_et.setText(object.getString(TreeListBaseAdapter.COL_NAME));
+                    supplier_et.setTag(object.getIntValue(TreeListBaseAdapter.COL_ID));
                     mNameEt.requestFocus();
                 }
             });
@@ -161,12 +162,12 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
             obj.put("level",0);
             obj.put("unfold",false);
             obj.put("isSel",false);
-            obj.put("item_id","1");
-            obj.put("item_name","普通商品");
+            obj.put(TreeListBaseAdapter.COL_ID,"1");
+            obj.put(TreeListBaseAdapter.COL_NAME,"普通商品");
             array.add(Utils.JsondeepCopy(obj));
             obj.put("isSel",false);
-            obj.put("item_id","2");
-            obj.put("item_name","称重商品");
+            obj.put(TreeListBaseAdapter.COL_ID,"2");
+            obj.put(TreeListBaseAdapter.COL_NAME,"称重商品");
             array.add(obj);
 
             treeListDialog.setDatas(array,null,true);
@@ -174,8 +175,8 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
-                    final String id = object.getString("item_id");
-                    goods_attr_et.setText(object.getString("item_name"));
+                    final String id = object.getString(TreeListBaseAdapter.COL_ID);
+                    goods_attr_et.setText(object.getString(TreeListBaseAdapter.COL_NAME));
                     goods_attr_et.setTag(id);
                     if ("2".equals(id)){
                         metering_et.setText("计重");
@@ -207,24 +208,24 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
             obj.put("level",0);
             obj.put("unfold",false);
             obj.put("isSel",true);
-            obj.put("item_id","0");
-            obj.put("item_name","计重");
+            obj.put(TreeListBaseAdapter.COL_ID,"0");
+            obj.put(TreeListBaseAdapter.COL_NAME,"计重");
             array.add(Utils.JsondeepCopy(obj));
             obj.put("isSel",false);
-            obj.put("item_id","1");
-            obj.put("item_name","计件");
+            obj.put(TreeListBaseAdapter.COL_ID,"1");
+            obj.put(TreeListBaseAdapter.COL_NAME,"计件");
             array.add(Utils.JsondeepCopy(obj));
             obj.put("isSel",false);
-            obj.put("item_id","2");
-            obj.put("item_name","定重");
+            obj.put(TreeListBaseAdapter.COL_ID,"2");
+            obj.put(TreeListBaseAdapter.COL_NAME,"定重");
             array.add(obj);
 
             treeListDialog.setDatas(array,null,true);
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
-                    metering_et.setText(object.getString("item_name"));
-                    metering_et.setTag(object.getString("item_id"));
+                    metering_et.setText(object.getString(TreeListBaseAdapter.COL_NAME));
+                    metering_et.setTag(object.getString(TreeListBaseAdapter.COL_ID));
                     mBarcodeEt.requestFocus();
                 }
             });
@@ -330,8 +331,8 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
             item.put("level",level);
             item.put("unfold",false);
             item.put("isSel",false);
-            item.put("item_id",category_json.getString("category_id"));
-            item.put("item_name",category_json.getString("name"));
+            item.put(TreeListBaseAdapter.COL_ID,category_json.getString("category_id"));
+            item.put(TreeListBaseAdapter.COL_NAME,category_json.getString("name"));
 
             item.put("kids",new JSONArray());
 
@@ -361,8 +362,8 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
                 object.put("level",0);
                 object.put("unfold",false);
                 object.put("isSel",false);
-                object.put("item_id",Utils.getNullStringAsEmpty(tmp,"unit_id"));
-                object.put("item_name",Utils.getNullStringAsEmpty(tmp,"unit_name"));
+                object.put(TreeListBaseAdapter.COL_ID,Utils.getNullStringAsEmpty(tmp,"unit_id"));
+                object.put(TreeListBaseAdapter.COL_NAME,Utils.getNullStringAsEmpty(tmp,"unit_name"));
                 array.add(object);
             }
         }
@@ -450,8 +451,8 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
                 object.put("level",0);
                 object.put("unfold",false);
                 object.put("isSel",false);
-                object.put("item_id",id);
-                object.put("item_name",Utils.getNullStringAsEmpty(tmp,"gs_name"));
+                object.put(TreeListBaseAdapter.COL_ID,id);
+                object.put(TreeListBaseAdapter.COL_NAME,Utils.getNullStringAsEmpty(tmp,"gs_name"));
                 array.add(object);
 
                 //

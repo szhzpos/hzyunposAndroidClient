@@ -438,7 +438,7 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
     }
 
     private boolean setSelectedItem(final TreeListItem item, final JSONObject object, int first_index){
-        if (Utils.getNullStringAsEmpty(object,"item_id").equals(item.getItem_id())){
+        if (Utils.getNullStringAsEmpty(object,TreeListBaseAdapter.COL_ID).equals(item.getItem_id())){
             item.setSel(true);
             unfoldParentItem(item,first_index);
             return true;

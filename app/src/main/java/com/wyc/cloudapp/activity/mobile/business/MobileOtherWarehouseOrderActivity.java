@@ -8,6 +8,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
+import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDataAdapter;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
 import com.wyc.cloudapp.adapter.business.MobileOtherWarehouseOrderAdapter;
@@ -57,8 +58,8 @@ public final class MobileOtherWarehouseOrderActivity extends AbstractMobileBusin
                 treeListDialog.setDatas(getOutInTypes(),null,true);
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
-                    out_in_type_tv.setText(object.getString("item_name"));
-                    out_in_type_tv.setTag(object.getString("item_id"));
+                    out_in_type_tv.setText(object.getString(TreeListBaseAdapter.COL_NAME));
+                    out_in_type_tv.setTag(object.getString(TreeListBaseAdapter.COL_ID));
                 }
             }));
             mOutInTypeTv = out_in_type_tv;
@@ -94,8 +95,8 @@ public final class MobileOtherWarehouseOrderActivity extends AbstractMobileBusin
             final String bgd_type = Utils.getNullStringAsEmpty(mOrderInfo,"bgd_type");
             for (int i = 0,size = array.size();i < size;i ++){
                 final JSONObject object = array.getJSONObject(i);
-                if (bgd_type.equals(object.getString("item_id"))){
-                    setView(mOutInTypeTv,bgd_type,object.getString("item_name"));
+                if (bgd_type.equals(object.getString(TreeListBaseAdapter.COL_ID))){
+                    setView(mOutInTypeTv,bgd_type,object.getString(TreeListBaseAdapter.COL_NAME));
                     return;
                 }
             }

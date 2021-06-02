@@ -50,7 +50,7 @@ public class BuyFullGiveXRuleAdapter extends TreeListBaseAdapter<BuyFullGiveXRul
 
     @Override
     void bindContent(@NonNull MyViewHolder holder, JSONObject object) {
-        holder.textView.setText(object.getString("item_name"));
+        holder.textView.setText(object.getString(TreeListBaseAdapter.COL_NAME));
     }
 
     @Override

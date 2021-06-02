@@ -8,6 +8,7 @@ import android.widget.TextView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.TreeListDialog;
@@ -68,8 +69,8 @@ public abstract class MobileWholesaleBaseActivity extends AbstractMobileQuerySou
                 treeListDialog.setDatas(getSettlementTypes(),null,true);
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
-                    mSettlementWayTv.setText(object.getString("item_name"));
-                    mSettlementWayTv.setTag(object.getString("item_id"));
+                    mSettlementWayTv.setText(object.getString(TreeListBaseAdapter.COL_NAME));
+                    mSettlementWayTv.setTag(object.getString(TreeListBaseAdapter.COL_ID));
                 }
             }));
             if (!isShowOrder())setSettlementType();//设置默认方式
@@ -85,8 +86,8 @@ public abstract class MobileWholesaleBaseActivity extends AbstractMobileQuerySou
         final String settlement_type = Utils.getNullOrEmptyStringAsDefault(mOrderInfo,"settlement_mode","2");
         for (int i = 0,size = array.size();i < size;i ++){
             final JSONObject object = array.getJSONObject(i);
-            if (settlement_type.equals(object.getString("item_id"))){
-                setView(mSettlementWayTv,settlement_type,object.getString("item_name"));
+            if (settlement_type.equals(object.getString(TreeListBaseAdapter.COL_ID))){
+                setView(mSettlementWayTv,settlement_type,object.getString(TreeListBaseAdapter.COL_NAME));
                 return;
             }
         }
@@ -111,8 +112,8 @@ public abstract class MobileWholesaleBaseActivity extends AbstractMobileQuerySou
             treeListDialog.setDatas(mCustomerList,null,true);
             if (treeListDialog.exec() == 1){
                 final JSONObject object = treeListDialog.getSingleContent();
-                mBusinessCustomerTv.setText(object.getString("item_name"));
-                mBusinessCustomerTv.setTag(object.getString("item_id"));
+                mBusinessCustomerTv.setText(object.getString(TreeListBaseAdapter.COL_NAME));
+                mBusinessCustomerTv.setTag(object.getString(TreeListBaseAdapter.COL_ID));
                 mPriceType = object.getIntValue("price_type");
             }
         }));
@@ -156,8 +157,8 @@ public abstract class MobileWholesaleBaseActivity extends AbstractMobileQuerySou
                 object.put("level",0);
                 object.put("unfold",false);
                 object.put("isSel",false);
-                object.put("item_id",id);
-                object.put("item_name",name);
+                object.put(TreeListBaseAdapter.COL_ID,id);
+                object.put(TreeListBaseAdapter.COL_NAME,name);
                 object.put("price_type",cs_kf_price);
                 array.add(object);
 

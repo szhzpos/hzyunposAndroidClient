@@ -36,6 +36,8 @@ import com.wyc.cloudapp.utils.Utils;
 
 
 public abstract class TreeListBaseAdapter<T extends TreeListBaseAdapter.MyViewHolder> extends RecyclerView.Adapter<T> {
+    public static final String COL_ID = "item_id",COL_NAME = "item_name";
+
     private JSONArray mDatas;
     private final Context mContext;
     private boolean mSingleSel = true;
@@ -148,7 +150,7 @@ public abstract class TreeListBaseAdapter<T extends TreeListBaseAdapter.MyViewHo
             }else{
                 if (is_sel)setViewBackgroundColor(mCurrentItemView = holder.itemView,true);
             }
-            holder.item_id.setText(item.getString("item_id"));
+            holder.item_id.setText(item.getString(COL_ID));
 
 
             holder.itemView.setPadding( 25 * item.getIntValue("level"),0,0,0);
@@ -372,7 +374,7 @@ public abstract class TreeListBaseAdapter<T extends TreeListBaseAdapter.MyViewHo
     }
 
     private boolean setSelectedItem(final JSONObject item,final JSONObject object,int first_index){
-        if (Utils.getNullStringAsEmpty(object,"item_id").equals(item.getString("item_id"))){
+        if (Utils.getNullStringAsEmpty(object,COL_ID).equals(item.getString(COL_ID))){
             item.put("isSel",true);
             unfoldParentItem(item,first_index);
             return true;
@@ -436,7 +438,7 @@ public abstract class TreeListBaseAdapter<T extends TreeListBaseAdapter.MyViewHo
             JSONObject ch_item;
             for (int i = 0,size = mDatas.size();i < size;i++){
                 ch_item = mDatas.getJSONObject(i);
-                if (Utils.getNullStringAsEmpty(ch_item,"item_id").equals(item.getString("item_id"))){
+                if (Utils.getNullStringAsEmpty(ch_item,COL_ID).equals(item.getString(COL_ID))){
                     return i;
                 }
             }

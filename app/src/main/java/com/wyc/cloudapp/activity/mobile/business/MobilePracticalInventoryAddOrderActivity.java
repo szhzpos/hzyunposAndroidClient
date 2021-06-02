@@ -21,6 +21,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
+import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
 import com.wyc.cloudapp.adapter.business.MobileInventoryOrderDetailsAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -132,7 +133,7 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractMobileActi
             treeListDialog.setDatas(array,null,true);
             if (treeListDialog.exec() == 1){
                 final JSONObject object = treeListDialog.getSingleContent();
-                setSaleOperator(object.getString("item_id"),object.getString("item_name"));
+                setSaleOperator(object.getString(TreeListBaseAdapter.COL_ID),object.getString(TreeListBaseAdapter.COL_NAME));
             }
         }));
 
@@ -152,8 +153,8 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractMobileActi
                 object.put("level",0);
                 object.put("unfold",false);
                 object.put("isSel",false);
-                object.put("item_id",id);
-                object.put("item_name",name);
+                object.put(TreeListBaseAdapter.COL_ID,id);
+                object.put(TreeListBaseAdapter.COL_NAME,name);
                 data.add(object);
 
                 if (i == 0){
@@ -465,8 +466,8 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractMobileActi
         final JSONArray array = getInventoryWay();
         for (int i = 0,size = array.size();i < size;i ++){
             final JSONObject object = array.getJSONObject(i);
-            if (object.getString("item_id").equals(id)){
-                return object.getString("item_name");
+            if (object.getString(TreeListBaseAdapter.COL_ID).equals(id)){
+                return object.getString(TreeListBaseAdapter.COL_NAME);
             }
         }
         return CustomApplication.self().getString(R.string.other_sz);
