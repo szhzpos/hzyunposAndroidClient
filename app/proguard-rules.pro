@@ -185,3 +185,5 @@
 -keepclasseswithmembernames class * {
     @butterknife.* <methods>;
 }
+
+-dontwarn java.util.concurrent.Flow*

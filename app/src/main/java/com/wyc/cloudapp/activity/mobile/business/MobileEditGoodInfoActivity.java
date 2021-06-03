@@ -29,10 +29,15 @@ import com.wyc.cloudapp.dialog.TreeListDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
+import com.wyc.cloudapp.utils.http.HttpUtils;
 
 import java.util.Locale;
 
 import butterknife.BindView;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableOnSubscribe;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 import static com.wyc.cloudapp.constants.ScanCallbackCode.CODE_REQUEST_CODE;
 
@@ -89,28 +94,21 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     }
 
     private void getSupplier(){
-        CustomApplication.execute(()->{
-            final HttpRequest httpRequest = new HttpRequest();
+       Observable.create((ObservableOnSubscribe<JSONArray>) emitter -> {
             final JSONObject object = new JSONObject();
             object.put("appid",getAppId());
             object.put("stores_id",getStoreId());
-            final String sz_param = HttpRequest.generate_request_parm(object,getAppSecret());
-            final JSONObject retJson = httpRequest.sendPost(getUrl() + "/api/supplier_search/xlist",sz_param,true);
-            switch (retJson.getIntValue("flag")){
-                case 0:
-                    runOnUiThread(()-> MyDialog.ToastMessage("查询供应商信息错误:" + retJson.getString("info"),this,getWindow()));
-                    break;
-                case 1:
-                    final JSONObject info_obj = JSONObject.parseObject(retJson.getString("info"));
-                    if ("n".equals(Utils.getNullOrEmptyStringAsDefault(info_obj,"status","n"))){
-                        runOnUiThread(()-> MyDialog.ToastMessage("查询供应商信息错误:" + info_obj.getString("info"),this,getWindow()));
-                    }else{
-                        mSupplierList = info_obj.getJSONArray("data");
-                        runOnUiThread(this::setDefaultSupplier);
-                    }
-                    break;
+            final JSONObject retJson = HttpUtils.sendPost(getUrl() + "/api/supplier_search/xlist",HttpRequest.generate_request_parm(object,getAppSecret()),true);
+            if (HttpUtils.checkRequestSuccess(retJson)){
+                final JSONObject info_obj = JSONObject.parseObject(retJson.getString("info"));
+                if (HttpUtils.checkBusinessSuccess(info_obj)){
+                    emitter.onNext(info_obj.getJSONArray("data"));
+                }else emitter.onError(new Exception(info_obj.getString("info")));
             }
-        });
+        }).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe(array -> {
+            mSupplierList = array;
+            setDefaultSupplier();
+        }, throwable -> MyDialog.ToastMessage("查询供应商信息错误:" + throwable.getMessage(),this,getWindow()));
     }
 
     private JSONArray parse_supplier_info(){
