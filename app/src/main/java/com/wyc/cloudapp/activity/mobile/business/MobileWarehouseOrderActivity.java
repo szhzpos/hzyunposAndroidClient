@@ -2,8 +2,6 @@ package com.wyc.cloudapp.activity.mobile.business;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
@@ -12,9 +10,8 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
 import com.wyc.cloudapp.adapter.business.MobileWarehouseOrderAdapter;
 import com.wyc.cloudapp.adapter.business.MobileWarehouseOrderDetailsAdapter;
-import com.wyc.cloudapp.adapter.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
@@ -22,7 +19,6 @@ import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
 
-import java.util.Locale;
 /*采购入库单*/
 public final class MobileWarehouseOrderActivity extends AbstractMobileBusinessOrderActivity{
     @Override
@@ -116,7 +112,7 @@ public final class MobileWarehouseOrderActivity extends AbstractMobileBusinessOr
         }
 
         @Override
-        protected AbstractBusinessOrderDetailsDataAdapter<? extends AbstractDataAdapter.SuperViewHolder> getAdapter() {
+        protected AbstractBusinessOrderDetailsDataAdapter<? extends AbstractDataAdapterForJson.SuperViewHolder> getAdapter() {
             return new MobileWarehouseOrderDetailsAdapter(this);
         }
 

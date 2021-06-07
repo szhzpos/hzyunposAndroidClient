@@ -18,7 +18,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class PromotionRule implements Comparable<PromotionRule> , Serializable {
+public final class PromotionRule implements Comparable<PromotionRule> , Serializable {
     private int tlp_id,promotion_type;
     private double price,upper_limit_num,lower_limit_num;
     private String type_detail_id;

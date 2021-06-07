@@ -53,8 +53,8 @@ public class VipDepositOrderAdapter extends AbstractChargeOrderAdapter<VipDeposi
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        if (null != mDatas) {
-            final JSONObject order_info = mDatas.getJSONObject(position);
+        if (null != mData) {
+            final JSONObject order_info = mData.getJSONObject(position);
             if (order_info != null) {
                 holder.row_id.setText(String.valueOf(position + 1));
                 holder.order_code.setText(order_info.getString("order_code"));
@@ -87,7 +87,7 @@ public class VipDepositOrderAdapter extends AbstractChargeOrderAdapter<VipDeposi
 
     @Override
     public int getItemCount() {
-        return mDatas == null ? 0: mDatas.size();
+        return mData == null ? 0: mData.size();
     }
 
     private final View.OnTouchListener touchListener = (v, event) -> {

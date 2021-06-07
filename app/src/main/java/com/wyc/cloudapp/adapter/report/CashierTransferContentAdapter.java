@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.adapter.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -28,7 +28,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class CashierTransferContentAdapter extends AbstractDataAdapter<CashierTransferContentAdapter.MyViewHolder> {
+public class CashierTransferContentAdapter extends AbstractDataAdapterForJson<CashierTransferContentAdapter.MyViewHolder> {
     final MainActivity mContext;
     static class MyViewHolder extends AbstractTableDataAdapter.SuperViewHolder {
         TextView sum_money,sj_money,order_money,order_num,refund_money,refund_num,recharge_money,recharge_num,oncecard_money,oncecard_num;
@@ -64,8 +64,8 @@ public class CashierTransferContentAdapter extends AbstractDataAdapter<CashierTr
 
     @Override
     public void onBindViewHolder( @NonNull final  MyViewHolder holder, int position) {
-        if (mDatas != null) {
-            final JSONObject object = mDatas.getJSONObject(position);
+        if (mData != null) {
+            final JSONObject object = mData.getJSONObject(position);
 
             holder.sum_money.setText(String.format(Locale.CHINA, "%.2f%s", object.getDoubleValue("sum_money"), "元"));
             holder.sj_money.setText(String.format(Locale.CHINA, "%.2f%s", object.getDoubleValue("sj_money"), "元"));
@@ -87,6 +87,6 @@ public class CashierTransferContentAdapter extends AbstractDataAdapter<CashierTr
 
     @Override
     public int getItemCount() {
-        return mDatas == null ? 0 : mDatas.size();
+        return mData == null ? 0 : mData.size();
     }
 }

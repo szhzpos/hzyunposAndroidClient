@@ -11,7 +11,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.adapter.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -29,7 +29,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class TransferDetailsAdapter extends AbstractDataAdapter<TransferDetailsAdapter.MyViewHolder> {
+public class TransferDetailsAdapter extends AbstractDataAdapterForJson<TransferDetailsAdapter.MyViewHolder> {
     private final MainActivity mContext;
     static class MyViewHolder extends AbstractTableDataAdapter.SuperViewHolder {
         TextView pay_name_tv,pay_money_tv,order_num_tv;
@@ -43,7 +43,7 @@ public class TransferDetailsAdapter extends AbstractDataAdapter<TransferDetailsA
 
     public TransferDetailsAdapter(final MainActivity context,final JSONArray array) {
          mContext = context;
-         mDatas = array;
+         mData = array;
     }
 
     @Override
@@ -58,8 +58,8 @@ public class TransferDetailsAdapter extends AbstractDataAdapter<TransferDetailsA
 
     @Override
     public void onBindViewHolder( @NonNull final  MyViewHolder holder, int position) {
-        if (mDatas != null && !mDatas.isEmpty()) {
-            final JSONObject object = mDatas.getJSONObject(position);
+        if (mData != null && !mData.isEmpty()) {
+            final JSONObject object = mData.getJSONObject(position);
             holder.pay_name_tv.setText(object.getString("pay_name"));
             holder.pay_money_tv.setText(String.format(Locale.CHINA, "%.2f", object.getDoubleValue("pay_money")));
             holder.order_num_tv.setText(object.getString("order_num"));
@@ -69,6 +69,6 @@ public class TransferDetailsAdapter extends AbstractDataAdapter<TransferDetailsA
 
     @Override
     public int getItemCount() {
-        return mDatas == null ? 0 : mDatas.size();
+        return mData == null ? 0 : mData.size();
     }
 }

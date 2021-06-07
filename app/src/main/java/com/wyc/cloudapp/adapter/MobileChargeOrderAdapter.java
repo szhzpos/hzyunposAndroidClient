@@ -52,8 +52,8 @@ public final class MobileChargeOrderAdapter extends AbstractChargeOrderAdapter<M
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        if (null != mDatas) {
-            final JSONObject order_info = mDatas.getJSONObject(position);
+        if (null != mData) {
+            final JSONObject order_info = mData.getJSONObject(position);
             if (order_info != null) {
                 holder.order_code.setText(order_info.getString("order_code"));
                 holder.order_amt.setText(String.format(Locale.CHINA, "%.2f", order_info.getDoubleValue("order_amt")));
@@ -93,7 +93,7 @@ public final class MobileChargeOrderAdapter extends AbstractChargeOrderAdapter<M
 
     @Override
     public int getItemCount() {
-        return mDatas == null ? 0: mDatas.size();
+        return mData == null ? 0: mData.size();
     }
 
     @Override

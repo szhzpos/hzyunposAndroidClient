@@ -60,8 +60,8 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        if (null != mDatas) {
-            final JSONObject order_info = mDatas.getJSONObject(position);
+        if (null != mData) {
+            final JSONObject order_info = mData.getJSONObject(position);
             if (order_info != null) {
                 holder.row_id.setText(String.valueOf(position + 1));
                 holder.order_code.setText(order_info.getString("order_code"));
@@ -101,7 +101,7 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
 
     @Override
     public int getItemCount() {
-        return mDatas == null ? 0: mDatas.size();
+        return mData == null ? 0: mData.size();
     }
 
     private final View.OnTouchListener touchListener = (v, event) -> {
@@ -141,8 +141,8 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
         final String sql = getQuery() + where_sql;
 
         Logger.d("sql:%s",sql);
-        mDatas = SQLiteHelper.getListToJson(sql,err);
-        if (mDatas != null){
+        mData = SQLiteHelper.getListToJson(sql,err);
+        if (mData != null){
             notifyDataSetChanged();
         }else
             MyDialog.ToastMessage("加载销售单据错误：" + err,mContext,null);

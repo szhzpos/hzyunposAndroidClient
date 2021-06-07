@@ -9,8 +9,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.activity.mobile.business.AbstractMobileBusinessOrderActivity;
 import com.wyc.cloudapp.activity.mobile.business.MobilePracticalInventoryOrderActivity;
-import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
-import com.wyc.cloudapp.adapter.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.utils.Utils;
 
 /**
@@ -25,7 +24,7 @@ import com.wyc.cloudapp.utils.Utils;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public abstract class AbstractBusinessOrderDataAdapter<T extends AbstractDataAdapter.SuperViewHolder > extends AbstractDataAdapter<T> implements View.OnClickListener {
+public abstract class AbstractBusinessOrderDataAdapter<T extends AbstractDataAdapterForJson.SuperViewHolder > extends AbstractDataAdapterForJson<T> implements View.OnClickListener {
     final MainActivity mContext;
     public AbstractBusinessOrderDataAdapter(MainActivity activity) {
         mContext = activity;

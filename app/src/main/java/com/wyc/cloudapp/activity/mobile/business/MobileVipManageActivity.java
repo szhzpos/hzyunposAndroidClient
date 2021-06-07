@@ -24,7 +24,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.adapter.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
@@ -162,7 +162,7 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
         return getString(R.string.vip_record_sz);
     }
 
-    private final static class VipRecordAdapter extends AbstractDataAdapter<VipRecordAdapter.MyViewHolder> implements View.OnClickListener{
+    private final static class VipRecordAdapter extends AbstractDataAdapterForJson<VipRecordAdapter.MyViewHolder> implements View.OnClickListener{
         private final MainActivity mContext;
         private int mCurrentRow;
         private int mCategoryId,mVagueType;
@@ -182,9 +182,9 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
 
         @Override
         public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-            int size = mDatas.size();
+            int size = mData.size();
             if (position < size){//由于mDatas 赋值与取值不在同一线程，有可能出现数组越界，所以得加个判断
-                final JSONObject vip = mDatas.getJSONObject(position);
+                final JSONObject vip = mData.getJSONObject(position);
                 holder.vip_name.setText(vip.getString("name"));
                 holder.card_code_tv.setText(vip.getString("card_code"));
                 holder.phone_num_tv.setText(vip.getString("mobile"));
@@ -206,7 +206,7 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
             detailInfoDialog.showAtLocation(mContext.getWindow().getDecorView(), Gravity.CENTER,0,0);
         }
 
-        static class MyViewHolder extends AbstractDataAdapter.SuperViewHolder {
+        static class MyViewHolder extends AbstractDataAdapterForJson.SuperViewHolder {
             private final TextView vip_name,card_code_tv,phone_num_tv,integral_tv,balance_tv;
             private final Button detail_btn;
             MyViewHolder(View itemView) {
@@ -288,15 +288,15 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
         private void reload(){
             mCurrentRow++;
             loadVip();
-            Logger.d("reload mCurrentRow:%d,size:%d",mCurrentRow,mDatas.size());
+            Logger.d("reload mCurrentRow:%d,size:%d",mCurrentRow, mData.size());
         }
 
         @Override
         public void setDataForArray(JSONArray array) {
             if (mVagueType >= 0 || mCurrentRow == 0){
-                mDatas = array;
+                mData = array;
             }else {
-                mDatas.addAll(array);
+                mData.addAll(array);
             }
             if (Looper.myLooper() != Looper.getMainLooper()){
                 CustomApplication.runInMainThread(this::notifyDataSetChanged);
@@ -305,7 +305,7 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
         }
     }
 
-    private final static class VipCategoryAdapter extends AbstractDataAdapter<VipCategoryAdapter.MyViewHolder> implements View.OnClickListener{
+    private final static class VipCategoryAdapter extends AbstractDataAdapterForJson<VipCategoryAdapter.MyViewHolder> implements View.OnClickListener{
         final MobileVipManageActivity mContext;
         private View mCurrentItemView;
         private VipCategoryAdapter(MobileVipManageActivity mContext) {
@@ -323,14 +323,14 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
 
         @Override
         public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-            final JSONObject object = mDatas.getJSONObject(position);
+            final JSONObject object = mData.getJSONObject(position);
 
             final String grade_id = object.getString("grade_id");
             holder.category_id.setText(grade_id);
             holder.category_name.setText(object.getString("grade_name"));
         }
 
-        static class MyViewHolder extends AbstractDataAdapter.SuperViewHolder {
+        static class MyViewHolder extends AbstractDataAdapterForJson.SuperViewHolder {
             private final TextView category_id;
             private final TextView category_name;
             MyViewHolder(View itemView) {
@@ -374,9 +374,9 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
         }
 
         private void signSelectCategory(int id){
-            if (mDatas != null){
-                for (int i = 0,size = mDatas.size();i < size;i++){
-                    final JSONObject object = mDatas.getJSONObject(i);
+            if (mData != null){
+                for (int i = 0, size = mData.size(); i < size; i++){
+                    final JSONObject object = mData.getJSONObject(i);
                     if (id == object.getIntValue("grade_id")){
                         object.put("sel",true);
                     }else {

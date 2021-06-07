@@ -16,7 +16,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.activity.mobile.report.MobileStockQueryActivity;
-import com.wyc.cloudapp.adapter.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.JEventLoop;
@@ -39,7 +39,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class MobileStockQueryAdapter extends AbstractDataAdapter<MobileStockQueryAdapter.MyViewHolder> {
+public class MobileStockQueryAdapter extends AbstractDataAdapterForJson<MobileStockQueryAdapter.MyViewHolder> {
     final MainActivity mContext;
     private int mDataSize = 0, mOffset = 0,mLimit = 50,mTotalRows = 0;
     private JSONObject mPreQueryCondition;
@@ -60,8 +60,8 @@ public class MobileStockQueryAdapter extends AbstractDataAdapter<MobileStockQuer
 
     @Override
     public void onBindViewHolder( @NonNull final  MyViewHolder holder, int position) {
-        if (mDatas != null) {
-            final JSONObject object = mDatas.getJSONObject(position);
+        if (mData != null) {
+            final JSONObject object = mData.getJSONObject(position);
             double stock_num = object.getDoubleValue("stock_num");
             if (stock_num < 0) {
                 holder.goods_name_tv.setTextColor(Color.RED);
@@ -127,13 +127,13 @@ public class MobileStockQueryAdapter extends AbstractDataAdapter<MobileStockQuer
                                 loop.done(0);
                             }
                             if (append){
-                                if (mDatas != null){
+                                if (mData != null){
                                     for (int i = 0,size = datas.size();i < size;i++){
-                                        mDatas.add(datas.getJSONObject(i));
+                                        mData.add(datas.getJSONObject(i));
                                     }
                                 }
                             }else{
-                                mDatas = datas;
+                                mData = datas;
                             }
                         }else{
                             err.append(info.getString("info"));

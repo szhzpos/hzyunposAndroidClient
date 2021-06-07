@@ -1,6 +1,5 @@
 package com.wyc.cloudapp.adapter;
 
-import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -41,8 +40,8 @@ public class PayMethodStatisticsViewAdapter extends AbstractTableDataAdapter<Pay
     @Override
     public void onBindViewHolder( @NonNull final  ViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        if (mDatas != null) {
-            final JSONObject object = mDatas.getJSONObject(position);
+        if (mData != null) {
+            final JSONObject object = mData.getJSONObject(position);
             holder.title.setText(object.getString("title"));
             holder.xx_money.setText(object.getString("xx_money"));
             holder.xx_num.setText(object.getString("xx_num"));
@@ -52,11 +51,11 @@ public class PayMethodStatisticsViewAdapter extends AbstractTableDataAdapter<Pay
 
     @Override
     public int getItemCount() {
-        return mDatas == null ? 0 : mDatas.size();
+        return mData == null ? 0 : mData.size();
     }
 
     public void setDataForArray(final JSONArray array){
-        mDatas = array;
+        mData = array;
         notifyDataSetChanged();
     }
 }

@@ -22,7 +22,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class Supplier implements Serializable, Parcelable {
+public final class Supplier implements Serializable, Parcelable {
     private String c_s_id;
     private String cs_code;
     private String cs_name;

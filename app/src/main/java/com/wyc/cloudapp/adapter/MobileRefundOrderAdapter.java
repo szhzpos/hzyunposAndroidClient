@@ -48,8 +48,8 @@ public final class MobileRefundOrderAdapter extends AbstractQueryDataAdapter<Mob
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        if (null != mDatas) {
-            final JSONObject order_info = mDatas.getJSONObject(position);
+        if (null != mData) {
+            final JSONObject order_info = mData.getJSONObject(position);
             if (order_info != null) {
                 holder.order_code.setText(order_info.getString("refund_order_code"));
                 holder.order_amt.setText(String.format(Locale.CHINA, "%.2f", order_info.getDoubleValue("refund_order_amt")));
@@ -82,7 +82,7 @@ public final class MobileRefundOrderAdapter extends AbstractQueryDataAdapter<Mob
 
     @Override
     public int getItemCount() {
-        return mDatas == null ? 0: mDatas.size();
+        return mData == null ? 0: mData.size();
     }
 
     private final View.OnTouchListener touchListener = (v, event) -> {
@@ -112,8 +112,8 @@ public final class MobileRefundOrderAdapter extends AbstractQueryDataAdapter<Mob
             final TextView order_code_tv = mCurrentItemView.findViewById(R.id.order_code);
             if (null != order_code_tv){
                 final String sz_order_code = order_code_tv.getText().toString();
-                for (int i = 0,size = mDatas.size();i < size;i ++){
-                    final JSONObject object = mDatas.getJSONObject(i);
+                for (int i = 0, size = mData.size(); i < size; i ++){
+                    final JSONObject object = mData.getJSONObject(i);
                     if (object != null && sz_order_code.equals(object.getString("refund_order_code"))){
                         return object;
                     }
@@ -135,8 +135,8 @@ public final class MobileRefundOrderAdapter extends AbstractQueryDataAdapter<Mob
                 "datetime(a.addtime, 'unixepoch', 'localtime') oper_time FROM refund_order a left join cashier_info b on a.cashier_id = b.cas_id " + where_sql +" order by a.addtime desc";
 
         Logger.d("sql:%s",sql);
-        mDatas = SQLiteHelper.getListToJson(sql,err);
-        if (mDatas != null){
+        mData = SQLiteHelper.getListToJson(sql,err);
+        if (mData != null){
             notifyDataSetChanged();
         }else
             MyDialog.ToastMessage("加载退货单据错误：" + err,mContext,null);

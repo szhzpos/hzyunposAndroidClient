@@ -22,7 +22,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class TreeListItem implements Cloneable,Serializable {
+public final class TreeListItem implements Cloneable,Serializable {
         /*    Item{
             p_ref,level,unfold,isSel,item_id,item_name,kids; <p_ref , kids>存在上下级时必须存在
         }*/

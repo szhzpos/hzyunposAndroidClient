@@ -25,7 +25,7 @@ public final class GoodsManageViewAdapter extends AbstractTableDataAdapter<Goods
     private final int mPerPageRows = 50;
     public GoodsManageViewAdapter(SaleActivity context){
         super(context);
-        mDatas = new JSONArray();
+        mData = new JSONArray();
     }
     static class MyViewHolder extends AbstractTableDataAdapter.SuperViewHolder {
         TextView _row_id_tv,_item_id_tv,_barcode_tv,_name_tv,_mnemonic_code_tv,_unit_name_tv,_specification_tv,_origin_tv,
@@ -60,7 +60,7 @@ public final class GoodsManageViewAdapter extends AbstractTableDataAdapter<Goods
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         super.onBindViewHolder(holder,position);
 
-        final JSONObject goods_info = mDatas.getJSONObject(position);
+        final JSONObject goods_info = mData.getJSONObject(position);
         if (goods_info != null){
             holder._row_id_tv.setText(String.valueOf(position+1));
             holder._item_id_tv.setText(goods_info.getString("item_no"));
@@ -112,12 +112,12 @@ public final class GoodsManageViewAdapter extends AbstractTableDataAdapter<Goods
             mWhereCondition = where_condition;
             mCurrentPage = page;
             if (page == 0) {
-                mDatas = array;
+                mData = array;
                 mAllRowsForQueryCondition = Integer.parseInt(counts);
                 mDataSize = array.size();
             }else{
                 mDataSize += array.size();
-                mDatas.addAll(array);
+                mData.addAll(array);
             }
             notifyDataSetChanged();
         }else{

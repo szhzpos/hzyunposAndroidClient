@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.adapter.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.utils.Utils;
 import java.util.Locale;
@@ -25,7 +25,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public final class MobileCategoryContentAdapter extends AbstractDataAdapter<MobileCategoryContentAdapter.MyViewHolder> {
+public final class MobileCategoryContentAdapter extends AbstractDataAdapterForJson<MobileCategoryContentAdapter.MyViewHolder> {
     final MainActivity mContext;
     public MobileCategoryContentAdapter(final MainActivity activity){
         mContext = activity;
@@ -42,8 +42,8 @@ public final class MobileCategoryContentAdapter extends AbstractDataAdapter<Mobi
 
     @Override
     public void onBindViewHolder( @NonNull final  MyViewHolder holder, int position) {
-        if (mDatas != null) {
-            final JSONObject object = mDatas.getJSONObject(position);
+        if (mData != null) {
+            final JSONObject object = mData.getJSONObject(position);
             holder.sale_num_tv.setText(String.format(Locale.CHINA, "%.2f", object.getDoubleValue("sum_xnum")));
             holder.sale_amt_tv.setText(String.format(Locale.CHINA, "%.2f", object.getDoubleValue("sales_money")));
             holder.profit_tv.setText(String.format(Locale.CHINA, "%.2f", object.getDoubleValue("real_profit")));

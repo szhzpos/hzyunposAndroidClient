@@ -33,7 +33,7 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/business_goods_type_list"
-            android:layout_width="@dimen/size_95"
+            android:layout_width="@dimen/width_108"
             android:layout_height="match_parent"
             android:layout_marginEnd="@dimen/margin_1"
             android:background="@drawable/right_bule_separator"

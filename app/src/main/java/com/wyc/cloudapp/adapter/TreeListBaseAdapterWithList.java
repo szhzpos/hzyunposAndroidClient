@@ -39,8 +39,7 @@ import java.util.List;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterWithList.MyViewHolder> extends RecyclerView.Adapter<T>  {
-    private List<TreeListItem> mDatas;
+public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterWithList.MyViewHolder> extends AbstractDataAdapterForList<TreeListItem,T> {
     protected final Context mContext;
     private boolean mSingleSel = true;
     private final Drawable mUnfoldDb,mFoldDb;
@@ -53,7 +52,7 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
         this.mContext = context;
         mUnfoldDb = context.getDrawable(R.drawable.unfold);
         mFoldDb = context.getDrawable(R.drawable.fold);
-        mDatas = new ArrayList<>();
+        setDataForList(new ArrayList<>());
     }
 
     public TreeListBaseAdapterWithList(Context context,boolean single){
@@ -61,7 +60,7 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
         mSingleSel = single;
     }
 
-    static abstract class MyViewHolder extends RecyclerView.ViewHolder {
+    static abstract class MyViewHolder extends AbstractDataAdapter.SuperViewHolder {
         ImageView icon;
         CheckBox mul_cb;
         RadioButton single_rb;
@@ -100,15 +99,15 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
     @Override
     public final void onBindViewHolder(@NonNull T holder, int position) {
         final int old_pos = position;
-        final TreeListItem item = mDatas.get(position);
+        final TreeListItem item = mData.get(position);
         holder.row_id.setText(String.valueOf(position));
 
         boolean is_unfold = item.isUnfold();
         boolean is_sel = item.isSel();
 
         final ImageView ico = holder.icon;
-        if ( (position += 1) == mDatas.size())position -= 1;
-        if (is_unfold || mDatas.get(position).getP_ref() == item || !item.getKids().isEmpty()){
+        if ( (position += 1) == mData.size())position -= 1;
+        if (is_unfold || mData.get(position).getP_ref() == item || !item.getKids().isEmpty()){
             if (ico.getVisibility() == View.INVISIBLE)ico.setVisibility(View.VISIBLE);
             ico.setOnClickListener(unfoldIcoListener);
             if (is_unfold){
@@ -167,7 +166,7 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
 
     @Override
     public int getItemCount() {
-        return mDatas.size();
+        return mData.size();
     }
     @Override
     public void onViewRecycled (@NonNull MyViewHolder holder){
@@ -175,7 +174,7 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
     }
 
     public void setData(final JSONArray datas, final JSONArray items){
-        if (datas != null)mDatas = JSON.parseObject(datas.toString(),new TypeReference<List<TreeListItem>>(TreeListItem.class) {}.getType());
+        if (datas != null)mData = JSON.parseObject(datas.toString(),new TypeReference<List<TreeListItem>>(TreeListItem.class) {}.getType());
 
         setSelectedItem(items);
 
@@ -192,7 +191,7 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
         final TextView row_id_tv = v.findViewById(R.id.row_id);
         if (row_id_tv != null){
             int row_id = Integer.parseInt(row_id_tv.getText().toString());
-            if (row_id >= 0 && row_id < mDatas.size()){
+            if (row_id >= 0 && row_id < mData.size()){
                 final TreeListItem object = TreeListItem.getViewTagValue(v);
                 if (mSingleSel){
                     clearSelected();
@@ -205,8 +204,8 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
     };
 
     private void clearSelected(){
-        if (mDatas != null){
-            for (Object o :mDatas){
+        if (mData != null){
+            for (Object o :mData){
                 final JSONObject object = (JSONObject)o;
                 if (object.getBooleanValue("isSel"))object.put("isSel",false);
             }
@@ -216,8 +215,8 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
         if (null != object){
             object.setSel(isChecked);
             TreeListItem child;
-            for (int j = index,size = mDatas.size();0 <= j && j < size;j++){
-                child = mDatas.get(j);
+            for (int j = index,size = mData.size();0 <= j && j < size;j++){
+                child = mData.get(j);
                 if (child.getP_ref() == object){
                     if (child.isUnfold()){
                         selectItem(child,j += 1,isChecked);
@@ -234,8 +233,8 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
         final View parent = (View) view.getParent();
         final TextView row_id_tv = parent.findViewById(R.id.row_id);
         int row_id = Integer.parseInt(row_id_tv.getText().toString());
-        if (row_id >= 0 && row_id < mDatas.size()){
-            final TreeListItem object = mDatas.get(row_id);
+        if (row_id >= 0 && row_id < mData.size()){
+            final TreeListItem object = mData.get(row_id);
             boolean unfold = object.isUnfold(),is_sel = object.isSel();
             object.setUnfold(!unfold);
             if (!unfold){
@@ -246,7 +245,7 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
                 for (int i = 0,size = kids.size();i < size;i++){
                     item = kids.get(i);
                     if (!single && !item.isSel())item.setSel(is_sel);
-                    mDatas.add(row_id + i + 1,item);
+                    mData.add(row_id + i + 1,item);
                 }
             }else {
                 foldChildren(object,row_id + 1);
@@ -258,14 +257,14 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
         if (parent != null){
             final List<TreeListItem> kids = new ArrayList<>();
             TreeListItem child;
-            for (int j = index;0 <= j && j < mDatas.size();j++){
-                child = mDatas.get(index);
+            for (int j = index;0 <= j && j < mData.size();j++){
+                child = mData.get(index);
                 if (child.getP_ref() == parent){
                     if (child.isUnfold()){
                         child.setUnfold(false);
                         foldChildren(child,index + 1);
                     }
-                    kids.add(mDatas.remove(index));
+                    kids.add(mData.remove(index));
                     j--;
                 }else {
                     break;
@@ -332,8 +331,8 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
 
     private TreeListItem getCurrentItem(){
         int row_id = getCurrentIndex();
-        if (row_id >= 0 && row_id < mDatas.size()){
-            final TreeListItem obj = mDatas.get(row_id);
+        if (row_id >= 0 && row_id < mData.size()){
+            final TreeListItem obj = mData.get(row_id);
             obj.setSel(true);
 
             final TreeListItem object = obj.clone();
@@ -354,20 +353,20 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
     }
 
     private void addItem(int index,final TreeListItem item){
-        if (index >= 0 && index < mDatas.size()){
-            mDatas.add(index,item);
+        if (index >= 0 && index < mData.size()){
+            mData.add(index,item);
         }
     }
 
     protected void addItemChildOfCurrent(final TreeListItem item){
         int level = item.getLevel();
         if (0 == level){//顶层元素
-            mDatas.add(item);
+            mData.add(item);
             notifyDataChange();
         }else {
-            int index = getCurrentIndex(),size = mDatas.size();
+            int index = getCurrentIndex(),size = mData.size();
             if (index >= 0 && index < size){
-                final TreeListItem cur = mDatas.get(index);
+                final TreeListItem cur = mData.get(index);
                 final List<TreeListItem> listItems = cur.getKids();
 
                 item.setP_ref(cur);
@@ -383,14 +382,14 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
                     for (int i = 0,list_size = listItems.size();i < list_size;i++){
                         t = listItems.get(i);
                         if (!mSingleSel && !t.isSel())t.setSel(is_sel);
-                        mDatas.add(index + i + 1,t);
+                        mData.add(index + i + 1,t);
                     }
                 }else {
                     index ++;
                     if (index == size)
-                        mDatas.add(item);
+                        mData.add(item);
                     else
-                        mDatas.add(index,item);
+                        mData.add(index,item);
                 }
                 notifyDataChange();
             }
@@ -428,8 +427,8 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
     private  void setSelectedItem(final JSONObject object){
         if (object != null){
             TreeListItem item;
-            for (int i = 0,size = mDatas.size();i < size;i++){
-                item = mDatas.get(i);
+            for (int i = 0,size = mData.size();i < size;i++){
+                item = mData.get(i);
                 if (setSelectedItem(item,object,i)){
                     break;
                 }
@@ -455,7 +454,7 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
 
     private void unfoldParentItem(final TreeListItem item , int index){
         if (item != null && item.getP_ref() != null){//顶层item不需要展开
-            final TreeListItem top_item = mDatas.get(index);
+            final TreeListItem top_item = mData.get(index);
             boolean unfold = top_item.isUnfold(),is_sel = top_item.isSel();
             if (!unfold){
                 top_item.setUnfold(true);
@@ -467,7 +466,7 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
                     for (int i = 0,size = kids.size();i < size;i++){
                         ch_item = kids.get(i);
                         if (!single && !ch_item.isSel())top_item.setSel(is_sel);
-                        mDatas.add(index + i + 1,ch_item);
+                        mData.add(index + i + 1,ch_item);
                         if (isChild(ch_item,item)){
                             unfoldParentItem(ch_item,index + i + 1);
                             index += 1;
@@ -499,10 +498,10 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
     }
 
     private int getItemIndex(final TreeListItem item){
-        if (null != mDatas && item != null){
+        if (null != mData && item != null){
             TreeListItem ch_item;
-            for (int i = 0,size = mDatas.size();i < size;i++){
-                ch_item = mDatas.get(i);
+            for (int i = 0,size = mData.size();i < size;i++){
+                ch_item = mData.get(i);
                 if (ch_item.getItem_id().equals(item.getItem_id())){
                     return i;
                 }
@@ -515,8 +514,8 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
     public JSONArray getMultipleSelectedContent(){
         final JSONArray objects = new JSONArray();
         TreeListItem object;
-        for (int i = 0,size = mDatas.size();i < size;i++){
-            object = mDatas.get(i);
+        for (int i = 0,size = mData.size();i < size;i++){
+            object = mData.get(i);
             if (object.isSel()){
                 object = object.clone();
                 object.setKids(null);
@@ -528,8 +527,8 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
 
     public TreeListItem getSingleSelectedContent(){
         TreeListItem object;
-        for (int i = 0,size = mDatas.size();i < size;i++){
-            object = mDatas.get(i);
+        for (int i = 0,size = mData.size();i < size;i++){
+            object = mData.get(i);
             if (object.isSel()){
                 object = object.clone();
                 object.setKids(null);

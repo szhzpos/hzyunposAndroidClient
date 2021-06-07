@@ -55,7 +55,7 @@ public abstract class MobileBaseOrderAdapter<T  extends MobileBaseOrderAdapter.M
 
     @Override
     public final void onBindViewHolder(@NonNull T holder, int position) {
-        final JSONObject object = mDatas.getJSONObject(position);
+        final JSONObject object = mData.getJSONObject(position);
 
         if (!holder.order_code_tv.hasOnClickListeners())holder.order_code_tv.setOnClickListener(this);
 

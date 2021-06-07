@@ -8,7 +8,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
 import com.wyc.cloudapp.adapter.business.MobilePurchaseOrderAdapter;
 import com.wyc.cloudapp.adapter.business.MobilePurchaseOrderDetailsAdapter;
-import com.wyc.cloudapp.adapter.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.utils.Utils;
 
 /*采购订货单*/
@@ -61,7 +61,7 @@ public class MobilePurchaseOrderActivity extends AbstractMobileBusinessOrderActi
         }
 
         @Override
-        protected AbstractBusinessOrderDetailsDataAdapter<? extends AbstractDataAdapter.SuperViewHolder> getAdapter() {
+        protected AbstractBusinessOrderDetailsDataAdapter<? extends AbstractDataAdapterForJson.SuperViewHolder> getAdapter() {
             return new MobilePurchaseOrderDetailsAdapter(this);
         }
 

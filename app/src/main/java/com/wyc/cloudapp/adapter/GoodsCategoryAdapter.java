@@ -19,6 +19,8 @@ import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
+import java.util.Locale;
+
 public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdapter.MyViewHolder> implements View.OnClickListener{
     private final SaleActivity mContext;
     private JSONArray mDatas;
@@ -114,7 +116,7 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
                 setViewBackgroundColor(myViewHolder.itemView,true);
             }
 
-            myViewHolder.category_name.setText(goods_type_info.getString("name"));
+            myViewHolder.category_name.setText(String.format(Locale.CHINA,"%s-%s",goods_type_info.getString("category_code"),goods_type_info.getString("name")));
             if (i == 1 && mFirstLoad && !mContext.containGoods() && (Utils.lessThan7Inches(mContext) || mSecLevelGoodsCategoryView != null)){//一级分类触发第二个类别查询
                 mFirstLoad = false;
                 myViewHolder.itemView.callOnClick();
@@ -130,9 +132,9 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
     public void setDatas(int parent_id){
         final StringBuilder err = new StringBuilder();
         if (0 == parent_id)
-            mDatas = SQLiteHelper.getListToJson("select category_id,name from shop_category where parent_id='0' and status = 1 union select -1 category_id,'组合商品' name ",0,0,false,err);
+            mDatas = SQLiteHelper.getListToJson("select category_id,category_code,name from shop_category where parent_id='0' and status = 1 union select -1 category_id,-2 category_code,'组合商品' name ",0,0,false,err);
         else
-            mDatas = SQLiteHelper.getListToJson("select category_id,name from shop_category where depth = 2 and status = 1 and parent_id=" + parent_id,0,0,false,err);
+            mDatas = SQLiteHelper.getListToJson("select category_id,category_code,name from shop_category where depth = 2 and status = 1 and parent_id=" + parent_id,0,0,false,err);
 
         if (mDatas != null){
             this.notifyDataSetChanged();

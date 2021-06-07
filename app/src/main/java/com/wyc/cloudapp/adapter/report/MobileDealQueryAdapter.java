@@ -8,7 +8,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
@@ -50,8 +49,8 @@ public class MobileDealQueryAdapter extends AbstractTableDataAdapter<MobileDealQ
     @Override
     public void onBindViewHolder( @NonNull final  MyViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        if (mDatas != null) {
-            final JSONObject object = mDatas.getJSONObject(position);
+        if (mData != null) {
+            final JSONObject object = mData.getJSONObject(position);
             holder.order_code_tv.setText(Html.fromHtml("<u>" + object.getString("order_code") + "</u>"));
             holder.order_code_tv.setOnClickListener(mItemClickListener);
 

@@ -70,7 +70,7 @@ public class MobileBaseOrderDetailsAdapter extends AbstractBusinessOrderDetailsD
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
 
-        final JSONObject object = mDatas.getJSONObject(position);
+        final JSONObject object = mData.getJSONObject(position);
 
         holder.barcode_tv.setText(object.getString("barcode"));
         holder.name_tv.setText(object.getString("goods_title"));

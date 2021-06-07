@@ -84,8 +84,8 @@ public abstract class AbstractQueryDataAdapter<T extends AbstractTableDataAdapte
             final TextView order_code_tv = mCurrentItemView.findViewById(R.id.order_code);
             if (null != order_code_tv){
                 final String sz_order_code = order_code_tv.getText().toString();
-                for (int i = 0,size = mDatas.size();i < size;i ++){
-                    final JSONObject object = mDatas.getJSONObject(i);
+                for (int i = 0, size = mData.size(); i < size; i ++){
+                    final JSONObject object = mData.getJSONObject(i);
                     if (object != null && sz_order_code.equals(object.getString("order_code"))){
                         return object;
                     }

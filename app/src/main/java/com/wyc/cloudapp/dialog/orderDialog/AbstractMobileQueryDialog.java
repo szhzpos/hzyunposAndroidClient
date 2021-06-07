@@ -115,7 +115,7 @@ public abstract class AbstractMobileQueryDialog extends AbstractDialogMainActivi
         final LinearLayout query_time_btn_layout = findViewById(R.id.query_time_btn_layout);
         final Button yesterday = query_time_btn_layout.findViewById(R.id.m_yesterday_btn),
                 other = query_time_btn_layout.findViewById(R.id.m_other_btn);
-        CustomApplication.runInMainThread(()->{
+        query_time_btn_layout.post(()->{
             float corner_size = query_time_btn_layout.getHeight() / 2.0f;
             query_time_btn_layout.setForeground(DrawableUtil.createDrawable(new float[]{corner_size,corner_size,corner_size,corner_size,corner_size,corner_size,corner_size,corner_size}
                     ,mContext.getColor(R.color.transparent),Utils.dpToPx(mContext,1),mContext.getColor(R.color.blue)));

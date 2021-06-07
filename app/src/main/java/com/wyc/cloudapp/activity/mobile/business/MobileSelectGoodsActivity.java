@@ -24,7 +24,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
-import com.wyc.cloudapp.adapter.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.constants.WholesalePriceType;
@@ -32,9 +32,10 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.decoration.GoodsInfoItemDecoration;
 import com.wyc.cloudapp.decoration.SuperItemDecoration;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.goods.AddGoodsInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
+
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -175,7 +176,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
         return Utils.getNullStringAsEmpty(object,"goods_title");
     }
 
-    static private class CategoryAdapter extends AbstractDataAdapter<CategoryAdapter.MyViewHolder> implements View.OnClickListener{
+    static private class CategoryAdapter extends AbstractDataAdapterForJson<CategoryAdapter.MyViewHolder> implements View.OnClickListener{
         final MobileSelectGoodsActivity mContext;
         private View mCurrentItemView;
         private final JSONObject CategoryObj = new JSONObject();
@@ -214,7 +215,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
             }
         }
 
-        static class MyViewHolder extends AbstractDataAdapter.SuperViewHolder {
+        static class MyViewHolder extends AbstractDataAdapterForJson.SuperViewHolder {
             private final TextView category_id;
             private final TextView category_name;
             MyViewHolder(View itemView) {
@@ -235,11 +236,11 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
 
         @Override
         public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-            if (mDatas != null){
-                final JSONObject goods_type_info = mDatas.getJSONObject(position);
+            if (mData != null){
+                final JSONObject goods_type_info = mData.getJSONObject(position);
                 holder.category_id.setText(goods_type_info.getString("category_id"));
-                holder.category_name.setText(goods_type_info.getString("name"));
-                if (position == 1) holder.itemView.callOnClick();
+                holder.category_name.setText(String.format(Locale.CHINA,"%s-%s",goods_type_info.getString("category_code"),goods_type_info.getString("name")));
+                if (position == 0) holder.itemView.callOnClick();
             }
         }
 
@@ -247,18 +248,18 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
             final StringBuilder err = new StringBuilder();
             switch (parent_id){
                 case 0:
-                    mDatas = SQLiteHelper.getListToJson("select category_id,name from shop_category where parent_id='0' and status = 1 union select -1 category_id,'组合商品' name ",0,0,false,err);
+                    mData = SQLiteHelper.getListToJson("select category_id,category_code,name from shop_category where parent_id='0' and status = 1 order by category_code",0,0,false,err);
                     break;
                 case -2:
                     if (Utils.isNotEmpty(mContext.mGoodsCategory)){
-                        mDatas = SQLiteHelper.getListToJson("select category_id,name from shop_category where status = 1 and category_id in("+ mContext.mGoodsCategory +")",0,0,false,err);
+                        mData = SQLiteHelper.getListToJson("select category_id,category_code,name from shop_category where status = 1 and category_id in("+ mContext.mGoodsCategory +")",0,0,false,err);
                     }else
-                        mDatas = SQLiteHelper.getListToJson("select category_id,name from shop_category where parent_id='0' and status = 1",0,0,false,err);
+                        mData = SQLiteHelper.getListToJson("select category_id,category_code,name from shop_category where parent_id='0' and status = 1 order by category_code",0,0,false,err);
                     break;
                 default:
-                    mDatas = SQLiteHelper.getListToJson("select category_id,name from shop_category where depth = 2 and status = 1 and parent_id=" + parent_id,0,0,false,err);
+                    mData = SQLiteHelper.getListToJson("select category_id,category_code,name from shop_category where depth = 2 and status = 1 and parent_id='" + parent_id + "' order by category_code",0,0,false,err);
             }
-            if (mDatas != null){
+            if (mData != null){
                 this.notifyDataSetChanged();
             }else{
                 MyDialog.ToastMessage("加载类别错误：" + err,mContext,null);
@@ -266,7 +267,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
         }
     }
 
-    static class GoodsAdapter extends AbstractDataAdapter<GoodsAdapter.MyViewHolder> implements View.OnClickListener{
+    static class GoodsAdapter extends AbstractDataAdapterForJson<GoodsAdapter.MyViewHolder> implements View.OnClickListener{
         final MobileSelectGoodsActivity mContext;
         private OnSelectFinish onSelectFinish;
         private boolean modify;
@@ -296,7 +297,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
             this.onSelectFinish = listener;
         }
 
-        static class MyViewHolder extends AbstractDataAdapter.SuperViewHolder {
+        static class MyViewHolder extends AbstractDataAdapterForJson.SuperViewHolder {
             @BindView(R.id.gp_id)
             TextView gp_id;
             @BindView(R.id.goods_id)
@@ -333,8 +334,8 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
 
         @Override
         public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int position) {
-            if (mDatas != null){
-                final JSONObject goods_info = mDatas.getJSONObject(position);
+            if (mData != null){
+                final JSONObject goods_info = mData.getJSONObject(position);
                 final TextView goods_title = myViewHolder.goods_title;
 
                 final String img_url = Utils.getNullStringAsEmpty(goods_info,"img_url");
@@ -419,8 +420,8 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
                 sql = common_sql + " category_id in (select category_id from shop_category where path like '%" + id +"%')";
             }
 
-            mDatas = SQLiteHelper.getListToJson(sql,0,0,false,err);
-            if (mDatas != null){
+            mData = SQLiteHelper.getListToJson(sql,0,0,false,err);
+            if (mData != null){
                 this.notifyDataSetChanged();
             }else{
                 MyDialog.ToastMessage("加载商品错误：" + err,mContext,null);
@@ -447,7 +448,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
                 if (isSelectMode && autoSelect && array.size() == 1){
                     if (onSelectFinish != null)onSelectFinish.onFinish(array.getJSONObject(0).getString("barcode_id"));
                 }else {
-                    mDatas = array;
+                    mData = array;
                     notifyDataSetChanged();
                 }
             }else{

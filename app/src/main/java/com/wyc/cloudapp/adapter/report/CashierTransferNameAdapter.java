@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.adapter.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -30,7 +30,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class CashierTransferNameAdapter extends AbstractDataAdapter<CashierTransferNameAdapter.MyViewHolder> {
+public class CashierTransferNameAdapter extends AbstractDataAdapterForJson<CashierTransferNameAdapter.MyViewHolder> {
     final MainActivity mContext;
     private View.OnClickListener mListener;
     static class MyViewHolder extends AbstractTableDataAdapter.SuperViewHolder {
@@ -59,8 +59,8 @@ public class CashierTransferNameAdapter extends AbstractDataAdapter<CashierTrans
 
     @Override
     public void onBindViewHolder( @NonNull final  MyViewHolder holder, int position) {
-        if (mDatas != null) {
-            final JSONObject object = mDatas.getJSONObject(position);
+        if (mData != null) {
+            final JSONObject object = mData.getJSONObject(position);
             holder.cas_name.setText(object.getString("cas_name"));
             holder.transfer_id.setText(Html.fromHtml("<u>" + object.getString("ti_code") + "</u>"));
             holder.transfer_id.setOnClickListener(mListener);
@@ -71,7 +71,7 @@ public class CashierTransferNameAdapter extends AbstractDataAdapter<CashierTrans
 
     @Override
     public int getItemCount() {
-        return mDatas == null ? 0 : mDatas.size();
+        return mData == null ? 0 : mData.size();
     }
 
     public void setItemListener(final View.OnClickListener listener){

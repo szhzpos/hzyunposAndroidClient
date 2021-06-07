@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.business.MobileVipCategoryInfoActivity;
-import com.wyc.cloudapp.adapter.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.adapter.bean.VipGrade;
 import com.wyc.cloudapp.dialog.business.EditVipCategoryDialog;
 import com.wyc.cloudapp.logger.Logger;
@@ -30,14 +30,14 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class MobileVipCategoryAdapter extends AbstractDataAdapter<MobileVipCategoryAdapter.MyViewHolder> implements View.OnClickListener  {
+public class MobileVipCategoryAdapter extends AbstractDataAdapterForJson<MobileVipCategoryAdapter.MyViewHolder> implements View.OnClickListener  {
     private final MobileVipCategoryInfoActivity mContext;
 
     public MobileVipCategoryAdapter(MobileVipCategoryInfoActivity c){
         mContext = c;
     }
 
-    protected static class MyViewHolder extends AbstractDataAdapter.SuperViewHolder{
+    protected static class MyViewHolder extends AbstractDataAdapterForJson.SuperViewHolder{
         TextView _grade_name_tv;
         Button _modify;
         public MyViewHolder(View itemView) {
@@ -57,7 +57,7 @@ public class MobileVipCategoryAdapter extends AbstractDataAdapter<MobileVipCateg
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        final JSONObject object = mDatas.getJSONObject(position);
+        final JSONObject object = mData.getJSONObject(position);
         holder._grade_name_tv.setText(String.format(Locale.CHINA,"%s - %s",object.getString("grade_sort"),object.getString("grade_name")));
         holder._grade_name_tv.setTag(object.getString("grade_id"));
         if (!holder._modify.hasOnClickListeners())holder._modify.setOnClickListener(this);

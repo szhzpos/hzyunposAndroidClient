@@ -1,6 +1,5 @@
 package com.wyc.cloudapp.adapter.business;
 
-import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -8,12 +7,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.business.EditSupplierActivity;
 import com.wyc.cloudapp.activity.mobile.business.MobileSupplierInfoActivity;
-import com.wyc.cloudapp.adapter.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.adapter.bean.Supplier;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
@@ -32,14 +30,14 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class MobileSupplierAdapter extends AbstractDataAdapter<MobileSupplierAdapter.MyViewHolder> implements View.OnClickListener {
+public class MobileSupplierAdapter extends AbstractDataAdapterForJson<MobileSupplierAdapter.MyViewHolder> implements View.OnClickListener {
     private final MobileSupplierInfoActivity mContext;
 
     public MobileSupplierAdapter(MobileSupplierInfoActivity c){
         mContext = c;
     }
 
-    protected static class MyViewHolder extends AbstractDataAdapter.SuperViewHolder{
+    protected static class MyViewHolder extends AbstractDataAdapterForJson.SuperViewHolder{
         TextView _supplier_tv,contacts_name_tv,phone_tv;
         Button _modify;
         public MyViewHolder(View itemView) {
@@ -61,7 +59,7 @@ public class MobileSupplierAdapter extends AbstractDataAdapter<MobileSupplierAda
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        final JSONObject object = mDatas.getJSONObject(position);
+        final JSONObject object = mData.getJSONObject(position);
         holder._supplier_tv.setText(String.format(Locale.CHINA,"%s-%s",object.getString("cs_code"),object.getString("cs_name")));
         holder.contacts_name_tv.setText(object.getString("name"));
         holder.phone_tv.setText(object.getString("mobile"));

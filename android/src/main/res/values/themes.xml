@@ -15,7 +15,7 @@
  limitations under the License.
  -->
 <resources>
-  <style name="CaptureTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+  <style name="CaptureTheme" parent="Theme.AppCompat.Light.NoActionBar">
     <item name="android:windowContentOverlay">@null</item>
     <item name="android:windowFullscreen">true</item>
     <item name="android:windowActionBarOverlay">false</item>

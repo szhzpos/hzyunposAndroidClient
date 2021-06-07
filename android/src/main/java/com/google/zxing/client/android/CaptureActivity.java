@@ -113,6 +113,13 @@ public final  class CaptureActivity extends AppCompatActivity implements Surface
     ambientLightManager = new AmbientLightManager(this);
 
     PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
+    findViewById(R.id.back).setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        onBackPressed();
+      }
+    });
   }
 
   @Override

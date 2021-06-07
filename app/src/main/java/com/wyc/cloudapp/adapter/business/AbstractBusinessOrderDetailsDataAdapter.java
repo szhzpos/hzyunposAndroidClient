@@ -13,7 +13,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
-import com.wyc.cloudapp.adapter.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.utils.Utils;
 
 /**
@@ -28,7 +28,7 @@ import com.wyc.cloudapp.utils.Utils;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public abstract class AbstractBusinessOrderDetailsDataAdapter<T extends AbstractTableDataAdapter.SuperViewHolder > extends AbstractDataAdapter<T> {
+public abstract class AbstractBusinessOrderDetailsDataAdapter<T extends AbstractTableDataAdapter.SuperViewHolder > extends AbstractDataAdapterForJson<T> {
     protected MainActivity mContext;
 
     private View mCurrentItemView;
@@ -56,7 +56,7 @@ public abstract class AbstractBusinessOrderDetailsDataAdapter<T extends Abstract
     };
 
     private JSONObject item(){
-        return (mDatas == null || mCurrentItemIndex == -1 || mCurrentItemIndex >= mDatas.size()) ? null : mDatas.getJSONObject(mCurrentItemIndex);
+        return (mData == null || mCurrentItemIndex == -1 || mCurrentItemIndex >= mData.size()) ? null : mData.getJSONObject(mCurrentItemIndex);
     }
 
     protected void setCurrentItemIndex(int index){
@@ -99,38 +99,38 @@ public abstract class AbstractBusinessOrderDetailsDataAdapter<T extends Abstract
 
     public void addDetails(@Nullable final JSONObject object,int index,boolean modify){ //index >=0 需要把第一个参数累加到index位置
         if (object != null){
-            if (mDatas == null)mDatas = new JSONArray();
+            if (mData == null) mData = new JSONArray();
 
             if (index >= 0){
-                final JSONObject o = (JSONObject) mDatas.remove(index);
+                final JSONObject o = (JSONObject) mData.remove(index);
                 if (modify){
-                    mDatas.add(index,object);
+                    mData.add(index,object);
                 }else {
                     final String[] keys = getCumulativeKey();
                     for (String key : keys){
                         o.put(key,o.getDoubleValue(key) + object.getDoubleValue(key));
                     }
-                    mDatas.add(index,o);
+                    mData.add(index,o);
                 }
             }else{
-                mDatas.add(object);
-                index = mDatas.size() - 1;
+                mData.add(object);
+                index = mData.size() - 1;
             }
             mCurrentItemIndex = index;
             notifyDataSetChanged();
         }
     }
     public void deleteDetails(){
-        if (mDatas != null && 0 <= mCurrentItemIndex && mCurrentItemIndex < mDatas.size()){
-            mDatas.remove(mCurrentItemIndex);
+        if (mData != null && 0 <= mCurrentItemIndex && mCurrentItemIndex < mData.size()){
+            mData.remove(mCurrentItemIndex);
             notifyDataSetChanged();
         }
     }
     public int isExist(final JSONObject object){
         int size = 0;
-        if (null == mDatas || (size = mDatas.size()) == 0 || null == object)return -1;
+        if (null == mData || (size = mData.size()) == 0 || null == object)return -1;
         for (int i = 0;i < size;i ++){
-            final JSONObject obj = mDatas.getJSONObject(i);
+            final JSONObject obj = mData.getJSONObject(i);
             final String key = "barcode_id";
             if (Utils.getNullStringAsEmpty(object,key).equals(obj.getString(key))){//注：如果加入了组合商品需要把gp_id加入判断
                 return i;

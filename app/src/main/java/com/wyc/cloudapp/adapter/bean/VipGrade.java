@@ -20,7 +20,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class VipGrade implements Serializable, Parcelable {
+public final class VipGrade implements Serializable, Parcelable {
     private String grade_id;
     private String grade_name;
     private String upgrade_points;

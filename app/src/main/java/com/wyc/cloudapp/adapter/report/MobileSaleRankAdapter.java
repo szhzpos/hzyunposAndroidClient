@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.adapter.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -26,7 +26,7 @@ import com.wyc.cloudapp.utils.Utils;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public final class MobileSaleRankAdapter extends AbstractDataAdapter<MobileSaleRankAdapter.MyViewHolder> {
+public final class MobileSaleRankAdapter extends AbstractDataAdapterForJson<MobileSaleRankAdapter.MyViewHolder> {
     private final MainActivity mContext;
     static class MyViewHolder extends AbstractTableDataAdapter.SuperViewHolder {
         TextView goods_name_tv,sale_num_tv,sale_amt_tv;
@@ -54,8 +54,8 @@ public final class MobileSaleRankAdapter extends AbstractDataAdapter<MobileSaleR
 
     @Override
     public void onBindViewHolder( @NonNull final  MyViewHolder holder, int position) {
-        if (mDatas != null) {
-            final JSONObject object = mDatas.getJSONObject(position);
+        if (mData != null) {
+            final JSONObject object = mData.getJSONObject(position);
             holder.goods_name_tv.setText(object.getString("goods_title"));
             holder.sale_num_tv.setText(object.getString("sales_num"));
             holder.sale_amt_tv.setText(object.getString("sales_money"));
@@ -65,7 +65,7 @@ public final class MobileSaleRankAdapter extends AbstractDataAdapter<MobileSaleR
 
     @Override
     public int getItemCount() {
-        return mDatas == null ? 0 : mDatas.size();
+        return mData == null ? 0 : mData.size();
     }
 
 }

@@ -31,8 +31,8 @@ public abstract class AbstractChargeOrderAdapter<T extends AbstractTableDataAdap
                 "  FROM member_order_info a left join cashier_info b on a.cashier_id = b.cas_id left join sales_info c on a.sc_id = c.sc_id " + where_sql;
 
         Logger.d("sql:%s",sql);
-        mDatas = SQLiteHelper.getListToJson(sql,err);
-        if (mDatas != null){
+        mData = SQLiteHelper.getListToJson(sql,err);
+        if (mData != null){
             notifyDataSetChanged();
         }else
             MyDialog.ToastMessage("加载充值订单错误：" + err,mContext,null);

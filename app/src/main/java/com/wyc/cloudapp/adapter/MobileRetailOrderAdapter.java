@@ -56,8 +56,8 @@ public final class MobileRetailOrderAdapter extends AbstractQueryDataAdapter<Mob
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        if (null != mDatas) {
-            final JSONObject order_info = mDatas.getJSONObject(position);
+        if (null != mData) {
+            final JSONObject order_info = mData.getJSONObject(position);
             if (order_info != null) {
                 holder.order_code.setText(order_info.getString("order_code"));
                 holder.order_amt.setText(String.format(Locale.CHINA, "%.2f", order_info.getDoubleValue("order_amt")));
@@ -97,7 +97,7 @@ public final class MobileRetailOrderAdapter extends AbstractQueryDataAdapter<Mob
 
     @Override
     public int getItemCount() {
-        return mDatas == null ? 0: mDatas.size();
+        return mData == null ? 0: mData.size();
     }
 
 
@@ -152,8 +152,8 @@ public final class MobileRetailOrderAdapter extends AbstractQueryDataAdapter<Mob
         final String sql = RetailOrderAdapter.getQuery() + where_sql + " order by a.addtime desc";
 
         Logger.d("sql:%s",sql);
-        mDatas = SQLiteHelper.getListToJson(sql,err);
-        if (mDatas != null){
+        mData = SQLiteHelper.getListToJson(sql,err);
+        if (mData != null){
             notifyDataSetChanged();
         }else
             MyDialog.ToastMessage("加载充值订单错误：" + err,mContext,null);

@@ -6,7 +6,7 @@ import android.widget.TextView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.adapter.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDataAdapter;
@@ -20,7 +20,7 @@ import com.wyc.cloudapp.utils.Utils;
 public final class MobileOtherWarehouseOrderActivity extends AbstractMobileBusinessOrderActivity {
 
     @Override
-    protected AbstractBusinessOrderDataAdapter<? extends AbstractDataAdapter.SuperViewHolder> getAdapter() {
+    protected AbstractBusinessOrderDataAdapter<? extends AbstractDataAdapterForJson.SuperViewHolder> getAdapter() {
         return new MobileOtherWarehouseOrderAdapter(this);
     }
 

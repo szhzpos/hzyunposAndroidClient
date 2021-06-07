@@ -95,6 +95,86 @@
         </RadioGroup>
 
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/add_goods_item_h"
+        android:layout_marginTop="@dimen/margin_8"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="@dimen/width_85"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/a_category_sz"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <TextView
+            android:id="@+id/a_category_et"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/round_border_sub_gray"
+            android:drawableEnd="@drawable/content"
+            android:gravity="center_vertical"
+            android:importantForAutofill="no"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:textColor="@color/text_color" />
+
+        <TextView
+            android:layout_width="@dimen/width_68"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/brand_sz"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <TextView
+            android:id="@+id/brand_et"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/round_border_sub_gray"
+            android:drawableEnd="@drawable/content"
+            android:gravity="center_vertical"
+            android:importantForAutofill="no"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:textColor="@color/text_color" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/add_goods_item_h"
+        android:layout_marginTop="@dimen/margin_8"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="@dimen/width_85"
+            android:layout_height="wrap_content"
+            android:text="@string/a_item_no_sz"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <EditText
+            android:id="@+id/a_item_no_et"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/round_border_sub_gray"
+            android:ems="10"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:selectAllOnFocus="true"
+            android:textColor="@color/text_color" />
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/add_goods_item_h"
@@ -161,114 +241,6 @@
         <TextView
             android:layout_width="@dimen/width_85"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="@string/a_supplier_sz"
-            android:textAlignment="viewEnd"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16" />
-
-        <TextView
-            android:id="@+id/a_supplier_et"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/round_border_sub_gray"
-            android:drawableEnd="@drawable/content"
-            android:gravity="center_vertical"
-            android:importantForAutofill="no"
-            android:paddingStart="@dimen/margin_5"
-            android:paddingEnd="@dimen/margin_5"
-            android:selectAllOnFocus="true"
-            android:textColor="@color/text_color" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/add_goods_item_h"
-        android:layout_marginTop="@dimen/margin_8"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="@dimen/width_85"
-            android:layout_height="wrap_content"
-            android:text="@string/a_item_no_sz"
-            android:textAlignment="viewEnd"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16" />
-
-        <EditText
-            android:id="@+id/a_item_no_et"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/round_border_sub_gray"
-            android:ems="10"
-            android:importantForAutofill="no"
-            android:inputType="number"
-            android:paddingStart="@dimen/margin_5"
-            android:paddingEnd="@dimen/margin_5"
-            android:selectAllOnFocus="true"
-            android:textColor="@color/text_color" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/add_goods_item_h"
-        android:layout_marginTop="@dimen/margin_8"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="@dimen/width_85"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="@string/a_category_sz"
-            android:textAlignment="viewEnd"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16" />
-
-        <TextView
-            android:id="@+id/a_category_et"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/round_border_sub_gray"
-            android:drawableEnd="@drawable/content"
-            android:gravity="center_vertical"
-            android:importantForAutofill="no"
-            android:paddingStart="@dimen/margin_5"
-            android:paddingEnd="@dimen/margin_5"
-            android:textColor="@color/text_color" />
-
-        <TextView
-            android:layout_width="@dimen/width_68"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="@string/brand_sz"
-            android:textAlignment="viewEnd"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16" />
-
-        <TextView
-            android:id="@+id/brand_et"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/round_border_sub_gray"
-            android:drawableEnd="@drawable/content"
-            android:gravity="center_vertical"
-            android:importantForAutofill="no"
-            android:paddingStart="@dimen/margin_5"
-            android:paddingEnd="@dimen/margin_5"
-            android:textColor="@color/text_color" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/add_goods_item_h"
-        android:layout_marginTop="@dimen/margin_8"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="@dimen/width_85"
-            android:layout_height="wrap_content"
             android:text="@string/a_unit_sz"
             android:textAlignment="viewEnd"
             android:textColor="@color/text_color"
@@ -307,7 +279,116 @@
             android:paddingEnd="@dimen/margin_5"
             android:textColor="@color/text_color" />
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/add_goods_item_h"
+        android:layout_marginTop="@dimen/margin_8"
+        android:orientation="horizontal">
 
+        <TextView
+            android:layout_width="@dimen/width_85"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/speci_sz"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <EditText
+            android:id="@+id/spec_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/round_border_sub_gray"
+            android:gravity="center_vertical"
+            android:importantForAutofill="no"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:selectAllOnFocus="true"
+            android:textColor="@color/text_color" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/add_goods_item_h"
+        android:layout_marginTop="@dimen/margin_8"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="@dimen/width_85"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/a_supplier_sz"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <TextView
+            android:id="@+id/a_supplier_et"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/round_border_sub_gray"
+            android:drawableEnd="@drawable/content"
+            android:gravity="center_vertical"
+            android:importantForAutofill="no"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:selectAllOnFocus="true"
+            android:textColor="@color/text_color" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/add_goods_item_h"
+        android:layout_marginTop="@dimen/margin_8"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="@dimen/width_85"
+            android:layout_height="wrap_content"
+            android:text="@string/hz_method_sz"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <EditText
+            android:id="@+id/hz_method_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/round_border_sub_gray"
+            android:enabled="false"
+            android:importantForAutofill="no"
+            android:inputType="numberDecimal"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:selectAllOnFocus="true"
+            android:textColor="@color/text_color" />
+
+        <TextView
+            android:id="@+id/ly_ratio_label"
+            android:layout_width="@dimen/width_68"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/margin_2"
+            android:text="@string/ly_ratio_sz"
+            android:textAlignment="textEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <EditText
+            android:id="@+id/ly_ratio_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/round_border_sub_gray"
+            android:gravity="center_vertical"
+            android:hint="@string/space_sz"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:text="@string/zero_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/add_goods_item_h"

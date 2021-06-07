@@ -1,6 +1,5 @@
 package com.wyc.cloudapp.adapter.business;
 
-import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -12,7 +11,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
-import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
@@ -58,7 +56,7 @@ public class MobileInventoryAuditDetailAdapter extends AbstractBusinessOrderData
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        final JSONObject object = mDatas.getJSONObject(position);
+        final JSONObject object = mData.getJSONObject(position);
         holder.barcode_tv.setText(object.getString("barcode"));
         holder.name_tv.setText(object.getString("goods_title"));
 

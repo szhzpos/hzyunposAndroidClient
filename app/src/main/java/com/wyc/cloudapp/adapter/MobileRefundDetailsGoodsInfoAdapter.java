@@ -46,8 +46,8 @@ public final class MobileRefundDetailsGoodsInfoAdapter extends AbstractTableData
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
 
-        if (null != mDatas) {
-            final JSONObject sale_goods_info = mDatas.getJSONObject(position);
+        if (null != mData) {
+            final JSONObject sale_goods_info = mData.getJSONObject(position);
             if (sale_goods_info != null) {
                 holder.row_id_tv.setText(String.valueOf(position + 1));
                 holder.goods_title_tv.setText(String.format(Locale.CHINA,"、%s",sale_goods_info.getString("goods_title")));
@@ -65,11 +65,11 @@ public final class MobileRefundDetailsGoodsInfoAdapter extends AbstractTableData
                 "where a.goods_status = 1 and a.barcode_status = 1 and b.ro_code = '" + order_code + "'";
 
         Logger.d("sql:%s",sql);
-        mDatas = SQLiteHelper.getListToJson(sql,err);
-        if (mDatas != null){
+        mData = SQLiteHelper.getListToJson(sql,err);
+        if (mData != null){
             notifyDataSetChanged();
         }else{
-            mDatas = new JSONArray();
+            mData = new JSONArray();
             MyDialog.ToastMessage("加载商品明细错误：" + err,mContext,null);
         }
     }

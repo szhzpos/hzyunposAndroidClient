@@ -1,12 +1,8 @@
 package com.wyc.cloudapp.adapter.business;
 
-import android.text.Html;
-
 import androidx.annotation.NonNull;
 
-import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.activity.mobile.business.MobilePracticalInventoryAddOrderActivity;
 
 /**
  * @ProjectName: CloudApp
@@ -27,6 +23,6 @@ public class MobileInventoryAuditAdapter extends MobileInventoryTaskAdapter {
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         super.onBindViewHolder(holder,position);
-        holder.inventory_task_code_tv.setTag(mDatas.getJSONObject(position).getString("pcd_task_id"));
+        holder.inventory_task_code_tv.setTag(mData.getJSONObject(position).getString("pcd_task_id"));
     }
 }

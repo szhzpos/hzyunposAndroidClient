@@ -102,7 +102,7 @@ public class EditSupplierActivity extends AbstractEditArchiveActivity {
         mSupplierCooperationWay = supplier_co_way_tv;
         setDefaultCooperationWay();
     }
-    private JSONArray getCooperationWay(){
+    public static JSONArray getCooperationWay(){
         return JSONArray.parseArray("[{\"item_id\":1,\"item_name\":\"联营\"},{\"item_id\":2,\"item_name\":\"购销\"},{\"item_id\":3,\"item_name\":\"租赁\"},{\"item_id\":4,\"item_name\":\"代销\"}]");
     }
     private void setDefaultCooperationWay(){

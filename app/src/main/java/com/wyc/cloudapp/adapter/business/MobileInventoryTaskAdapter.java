@@ -54,7 +54,7 @@ public class MobileInventoryTaskAdapter extends AbstractBusinessOrderDataAdapter
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        final JSONObject object = mDatas.getJSONObject(position);
+        final JSONObject object = mData.getJSONObject(position);
 
         holder.inventory_task_tv.setText(object.getString("task_name"));
 

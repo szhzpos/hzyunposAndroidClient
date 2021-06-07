@@ -64,6 +64,12 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     EditText pf_price_et;
     @BindView(R.id.place_et)
     EditText place_et;
+    @BindView(R.id.spec_tv)
+    TextView spec_tv;
+    @BindView(R.id.hz_method_tv)
+    TextView hz_method_tv;
+    @BindView(R.id.ly_ratio_tv)
+    TextView ly_ratio_tv;
 
     private boolean isModify;
     private JSONObject mGoodsObj;
@@ -146,7 +152,18 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         if (!isModify && null != object && null != mSupplierTv){
             mSupplierTv.setText(object.getString("gs_name"));
             mSupplierTv.setTag(object.getString("gs_id"));
+            setHz_method();
         }
+    }
+    private JSONObject getSupplierById(final String gs_id){
+        if (null == mSupplierList)return null;
+        for (int i = 0,size = mSupplierList.size();i < size;i ++){
+            final JSONObject object = mSupplierList.getJSONObject(i);
+            if (object.getString("gs_id").equals(gs_id)){
+                return object;
+            }
+        }
+        return null;
     }
 
     private void getGoodsInfoByBarcode(){
@@ -179,7 +196,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         final String unit_sz = Utils.getNullStringAsEmpty(info,"unit");
         if (!unit_sz.isEmpty())mUnitTv.setText(unit_sz);
         mRetailPriceEt.setText(String.format(Locale.CHINA,"%.2f",info.getDoubleValue("price")));
-
+        mBarcodeEt.setText(mBarcode);
         final String name = Utils.getNullStringAsEmpty(info,"name");
         if (name.isEmpty()){
             mNameEt.requestFocus();
@@ -315,7 +332,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         if (resultCode == RESULT_OK ){
             final String _code = intent.getStringExtra("auth_code");
             if (requestCode == CODE_REQUEST_CODE) {
-                mBarcode = _code;
+                mBarcodeEt.setText(_code);
                 getGoodsInfoByBarcode();
             }
         }
@@ -332,12 +349,32 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
                     supplier_et.setText(object.getString(TreeListBaseAdapter.COL_NAME));
-                    supplier_et.setTag(object.getIntValue(TreeListBaseAdapter.COL_ID));
+                    supplier_et.setTag(object.getString(TreeListBaseAdapter.COL_ID));
+                    setHz_method();
                     mNameEt.requestFocus();
                 }
             });
         });
         mSupplierTv = supplier_et;
+    }
+
+    private void setHz_method(){
+        final JSONObject supplier = getSupplierById(Utils.getViewTagValue(mSupplierTv,""));
+        if (null != supplier){
+            final String hz_method = supplier.getString("hz_method");
+            hz_method_tv.setTag(hz_method);
+            hz_method_tv.setText(supplier.getString("hz_method_name"));
+            setLyRatio("1".equals(hz_method) ? View.VISIBLE : View.GONE);
+        }
+    }
+    private void setLyRatio(int visibility){
+        //设置联营扣率
+        final TextView ly_ratio_label = findViewById(R.id.ly_ratio_label);
+        ly_ratio_label.setVisibility(visibility);
+        ly_ratio_tv.setVisibility(visibility);
+        if (visibility == View.VISIBLE){
+            ly_ratio_tv.setText(Utils.getNullStringAsEmpty(mGoodsObj,"cash_flow_ratio"));
+        }
     }
 
     private void initBrand(){
@@ -660,13 +697,15 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         data.put("buying_price",mPurPriceEt.getText().toString());
         data.put("category_id",Utils.getViewTagValue(mCategoryTv,""));
         data.put("goods_title",name);
-        data.put("gs_id",Utils.getViewTagValue(mSupplierTv,0));
+        data.put("gs_id",Utils.getViewTagValue(mSupplierTv,""));
         data.put("spec_id",Utils.getViewTagValue(mGoodsAttrEt,"1"));
         data.put("only_coding",only_coding);
-        data.put("cash_flow_mode",2);
         data.put("unit",unit);
+        data.put("spec_str",spec_tv.getText().toString());
         data.put("current_goods", getCurPriceFlag());
         data.put("gb_id",Utils.getViewTagValue(mBrandTv,""));
+        data.put("cash_flow_mode",Utils.getViewTagValue(hz_method_tv,""));
+        data.put("cash_flow_ratio",ly_ratio_tv.getText().toString());
 
         final JSONArray barcode_info = new JSONArray();
         final JSONObject goods = new JSONObject();

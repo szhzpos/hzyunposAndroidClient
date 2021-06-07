@@ -17,7 +17,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class FullReduceRule implements Comparable<FullReduceRule>, Serializable {
+public final class FullReduceRule implements Comparable<FullReduceRule>, Serializable {
     int tlpb_id;
     String title;
     int type_detail_id;

@@ -682,4 +682,7 @@
     <string name="brand_sz">品牌：</string>
     <string name="pf_price">批发价：</string>
     <string name="cur_price">时价：</string>
+    <string name="speci_sz">规格：</string>
+    <string name="hz_method_sz">经销方式：</string>
+    <string name="ly_ratio_sz">扣率：</string>
 </resources>

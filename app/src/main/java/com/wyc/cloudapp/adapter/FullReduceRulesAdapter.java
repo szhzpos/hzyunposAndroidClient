@@ -10,21 +10,17 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
-import java.util.Locale;
-
-public class FullReduceRulesAdapter extends AbstractDataAdapter<FullReduceRulesAdapter.MyViewHolder> {
+public class FullReduceRulesAdapter extends AbstractDataAdapterForJson<FullReduceRulesAdapter.MyViewHolder> {
     private final Context mContext;
     public FullReduceRulesAdapter(Context context){
         mContext = context;
     }
 
-    static class MyViewHolder extends AbstractDataAdapter.SuperViewHolder{
+    static class MyViewHolder extends AbstractDataAdapterForJson.SuperViewHolder{
         TextView rule_des_tv,diff_amt_des_tv,name;
         ImageView status_img;
         MyViewHolder(@NonNull View itemView) {
@@ -45,8 +41,8 @@ public class FullReduceRulesAdapter extends AbstractDataAdapter<FullReduceRulesA
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        if (mDatas != null){
-            final JSONObject object = mDatas.getJSONObject(position);
+        if (mData != null){
+            final JSONObject object = mData.getJSONObject(position);
             holder.name.setText(Utils.getNullStringAsEmpty(object,"title"));
 
             int fold = object.getIntValue("fold"),status = object.getIntValue("status");

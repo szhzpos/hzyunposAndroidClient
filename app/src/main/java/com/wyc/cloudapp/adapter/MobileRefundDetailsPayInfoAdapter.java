@@ -46,8 +46,8 @@ public final class MobileRefundDetailsPayInfoAdapter extends AbstractPayInfoAdap
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        if (null != mDatas) {
-            final JSONObject pay_info = mDatas.getJSONObject(position);
+        if (null != mData) {
+            final JSONObject pay_info = mData.getJSONObject(position);
             if (pay_info != null) {
                 holder.row_id_tv.setText(String.valueOf(position + 1));
                 holder.pay_method_name_tv.setTag(pay_info.getIntValue("pay_method"));
@@ -68,11 +68,11 @@ public final class MobileRefundDetailsPayInfoAdapter extends AbstractPayInfoAdap
                 "b.unified_pay_query FROM refund_order_pays a left join pay_method b on a.pay_method = b.pay_method_id where ro_code = '" + order_code + "'";
 
         Logger.d("sql:%s",sql);
-        mDatas = SQLiteHelper.getListToJson(sql,err);
-        if (mDatas != null){
+        mData = SQLiteHelper.getListToJson(sql,err);
+        if (mData != null){
             mContext.runOnUiThread(this::notifyDataSetChanged);
         }else{
-            mDatas = new JSONArray();
+            mData = new JSONArray();
             mContext.runOnUiThread(()->MyDialog.ToastMessage("加载付款明细错误：" + err,mContext,null));
         }
     }
@@ -80,7 +80,7 @@ public final class MobileRefundDetailsPayInfoAdapter extends AbstractPayInfoAdap
     @Override
     public boolean isPaySuccess() {
         boolean success  = true;
-        for (Object o : mDatas){
+        for (Object o : mData){
             if (o instanceof JSONObject){
                 if(2 != Utils.getNotKeyAsNumberDefault((JSONObject)o,"pay_status",1)){
                     success = false;

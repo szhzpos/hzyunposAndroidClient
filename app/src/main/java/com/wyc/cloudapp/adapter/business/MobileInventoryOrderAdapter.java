@@ -55,7 +55,7 @@ public class MobileInventoryOrderAdapter extends AbstractBusinessOrderDataAdapte
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        final JSONObject object = mDatas.getJSONObject(position);
+        final JSONObject object = mData.getJSONObject(position);
         holder.inventory_code_tv.setText(Html.fromHtml("<u>" + object.getString("pcd_code") + "</u>"));
         holder.inventory_code_tv.setTag(object.getString("pcd_id"));
         if (!holder.inventory_code_tv.hasOnClickListeners())holder.inventory_code_tv.setOnClickListener(this);

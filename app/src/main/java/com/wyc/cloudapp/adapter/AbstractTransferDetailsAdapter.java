@@ -58,8 +58,8 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
 
         if (getTransferOrderCodes(ti_code,cas_id,stores_id,start_time,err) && getTransferDetailsInfo(cas_id,stores_id,start_time,err)){
             final String pay_method_sql = "SELECT pay_method_id,name pay_m_name from pay_method order by sort";
-            mDatas = SQLiteHelper.getListToJson(pay_method_sql,err);
-            if (mDatas != null){
+            mData = SQLiteHelper.getListToJson(pay_method_sql,err);
+            if (mData != null){
 
                 double cash_sum_amt = 0.0;
 
@@ -69,12 +69,12 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
                 cash_sum_amt += disposeTransferCardsc(ti_code);
 
                 JSONObject pay_obj;
-                for (int i = 0;i < mDatas.size();i++){
-                    pay_obj = mDatas.getJSONObject(i);
+                for (int i = 0; i < mData.size(); i++){
+                    pay_obj = mData.getJSONObject(i);
                     int retail_order_num = pay_obj.getIntValue("retail_order_num"),refund_order_num = pay_obj.getIntValue("refund_order_num"),
                             deposit_order_num = pay_obj.getIntValue("deposit_order_num"),cardsc_order_num = pay_obj.getIntValue("cardsc_order_num");
                     if (retail_order_num == 0 && refund_order_num == 0 && deposit_order_num == 0 && cardsc_order_num == 0){
-                        mDatas.remove(i--);
+                        mData.remove(i--);
                     }
                 }
                 //
@@ -120,8 +120,8 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
             if (PayMethodViewAdapter.getCashMethodId().equals(String.valueOf(pay_method_id))){
                 cash_sum_amt += amt;
             }
-            for (int i = 0,size = mDatas.size();i < size;i++){
-                pay_obj = mDatas.getJSONObject(i);
+            for (int i = 0, size = mData.size(); i < size; i++){
+                pay_obj = mData.getJSONObject(i);
                 if (pay_method_id == Utils.getNotKeyAsNumberDefault(pay_obj,"pay_method_id",-2)){
                     pay_obj.put("retail_order_num",num);
                     pay_obj.put("retail_amt",amt);
@@ -153,8 +153,8 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
                 cash_sum_amt -= amt;
             }
 
-            for (int i = 0,size = mDatas.size();i < size;i++){
-                pay_obj = mDatas.getJSONObject(i);
+            for (int i = 0, size = mData.size(); i < size; i++){
+                pay_obj = mData.getJSONObject(i);
                 if (pay_method_id == Utils.getNotKeyAsNumberDefault(pay_obj,"pay_method_id",-2)){
                     pay_obj.put("refund_order_num",num);
                     pay_obj.put("refund_amt",amt);
@@ -186,8 +186,8 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
                 cash_sum_amt += amt;
             }
 
-            for (int i = 0,size = mDatas.size();i < size;i++){
-                pay_obj = mDatas.getJSONObject(i);
+            for (int i = 0, size = mData.size(); i < size; i++){
+                pay_obj = mData.getJSONObject(i);
                 if (pay_method_id == Utils.getNotKeyAsNumberDefault(pay_obj,"pay_method_id",-2)){
                     pay_obj.put("deposit_order_num",num);
                     pay_obj.put("deposit_amt",amt);
@@ -220,8 +220,8 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
                 cash_sum_amt += amt;
             }
 
-            for (int i = 0,size = mDatas.size();i < size;i++){
-                pay_obj = mDatas.getJSONObject(i);
+            for (int i = 0, size = mData.size(); i < size; i++){
+                pay_obj = mData.getJSONObject(i);
                 if (pay_method_id == Utils.getNotKeyAsNumberDefault(pay_obj,"pay_method_id",-2)){
                     pay_obj.put("cardsc_order_num",num);
                     pay_obj.put("cardsc_amt",amt);

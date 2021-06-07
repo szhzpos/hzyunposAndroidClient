@@ -7,7 +7,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.adapter.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
 import com.wyc.cloudapp.adapter.business.MobilePurchaseRefundOrderAdapter;
 import com.wyc.cloudapp.adapter.business.MobilePurchaseRefundOrderDetailsAdapter;
@@ -119,7 +119,7 @@ public class MobilePurchaseRefundOrderActivity extends AbstractMobileBusinessOrd
         }
 
         @Override
-        protected AbstractBusinessOrderDetailsDataAdapter<? extends AbstractDataAdapter.SuperViewHolder> getAdapter() {
+        protected AbstractBusinessOrderDetailsDataAdapter<? extends AbstractDataAdapterForJson.SuperViewHolder> getAdapter() {
             return new MobilePurchaseRefundOrderDetailsAdapter(this);
         }
 

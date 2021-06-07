@@ -46,8 +46,8 @@ public final class RetailDetailsPayInfoAdapter extends AbstractPayInfoAdapter<Re
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        if (null != mDatas) {
-            final JSONObject pay_info = mDatas.getJSONObject(position);
+        if (null != mData) {
+            final JSONObject pay_info = mData.getJSONObject(position);
             if (pay_info != null) {
                 holder.row_id_tv.setText(String.valueOf(position + 1));
                 holder.pay_method_name_tv.setTag(pay_info.getIntValue("pay_method"));
@@ -69,8 +69,8 @@ public final class RetailDetailsPayInfoAdapter extends AbstractPayInfoAdapter<Re
             if (name != null){
                 int pay_method_id = Utils.getViewTagValue(name,-1);
                 if (pay_method_id != -1){
-                    for (int i = 0,size = mDatas.size();i < size; i++){
-                        final JSONObject pay_record = mDatas.getJSONObject(i);
+                    for (int i = 0, size = mData.size(); i < size; i++){
+                        final JSONObject pay_record = mData.getJSONObject(i);
                         if (null != pay_record && pay_method_id == pay_record.getIntValue("pay_method")){
                             return pay_record;
                         }
@@ -89,11 +89,11 @@ public final class RetailDetailsPayInfoAdapter extends AbstractPayInfoAdapter<Re
                 "b.unified_pay_query FROM retail_order_pays a left join pay_method b on a.pay_method = b.pay_method_id where order_code = '" + order_code + "'";
 
         Logger.d("sql:%s",sql);
-        mDatas = SQLiteHelper.getListToJson(sql,err);
-        if (mDatas != null){
+        mData = SQLiteHelper.getListToJson(sql,err);
+        if (mData != null){
             mContext.runOnUiThread(this::notifyDataSetChanged);
         }else{
-            mDatas = new JSONArray();
+            mData = new JSONArray();
             mContext.runOnUiThread(()->MyDialog.ToastMessage("加载付款明细错误：" + err,mContext,null));
         }
 
@@ -101,7 +101,7 @@ public final class RetailDetailsPayInfoAdapter extends AbstractPayInfoAdapter<Re
     @Override
     public boolean isPaySuccess(){
         boolean success  = true;
-        for (Object o : mDatas){
+        for (Object o : mData){
             if (o instanceof JSONObject){
                 if(2 != Utils.getNotKeyAsNumberDefault((JSONObject)o,"pay_status",1)){
                     success = false;

@@ -20,7 +20,7 @@ import java.util.Locale;
 public final class MobileTransferDetailsAdapter extends AbstractTransferDetailsAdapter {
     public MobileTransferDetailsAdapter(MainActivity context,final JSONArray array){
         super(context);
-        mDatas = array;
+        mData = array;
     }
 
     static class MyViewHolder extends AbstractTransferDetailsAdapter.MyViewHolder {
@@ -44,12 +44,12 @@ public final class MobileTransferDetailsAdapter extends AbstractTransferDetailsA
     @Override
     public void onBindViewHolder(@NonNull AbstractTransferDetailsAdapter.MyViewHolder t_holder, int position) {
         super.onBindViewHolder(t_holder, position);
-        if (null != mDatas) {
-            final JSONObject pay_info = mDatas.getJSONObject(position);
+        if (null != mData) {
+            final JSONObject pay_info = mData.getJSONObject(position);
             if (pay_info != null) {
                 final MyViewHolder holder = (MyViewHolder) t_holder;
 
-                if (position == mDatas.size() - 1) {
+                if (position == mData.size() - 1) {
                     holder.pay_m_name_tv.setTextColor(Color.RED);
                 }
                 holder.pay_m_name_tv.setText(pay_info.getString("pay_name"));
@@ -91,7 +91,7 @@ public final class MobileTransferDetailsAdapter extends AbstractTransferDetailsA
     }
 
     public void setDatas(final JSONArray array){
-        mDatas = array;
+        mData = array;
         notifyDataSetChanged();
     }
 

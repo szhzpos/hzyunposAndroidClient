@@ -12,7 +12,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.adapter.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -30,7 +30,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class MobileGoodsDetailsAdapter extends AbstractDataAdapter<MobileGoodsDetailsAdapter.MyViewHolder> {
+public class MobileGoodsDetailsAdapter extends AbstractDataAdapterForJson<MobileGoodsDetailsAdapter.MyViewHolder> {
     private final MainActivity mContext;
     private int mShowType = 0;
     public MobileGoodsDetailsAdapter(MainActivity context) {
@@ -65,8 +65,8 @@ public class MobileGoodsDetailsAdapter extends AbstractDataAdapter<MobileGoodsDe
 
     @Override
     public void onBindViewHolder( @NonNull final  MyViewHolder holder, int position) {
-        if (mDatas != null) {
-            final JSONObject object = mDatas.getJSONObject(position);
+        if (mData != null) {
+            final JSONObject object = mData.getJSONObject(position);
             holder.goods_title_tv.setText(object.getString("goods_title"));
             if (mShowType == 1) {
                 holder.price_num_layout.setVisibility(View.GONE);
@@ -80,7 +80,7 @@ public class MobileGoodsDetailsAdapter extends AbstractDataAdapter<MobileGoodsDe
 
     public void setDatas(final JSONArray array, int type){
         mShowType = type;
-        mDatas = array;
+        mData = array;
         notifyDataSetChanged();
     }
 

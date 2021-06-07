@@ -12,9 +12,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.CustomizationView.SwipeLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.adapter.AbstractDataAdapter;
-import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
-import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
@@ -36,7 +34,7 @@ public class MobileInventoryOrderDetailsAdapter extends  AbstractBusinessOrderDe
         super(activity);
     }
 
-    static class MyViewHolder extends AbstractDataAdapter.SuperViewHolder {
+    static class MyViewHolder extends AbstractDataAdapterForJson.SuperViewHolder {
         TextView barcode_tv,name_tv,num_tv,unit_name;
         MyViewHolder(View itemView) {
             super(itemView);
@@ -70,7 +68,7 @@ public class MobileInventoryOrderDetailsAdapter extends  AbstractBusinessOrderDe
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
 
-        final JSONObject object = mDatas.getJSONObject(position);
+        final JSONObject object = mData.getJSONObject(position);
 
         holder.barcode_tv.setText(object.getString("barcode"));
         holder.name_tv.setText(object.getString("goods_title"));

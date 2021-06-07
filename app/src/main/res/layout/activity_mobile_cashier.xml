@@ -284,7 +284,7 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/mobile_goods_type_list"
-                android:layout_width="@dimen/width_88"
+                android:layout_width="@dimen/width_108"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="@dimen/margin_1"
                 android:background="@color/white">
