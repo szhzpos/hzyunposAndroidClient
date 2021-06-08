@@ -23,6 +23,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -46,17 +47,17 @@ import static android.database.Cursor.FIELD_TYPE_INTEGER;
 import static android.database.Cursor.FIELD_TYPE_NULL;
 import static android.database.Cursor.FIELD_TYPE_STRING;
 
-/**
- * Created by Administrator on 2018-03-27.
- */
-
 public final class SQLiteHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 9;
     private static volatile SQLiteDatabase mDb;
 
     private SQLiteHelper(Context context,final String databaseName){
         super(context, databaseName, null, DATABASE_VERSION);
         Logger.d("DATABASE_NAME:%s",databaseName);
+    }
+
+    public static boolean isNotInit(){
+        return mDb == null;
     }
 
     public static void initDb(Context context, final String storesId){
@@ -134,6 +135,12 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         }
         if(!checkColumnExists(db,"barcode_info","current_goods")){
             modify_list.add("ALTER TABLE barcode_info ADD COLUMN current_goods INTEGER DEFAULT (1)");
+        }
+        if(!checkColumnExists(db,"barcode_info","spec_str")){
+            modify_list.add("ALTER TABLE barcode_info ADD COLUMN spec_str VARCHAR");
+        }
+        if(!checkColumnExists(db,"barcode_info","cash_flow_ratio")){
+            modify_list.add("ALTER TABLE barcode_info ADD COLUMN cash_flow_ratio REAL DEFAULT (0.00)");
         }
 
         try {
@@ -395,7 +402,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             synchronized (SQLiteHelper.class){
                 mDb.close();
                 mDb = null;
-                Logger.d("mDb closed...");
+                Logger.i("mDb closed...");
             }
         }
     }

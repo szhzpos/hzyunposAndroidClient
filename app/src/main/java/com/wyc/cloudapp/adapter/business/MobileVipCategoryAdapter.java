@@ -11,6 +11,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.business.MobileVipCategoryInfoActivity;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
+import com.wyc.cloudapp.adapter.AbstractDataAdapterForList;
 import com.wyc.cloudapp.adapter.bean.VipGrade;
 import com.wyc.cloudapp.dialog.business.EditVipCategoryDialog;
 import com.wyc.cloudapp.logger.Logger;
@@ -30,7 +31,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class MobileVipCategoryAdapter extends AbstractDataAdapterForJson<MobileVipCategoryAdapter.MyViewHolder> implements View.OnClickListener  {
+public class MobileVipCategoryAdapter extends AbstractDataAdapterForList<VipGrade,MobileVipCategoryAdapter.MyViewHolder> implements View.OnClickListener  {
     private final MobileVipCategoryInfoActivity mContext;
 
     public MobileVipCategoryAdapter(MobileVipCategoryInfoActivity c){
@@ -57,17 +58,14 @@ public class MobileVipCategoryAdapter extends AbstractDataAdapterForJson<MobileV
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        final JSONObject object = mData.getJSONObject(position);
-        holder._grade_name_tv.setText(String.format(Locale.CHINA,"%s - %s",object.getString("grade_sort"),object.getString("grade_name")));
-        holder._grade_name_tv.setTag(object.getString("grade_id"));
+        final VipGrade object = mData.get(position);
+        holder._grade_name_tv.setText(String.format(Locale.CHINA,"%s - %s",object.getGrade_sort(),object.getGrade_name()));
+        holder._grade_name_tv.setTag(object.getGrade_id());
         if (!holder._modify.hasOnClickListeners())holder._modify.setOnClickListener(this);
         holder._modify.setTag(object);
     }
     @Override
     public void onClick(View v) {
-        final JSONObject object = Utils.getViewTagValue(v);
-        Logger.d_json(object);
-        final VipGrade vipGrade = object.toJavaObject(VipGrade.class);
-        EditVipCategoryDialog.start(mContext,vipGrade,true);
+        EditVipCategoryDialog.start(mContext, (VipGrade) v.getTag(),true);
     }
 }

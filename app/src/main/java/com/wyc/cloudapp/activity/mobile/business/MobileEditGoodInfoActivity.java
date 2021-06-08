@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -36,7 +37,10 @@ import java.util.Locale;
 import butterknife.BindView;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableEmitter;
 import io.reactivex.rxjava3.core.ObservableOnSubscribe;
+import io.reactivex.rxjava3.core.Scheduler;
+import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 import static com.wyc.cloudapp.constants.ScanCallbackCode.CODE_REQUEST_CODE;
@@ -116,6 +120,74 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
             setDefaultSupplier();
         }, throwable -> MyDialog.ToastMessage("查询供应商信息错误:" + throwable.getMessage(),this,getWindow()));
     }
+    private void initSupplier(){
+        final TextView supplier_et = findViewById(R.id.a_supplier_et);
+        supplier_et.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                setHz_method();
+            }
+        });
+        supplier_et.setOnClickListener(v -> {
+            final String sup = getString(R.string.a_supplier_sz);
+            final TreeListDialog treeListDialog = new TreeListDialog(this,sup.substring(0,sup.length() - 1));
+            treeListDialog.setDatas(Utils.JsondeepCopy(parse_supplier_info()),null,true);
+            CustomApplication.runInMainThread(()->{
+                if (treeListDialog.exec() == 1){
+                    final JSONObject object = treeListDialog.getSingleContent();
+                    supplier_et.setTag(object.getString(TreeListBaseAdapter.COL_ID));//注意调用位置。后续业务会在TextWatcher对象里面获取tag值，所以必须先设置tag
+                    supplier_et.setText(object.getString(TreeListBaseAdapter.COL_NAME));
+                    mNameEt.requestFocus();
+                }
+            });
+        });
+        mSupplierTv = supplier_et;
+    }
+
+    private void setHz_method(){
+        final JSONObject supplier = getSupplierById(Utils.getViewTagValue(mSupplierTv,""));
+        if (null != supplier){
+            final String hz_method = supplier.getString("hz_method");
+            hz_method_tv.setTag(hz_method);
+            hz_method_tv.setText(supplier.getString("hz_method_name"));
+            setLyRatio("1".equals(hz_method) ? View.VISIBLE : View.INVISIBLE);
+        }
+    }
+    private JSONObject getDefaultSupplier(){
+        if (null == mSupplierList)return null;
+        for (int i = 0,size = mSupplierList.size();i < size;i ++){
+            final JSONObject object = mSupplierList.getJSONObject(i);
+            if (DEFAULT_SUPPLIER_CODE.equals(object.getString("gs_code"))){
+                return object;
+            }
+        }
+        return null;
+    }
+
+    private void setDefaultSupplier(){
+        if (null != mSupplierTv){
+            JSONObject object;
+            if (isModify){
+                object = getSupplierById(Utils.getNullStringAsEmpty(mGoodsObj,"gs_id"));
+            }else {
+                object = getDefaultSupplier();
+            }
+            if ( null != object){
+                mSupplierTv.setTag(object.getString("gs_id"));
+                mSupplierTv.setText(object.getString("gs_name"));
+            }
+        }
+    }
 
     private JSONArray parse_supplier_info(){
         final JSONArray array  = new JSONArray(),suppliers = mSupplierList;
@@ -136,25 +208,6 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         return array;
     }
 
-    private JSONObject getDefaultSupplier(){
-        if (null == mSupplierList)return null;
-        for (int i = 0,size = mSupplierList.size();i < size;i ++){
-            final JSONObject object = mSupplierList.getJSONObject(i);
-            if (DEFAULT_SUPPLIER_CODE.equals(object.getString("gs_code"))){
-                return object;
-            }
-        }
-        return null;
-    }
-
-    private void setDefaultSupplier(){
-        final JSONObject object = getDefaultSupplier();
-        if (!isModify && null != object && null != mSupplierTv){
-            mSupplierTv.setText(object.getString("gs_name"));
-            mSupplierTv.setTag(object.getString("gs_id"));
-            setHz_method();
-        }
-    }
     private JSONObject getSupplierById(final String gs_id){
         if (null == mSupplierList)return null;
         for (int i = 0,size = mSupplierList.size();i < size;i ++){
@@ -339,34 +392,6 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         super.onActivityResult(requestCode,resultCode,intent);
     }
 
-    private void initSupplier(){
-        final TextView supplier_et = findViewById(R.id.a_supplier_et);
-        supplier_et.setOnClickListener(v -> {
-            final String sup = getString(R.string.a_supplier_sz);
-            final TreeListDialog treeListDialog = new TreeListDialog(this,sup.substring(0,sup.length() - 1));
-            treeListDialog.setDatas(Utils.JsondeepCopy(parse_supplier_info()),null,true);
-            CustomApplication.runInMainThread(()->{
-                if (treeListDialog.exec() == 1){
-                    final JSONObject object = treeListDialog.getSingleContent();
-                    supplier_et.setText(object.getString(TreeListBaseAdapter.COL_NAME));
-                    supplier_et.setTag(object.getString(TreeListBaseAdapter.COL_ID));
-                    setHz_method();
-                    mNameEt.requestFocus();
-                }
-            });
-        });
-        mSupplierTv = supplier_et;
-    }
-
-    private void setHz_method(){
-        final JSONObject supplier = getSupplierById(Utils.getViewTagValue(mSupplierTv,""));
-        if (null != supplier){
-            final String hz_method = supplier.getString("hz_method");
-            hz_method_tv.setTag(hz_method);
-            hz_method_tv.setText(supplier.getString("hz_method_name"));
-            setLyRatio("1".equals(hz_method) ? View.VISIBLE : View.GONE);
-        }
-    }
     private void setLyRatio(int visibility){
         //设置联营扣率
         final TextView ly_ratio_label = findViewById(R.id.ly_ratio_label);
@@ -374,7 +399,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         ly_ratio_tv.setVisibility(visibility);
         if (visibility == View.VISIBLE){
             ly_ratio_tv.setText(Utils.getNullStringAsEmpty(mGoodsObj,"cash_flow_ratio"));
-        }
+        }else ly_ratio_tv.setText("");
     }
 
     private void initBrand(){
@@ -387,7 +412,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
                     brand.setText(object.getString(TreeListBaseAdapter.COL_NAME));
-                    brand.setTag(object.getIntValue(TreeListBaseAdapter.COL_ID));
+                    brand.setTag(object.getString(TreeListBaseAdapter.COL_ID));
                 }
             });
         });
@@ -395,34 +420,28 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     }
 
     private void getGoodsBase(){
-        CustomApplication.execute(()->{
+        Observable.create((ObservableOnSubscribe<JSONObject>) emitter -> {
             final HttpRequest httpRequest = new HttpRequest();
             final JSONObject object = new JSONObject();
             object.put("appid",getAppId());
             final String sz_param = HttpRequest.generate_request_parm(object,getAppSecret());
             final JSONObject retJson = httpRequest.sendPost(getUrl() + "/api/goods_set/get_bases",sz_param,true);
-            switch (retJson.getIntValue("flag")){
-                case 0:
-                    runOnUiThread(()-> MyDialog.ToastMessage("查询商品基本信息错误:" + retJson.getString("info"),this,getWindow()));
-                    break;
-                case 1:
-                    final JSONObject info_obj = JSONObject.parseObject(retJson.getString("info"));
-                    if ("n".equals(Utils.getNullOrEmptyStringAsDefault(info_obj,"status","n"))){
-                        runOnUiThread(()-> MyDialog.ToastMessage("查询商品基本信息错误:" + info_obj.getString("info"),this,getWindow()));
-                    }else{
-                        final JSONObject data = info_obj.getJSONObject("data");
-                        mUnitList = parse_unit_info(Utils.getNullObjectAsEmptyJsonArray(data,"units"));
-                        final JSONArray categorys = new JSONArray();
-                        parse_category_info(Utils.getNullObjectAsEmptyJsonArray(data,"category"),null,0,categorys);
-                        mCategoryList = categorys;
-                        runOnUiThread(this::setDefaultCategory);
-
-                        mBrandList = parse_brand_info(Utils.getNullObjectAsEmptyJsonArray(data,"brand"));
-                        runOnUiThread(this::setDefaultBrand);
-                    }
-                    break;
+            if (HttpUtils.checkRequestSuccess(retJson)){
+                final JSONObject info_obj = JSONObject.parseObject(retJson.getString("info"));
+                if (HttpUtils.checkBusinessSuccess(info_obj)){
+                    emitter.onNext(info_obj.getJSONObject("data"));
+                }else emitter.onError(new Exception(info_obj.getString("info")));
             }
-        });
+        }).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe(data -> {
+            mUnitList = parse_unit_info(Utils.getNullObjectAsEmptyJsonArray(data,"units"));
+            final JSONArray categorys = new JSONArray();
+            parse_category_info(Utils.getNullObjectAsEmptyJsonArray(data,"category"),null,0,categorys);
+            mCategoryList = categorys;
+            setDefaultCategory();
+
+            mBrandList = parse_brand_info(Utils.getNullObjectAsEmptyJsonArray(data,"brand"));
+            setDefaultBrand();
+        }, throwable -> MyDialog.ToastMessage("查询商品基本信息错误:" + throwable.getMessage(),this,getWindow()));
     }
 
     private JSONObject getDefaultCategory(){
@@ -729,7 +748,6 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
 
         data.put("appid",getAppId());
         data.put("goods",barcode_info);
-
         return data;
     }
 
@@ -755,7 +773,6 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     }
 
     private void addGoods(final JSONObject data,boolean reset){
-        Logger.d_json(data);
         if (data.isEmpty())return;
 
         final CustomProgressDialog progressDialog = new CustomProgressDialog(this);
@@ -857,6 +874,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         mPurPriceEt.setText(R.string.zero_p_z_sz);
         pf_price_et.setText(R.string.zero_p_z_sz);
         mUnitTv.setText("");
+        spec_tv.setText("");
 
         getOnlycodeAndBarcode();
     }
@@ -917,8 +935,10 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
 
         mUnitTv.setTag(goods.getString("unit_id"));
         mUnitTv.setText(goods.getString("unit_name"));
+        spec_tv.setText(goods.getString("spec_str"));
 
         place_et.setText(goods.getString("origin"));
+
 
         mPurPriceEt.setText(goods.getString("buying_price"));
         pf_price_et.setText(goods.getString("trade_price"));

@@ -12,6 +12,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.business.EditConsumerActivity;
 import com.wyc.cloudapp.activity.mobile.business.MobileConsumerInfoActivity;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
+import com.wyc.cloudapp.adapter.AbstractDataAdapterForList;
 import com.wyc.cloudapp.adapter.bean.Consumer;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
@@ -30,7 +31,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class MobileConsumerAdapter extends AbstractDataAdapterForJson<MobileConsumerAdapter.MyViewHolder> implements View.OnClickListener  {
+public class MobileConsumerAdapter extends AbstractDataAdapterForList<Consumer,MobileConsumerAdapter.MyViewHolder> implements View.OnClickListener  {
     private final MobileConsumerInfoActivity mContext;
 
     public MobileConsumerAdapter(MobileConsumerInfoActivity c){
@@ -59,18 +60,15 @@ public class MobileConsumerAdapter extends AbstractDataAdapterForJson<MobileCons
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        final JSONObject object = mData.getJSONObject(position);
-        holder._consumer_tv.setText(String.format(Locale.CHINA,"%s-%s",object.getString("cs_code"),object.getString("cs_name")));
-        holder.contacts_name_tv.setText(object.getString("name"));
-        holder.phone_tv.setText(object.getString("mobile"));
+        final Consumer object = mData.get(position);
+        holder._consumer_tv.setText(String.format(Locale.CHINA,"%s-%s",object.getCs_code(),object.getCs_name()));
+        holder.contacts_name_tv.setText(object.getName());
+        holder.phone_tv.setText(object.getMobile());
         if (!holder._modify.hasOnClickListeners())holder._modify.setOnClickListener(this);
         holder._modify.setTag(object);
     }
     @Override
     public void onClick(View v) {
-        final JSONObject object = Utils.getViewTagValue(v);
-        Logger.d_json(object);
-        final Consumer consumer = object.toJavaObject(Consumer.class);
-        EditConsumerActivity.start(mContext,true,consumer);
+        EditConsumerActivity.start(mContext,true,(Consumer)v.getTag());
     }
 }

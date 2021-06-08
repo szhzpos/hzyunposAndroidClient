@@ -118,7 +118,7 @@ public final class MobileRetailOrderAdapter extends AbstractQueryDataAdapter<Mob
             }else if (isClickView(refund_btn,event.getX(),event.getY())){
                 int order_status = Utils.getNotKeyAsNumberDefault(curr,"order_status",-1),upload_status = Utils.getNotKeyAsNumberDefault(curr,"upload_status",-1);
                 if (upload_status == RetailOrderStatus.UPLOAD_ERROR){
-                    CustomApplication.self().reuplaod_retail_order();
+                    CustomApplication.self().reupload_retail_order();
                 }else if (order_status == 2 || order_status == 88){
                     CustomApplication.runInMainThread(()->{
                         if (RefundDialog.verifyRefundPermission(mContext)){

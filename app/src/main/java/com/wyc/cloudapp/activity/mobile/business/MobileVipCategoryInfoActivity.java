@@ -10,6 +10,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.adapter.bean.VipGrade;
 import com.wyc.cloudapp.adapter.business.MobileVipCategoryAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
@@ -59,7 +60,7 @@ public class MobileVipCategoryInfoActivity extends AbstractMobileBaseArchiveActi
                     ret_obj = JSONObject.parseObject(ret_obj.getString("info"));
                     if (HttpUtils.checkBusinessSuccess(ret_obj)){
                         final JSONArray data = ret_obj.getJSONArray("data");
-                        mAdapter.setDataForArray(data);
+                        mAdapter.setDataForList(data.toJavaList(VipGrade.class));
                     }else throw new JSONException(ret_obj.getString("info"));
                 }catch (JSONException e){
                     e.printStackTrace();

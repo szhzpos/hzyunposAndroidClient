@@ -13,10 +13,12 @@ import android.widget.Spinner;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.adapter.bean.Supplier;
 import com.wyc.cloudapp.adapter.business.MobileSupplierAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
@@ -90,7 +92,7 @@ public class MobileSupplierInfoActivity extends AbstractMobileBaseArchiveActivit
                     ret_obj = JSONObject.parseObject(ret_obj.getString("info"));
                     if (HttpUtils.checkBusinessSuccess(ret_obj)){
                         final JSONArray data = ret_obj.getJSONArray("data");
-                        mAdapter.setDataForArray(data);
+                        mAdapter.setDataForList(data.toJavaList(Supplier.class));
                     }else throw new JSONException(ret_obj.getString("info"));
                 }catch (JSONException e){
                     e.printStackTrace();

@@ -335,7 +335,7 @@
     <string name="a_purchase_price_sz">参考进价：</string>
     <string name="a_retail_price">零售价：</string>
     <string name="a_category_sz">所属分类：</string>
-    <string name="a_unit_sz">计量单位：</string>
+    <string name="a_unit_sz">单位：</string>
     <string name="a_ckml_sz">参考毛利：</string>
     <string name="a_goods_attr_sz">商品属性：</string>
     <string name="a_supplier_sz">供应商：</string>

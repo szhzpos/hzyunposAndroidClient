@@ -37,6 +37,7 @@ public class BaseActivity extends AppCompatActivity {
 
         if (CustomApplication.self().isNotLogin() && !(this instanceof LoginActivity)){
             LoginActivity.start(this);
+            Logger.d("restart Activity:%s",getLocalClassName());
             finish();
         }
     }

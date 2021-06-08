@@ -100,6 +100,7 @@ public final class HttpRequest {
             if(mGetCode != HttpURLConnection.HTTP_OK){
                 content.put("flag", 0);
                 content.put("info",mGetConn.getResponseMessage());
+                mGetConn.getErrorStream().close();
             }else {
                 in = new BufferedReader(new InputStreamReader(mGetConn.getInputStream(),StandardCharsets.UTF_8));
                 while ((line = in.readLine()) != null) {
@@ -146,6 +147,7 @@ public final class HttpRequest {
             if(mGetCode != HttpURLConnection.HTTP_OK){
                 content.put("flag", 0);
                 content.put("info",mGetConn.getResponseMessage());
+                mPostConn.getErrorStream().close();
             }else{
                 content.put("flag",1);
                 if (store_file instanceof File){//可能产生效率问题，后续跟进优化
@@ -193,6 +195,7 @@ public final class HttpRequest {
             if(mPostCode != HttpURLConnection.HTTP_OK){
                 content.put("flag", 0);
                 content.put("info",mPostConn.getResponseMessage());
+                mGetConn.getErrorStream().close();
             }else{
                 content.put("flag",1);
                 if (store_file instanceof File){//可能产生效率问题，后续跟进优化
@@ -247,6 +250,7 @@ public final class HttpRequest {
             if(mPostCode != HttpURLConnection.HTTP_OK){
                 content.put("flag", 0);
                 content.put("info",mPostConn.getResponseMessage());
+                mPostConn.getErrorStream().close();
             }else{
                 reader = new InputStreamReader(mPostConn.getInputStream(),StandardCharsets.UTF_8);
                 if (json){

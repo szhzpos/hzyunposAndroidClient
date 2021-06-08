@@ -51,6 +51,8 @@ class SyncManagement extends Thread {
                 join(3000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
+                mSyncHandler.removeCallbacksAndMessages(null);
+                mSyncHandler.getLooper().quit();
             }
             mSyncHandler = null;
             handlerInitLatch = null;

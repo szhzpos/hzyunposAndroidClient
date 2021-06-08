@@ -13,10 +13,12 @@ import android.widget.Spinner;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.adapter.bean.Consumer;
 import com.wyc.cloudapp.adapter.business.MobileConsumerAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
@@ -25,6 +27,8 @@ import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
+
+import java.util.List;
 
 /*客户信息*/
 public class MobileConsumerInfoActivity extends AbstractMobileBaseArchiveActivity {
@@ -87,8 +91,8 @@ public class MobileConsumerInfoActivity extends AbstractMobileBaseArchiveActivit
                 try {
                     ret_obj = JSONObject.parseObject(ret_obj.getString("info"));
                     if (HttpUtils.checkBusinessSuccess(ret_obj)){
-                        final JSONArray data = ret_obj.getJSONArray("data");
-                        mAdapter.setDataForArray(data);
+                        final String data = ret_obj.getString("data");
+                        mAdapter.setDataForList(JSON.parseObject(data,new TypeReference<List<Consumer>>(){}.getType()));
                     }else throw new JSONException(ret_obj.getString("info"));
                 }catch (JSONException e){
                     e.printStackTrace();

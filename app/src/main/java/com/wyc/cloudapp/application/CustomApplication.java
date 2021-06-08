@@ -87,6 +87,7 @@ public final class CustomApplication extends Application {
         super.onConfigurationChanged(newConfig);
     }
 
+
     private void setupLeakCanary() {
         enabledStrictMode();
         LeakCanary.install(this);
@@ -138,7 +139,7 @@ public final class CustomApplication extends Application {
     }
 
     public boolean isNotLogin(){
-        return mStoreInfo == null || mCashierInfo == null;
+        return SQLiteHelper.isNotInit() || mStoreInfo == null || mCashierInfo == null;
     }
 
     public JSONObject getCashierInfo(){
@@ -218,7 +219,7 @@ public final class CustomApplication extends Application {
             mActivities.remove(activity);
             if (mActivities.isEmpty()){
                 THREAD_POOL_EXECUTOR.shutdownNow();
-                Logger.d("THREAD_POOL_EXECUTOR shutdowned");
+                Logger.d("THREAD_POOL_EXECUTOR shutdown...");
                 exit();
             }
         }
@@ -305,7 +306,7 @@ public final class CustomApplication extends Application {
         mSyncManagement.sync_retail_order(false);
     }
 
-    public void reuplaod_retail_order(){
+    public void reupload_retail_order(){
         mSyncManagement.sync_retail_order(true);
     }
 

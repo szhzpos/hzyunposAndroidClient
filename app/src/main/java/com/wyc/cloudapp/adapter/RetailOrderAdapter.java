@@ -117,7 +117,7 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
             }else if (isClickView(order_action,event.getX(),event.getY())){
                 int order_status = cur_order.getIntValue("order_status"),upload_status = cur_order.getIntValue("upload_status");
                 if (upload_status == RetailOrderStatus.UPLOAD_ERROR){//启动重传
-                    CustomApplication.self().reuplaod_retail_order();
+                    CustomApplication.self().reupload_retail_order();
                 }else if (order_status == 2 || order_status == 88){
                     CustomApplication.runInMainThread(()->{
                         if (RefundDialog.verifyRefundPermission(mContext)){

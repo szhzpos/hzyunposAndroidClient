@@ -39,6 +39,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.BuildConfig;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.MobileNavigationActivity;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -550,6 +551,9 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
                             jsonLogin.put("pos_code", Utils.getDeviceId(mSelf));
                             jsonLogin.put("pos_name", Utils.getDeviceId(mSelf));
                             jsonLogin.put("stores_id", mStoresId);
+                            jsonLogin.put("pos_type", 1);//安卓设备
+                            jsonLogin.put("cas_id", Utils.getNullStringAsEmpty(cashier_json,"cas_id"));
+                            jsonLogin.put("soft_version", BuildConfig.VERSION_NAME);
 
                             final String set_sz_param = HttpRequest.generate_request_parm(jsonLogin, appSecret);
 
