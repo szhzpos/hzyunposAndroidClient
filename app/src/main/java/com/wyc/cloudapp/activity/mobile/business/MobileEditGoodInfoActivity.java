@@ -783,6 +783,9 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
 
         CustomApplication.execute(()->{
 
+            data.put("operation_mode",1);//判断后台操作员权限
+            data.put("pt_user_id",getPtUserId());
+
             final HttpRequest httpRequest = new HttpRequest();
 
             final String param = HttpRequest.generate_request_parm(data,getAppSecret());
