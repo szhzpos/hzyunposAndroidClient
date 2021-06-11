@@ -320,7 +320,8 @@
             android:paddingStart="@dimen/margin_5"
             android:paddingEnd="@dimen/margin_5"
             android:selectAllOnFocus="true"
-            android:textColor="@color/text_color" />
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -384,7 +385,7 @@
 
         <TextView
             android:id="@+id/ly_ratio_label"
-            android:layout_width="@dimen/width_68"
+            android:layout_width="@dimen/width_78"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="@dimen/margin_2"
@@ -406,9 +407,11 @@
             android:lines="1"
             android:paddingStart="@dimen/margin_5"
             android:paddingEnd="@dimen/margin_5"
+            android:selectAllOnFocus="true"
             android:text="@string/zero_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16" />
+
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -442,7 +445,7 @@
             android:textSize="@dimen/font_size_16" />
 
         <TextView
-            android:layout_width="@dimen/width_68"
+            android:layout_width="@dimen/width_78"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="@dimen/margin_2"
@@ -464,6 +467,7 @@
             android:lines="1"
             android:paddingStart="@dimen/margin_5"
             android:paddingEnd="@dimen/margin_5"
+            android:selectAllOnFocus="true"
             android:text="@string/zero_p_z_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16" />
@@ -500,7 +504,7 @@
             android:textSize="@dimen/font_size_16" />
 
         <TextView
-            android:layout_width="@dimen/width_68"
+            android:layout_width="@dimen/width_78"
             android:layout_height="wrap_content"
             android:text="@string/a_vip_price_sz"
             android:textAlignment="viewEnd"

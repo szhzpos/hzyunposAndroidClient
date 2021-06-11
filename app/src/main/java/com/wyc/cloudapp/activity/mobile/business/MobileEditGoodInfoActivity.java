@@ -725,6 +725,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         data.put("gb_id",Utils.getViewTagValue(mBrandTv,""));
         data.put("cash_flow_mode",Utils.getViewTagValue(hz_method_tv,""));
         data.put("cash_flow_ratio",ly_ratio_tv.getText().toString());
+        data.put("origin",place_et.getText().toString());
 
         final JSONArray barcode_info = new JSONArray();
         final JSONObject goods = new JSONObject();
@@ -868,8 +869,8 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
 
         mNameEt.setText(R.string.space_sz);
         resetCurPrice();
-        setDefaultSupplier();
-        setDefaultCategory();
+        //setDefaultSupplier();
+        //setDefaultCategory();
         setDefaultUnit();
 
         mRetailPriceEt.setText(R.string.zero_p_z_sz);
