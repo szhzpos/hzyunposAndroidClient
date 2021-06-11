@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -100,7 +101,8 @@ public final class HttpRequest {
             if(mGetCode != HttpURLConnection.HTTP_OK){
                 content.put("flag", 0);
                 content.put("info",mGetConn.getResponseMessage());
-                mGetConn.getErrorStream().close();
+                InputStream inputStream = mGetConn.getErrorStream();
+                if (inputStream != null)inputStream.close();
             }else {
                 in = new BufferedReader(new InputStreamReader(mGetConn.getInputStream(),StandardCharsets.UTF_8));
                 while ((line = in.readLine()) != null) {
@@ -147,7 +149,8 @@ public final class HttpRequest {
             if(mGetCode != HttpURLConnection.HTTP_OK){
                 content.put("flag", 0);
                 content.put("info",mGetConn.getResponseMessage());
-                mPostConn.getErrorStream().close();
+                InputStream inputStream = mGetConn.getErrorStream();
+                if (inputStream != null)inputStream.close();
             }else{
                 content.put("flag",1);
                 if (store_file instanceof File){//可能产生效率问题，后续跟进优化
@@ -195,7 +198,8 @@ public final class HttpRequest {
             if(mPostCode != HttpURLConnection.HTTP_OK){
                 content.put("flag", 0);
                 content.put("info",mPostConn.getResponseMessage());
-                mGetConn.getErrorStream().close();
+                InputStream inputStream = mPostConn.getErrorStream();
+                if (inputStream != null)inputStream.close();
             }else{
                 content.put("flag",1);
                 if (store_file instanceof File){//可能产生效率问题，后续跟进优化
@@ -250,7 +254,8 @@ public final class HttpRequest {
             if(mPostCode != HttpURLConnection.HTTP_OK){
                 content.put("flag", 0);
                 content.put("info",mPostConn.getResponseMessage());
-                mPostConn.getErrorStream().close();
+                InputStream inputStream = mPostConn.getErrorStream();
+                if (inputStream != null)inputStream.close();
             }else{
                 reader = new InputStreamReader(mPostConn.getInputStream(),StandardCharsets.UTF_8);
                 if (json){
