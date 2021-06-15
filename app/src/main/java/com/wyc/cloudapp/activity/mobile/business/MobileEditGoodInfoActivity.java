@@ -3,13 +3,19 @@ package com.wyc.cloudapp.activity.mobile.business;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +25,9 @@ import androidx.annotation.NonNull;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.hjq.permissions.OnPermissionCallback;
+import com.hjq.permissions.Permission;
+import com.hjq.permissions.XXPermissions;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -26,27 +35,46 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.TakePhotoPopWin;
 import com.wyc.cloudapp.dialog.TreeListDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.FileUtils;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.ObservableEmitter;
 import io.reactivex.rxjava3.core.ObservableOnSubscribe;
-import io.reactivex.rxjava3.core.Scheduler;
-import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 import static com.wyc.cloudapp.constants.ScanCallbackCode.CODE_REQUEST_CODE;
 
 public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     private static final String DEFAULT_SUPPLIER_CODE = "0000";
+    private static final int REQUEST_CAPTURE_IMG = 100;
+    private static final int REQ_CROP = 108;
+    private static final int CHOOSE_PHOTO = 110;
 
     private String mBarcodeId;
     private String mBarcode;
@@ -75,6 +103,11 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     @BindView(R.id.ly_ratio_tv)
     TextView ly_ratio_tv;
 
+    @BindView(R.id.goods_img)
+    ImageView goods_img;
+
+    private Uri mImageUri;
+
     private boolean isModify;
     private JSONObject mGoodsObj;
 
@@ -101,6 +134,103 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         if (isModify){
             getGoodsByBarcodeId();
         }
+    }
+
+    @OnClick(R.id.clear_img_btn)
+    void clearPic(){
+        mImageUri = null;
+        goods_img.setImageDrawable(getDrawable(R.drawable.nodish));
+    }
+
+    @OnClick(R.id.add_img_btn)
+    void capturePic(){
+        final TakePhotoPopWin takePhotoPopWin = new TakePhotoPopWin(this, v -> {
+            int id = v.getId();
+            if (id == R.id.btn_take_photo){
+                XXPermissions.with(MobileEditGoodInfoActivity.this)
+                        .permission(Permission.CAMERA)
+                        .request(new OnPermissionCallback() {
+                            @Override
+                            public void onGranted(List<String> permissions, boolean all) {
+                                takePic();
+                            }
+
+                            @Override
+                            public void onDenied(List<String> permissions, boolean never) {
+                                if (never){
+                                    Toast.makeText(MobileEditGoodInfoActivity.this,getString(R.string.camera_permission_hint),Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+            }else if (id == R.id.btn_pick_photo){
+                openAlbum();
+            }
+        });
+        takePhotoPopWin.showAtLocation(getWindow().getDecorView(), Gravity.BOTTOM, 0, 0);
+    }
+
+    private void takePic(){
+        mImageUri = FileUtils.getImgUri(this,createImageFile(""));
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT,mImageUri);
+        startActivityForResult(intent, REQUEST_CAPTURE_IMG);
+    }
+    private File createImageFile(String prefix) {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",Locale.CHINA).format(new Date());
+        String imageFileName = prefix + timeStamp +  Bitmap.CompressFormat.JPEG.toString();
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        return new File(storageDir + File.separator + imageFileName);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent){
+        if (resultCode == RESULT_OK ){
+            if (requestCode == CODE_REQUEST_CODE) {
+                final String _code = intent.getStringExtra("auth_code");
+                mBarcodeEt.setText(_code);
+                getGoodsInfoByBarcode();
+            }else if (requestCode == REQUEST_CAPTURE_IMG) {
+                crop();
+            }else if (requestCode == REQ_CROP){
+                try(InputStream inputStream = getContentResolver().openInputStream(mImageUri)) {
+                    goods_img.setImageBitmap(BitmapFactory.decodeStream(inputStream));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Toast.makeText(this,e.getLocalizedMessage(),Toast.LENGTH_SHORT).show();
+                }
+            }else if (requestCode == CHOOSE_PHOTO){
+                mImageUri = intent.getData();
+                crop();
+            }
+        }
+        super.onActivityResult(requestCode,resultCode,intent);
+    }
+
+    private void crop() {
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.setDataAndType(mImageUri, "image/*");
+        intent.putExtra("aspectX", 1);
+        intent.putExtra("aspectY", 1);
+        intent.putExtra("outputX", 200);
+        intent.putExtra("outputY", 200);
+        intent.putExtra("scale", true);
+        intent.putExtra("return-data", false);
+
+        Uri imgCropUri = FileUtils.getImgUri(this,createImageFile("clip"));
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, imgCropUri);
+
+        intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+        intent.putExtra("noFaceDetection", false);
+
+        startActivityForResult(intent, REQ_CROP);
+    }
+
+    private void openAlbum() {
+        Intent openAlbumIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        openAlbumIntent.setDataAndType( android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,"image/*");
+        openAlbumIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivityForResult(openAlbumIntent, CHOOSE_PHOTO);//打开相册
     }
 
     private void getSupplier(){
@@ -378,18 +508,6 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
             });
             mBarcodeEt = barcdoe_et;
         }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent intent){
-        if (resultCode == RESULT_OK ){
-            final String _code = intent.getStringExtra("auth_code");
-            if (requestCode == CODE_REQUEST_CODE) {
-                mBarcodeEt.setText(_code);
-                getGoodsInfoByBarcode();
-            }
-        }
-        super.onActivityResult(requestCode,resultCode,intent);
     }
 
     private void setLyRatio(int visibility){
@@ -675,6 +793,8 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     protected void sure() {
         addGoods(generateParameter(),false);
     }
+
+
     private JSONObject generateParameter(){
         final JSONObject data = new JSONObject();
 
@@ -879,6 +999,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         pf_price_et.setText(R.string.zero_p_z_sz);
         mUnitTv.setText("");
         spec_tv.setText("");
+        mBarcodeEt.setText("");
 
         getOnlycodeAndBarcode();
     }
@@ -905,6 +1026,17 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         }
     }
     private void showGoods(final JSONObject goods){
+
+        final String img_url = Utils.getNullStringAsEmpty(goods,"img_url");
+        if (!"".equals(img_url)){
+            final String szImage = img_url.substring(img_url.lastIndexOf("/") + 1);
+            CustomApplication.execute(()->{
+                final Bitmap bitmap = BitmapFactory.decodeFile(CustomApplication.getGoodsImgSavePath() + szImage);
+                CustomApplication.runInMainThread(()-> goods_img.setImageBitmap(bitmap));
+            });
+        }else{
+            goods_img.setImageDrawable(getDrawable(R.drawable.nodish));
+        }
 
         final JSONObject attr_obj = getAttrById(goods.getString("type"));
         if (null != attr_obj){

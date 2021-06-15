@@ -1,5 +1,17 @@
 package com.wyc.cloudapp.utils;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
+import android.provider.MediaStore;
+
+import androidx.core.content.FileProvider;
+
+import com.wyc.cloudapp.logger.Logger;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -59,8 +71,10 @@ public class FileUtils {
         if("".equals(end))return type;
         //在MIME和文件类型的匹配表中找到对应的MIME类型。
         for (String[] strings : MIME_MapTable) {
-            if (end.equals(strings[0]))
+            if (end.equals(strings[0])){
                 type = strings[1];
+                break;
+            }
         }
         return type;
     }
@@ -132,4 +146,49 @@ public class FileUtils {
             {".zip",    "application/zip"},
             {"",        "*/*"}
     };
+
+    private static ContentValues getImageContentValues(File paramFile, long paramLong) {
+        ContentValues localContentValues = new ContentValues();
+        localContentValues.put(MediaStore.Images.ImageColumns.TITLE, paramFile.getName());
+        localContentValues.put(MediaStore.Images.ImageColumns.DISPLAY_NAME, paramFile.getName());
+        localContentValues.put(MediaStore.Images.ImageColumns.MIME_TYPE,"image/*");
+        localContentValues.put(MediaStore.Images.ImageColumns.DATE_MODIFIED, paramLong);
+        localContentValues.put(MediaStore.Images.ImageColumns.DATE_ADDED, paramLong);
+        localContentValues.put(MediaStore.Images.ImageColumns.ORIENTATION, 0);
+        localContentValues.put(MediaStore.Images.ImageColumns.DATE_TAKEN,paramLong);
+        localContentValues.put(MediaStore.Images.ImageColumns.DATA, paramFile.getAbsolutePath());
+        localContentValues.put(MediaStore.Images.ImageColumns.SIZE, paramFile.length());
+        return localContentValues;
+    }
+    public static Uri getImgUri(Context context, File file) {
+        /*ContentResolver localContentResolver = context.getContentResolver();
+        ContentValues localContentValues = getImageContentValues(file, System.currentTimeMillis());
+        return localContentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, localContentValues);*/
+        return getUriForFile(context,file);
+    }
+    private static Uri getUriForFile(Context context, File file) {
+        Uri fileUri;
+        if (Build.VERSION.SDK_INT >= 24) {
+            fileUri = FileProvider.getUriForFile(context, context.getPackageName() + ".fileprovider", file);
+        } else {
+            fileUri = Uri.fromFile(file);
+        }
+        return fileUri;
+    }
+
+    public static String getRealPathFromURI(Context context, Uri contentURI) {
+        String result;
+        Cursor cursor = context.getContentResolver().query(contentURI,
+                new String[]{MediaStore.Images.ImageColumns.DATA},null, null, null);
+        if (cursor == null)
+            result = contentURI.getPath();
+        else {
+            cursor.moveToFirst();
+            int index = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            result = cursor.getString(index);
+            cursor.close();
+        }
+        return result;
+    }
+
 }

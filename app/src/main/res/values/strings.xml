@@ -685,4 +685,8 @@
     <string name="speci_sz">规格：</string>
     <string name="hz_method_sz">经销方式：</string>
     <string name="ly_ratio_sz">扣率(%)：</string>
+    <string name="goods_img_sz">商品图片：</string>
+    <string name="camera_permission_hint">请打开相机权限…</string>
+    <string name="clear_img">清除图片</string>
+    <string name="add_img">添加图片</string>
 </resources>
