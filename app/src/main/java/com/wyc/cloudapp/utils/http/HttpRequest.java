@@ -10,9 +10,11 @@ import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -219,6 +221,57 @@ public final class HttpRequest {
             content.put("flag",0);
             content.put("rsCode", HttpURLConnection.HTTP_BAD_REQUEST);
             content.put("info","下载失败！ " + e.getLocalizedMessage());
+        }finally {
+            clearConnection(CLOSEMODE.POST);
+        }
+        return content;
+    }
+
+    public synchronized JSONObject uploadFileForPost(final String url,File store_file){
+        final JSONObject content = new JSONObject();
+        final byte[] buffer = new byte[1024];
+        int lenght = 0,file_size = 0;
+        BufferedReader in = null;
+        String line;
+        final StringBuilder result = new StringBuilder();
+
+        try {
+            final URL url_obj = new URL(url);
+            mPostConn =(HttpURLConnection)url_obj.openConnection();
+            mPostConn.setUseCaches(false);
+            mPostConn.setConnectTimeout(mConnTimeOut);
+            mPostConn.setReadTimeout(mReadTimeOut);
+            mPostConn.setRequestMethod("POST");
+            mPostConn.connect();
+
+            try (BufferedOutputStream o = new BufferedOutputStream(mPostConn.getOutputStream()); FileInputStream fileOutputStream = new FileInputStream(store_file)){
+                while ((lenght = fileOutputStream.read(buffer)) != -1){
+                    o.write(buffer,0,lenght);
+                    if (mListener != null)mListener.onSize(file_size += lenght);
+                }
+            }
+            try (InputStream inputStream = mPostConn.getInputStream()){
+                mPostCode = mPostConn.getResponseCode();
+                if(mPostCode != HttpURLConnection.HTTP_OK){
+                    content.put("flag", 0);
+                    content.put("info",mPostConn.getResponseMessage());
+                    InputStream errorStream = mPostConn.getErrorStream();
+                    if (errorStream != null)errorStream.close();
+                }else{
+                    InputStreamReader reader = new InputStreamReader(inputStream,StandardCharsets.UTF_8);
+                    in = new BufferedReader(reader);
+                    while ((line = in.readLine()) != null) {
+                        result.append(line);
+                    }
+                    content.put("flag", 1);
+                    content.put("info",Utils.unicode2StringWithStringBuilder(result).toString());
+                }
+                content.put("rsCode", mPostCode);
+            }
+        }catch (IOException | JSONException e){
+            content.put("flag",0);
+            content.put("rsCode", HttpURLConnection.HTTP_BAD_REQUEST);
+            content.put("info","上传错误：" + e.getLocalizedMessage());
         }finally {
             clearConnection(CLOSEMODE.POST);
         }

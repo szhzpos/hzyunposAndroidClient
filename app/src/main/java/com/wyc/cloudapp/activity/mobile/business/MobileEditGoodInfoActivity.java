@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -44,15 +43,12 @@ import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -60,13 +56,6 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableOnSubscribe;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 import static com.wyc.cloudapp.constants.ScanCallbackCode.CODE_REQUEST_CODE;
 
@@ -170,17 +159,12 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     }
 
     private void takePic(){
-        mImageUri = FileUtils.getImgUri(this,createImageFile(""));
+        mImageUri = FileUtils.createCaptureImageFile();
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT,mImageUri);
         startActivityForResult(intent, REQUEST_CAPTURE_IMG);
     }
-    private File createImageFile(String prefix) {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",Locale.CHINA).format(new Date());
-        String imageFileName = prefix + timeStamp +  Bitmap.CompressFormat.JPEG.toString();
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        return new File(storageDir + File.separator + imageFileName);
-    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent){
@@ -212,19 +196,21 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         intent.setDataAndType(mImageUri, "image/*");
         intent.putExtra("aspectX", 1);
         intent.putExtra("aspectY", 1);
-        intent.putExtra("outputX", 200);
-        intent.putExtra("outputY", 200);
-        intent.putExtra("scale", true);
+        intent.putExtra("outputX", 1200);
+        intent.putExtra("outputY", 1200);
+        intent.putExtra("scale", false);
         intent.putExtra("return-data", false);
 
-        Uri imgCropUri = FileUtils.getImgUri(this,createImageFile("clip"));
+        Uri imgCropUri = FileUtils.createCropImageFile();
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imgCropUri);
 
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
         intent.putExtra("noFaceDetection", false);
 
+        mImageUri = imgCropUri;
         startActivityForResult(intent, REQ_CROP);
     }
+
 
     private void openAlbum() {
         Intent openAlbumIntent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -794,7 +780,6 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         addGoods(generateParameter(),false);
     }
 
-
     private JSONObject generateParameter(){
         final JSONObject data = new JSONObject();
 
@@ -896,18 +881,32 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     private void addGoods(final JSONObject data,boolean reset){
         if (data.isEmpty())return;
 
-        final CustomProgressDialog progressDialog = new CustomProgressDialog(this);
+        final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,"正在上传商品信息...");
         final JEventLoop loop = new JEventLoop();
         final StringBuilder err = new StringBuilder();
 
-        progressDialog.setCancel(false).setMessage("正在上传商品信息...").show();
-
         CustomApplication.execute(()->{
+
+            HttpRequest httpRequest = new HttpRequest();
+            //上传图片
+            try {
+                JSONObject ret_json = httpRequest.uploadFileForPost(getUrl() + "/api/imgupload/index",new File(new URI(mImageUri.toString())));
+                if (HttpUtils.checkRequestSuccess(ret_json)){
+                    ret_json = JSONObject.parseObject(ret_json.getString("info"));
+                    if (HttpUtils.checkBusinessSuccess(ret_json)){
+                        ret_json = ret_json.getJSONObject("data");
+                        data.put("pic_id",ret_json.getString("imgs_id"));
+                    }else throw new Exception(ret_json.getString("info"));
+                }else throw new Exception(ret_json.getString("info"));
+            } catch (Exception e) {
+                e.printStackTrace();
+                loop.done(0);
+                err.append(e);
+                return;
+            }
 
             data.put("operation_mode",1);//判断后台操作员权限
             data.put("pt_user_id",getPtUserId());
-
-            final HttpRequest httpRequest = new HttpRequest();
 
             final String param = HttpRequest.generate_request_parm(data,getAppSecret());
 
@@ -938,7 +937,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         int code = loop.exec();
         progressDialog.dismiss();
         if (code != 1){
-            MyDialog.displayErrorMessage(this, "编辑商品错误:" + err);
+            MyDialog.displayErrorMessage(this, "上传商品错误:" + err);
         }else {
             if (reset)
                 reset();
@@ -986,6 +985,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     private void reset(){
         isModify = false;
         mGoodsObj = null;
+        mImageUri = null;
 
         mNameEt.setText(R.string.space_sz);
         resetCurPrice();

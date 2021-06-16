@@ -4,18 +4,24 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.MediaStore;
 
 import androidx.core.content.FileProvider;
 
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.logger.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -161,12 +167,11 @@ public class FileUtils {
         return localContentValues;
     }
     public static Uri getImgUri(Context context, File file) {
-        /*ContentResolver localContentResolver = context.getContentResolver();
+        ContentResolver localContentResolver = context.getContentResolver();
         ContentValues localContentValues = getImageContentValues(file, System.currentTimeMillis());
-        return localContentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, localContentValues);*/
-        return getUriForFile(context,file);
+        return localContentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, localContentValues);
     }
-    private static Uri getUriForFile(Context context, File file) {
+    public static Uri getUriForFile(Context context, File file) {
         Uri fileUri;
         if (Build.VERSION.SDK_INT >= 24) {
             fileUri = FileProvider.getUriForFile(context, context.getPackageName() + ".fileprovider", file);
@@ -174,6 +179,17 @@ public class FileUtils {
             fileUri = Uri.fromFile(file);
         }
         return fileUri;
+    }
+
+    public static Uri createCropImageFile() {
+        String imageFileName = "clip_wyc_." +  Bitmap.CompressFormat.JPEG.toString();
+        String storageDir = CustomApplication.getGoodsImgSavePath();
+        return Uri.parse("file://" + File.separator +storageDir + File.separator + imageFileName);
+    }
+    public static Uri createCaptureImageFile() {
+        String imageFileName = "capture_wyc_." +  Bitmap.CompressFormat.JPEG.toString();
+        String storageDir = CustomApplication.getGoodsImgSavePath();
+        return Uri.parse("file://" + File.separator +storageDir + File.separator + imageFileName);
     }
 
     public static String getRealPathFromURI(Context context, Uri contentURI) {

@@ -95,7 +95,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         showAdImg();
-        mSurfaceRect = new Rect(0,0,mSurface.getWidth(),mSurface.getHeight());
+        mSurfaceRect = new Rect(0,0,mSurface.getWidth(),mSurface.getHeight() - 30);
         mBitmapRect = new Rect();
     }
 

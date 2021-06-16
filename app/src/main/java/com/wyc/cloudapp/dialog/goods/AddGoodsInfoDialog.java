@@ -72,7 +72,9 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
     }
 
     protected double getWidthRatio(){
-        return 0.98;
+        if (mContext.lessThan7Inches())
+            return 0.98;
+        return super.getWidthRatio();
     }
 
     private void initUnit(){
