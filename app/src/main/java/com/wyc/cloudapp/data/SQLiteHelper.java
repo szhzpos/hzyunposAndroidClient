@@ -48,7 +48,7 @@ import static android.database.Cursor.FIELD_TYPE_NULL;
 import static android.database.Cursor.FIELD_TYPE_STRING;
 
 public final class SQLiteHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 9;
+    private static final int DATABASE_VERSION = 10;
     private static volatile SQLiteDatabase mDb;
 
     private SQLiteHelper(Context context,final String databaseName){
@@ -109,9 +109,16 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "                     NOT NULL,\n" +
                 "    name,\n" +
                 "    sort     VARCHAR\n" +
-                ");";
+                ");",auxiliary_barcode_sql = "CREATE TABLE  IF NOT EXISTS auxiliary_barcode_info (\n" +
+                "    id            INTEGER PRIMARY KEY,\n" +
+                "    g_m_id        INTEGER,\n" +
+                "    barcode_id    VARCHAR,\n" +
+                "    fuzhu_barcode VARCHAR,\n" +
+                "    status        INTEGER\n" +
+                ");\n";
         update_list.add(sales_info_sql);
         update_list.add(sale_operator_info_sql);
+        update_list.add(auxiliary_barcode_sql);
 
         //修改
         if(!checkColumnExists(db,"member_order_info","sc_id")){

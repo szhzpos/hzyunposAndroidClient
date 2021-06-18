@@ -123,6 +123,7 @@
     <string name="not_empty_hint_sz">%1$s不能为空!</string>
     <string name="not_exist_hint_sz">不存在%1$s!</string>
     <string name="select_anything_hint">选择%1$s</string>
+    <string name="mark_info_hint">标记已获%1$s信息错误:</string>
     <string name="input_hint">请输入%1$s</string>
     <string name="not_zl_hint_sz">不找零</string>
     <string name="select_pay_way_hint_sz">请选择付款方式</string>

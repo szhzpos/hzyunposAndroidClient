@@ -93,7 +93,7 @@ public final class CustomApplication extends Application {
         LeakCanary.install(this);
     }
 
-    public static void enabledStrictMode() {
+    private static void enabledStrictMode() {
         if (BuildConfig.DEBUG) {
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());
             StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll().penaltyLog().build());

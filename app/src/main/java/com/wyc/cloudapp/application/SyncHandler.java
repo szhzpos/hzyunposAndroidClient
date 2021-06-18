@@ -13,6 +13,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.constants.RetailOrderStatus;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -26,6 +27,7 @@ import java.io.File;
 import java.net.HttpURLConnection;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Consumer;
 
 import static com.wyc.cloudapp.constants.MessageID.SYNC_DIS_INFO_ID;
@@ -51,7 +53,19 @@ final class SyncHandler extends Handler {
         return Arrays.asList(MessageID.SYNC_CASHIER_ID/*收银员*/,MessageID.SYNC_GOODS_CATEGORY_ID/*商品类别*/,MessageID.SYNC_PAY_METHOD_ID/*支付方式*/,MessageID.SYNC_STORES_ID/*仓库信息*/,
                 MessageID.SYNC_GP_INFO_ID/*组合商品*/,MessageID.SYNC_GOODS_ID/*商品信息*/,MessageID.SYNC_FULLREDUCE_ID/*满减信息*/,MessageID.SYNC_SALES_INFO_ID/*营业员信息*/,
                 MessageID.SYNC_SALE_OPERATOR_INFO_ID/*经办人信息*/,MessageID.SYNC_PROMOTION_ID/*促销信息*/,MessageID.SYNC_STEP_PROMOTION_ID/*阶梯促销*/,MessageID.SYNC_STEP_FULLREDUCE_ID/*阶梯满减*/,
-                MessageID.SYNC_BUY_X_GIVE_X_ID,MessageID.SYNC_BUY_FULL_GIVE_X_ID);
+                MessageID.SYNC_BUY_X_GIVE_X_ID,MessageID.SYNC_BUY_FULL_GIVE_X_ID,MessageID.SYNC_AUXILIARY_BARCODE_ID/*辅助条码*/);
+    }
+
+    List<String> getSyncDataTableName(){
+        return Arrays.asList("shop_category","shop_stores","barcode_info","pay_method","cashier_info","fullreduce_info","sales_info",
+                "promotion_info","sale_operator_info","goods_group", "goods_group_info","buyfull_give_x","buy_x_give_x","step_promotion_info","auxiliary_barcode_info");
+    }
+
+    String[] getGoodsCols(){
+        return new String[]{"goods_id","barcode_id","barcode","goods_title","only_coding","retail_price","buying_price","trade_price","cost_price","ps_price",
+                "unit_id","unit_name","specifi","category_name","metering_id","current_goods","shelf_life","goods_status","origin","type","goods_tare","barcode_status","category_id",
+                "tax_rate","tc_mode","tc_rate","yh_mode","yh_price","mnemonic_code","image","attr_id","attr_name","attr_code","brand_id","brand","brand_code","gs_id","gs_code","gs_name",
+                "conversion","update_price","stock_unit_id","stock_unit_name","img_url","spec_str","cash_flow_ratio"};
     }
 
     void initParameter(final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){
@@ -61,18 +75,6 @@ final class SyncHandler extends Handler {
         mPosNum = pos_num;
         mOperId = operid;
         mStoresId = stores_id;
-    }
-
-    List<String> getSyncDataTableName(){
-        return Arrays.asList("shop_category","shop_stores","barcode_info","pay_method","cashier_info","fullreduce_info","sales_info",
-                "promotion_info","sale_operator_info","goods_group", "goods_group_info","buyfull_give_x","buy_x_give_x","step_promotion_info");
-    }
-
-    String[] getGoodsCols(){
-        return new String[]{"goods_id","barcode_id","barcode","goods_title","only_coding","retail_price","buying_price","trade_price","cost_price","ps_price",
-                "unit_id","unit_name","specifi","category_name","metering_id","current_goods","shelf_life","goods_status","origin","type","goods_tare","barcode_status","category_id",
-                "tax_rate","tc_mode","tc_rate","yh_mode","yh_price","mnemonic_code","image","attr_id","attr_name","attr_code","brand_id","brand","brand_code","gs_id","gs_code","gs_name",
-                "conversion","update_price","stock_unit_id","stock_unit_name","img_url","spec_str","cash_flow_ratio"};
     }
 
     @Override
@@ -225,6 +227,16 @@ final class SyncHandler extends Handler {
                     url = base_url + "/api/Jingbanren/xlist";
                     object.put("stores_id",stores_id);
                     break;
+                case MessageID.SYNC_AUXILIARY_BARCODE_ID:
+                    table_name = "auxiliary_barcode_info";
+                    sys_name = "正在辅助条码";
+                    table_cls = new String[]{"id","g_m_id","barcode_id","fuzhu_barcode","status"};
+                    url = base_url + "/api/goods_set/get_fuzhu_barcode";
+                    object.put("stores_id",stores_id);
+                    object.put("page",msg.obj);
+                    object.put("limit",500);
+                    object.put("pos_num",pos_num);
+                    break;
                 case MessageID.SYNC_FINISH_ID:
                     CustomApplication.sendMessage(MessageID.SYNC_FINISH_ID);//同步完成
                     return;
@@ -314,6 +326,7 @@ final class SyncHandler extends Handler {
                                     case MessageID.SYNC_BUY_X_GIVE_X_ID:
                                     case MessageID.SYNC_PROMOTION_ID:
                                     case MessageID.SYNC_STEP_PROMOTION_ID:
+                                    case MessageID.SYNC_AUXILIARY_BARCODE_ID:
                                     case MessageID.SYNC_FULLREDUCE_ID:
                                     case MessageID.SYNC_PAY_METHOD_ID:
                                     case MessageID.SYNC_GOODS_CATEGORY_ID:
@@ -374,6 +387,12 @@ final class SyncHandler extends Handler {
                                                 if ((current_page++ <= max_page)){
                                                     Logger.d("current_page:%d,max_page:%d",current_page,max_page);
                                                     sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_BUY_FULL_GIVE_X_ID,current_page));
+                                                }
+                                            }else if (MessageID.SYNC_AUXILIARY_BARCODE_ID == msg.what){
+                                                up_auxiliary_barcode(data);
+                                                if ((current_page++ <= max_page)){
+                                                    Logger.d("current_page:%d,max_page:%d",current_page,max_page);
+                                                    sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_AUXILIARY_BARCODE_ID,current_page));
                                                 }
                                             }
                                         }
@@ -1023,6 +1042,35 @@ final class SyncHandler extends Handler {
             }
             if (!success)Logger.e("标记已获买满送X信息错误:" + object.getString("info"));
         }
+    }
+
+    private void up_auxiliary_barcode(final JSONArray datas) throws JSONException{
+        if (datas != null && !datas.isEmpty()){
+            JSONObject object;
+            final String url = mUrl + "/api/goods_set/up_fuzhu_barcode";
+
+            final JSONArray g_m_ids = new JSONArray();
+            for (int k = 0,length = datas.size();k < length;k++) {
+                object = datas.getJSONObject(k);
+                g_m_ids.add(object.getIntValue("g_m_id"));
+            }
+
+            object = new JSONObject();
+            object.put("appid",mAppId);
+            object.put("g_m_ids",g_m_ids);
+            object.put("pos_num",mPosNum);
+
+            object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,mAppSecret),true);
+            boolean success;
+            if (success = (object.getIntValue("flag") == 1)){
+                object = JSON.parseObject(object.getString("info"));
+                success = "y".equals(object.getString("status"));
+            }
+            if (!success)Logger.e(getMarkErrorMsg("辅助条码",object.getString("info")));
+        }
+    }
+    private String getMarkErrorMsg(String mark,String info){
+        return String.format(Locale.CHINA,"%s:%s",CustomApplication.self().getString(R.string.mark_info_hint,mark),info);
     }
 
 

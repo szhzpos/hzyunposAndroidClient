@@ -44,4 +44,5 @@ public final  class MessageID {
     public static final int SYNC_STEP_FULLREDUCE_ID = 46;
     public static final int SYNC_BUY_X_GIVE_X_ID = 47;
     public static final int SYNC_BUY_FULL_GIVE_X_ID = 48;
+    public static final int SYNC_AUXILIARY_BARCODE_ID = 49;
 }
