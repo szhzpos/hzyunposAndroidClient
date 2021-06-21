@@ -149,7 +149,35 @@
                 android:text="@string/zero_p_z_sz"
                 android:textColor="@color/text_color" />
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/add_goods_item_h"
+            android:layout_marginTop="@dimen/margin_8"
+            android:orientation="horizontal">
 
+            <TextView
+                android:layout_width="@dimen/width_85"
+                android:layout_height="wrap_content"
+                android:text="@string/a_vip_price_sz"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <EditText
+                android:id="@+id/a_vip_price_et"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/round_border_sub_gray"
+                android:ems="10"
+                android:hint="@string/space_sz"
+                android:importantForAutofill="no"
+                android:inputType="numberDecimal"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/margin_5"
+                android:selectAllOnFocus="true"
+                android:text="@string/zero_p_z_sz"
+                android:textColor="@color/text_color" />
+        </LinearLayout>
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="@dimen/add_goods_item_h"
@@ -279,7 +307,47 @@
                 android:paddingEnd="@dimen/margin_5"
                 android:textColor="@color/text_color" />
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/add_goods_item_h"
+            android:layout_marginTop="@dimen/margin_8"
+            android:orientation="horizontal">
 
+            <TextView
+                android:layout_width="@dimen/width_85"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/cur_price"
+                android:textAlignment="viewEnd"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/round_border_sub_gray"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/n"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:text="@string/no" />
+
+                <RadioButton
+                    android:id="@+id/y"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:text="@string/yes" />
+
+            </RadioGroup>
+
+        </LinearLayout>
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="@dimen/add_goods_item_h"
@@ -332,9 +400,8 @@
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_16" />
         </LinearLayout>
-
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="@dimen/add_goods_item_h"
             android:layout_marginTop="@dimen/margin_8"
             android:orientation="horizontal">
@@ -342,27 +409,57 @@
             <TextView
                 android:layout_width="@dimen/width_85"
                 android:layout_height="wrap_content"
-                android:text="@string/a_vip_price_sz"
+                android:text="@string/hz_method_sz"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_16" />
 
             <EditText
-                android:id="@+id/a_vip_price_et"
-                android:layout_width="wrap_content"
+                android:id="@+id/hz_method_tv"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:background="@drawable/round_border_sub_gray"
-                android:ems="10"
-                android:hint="@string/space_sz"
+                android:enabled="false"
                 android:importantForAutofill="no"
                 android:inputType="numberDecimal"
+                android:lines="1"
                 android:paddingStart="@dimen/margin_5"
                 android:paddingEnd="@dimen/margin_5"
                 android:selectAllOnFocus="true"
-                android:text="@string/zero_p_z_sz"
-                android:textColor="@color/text_color" />
-        </LinearLayout>
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
 
+            <TextView
+                android:id="@+id/ly_ratio_label"
+                android:layout_width="@dimen/width_78"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/margin_2"
+                android:text="@string/ly_ratio_sz"
+                android:textAlignment="textEnd"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <EditText
+                android:id="@+id/ly_ratio_tv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/round_border_sub_gray"
+                android:gravity="center_vertical"
+                android:hint="@string/space_sz"
+                android:importantForAutofill="no"
+                android:inputType="number"
+                android:lines="1"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/margin_5"
+                android:selectAllOnFocus="true"
+                android:text="@string/zero_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+        </LinearLayout>
         <Button
             android:id="@+id/save"
             style="@style/Widget.AppCompat.Button.Borderless"

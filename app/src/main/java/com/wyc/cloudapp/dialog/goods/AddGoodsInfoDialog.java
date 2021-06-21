@@ -6,6 +6,8 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
@@ -27,12 +29,21 @@ import com.wyc.cloudapp.utils.http.HttpRequest;
 
 import java.util.Locale;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
     private String mBarcode;
     private EditText mBarcodeEt,mNameEt,mPurPriceEt,mRetailPriceEt,mCategoryEt,mUnitEt,mGoodsAttrEt,mItemIdEt, mMeteringEt,mSupplierEt,mVipPriceEt;
     private JSONArray mUnitList,mCategoryList,mSupplierList;
     private OnFinishListener mFinishListener;
     private JSONObject mCurrentCategory;
+
+    @BindView(R.id.hz_method_tv)
+    TextView hz_method_tv;
+    @BindView(R.id.ly_ratio_tv)
+    TextView ly_ratio_tv;
+
     public AddGoodsInfoDialog(@NonNull MainActivity context) {
         super(context, context.getString(R.string.a_goods_sz));
     }
@@ -40,6 +51,7 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ButterKnife.bind(this);
 
         mNameEt = findViewById(R.id.a_name_et);
         mRetailPriceEt = findViewById(R.id.a_retail_price_et);
@@ -75,6 +87,11 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
         if (mContext.lessThan7Inches())
             return 0.98;
         return super.getWidthRatio();
+    }
+
+    private int getCurPriceFlag(){
+        final RadioButton yes = findViewById(R.id.y);
+        return yes.isChecked() ? 1 : 0;
     }
 
     private void initUnit(){
@@ -134,6 +151,22 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
 
     private void initSupplier(){
         final EditText supplier_et = findViewById(R.id.a_supplier_et);
+        supplier_et.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                setHz_method();
+            }
+        });
         supplier_et.setOnClickListener(v -> {
             final String sup = mContext.getString(R.string.a_supplier_sz);
             final TreeListDialog treeListDialog = new TreeListDialog(mContext,sup.substring(0,sup.length() - 1));
@@ -141,8 +174,8 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
+                    supplier_et.setTag(object.getString(TreeListBaseAdapter.COL_ID));
                     supplier_et.setText(object.getString(TreeListBaseAdapter.COL_NAME));
-                    supplier_et.setTag(object.getIntValue(TreeListBaseAdapter.COL_ID));
                     mNameEt.requestFocus();
                 }
             });
@@ -152,6 +185,34 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
             Utils.hideKeyBoard(supplier_et);
         });
         mSupplierEt = supplier_et;
+    }
+    private void setHz_method(){
+        final JSONObject supplier = getSupplierById(Utils.getViewTagValue(mSupplierEt,""));
+        if (null != supplier){
+            final String hz_method = supplier.getString("hz_method");
+            hz_method_tv.setTag(hz_method);
+            hz_method_tv.setText(supplier.getString("hz_method_name"));
+            setLyRatio("1".equals(hz_method) ? View.VISIBLE : View.INVISIBLE);
+        }
+    }
+    private JSONObject getSupplierById(final String gs_id){
+        if (null == mSupplierList)return null;
+        for (int i = 0,size = mSupplierList.size();i < size;i ++){
+            final JSONObject object = mSupplierList.getJSONObject(i);
+            if (object.getString(TreeListBaseAdapter.COL_ID).equals(gs_id)){
+                return object;
+            }
+        }
+        return null;
+    }
+    private void setLyRatio(int visibility){
+        //设置联营扣率
+        final TextView ly_ratio_label = findViewById(R.id.ly_ratio_label);
+        ly_ratio_label.setVisibility(visibility);
+        ly_ratio_tv.setVisibility(visibility);
+        if (visibility == View.GONE){
+            ly_ratio_tv.setText(R.string.zero_p_z_sz);
+        }
     }
 
     private void initGoodsAttrAndMetering(){
@@ -280,8 +341,8 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
             public void afterTextChanged(Editable s) {
                 double retail_pirce_et = 0.0,pur_price = 0.0;
                 try {
-                    retail_pirce_et = Double.valueOf(mRetailPriceEt.getText().toString());
-                    pur_price = Double.valueOf(s.toString());
+                    retail_pirce_et = Double.parseDouble(mRetailPriceEt.getText().toString());
+                    pur_price = Double.parseDouble(s.toString());
                 }catch (NumberFormatException e){
                     e.printStackTrace();
                 }
@@ -448,11 +509,13 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
             JSONObject object;
             for (int i = 0,size = suppliers.size();i < size;i++){
                 final JSONObject tmp = suppliers.getJSONObject(i);
-                final int id = Utils.getNotKeyAsNumberDefault(tmp,"gs_id",0);
+                final String id = Utils.getNullStringAsEmpty(tmp,"gs_id");
                 object = new JSONObject();
                 object.put("level",0);
                 object.put("unfold",false);
                 object.put("isSel",false);
+                object.put("hz_method",tmp.getString("hz_method"));
+                object.put("hz_method_name",tmp.getString("hz_method_name"));
                 object.put(TreeListBaseAdapter.COL_ID,id);
                 object.put(TreeListBaseAdapter.COL_NAME,Utils.getNullStringAsEmpty(tmp,"gs_name"));
                 array.add(object);
@@ -460,8 +523,8 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
                 //
                 if ("0000".equals(Utils.getNullStringAsEmpty(tmp,"gs_code")) && mSupplierEt != null){
                     CustomApplication.runInMainThread(()->{
-                        mSupplierEt.setText(Utils.getNullStringAsEmpty(tmp,"gs_name"));
                         mSupplierEt.setTag(id);
+                        mSupplierEt.setText(Utils.getNullStringAsEmpty(tmp,"gs_name"));
                     });
                 }
             }
@@ -633,7 +696,9 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
         data.put("gs_id",Utils.getViewTagValue(mSupplierEt,0));
         data.put("spec_id",Utils.getViewTagValue(mGoodsAttrEt,"1"));
         data.put("only_coding",only_coding);
-        data.put("cash_flow_mode",2);
+        data.put("current_goods", getCurPriceFlag());
+        data.put("cash_flow_mode",Utils.getViewTagValue(hz_method_tv,""));
+        data.put("cash_flow_ratio",ly_ratio_tv.getText().toString());
         data.put("unit",unit);
 
         final JSONArray barcode_info = new JSONArray();

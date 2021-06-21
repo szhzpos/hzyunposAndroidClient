@@ -115,11 +115,11 @@ public class PayMethodDialogImp extends AbstractPayDialog implements MobileCashi
                 if (length > 0){
                     int index = editable.toString().indexOf('.');
                     if (length == 1 && index > -1)return;
-                    if (length >= (index += 3)){
+                    if (index > -1 && length >= (index += 3)){//保留两位小数
                         Logger.d("index:%d",index);
                         editable.delete(index,editable.length());
                     }
-                    if (Double.valueOf(editable.toString()) - mOriginalPayAmt> 0){
+                    if (Double.parseDouble(editable.toString()) - mOriginalPayAmt> 0){
                         refreshContent();
                         MyDialog.SnackbarMessage(mDialogWindow,getTitle().concat(mContext.getString(R.string.not_zl_hint_sz)),null);
                     }
