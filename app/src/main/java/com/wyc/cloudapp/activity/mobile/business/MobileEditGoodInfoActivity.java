@@ -35,7 +35,7 @@ import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.TakePhotoPopWin;
-import com.wyc.cloudapp.dialog.TreeListDialog;
+import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.FileUtils;
 import com.wyc.cloudapp.utils.Utils;
@@ -46,7 +46,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Locale;
 
@@ -256,8 +255,8 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         });
         supplier_et.setOnClickListener(v -> {
             final String sup = getString(R.string.a_supplier_sz);
-            final TreeListDialog treeListDialog = new TreeListDialog(this,sup.substring(0,sup.length() - 1));
-            treeListDialog.setDatas(Utils.JsondeepCopy(parse_supplier_info()),null,true);
+            final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(this,sup.substring(0,sup.length() - 1));
+            treeListDialog.setData(Utils.JsondeepCopy(parse_supplier_info()),null,true);
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
@@ -377,8 +376,8 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     private void initUnit(){
         final TextView unit_et = findViewById(R.id.a_unit_et);
         unit_et.setOnClickListener(v -> {
-            final TreeListDialog treeListDialog = new TreeListDialog(this,getString(R.string.unit_sz));
-            treeListDialog.setDatas(Utils.JsondeepCopy(mUnitList),null,true);
+            final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(this,getString(R.string.unit_sz));
+            treeListDialog.setData(Utils.JsondeepCopy(mUnitList),null,true);
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
@@ -400,8 +399,8 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     private void initCategory(){
         final TextView category_et = findViewById(R.id.a_category_et);
         category_et.setOnClickListener(v -> {
-            final TreeListDialog treeListDialog = new TreeListDialog(this,getString(R.string.d_category_sz));
-            treeListDialog.setDatas(Utils.JsondeepCopy(mCategoryList),null,true);
+            final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(this,getString(R.string.d_category_sz));
+            treeListDialog.setData(Utils.JsondeepCopy(mCategoryList),null,true);
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
@@ -510,8 +509,8 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         final TextView brand = findViewById(R.id.brand_et);
         brand.setOnClickListener(v -> {
             final String sup = getString(R.string.brand_sz);
-            final TreeListDialog treeListDialog = new TreeListDialog(this,sup.substring(0,sup.length() - 1));
-            treeListDialog.setDatas(Utils.JsondeepCopy(mBrandList),null,true);
+            final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(this,sup.substring(0,sup.length() - 1));
+            treeListDialog.setData(Utils.JsondeepCopy(mBrandList),null,true);
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
@@ -660,8 +659,8 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         setMeteringList();
         goods_attr_et.setOnClickListener(v -> {
             final String attr = getString(R.string.a_goods_attr_sz);
-            final TreeListDialog treeListDialog = new TreeListDialog(this,attr.substring(0,attr.length() - 1));
-            treeListDialog.setDatas(mAttrList,null,true);
+            final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(this,attr.substring(0,attr.length() - 1));
+            treeListDialog.setData(mAttrList,null,true);
 
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
@@ -698,8 +697,8 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
 
         metering_et.setOnClickListener(v -> {
             final String attr_sz = getString(R.string.a_goods_attr_sz);
-            final TreeListDialog treeListDialog = new TreeListDialog(this,attr_sz.substring(0,attr_sz.length() - 1));
-            treeListDialog.setDatas(meteringList,null,true);
+            final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(this,attr_sz.substring(0,attr_sz.length() - 1));
+            treeListDialog.setData(meteringList,null,true);
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
@@ -751,7 +750,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         if (mAttrList != null){
             for (int i = 0,size = mAttrList.size();i < size;i ++){
                 final JSONObject object = mAttrList.getJSONObject(i);
-                if (Utils.getNullStringAsEmpty(object,TreeListBaseAdapter.COL_ID).equals(id)){
+                if (Utils.getNullStringAsEmpty(object, TreeListBaseAdapter.COL_ID).equals(id)){
                     return object;
                 }
             }
@@ -762,7 +761,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         if (meteringList != null){
             for (int i = 0,size = meteringList.size();i < size;i ++){
                 final JSONObject object = meteringList.getJSONObject(i);
-                if (Utils.getNullStringAsEmpty(object,TreeListBaseAdapter.COL_ID).equals(id)){
+                if (Utils.getNullStringAsEmpty(object, TreeListBaseAdapter.COL_ID).equals(id)){
                     return object;
                 }
             }

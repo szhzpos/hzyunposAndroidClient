@@ -30,7 +30,7 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.TreeListDialog;
+import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.dialog.baseDialog.BusinessSelectGoodsDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
@@ -478,8 +478,8 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
         if (null != business_supplier_tv){
             final String sup = getString(R.string.supplier_colon_sz);
             business_supplier_tv.setOnClickListener(v -> CustomApplication.runInMainThread(()->{
-                final TreeListDialog treeListDialog = new TreeListDialog(this,sup.substring(0,sup.length() - 1));
-                treeListDialog.setDatas(mSupplierList,null,true);
+                final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(this,sup.substring(0,sup.length() - 1));
+                treeListDialog.setData(mSupplierList,null,true);
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
                     business_supplier_tv.setText(object.getString(TreeListBaseAdapter.COL_NAME));
@@ -503,8 +503,8 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
         final String sz = getString(R.string.sale_operator_sz);
         final JSONArray array = getSaleOperator(business_operator_tv);
         business_operator_tv.setOnClickListener(v -> CustomApplication.runInMainThread(()->{
-            final TreeListDialog treeListDialog = new TreeListDialog(this,sz.substring(0,sz.length() - 1));
-            treeListDialog.setDatas(array,null,true);
+            final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(this,sz.substring(0,sz.length() - 1));
+            treeListDialog.setData(array,null,true);
             if (treeListDialog.exec() == 1){
                 final JSONObject object = treeListDialog.getSingleContent();
                 business_operator_tv.setText(object.getString(TreeListBaseAdapter.COL_NAME));

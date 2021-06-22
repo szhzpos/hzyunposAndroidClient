@@ -14,7 +14,7 @@ import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter
 import com.wyc.cloudapp.adapter.business.MobileOtherWarehouseOrderAdapter;
 import com.wyc.cloudapp.adapter.business.MobileOtherWarehouseOrderDetailsAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.dialog.TreeListDialog;
+import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.utils.Utils;
 /*其他出入库单*/
 public final class MobileOtherWarehouseOrderActivity extends AbstractMobileBusinessOrderActivity {
@@ -54,8 +54,8 @@ public final class MobileOtherWarehouseOrderActivity extends AbstractMobileBusin
             final String sz = getString(R.string.out_in_warehouse);
 
             out_in_type_tv.setOnClickListener(v -> CustomApplication.runInMainThread(()->{
-                final TreeListDialog treeListDialog = new TreeListDialog(this,sz.substring(0,sz.length() - 1));
-                treeListDialog.setDatas(getOutInTypes(),null,true);
+                final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(this,sz.substring(0,sz.length() - 1));
+                treeListDialog.setData(getOutInTypes(),null,true);
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
                     out_in_type_tv.setText(object.getString(TreeListBaseAdapter.COL_NAME));

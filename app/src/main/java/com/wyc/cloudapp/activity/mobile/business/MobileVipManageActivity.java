@@ -148,12 +148,7 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
     @Override
     protected void add() {
         if (AddVipInfoDialog.verifyVipModifyOrAddPermissions(this)){
-            final JSONArray array = Utils.JsondeepCopy(mVipCategoryAdapter.getData());
-            array.remove(0);
-            final AddVipInfoDialog addVipInfoDialog = new AddVipInfoDialog(MobileVipManageActivity.this,getString(R.string.add_vip_sz),array);
-            addVipInfoDialog.setYesOnclickListener(dialog -> {
-                final JSONObject object = dialog.getVipInfo();
-            }).show();
+            EditVipInfoActivity.start(this);
         }
     }
 

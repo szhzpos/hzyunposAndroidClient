@@ -36,7 +36,7 @@ public class EditGoodsCategoryAdapter extends TreeListBaseAdapterWithList<EditGo
         return R.id.content_layout;
     }
 
-    static class MyViewHolder extends TreeListBaseAdapterWithList.MyViewHolder {
+    static class MyViewHolder extends TreeListBaseAdapter.MyViewHolder {
         TextView content;
         ImageView add,modify;
         public MyViewHolder(@NonNull View itemView) {
@@ -45,8 +45,9 @@ public class EditGoodsCategoryAdapter extends TreeListBaseAdapterWithList<EditGo
             add = findViewById(R.id.add);
             modify = findViewById(R.id.modify);
         }
+
         @Override
-        protected int getContentResourceLayout() {
+        protected int getContentResourceId() {
             return R.layout.mobile_add_goods_category_adapter;
         }
     }

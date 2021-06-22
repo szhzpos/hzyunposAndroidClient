@@ -7,7 +7,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.SaleActivity;
@@ -28,14 +27,14 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class BuyFullGiveXGoodsAdapter extends TreeListBaseAdapter<BuyFullGiveXGoodsAdapter.MyViewHolder> {
+public class BuyFullGiveXGoodsAdapter extends TreeListBaseAdapterForJson<BuyFullGiveXGoodsAdapter.MyViewHolder> {
     final SaleActivity mContext;
     public BuyFullGiveXGoodsAdapter(SaleActivity context, boolean single) {
         super(context, single);
         mContext = context;
     }
 
-    static class MyViewHolder extends TreeListBaseAdapter.MyViewHolder {
+    static class MyViewHolder extends TreeListBaseAdapterForJson.MyViewHolder {
         TextView _barcode_tv,_name_tv,_unit_name_tv,
                 _retail_price_tv,remark_tv,_num_tv;
         MyViewHolder(View itemView) {

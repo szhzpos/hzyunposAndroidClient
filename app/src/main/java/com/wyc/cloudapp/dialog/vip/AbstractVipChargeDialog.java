@@ -26,7 +26,7 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.TreeListDialog;
+import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
@@ -126,8 +126,8 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
     }
 
     public static JSONObject showSaleInfo(final MainActivity activity){
-        final TreeListDialog treeListDialog = new TreeListDialog(activity,activity.getString(R.string.sale_man_sz));
-        treeListDialog.setDatas(parse_sale_man(activity),null,true);
+        final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(activity,activity.getString(R.string.sale_man_sz));
+        treeListDialog.setData(parse_sale_man(activity),null,true);
         if (treeListDialog.exec() == 1){
             return treeListDialog.getSingleContent();
         }
@@ -307,8 +307,8 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
         });
         mobile_charge_plan.setOnClickListener(v -> {
             final String charge_plan_sz = mContext.getString(R.string.charge_plan_sz);
-            final TreeListDialog treeListDialog = new TreeListDialog(mContext,charge_plan_sz.substring(0,charge_plan_sz.length() - 1));
-            treeListDialog.setDatas(mChargePlans,null,true);
+            final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(mContext,charge_plan_sz.substring(0,charge_plan_sz.length() - 1));
+            treeListDialog.setData(mChargePlans,null,true);
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     showChargePlan(treeListDialog.getSingleContent(),mobile_charge_plan);
@@ -394,8 +394,8 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
             });
             mobile_pay_method.setOnClickListener(v -> {
                 final String pay_method_name_colon_sz = mContext.getString(R.string.pay_method_name_colon_sz);
-                final TreeListDialog treeListDialog = new TreeListDialog(mContext,pay_method_name_colon_sz.substring(0,pay_method_name_colon_sz.length() - 1));
-                treeListDialog.setDatas(parse_pay_method(mPayMethods),null,true);
+                final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(mContext,pay_method_name_colon_sz.substring(0,pay_method_name_colon_sz.length() - 1));
+                treeListDialog.setData(parse_pay_method(mPayMethods),null,true);
                 mobile_pay_method.post(()->{
                     if (treeListDialog.exec() == 1){
                         set_pay_method_and_check_scan(treeListDialog.getSingleContent(),mobile_pay_method);
@@ -417,11 +417,11 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
     public abstract void clearPayCode(boolean clearView);
 
     private void set_pay_method_and_check_scan(@NonNull final JSONObject object,final TextView mobile_pay_method){
-        final String _id = Utils.getNullStringAsEmpty(object,TreeListBaseAdapter.COL_ID);
+        final String _id = Utils.getNullStringAsEmpty(object, TreeListBaseAdapter.COL_ID);
         mPayMethodSelected = get_pay_method(_id);
         if (mPayMethodSelected != null){
             mobile_pay_method.setTag(_id);
-            mobile_pay_method.setText(Utils.getNullStringAsEmpty(object,TreeListBaseAdapter.COL_NAME));
+            mobile_pay_method.setText(Utils.getNullStringAsEmpty(object, TreeListBaseAdapter.COL_NAME));
 
             checkPayMethod();
         }

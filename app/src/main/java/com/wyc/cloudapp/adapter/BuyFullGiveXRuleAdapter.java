@@ -6,12 +6,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-
-import java.util.List;
 
 /**
  * @ProjectName: CloudApp
@@ -25,12 +22,12 @@ import java.util.List;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class BuyFullGiveXRuleAdapter extends TreeListBaseAdapter<BuyFullGiveXRuleAdapter.MyViewHolder> {
+public class BuyFullGiveXRuleAdapter extends TreeListBaseAdapterForJson<BuyFullGiveXRuleAdapter.MyViewHolder> {
 
     public BuyFullGiveXRuleAdapter(Context context, boolean single) {
         super(context, single);
     }
-    static class MyViewHolder extends TreeListBaseAdapter.MyViewHolder {
+    static class MyViewHolder extends TreeListBaseAdapterForJson.MyViewHolder {
         TextView textView;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);

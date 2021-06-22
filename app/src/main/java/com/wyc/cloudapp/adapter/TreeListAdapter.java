@@ -11,11 +11,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 
 
-public class TreeListAdapter extends TreeListBaseAdapter<TreeListAdapter.MyViewHolder> {
+public class TreeListAdapter extends TreeListBaseAdapterForJson<TreeListAdapter.MyViewHolder> {
     public TreeListAdapter(Context context, boolean single) {
         super(context, single);
     }
-    static class MyViewHolder extends TreeListBaseAdapter.MyViewHolder {
+
+    public static class MyViewHolder extends TreeListBaseAdapterForJson.MyViewHolder {
         TextView textView;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);

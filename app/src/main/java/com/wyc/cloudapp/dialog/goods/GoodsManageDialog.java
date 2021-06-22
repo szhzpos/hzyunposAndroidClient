@@ -1,12 +1,6 @@
 package com.wyc.cloudapp.dialog.goods;
 
-import android.graphics.Point;
 import android.os.Bundle;
-import android.view.Display;
-import android.view.Gravity;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -29,8 +23,6 @@ import com.wyc.cloudapp.adapter.TreeListAdapter;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
 import com.wyc.cloudapp.utils.Utils;
-
-import static android.content.Context.WINDOW_SERVICE;
 
 public final class GoodsManageDialog extends AbstractDialogSaleActivity {
     private Spinner mConditionSpinner;
@@ -93,7 +85,7 @@ public final class GoodsManageDialog extends AbstractDialogSaleActivity {
         item_list.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
         item_list.setAdapter(listAdapter);
         listAdapter.setItemListener(object -> {
-            if (Utils.getNotKeyAsNumberDefault(object,TreeListBaseAdapter.COL_ID,0) != 0)
+            if (Utils.getNotKeyAsNumberDefault(object, TreeListBaseAdapter.COL_ID,0) != 0)
                 mCurrentCategory = object;
             else
                 if (mCurrentCategory != null)mCurrentCategory = null;

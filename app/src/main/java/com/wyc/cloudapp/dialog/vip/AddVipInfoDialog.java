@@ -29,7 +29,6 @@ import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.constants.MessageID;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
@@ -71,7 +70,7 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
         initVipPhoneNum();
         initVipBirthdayEt();
         initVipSex();
-        initBirthdayTypeSex();
+        initBirthdayType();
     }
 
     @Override
@@ -228,7 +227,7 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
         });
     }
 
-    private void initBirthdayTypeSex(){
+    private void initBirthdayType(){
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext,R.layout.drop_down_style);
 
         arrayAdapter.add("农历");
@@ -262,7 +261,7 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
     }
 
     private void queryVipLevel(){
-        mProgressDialog.setMessage("正在查询会员级别...").show();
+        mProgressDialog.setMessage(mContext.getString(R.string.query_vip_grade_hint)).show();
         mProgressDialog.setCancelable(false);
         CustomApplication.execute(()->{
             String url = mContext.getUrl() + "/api/member/get_member_grade",sz_param;

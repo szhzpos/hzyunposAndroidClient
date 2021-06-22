@@ -12,10 +12,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.adapter.bean.Consumer;
-import com.wyc.cloudapp.adapter.bean.Supplier;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.TreeListDialog;
+import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
@@ -23,7 +22,6 @@ import com.wyc.cloudapp.utils.http.HttpUtils;
 import java.util.Locale;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /*编辑客户*/
 public class EditConsumerActivity extends AbstractEditArchiveActivity {
@@ -59,8 +57,8 @@ public class EditConsumerActivity extends AbstractEditArchiveActivity {
         final TextView consumer_settlement_way_tv = findViewById(R.id.consumer_settlement_way_tv);
         consumer_settlement_way_tv.setOnClickListener(v -> {
             final String sz = getString(R.string.supplier_cooperation_way_sz);
-            final TreeListDialog treeListDialog = new TreeListDialog(this,sz.substring(0,sz.length() - 1));
-            treeListDialog.setDatas(getSettlementWay(),null,true);
+            final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(this,sz.substring(0,sz.length() - 1));
+            treeListDialog.setData(getSettlementWay(),null,true);
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
@@ -89,8 +87,8 @@ public class EditConsumerActivity extends AbstractEditArchiveActivity {
         final TextView default_price_tv = findViewById(R.id.default_price_tv);
         default_price_tv.setOnClickListener(v -> {
             final String sz = getString(R.string.supplier_settlement_way_sz);
-            final TreeListDialog treeListDialog = new TreeListDialog(this,sz.substring(0,sz.length() - 1));
-            treeListDialog.setDatas(getDefaultPrice(),null,true);
+            final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(this,sz.substring(0,sz.length() - 1));
+            treeListDialog.setData(getDefaultPrice(),null,true);
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();

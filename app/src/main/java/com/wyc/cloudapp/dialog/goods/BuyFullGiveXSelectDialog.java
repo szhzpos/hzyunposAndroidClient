@@ -1,13 +1,6 @@
 package com.wyc.cloudapp.dialog.goods;
 
-import android.graphics.Point;
 import android.os.Bundle;
-import android.view.Display;
-import android.view.Gravity;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -30,8 +23,6 @@ import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
-
-import static android.content.Context.WINDOW_SERVICE;
 
 /**
  * @ProjectName: CloudApp

@@ -350,7 +350,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                             final JSONObject object = AbstractVipChargeDialog.showSaleInfo(this);
                             final String name = Utils.getNullStringAsEmpty(object, TreeListBaseAdapter.COL_NAME);
                             mSaleManInfo = new JSONObject();
-                            mSaleManInfo.put("id",Utils.getNullStringAsEmpty(object,TreeListBaseAdapter.COL_ID));
+                            mSaleManInfo.put("id",Utils.getNullStringAsEmpty(object, TreeListBaseAdapter.COL_ID));
                             mSaleManInfo.put("name",name);
                             setSaleManView(name);
                             window.dismiss();

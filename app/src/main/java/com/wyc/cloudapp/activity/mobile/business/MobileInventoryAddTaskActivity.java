@@ -21,7 +21,7 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.TreeListDialog;
+import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -158,8 +158,8 @@ public class MobileInventoryAddTaskActivity extends AbstractMobileActivity {
         final TextView view = findViewById(R.id.inventory_way_tv);
         final String sz = getString(R.string.inventory_way);
         view.setOnClickListener(v -> CustomApplication.runInMainThread(()->{
-            final TreeListDialog treeListDialog = new TreeListDialog(this,sz.substring(0,sz.length() - 1));
-            treeListDialog.setDatas(MobilePracticalInventoryAddOrderActivity.getInventoryWay(),null,true);
+            final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(this,sz.substring(0,sz.length() - 1));
+            treeListDialog.setData(MobilePracticalInventoryAddOrderActivity.getInventoryWay(),null,true);
             if (treeListDialog.exec() == 1){
                 final JSONObject object = treeListDialog.getSingleContent();
                 final String way = object.getString(TreeListBaseAdapter.COL_ID);
@@ -178,8 +178,8 @@ public class MobileInventoryAddTaskActivity extends AbstractMobileActivity {
         final TextView view = findViewById(R.id.inventory_category_tv);
         final String sz = getString(R.string.inventoried_category_sz);
         view.setOnClickListener(v -> CustomApplication.runInMainThread(()->{
-            final TreeListDialog treeListDialog = new TreeListDialog(this,sz.substring(0,sz.length() - 1));
-            treeListDialog.setDatas(getInventoryCategory(null),null,false);
+            final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(this,sz.substring(0,sz.length() - 1));
+            treeListDialog.setData(getInventoryCategory(null),null,false);
             if (treeListDialog.exec() == 1){
                 final JSONArray array = treeListDialog.getMultipleContent();
                 final String ids = getInventoryCategoryIds(array);

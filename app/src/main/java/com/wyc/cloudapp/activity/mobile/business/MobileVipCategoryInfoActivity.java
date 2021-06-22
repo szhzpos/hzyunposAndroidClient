@@ -38,7 +38,6 @@ public class MobileVipCategoryInfoActivity extends AbstractMobileBaseArchiveActi
     @Override
     protected void onResume() {
         super.onResume();
-        Logger.d(getClass().getName());
     }
 
     private void initCategoryList(){

@@ -39,7 +39,7 @@ import java.util.List;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterWithList.MyViewHolder> extends AbstractDataAdapterForList<TreeListItem,T> {
+public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterWithList.MyViewHolder> extends TreeListBaseAdapter<List<TreeListItem>,TreeListItem,T> {
     protected final Context mContext;
     private boolean mSingleSel = true;
     private final Drawable mUnfoldDb,mFoldDb;
@@ -52,7 +52,7 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
         this.mContext = context;
         mUnfoldDb = context.getDrawable(R.drawable.unfold);
         mFoldDb = context.getDrawable(R.drawable.fold);
-        setDataForList(new ArrayList<>());
+        setData(new ArrayList<>(),null);
     }
 
     public TreeListBaseAdapterWithList(Context context,boolean single){
@@ -60,28 +60,21 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
         mSingleSel = single;
     }
 
-    static abstract class MyViewHolder extends AbstractDataAdapter.SuperViewHolder {
-        ImageView icon;
-        CheckBox mul_cb;
-        RadioButton single_rb;
-        TextView item_id,row_id;
-        ViewStub content;
-        MyViewHolder(View itemView) {
-            super(itemView);
-            row_id = findViewById(R.id.row_id);
-            icon = findViewById(R.id.item_ico);
-            mul_cb = findViewById(R.id.multiple_cb);
-            single_rb = findViewById(R.id.single_rb);
-            item_id = findViewById(R.id.item_id);
-            content = findViewById(R.id.content_view);
-            content.setLayoutResource(getContentResourceLayout());
-            content.inflate();
-        }
+    @Override
+    public TreeListBaseAdapterWithList<T> setData(final List<TreeListItem> array,final List<TreeListItem> selected){
+        mData = array;
+        if (Looper.myLooper() != Looper.getMainLooper()){
+            CustomApplication.runInMainThread(this::notifyDataSetChanged);
+        }else
+            notifyDataSetChanged();
 
-        protected abstract int getContentResourceLayout();
-        protected final <T extends View> T  findViewById(int id){
-            return itemView.findViewById(id);
-        }
+        return this;
+    }
+
+    @Override
+    public void setData(final List<TreeListItem> data,boolean singleSel){
+        mSingleSel = singleSel;
+        setData(data,null);
     }
 
     protected final View getView(){
@@ -192,7 +185,7 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
         if (row_id_tv != null){
             int row_id = Integer.parseInt(row_id_tv.getText().toString());
             if (row_id >= 0 && row_id < mData.size()){
-                final TreeListItem object = TreeListItem.getViewTagValue(v);
+                final TreeListItem object = mData.get(row_id);
                 if (mSingleSel){
                     clearSelected();
                     object.setSel(isChecked);
@@ -205,9 +198,8 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
 
     private void clearSelected(){
         if (mData != null){
-            for (Object o :mData){
-                final JSONObject object = (JSONObject)o;
-                if (object.getBooleanValue("isSel"))object.put("isSel",false);
+            for (TreeListItem o :mData){
+                if (o.isSel())o.setSel(false);
             }
         }
     }
@@ -437,7 +429,7 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
     }
 
     private boolean setSelectedItem(final TreeListItem item, final JSONObject object, int first_index){
-        if (Utils.getNullStringAsEmpty(object,TreeListBaseAdapter.COL_ID).equals(item.getItem_id())){
+        if (Utils.getNullStringAsEmpty(object, TreeListBaseAdapter.COL_ID).equals(item.getItem_id())){
             item.setSel(true);
             unfoldParentItem(item,first_index);
             return true;
@@ -510,9 +502,9 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
         return -1;
     }
 
-
-    public JSONArray getMultipleSelectedContent(){
-        final JSONArray objects = new JSONArray();
+    @Override
+    public List<TreeListItem> getMultipleSelectedContent(){
+        final List<TreeListItem> objects = new ArrayList<>();
         TreeListItem object;
         for (int i = 0,size = mData.size();i < size;i++){
             object = mData.get(i);
@@ -525,6 +517,7 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
         return objects;
     }
 
+    @Override
     public TreeListItem getSingleSelectedContent(){
         TreeListItem object;
         for (int i = 0,size = mData.size();i < size;i++){

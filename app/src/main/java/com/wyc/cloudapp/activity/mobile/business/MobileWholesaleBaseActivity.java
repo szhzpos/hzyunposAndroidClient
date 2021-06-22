@@ -11,7 +11,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.TreeListDialog;
+import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
@@ -65,8 +65,8 @@ public abstract class MobileWholesaleBaseActivity extends AbstractMobileQuerySou
             mSettlementWayTv = settlement_layout.findViewById(R.id.settlement_way_tv);
             final String sz = getString(R.string.settlement_way);
             mSettlementWayTv.setOnClickListener(v -> CustomApplication.runInMainThread(()->{
-                final TreeListDialog treeListDialog = new TreeListDialog(this,sz.substring(0,sz.length() - 1));
-                treeListDialog.setDatas(getSettlementTypes(),null,true);
+                final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(this,sz.substring(0,sz.length() - 1));
+                treeListDialog.setData(getSettlementTypes(),null,true);
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
                     mSettlementWayTv.setText(object.getString(TreeListBaseAdapter.COL_NAME));
@@ -108,8 +108,8 @@ public abstract class MobileWholesaleBaseActivity extends AbstractMobileQuerySou
         mBusinessCustomerTv = findViewById(R.id.m_business_customer_tv);
         final String sup = getString(R.string.customer_colon_sz);
         mBusinessCustomerTv.setOnClickListener(v -> CustomApplication.runInMainThread(()->{
-            final TreeListDialog treeListDialog = new TreeListDialog(this,sup.substring(0,sup.length() - 1));
-            treeListDialog.setDatas(mCustomerList,null,true);
+            final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(this,sup.substring(0,sup.length() - 1));
+            treeListDialog.setData(mCustomerList,null,true);
             if (treeListDialog.exec() == 1){
                 final JSONObject object = treeListDialog.getSingleContent();
                 mBusinessCustomerTv.setText(object.getString(TreeListBaseAdapter.COL_NAME));

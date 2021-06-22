@@ -25,7 +25,7 @@ import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
-import com.wyc.cloudapp.dialog.TreeListDialog;
+import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.DrawableUtil;
@@ -249,8 +249,8 @@ public abstract class AbstractMobileQueryDialog extends AbstractDialogMainActivi
         final TextView switch_condition = findViewById(R.id.switch_condition);
         final JSONArray array = createSwitchConditionContentAndSetDefaultValue(switch_condition);
         switch_condition.setOnClickListener(v -> {
-            final TreeListDialog treeListDialog = new TreeListDialog(mContext,mContext.getString(R.string.query_way_sz));
-            treeListDialog.setDatas(array,null,true);
+            final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(mContext,mContext.getString(R.string.query_way_sz));
+            treeListDialog.setData(array,null,true);
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();

@@ -22,7 +22,7 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.TreeListDialog;
+import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -97,8 +97,8 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
     private void initUnit(){
         final EditText unit_et = findViewById(R.id.a_unit_et);
         unit_et.setOnClickListener(v -> {
-            final TreeListDialog treeListDialog = new TreeListDialog(mContext,mContext.getString(R.string.unit_sz));
-            treeListDialog.setDatas(Utils.JsondeepCopy(mUnitList),null,true);
+            final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(mContext,mContext.getString(R.string.unit_sz));
+            treeListDialog.setData(Utils.JsondeepCopy(mUnitList),null,true);
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
@@ -119,8 +119,8 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
     private void initCategory(){
         final EditText category_et = findViewById(R.id.a_category_et);
         category_et.setOnClickListener(v -> {
-            final TreeListDialog treeListDialog = new TreeListDialog(mContext,mContext.getString(R.string.d_category_sz));
-            treeListDialog.setDatas(Utils.JsondeepCopy(mCategoryList),null,true);
+            final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(mContext,mContext.getString(R.string.d_category_sz));
+            treeListDialog.setData(Utils.JsondeepCopy(mCategoryList),null,true);
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
@@ -169,8 +169,8 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
         });
         supplier_et.setOnClickListener(v -> {
             final String sup = mContext.getString(R.string.a_supplier_sz);
-            final TreeListDialog treeListDialog = new TreeListDialog(mContext,sup.substring(0,sup.length() - 1));
-            treeListDialog.setDatas(Utils.JsondeepCopy(mSupplierList),null,true);
+            final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(mContext,sup.substring(0,sup.length() - 1));
+            treeListDialog.setData(Utils.JsondeepCopy(mSupplierList),null,true);
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
@@ -219,7 +219,7 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
         final EditText goods_attr_et = findViewById(R.id.a_goods_attr_et),metering_et = findViewById(R.id.a_metering_et);
         goods_attr_et.setOnClickListener(v -> {
             final String attr = mContext.getString(R.string.a_goods_attr_sz);
-            final TreeListDialog treeListDialog = new TreeListDialog(mContext,attr.substring(0,attr.length() - 1));
+            final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(mContext,attr.substring(0,attr.length() - 1));
             final JSONArray array = new JSONArray();
             final JSONObject obj = new JSONObject();
             obj.put("level",0);
@@ -233,7 +233,7 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
             obj.put(TreeListBaseAdapter.COL_NAME,"称重商品");
             array.add(obj);
 
-            treeListDialog.setDatas(array,null,true);
+            treeListDialog.setData(array,null,true);
 
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
@@ -264,7 +264,7 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
 
         metering_et.setOnClickListener(v -> {
             final String attr = mContext.getString(R.string.a_goods_attr_sz);
-            final TreeListDialog treeListDialog = new TreeListDialog(mContext,attr.substring(0,attr.length() - 1));
+            final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(mContext,attr.substring(0,attr.length() - 1));
             final JSONArray array = new JSONArray();
 
             final JSONObject obj = new JSONObject();
@@ -283,7 +283,7 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
             obj.put(TreeListBaseAdapter.COL_NAME,"定重");
             array.add(obj);
 
-            treeListDialog.setDatas(array,null,true);
+            treeListDialog.setData(array,null,true);
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();

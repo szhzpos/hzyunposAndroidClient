@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.dialog;
+package com.wyc.cloudapp.dialog.tree;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -9,18 +9,29 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.adapter.TreeListAdapter;
+import com.wyc.cloudapp.adapter.AbstractDataAdapter;
+import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogContext;
 
-public class TreeListDialog extends AbstractDialogContext {
-    private TreeListAdapter mAdapter;
-    private JSONArray mDatas,mSelectedItems;
+/**
+ * @ProjectName: AndroidClient
+ * @Package: com.wyc.cloudapp.dialog.tree
+ * @ClassName: AbstractTreeList
+ * @Description: 树形对话框基类
+ * @Author: wyc
+ * @CreateDate: 2021-06-22 11:55
+ * @UpdateUser: 更新者
+ * @UpdateDate: 2021-06-22 11:55
+ * @UpdateRemark: 更新说明
+ * @Version: 1.0
+ */
+public abstract class AbstractTreeListDialog<D,S> extends AbstractDialogContext {
+    private TreeListBaseAdapter<D,S,AbstractDataAdapter.SuperViewHolder> mAdapter;
+    private D mData,mSelectedItems;
     private boolean mSingleSelection;
 
-    public TreeListDialog(@NonNull Context context, String title) {
+    public AbstractTreeListDialog(@NonNull Context context, String title) {
         super(context, title);
     }
 
@@ -38,30 +49,30 @@ public class TreeListDialog extends AbstractDialogContext {
 
     private void initList(){
         final RecyclerView item_list = findViewById(R.id.item_list);
-        final TreeListAdapter listAdapter = new TreeListAdapter(mContext,mSingleSelection);
-        listAdapter.setData(mDatas,mSelectedItems);
+        mAdapter = getAdapter();
+        mAdapter.setData(mData,mSelectedItems);
         item_list.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
         item_list.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
-        item_list.setAdapter(listAdapter);
-        mAdapter = listAdapter;
+        item_list.setAdapter(mAdapter);
+
     }
 
-    public TreeListDialog setDatas(final JSONArray obj, final JSONArray selectItems, boolean singleSelection){
+    public AbstractTreeListDialog<D,S> setData(final D obj, final D selectItems, boolean singleSelection){
         mSingleSelection = singleSelection;
-        mDatas = obj;
+        mData = obj;
         mSelectedItems = selectItems;
         return this;
     }
 
-    public JSONArray getMultipleContent(){
-        if (mAdapter != null)return mAdapter.getMultipleSelectedContent();
-        return new JSONArray();
+    public D getMultipleContent(){
+        return mAdapter.getMultipleSelectedContent();
     }
 
-    public JSONObject getSingleContent(){
-        if (mAdapter != null)return mAdapter.getSingleSelectedContent();
-        return new JSONObject();
+    public S getSingleContent(){
+        return mAdapter.getSingleSelectedContent();
     }
+
+    protected abstract <T extends TreeListBaseAdapter<D,S,AbstractDataAdapter.SuperViewHolder>> T getAdapter();
 
     private void initBtn(){
         final Button ok = findViewById(R.id.t_ok),cancel = findViewById(R.id.t_cancel);
@@ -70,5 +81,7 @@ public class TreeListDialog extends AbstractDialogContext {
             cancel.setOnClickListener(v -> setCodeAndExit(0));
         }
     }
-
+    protected boolean isSingleSelection(){
+        return mSingleSelection;
+    }
 }

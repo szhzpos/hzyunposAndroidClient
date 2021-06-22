@@ -202,7 +202,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
                 final String name = Utils.getNullStringAsEmpty(object, TreeListBaseAdapter.COL_NAME);
 
                 mSaleManInfo = new JSONObject();
-                mSaleManInfo.put("id",Utils.getNullStringAsEmpty(object,TreeListBaseAdapter.COL_ID));
+                mSaleManInfo.put("id",Utils.getNullStringAsEmpty(object, TreeListBaseAdapter.COL_ID));
                 mSaleManInfo.put("name",name);
                 sale_man_name.setText(name);
             });

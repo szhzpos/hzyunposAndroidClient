@@ -30,7 +30,7 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.TreeListDialog;
+import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.dialog.baseDialog.BusinessSelectGoodsDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
@@ -129,8 +129,8 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractMobileActi
         final String sz = getString(R.string.sale_operator_sz);
         final JSONArray array = getSaleOperator(business_operator_tv);
         business_operator_tv.setOnClickListener(v -> CustomApplication.runInMainThread(()->{
-            final TreeListDialog treeListDialog = new TreeListDialog(this,sz.substring(0,sz.length() - 1));
-            treeListDialog.setDatas(array,null,true);
+            final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(this,sz.substring(0,sz.length() - 1));
+            treeListDialog.setData(array,null,true);
             if (treeListDialog.exec() == 1){
                 final JSONObject object = treeListDialog.getSingleContent();
                 setSaleOperator(object.getString(TreeListBaseAdapter.COL_ID),object.getString(TreeListBaseAdapter.COL_NAME));

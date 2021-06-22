@@ -21,7 +21,7 @@ import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.CustomePopupWindow;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.TreeListDialog;
+import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogContext;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -159,8 +159,8 @@ public class AddBarcodeScaleDialog extends AbstractDialogContext {
             }
         });
         editText.setOnClickListener(v -> {
-            final TreeListDialog treeListDialog = new TreeListDialog(mContext,mContext.getString(R.string.d_category_sz));
-            treeListDialog.setDatas(GoodsCategoryAdapter.getCategoryAsTreeListData(mContext),mCategoryInfo,false);
+            final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(mContext,mContext.getString(R.string.d_category_sz));
+            treeListDialog.setData(GoodsCategoryAdapter.getCategoryAsTreeListData(mContext),mCategoryInfo,false);
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final StringBuilder names = new StringBuilder();

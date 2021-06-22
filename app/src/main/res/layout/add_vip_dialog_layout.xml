@@ -109,7 +109,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="@string/name_sz"
+            android:text="@string/title_sz"
             android:textColor="@color/lightBlue"
             android:textSize="@dimen/font_size_16" />
 

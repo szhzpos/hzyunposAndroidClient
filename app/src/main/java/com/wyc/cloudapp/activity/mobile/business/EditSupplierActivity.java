@@ -14,7 +14,7 @@ import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.adapter.bean.Supplier;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.TreeListDialog;
+import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
@@ -58,8 +58,8 @@ public class EditSupplierActivity extends AbstractEditArchiveActivity {
         final JSONArray array = getSettlementWay();
         supplier_settlement_way_tv.setOnClickListener(v -> {
             final String sz = getString(R.string.supplier_cooperation_way_sz);
-            final TreeListDialog treeListDialog = new TreeListDialog(this,sz.substring(0,sz.length() - 1));
-            treeListDialog.setDatas(array,null,true);
+            final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(this,sz.substring(0,sz.length() - 1));
+            treeListDialog.setData(array,null,true);
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
@@ -89,8 +89,8 @@ public class EditSupplierActivity extends AbstractEditArchiveActivity {
         final JSONArray array = getCooperationWay();
         supplier_co_way_tv.setOnClickListener(v -> {
             final String sz = getString(R.string.supplier_settlement_way_sz);
-            final TreeListDialog treeListDialog = new TreeListDialog(this,sz.substring(0,sz.length() - 1));
-            treeListDialog.setDatas(array,null,true);
+            final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(this,sz.substring(0,sz.length() - 1));
+            treeListDialog.setData(array,null,true);
             CustomApplication.runInMainThread(()->{
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();

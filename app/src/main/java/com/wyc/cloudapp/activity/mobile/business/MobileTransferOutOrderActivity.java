@@ -15,7 +15,7 @@ import com.wyc.cloudapp.adapter.business.MobileTransferOutOrderAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.TreeListDialog;
+import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.utils.Utils;
 /*调出单*/
 public class MobileTransferOutOrderActivity extends AbstractMobileBusinessOrderActivity {
@@ -55,8 +55,8 @@ public class MobileTransferOutOrderActivity extends AbstractMobileBusinessOrderA
             final String sz = getString(R.string.transfer_in_wh);
             final JSONArray array = getTransferInWarehouse(transfer_in_wh_tv);
             transfer_in_wh_tv.setOnClickListener(v -> CustomApplication.runInMainThread(()->{
-                final TreeListDialog treeListDialog = new TreeListDialog(this,sz.substring(0,sz.length() - 1));
-                treeListDialog.setDatas(array,null,true);
+                final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(this,sz.substring(0,sz.length() - 1));
+                treeListDialog.setData(array,null,true);
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
                     setTransferInWarehouse(object.getString(TreeListBaseAdapter.COL_ID),object.getString(TreeListBaseAdapter.COL_NAME));

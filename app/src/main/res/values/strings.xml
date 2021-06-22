@@ -85,6 +85,7 @@
     <string name="cash_pay_sz">现金：</string>
     <string name="cash_zl_sz">找零：</string>
     <string name="not_found_hint">Not found content view…</string>
+    <string name="name_sz">名称：</string>
 
     <!-- 新增会员 -->
     <string name="vip_dialog_title_sz">会员信息</string>
@@ -102,6 +103,7 @@
     <string name="add_sz">新增</string>
     <string name="grade_sz">级别：</string>
     <string name="level_sz">级别：</string>
+
     <string name="birth_sz">生日：</string>
     <string name="add_vip_sz">新增会员</string>
     <string name="modify_vip_sz">修改会员</string>
@@ -208,7 +210,7 @@
     <string name="pro_t_sz">协议类型</string>
     <string name="goods_i_sz">商品信息</string>
     <string name="g_price_sz">价格：</string>
-    <string name="name_sz">名称：</string>
+    <string name="title_sz">名称：</string>
     <string name="weigh_sz">重量：</string>
 
     <!-- 零售单查询窗口 -->
@@ -444,7 +446,7 @@
     <string name="refund_sz">退款</string>
     <!-- 手机设置窗口-->
     <string name="job_num_sz">工号：</string>
-    <string name="m_name_sz">姓名：</string>
+    <string name="m_name_sz">@string/name_sz</string>
     <string name="exit_sz">退出登录</string>
     <string name="origin_order_code_sz">原单号</string>
     <string name="display_size_sz">屏幕</string>
@@ -690,4 +692,11 @@
     <string name="camera_permission_hint">请打开相机权限…</string>
     <string name="clear_img">清除图片</string>
     <string name="add_img">添加图片</string>
+
+    <!-- 编辑会员-->
+    <string name="vip_name">@string/name_sz</string>
+    <string name="male">男</string>
+    <string name="female">女</string>
+    <string name="referrer">推荐人：</string>
+    <string name="query_vip_grade_hint">正在查询会员级别…</string>
 </resources>

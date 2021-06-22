@@ -32,7 +32,7 @@
                 android:layout_height="@dimen/height_45"
                 android:layout_marginStart="@dimen/margin_5"
                 android:gravity="center"
-                android:text="@string/name_sz"
+                android:text="@string/title_sz"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_18" />
