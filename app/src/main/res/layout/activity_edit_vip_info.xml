@@ -201,7 +201,7 @@
                 android:text="@string/male" />
 
             <RadioButton
-                android:id="@+id/radioButton2"
+                android:id="@+id/female_rb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_18"
@@ -299,7 +299,7 @@
             android:textSize="@dimen/font_size_14" />
 
         <EditText
-            android:id="@+id/contacts_name_et"
+            android:id="@+id/referrer_et"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/white"
@@ -307,11 +307,11 @@
             android:importantForAutofill="no"
             android:inputType="number"
             android:paddingStart="5dp"
+            android:paddingEnd="0dp"
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_14"
-            android:paddingEnd="0dp" />
+            android:textSize="@dimen/font_size_14" />
     </LinearLayout>
 
     <LinearLayout

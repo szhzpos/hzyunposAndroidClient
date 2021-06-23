@@ -7,15 +7,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.business.EditSupplierActivity;
 import com.wyc.cloudapp.activity.mobile.business.MobileSupplierInfoActivity;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForList;
-import com.wyc.cloudapp.adapter.bean.Supplier;
-import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.Utils;
+import com.wyc.cloudapp.bean.Supplier;
 
 import java.util.Locale;
 

@@ -7,12 +7,7 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.adapter.bean.TreeListItem;
-
-import java.util.List;
 
 /**
  * @ProjectName: AndroidClient

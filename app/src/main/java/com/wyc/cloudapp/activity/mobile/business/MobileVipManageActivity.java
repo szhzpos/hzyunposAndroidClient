@@ -26,6 +26,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -128,7 +129,7 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
         CustomApplication.execute(()->{
             JSONObject object = new JSONObject();
             object.put("appid",getAppId());
-            object = HttpUtils.sendPost(getUrl() + "/api/member/get_member_grade", HttpRequest.generate_request_parm(object,getAppSecret()),true);
+            object = HttpUtils.sendPost(getUrl() + InterfaceURL.VIP_GRADE, HttpRequest.generate_request_parm(object,getAppSecret()),true);
             if (HttpUtils.checkRequestSuccess(object)){
                 object = JSONObject.parseObject(object.getString("info"));
                 if (HttpUtils.checkBusinessSuccess(object)){

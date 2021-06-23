@@ -8,7 +8,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.business.MobileEditGoodsCategoryActivity;
-import com.wyc.cloudapp.adapter.bean.TreeListItem;
+import com.wyc.cloudapp.bean.TreeListItem;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;

@@ -11,7 +11,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
-import com.wyc.cloudapp.adapter.bean.Supplier;
+import com.wyc.cloudapp.bean.Supplier;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;

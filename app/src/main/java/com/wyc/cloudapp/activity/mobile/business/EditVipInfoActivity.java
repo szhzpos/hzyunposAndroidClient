@@ -1,37 +1,40 @@
 package com.wyc.cloudapp.activity.mobile.business;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.DatePickerDialog;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.icu.util.Calendar;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.alibaba.fastjson.JSON;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
-import com.wyc.cloudapp.adapter.bean.TreeListItem;
-import com.wyc.cloudapp.adapter.bean.VipGrade;
+import com.wyc.cloudapp.bean.TreeListItem;
+import com.wyc.cloudapp.bean.VipGrade;
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.constants.MessageID;
+import com.wyc.cloudapp.constants.InterfaceURL;
+import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.dialog.tree.TreeListDialogForObj;
 import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
+import com.wyc.cloudapp.utils.http.callback.ArrayCallback;
+import com.wyc.cloudapp.utils.http.callback.ObjectCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +42,6 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableEmitter;
 import io.reactivex.rxjava3.core.ObservableOnSubscribe;
@@ -51,10 +53,32 @@ public class EditVipInfoActivity extends AbstractEditArchiveActivity {
     private String mBirthdayType;
     private TextView mVipBirthday;
 
+    @BindView(R.id.p_num_et)
+    EditText p_num_et;
+
+    @BindView(R.id.card_et)
+    EditText card_et;
+
+    @BindView(R.id.name_et)
+    EditText name_et;
+
     @BindView(R.id.grade_tv)
     TextView grade_tv;
+
     @BindView(R.id.sale_man_tv)
     TextView sale_man_tv;
+
+    @BindView(R.id.referrer_et)
+    EditText referrer_et;
+
+    @BindView(R.id.remark_mt)
+    EditText remark_mt;
+
+    @BindView(R.id.male_rb)
+    RadioButton male_rb;
+
+    @BindView(R.id.female_rb)
+    RadioButton female_rb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,32 +97,25 @@ public class EditVipInfoActivity extends AbstractEditArchiveActivity {
         queryVipLevel();
     }
     private void queryVipLevel(){
-        Observable.create((ObservableOnSubscribe<List<VipGrade>>) emitter -> {
-            final JSONObject param = new JSONObject();
-            param.put("appid",getAppId());
-            JSONObject ret_obj = HttpUtils.sendPost(getUrl() + "/api/member/get_member_grade", HttpRequest.generate_request_parm(param,getAppSecret()),true);
-            if (HttpUtils.checkRequestSuccess(ret_obj)){
-                try {
-                    ret_obj = JSONObject.parseObject(ret_obj.getString("info"));
-                    if (HttpUtils.checkBusinessSuccess(ret_obj)){
-                        final JSONArray data = ret_obj.getJSONArray("data");
-                        emitter.onNext(data.toJavaList(VipGrade.class));
-                    }else throw new JSONException(ret_obj.getString("info"));
-                }catch (JSONException e){
-                    emitter.onError(e);
-                }
-            }
-        }).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe(vipGrades -> {
-            if (null != vipGrades && !vipGrades.isEmpty()){
-                VipGrade vipGrade = vipGrades.get(0);
-                grade_tv.setText(vipGrade.getGrade_name());
-                grade_tv.setTag(vipGrade.getGrade_id());
-                vipGradeList = vipGrades;
-            }
-        }, throwable -> {
-            throwable.printStackTrace();
-            MyDialog.ToastMessage(throwable.getMessage(),this,null);
-        });
+        final JSONObject param = new JSONObject();
+        param.put("appid",getAppId());
+        HttpUtils.sendAsyncPost(getUrl() + InterfaceURL.VIP_GRADE,HttpRequest.generate_request_parm(param,getAppSecret()))
+                .enqueue(new ArrayCallback<VipGrade>(VipGrade.class,true) {
+                    @Override
+                    protected void onError(String msg) {
+                        MyDialog.toastMessage(msg);
+                    }
+
+                    @Override
+                    protected void onSuccessForResult(@Nullable List<VipGrade> d, String hint) {
+                        if (d != null){
+                            VipGrade vipGrade = d.get(0);
+                            grade_tv.setText(vipGrade.getGrade_name());
+                            grade_tv.setTag(vipGrade.getGrade_id());
+                            vipGradeList = d;
+                        }
+                    }
+                });
     }
     private void initGrade(){
         grade_tv.setOnClickListener(v -> CustomApplication.runInMainThread(()->{
@@ -180,12 +197,85 @@ public class EditVipInfoActivity extends AbstractEditArchiveActivity {
 
     @Override
     protected void sure() {
-
+        add(false);
     }
 
     @Override
     protected void saveAndAdd() {
+        add(true);
+    }
+    
+    private void add(boolean reset){
+        final JSONObject param = getParameter();
+        if (!param.isEmpty()){
+            param.put("appid",getAppId());
+            final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,getString(R.string.hints_save_data_sz));
+            HttpUtils.sendAsyncPost(getUrl() + "/api/member/mk",HttpRequest.generate_request_parm(param,getAppSecret())).enqueue(new ObjectCallback<String>(String.class,true) {
+                @Override
+                protected void onError(String msg) {
+                    progressDialog.dismiss();
+                    MyDialog.toastMessage(msg);
+                }
+                @Override
+                protected void onSuccessForResult(String d,final String hint) {
+                    progressDialog.dismiss();
+                    MyDialog.toastMessage(hint);
+                    if (reset){
+                        reset();
+                    }else finish();
+                }
+            });
+        }
+    }
 
+    private JSONObject getParameter(){
+        final String p_num = p_num_et.getText().toString(),card_no = card_et.getText().toString(),name = name_et.getText().toString(),birthday  = mVipBirthday.getText().toString();
+        final JSONObject param = new JSONObject();
+        if (!Utils.isNotEmpty(p_num)){
+            p_num_et.requestFocus();
+            MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.vip_ph_num_not_colon_sz)),this,getWindow());
+            return param;
+        }
+        if (!Utils.isNotEmpty(card_no)){
+            card_et.requestFocus();
+            MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.card_code_sz)),this,getWindow());
+            return param;
+        }
+        if (!Utils.isNotEmpty(name)){
+            name_et.requestFocus();
+            MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.vip_name_sz)),this,getWindow());
+            return param;
+        }
+        if (!Utils.isNotEmpty(birthday)){
+            mVipBirthday.requestFocus();
+            MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.input_birthday_hint_sz)),this,getWindow());
+            return param;
+        }
+
+        param.put("mobile",p_num);
+        param.put("grade_id",grade_tv.getTag());
+        param.put("name",name);
+        param.put("sex",male_rb.isChecked() ? "男" : female_rb.isChecked() ? "女" : "-");
+        param.put("card_code",card_no);
+        param.put("birthday",mVipBirthday.getText().toString());
+        param.put("birthday_type",mBirthdayType);
+        param.put("re_mobile",referrer_et.getText().toString());
+        param.put("sc_id",sale_man_tv.getTag());
+        param.put("stores_id",getStoreId());
+        param.put("origin",1);
+
+        return param;
+    }
+
+    private void reset(){
+        p_num_et.setText(R.string.space_sz);
+        card_et.setText(R.string.space_sz);
+        name_et.setText(R.string.space_sz);
+        mVipBirthday.setText(R.string.space_sz);
+        sale_man_tv.setText(R.string.space_sz);
+        referrer_et.setText(R.string.space_sz);
+        referrer_et.setText(R.string.space_sz);
+        remark_mt.setText(R.string.space_sz);
     }
 
     public static void start(MobileVipManageActivity context){

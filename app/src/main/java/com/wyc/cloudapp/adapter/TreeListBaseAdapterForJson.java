@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Looper;
 import android.view.View;
-import android.view.ViewStub;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -18,11 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.adapter.bean.TreeListItem;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.utils.Utils;
-
-import java.util.List;
 
 /**
  * @ProjectName: CloudApp

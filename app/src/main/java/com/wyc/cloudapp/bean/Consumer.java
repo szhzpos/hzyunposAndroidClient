@@ -1,9 +1,10 @@
-package com.wyc.cloudapp.adapter.bean;
+package com.wyc.cloudapp.bean;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.wyc.cloudapp.utils.Utils;
 
@@ -12,7 +13,7 @@ import java.util.Locale;
 
 /**
  * @ProjectName: CloudApp
- * @Package: com.wyc.cloudapp.adapter.bean
+ * @Package: com.wyc.cloudapp.bean
  * @ClassName: Consumer
  * @Description: 客户
  * @Author: wyc
@@ -180,5 +181,15 @@ public final class Consumer implements Serializable, Parcelable {
     @Override
     public String toString() {
         return String.format(Locale.CHINA,"cs_id[%s]-cs_code[%s]-cs_name[%s]",c_s_id,cs_code,cs_name);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        return super.equals(obj);
     }
 }

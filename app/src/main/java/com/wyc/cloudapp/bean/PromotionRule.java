@@ -1,6 +1,7 @@
-package com.wyc.cloudapp.adapter.bean;
+package com.wyc.cloudapp.bean;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.Serializable;
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.Locale;
 
 /**
  * @ProjectName: CloudApp
- * @Package: com.wyc.cloudapp.adapter.bean
+ * @Package: com.wyc.cloudapp.bean
  * @ClassName: PromotionRule
  * @Description: 促销规则
  * @Author: wyc
@@ -116,6 +117,16 @@ public final class PromotionRule implements Comparable<PromotionRule> , Serializ
     @Override
     public String toString() {
         return String.format(Locale.CHINA,"tlp_id:%d,price:%f,upper_limit_num:%f,lower_limit_num:%f",tlp_id,price,upper_limit_num,lower_limit_num);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        return super.equals(obj);
     }
 }
 

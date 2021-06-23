@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import com.wyc.cloudapp.CustomizationView.SwipeLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.business.MobileEditGoodsCategoryActivity;
-import com.wyc.cloudapp.adapter.bean.TreeListItem;
+import com.wyc.cloudapp.bean.TreeListItem;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;

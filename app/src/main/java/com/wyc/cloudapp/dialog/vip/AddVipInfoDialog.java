@@ -25,6 +25,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
@@ -264,7 +265,7 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
         mProgressDialog.setMessage(mContext.getString(R.string.query_vip_grade_hint)).show();
         mProgressDialog.setCancelable(false);
         CustomApplication.execute(()->{
-            String url = mContext.getUrl() + "/api/member/get_member_grade",sz_param;
+            String url = mContext.getUrl() + InterfaceURL.VIP_GRADE,sz_param;
             JSONObject object = new JSONObject(),ret_json;
             HttpRequest httpRequest = new HttpRequest();
             try {

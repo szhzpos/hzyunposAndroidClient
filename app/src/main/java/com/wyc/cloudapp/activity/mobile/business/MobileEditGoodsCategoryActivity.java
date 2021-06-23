@@ -10,7 +10,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.EditGoodsCategoryAdapter;
 import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
-import com.wyc.cloudapp.adapter.bean.TreeListItem;
+import com.wyc.cloudapp.bean.TreeListItem;
 import com.wyc.cloudapp.dialog.business.EditGoodsCategoryDialog;
 
 import static com.wyc.cloudapp.activity.mobile.business.MobileSelectGoodsActivity.TITLE_KEY;

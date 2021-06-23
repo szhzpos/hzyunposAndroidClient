@@ -18,7 +18,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.adapter.bean.Consumer;
+import com.wyc.cloudapp.bean.Consumer;
 import com.wyc.cloudapp.adapter.business.MobileConsumerAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;

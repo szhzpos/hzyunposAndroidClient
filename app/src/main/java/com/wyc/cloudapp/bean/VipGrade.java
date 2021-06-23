@@ -1,16 +1,17 @@
-package com.wyc.cloudapp.adapter.bean;
+package com.wyc.cloudapp.bean;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.Serializable;
 import java.util.Locale;
 
 /**
  * @ProjectName: CloudApp
- * @Package: com.wyc.cloudapp.adapter.bean
+ * @Package: com.wyc.cloudapp.bean
  * @ClassName: VipCategory
  * @Description: 会员类别
  * @Author: wyc
@@ -185,5 +186,15 @@ public final class VipGrade implements Serializable, Parcelable {
     @Override
     public String toString() {
         return String.format(Locale.CHINA,"grade_id[%s]-grade_name[%s]",grade_id,grade_name);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        return super.equals(obj);
     }
 }

@@ -78,7 +78,7 @@ public final class HttpUtils {
                     content.put("info","");
                 }
             }
-            content.put("rsCode", response.code());
+            content.put("rsCode",code);
         }catch (IOException | XmlPullParserException e) {
             e.printStackTrace();
             if (e instanceof IOException)

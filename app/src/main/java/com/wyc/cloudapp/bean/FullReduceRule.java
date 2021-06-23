@@ -1,13 +1,14 @@
-package com.wyc.cloudapp.adapter.bean;
+package com.wyc.cloudapp.bean;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.Serializable;
 import java.util.Locale;
 
 /**
  * @ProjectName: CloudApp
- * @Package: com.wyc.cloudapp.adapter.bean
+ * @Package: com.wyc.cloudapp.bean
  * @ClassName: FullReduceRule
  * @Description: 满减规则
  * @Author: wyc
@@ -100,5 +101,15 @@ public final class FullReduceRule implements Comparable<FullReduceRule>, Seriali
     @Override
     public int compareTo(FullReduceRule o) {
         return Double.compare(buyfull_money,o.buyfull_money);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        return super.equals(obj);
     }
 }

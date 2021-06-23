@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.adapter.bean;
+package com.wyc.cloudapp.bean;
 
 import android.view.View;
 
@@ -12,7 +12,7 @@ import java.util.Locale;
 
 /**
  * @ProjectName: CloudApp
- * @Package: com.wyc.cloudapp.adapter.bean
+ * @Package: com.wyc.cloudapp.bean
  * @ClassName: TreeList
  * @Description: 树形结构内容对象
  * @Author: wyc
@@ -127,5 +127,15 @@ public final class TreeListItem implements Cloneable,Serializable {
     @Override
     public String toString() {
         return String.format(Locale.CHINA,"item_id:%s,item_name:%s",item_id,item_name);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        return super.equals(obj);
     }
 }

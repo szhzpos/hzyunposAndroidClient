@@ -10,13 +10,13 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.adapter.bean.VipGrade;
+import com.wyc.cloudapp.bean.VipGrade;
 import com.wyc.cloudapp.adapter.business.MobileVipCategoryAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.business.EditVipCategoryDialog;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
 
@@ -53,7 +53,7 @@ public class MobileVipCategoryInfoActivity extends AbstractMobileBaseArchiveActi
         CustomApplication.execute(()->{
             final JSONObject param = new JSONObject();
             param.put("appid",getAppId());
-            JSONObject ret_obj = HttpUtils.sendPost(getUrl() + "/api/member/get_member_grade", HttpRequest.generate_request_parm(param,getAppSecret()),true);
+            JSONObject ret_obj = HttpUtils.sendPost(getUrl() + InterfaceURL.VIP_GRADE, HttpRequest.generate_request_parm(param,getAppSecret()),true);
             if (HttpUtils.checkRequestSuccess(ret_obj)){
                 try {
                     ret_obj = JSONObject.parseObject(ret_obj.getString("info"));

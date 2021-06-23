@@ -270,6 +270,9 @@ public final class MyDialog extends AbstractDialogContext {
     public static void ToastMessageInMainThread(final String message){
         CustomApplication.runInMainThread(()-> Toast.makeText(CustomApplication.self(),message,Toast.LENGTH_LONG).show());
     }
+    public static void toastMessage(final String message){
+        Toast.makeText(CustomApplication.self(),message,Toast.LENGTH_LONG).show();
+    }
 
     public static void ToastMessage(final String message, @NonNull final Context context, final Window window){
         final Toast toast = new Toast(context);

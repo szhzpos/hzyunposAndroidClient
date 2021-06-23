@@ -7,15 +7,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.business.MobileVipCategoryInfoActivity;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForList;
-import com.wyc.cloudapp.adapter.bean.VipGrade;
+import com.wyc.cloudapp.bean.VipGrade;
 import com.wyc.cloudapp.dialog.business.EditVipCategoryDialog;
-import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 

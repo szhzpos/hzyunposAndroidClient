@@ -8,7 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.adapter.bean.TreeListItem;
+import com.wyc.cloudapp.bean.TreeListItem;
 
 /**
  * @ProjectName: AndroidClient

@@ -5,7 +5,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.adapter.TreeListAdapterForObj;
-import com.wyc.cloudapp.adapter.bean.TreeListItem;
+import com.wyc.cloudapp.bean.TreeListItem;
 
 import java.util.List;
 

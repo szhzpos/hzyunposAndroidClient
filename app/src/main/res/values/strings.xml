@@ -574,6 +574,7 @@
     <string name="cashBox_residue_unit_sz">钱箱剩余(元)</string>
 
     <string name="hints_query_data_sz">正在查询数据…</string>
+    <string name="hints_save_data_sz">正在保存数据…</string>
     <string name="select_goods_label">选择商品</string>
 
     <!--业务单据商品选择对话框-->
