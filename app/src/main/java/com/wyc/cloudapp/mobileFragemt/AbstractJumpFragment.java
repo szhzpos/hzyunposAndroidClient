@@ -1,6 +1,7 @@
 package com.wyc.cloudapp.mobileFragemt;
 
 import android.os.Bundle;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,9 @@ import com.wyc.cloudapp.CustomizationView.JumpTextView;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.fragment.AbstractBaseFragment;
 import com.wyc.cloudapp.logger.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /*
  * 负责加载功能布局，getRootLayoutId返回根布局id，如果根布局不是功能布局，则根据getMainViewId返回的id在根布局查找。
@@ -46,15 +50,17 @@ public abstract class AbstractJumpFragment extends AbstractMobileFragment {
                 int _count = function_linearLayout.getChildCount(), child_count;
                 for (int i = 0; i < _count; i++) {
                     final View child = function_linearLayout.getChildAt(i);
-                    if (child instanceof ViewGroup) {
-                        final ViewGroup viewGroup = (ViewGroup) child;
-                        child_count = viewGroup.getChildCount();
-                        for (int j = 0; j < child_count; j++) {
-                            final View view = viewGroup.getChildAt(j);
-                            if (view instanceof JumpTextView)view.setOnClickListener(mClickListener);
+                    if (!ignore(child)){
+                        if (child instanceof ViewGroup) {
+                            final ViewGroup viewGroup = (ViewGroup) child;
+                            child_count = viewGroup.getChildCount();
+                            for (int j = 0; j < child_count; j++) {
+                                final View view = viewGroup.getChildAt(j);
+                                if (view instanceof JumpTextView)view.setOnClickListener(mClickListener);
+                            }
+                        }else if (child instanceof JumpTextView){
+                            child.setOnClickListener(mClickListener);
                         }
-                    }else if (child instanceof JumpTextView){
-                        child.setOnClickListener(mClickListener);
                     }
                 }
             }
@@ -67,6 +73,22 @@ public abstract class AbstractJumpFragment extends AbstractMobileFragment {
     }
     abstract protected int getMainViewId();
     abstract protected void triggerItemClick(final View v);
+    protected List<Integer> getIgnoreView(){
+        return new ArrayList<>();
+    }
+    private boolean ignore(View view){
+        if (view.getVisibility() == View.GONE)return true;
+
+        int id_ = view.getId();
+        List<Integer> ids = getIgnoreView();
+        for(int id : ids){
+            if (id_ == id){
+                view.setVisibility(View.GONE);
+                return true;
+            }
+        }
+        return false;
+    }
 
     private final View.OnClickListener mClickListener = this::triggerItemClick;
 }

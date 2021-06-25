@@ -110,12 +110,12 @@ public class MainActivity extends BaseActivity {
     * */
     public boolean verifyPermissions(final String per_id,final String requested_cas_code,boolean isShow){
         boolean code = false;
-        final JSONObject mCashierInfo = mApplication.getCashierInfo(),mStoreInfo = mApplication.getStoreInfo();
-        String cashier_id = Utils.getNullStringAsEmpty(mCashierInfo,"cas_code"),cas_pwd = Utils.getNullStringAsEmpty(mCashierInfo,"cas_pwd"),stores_id = mStoreInfo.getString("stores_id");
+        final JSONObject mCashierInfo = mApplication.getCashierInfo();
+        String cas_pwd = Utils.getNullStringAsEmpty(mCashierInfo,"cas_pwd"),stores_id = getStoreId();
         final StringBuilder err = new StringBuilder();
         if (null != requested_cas_code){
             cas_pwd = Utils.getUserIdAndPasswordCombinationOfMD5(requested_cas_code);
-            Logger.i("操作员:%s,向:%s请求权限:%s",cashier_id,cas_pwd,per_id);
+            Logger.i("操作员:%s,向:%s请求权限:%s",getCashierCode(),cas_pwd,per_id);
         }
         final String authority = SQLiteHelper.getString("SELECT authority FROM cashier_info where cas_pwd = '" + cas_pwd +"' and stores_id = " + stores_id,err);
         if (Utils.isNotEmpty(authority)){

@@ -118,6 +118,76 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/once_card_layout"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/board_rect_size"
+            android:layout_marginBottom="@dimen/margin_2"
+            android:orientation="horizontal">
+
+            <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+                android:id="@+id/once_card_sale_tv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:layout_weight="1"
+                android:background="#E4B0D9"
+                android:drawableTop="@drawable/once_card"
+                android:gravity="center"
+                android:text="@string/once_card_sale_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18"
+                app:verSpacing="@dimen/default_vertical" />
+
+            <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#A2A0AB"
+                android:drawableTop="@drawable/m_charge_query"
+                android:gravity="center"
+                android:text="@string/once_card_query_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18"
+                app:verSpacing="@dimen/default_vertical" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/gift_card_layout"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/board_rect_size"
+            android:layout_marginBottom="@dimen/margin_2"
+            android:orientation="horizontal">
+
+            <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+                android:id="@+id/gift_card_sale_tv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/margin_2"
+                android:layout_weight="1"
+                android:background="#9A8C4A"
+                android:drawableTop="@drawable/gift_card"
+                android:gravity="center"
+                android:text="@string/gift_card_sale_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18"
+                app:verSpacing="@dimen/default_vertical" />
+
+            <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+                android:id="@+id/gift_card_query_tv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#ACBA95"
+                android:drawableTop="@drawable/m_charge_query"
+                android:gravity="center"
+                android:text="@string/gift_card_query_sz"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_18"
+                app:verSpacing="@dimen/default_vertical" />
+
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/board_rect_size"
             android:layout_marginBottom="@dimen/margin_2"

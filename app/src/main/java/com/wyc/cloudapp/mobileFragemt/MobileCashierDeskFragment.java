@@ -20,6 +20,9 @@ import com.wyc.cloudapp.dialog.vip.MobileVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.MobileVipDepositOrderDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class MobileCashierDeskFragment extends AbstractJumpFragment {
     @Override
     protected int getRootLayout() {
@@ -28,6 +31,25 @@ public final class MobileCashierDeskFragment extends AbstractJumpFragment {
     @Override
     protected int getMainViewId() {
         return R.id.main_linearLayout;
+    }
+
+    @Override
+    protected List<Integer> getIgnoreView() {
+        final List<Integer> ids = new ArrayList<>();
+        if (!verifyOnceCardPermissions()){
+            ids.add(R.id.once_card_layout);
+        }
+        if (!verifyGiftCardPermissions()){
+            ids.add(R.id.gift_card_layout);
+        }
+        return ids;
+    }
+
+    private boolean verifyOnceCardPermissions(){
+        return mContext.verifyPermissions("27",null,false);
+    }
+    private boolean verifyGiftCardPermissions(){
+        return mContext.verifyPermissions("30",null,false);
     }
 
     @Override
