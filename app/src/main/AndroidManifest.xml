@@ -39,7 +39,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
-        <activity android:name=".activity.mobile.business.EditVipInfoActivity"></activity>
+        <activity android:name=".activity.mobile.business.SelectOnceCardActivity"></activity>
+        <activity android:name=".activity.mobile.business.MobileOnceCardActivity" />
+        <activity android:name=".activity.mobile.business.EditVipInfoActivity" />
         <activity android:name=".activity.mobile.business.MobileEditGoodInfoActivity" />
         <activity android:name=".activity.mobile.business.MobileVipCategoryInfoActivity" />
         <activity android:name=".activity.mobile.business.EditConsumerActivity" />

@@ -22,6 +22,7 @@ import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.VipInfo;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.JEventLoop;
@@ -44,7 +45,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
     protected JSONObject mPayMethodSelected;
     protected static final String PAY_CODE_LABEL = "payCode";
 
-    private JSONObject mVip;
+    private VipInfo mVip;
     private EditText mSearchContent,mChargeAmtEt,mRemarkEt,mPresentAmtEt;
     private TextView mVip_name,mVip_sex,mVip_p_num,mVip_card_id,mVip_balance,mVip_integral,mVipGrade,mVipDiscount,mChargePlanTv,mSaleManTv;
     private CustomProgressDialog mProgressDialog;
@@ -53,12 +54,10 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
     public AbstractVipChargeDialog(@NonNull MainActivity context) {
         super(context, context.getString(R.string.vip_charge_sz));
     }
-    public AbstractVipChargeDialog(@NonNull MainActivity context, final JSONObject object){
+    public AbstractVipChargeDialog(@NonNull MainActivity context, final VipInfo object){
         this(context);
         mVip = object;
-        CustomApplication.execute(()->{
-            loadChargePlan(Utils.getNullStringAsEmpty(object,"openid"));
-        });
+        CustomApplication.execute(()-> loadChargePlan(object.getOpenid()));
     }
 
     @Override
@@ -147,7 +146,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
         mVipDiscount = findViewById(R.id.vip_discount);
     }
 
-    public JSONObject getVip(){
+    public VipInfo getVip(){
         return mVip;
     }
 
@@ -182,11 +181,12 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
             mProgressDialog.setMessage("正在查询会员...").refreshMessage().show();
             CustomApplication.execute(()->{
                 try {
-                    final JSONArray array = VipInfoDialog.searchVip(mobile);
-                    final JSONObject vip = array.getJSONObject(0);
-                    Logger.d(vip);
-                    loadChargePlan(Utils.getNullStringAsEmpty(vip,"openid"));
-                    CustomApplication.runInMainThread(()-> showVipInfo(vip));
+                    final JSONObject object = VipInfoDialog.searchVip(mobile).getJSONObject(0);
+                    VipInfo vip = object == null ? null : object.toJavaObject(VipInfo.class);
+                    if (vip != null){
+                        loadChargePlan(vip.getOpenid());
+                        CustomApplication.runInMainThread(()-> showVipInfo(vip));
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                     CustomApplication.runInMainThread(()-> {
@@ -225,28 +225,28 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
         }
     }
 
-    private void showVipInfo(JSONObject object){
+    private void showVipInfo(VipInfo object){
         mVip = object;
         showVipInfo();
     }
     private void showVipInfo(){
-        final JSONObject object = mVip;
+        final VipInfo object = mVip;
         if (null != object){
-            final String grade_name = object.getString("grade_name"),mobile = object.getString("mobile");
+            final String grade_name = object.getGradeName(),mobile = object.getMobile();
             if (grade_name != null)mVipGrade.setText(grade_name);
 
-            mVip_name.setText(object.getString("name"));
-            mVip_sex.setText(object.getString("sex"));
+            mVip_name.setText(object.getName());
+            mVip_sex.setText(object.getSex());
 
             mVip_p_num.setText(mobile);
             if (mSearchContent.getText().length() == 0){
                 mSearchContent.setText(mobile);
             }
 
-            mVipDiscount.setText(object.getString("discount"));
-            mVip_card_id.setText(object.getString("card_code"));
-            mVip_balance.setText(String.format(Locale.CHINA,"%.2f",object.getDouble("money_sum")));
-            mVip_integral.setText(String.format(Locale.CHINA,"%.2f",object.getDouble("points_sum")));
+            mVipDiscount.setText(String.valueOf(object.getDiscount()));
+            mVip_card_id.setText(object.getCard_code());
+            mVip_balance.setText(String.format(Locale.CHINA,"%.2f",object.getMoney_sum()));
+            mVip_integral.setText(String.format(Locale.CHINA,"%.2f",object.getPoints_sum()));
         }
     }
 
@@ -495,7 +495,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
             return false;
         }else if (checkMinChargeAmt()){
             mChargeAmtEt.requestFocus();
-            MyDialog.ToastMessage(mChargeAmtEt,String.format(Locale.CHINA,"本会员级别最小充值金额:%.2f",Utils.getNotKeyAsNumberDefault(mVip,"min_recharge_money",0.0)),mContext,getWindow());
+            MyDialog.ToastMessage(mChargeAmtEt,String.format(Locale.CHINA,"本会员级别最小充值金额:%.2f",mVip.getMin_recharge_money()),mContext,getWindow());
             return false;
         }
 
@@ -524,7 +524,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
         if (mChargeAmtEt != null){
             try {
                 amt =Double.parseDouble(mChargeAmtEt.getText().toString());
-                min_recharge_money = Utils.getNotKeyAsNumberDefault(mVip,"min_recharge_money",0.0);
+                min_recharge_money = mVip.getMin_recharge_money();
             }catch (NumberFormatException e){
                 e.printStackTrace();
             }
@@ -541,7 +541,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
         });
     }
 
-    private void chargeSuccess(final JSONObject member){
+    private void chargeSuccess(final VipInfo member){
         CustomApplication.runInMainThread(()->{
             mProgressDialog.dismiss();
             MyDialog.ToastMessage("充值成功！",mContext,getWindow());
@@ -574,7 +574,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
 
                 JSONObject data_ = new JSONObject(),retJson,info_json;
                 final String url = mContext.getUrl(),appId = mContext.getAppId(),appSecret = mContext.getAppSecret(),stores_id = mContext.getStoreId(),
-                        member_id = mVip.getString("member_id"),third_order_id = generate_pay_son_order_id(),pay_method_id = mPayMethodSelected.getString("pay_method_id");
+                        member_id = String.valueOf(mVip.getMember_id()),third_order_id = generate_pay_son_order_id(),pay_method_id = mPayMethodSelected.getString("pay_method_id");
 
                 member_order_info.put("stores_id",stores_id);
                 member_order_info.put("member_id",member_id);
@@ -582,9 +582,9 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                 member_order_info.put("order_type",1);
                 member_order_info.put("addtime",System.currentTimeMillis() / 1000);
 
-                member_order_info.put("card_code",mVip.getString("card_code"));
-                member_order_info.put("mobile",mVip.getString("mobile"));
-                member_order_info.put("name",mVip.getString("name"));
+                member_order_info.put("card_code",mVip.getCard_code());
+                member_order_info.put("mobile",mVip.getMobile());
+                member_order_info.put("name",mVip.getName());
                 member_order_info.put("pay_method_id",pay_method_id);
                 member_order_info.put("third_order_id",third_order_id);
                 member_order_info.put("cashier_id",mContext.getCashierId());
@@ -794,7 +794,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                                                         if (SQLiteHelper.execUpdateSql("member_order_info",values,whereClause,whereArgs,err) < 0){
                                                             showPayError(err.toString());
                                                         }else {
-                                                            chargeSuccess(member);
+                                                            chargeSuccess(member.toJavaObject(VipInfo.class));
                                                             if (mContext.getPrintStatus()){
                                                                 Printer.print(mContext,get_print_content(mContext,order_code));
                                                             }

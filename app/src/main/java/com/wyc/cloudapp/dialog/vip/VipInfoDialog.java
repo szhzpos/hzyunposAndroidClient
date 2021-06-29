@@ -21,28 +21,30 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.VipInfo;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.constants.MessageID;
-import com.wyc.cloudapp.utils.Utils;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 
-public final class VipInfoDialog extends AbstractDialogSaleActivity {
+public final class VipInfoDialog extends AbstractDialogMainActivity {
     private EditText mSearchContent;
     private CustomProgressDialog mProgressDialog;
     private Myhandler mHandler;
+    @Deprecated
     private JSONObject mVip;
+    private VipInfo mVObj;
     private TextView mVip_name,mVip_sex,mVip_p_num,mVip_card_id,mVip_balance,mVip_integral,mVipGrade,mVipDiscount;
     private Button mSearchBtn;
     private onYesOnclickListener mYesOnclickListener;//确定按钮被点击了的监听器
     private Button mAddBtn;
-    public VipInfoDialog(@NonNull SaleActivity context) {
+    public VipInfoDialog(@NonNull MainActivity context) {
         super(context,context.getString(R.string.vip_dialog_title_sz));
     }
     @Override
@@ -95,7 +97,7 @@ public final class VipInfoDialog extends AbstractDialogSaleActivity {
             chargeBtn.setOnClickListener(view -> {
                 if (verifyVipDepositPermissions(mContext)){
                     if (mVip != null){
-                        final AbstractVipChargeDialog chargeDialog = new NormalVipChargeDialog(mContext,mVip);
+                        final AbstractVipChargeDialog chargeDialog = new NormalVipChargeDialog(mContext,mVObj);
                         chargeDialog.exec();
                         showVipInfo(chargeDialog.getVip());
                     }else{
@@ -112,7 +114,7 @@ public final class VipInfoDialog extends AbstractDialogSaleActivity {
             modifiyBtn.setOnClickListener(view -> {
                 if (AddVipInfoDialog.verifyVipModifyOrAddPermissions(mContext)){
                     if (mVip != null){
-                        final AddVipInfoDialog dialog = new AddVipInfoDialog(mContext,mContext.getString(R.string.modify_vip_sz),mVip);
+                        final AddVipInfoDialog dialog = new AddVipInfoDialog(mContext,mContext.getString(R.string.modify_vip_sz),mVObj);
                         dialog.setOnShowListener(dialog12 -> mSearchContent.clearFocus());
                         dialog.setOnDismissListener(dialog1 -> mSearchContent.postDelayed(()->{mSearchContent.requestFocus();},300));
                         dialog.setYesOnclickListener(dialog14 -> {
@@ -131,13 +133,13 @@ public final class VipInfoDialog extends AbstractDialogSaleActivity {
         if (null != add_btn){
             add_btn.setOnClickListener(view -> {
                 if (AddVipInfoDialog.verifyVipModifyOrAddPermissions(mContext)){
-                    final AddVipInfoDialog dialog = new AddVipInfoDialog(mContext,mContext.getString(R.string.add_vip_sz),(JSONObject) null);
+                    final AddVipInfoDialog dialog = new AddVipInfoDialog(mContext,mContext.getString(R.string.add_vip_sz),(VipInfo) null);
                     dialog.setOnShowListener(dialog12 -> mSearchContent.clearFocus());
                     dialog.setOnDismissListener(dialog1 -> mSearchContent.postDelayed(()->{mSearchContent.requestFocus();},300));
                     dialog.setYesOnclickListener(dialog13 -> {
-                        JSONObject jsonObject = dialog13.getVipInfo();
+                        VipInfo jsonObject = dialog13.getVipInfo();
                         if (jsonObject != null){
-                            mSearchContent.setText(jsonObject.getString("mobile"));
+                            mSearchContent.setText(jsonObject.getMobile());
                             mSearchBtn.callOnClick();
                         }
                         dialog13.dismiss();
@@ -246,21 +248,23 @@ public final class VipInfoDialog extends AbstractDialogSaleActivity {
         }
     }
 
-    private void showVipInfo(JSONObject object){
+    private void showVipInfo(VipInfo object){
         if (null != object){
-            mVip = object;
+            Logger.d(object);
+            mVip = (JSONObject) JSON.toJSON(object);
+            mVObj = object;
 
-            mVipGrade.setText(Utils.getNullStringAsEmpty(object,"grade_name"));
+            mVipGrade.setText(object.getGradeName());
 
             mSearchBtn.setText(mContext.getString(R.string.OK));
-            mVip_name.setText(object.getString("name"));
-            mVip_sex.setText(object.getString("sex"));
-            mVip_p_num.setText(object.getString("mobile"));
+            mVip_name.setText(object.getName());
+            mVip_sex.setText(object.getSex());
+            mVip_p_num.setText(object.getMobile());
 
-            mVipDiscount.setText(object.getString("discount"));
-            mVip_card_id.setText(object.getString("card_code"));
-            mVip_balance.setText(String.format(Locale.CHINA,"%.2f",object.getDouble("money_sum")));
-            mVip_integral.setText(String.format(Locale.CHINA,"%.2f",object.getDouble("points_sum")));
+            mVipDiscount.setText(String.valueOf(object.getDiscount()));
+            mVip_card_id.setText(object.getCard_code());
+            mVip_balance.setText(String.format(Locale.CHINA,"%.2f",object.getMoney_sum()));
+            mVip_integral.setText(String.format(Locale.CHINA,"%.2f",object.getPoints_sum()));
 
             showAddBtn(View.GONE);
         }
@@ -289,8 +293,12 @@ public final class VipInfoDialog extends AbstractDialogSaleActivity {
         }
     }
 
+    @Deprecated
     public JSONObject getVip(){
         return mVip;
+    }
+    public VipInfo getVipBean(){
+        return mVObj;
     }
 
     public VipInfoDialog setYesOnclickListener(onYesOnclickListener listener) {
@@ -330,7 +338,8 @@ public final class VipInfoDialog extends AbstractDialogSaleActivity {
                     if (msg.obj instanceof JSONArray){
                         final JSONArray array = (JSONArray)msg.obj;
                         if (array.size() == 1){
-                            dialog.showVipInfo(array.getJSONObject(0));
+                            Logger.d_json(array.getJSONObject(0));
+                            dialog.showVipInfo(array.getJSONObject(0).toJavaObject(VipInfo.class));
 
                             //触发修改或充值按钮点击事件；做这两个操作之前客户可能没查询会员，必须先查询再操作。
                             final Button btn = dialog.findViewById(msg.arg1);

@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context=".activity.mobile.business.MobileOnceCardActivity">
+
+    <com.wyc.cloudapp.CustomizationView.InterceptLinearLayout
+        android:id="@+id/func_btn_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_50"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="@dimen/margin_18"
+        android:layout_marginTop="@dimen/margin_5"
+        android:layout_marginEnd="@dimen/margin_18"
+        android:layout_marginBottom="@dimen/margin_5"
+        android:orientation="horizontal"
+        android:padding="@dimen/margin_1">
+
+        <Button
+            android:id="@+id/once_card_sale_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/once_card_sale_sz"
+            android:textSize="@dimen/font_size_16" />
+
+        <Button
+            android:id="@+id/once_card_use_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/once_card_use"
+            android:textSize="@dimen/font_size_16" />
+    </com.wyc.cloudapp.CustomizationView.InterceptLinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/sale_info_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusable="auto"
+        android:focusableInTouchMode="true"
+        android:visibility="visible">
+
+        <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+            android:id="@+id/mobile_search_content"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_50"
+            android:layout_gravity="center"
+            android:background="@drawable/round_border_sub_gray"
+            android:drawableStart="@drawable/sel"
+            android:drawableEnd="@drawable/scan"
+            android:drawablePadding="@dimen/margin_8"
+            android:ems="10"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:hint="@string/once_card_barcode"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            android:padding="@dimen/margin_5"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_18"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/sale_once_card_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@android:color/white"
+            app:layout_constraintBottom_toTopOf="@id/mobile_bottom_btn_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/mobile_search_content" />
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/mobile_bottom_btn_layout"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/height_58"
+            android:layout_marginBottom="@dimen/margin_5"
+            android:background="@color/white"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@+id/mobile_bottom_layout"
+            app:layout_constraintEnd_toStartOf="@+id/mobile_other_fun_btn_layout"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <Button
+                android:id="@+id/mobile_vip_btn"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/margin_2"
+                android:layout_weight="1"
+                android:background="@drawable/button_blue"
+                android:drawableEnd="@drawable/fold"
+                android:focusable="false"
+                android:gravity="start|center_vertical"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/size_0"
+                android:text="@string/vip_button_sz"
+                android:textColor="@color/blue_white"
+                android:textSize="@dimen/font_size_16"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/mobile_sale_man_btn"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/vip_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/size_32"
+                android:textColor="@color/orange_1"
+                android:textSize="@dimen/fun_button_font_size_16"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/mobile_vip_btn"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/mobile_sale_man_btn"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/margin_8"
+                android:background="@drawable/button_blue"
+                android:drawableEnd="@drawable/fold"
+                android:focusable="false"
+                android:gravity="start|center_vertical"
+                android:paddingStart="@dimen/margin_5"
+                android:text="@string/sale_man_sz"
+                android:textColor="@color/blue_white"
+                android:textSize="@dimen/font_size_16"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/mobile_vip_btn" />
+
+            <TextView
+                android:id="@+id/sale_man_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/size_32"
+                android:textColor="@color/orange_1"
+                android:textSize="@dimen/fun_button_font_size_16"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/mobile_sale_man_btn"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <LinearLayout
+            android:id="@+id/mobile_other_fun_btn_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_8"
+            android:layout_marginEnd="@dimen/margin_8"
+            android:layout_marginBottom="@dimen/margin_8"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="@id/mobile_bottom_btn_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/mobile_bottom_btn_layout">
+
+            <com.wyc.cloudapp.CustomizationView.InterceptLinearLayout
+                android:id="@+id/mobile_other_fun_hide_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <Button
+                    android:id="@+id/mobile_clear_btn"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/float_circle_button_size"
+                    android:layout_height="@dimen/float_circle_button_size"
+                    android:layout_marginBottom="@dimen/margin_5"
+                    android:background="@drawable/circle_shape_button"
+                    android:text="@string/clear_sz"
+                    android:textColor="@color/blue_white"
+                    android:textSize="@dimen/font_size_14" />
+
+            </com.wyc.cloudapp.CustomizationView.InterceptLinearLayout>
+
+            <Button
+                android:id="@+id/mobile_other_fun_btn"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/float_circle_button_size"
+                android:layout_height="@dimen/float_circle_button_size"
+                android:background="@drawable/more"
+                android:focusable="false" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/mobile_bottom_layout"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_78"
+            android:background="@drawable/square_blue_shape"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <com.wyc.cloudapp.CustomizationView.BasketView
+                android:id="@+id/basketView"
+                android:layout_width="@dimen/height_78"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                app:srcCompat="@drawable/shopping" />
+
+            <TextView
+                android:id="@+id/mobile_sale_amt"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/zero_p_z_sz"
+                android:textColor="@color/orange_1"
+                android:textSize="@dimen/font_size_24"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/mobile_checkout_btn"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/mobile_checkout_btn_width"
+                android:layout_height="match_parent"
+                android:background="@drawable/button_sub_green"
+                android:focusable="false"
+                android:text="@string/check_out_sz"
+                android:textColor="@color/blue"
+                android:textSize="@dimen/font_size_24" />
+
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/once_card_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/once_card_search"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_50"
+            android:layout_gravity="center"
+            android:background="@drawable/round_border_sub_gray"
+            android:drawableStart="@drawable/back"
+            android:drawableEnd="@drawable/search"
+            android:drawablePadding="@dimen/margin_8"
+            android:ems="10"
+            android:hint="@string/input_once_card_hint"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            android:padding="@dimen/margin_5"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_18" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/once_"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -10,13 +10,14 @@ import androidx.annotation.NonNull;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.bean.VipInfo;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
 
 
 public class NormalVipChargeDialog extends AbstractVipChargeDialog {
     private EditText mPayCodeEt;
-    public NormalVipChargeDialog(@NonNull MainActivity context, final JSONObject vip) {
+    public NormalVipChargeDialog(@NonNull MainActivity context, final VipInfo vip) {
         super(context,vip);
     }
 

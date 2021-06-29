@@ -102,7 +102,7 @@ public class MobilePracticalInventoryOrderActivity extends AbstractMobileActivit
     private void initQueryTimeBtn(){
         final InterceptLinearLayout query_time_btn_layout = findViewById(R.id.query_time_btn_layout);
         final Button today = query_time_btn_layout.findViewById(R.id.m_today_btn);
-        CustomApplication.runInMainThread(()->{
+        query_time_btn_layout.post(()->{
             float corner_size = query_time_btn_layout.getHeight() / 2.0f;
             query_time_btn_layout.setForeground(DrawableUtil.createDrawable(new float[]{corner_size,corner_size,corner_size,corner_size,corner_size,corner_size,corner_size,corner_size}
                     ,getColor(R.color.transparent), Utils.dpToPx(this,1),getColor(R.color.blue)));

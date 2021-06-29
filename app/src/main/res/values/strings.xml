@@ -705,4 +705,10 @@
     <string name="female">女</string>
     <string name="referrer">推荐人：</string>
     <string name="query_vip_grade_hint">正在查询会员级别…</string>
+
+    <!-- 次卡管理 -->
+    <string name="once_card_use">次卡使用</string>
+    <string name="once_card_barcode">次卡条码</string>
+    <string name="select_once_card">选择次卡</string>
+    <string name="input_once_card_hint">请输入次卡编码</string>
 </resources>

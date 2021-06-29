@@ -25,11 +25,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.VipInfo;
 import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.constants.MessageID;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
@@ -42,11 +44,12 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
     private String mVipGradeId,mMemberId;
     private CustomProgressDialog mProgressDialog;
     private Myhandler mHandler;
-    private String mSex,mBirthdayType;
-    private JSONObject mVip;
+    private String mSex;
+    private int mBirthdayType;
+    private VipInfo mVip;
     private JSONArray mVipGrade;
 
-    public AddVipInfoDialog(@NonNull MainActivity context, final String title, final JSONObject vip) {//如果vip为null则新增会员，否则修改会员
+    public AddVipInfoDialog(@NonNull MainActivity context, final String title, final VipInfo vip) {//如果vip为null则新增会员，否则修改会员
         super(context,title);
         mVip = vip;
     }
@@ -128,21 +131,21 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
             });
     }
 
-    public JSONObject getVipInfo(){
+    public VipInfo getVipInfo(){
         String phone_num = m_vip_p_num_et.getText().toString();
-        if (mVip != null){
-            mVip.put("member_id",mMemberId);
+        if (mMemberId != null){
+            mVip.setMember_id(Integer.parseInt(mMemberId));
         }else{
-            mVip = new JSONObject();
-            mVip.put("login_pwd",phone_num.substring(phone_num.length() - 6));
+            mVip = new VipInfo();
+            mVip.setLogin_pwd(phone_num.substring(phone_num.length() - 6));
         }
-        mVip.put("mobile",phone_num);
-        mVip.put("name", m_vip_name_et.getText());
-        mVip.put("birthday_type",mBirthdayType);
-        mVip.put("birthday", m_vip_birthday_et.getText());
-        mVip.put("card_code", m_card_id_et.getText());
-        mVip.put("grade_id",mVipGradeId);
-        mVip.put("sex",mSex);
+        mVip.setMobile(phone_num);
+        mVip.setName(m_vip_name_et.getText().toString());
+        mVip.setBirthday_type(mBirthdayType);
+        mVip.setBirthday(m_vip_birthday_et.getText().toString());
+        mVip.setCard_code(m_card_id_et.getText().toString());
+        mVip.setGrade_id(Integer.parseInt(mVipGradeId));
+        mVip.setSex(mSex);
         return mVip;
     }
 
@@ -195,10 +198,10 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(mContext,R.layout.drop_down_style);
         final String sz_male = "男",sz_woman = "女";
         if (mVip != null){
-            if (sz_male.equals(mVip.getString("sex"))){
+            if (sz_male.equals(mVip.getSex())){
                 arrayAdapter.add(sz_male);
                 arrayAdapter.add(sz_woman);
-            }else if(sz_woman.equals(mVip.getString("sex"))){
+            }else if(sz_woman.equals(mVip.getSex())){
                 arrayAdapter.add(sz_woman);
                 arrayAdapter.add(sz_male);
             }else{
@@ -240,9 +243,9 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0){
-                    mBirthdayType = "2";
+                    mBirthdayType = 2;
                 }else {
-                    mBirthdayType = "1";
+                    mBirthdayType = 1;
                 }
             }
 
@@ -253,7 +256,7 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
         });
 
         if (mVip != null){
-            if ("1".equals(mVip.getString("birthday_type"))){
+            if (1 == mVip.getBirthday_type()){
                 b_type.setSelection(1);
             }else{
                 b_type.setSelection(0);
@@ -331,10 +334,11 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
         CustomApplication.execute(()->{
             final String sz_url = mContext.getUrl();
             String url = sz_url + "/api/member/mk",sz_param;
-            JSONObject object = getVipInfo(),ret_json;
+            JSONObject object = (JSONObject) JSON.toJSON(getVipInfo()),ret_json;
 
-            if (mVip.containsKey("member_id")){
+            if (mMemberId != null){
                 url = sz_url + "/api/member/up";
+                object.put("member_id",mMemberId);
             }
 
             if (object != null){
@@ -342,6 +346,8 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
                 try {
                     object.put("appid",mContext.getAppId());
                     sz_param = HttpRequest.generate_request_parm(object,mContext.getAppSecret());
+
+                    Logger.d(sz_param);
 
                     ret_json = httpRequest.sendPost(url,sz_param,true);
                     switch (ret_json.getIntValue("flag")){
@@ -368,17 +374,17 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
         });
     }
     private void showVipInfo(){
-        mMemberId = mVip.getString("member_id");
+        mMemberId = String.valueOf(mVip.getMember_id());
 
-        m_vip_p_num_et.setText(mVip.getString("mobile"));
+        m_vip_p_num_et.setText(mVip.getMobile());
         m_vip_p_num_et.setEnabled(false);
 
-        m_vip_name_et.setText(mVip.getString("name"));
+        m_vip_name_et.setText(mVip.getName());
 
-        m_card_id_et.setText(mVip.getString("card_code"));
+        m_card_id_et.setText(mVip.getCard_code());
         m_card_id_et.setEnabled(false);
 
-        m_vip_birthday_et.setText(mVip.getString("birthday"));
+        m_vip_birthday_et.setText(mVip.getBirthday());
     }
 
     private static class Myhandler extends Handler {
