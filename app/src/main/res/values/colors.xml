@@ -38,4 +38,7 @@
     <color name="mobile_fun_view_no_click">@color/text_color</color>
     <color name="mobile_fun_view_click">@color/blue</color>
     <color name="mobile_order_status">#FFD6AB6D</color>
+    <color name="light_blue_400">#FF29B6F6</color>
+    <color name="gray_400">#FFBDBDBD</color>
+    <color name="gray_600">#FF757575</color>
 </resources>

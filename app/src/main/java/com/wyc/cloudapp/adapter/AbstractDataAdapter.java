@@ -28,4 +28,7 @@ public abstract class AbstractDataAdapter<D,T extends AbstractDataAdapter.SuperV
             return itemView.findViewById(id);
         }
     }
+    public final boolean isEmpty(){
+        return mData == null || getItemCount() == 0;
+    }
 }

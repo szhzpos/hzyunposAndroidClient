@@ -378,7 +378,7 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
     public boolean isTransferAmtNotVisible(){
         return mTransferAmtNotVisible;
     }
-    public boolean isEmpty(){
+    public boolean isTransferInfoEmpty(){
         return mTransferSumInfo.isEmpty();
     }
 }

@@ -69,7 +69,7 @@ public abstract class AbstractTransferDialog extends AbstractDialogMainActivity 
         final Button btn = findViewById(R.id.ok_);
         if (btn != null){
             btn.setOnClickListener(v -> {
-                if (mTransferDetailsAdapter != null && !mTransferDetailsAdapter.isEmpty()){
+                if (mTransferDetailsAdapter != null && !mTransferDetailsAdapter.isTransferInfoEmpty()){
                     final ChangeNumOrPriceDialog dialog = new ChangeNumOrPriceDialog(mContext,"钱箱现金",String.valueOf(0.0));
                     dialog.setYesOnclickListener(myDialog -> {
                         final StringBuilder err  = new StringBuilder();

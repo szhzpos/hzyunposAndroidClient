@@ -3,6 +3,7 @@ package com.wyc.cloudapp.bean;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -21,7 +22,7 @@ import java.util.List;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class OnceCardInfo {
+public class OnceCardInfo implements Parcelable,Cloneable {
     private String end_time;
     private int tc_xtype;
     private String start_time;
@@ -49,6 +50,88 @@ public class OnceCardInfo {
     private int total;
 
     private List<GoodInfo> goods;
+
+    public OnceCardInfo(){
+
+    }
+
+    protected OnceCardInfo(Parcel in) {
+        end_time = in.readString();
+        tc_xtype = in.readInt();
+        start_time = in.readString();
+        surplus = in.readString();
+        once_card_id = in.readInt();
+        validity_types = in.readString();
+        validity_type = in.readInt();
+        details = in.readString();
+        mnemonic = in.readString();
+        addtime = in.readString();
+        max_day = in.readInt();
+        available_limits = in.readString();
+        available = in.readInt();
+        channel = in.readInt();
+        channels = in.readString();
+        img_big = in.readString();
+        img = in.readString();
+        tc_xtypes = in.readString();
+        tc_money = in.readDouble();
+        price = in.readDouble();
+        title = in.readString();
+        available_limit = in.readInt();
+        sy_limit = in.readInt();
+        sy_limit_types = in.readString();
+        total = in.readInt();
+        goods = in.createTypedArrayList(GoodInfo.CREATOR);
+    }
+
+    @CallSuper
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(end_time);
+        dest.writeInt(tc_xtype);
+        dest.writeString(start_time);
+        dest.writeString(surplus);
+        dest.writeInt(once_card_id);
+        dest.writeString(validity_types);
+        dest.writeInt(validity_type);
+        dest.writeString(details);
+        dest.writeString(mnemonic);
+        dest.writeString(addtime);
+        dest.writeInt(max_day);
+        dest.writeString(available_limits);
+        dest.writeInt(available);
+        dest.writeInt(channel);
+        dest.writeString(channels);
+        dest.writeString(img_big);
+        dest.writeString(img);
+        dest.writeString(tc_xtypes);
+        dest.writeDouble(tc_money);
+        dest.writeDouble(price);
+        dest.writeString(title);
+        dest.writeInt(available_limit);
+        dest.writeInt(sy_limit);
+        dest.writeString(sy_limit_types);
+        dest.writeInt(total);
+        dest.writeTypedList(goods);
+    }
+
+    @CallSuper
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<OnceCardInfo> CREATOR = new Creator<OnceCardInfo>() {
+        @Override
+        public OnceCardInfo createFromParcel(Parcel in) {
+            return new OnceCardInfo(in);
+        }
+
+        @Override
+        public OnceCardInfo[] newArray(int size) {
+            return new OnceCardInfo[size];
+        }
+    };
 
     public void setEnd_time(String end_time) {
         this.end_time = end_time;
@@ -275,26 +358,38 @@ public class OnceCardInfo {
             return false;
         }
         OnceCardInfo rhs = ((OnceCardInfo) other);
-        return once_card_id == rhs.once_card_id && (title != null && title.equals(rhs.title));
+        return once_card_id == rhs.once_card_id;
     }
 
     @NonNull
     @Override
     public String toString() {
-        return OnceCardInfo.class.getName() + '@' + Integer.toHexString(System.identityHashCode(this)) + '[' +
+        return OnceCardInfo.class.getName() + '@' + Integer.toHexString(System.identityHashCode(this)) + '{' +
                 "once_card_id = " +
                 once_card_id +
-                "\r\n" +
+                ",\r\n" +
                 "title = " +
                 ((this.title == null) ? "<null>" : this.title) +
-                "\r\n" +
+                ",\r\n" +
                 "goods = " +
                 ((this.goods == null) ? "<null>" : Arrays.toString(goods.toArray())) +
                 "\r\n" +
-                ']';
+                '}';
     }
 
-    private static class GoodInfo implements Parcelable {
+    @NonNull
+    @Override
+    public OnceCardInfo clone() {
+        OnceCardInfo info = null;
+        try {
+            info = (OnceCardInfo)super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return info;
+    }
+
+    private static class GoodInfo implements Parcelable,Cloneable  {
 
         private String goods_title;
         private int barcode_id;
@@ -420,26 +515,38 @@ public class OnceCardInfo {
                 return false;
             }
             OnceCardInfo.GoodInfo rhs = ((OnceCardInfo.GoodInfo) other);
-            return barcode_id == rhs.barcode_id && (goods_title != null && goods_title.equals(rhs.goods_title)) && (barcode != null && barcode.equals(rhs.barcode));
+            return barcode_id == rhs.barcode_id;
         }
 
         @NonNull
         @Override
         public String toString() {
-            return GoodInfo.class.getName() + '@' + Integer.toHexString(System.identityHashCode(this)) + '[' +
+            return GoodInfo.class.getName() + '@' + Integer.toHexString(System.identityHashCode(this)) + '{' +
                     "barcode_id" +
                     '=' +
                     barcode_id +
-                    "\r\n" +
+                    ",\r\n" +
                     "barcode" +
                     '=' +
                     ((this.barcode == null) ? "<null>" : this.barcode) +
-                    "\r\n" +
+                    ",\r\n" +
                     "goods_title" +
                     '=' +
                     ((this.goods_title == null) ? "<null>" : this.goods_title) +
                     "\r\n" +
-                    ']';
+                    '}';
+        }
+
+        @NonNull
+        @Override
+        public GoodInfo clone() {
+            GoodInfo info = null;
+            try {
+                info = (GoodInfo)super.clone();
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+            }
+            return info;
         }
     }
 }

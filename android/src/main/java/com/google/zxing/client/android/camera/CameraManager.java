@@ -16,15 +16,14 @@
 
 package com.google.zxing.client.android.camera;
 
-import android.app.Activity;
 import android.content.Context;
+import android.graphics.ImageFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.os.Handler;
 import android.util.Log;
 import android.view.SurfaceHolder;
-import android.view.WindowManager;
 
 import com.google.zxing.PlanarYUVLuminanceSource;
 import com.google.zxing.client.android.camera.open.OpenCamera;
@@ -60,6 +59,8 @@ public final class CameraManager {
   private int requestedCameraId = OpenCameraInterface.NO_REQUESTED_CAMERA;
   private int requestedFramingRectWidth;
   private int requestedFramingRectHeight;
+  private byte[] mCallbackBuffer;
+  private volatile boolean isCapture = true;
   /**
    * Preview frames are delivered here, which we pass on to the registered handler. Make sure to
    * clear the handler so it will only receive one message.
@@ -70,6 +71,10 @@ public final class CameraManager {
     this.context = context;
     this.configManager = new CameraConfigurationManager(context);
     previewCallback = new PreviewCallback(configManager);
+  }
+
+  public void stopCapture(){
+    isCapture = false;
   }
   
   /**
@@ -91,6 +96,7 @@ public final class CameraManager {
     if (!initialized) {
       initialized = true;
       configManager.initFromCameraParameters(theCamera);
+
       if (requestedFramingRectWidth > 0 && requestedFramingRectHeight > 0) {
         setManualFramingRect(requestedFramingRectWidth, requestedFramingRectHeight);
         requestedFramingRectWidth = 0;
@@ -98,7 +104,7 @@ public final class CameraManager {
       }
     }
 
-    Camera cameraObject = theCamera.getCamera();
+    final Camera cameraObject = theCamera.getCamera();
     Camera.Parameters parameters = cameraObject.getParameters();
     String parametersFlattened = parameters == null ? null : parameters.flatten(); // Save these, temporarily
     try {
@@ -122,6 +128,19 @@ public final class CameraManager {
     }
     cameraObject.setPreviewDisplay(holder);
 
+    Point point = configManager.getBestPreviewSize();
+    mCallbackBuffer = new byte[point.x * point.y *  ImageFormat.getBitsPerPixel(parameters.getPreviewFormat()) / 8];
+    cameraObject.addCallbackBuffer(mCallbackBuffer);
+    cameraObject.setPreviewCallbackWithBuffer(new Camera.PreviewCallback() {
+      @Override
+      public void onPreviewFrame(byte[] data, Camera camera) {
+        if (isCapture){
+          previewCallback.onPreviewFrame(data,camera);
+        }
+        if (isOpen())
+          camera.addCallbackBuffer(mCallbackBuffer);
+      }
+    });
   }
 
   public synchronized boolean isOpen() {
@@ -163,6 +182,7 @@ public final class CameraManager {
       autoFocusManager = null;
     }
     if (camera != null && previewing) {
+      camera.getCamera().setPreviewCallbackWithBuffer(null);
       camera.getCamera().stopPreview();
       previewCallback.setHandler(null, 0);
       previewing = false;
@@ -202,7 +222,8 @@ public final class CameraManager {
     OpenCamera theCamera = camera;
     if (theCamera != null && previewing) {
       previewCallback.setHandler(handler, message);
-      theCamera.getCamera().setOneShotPreviewCallback(previewCallback);
+      isCapture = true;
+      //theCamera.getCamera().setOneShotPreviewCallback(previewCallback);
     }
   }
 

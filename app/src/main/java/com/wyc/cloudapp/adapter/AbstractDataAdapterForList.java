@@ -20,27 +20,30 @@ import java.util.List;
  * @Version: 1.0
  */
 public abstract class AbstractDataAdapterForList<E,T extends AbstractDataAdapter.SuperViewHolder> extends AbstractDataAdapter<List<E>,T> {
-    public void setDataForList(final List<E> array){
+    public final void setDataForList(final List<E> array){
         mData = array;
         if (Looper.myLooper() != Looper.getMainLooper()){
             CustomApplication.runInMainThread(this::notifyDataSetChanged);
         }else
             notifyDataSetChanged();
     }
-    public List<E> getList(){
+    public final List<E> getList(){
         return mData;
     }
-    public boolean isEmpty(){
-        return getItemCount() == 0;
+    protected final E getItem(int index){
+        if (index >= 0 && index < getItemCount() && !isEmpty()){
+            return mData.get(index);
+        }
+        return null;
     }
-    public void clear(){
+    public final void clear(){
         if (mData != null){
             mData.clear();
             notifyDataSetChanged();
         }
     }
     @Override
-    public int getItemCount() {
+    public final int getItemCount() {
         return mData == null ? 0: mData.size();
     }
 }

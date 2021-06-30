@@ -93,6 +93,10 @@ public final class HttpUtils {
     public static Call sendAsyncPost(final String url, @NonNull final String param){
         return getHttpClient().newCall(createRequestForForm(url,param));
     }
+    public static Call sendAsyncGet(final String url){
+        final Request request = new Request.Builder().url(url).build();
+        return getHttpClient().newCall(request);
+    }
     private static Request createRequestForForm(final String url, @NonNull final String param){
         final RequestBody body = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded; charset=utf-8"), param);
         return new Request.Builder().url(url).post(body).build();

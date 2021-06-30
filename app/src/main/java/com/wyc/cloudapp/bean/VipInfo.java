@@ -19,7 +19,7 @@ import java.io.Serializable;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class VipInfo implements Serializable {
+final public class VipInfo implements Serializable {
     private String head_img_id;
     private String card_code;
     private String sc_id;

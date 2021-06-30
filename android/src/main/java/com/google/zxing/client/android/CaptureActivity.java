@@ -122,6 +122,10 @@ public final  class CaptureActivity extends AppCompatActivity implements Surface
     });
   }
 
+  public void stopCapture(){
+    if (cameraManager != null)cameraManager.stopCapture();
+  }
+
   @Override
   protected void onResume() {
     super.onResume();

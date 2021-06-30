@@ -711,4 +711,5 @@
     <string name="once_card_barcode">次卡条码</string>
     <string name="select_once_card">选择次卡</string>
     <string name="input_once_card_hint">请输入次卡编码</string>
+    <string name="available_times">可用次数：</string>
 </resources>

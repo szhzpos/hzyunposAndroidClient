@@ -28,9 +28,6 @@ public abstract class AbstractDataAdapterForJson<T extends AbstractDataAdapter.S
     public JSONArray getData(){
         return mData;
     }
-    public boolean isEmpty(){
-        return getItemCount() == 0;
-    }
     public void clear(){
         if (mData != null){
             mData.clear();

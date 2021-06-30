@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.CustomizationView.BasketView;
@@ -20,7 +22,13 @@ import com.wyc.cloudapp.CustomizationView.InterceptLinearLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
+import com.wyc.cloudapp.adapter.business.MobileOnceCardSaleAdapter;
+import com.wyc.cloudapp.bean.OnceCardInfo;
+import com.wyc.cloudapp.bean.OnceCardSaleInfo;
 import com.wyc.cloudapp.bean.VipInfo;
+import com.wyc.cloudapp.decoration.LinearItemDecoration;
+import com.wyc.cloudapp.decoration.SaleGoodsItemDecoration;
+import com.wyc.cloudapp.decoration.SuperItemDecoration;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
@@ -28,18 +36,23 @@ import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.DrawableUtil;
 import com.wyc.cloudapp.utils.Utils;
 
+import java.util.Locale;
+
 import butterknife.BindView;
 
 import static com.wyc.cloudapp.constants.ScanCallbackCode.CODE_REQUEST_CODE;
 
-public class MobileOnceCardActivity extends AbstractMobileActivity implements View.OnClickListener {
+public class MobileOnceCardSaleActivity extends AbstractMobileActivity implements View.OnClickListener {
     private Button mCurrentBtn;
     private EditText mSearchContent;
     private VipInfo mVip;
     private JSONObject mSaleManInfo;
+    private MobileOnceCardSaleAdapter mSaleAdapter;
 
     @BindView(R.id.basketView)
     BasketView mBasketView;
+    @BindView(R.id.sale_amt_tv)
+    TextView sale_amt_tv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +63,15 @@ public class MobileOnceCardActivity extends AbstractMobileActivity implements Vi
         initSearchContent();
         initVipBtn();
         initSaleBtn();
+        initSaleOnceCardAdapter();
+    }
+
+    private void initSaleOnceCardAdapter(){
+        final RecyclerView sale_once_card_list = findViewById(R.id.sale_once_card_list);
+        mSaleAdapter = new MobileOnceCardSaleAdapter(this);
+        sale_once_card_list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
+        sale_once_card_list.addItemDecoration(new LinearItemDecoration(this.getColor(R.color.gray_subtransparent),3));
+        sale_once_card_list.setAdapter(mSaleAdapter);
     }
 
     private void initSaleBtn(){
@@ -148,10 +170,20 @@ public class MobileOnceCardActivity extends AbstractMobileActivity implements Vi
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (resultCode == RESULT_OK){
             if (requestCode == SelectOnceCardActivity.SELECT_ONCE_CARD){
-
+                OnceCardInfo info = SelectOnceCardActivity.getOnceCardInfo(data);
+                Logger.d(info);
+                add(info);
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+    private void add(OnceCardInfo info){
+        final OnceCardSaleInfo saleInfo = new OnceCardSaleInfo.Builder()
+                .onceCardId(info.getOnce_card_id())
+                .name(info.getTitle())
+                .price(info.getPrice())
+                .num(1).build();
+        mSaleAdapter.addOnceCard(saleInfo);
     }
 
     private void initFunctionBtn(){

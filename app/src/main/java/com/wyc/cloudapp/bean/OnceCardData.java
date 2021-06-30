@@ -15,7 +15,7 @@ import java.util.List;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class OnceCardData implements Serializable {
+public final class OnceCardData implements Serializable {
     List<OnceCardInfo> card;
 
     public void setCard(List<OnceCardInfo> card) {
