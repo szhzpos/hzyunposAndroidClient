@@ -1,14 +1,17 @@
-package com.wyc.cloudapp.activity.mobile.business;
+package com.wyc.cloudapp.activity.mobile;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,7 +21,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForList;
 import com.wyc.cloudapp.bean.OnceCardData;
@@ -33,6 +35,7 @@ import com.wyc.cloudapp.utils.http.callback.ObjectCallback;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -46,6 +49,7 @@ public class SelectOnceCardActivity extends AbstractMobileActivity {
     public static final int SELECT_ONCE_CARD = 0x000000cc;
     private static final String ITEM_KEY = "I";
     private OnceCardAdapter mAdapter;
+    private EditText mSearch;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,8 +58,9 @@ public class SelectOnceCardActivity extends AbstractMobileActivity {
 
         initOnceCardInfo();
 
+        initSearchContent();
 
-        loadOnceCard();
+        showActivity();
     }
 
     private void initOnceCardInfo(){
@@ -63,22 +68,50 @@ public class SelectOnceCardActivity extends AbstractMobileActivity {
         mAdapter = new OnceCardAdapter(this);
         once_card_list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
         once_card_list.addItemDecoration(new LinearItemDecoration(this.getColor(R.color.gray_subtransparent),3));
-        mAdapter.setSelectListener(cardInfo -> {
-            final Intent intent = new Intent();
-            intent.putExtra(ITEM_KEY,cardInfo);
-            setResult(RESULT_OK,intent);
-            finish();
-        });
+        mAdapter.setSelectListener(this::setResult);
         once_card_list.setAdapter(mAdapter);
+    }
+    private void setResult(OnceCardInfo cardInfo){
+        final Intent intent = new Intent();
+        intent.putExtra(ITEM_KEY,cardInfo);
+        setResult(RESULT_OK,intent);
+        finish();
     }
     public static OnceCardInfo getOnceCardInfo(@NonNull Intent intent){
         return intent.getParcelableExtra(ITEM_KEY);
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void initSearchContent(){
+        final EditText search = findViewById(R.id.search_once_card);
+        search.setOnKeyListener((v, keyCode, event) -> {
+            if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_UP){
+                loadOnceCard();
+                return true;
+            }
+            return false;
+        });
+        search.setOnTouchListener((view, motionEvent) -> {
+            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                final float dx = motionEvent.getX();
+                final int w = search.getWidth();
+                if (dx > (w - search.getCompoundPaddingRight())) {
+                    loadOnceCard();
+                }
+            }
+            return false;
+        });
+        mSearch = search;
     }
 
     private void loadOnceCard(){
         final JSONObject object = new JSONObject();
         object.put("appid",getAppId());
         object.put("channel",1);
+        final String name = mSearch.getText().toString();
+        if (Utils.isNotEmpty(name)){
+            object.put("title",name);
+        }
         HttpUtils.sendAsyncPost(getUrl() + InterfaceURL.ONCE_CARD,HttpRequest.generate_request_parm(object,getAppSecret()))
         .enqueue(new ObjectCallback<OnceCardData>(OnceCardData.class,true) {
             @Override
@@ -88,8 +121,7 @@ public class SelectOnceCardActivity extends AbstractMobileActivity {
 
             @Override
             protected void onSuccessForResult(OnceCardData d, String hint) {
-                List<OnceCardInfo> list = d.getCard();
-                mAdapter.setDataForList(list);
+                mAdapter.setDataForList(d.getCard());
             }
         });
     }
@@ -101,11 +133,26 @@ public class SelectOnceCardActivity extends AbstractMobileActivity {
     public static void start(Activity context){
         context.startActivityForResult(new Intent(context,SelectOnceCardActivity.class),SELECT_ONCE_CARD);
     }
+    public static void startForResult(Activity context,final ArrayList<OnceCardInfo> result){
+        final Intent intent = new Intent(context,SelectOnceCardActivity.class);
+        intent.putParcelableArrayListExtra("result",result);
+        context.startActivityForResult(intent,SELECT_ONCE_CARD);
+    }
+
+    private void showActivity(){
+        final Intent intent = getIntent();
+        if (null != intent){
+            List<OnceCardInfo> data = intent.getParcelableArrayListExtra("result");
+            if (null !=data){
+                mAdapter.setDataForList(data);
+            }else loadOnceCard();
+        }else loadOnceCard();
+    }
 
     static class OnceCardAdapter extends AbstractDataAdapterForList<OnceCardInfo,OnceCardAdapter.MyViewHolder> implements View.OnClickListener{
         private OnSelectFinishListener mListener;
-        private final Context mContext;
-        public OnceCardAdapter(Context context){
+        private final SelectOnceCardActivity mContext;
+        public OnceCardAdapter(SelectOnceCardActivity context){
             mContext = context;
         }
 

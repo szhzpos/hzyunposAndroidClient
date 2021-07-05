@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.wyc.cloudapp.CustomizationView.InterceptLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/_float_fun_btn"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <Button
+        android:id="@+id/alter_num_btn"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_5"
+        android:layout_marginTop="@dimen/margin_5"
+        android:layout_marginEnd="@dimen/margin_5"
+        android:layout_marginBottom="@dimen/margin_2"
+        android:layout_weight="1"
+        android:background="@drawable/button_sub_green"
+        android:text="@string/num_not_colon_sz"
+        android:textColor="@color/gray_7"
+        android:textSize="@dimen/font_size_16" />
+
+    <Button
+        android:id="@+id/del_btn"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_5"
+        android:layout_marginTop="@dimen/margin_5"
+        android:layout_marginEnd="@dimen/margin_5"
+        android:layout_marginBottom="@dimen/margin_2"
+        android:layout_weight="1"
+        android:background="@drawable/button_sub_green"
+        android:text="@string/delete_sz"
+        android:textColor="@color/gray_7"
+        android:textSize="@dimen/font_size_14" />
+
+</com.wyc.cloudapp.CustomizationView.InterceptLinearLayout>

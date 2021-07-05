@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:orientation="vertical"
-    tools:context=".activity.mobile.business.MobileOnceCardSaleActivity">
+    tools:context=".activity.mobile.MobileOnceCardSaleActivity">
 
     <com.wyc.cloudapp.CustomizationView.InterceptLinearLayout
         android:id="@+id/func_btn_layout"
@@ -56,12 +56,12 @@
             android:layout_marginEnd="2dp"
             android:background="@drawable/round_border_sub_gray"
             android:drawableStart="@drawable/sel"
-            android:drawableEnd="@drawable/scan"
+            android:drawableEnd="@drawable/search"
             android:drawablePadding="@dimen/margin_8"
             android:ems="10"
             android:focusable="true"
             android:focusableInTouchMode="true"
-            android:hint="@string/once_card_barcode"
+            android:hint="@string/input_once_card_hint"
             android:importantForAutofill="no"
             android:inputType="textPersonName"
             android:padding="@dimen/margin_5"
@@ -229,7 +229,7 @@
                 android:textStyle="bold" />
 
             <Button
-                android:id="@+id/mobile_checkout_btn"
+                android:id="@+id/onceCard_checkout_btn"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="@dimen/mobile_checkout_btn_width"
                 android:layout_height="match_parent"

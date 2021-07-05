@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -60,7 +61,7 @@
             android:textSize="@dimen/font_size_14" />
 
         <Button
-            android:id="@+id/mobile_minus_btn"
+            android:id="@+id/_minus_btn"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/mobile_p_m_btn_size"
             android:layout_height="@dimen/mobile_p_m_btn_size"
@@ -80,7 +81,7 @@
             android:textSize="@dimen/font_size_14" />
 
         <Button
-            android:id="@+id/mobile_plus_btn"
+            android:id="@+id/_plus_btn"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/mobile_p_m_btn_size"
             android:layout_height="@dimen/mobile_p_m_btn_size"
@@ -110,43 +111,5 @@
             android:textColor="@color/orange_1"
             android:textSize="@dimen/font_size_18" />
     </LinearLayout>
-
-    <com.wyc.cloudapp.CustomizationView.InterceptLinearLayout
-        android:id="@+id/mobile_float_fun_btn"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:visibility="gone">
-
-        <Button
-            android:id="@+id/mobile_alter_num_btn"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_5"
-            android:layout_marginTop="@dimen/margin_5"
-            android:layout_marginEnd="@dimen/margin_5"
-            android:layout_marginBottom="@dimen/margin_2"
-            android:layout_weight="1"
-            android:background="@drawable/button_sub_green"
-            android:text="@string/num_not_colon_sz"
-            android:textColor="@color/gray_7"
-            android:textSize="@dimen/font_size_16" />
-
-        <Button
-            android:id="@+id/mobile_del_btn"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_5"
-            android:layout_marginTop="@dimen/margin_5"
-            android:layout_marginEnd="@dimen/margin_5"
-            android:layout_marginBottom="@dimen/margin_2"
-            android:layout_weight="1"
-            android:background="@drawable/button_sub_green"
-            android:text="@string/delete_sz"
-            android:textColor="@color/gray_7"
-            android:textSize="@dimen/font_size_14" />
-    </com.wyc.cloudapp.CustomizationView.InterceptLinearLayout>
 
 </LinearLayout>

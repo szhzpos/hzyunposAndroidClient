@@ -1,6 +1,7 @@
-package com.wyc.cloudapp.activity.mobile.business;
+package com.wyc.cloudapp.activity.mobile;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ReplacementTransformationMethod;
@@ -20,31 +21,31 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.CustomizationView.BasketView;
 import com.wyc.cloudapp.CustomizationView.InterceptLinearLayout;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.adapter.business.MobileOnceCardSaleAdapter;
+import com.wyc.cloudapp.bean.OnceCardData;
 import com.wyc.cloudapp.bean.OnceCardInfo;
 import com.wyc.cloudapp.bean.OnceCardSaleInfo;
 import com.wyc.cloudapp.bean.VipInfo;
+import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
-import com.wyc.cloudapp.decoration.SaleGoodsItemDecoration;
-import com.wyc.cloudapp.decoration.SuperItemDecoration;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.DrawableUtil;
 import com.wyc.cloudapp.utils.Utils;
+import com.wyc.cloudapp.utils.http.HttpRequest;
+import com.wyc.cloudapp.utils.http.HttpUtils;
+import com.wyc.cloudapp.utils.http.callback.ObjectCallback;
 
-import java.util.Locale;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
-
-import static com.wyc.cloudapp.constants.ScanCallbackCode.CODE_REQUEST_CODE;
+import butterknife.ButterKnife;
 
 public class MobileOnceCardSaleActivity extends AbstractMobileActivity implements View.OnClickListener {
     private Button mCurrentBtn;
-    private EditText mSearchContent;
     private VipInfo mVip;
     private JSONObject mSaleManInfo;
     private MobileOnceCardSaleAdapter mSaleAdapter;
@@ -64,11 +65,44 @@ public class MobileOnceCardSaleActivity extends AbstractMobileActivity implement
         initVipBtn();
         initSaleBtn();
         initSaleOnceCardAdapter();
+        initCheckoutBtn();
+
+        ButterKnife.bind(this);
+    }
+
+    private void initCheckoutBtn(){
+        final Button onceCard_checkout_btn = findViewById(R.id.onceCard_checkout_btn);
+        onceCard_checkout_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mVip != null){
+
+                }else {
+                    MyDialog.toastMessage("请输入会员信息...");
+                }
+            }
+        });
     }
 
     private void initSaleOnceCardAdapter(){
         final RecyclerView sale_once_card_list = findViewById(R.id.sale_once_card_list);
         mSaleAdapter = new MobileOnceCardSaleAdapter(this);
+        mSaleAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                int num = 0;
+                double amt = 0.0;
+                List<OnceCardSaleInfo> saleInfoList = mSaleAdapter.getList();
+                if (null != saleInfoList && saleInfoList.size() != 0){
+                    for (OnceCardSaleInfo info : saleInfoList){
+                        num += info.getNum();
+                        amt += info.getAmt();
+                    }
+                }
+                mBasketView.update(num);
+                sale_amt_tv.setText(String.valueOf(amt));
+            }
+        });
         sale_once_card_list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
         sale_once_card_list.addItemDecoration(new LinearItemDecoration(this.getColor(R.color.gray_subtransparent),3));
         sale_once_card_list.setAdapter(mSaleAdapter);
@@ -141,7 +175,7 @@ public class MobileOnceCardSaleActivity extends AbstractMobileActivity implement
         });
         search.setOnKeyListener((v, keyCode, event) -> {
             if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_UP){
-                queryOnceCardById(search.getText().toString());
+                queryOnceCardByName(search.getText().toString());
                 return true;
             }
             return false;
@@ -151,28 +185,52 @@ public class MobileOnceCardSaleActivity extends AbstractMobileActivity implement
                 final float dx = motionEvent.getX();
                 final int w = search.getWidth();
                 if (dx > (w - search.getCompoundPaddingRight())) {
-                    search.requestFocus();
-                    final Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-                    startActivityForResult(intent, CODE_REQUEST_CODE);
+                    queryOnceCardByName(search.getText().toString());
                 }else if(dx < search.getCompoundPaddingLeft()){
                     SelectOnceCardActivity.start(this);
                 }
             }
             return false;
         });
-        mSearchContent = search;
     }
 
-    private void queryOnceCardById(String id) {
+    private void queryOnceCardByName(String name) {
+        final JSONObject object = new JSONObject();
+        object.put("appid",getAppId());
+        object.put("channel",1);
+        if (Utils.isNotEmpty(name)){
+            object.put("title",name);
+        }
+        final ProgressDialog progressDialog = ProgressDialog.show(this,"",getString(R.string.hints_query_data_sz),false,true);
+        HttpUtils.sendAsyncPost(getUrl() + InterfaceURL.ONCE_CARD,HttpRequest.generate_request_parm(object,getAppSecret()))
+                .enqueue(new ObjectCallback<OnceCardData>(OnceCardData.class,true) {
+                    @Override
+                    protected void onError(String msg) {
+                        MyDialog.toastMessage(msg);
+                        progressDialog.dismiss();
+                    }
+
+                    @Override
+                    protected void onSuccessForResult(OnceCardData d, String hint) {
+                        List<OnceCardInfo> list = d.getCard();
+                        if (null != list){
+                            if (list.size() == 1){
+                                add(list.get(0));
+                            }else
+                                SelectOnceCardActivity.startForResult(MobileOnceCardSaleActivity.this, (ArrayList<OnceCardInfo>) list);
+                        }
+                        progressDialog.dismiss();
+                    }
+                });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (resultCode == RESULT_OK){
             if (requestCode == SelectOnceCardActivity.SELECT_ONCE_CARD){
-                OnceCardInfo info = SelectOnceCardActivity.getOnceCardInfo(data);
-                Logger.d(info);
-                add(info);
+                if (null != data){
+                    add(SelectOnceCardActivity.getOnceCardInfo(data));
+                }
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
