@@ -148,7 +148,7 @@
                 app:layout_constraintStart_toEndOf="@+id/mobile_vip_btn" />
 
             <TextView
-                android:id="@+id/sale_man_name"
+                android:id="@+id/sale_man_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/size_32"

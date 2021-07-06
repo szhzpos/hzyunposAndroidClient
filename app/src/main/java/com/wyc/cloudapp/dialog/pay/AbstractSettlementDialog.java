@@ -99,7 +99,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         initPayMethod();
 
         //初始化现金EditText
-        initCsahText();
+        initCashText();
 
         manualMolBtn();
         initRemarkBtn();
@@ -109,7 +109,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         initKeyboard();
 
         //根据金额设置按钮数字
-         autoShowValueFromPayAmt();
+         autoShowValueFromPayAmt(getWindow().getDecorView(), (int) mCashAmt);
     }
 
     @Override
@@ -377,7 +377,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                         if (Utils.equalDouble(mPay_balance, 0) && mPayDetailViewAdapter.findPayDetailById(pay_method_id) == null) {//剩余金额为零，同时不存在此付款方式的记录。
                             MyDialog.SnackbarMessage(mWindow, "剩余金额为零！", getCurrentFocus());
                         } else {
-                            if (mVip != null){
+                            if (mVip != null && PayMethodViewAdapter.isVipPay(pay_method_copy)){
                                 pay_method_copy.put("card_code",mVip.getString("card_code"));
                             }
                             final PayMethodDialogImp payMethodDialogImp = new PayMethodDialogImp(mContext, pay_method_copy);
@@ -417,7 +417,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                         }
                     }
                 }else{
-                    MyDialog.SnackbarMessage(mWindow,"剩余付款金额不能小于零！",mPayBalanceTv);
+                    MyDialog.SnackbarMessage(mWindow,mContext.getString(R.string.pay_amt_less_zero_hints),mPayBalanceTv);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -499,7 +499,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                         }
                     }
                 }else{
-                    MyDialog.SnackbarMessage(mWindow,"剩余付款金额不能小于零！",mPayBalanceTv);
+                    MyDialog.SnackbarMessage(mWindow,mContext.getString(R.string.pay_amt_less_zero_hints),mPayBalanceTv);
                 }
             }
         });
@@ -1263,7 +1263,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         });
     }
 
-    private void initCsahText(){
+    private void initCashText(){
         final EditText cm = mCashMoneyEt = findViewById(R.id.cash_amt);
         cm.setText(String.format(Locale.CHINA,"%.2f",mActual_amt));
         cm.addTextChangedListener(new TextWatcher() {
@@ -1304,9 +1304,9 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         return new SimpleDateFormat("yyyyMMddHHmmssSSS",Locale.CHINA).format(new Date())+ mContext.getPosNum() + Utils.getNonce_str(8);
     }
 
-    private void autoShowValueFromPayAmt(){
-        int amt = (int)mCashAmt,tmp;
-        final Button first = findViewById(R.id._ten),sec = findViewById(R.id._twenty),third = findViewById(R.id._fifty),fourth = findViewById(R.id._one_hundred);
+    public static void autoShowValueFromPayAmt(View view,int amt){
+        int tmp;
+        final Button first = view.findViewById(R.id._ten),sec = view.findViewById(R.id._twenty),third = view.findViewById(R.id._fifty),fourth = view.findViewById(R.id._one_hundred);
         tmp = amt +(5 - amt % 5);
         first.setText(String.valueOf(tmp));
         sec.setText(String.valueOf((tmp = tmp +(10- tmp % 10))));

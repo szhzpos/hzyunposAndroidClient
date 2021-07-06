@@ -711,4 +711,9 @@
     <string name="select_once_card">选择次卡</string>
     <string name="input_once_card_hint">请输入次卡名称</string>
     <string name="available_times">可用次数：</string>
+    <string name="once_card_pay">次卡结账</string>
+    <string name="pay_amt_less_zero_hints">剩余付款金额不能小于零!</string>
+    <string name="pay_method_exist_hints">已存在%1$s，是否清除?</string>
+    <string name="zl_amt_hint">找零不能大于100</string>
+
 </resources>

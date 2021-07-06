@@ -186,4 +186,11 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
         return amt;
     }
+    public boolean isEmpty(){
+        return getItemCount() - 1 == 0;
+    }
+    public void clear(){
+        mDatas.clear();
+        notifyDataSetChanged();
+    }
 }

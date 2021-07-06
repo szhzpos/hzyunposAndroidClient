@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
-import android.text.Spanned;
 import android.view.View;
 import android.widget.EditText;
 
@@ -129,7 +128,7 @@ public class ChangeNumOrPriceDialog extends AbstractDialogMainActivity {
     private void initKeyboardView(){
         final KeyboardView view = findViewById(R.id.keyboard_view);
         view.layout(R.layout.change_price_keyboard_layout);
-        view.setCurrentFocusListenner(() -> {
+        view.setCurrentFocusListener(() -> {
             final View focus = getCurrentFocus();
             if (focus instanceof EditText){
                 return (EditText) focus;
@@ -140,7 +139,7 @@ public class ChangeNumOrPriceDialog extends AbstractDialogMainActivity {
         view.setOkListener(v -> {
             if (yesOnclickListener != null){
                 yesOnclickListener.onYesClick(ChangeNumOrPriceDialog.this);
-            }
+            }else setCodeAndExit(1);
         });
     }
 }

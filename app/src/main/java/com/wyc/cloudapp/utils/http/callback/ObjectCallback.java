@@ -4,6 +4,9 @@ import com.alibaba.fastjson.TypeReference;
 
 
 public abstract class ObjectCallback<T> extends TypeCallback<ObjectResult<T>> {
+    protected ObjectCallback(Class<T> c){
+        this(c,true);
+    }
     protected ObjectCallback(Class<T> c,boolean main) {
         super(new TypeReference<ObjectResult<T>>(c){}.getType(),main);
     }

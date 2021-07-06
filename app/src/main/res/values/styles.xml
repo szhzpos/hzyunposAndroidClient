@@ -49,7 +49,7 @@
         <item name="android:buttonBarStyle">?android:attr/buttonBarStyle</item>
     </style>
 
-    <style name="Theme.NotFullActivity" parent="@style/Theme.AppCompat.Dialog">
+    <style name="notFullActivity" parent="@style/Theme.AppCompat.Dialog">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowIsFloating">true</item>

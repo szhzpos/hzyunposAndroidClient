@@ -24,17 +24,54 @@ import java.util.Objects;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public final class OnceCardSaleInfo implements Serializable {
+public final class OnceCardSaleInfo implements Parcelable {
     private int num;
     private double amt;
     private double price;
     private int once_card_id;
     private String name;
+    private double discountAmt;
 
     public OnceCardSaleInfo(){
 
     }
 
+
+    protected OnceCardSaleInfo(Parcel in) {
+        num = in.readInt();
+        amt = in.readDouble();
+        price = in.readDouble();
+        once_card_id = in.readInt();
+        name = in.readString();
+        discountAmt = in.readDouble();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(num);
+        dest.writeDouble(amt);
+        dest.writeDouble(price);
+        dest.writeInt(once_card_id);
+        dest.writeString(name);
+        dest.writeDouble(discountAmt);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<OnceCardSaleInfo> CREATOR = new Creator<OnceCardSaleInfo>() {
+        @Override
+        public OnceCardSaleInfo createFromParcel(Parcel in) {
+            return new OnceCardSaleInfo(in);
+        }
+
+        @Override
+        public OnceCardSaleInfo[] newArray(int size) {
+            return new OnceCardSaleInfo[size];
+        }
+    };
 
     public void setNum(int n){
         num = n;
@@ -75,6 +112,14 @@ public final class OnceCardSaleInfo implements Serializable {
 
     public String getName() {
         return name;
+    }
+
+    public void setDiscountAmt(double discountAmt) {
+        this.discountAmt = discountAmt;
+    }
+
+    public double getDiscountAmt() {
+        return discountAmt;
     }
 
     @Override

@@ -22,6 +22,7 @@ import java.util.Locale;
 
 public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdapter.MyViewHolder> {
     private static final String CASH_METHOD_ID = "1";//现金支付方式id
+    private static final String VIP_METHOD_ID = "5";//会员支付方式id
     private static final String DEFAULT_PAY_METHOD_ID = CASH_METHOD_ID;//默认支付方式ID为现金
     private static final String CUR_PAY_METHOD_LABEL = "isCur";
     private final MainActivity mContext;
@@ -262,6 +263,10 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
 
     public static boolean isMolForPayMethod(final JSONObject object){
         return object != null && 2 == object.getIntValue("is_moling");
+    }
+
+    public static boolean isVipPay(final JSONObject object){
+        return Utils.getNullStringAsEmpty(object,"pay_method_id").equals(VIP_METHOD_ID);
     }
 
     public boolean isMolWithPayed(){//查询已支付记录里面是否存在参与抹零的支付方式

@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.activity.mobile.MobileCashierActivity;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -22,7 +23,7 @@ import com.wyc.cloudapp.utils.Utils;
 import static com.wyc.cloudapp.constants.ScanCallbackCode.PAY_REQUEST_CODE;
 
 public class PayMethodDialogImp extends AbstractPayDialog implements MobileCashierActivity.ScanCallback {
-    PayMethodDialogImp(@NonNull SaleActivity context, @NonNull final JSONObject pay_method) {
+    public PayMethodDialogImp(@NonNull MainActivity context, @NonNull final JSONObject pay_method) {
         super(context,Utils.getNullStringAsEmpty(pay_method,"name"));
         mPayMethod = pay_method;
     }

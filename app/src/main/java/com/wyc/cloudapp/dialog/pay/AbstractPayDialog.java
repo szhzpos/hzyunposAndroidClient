@@ -32,6 +32,7 @@ public abstract class AbstractPayDialog extends AbstractDialogMainActivity imple
     protected double mOriginalPayAmt = 0.0;
     protected Window mDialogWindow;
     private onCancelListener mCancelListener;
+    private boolean modifyPayAmt = true;
     public AbstractPayDialog(@NonNull MainActivity context, final String title) {
         super(context,title);
     }
@@ -51,6 +52,12 @@ public abstract class AbstractPayDialog extends AbstractDialogMainActivity imple
         //初始化数字键盘
         initKeyboardView();
     }
+
+    public AbstractPayDialog setModifyPayAmt(boolean modifyPayAmt) {
+        this.modifyPayAmt = modifyPayAmt;
+        return this;
+    }
+
     @Override
     protected int getContentLayoutId(){
         return R.layout.pay_method_dialog_layout;
@@ -163,6 +170,7 @@ public abstract class AbstractPayDialog extends AbstractDialogMainActivity imple
             }
             return false;
         });
+        mPayAmtEt.setEnabled(modifyPayAmt);
     }
 
     private void init_pay_code(){
@@ -181,7 +189,7 @@ public abstract class AbstractPayDialog extends AbstractDialogMainActivity imple
             view.layout(R.layout.mobile_pay_method_keyboard_layout);
         }else
             view.layout(R.layout.pay_method_keyboard_layout);
-        view.setCurrentFocusListenner(() -> {
+        view.setCurrentFocusListener(() -> {
             final View focus = getCurrentFocus();
             if (focus instanceof EditText){
                 return (EditText) focus;

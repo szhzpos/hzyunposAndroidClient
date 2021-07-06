@@ -47,17 +47,22 @@ import butterknife.ButterKnife;
 public class MobileOnceCardSaleActivity extends AbstractMobileActivity implements View.OnClickListener {
     private Button mCurrentBtn;
     private VipInfo mVip;
-    private JSONObject mSaleManInfo;
     private MobileOnceCardSaleAdapter mSaleAdapter;
 
     @BindView(R.id.basketView)
     BasketView mBasketView;
     @BindView(R.id.sale_amt_tv)
     TextView sale_amt_tv;
+    @BindView(R.id.sale_man_tv)
+    TextView sale_man_tv;
+    @BindView(R.id.mobile_vip_btn)
+    Button _vip_btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ButterKnife.bind(this);
+
         setMiddleText(getIntent().getStringExtra("title"));
 
         initFunctionBtn();
@@ -66,20 +71,15 @@ public class MobileOnceCardSaleActivity extends AbstractMobileActivity implement
         initSaleBtn();
         initSaleOnceCardAdapter();
         initCheckoutBtn();
-
-        ButterKnife.bind(this);
     }
 
     private void initCheckoutBtn(){
         final Button onceCard_checkout_btn = findViewById(R.id.onceCard_checkout_btn);
-        onceCard_checkout_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mVip != null){
-
-                }else {
-                    MyDialog.toastMessage("请输入会员信息...");
-                }
+        onceCard_checkout_btn.setOnClickListener(v -> {
+            if (mVip != null){
+                OnceCardPayActivity.start(MobileOnceCardSaleActivity.this,mVip, (ArrayList<OnceCardSaleInfo>) mSaleAdapter.getList(),getSaleManId());
+            }else {
+                _vip_btn.callOnClick();
             }
         });
     }
@@ -111,31 +111,23 @@ public class MobileOnceCardSaleActivity extends AbstractMobileActivity implement
     private void initSaleBtn(){
         final Button btn = findViewById(R.id.mobile_sale_man_btn);
         if (btn != null)
-            btn.setOnClickListener(v -> {
-                final TextView sale_man_name = findViewById(R.id.sale_man_name);
-                final JSONObject object = AbstractVipChargeDialog.showSaleInfo(this);
-
-                final String name = Utils.getNullStringAsEmpty(object, TreeListBaseAdapter.COL_NAME);
-
-                mSaleManInfo = new JSONObject();
-                mSaleManInfo.put("id",Utils.getNullStringAsEmpty(object, TreeListBaseAdapter.COL_ID));
-                mSaleManInfo.put("name",name);
-                sale_man_name.setText(name);
-            });
+            btn.setOnClickListener(v -> setSaleman(AbstractVipChargeDialog.showSaleInfo(this)));
+    }
+    private String getSaleManId(){
+        return Utils.getViewTagValue(sale_man_tv,"");
     }
 
     private void initVipBtn(){
-        final Button btn = findViewById(R.id.mobile_vip_btn);
-        if (btn != null)
-            btn.setOnClickListener(v -> {
-                final VipInfoDialog vipInfoDialog = new VipInfoDialog(this);
-                if (mVip != null){
-                    if (1 == MyDialog.showMessageToModalDialog(this,"已存在会员信息,是否清除？")){
-                        clearVipInfo();
-                    }
-                }else
-                    vipInfoDialog.setYesOnclickListener(dialog -> {showVipInfo(dialog.getVipBean());dialog.dismiss(); }).show();
-            });
+        _vip_btn.setOnClickListener(v -> {
+            final VipInfoDialog vipInfoDialog = new VipInfoDialog(this);
+            if (mVip != null){
+                if (1 == MyDialog.showMessageToModalDialog(this,"已存在会员信息,是否清除？")){
+                    clearVipInfo();
+                }
+            }else
+                vipInfoDialog.setYesOnclickListener(dialog -> {
+                    setVipInfo(dialog.getVipBean());dialog.dismiss(); }).show();
+        });
     }
 
     public void clearVipInfo(){
@@ -147,14 +139,12 @@ public class MobileOnceCardSaleActivity extends AbstractMobileActivity implement
         mVip = null;
     }
 
-    public void showVipInfo(final VipInfo vip){
-        final ConstraintLayout mobile_bottom_btn_layout = findViewById(R.id.mobile_bottom_btn_layout);
-        if ( vip != null && mobile_bottom_btn_layout != null){
-            final TextView vip_name_tv = mobile_bottom_btn_layout.findViewById(R.id.vip_name);
-            if (null != vip_name_tv){
-                vip_name_tv.setText(vip.getName());
-            }
-        }
+    public void setVipInfo(final VipInfo vip){
+        final TextView vip_name_tv = findViewById(R.id.vip_name);
+        if ( vip != null ){
+            vip_name_tv.setText(vip.getName());
+        }else vip_name_tv.setText("");
+        mVip = vip;
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -231,9 +221,20 @@ public class MobileOnceCardSaleActivity extends AbstractMobileActivity implement
                 if (null != data){
                     add(SelectOnceCardActivity.getOnceCardInfo(data));
                 }
+            }else if (requestCode == OnceCardPayActivity.ONCE_CARD_REQUEST_PAY){
+                clearContent();
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+    private void clearContent(){
+        mSaleAdapter.clear();
+        setVipInfo(null);
+        setSaleman(null);
+    }
+    private void setSaleman(JSONObject object){
+        sale_man_tv.setTag(Utils.getNullStringAsEmpty(object, TreeListBaseAdapter.COL_ID));
+        sale_man_tv.setText(Utils.getNullStringAsEmpty(object, TreeListBaseAdapter.COL_NAME));
     }
     private void add(OnceCardInfo info){
         final OnceCardSaleInfo saleInfo = new OnceCardSaleInfo.Builder()

@@ -153,7 +153,7 @@ public final class VipInfoDialog extends AbstractDialogMainActivity {
     private void initKeyboardView(){
         final KeyboardView view = findViewById(R.id.keyboard_view);
         view.layout(R.layout.keyboard_layout);
-        view.setCurrentFocusListenner(() -> {
+        view.setCurrentFocusListener(() -> {
             final View focus = getCurrentFocus();
             if (focus instanceof EditText){
                 return (EditText) focus;

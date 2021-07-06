@@ -15,4 +15,6 @@ package com.wyc.cloudapp.constants;
 public class InterfaceURL {
     public static final String VIP_GRADE = "/api/member/get_member_grade";
     public static final String ONCE_CARD = "/api/once_cards/index";
+    public static final String ONCE_CARD_UPLOAD = "/api/once_cards/place_order";
+    public static final String ONCE_CARD_PAY = "/api/once_cards/pay";
 }

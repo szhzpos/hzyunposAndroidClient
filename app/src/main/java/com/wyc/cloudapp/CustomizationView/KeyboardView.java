@@ -98,7 +98,7 @@ public final class KeyboardView extends LinearLayout implements View.OnClickList
     public interface OnCurrentFocusListener {
        EditText getFocusEditText();
    }
-   public void setCurrentFocusListenner(OnCurrentFocusListener onCurrentFocusListener){
+   public void setCurrentFocusListener(OnCurrentFocusListener onCurrentFocusListener){
        mCurrentFocusListener = onCurrentFocusListener;
    }
 
