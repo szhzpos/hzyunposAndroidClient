@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -488,11 +489,11 @@ public class OnceCardPayActivity extends AbstractMobileActivity {
     private String getSaleMan(){
         return getIntent().getStringExtra(SALE_MAN);
     }
-    public static void start(@NonNull Activity context, @NonNull VipInfo vipInfo,@NonNull ArrayList<OnceCardSaleInfo> saleInfo,String saleman){
+    public static void start(@NonNull Fragment context, @NonNull VipInfo vipInfo, @NonNull ArrayList<OnceCardSaleInfo> saleInfo, String saleman){
         if (vipInfo == null || saleInfo == null){
             throw new IllegalArgumentException("the second and third parameter can't empty...");
         }
-        Intent intent = new Intent(context,OnceCardPayActivity.class)
+        Intent intent = new Intent(context.getContext(),OnceCardPayActivity.class)
                 .putParcelableArrayListExtra(SALE_INFO,saleInfo)
                 .putExtra(VIP_INFO,vipInfo)
                 .putExtra(SALE_MAN,saleman);

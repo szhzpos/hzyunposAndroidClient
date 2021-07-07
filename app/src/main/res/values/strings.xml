@@ -715,5 +715,7 @@
     <string name="pay_amt_less_zero_hints">剩余付款金额不能小于零!</string>
     <string name="pay_method_exist_hints">已存在%1$s，是否清除?</string>
     <string name="zl_amt_hint">找零不能大于100</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

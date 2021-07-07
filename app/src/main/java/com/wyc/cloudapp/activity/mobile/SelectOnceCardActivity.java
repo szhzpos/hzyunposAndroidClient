@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -130,8 +131,8 @@ public class SelectOnceCardActivity extends AbstractMobileActivity {
     protected int getContentLayoutId() {
         return R.layout.activity_select_once_card;
     }
-    public static void start(Activity context){
-        context.startActivityForResult(new Intent(context,SelectOnceCardActivity.class),SELECT_ONCE_CARD);
+    public static void start(Fragment context){
+        context.startActivityForResult(new Intent(context.getContext(),SelectOnceCardActivity.class),SELECT_ONCE_CARD);
     }
     public static void startForResult(Activity context,final ArrayList<OnceCardInfo> result){
         final Intent intent = new Intent(context,SelectOnceCardActivity.class);

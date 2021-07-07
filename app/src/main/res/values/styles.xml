@@ -39,11 +39,21 @@
         <item name="colorAccent">@color/white</item>
     </style>
 
-    <style name="TabStyle">
+    <style name="TabStyle" parent="Base.Widget.Design.TabLayout">
+        <item name="tabTextAppearance">@style/TabText</item>
+        <item name="tabBackground">@color/white</item>
+        <item name="tabIndicatorColor">@color/blue</item>
+        <item name="tabSelectedTextColor">@color/white</item>
+        <item name="tabRippleColor">@color/white</item>
+        <item name="tabGravity">fill</item>
+        <item name="tabIndicatorGravity">stretch</item>
+        <item name="tabMaxWidth">0dp</item>
+        <item name="tabMode">fixed</item>
+    </style>
+    <style name="TabText">
         <item name="android:textSize">@dimen/font_size_18</item>
         <item name="android:textColor">?android:attr/textColorSecondary</item>
     </style>
-
     <style name="Widget.AppTheme.ButtonBar.Fullscreen" parent="">
         <item name="android:background">@color/black_overlay</item>
         <item name="android:buttonBarStyle">?android:attr/buttonBarStyle</item>

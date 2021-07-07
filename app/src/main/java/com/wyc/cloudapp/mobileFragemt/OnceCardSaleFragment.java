@@ -1,9 +1,8 @@
-package com.wyc.cloudapp.activity.mobile;
+package com.wyc.cloudapp.mobileFragemt;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.method.ReplacementTransformationMethod;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -19,10 +18,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.CustomizationView.BasketView;
-import com.wyc.cloudapp.CustomizationView.InterceptLinearLayout;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.mobile.OnceCardPayActivity;
+import com.wyc.cloudapp.activity.mobile.SelectOnceCardActivity;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.adapter.business.MobileOnceCardSaleAdapter;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.OnceCardData;
 import com.wyc.cloudapp.bean.OnceCardInfo;
 import com.wyc.cloudapp.bean.OnceCardSaleInfo;
@@ -32,7 +33,6 @@ import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
-import com.wyc.cloudapp.utils.DrawableUtil;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
@@ -42,12 +42,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-public class MobileOnceCardSaleActivity extends AbstractMobileActivity implements View.OnClickListener {
-    private Button mCurrentBtn;
+import static android.app.Activity.RESULT_OK;
+
+/**
+ * @ProjectName: AndroidClient
+ * @Package: com.wyc.cloudapp.mobileFragemt
+ * @ClassName: OnceCardSaleFragment
+ * @Description: 次卡销售
+ * @Author: wyc
+ * @CreateDate: 2021-07-07 11:05
+ * @UpdateUser: 更新者
+ * @UpdateDate: 2021-07-07 11:05
+ * @UpdateRemark: 更新说明
+ * @Version: 1.0
+ */
+public final class OnceCardSaleFragment extends AbstractMobileFragment {
     private VipInfo mVip;
     private MobileOnceCardSaleAdapter mSaleAdapter;
+    private EditText _search_content;
 
     @BindView(R.id.basketView)
     BasketView mBasketView;
@@ -59,13 +73,12 @@ public class MobileOnceCardSaleActivity extends AbstractMobileActivity implement
     Button _vip_btn;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        ButterKnife.bind(this);
+    protected int getRootLayout() {
+        return R.layout.once_card_sale_fragment;
+    }
 
-        setMiddleText(getIntent().getStringExtra("title"));
-
-        initFunctionBtn();
+    @Override
+    protected void viewCreated(boolean created) {
         initSearchContent();
         initVipBtn();
         initSaleBtn();
@@ -73,11 +86,26 @@ public class MobileOnceCardSaleActivity extends AbstractMobileActivity implement
         initCheckoutBtn();
     }
 
+    @Override
+    public String getTitle() {
+        return CustomApplication.self().getString(R.string.once_card_sale_sz);
+    }
+
+    @OnClick(R.id._other_fun_btn)
+    void other_func(){
+        final Button _clear_btn = findViewById(R.id._clear_btn);
+        if (_clear_btn.getVisibility() == View.GONE){
+            _clear_btn.setVisibility(View.VISIBLE);
+            if (!_clear_btn.hasOnClickListeners())
+                _clear_btn.setOnClickListener(v -> mSaleAdapter.clear());
+        }else _clear_btn.setVisibility(View.GONE);
+    }
+
     private void initCheckoutBtn(){
         final Button onceCard_checkout_btn = findViewById(R.id.onceCard_checkout_btn);
         onceCard_checkout_btn.setOnClickListener(v -> {
             if (mVip != null){
-                OnceCardPayActivity.start(MobileOnceCardSaleActivity.this,mVip, (ArrayList<OnceCardSaleInfo>) mSaleAdapter.getList(),getSaleManId());
+                OnceCardPayActivity.start(this,mVip, (ArrayList<OnceCardSaleInfo>) mSaleAdapter.getList(),getSaleManId());
             }else {
                 _vip_btn.callOnClick();
             }
@@ -86,7 +114,7 @@ public class MobileOnceCardSaleActivity extends AbstractMobileActivity implement
 
     private void initSaleOnceCardAdapter(){
         final RecyclerView sale_once_card_list = findViewById(R.id.sale_once_card_list);
-        mSaleAdapter = new MobileOnceCardSaleAdapter(this);
+        mSaleAdapter = new MobileOnceCardSaleAdapter(mContext);
         mSaleAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
@@ -103,15 +131,15 @@ public class MobileOnceCardSaleActivity extends AbstractMobileActivity implement
                 sale_amt_tv.setText(String.valueOf(amt));
             }
         });
-        sale_once_card_list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
-        sale_once_card_list.addItemDecoration(new LinearItemDecoration(this.getColor(R.color.gray_subtransparent),3));
+        sale_once_card_list.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
+        sale_once_card_list.addItemDecoration(new LinearItemDecoration(mContext.getColor(R.color.gray_subtransparent),3));
         sale_once_card_list.setAdapter(mSaleAdapter);
     }
 
     private void initSaleBtn(){
         final Button btn = findViewById(R.id.mobile_sale_man_btn);
         if (btn != null)
-            btn.setOnClickListener(v -> setSaleman(AbstractVipChargeDialog.showSaleInfo(this)));
+            btn.setOnClickListener(v -> setSaleman(AbstractVipChargeDialog.showSaleInfo(mContext)));
     }
     private String getSaleManId(){
         return Utils.getViewTagValue(sale_man_tv,"");
@@ -119,9 +147,9 @@ public class MobileOnceCardSaleActivity extends AbstractMobileActivity implement
 
     private void initVipBtn(){
         _vip_btn.setOnClickListener(v -> {
-            final VipInfoDialog vipInfoDialog = new VipInfoDialog(this);
+            final VipInfoDialog vipInfoDialog = new VipInfoDialog(mContext);
             if (mVip != null){
-                if (1 == MyDialog.showMessageToModalDialog(this,"已存在会员信息,是否清除？")){
+                if (1 == MyDialog.showMessageToModalDialog(mContext,"已存在会员信息,是否清除？")){
                     clearVipInfo();
                 }
             }else
@@ -182,17 +210,18 @@ public class MobileOnceCardSaleActivity extends AbstractMobileActivity implement
             }
             return false;
         });
+        _search_content = search;
     }
 
     private void queryOnceCardByName(String name) {
         final JSONObject object = new JSONObject();
-        object.put("appid",getAppId());
+        object.put("appid",mContext.getAppId());
         object.put("channel",1);
         if (Utils.isNotEmpty(name)){
             object.put("title",name);
         }
-        final ProgressDialog progressDialog = ProgressDialog.show(this,"",getString(R.string.hints_query_data_sz),false,true);
-        HttpUtils.sendAsyncPost(getUrl() + InterfaceURL.ONCE_CARD,HttpRequest.generate_request_parm(object,getAppSecret()))
+        final ProgressDialog progressDialog = ProgressDialog.show(mContext,"",getString(R.string.hints_query_data_sz),false,true);
+        HttpUtils.sendAsyncPost(mContext.getUrl() + InterfaceURL.ONCE_CARD, HttpRequest.generate_request_parm(object,mContext.getAppSecret()))
                 .enqueue(new ObjectCallback<OnceCardData>(OnceCardData.class,true) {
                     @Override
                     protected void onError(String msg) {
@@ -207,7 +236,7 @@ public class MobileOnceCardSaleActivity extends AbstractMobileActivity implement
                             if (list.size() == 1){
                                 add(list.get(0));
                             }else
-                                SelectOnceCardActivity.startForResult(MobileOnceCardSaleActivity.this, (ArrayList<OnceCardInfo>) list);
+                                SelectOnceCardActivity.startForResult(mContext, (ArrayList<OnceCardInfo>) list);
                         }
                         progressDialog.dismiss();
                     }
@@ -215,7 +244,7 @@ public class MobileOnceCardSaleActivity extends AbstractMobileActivity implement
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (resultCode == RESULT_OK){
             if (requestCode == SelectOnceCardActivity.SELECT_ONCE_CARD){
                 if (null != data){
@@ -231,6 +260,7 @@ public class MobileOnceCardSaleActivity extends AbstractMobileActivity implement
         mSaleAdapter.clear();
         setVipInfo(null);
         setSaleman(null);
+        _search_content.getText().clear();
     }
     private void setSaleman(JSONObject object){
         sale_man_tv.setTag(Utils.getNullStringAsEmpty(object, TreeListBaseAdapter.COL_ID));
@@ -244,51 +274,4 @@ public class MobileOnceCardSaleActivity extends AbstractMobileActivity implement
                 .num(1).build();
         mSaleAdapter.addOnceCard(saleInfo);
     }
-
-    private void initFunctionBtn(){
-        final InterceptLinearLayout func_btn_layout = findViewById(R.id.func_btn_layout);
-        final Button today = func_btn_layout.findViewById(R.id.once_card_sale_btn);
-        func_btn_layout.post(()->{
-            float corner_size = func_btn_layout.getHeight() / 2.0f;
-            func_btn_layout.setForeground(DrawableUtil.createDrawable(new float[]{corner_size,corner_size,corner_size,corner_size,corner_size,corner_size,corner_size,corner_size}
-                    ,getColor(R.color.transparent), Utils.dpToPx(this,1),getColor(R.color.blue)));
-        });
-        func_btn_layout.setClickListener(this);
-        func_btn_layout.post(today::callOnClick);
-    }
-    @Override
-    public void onClick(View v) {
-        final Button btn = (Button) v;
-
-        int white = getColor(R.color.white),text_color = getColor(R.color.text_color),blue = getColor(R.color.blue);
-        final int id = btn.getId();
-
-        float corner_size = (float) (btn.getHeight() / 2.0);
-        float[] corners = new float[8];
-
-        if (id == R.id.once_card_sale_btn){
-            corners[0] = corners[1] =  corners[6] = corners[7] = corner_size;
-        }else {
-            corners[2] = corners[3] =  corners[4] = corners[5] = corner_size;
-        }
-
-        if (btn != mCurrentBtn){
-            btn.setTextColor(white);
-            btn.setBackground(DrawableUtil.createDrawable(corners,blue,0,blue));
-            if (null != mCurrentBtn){
-                mCurrentBtn.setTextColor(text_color);
-                if (mCurrentBtn.getId() == R.id.m_yesterday_btn){
-                    mCurrentBtn.setBackground(getDrawable(R.drawable.left_right_separator));
-                }else
-                    mCurrentBtn.setBackgroundColor(white);
-            }
-            mCurrentBtn = btn;
-        }
-    }
-
-    @Override
-    protected int getContentLayoutId() {
-        return R.layout.activity_once_card;
-    }
-
 }

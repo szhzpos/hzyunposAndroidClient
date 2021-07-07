@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.fragment.AbstractBaseFragment;
 
+import butterknife.ButterKnife;
+
 public abstract class AbstractMobileFragment extends AbstractBaseFragment {
     protected MainActivity mContext;
     public AbstractMobileFragment(){
@@ -19,7 +21,9 @@ public abstract class AbstractMobileFragment extends AbstractBaseFragment {
     @CallSuper
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(getRootLayout(), container, false);
+        View view = inflater.inflate(getRootLayout(), container, false);
+        ButterKnife.bind(this,view);
+        return view;
     }
 
     @CallSuper
@@ -32,4 +36,7 @@ public abstract class AbstractMobileFragment extends AbstractBaseFragment {
     }
 
     abstract protected int getRootLayout();
+    public String getTitle(){
+        return "";
+    }
 }
