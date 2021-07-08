@@ -16,7 +16,7 @@ import com.wyc.cloudapp.logger.Logger;
  */
 public abstract class AbstractBaseFragment extends Fragment {
     private View mRootView;
-    protected abstract void viewCreated(final boolean created);
+    protected abstract void viewCreated();
 
     @Override
     protected void finalize(){
@@ -26,7 +26,7 @@ public abstract class AbstractBaseFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         mRootView = view;
-        viewCreated(mRootView != null);
+        viewCreated();
     }
     public final <T extends View> T findViewById(int id) {
         if (mRootView == null) {

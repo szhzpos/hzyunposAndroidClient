@@ -17,6 +17,15 @@ android {
                 abiFilters 'arm64-v8a','armeabi-v7a','x86','x86_64'
             }
         }
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += [
+                        "room.schemaLocation":"$projectDir/schemas".toString(),
+                        "room.incremental":"true",
+                        "room.expandProjection":"true"]
+            }
+        }
     }
 
     final Properties props = new Properties()
@@ -108,4 +117,9 @@ dependencies {
     implementation 'io.reactivex.rxjava3:rxjava:3.0.0'
 
     implementation 'com.github.getActivity:XXPermissions:11.5'
+
+    //room database
+    def room_version = "2.3.0"
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
 }

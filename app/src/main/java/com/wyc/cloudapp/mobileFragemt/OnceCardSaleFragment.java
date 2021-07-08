@@ -78,7 +78,7 @@ public final class OnceCardSaleFragment extends AbstractMobileFragment {
     }
 
     @Override
-    protected void viewCreated(boolean created) {
+    protected void viewCreated() {
         initSearchContent();
         initVipBtn();
         initSaleBtn();

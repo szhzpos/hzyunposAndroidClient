@@ -18,6 +18,7 @@ import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.room.Dao;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -26,6 +27,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.data.room.AppDatabase;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.FileUtils;
@@ -48,12 +50,18 @@ import static android.database.Cursor.FIELD_TYPE_NULL;
 import static android.database.Cursor.FIELD_TYPE_STRING;
 
 public final class SQLiteHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 10;
+    public static final int DATABASE_VERSION = 10;
     private static volatile SQLiteDatabase mDb;
 
     private SQLiteHelper(Context context,final String databaseName){
         super(context, databaseName, null, DATABASE_VERSION);
         Logger.d("DATABASE_NAME:%s",databaseName);
+    }
+
+    public static String DATABASE_NAME(String storesId){
+        //数据库名称order_门店编号
+        if (!Utils.isNotEmpty(storesId))throw new IllegalArgumentException("storesId cant not empty...");
+        return String.format(Locale.CHINA,"%sorder_%s",Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/",storesId);
     }
 
     public static boolean isNotInit(){
@@ -65,11 +73,9 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             synchronized (SQLiteHelper.class){
                 if (mDb == null){
                     try {
-                        //数据库名称order_门店编号
-                        final String databaseName = String.format(Locale.CHINA,"%sorder_%s",Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/"
-                                ,storesId);
-                        final SQLiteHelper sqLiteHelper = new SQLiteHelper(context,databaseName);
+                        final SQLiteHelper sqLiteHelper = new SQLiteHelper(context,DATABASE_NAME(storesId));
                         mDb = sqLiteHelper.getWritableDatabase();
+
                     }catch (SQLiteCantOpenDatabaseException e){
                         CustomApplication.execute(()-> {
                             Looper.prepare();
@@ -1213,26 +1219,26 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    bi_id            INTEGER PRIMARY KEY AUTOINCREMENT\n" +
                 "                             UNIQUE\n" +
                 ");\n",sql_pay_method = "CREATE TABLE IF NOT EXISTS pay_method (\n" +//付款方式
-                "    is_enable         VARCHAR DEFAULT (1),\n" +
-                "    support           VARCHAR  ,\n" +
+                "    is_enable         INTEGER DEFAULT (1),\n" +
+                "    support           TEXT  ,\n" +
                 "    is_open           INTEGER DEFAULT (1),\n" +
-                "    rule              VARCHAR,\n" +
-                "    unified_pay_query VARCHAR,\n" +
-                "    unified_pay_order VARCHAR,\n" +
-                "    wr_btn_img        VARCHAR,\n" +
+                "    rule              TEXT,\n" +
+                "    unified_pay_query TEXT,\n" +
+                "    unified_pay_order TEXT,\n" +
+                "    wr_btn_img        TEXT,\n" +
                 "    is_scan           INTEGER DEFAULT (2),\n" +
-                "    is_cardno         INT     DEFAULT (1),\n" +
-                "    is_show_client    INT,\n" +
-                "    master_img        VARCHAR,\n" +
-                "    pay_img           VARCHAR,\n" +
-                "    xtype             CHAR,\n" +
-                "    sort              INT,\n" +
-                "    shortcut_key      CHAR,\n" +
+                "    is_cardno         INTEGER     DEFAULT (1),\n" +
+                "    is_show_client    INTEGER,\n" +
+                "    master_img        TEXT,\n" +
+                "    pay_img           TEXT,\n" +
+                "    xtype             TEXT,\n" +
+                "    sort              INTEGER,\n" +
+                "    shortcut_key      TEXT,\n" +
                 "    is_check          INTEGER,\n" +
-                "    remark            VARCHAR,\n" +
-                "    status            INT,\n" +
-                "    name              CHAR,\n" +
-                "    pay_method_id     INTEGER PRIMARY KEY\n" +
+                "    remark            TEXT,\n" +
+                "    status            INTEGER,\n" +
+                "    name              TEXT,\n" +
+                "    pay_method_id     INTEGER PRIMARY KEY NOT NULL\n" +
                 ");\n",sql_local_parameter= "CREATE TABLE IF NOT EXISTS local_parameter (\n" +//本地参数
                 "    parameter_id      VARCHAR (20) NOT NULL,\n" +
                 "    parameter_content TEXT,\n" +

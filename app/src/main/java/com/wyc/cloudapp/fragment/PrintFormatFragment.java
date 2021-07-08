@@ -26,7 +26,6 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -85,13 +84,11 @@ public class PrintFormatFragment extends AbstractParameterFragment {
     }
 
     @Override
-    protected void viewCreated(boolean created) {
-        if (created){
-            final Button save_btn = findViewById(R.id.save);
-            initPrinterId();
-            //保存参数
-            save_btn.setOnClickListener(v->saveContent());
-        }
+    protected void viewCreated() {
+        final Button save_btn = findViewById(R.id.save);
+        initPrinterId();
+        //保存参数
+        save_btn.setOnClickListener(v->saveContent());
     }
 
     @Override

@@ -51,11 +51,9 @@ public final class MyFragment extends AbstractJumpFragment {
     }
 
     @Override
-    protected void viewCreated(boolean created) {
-        super.viewCreated(created);
-        if (created) {
-            initExit();
-            initUserInfo();
-        }
+    protected void viewCreated() {
+        super.viewCreated();
+        initExit();
+        initUserInfo();
     }
 }

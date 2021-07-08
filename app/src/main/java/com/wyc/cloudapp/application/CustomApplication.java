@@ -23,6 +23,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.squareup.leakcanary.LeakCanary;
 import com.wyc.cloudapp.BuildConfig;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.data.room.AppDatabase;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.AndroidLogAdapter;
 import com.wyc.cloudapp.logger.DiskLogAdapter;
@@ -230,6 +231,7 @@ public final class CustomApplication extends Application {
         mSyncManagement.quit();
         mApplication = null;
         SQLiteHelper.closeDB();
+        AppDatabase.closeDB();
         android.os.Process.killProcess(android.os.Process.myPid());
     }
 

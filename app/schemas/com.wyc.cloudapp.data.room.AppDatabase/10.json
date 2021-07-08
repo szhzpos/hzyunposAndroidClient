@@ -1,0 +1,159 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 10,
+    "identityHash": "44061e1e9947d79954761b705112a810",
+    "entities": [
+      {
+        "tableName": "pay_method",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`pay_method_id` INTEGER NOT NULL, `name` TEXT, `status` INTEGER, `remark` TEXT, `is_check` INTEGER, `shortcut_key` TEXT, `sort` INTEGER, `xtype` TEXT, `pay_img` TEXT, `master_img` TEXT, `is_show_client` INTEGER, `is_cardno` INTEGER DEFAULT 1, `is_scan` INTEGER DEFAULT 2, `wr_btn_img` TEXT, `unified_pay_order` TEXT, `unified_pay_query` TEXT, `rule` TEXT, `is_open` INTEGER DEFAULT 1, `support` TEXT, `is_enable` INTEGER DEFAULT 1, `is_moling` INTEGER DEFAULT 1, PRIMARY KEY(`pay_method_id`))",
+        "fields": [
+          {
+            "fieldPath": "pay_method_id",
+            "columnName": "pay_method_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "remark",
+            "columnName": "remark",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "is_check",
+            "columnName": "is_check",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "shortcut_key",
+            "columnName": "shortcut_key",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "sort",
+            "columnName": "sort",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "xtype",
+            "columnName": "xtype",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "pay_img",
+            "columnName": "pay_img",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "master_img",
+            "columnName": "master_img",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "is_show_client",
+            "columnName": "is_show_client",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "is_cardno",
+            "columnName": "is_cardno",
+            "affinity": "INTEGER",
+            "notNull": false,
+            "defaultValue": "1"
+          },
+          {
+            "fieldPath": "is_scan",
+            "columnName": "is_scan",
+            "affinity": "INTEGER",
+            "notNull": false,
+            "defaultValue": "2"
+          },
+          {
+            "fieldPath": "wr_btn_img",
+            "columnName": "wr_btn_img",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "unified_pay_order",
+            "columnName": "unified_pay_order",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "unified_pay_query",
+            "columnName": "unified_pay_query",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "rule",
+            "columnName": "rule",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "is_open",
+            "columnName": "is_open",
+            "affinity": "INTEGER",
+            "notNull": false,
+            "defaultValue": "1"
+          },
+          {
+            "fieldPath": "support",
+            "columnName": "support",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "is_enable",
+            "columnName": "is_enable",
+            "affinity": "INTEGER",
+            "notNull": false,
+            "defaultValue": "1"
+          },
+          {
+            "fieldPath": "is_moling",
+            "columnName": "is_moling",
+            "affinity": "INTEGER",
+            "notNull": false,
+            "defaultValue": "1"
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "pay_method_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '44061e1e9947d79954761b705112a810')"
+    ]
+  }
+}

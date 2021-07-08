@@ -3,22 +3,16 @@ package com.wyc.cloudapp.mobileFragemt;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.fragment.app.Fragment;
-
-import com.wyc.cloudapp.CustomizationView.TopDrawableTextView;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.dialog.MyDialog;
 
 public final class ReportFragment extends AbstractJumpFragment {
     @Override
-    protected void viewCreated(boolean created) {
-        super.viewCreated(created);
+    protected void viewCreated() {
+        super.viewCreated();
 
     }
 

@@ -8,11 +8,15 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.FragmentPagerAdapter;
+import com.wyc.cloudapp.data.room.AppDatabase;
+import com.wyc.cloudapp.data.room.entity.PayMethod;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.mobileFragemt.AbstractMobileFragment;
 import com.wyc.cloudapp.mobileFragemt.OnceCardSaleFragment;
 import com.wyc.cloudapp.mobileFragemt.OnceCardUseFragment;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
@@ -33,6 +37,8 @@ public class OnceCardSaleActivity extends AbstractMobileActivity {
         ButterKnife.bind(this);
 
         init();
+        List<PayMethod> payMethods = AppDatabase.getInstance().PayMethodDao().getAll();
+        Logger.d(Arrays.toString(payMethods.toArray()));
     }
 
     private void init(){

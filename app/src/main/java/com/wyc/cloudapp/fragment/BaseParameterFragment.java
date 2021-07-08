@@ -84,14 +84,12 @@ public class BaseParameterFragment extends AbstractParameterFragment {
     }
 
     @Override
-    protected void viewCreated(boolean created) {
-        if (created){
-            //初始化事件
-            set_save_period();//数据保存周期
-            _dual_view();//双屏设置
-            auto_mol();//自动抹零
-            findViewById(R.id.save).setOnClickListener(v->saveContent());
-        }
+    protected void viewCreated() {
+        //初始化事件
+        set_save_period();//数据保存周期
+        _dual_view();//双屏设置
+        auto_mol();//自动抹零
+        findViewById(R.id.save).setOnClickListener(v->saveContent());
     }
 
     @Override

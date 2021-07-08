@@ -1,20 +1,13 @@
 package com.wyc.cloudapp.mobileFragemt;
 
 import android.os.Bundle;
-import android.util.SparseArray;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
-import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
-import androidx.fragment.app.Fragment;
 
 import com.wyc.cloudapp.CustomizationView.JumpTextView;
-import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.fragment.AbstractBaseFragment;
-import com.wyc.cloudapp.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,34 +26,32 @@ public abstract class AbstractJumpFragment extends AbstractMobileFragment {
 
     @CallSuper
     @Override
-    protected void viewCreated(boolean created) {
-        if (created){
-            final int function_layout_id = getMainViewId(), rood_layout_id = getRootLayout();
-            ViewGroup function_linearLayout;
+    protected void viewCreated() {
+        final int function_layout_id = getMainViewId(), rood_layout_id = getRootLayout();
+        ViewGroup function_linearLayout;
 
-            if (function_layout_id !=0 && rood_layout_id != function_layout_id) {
-                function_linearLayout = findViewById(function_layout_id);
-            } else
-                function_linearLayout = (ViewGroup)getRootView() ;
+        if (function_layout_id !=0 && rood_layout_id != function_layout_id) {
+            function_linearLayout = findViewById(function_layout_id);
+        } else
+            function_linearLayout = (ViewGroup)getRootView() ;
 
-            if (function_linearLayout != null) {
-                if (function_linearLayout instanceof ScrollView && function_linearLayout.getChildCount() != 0)
-                    function_linearLayout = (ViewGroup) function_linearLayout.getChildAt(0);
+        if (function_linearLayout != null) {
+            if (function_linearLayout instanceof ScrollView && function_linearLayout.getChildCount() != 0)
+                function_linearLayout = (ViewGroup) function_linearLayout.getChildAt(0);
 
-                int _count = function_linearLayout.getChildCount(), child_count;
-                for (int i = 0; i < _count; i++) {
-                    final View child = function_linearLayout.getChildAt(i);
-                    if (!ignore(child)){
-                        if (child instanceof ViewGroup) {
-                            final ViewGroup viewGroup = (ViewGroup) child;
-                            child_count = viewGroup.getChildCount();
-                            for (int j = 0; j < child_count; j++) {
-                                final View view = viewGroup.getChildAt(j);
-                                if (view instanceof JumpTextView)view.setOnClickListener(mClickListener);
-                            }
-                        }else if (child instanceof JumpTextView){
-                            child.setOnClickListener(mClickListener);
+            int _count = function_linearLayout.getChildCount(), child_count;
+            for (int i = 0; i < _count; i++) {
+                final View child = function_linearLayout.getChildAt(i);
+                if (!ignore(child)){
+                    if (child instanceof ViewGroup) {
+                        final ViewGroup viewGroup = (ViewGroup) child;
+                        child_count = viewGroup.getChildCount();
+                        for (int j = 0; j < child_count; j++) {
+                            final View view = viewGroup.getChildAt(j);
+                            if (view instanceof JumpTextView)view.setOnClickListener(mClickListener);
                         }
+                    }else if (child instanceof JumpTextView){
+                        child.setOnClickListener(mClickListener);
                     }
                 }
             }

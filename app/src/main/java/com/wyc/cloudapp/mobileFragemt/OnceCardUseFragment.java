@@ -22,7 +22,7 @@ public final class OnceCardUseFragment extends AbstractMobileFragment {
     }
 
     @Override
-    protected void viewCreated(boolean created) {
+    protected void viewCreated() {
 
     }
     @Override

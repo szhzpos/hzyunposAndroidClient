@@ -9,7 +9,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -63,15 +62,13 @@ public class PeripheralSettingFragment extends AbstractParameterFragment {
     }
 
     @Override
-    protected void viewCreated(boolean created) {
-        if (created){
-            findViewById(R.id.save).setOnClickListener(v->saveContent());
-            //初始化
-            initSerialScale();
+    protected void viewCreated() {
+        findViewById(R.id.save).setOnClickListener(v->saveContent());
+        //初始化
+        initSerialScale();
 
-            //加载参数
-            loadContent();
-        }
+        //加载参数
+        loadContent();
     }
 
     @Override

@@ -17,7 +17,6 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.CustomizationView.PieView;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.PayMethodStatisticsViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
@@ -42,13 +41,11 @@ public final class BoardFragment extends AbstractMobileFragment {
     }
 
     @Override
-    protected void viewCreated(boolean created) {
-        if (created){
-            initPayMethodBtn();
-            initPayMethodList();
-            initTimeBtn();
-            initPie();
-        }
+    protected void viewCreated() {
+        initPayMethodBtn();
+        initPayMethodList();
+        initTimeBtn();
+        initPie();
     }
 
     private void initPie(){
