@@ -9,11 +9,12 @@ import androidx.annotation.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @ProjectName: AndroidClient
  * @Package: com.wyc.cloudapp.bean
- * @ClassName: OnceCardInfo
+ * @ClassName: TimeCardInfo
  * @Description: 次卡信息
  * @Author: wyc
  * @CreateDate: 2021-06-29 17:15
@@ -22,7 +23,7 @@ import java.util.List;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class OnceCardInfo implements Parcelable,Cloneable {
+public final class TimeCardInfo implements Parcelable,Cloneable {
     private String end_time;
     private int tc_xtype;
     private String start_time;
@@ -51,11 +52,11 @@ public class OnceCardInfo implements Parcelable,Cloneable {
 
     private List<GoodInfo> goods;
 
-    public OnceCardInfo(){
+    public TimeCardInfo(){
 
     }
 
-    protected OnceCardInfo(Parcel in) {
+    protected TimeCardInfo(Parcel in) {
         end_time = in.readString();
         tc_xtype = in.readInt();
         start_time = in.readString();
@@ -121,15 +122,15 @@ public class OnceCardInfo implements Parcelable,Cloneable {
         return 0;
     }
 
-    public static final Creator<OnceCardInfo> CREATOR = new Creator<OnceCardInfo>() {
+    public static final Creator<TimeCardInfo> CREATOR = new Creator<TimeCardInfo>() {
         @Override
-        public OnceCardInfo createFromParcel(Parcel in) {
-            return new OnceCardInfo(in);
+        public TimeCardInfo createFromParcel(Parcel in) {
+            return new TimeCardInfo(in);
         }
 
         @Override
-        public OnceCardInfo[] newArray(int size) {
-            return new OnceCardInfo[size];
+        public TimeCardInfo[] newArray(int size) {
+            return new TimeCardInfo[size];
         }
     };
 
@@ -342,29 +343,22 @@ public class OnceCardInfo implements Parcelable,Cloneable {
     }
 
     @Override
-    public int hashCode() {
-        int result = 1;
-        result = ((result* 31)+ once_card_id);
-        result = ((result* 31)+((this.title == null)? 0 :this.title.hashCode()));
-        return result;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TimeCardInfo that = (TimeCardInfo) o;
+        return once_card_id == that.once_card_id;
     }
 
     @Override
-    public boolean equals(@Nullable Object other) {
-        if (this == other){
-            return true;
-        }
-        if (!(other instanceof OnceCardInfo)) {
-            return false;
-        }
-        OnceCardInfo rhs = ((OnceCardInfo) other);
-        return once_card_id == rhs.once_card_id;
+    public int hashCode() {
+        return Objects.hash(once_card_id);
     }
 
     @NonNull
     @Override
     public String toString() {
-        return OnceCardInfo.class.getName() + '@' + Integer.toHexString(System.identityHashCode(this)) + '{' +
+        return TimeCardInfo.class.getName() + '@' + Integer.toHexString(System.identityHashCode(this)) + '{' +
                 "once_card_id = " +
                 once_card_id +
                 ",\r\n" +
@@ -379,10 +373,10 @@ public class OnceCardInfo implements Parcelable,Cloneable {
 
     @NonNull
     @Override
-    public OnceCardInfo clone() {
-        OnceCardInfo info = null;
+    public TimeCardInfo clone() {
+        TimeCardInfo info = null;
         try {
-            info = (OnceCardInfo)super.clone();
+            info = (TimeCardInfo)super.clone();
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
         }
@@ -496,26 +490,18 @@ public class OnceCardInfo implements Parcelable,Cloneable {
             return goods_spec_code;
         }
 
-
         @Override
-        public int hashCode() {
-            int result = 1;
-            result = ((result* 31)+ barcode_id);
-            result = ((result* 31)+((this.barcode == null)? 0 :this.barcode.hashCode()));
-            result = ((result* 31)+((this.goods_title == null)? 0 :this.goods_title.hashCode()));
-            return result;
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            GoodInfo goodInfo = (GoodInfo) o;
+            return barcode_id == goodInfo.barcode_id &&
+                    Objects.equals(only_coding, goodInfo.only_coding);
         }
 
         @Override
-        public boolean equals(@Nullable Object other) {
-            if (this == other){
-                return true;
-            }
-            if (!(other instanceof OnceCardInfo.GoodInfo)) {
-                return false;
-            }
-            OnceCardInfo.GoodInfo rhs = ((OnceCardInfo.GoodInfo) other);
-            return barcode_id == rhs.barcode_id;
+        public int hashCode() {
+            return Objects.hash(barcode_id, only_coding);
         }
 
         @NonNull

@@ -29,6 +29,7 @@ import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.DrawableUtil;
+import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.text.ParseException;
@@ -135,7 +136,7 @@ public abstract class AbstractMobileQueryDialog extends AbstractDialogMainActivi
         float[] corners = new float[8];
 
 
-        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+        final SimpleDateFormat sdf = new SimpleDateFormat(FormatDateTimeUtils.YYYY_MM_DD_1, Locale.CHINA);
         final Calendar rightNow = Calendar.getInstance();
         rightNow.setTimeZone(TimeZone.getDefault());
         if (id == R.id.m_today_btn){

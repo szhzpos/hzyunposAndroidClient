@@ -12,6 +12,7 @@ import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
+import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
@@ -44,7 +45,7 @@ public abstract class MobileWholesaleBaseActivity extends AbstractMobileQuerySou
     @Override
     protected void showOrder() {
         super.showOrder();
-        setView(mDateTv, "",Utils.formatDataWithTimestamp(mOrderInfo.getLongValue("addtime") * 1000));
+        setView(mDateTv, "", FormatDateTimeUtils.formatDataWithTimestamp(mOrderInfo.getLongValue("addtime") * 1000));
         setSettlementType();
         setCustomer(Utils.getNullStringAsEmpty(mOrderInfo,"c_s_id"),Utils.getNullStringAsEmpty(mOrderInfo,"cs_xname"));
     }

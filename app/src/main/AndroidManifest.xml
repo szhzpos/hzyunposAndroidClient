@@ -39,12 +39,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
-        <activity android:name=".activity.mobile.OnceCardSaleActivity"></activity>
+        <activity android:name=".activity.mobile.TimeCardSaleActivity"></activity>
         <activity
-            android:name=".activity.mobile.OnceCardPayActivity"
+            android:name=".activity.mobile.TimeCardPayActivity"
             android:theme="@style/notFullActivity" />
-        <activity android:name=".activity.mobile.SelectOnceCardActivity" />
-        <activity android:name=".activity.mobile.MobileOnceCardSaleActivity" />
+        <activity android:name=".activity.mobile.SelectTimeCardActivity" />
+        <activity android:name=".activity.mobile.MobileTimeCardSaleActivity" />
         <activity android:name=".activity.mobile.business.EditVipInfoActivity" />
         <activity android:name=".activity.mobile.business.MobileEditGoodInfoActivity" />
         <activity android:name=".activity.mobile.business.MobileVipCategoryInfoActivity" />

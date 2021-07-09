@@ -16,6 +16,7 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
+import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 /*调出单*/
 public class MobileTransferOutOrderActivity extends AbstractMobileBusinessOrderActivity {
@@ -115,7 +116,7 @@ public class MobileTransferOutOrderActivity extends AbstractMobileBusinessOrderA
             super.showOrder();
             setTransferInWarehouse(Utils.getNullStringAsEmpty(mOrderInfo,"dr_wh_id"),Utils.getNullStringAsEmpty(mOrderInfo,"dr_wh_name"));
             setView(mOrderCodeTv,Utils.getNullStringAsEmpty(mOrderInfo,"ckd_id"),Utils.getNullStringAsEmpty(mOrderInfo,"ckd_code"));
-            setView(mDateTv, "",Utils.formatDataWithTimestamp(mOrderInfo.getLongValue("addtime") * 1000));
+            setView(mDateTv, "", FormatDateTimeUtils.formatDataWithTimestamp(mOrderInfo.getLongValue("addtime") * 1000));
         }
 
         @Override

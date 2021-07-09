@@ -15,6 +15,7 @@ import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
+import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
@@ -79,7 +80,7 @@ public abstract class AbstractRetailOrderDetailsDialog extends AbstractOrderDeta
         int pay_status = 1,order_status = 1;
         final String pay_code = Utils.getNullStringAsEmpty(pay_record,"pay_code");
         if (2 == pay_record.getIntValue("is_check")){
-            final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.CANADA);
+            final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(FormatDateTimeUtils.YYYY_MM_DD_1,Locale.CANADA);
             try {
                 final Date date = simpleDateFormat.parse(Utils.getNullStringAsEmpty(mOrderInfo,"oper_time"));
                 if (date != null)
@@ -179,7 +180,7 @@ public abstract class AbstractRetailOrderDetailsDialog extends AbstractOrderDeta
 
             //更新当前付款记录
             pay_record.put("pay_status",pay_status);
-            pay_record.put("pay_time",new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(pay_time * 1000));
+            pay_record.put("pay_time",new SimpleDateFormat(FormatDateTimeUtils.YYYY_MM_DD_1, Locale.CHINA).format(pay_time * 1000));
             if (pay_status == 2){
                 pay_record.put("pay_status_name","已支付");
             }

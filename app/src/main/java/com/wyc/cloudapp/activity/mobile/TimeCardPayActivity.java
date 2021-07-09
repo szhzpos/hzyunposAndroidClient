@@ -1,7 +1,8 @@
 package com.wyc.cloudapp.activity.mobile;
 
-import android.app.Activity;
 import android.content.Intent;
+import android.database.sqlite.SQLiteConstraintException;
+import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -23,10 +24,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.PayDetailViewAdapter;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
-import com.wyc.cloudapp.bean.OnceCardPayInfo;
-import com.wyc.cloudapp.bean.OnceCardSaleInfo;
+import com.wyc.cloudapp.bean.TimeCardPayInfo;
+import com.wyc.cloudapp.bean.TimeCardSaleInfo;
 import com.wyc.cloudapp.bean.VipInfo;
 import com.wyc.cloudapp.constants.InterfaceURL;
+import com.wyc.cloudapp.data.room.AppDatabase;
+import com.wyc.cloudapp.data.room.entity.TimeCardPayDetail;
+import com.wyc.cloudapp.data.room.entity.TimeCardSaleOrder;
 import com.wyc.cloudapp.decoration.PayMethodItemDecoration;
 import com.wyc.cloudapp.decoration.SuperItemDecoration;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
@@ -35,6 +39,7 @@ import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.pay.AbstractSettlementDialog;
 import com.wyc.cloudapp.dialog.pay.PayMethodDialogImp;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
@@ -49,16 +54,17 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class OnceCardPayActivity extends AbstractMobileActivity {
+import static com.wyc.cloudapp.utils.FormatDateTimeUtils.formatCurrentTime;
+
+public class TimeCardPayActivity extends AbstractMobileActivity {
     public static final int ONCE_CARD_REQUEST_PAY = 0x000000dd;
-    private static final String VIP_INFO = "V";
-    private static final String SALE_INFO = "S";
-    private static final String SALE_MAN = "M";
+    private static final String ORDER_INFO = "o";
 
     private PayMethodViewAdapter mPayMethodViewAdapter;
     private RecyclerView mPayMethodView;
     private PayDetailViewAdapter mPayDetailViewAdapter;
     private JSONObject PayMethod;
+    private TimeCardSaleOrder mOrder;
 
     private double mPay_balance,mPay_amt,mCashAmt,mOrder_amt,mDiscount_amt,mActual_amt,mZlAmt,mAmt_received;
 
@@ -80,6 +86,7 @@ public class OnceCardPayActivity extends AbstractMobileActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mOrder = getIntent().getParcelableExtra(ORDER_INFO);
 
         WindowManager.LayoutParams attributes = getWindow().getAttributes();
         attributes.dimAmount = 0.5f;
@@ -143,9 +150,8 @@ public class OnceCardPayActivity extends AbstractMobileActivity {
     }
 
     private void showVip(){
-        VipInfo vipInfo = getVip();
-        vip_name.setText(vipInfo.getName());
-        vip_phone_num.setText(vipInfo.getMobile());
+        vip_name.setText(mOrder.getVip_name());
+        vip_phone_num.setText(mOrder.getVip_mobile());
     }
 
     private void initPayDetailViewAdapter() {
@@ -176,9 +182,9 @@ public class OnceCardPayActivity extends AbstractMobileActivity {
                     double sale_amt = Utils.formatDouble(getSaleAmt(),2);
                     double rec_pay_amt = Utils.formatDouble(mPayDetailViewAdapter.getPaySumAmt(),2);
                     if (Utils.equalDouble(sale_amt,rec_pay_amt)){//再次验证销售金额以及付款金额是否相等
-                        startPay();
+                        save();
                     }else{
-                        MyDialog.displayErrorMessage(OnceCardPayActivity.this, String.format(Locale.CHINA,"销售金额:%f  不等于 付款金额:%f",sale_amt,rec_pay_amt));
+                        MyDialog.displayErrorMessage(TimeCardPayActivity.this, String.format(Locale.CHINA,"销售金额:%f  不等于 付款金额:%f",sale_amt,rec_pay_amt));
                     }
                 }
             }
@@ -187,33 +193,56 @@ public class OnceCardPayActivity extends AbstractMobileActivity {
 
     private double getSaleAmt(){
         double amt = 0.0;
-        List<OnceCardSaleInfo> saleInfoList = getSaleInfo();
-        for (OnceCardSaleInfo info : saleInfoList){
+        List<TimeCardSaleInfo> saleInfoList = mOrder.getSaleInfo();
+        for (TimeCardSaleInfo info : saleInfoList){
             amt += info.getAmt();
         }
         return amt;
     }
     private double getDiscountAmt(){
         double amt = 0.0;
-        List<OnceCardSaleInfo> saleInfoList = getSaleInfo();
-        for (OnceCardSaleInfo info : saleInfoList){
+        List<TimeCardSaleInfo> saleInfoList = mOrder.getSaleInfo();
+        for (TimeCardSaleInfo info : saleInfoList){
             amt += info.getDiscountAmt();
         }
         return amt;
+    }
+
+    private void save(){
+        List<TimeCardPayDetail> payDetails = new ArrayList<>();
+        JSONArray array = mPayDetailViewAdapter.getDatas();
+        TimeCardPayDetail payDetail = null;
+        for (int i = 0,size = array.size();i < size;i ++){
+            final JSONObject object = array.getJSONObject(i);
+            payDetail = new TimeCardPayDetail.Builder(mOrder.getOrder_no())
+                    .pay_method_id(object.getIntValue("pay_method_id"))
+                    .amt(object.getDoubleValue("pamt")).operator(getCashierCode()).build();
+
+            payDetails.add(payDetail);
+        }
+        try {
+            mOrder.setTime(formatCurrentTime(FormatDateTimeUtils.YYYY_MM_DD_1));
+            AppDatabase.getInstance().TimeCardSaleOrderDao().insertWithDetails(mOrder,mOrder.getSaleInfo(),payDetails);
+            Logger.d(AppDatabase.getInstance().TimeCardSaleOrderDao().getAll());
+            startPay();
+        }catch (SQLiteException e){
+            e.printStackTrace();
+            MyDialog.toastMessage(e.getMessage());
+        }
     }
 
     private void startPay(){
         final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,"正在支付...");
         final JSONObject param = new JSONObject();
         param.put("appid",getAppId());
-        param.put("member_openid",getVip().getOpenid());
+        param.put("member_openid",mOrder.getVip_openid());
         param.put("origin",5);
         param.put("stores_id",getStoreId());
         param.put("cards",getCards().toString());
-        param.put("sales_id",getSaleMan());
+        param.put("sales_id",mOrder.getSaleman());
         param.put("cas_id",getCashierId());
         HttpUtils.sendAsyncPost(getUrl() + InterfaceURL.ONCE_CARD_UPLOAD, HttpRequest.generate_request_parm(param,getAppSecret()))//生成订单
-                .enqueue(new ObjectCallback<OnceCardPayInfo>(OnceCardPayInfo.class) {
+                .enqueue(new ObjectCallback<TimeCardPayInfo>(TimeCardPayInfo.class) {
                     @Override
                     protected void onError(String msg) {
                         MyDialog.toastMessage(msg);
@@ -221,16 +250,16 @@ public class OnceCardPayActivity extends AbstractMobileActivity {
                     }
 
                     @Override
-                    protected void onSuccessForResult(OnceCardPayInfo d, String hint) {
+                    protected void onSuccessForResult(TimeCardPayInfo d, String hint) {
                         //提交支付
                         try {
-                            OnceCardPayInfo.PayInfo payInfo = d.getPay_info();
+                            TimeCardPayInfo.PayInfo payInfo = d.getPay_info();
                             final JSONObject pay = new JSONObject();
                             pay.put("appid",getAppId());
                             pay.put("order_code",payInfo.getOrder_code());
                             pay.put("pay_method",PayMethod.getString("pay_method_id"));
                             if (PayMethodViewAdapter.isVipPay(PayMethod)){
-                                final ChangeNumOrPriceDialog password_dialog = new ChangeNumOrPriceDialog(OnceCardPayActivity.this,"请输入密码","");
+                                final ChangeNumOrPriceDialog password_dialog = new ChangeNumOrPriceDialog(TimeCardPayActivity.this,"请输入密码","");
                                 if (password_dialog.exec() == 0){
                                     progressDialog.dismiss();
                                     return;
@@ -263,9 +292,9 @@ public class OnceCardPayActivity extends AbstractMobileActivity {
     }
 
     private JSONArray getCards(){
-        List<OnceCardSaleInfo> saleInfoList = getSaleInfo();
+        List<TimeCardSaleInfo> saleInfoList = mOrder.getSaleInfo();
         final JSONArray array = new JSONArray();
-        for (OnceCardSaleInfo saleInfo : saleInfoList){
+        for (TimeCardSaleInfo saleInfo : saleInfoList){
             final JSONObject object = new JSONObject();
             object.put("once_card_id",saleInfo.getOnce_card_id());
             object.put("num",saleInfo.getNum());
@@ -345,9 +374,9 @@ public class OnceCardPayActivity extends AbstractMobileActivity {
                             MyDialog.SnackbarMessage(getWindow(), "剩余金额为零！", getCurrentFocus());
                         } else {
                             if (PayMethodViewAdapter.isVipPay(PayMethod)){
-                                PayMethod.put("card_code",getVip().getCard_code());
+                                PayMethod.put("card_code",mOrder.getVip_card_no());
                             }
-                            final PayMethodDialogImp payMethodDialogImp = new PayMethodDialogImp(OnceCardPayActivity.this, PayMethod);
+                            final PayMethodDialogImp payMethodDialogImp = new PayMethodDialogImp(TimeCardPayActivity.this, PayMethod);
                             payMethodDialogImp.setModifyPayAmt(false).setPayAmt(mPay_balance);
                             final int code = payMethodDialogImp.exec();
                             mPayMethodViewAdapter.showDefaultPayMethod();
@@ -480,23 +509,13 @@ public class OnceCardPayActivity extends AbstractMobileActivity {
     protected int getContentLayoutId() {
         return R.layout.activity_once_card_pay;
     }
-    private VipInfo getVip(){
-        return (VipInfo) getIntent().getSerializableExtra(VIP_INFO);
-    }
-    private ArrayList<OnceCardSaleInfo> getSaleInfo(){
-        return getIntent().getParcelableArrayListExtra(SALE_INFO);
-    }
-    private String getSaleMan(){
-        return getIntent().getStringExtra(SALE_MAN);
-    }
-    public static void start(@NonNull Fragment context, @NonNull VipInfo vipInfo, @NonNull ArrayList<OnceCardSaleInfo> saleInfo, String saleman){
-        if (vipInfo == null || saleInfo == null){
-            throw new IllegalArgumentException("the second and third parameter can't empty...");
+
+    public static void start(@NonNull Fragment context,TimeCardSaleOrder order){
+        if (order == null){
+            throw new IllegalArgumentException("the second parameter can't empty...");
         }
-        Intent intent = new Intent(context.getContext(),OnceCardPayActivity.class)
-                .putParcelableArrayListExtra(SALE_INFO,saleInfo)
-                .putExtra(VIP_INFO,vipInfo)
-                .putExtra(SALE_MAN,saleman);
+        Intent intent = new Intent(context.getContext(), TimeCardPayActivity.class)
+                .putExtra(ORDER_INFO,order);
         context.startActivityForResult(intent,ONCE_CARD_REQUEST_PAY);
     }
 }

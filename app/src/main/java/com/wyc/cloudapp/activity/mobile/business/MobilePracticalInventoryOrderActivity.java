@@ -24,6 +24,7 @@ import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.DrawableUtil;
+import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
@@ -152,7 +153,7 @@ public class MobilePracticalInventoryOrderActivity extends AbstractMobileActivit
             m_query_time_tv_layout.setVisibility(View.VISIBLE);
             corners[2] = corners[3] =  corners[4] = corners[5] = corner_size;
             if (mEndDateTv != null && mStartDateTv != null){
-                final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+                final SimpleDateFormat sdf = new SimpleDateFormat(FormatDateTimeUtils.YYYY_MM_DD_1, Locale.CHINA);
                 try {
                     rightNow.setTime(Objects.requireNonNull(sdf.parse(mStartDateTv.getText() + " 00:00:00")));
                     mStartTime = rightNow.getTime().getTime();
@@ -181,7 +182,7 @@ public class MobilePracticalInventoryOrderActivity extends AbstractMobileActivit
     };
 
     private void query(){
-        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+        final SimpleDateFormat sdf = new SimpleDateFormat(FormatDateTimeUtils.YYYY_MM_DD_1, Locale.CHINA);
 
         mParameterObj.put("appid",getAppId());
         mParameterObj.put(WH_ID_KEY,getWhId());

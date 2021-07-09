@@ -4,6 +4,7 @@ import android.text.Html;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 
 /**
@@ -27,6 +28,6 @@ public class MobileWholesaleRefundOrderAdapter extends MobileWholesaleOrderAdapt
         holder.cs_name_tv.setText(object.getString("cs_xname"));
         holder.order_code_tv.setText(Html.fromHtml("<u>" + object.getString("refund_code") + "</u>"));
         holder.order_code_tv.setTag(object.getString("order_id"));
-        holder.date_tv.setText(Utils.formatDataWithTimestamp(object.getLongValue("addtime") * 1000));
+        holder.date_tv.setText(FormatDateTimeUtils.formatDataWithTimestamp(object.getLongValue("addtime") * 1000));
     }
 }

@@ -12,8 +12,8 @@ import com.wyc.cloudapp.data.room.AppDatabase;
 import com.wyc.cloudapp.data.room.entity.PayMethod;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.mobileFragemt.AbstractMobileFragment;
-import com.wyc.cloudapp.mobileFragemt.OnceCardSaleFragment;
-import com.wyc.cloudapp.mobileFragemt.OnceCardUseFragment;
+import com.wyc.cloudapp.mobileFragemt.TimeCardSaleFragment;
+import com.wyc.cloudapp.mobileFragemt.TimeCardUseFragment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,7 +23,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /*次卡销售*/
-public class OnceCardSaleActivity extends AbstractMobileActivity {
+public class TimeCardSaleActivity extends AbstractMobileActivity {
 
     @BindView(R.id._tab)
     TabLayout _tab;
@@ -37,14 +37,12 @@ public class OnceCardSaleActivity extends AbstractMobileActivity {
         ButterKnife.bind(this);
 
         init();
-        List<PayMethod> payMethods = AppDatabase.getInstance().PayMethodDao().getAll();
-        Logger.d(Arrays.toString(payMethods.toArray()));
     }
 
     private void init(){
         final List<AbstractMobileFragment> fragments = new ArrayList<>();
-        fragments.add(new OnceCardSaleFragment());
-        fragments.add(new OnceCardUseFragment());
+        fragments.add(new TimeCardSaleFragment());
+        fragments.add(new TimeCardUseFragment());
 
         final FragmentPagerAdapter<AbstractMobileFragment> adapter =  new FragmentPagerAdapter<>(fragments,this);
         view_pager.setAdapter(adapter);

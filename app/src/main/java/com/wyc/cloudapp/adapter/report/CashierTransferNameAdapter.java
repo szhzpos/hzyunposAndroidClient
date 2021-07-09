@@ -13,6 +13,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
+import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.text.SimpleDateFormat;
@@ -64,7 +65,7 @@ public class CashierTransferNameAdapter extends AbstractDataAdapterForJson<Cashi
             holder.cas_name.setText(object.getString("cas_name"));
             holder.transfer_id.setText(Html.fromHtml("<u>" + object.getString("ti_code") + "</u>"));
             holder.transfer_id.setOnClickListener(mListener);
-            holder.trans_time.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(object.getLongValue("transfer_time") * 1000));
+            holder.trans_time.setText(new SimpleDateFormat(FormatDateTimeUtils.YYYY_MM_DD_1, Locale.CHINA).format(object.getLongValue("transfer_time") * 1000));
         }
     }
 

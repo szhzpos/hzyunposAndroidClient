@@ -9,7 +9,7 @@ import java.util.Locale;
 /**
  * @ProjectName: AndroidClient
  * @Package: com.wyc.cloudapp.bean
- * @ClassName: OnceCardPayInfo
+ * @ClassName: TimeCardPayInfo
  * @Description: 次卡支付信息
  * @Author: wyc
  * @CreateDate: 2021-07-06 15:36
@@ -18,7 +18,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class OnceCardPayInfo implements Serializable {
+public class TimeCardPayInfo implements Serializable {
     private int if_pwd;
     private String order_code;
     private PayInfo pay_info;

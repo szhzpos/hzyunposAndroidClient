@@ -26,6 +26,7 @@ import com.wyc.cloudapp.adapter.report.TransferDetailsAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
@@ -176,7 +177,7 @@ public class MobileCashierTransfer extends AbstractReportActivity {
             mCurrentDateView = view;
         }
 
-        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+        final SimpleDateFormat sdf = new SimpleDateFormat(FormatDateTimeUtils.YYYY_MM_DD_1, Locale.CHINA);
         final Calendar rightNow = Calendar.getInstance();
         rightNow.setTimeZone(TimeZone.getDefault());
         long start_time = -1,end_time = -1;
@@ -429,7 +430,7 @@ public class MobileCashierTransfer extends AbstractReportActivity {
             final TextView ti_code_tv = findViewById(R.id.ti_code_tv),cas_name = findViewById(R.id.cas_name_tv),
                     upload_time_tv = findViewById(R.id.upload_time_tv),ti_start_time_tv = findViewById(R.id.ti_start_time_tv),
                     ti_end_time_tv = findViewById(R.id.ti_end_time_tv);
-            final SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+            final SimpleDateFormat sf = new SimpleDateFormat(FormatDateTimeUtils.YYYY_MM_DD_1, Locale.CHINA);
 
             ti_code_tv.setText(mData.getString("ti_code"));
             cas_name.setText(mData.getString("cas_name"));

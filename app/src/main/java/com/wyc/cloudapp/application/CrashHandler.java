@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
@@ -162,7 +163,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
     private String saveCrashInfoFile(Throwable ex) throws Exception {
         final StringBuilder sb = new StringBuilder();
         try {
-            final String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(new Date());
+            final String date = FormatDateTimeUtils.formatCurrentTime(FormatDateTimeUtils.YYYY_MM_DD_1);
             sb.append("\r\n").append(date).append("\n");
             for (Map.Entry<String, String> entry : infos.entrySet()) {
                 String key = entry.getKey();

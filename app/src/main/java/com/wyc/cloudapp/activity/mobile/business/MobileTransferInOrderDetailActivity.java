@@ -27,6 +27,7 @@ import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
@@ -100,7 +101,7 @@ public class MobileTransferInOrderDetailActivity extends AbstractMobileActivity 
         final JSONObject object = mOrderInfo;
         setView(mOrderCodeTv,Utils.getNullStringAsEmpty(object,"ckd_id"), Utils.getNullStringAsEmpty(object,"ckd_code"));
         setView(mSaleOperatorTv, Utils.getNullStringAsEmpty(object,"js_pt_user_id"), Utils.getNullStringAsEmpty(object,"js_pt_user_name"));
-        setView(mDateTv, "", Utils.formatDataWithTimestamp(object.getLongValue("addtime") * 1000));
+        setView(mDateTv, "", FormatDateTimeUtils.formatDataWithTimestamp(object.getLongValue("addtime") * 1000));
         setView(mRemarkEt, "", Utils.getNullStringAsEmpty(object, "remark"));
         setView(mTransferOutWhTv,Utils.getNullStringAsEmpty(object,"wh_id"), Utils.getNullStringAsEmpty(object,"wh_name"));
 

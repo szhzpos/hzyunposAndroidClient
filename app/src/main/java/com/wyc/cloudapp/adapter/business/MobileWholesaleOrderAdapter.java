@@ -12,6 +12,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
+import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.text.SimpleDateFormat;
@@ -55,7 +56,7 @@ public class MobileWholesaleOrderAdapter extends MobileBaseOrderAdapter<MobileWh
         holder.cs_name_tv.setText(object.getString("cs_xname"));
         holder.order_code_tv.setText(Html.fromHtml("<u>" + object.getString("order_code") + "</u>"));
         holder.order_code_tv.setTag(object.getString("order_id"));
-        holder.date_tv.setText(Utils.formatDataWithTimestamp(object.getLongValue("addtime") * 1000));
+        holder.date_tv.setText(FormatDateTimeUtils.formatDataWithTimestamp(object.getLongValue("addtime") * 1000));
     }
 
 }

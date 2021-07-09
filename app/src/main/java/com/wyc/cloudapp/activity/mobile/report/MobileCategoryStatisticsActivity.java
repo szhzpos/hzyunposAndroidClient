@@ -29,6 +29,7 @@ import com.wyc.cloudapp.adapter.report.MobileCategoryNameAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
@@ -97,7 +98,7 @@ public final class MobileCategoryStatisticsActivity extends AbstractReportActivi
             view.setBackground(getDrawable(R.drawable.mobile_report_date_btn_style));
         }
 
-        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+        final SimpleDateFormat sdf = new SimpleDateFormat(FormatDateTimeUtils.YYYY_MM_DD_1, Locale.CHINA);
         final Calendar rightNow = Calendar.getInstance();
         rightNow.setTimeZone(TimeZone.getDefault());
         long start_time = -1,end_time = -1;

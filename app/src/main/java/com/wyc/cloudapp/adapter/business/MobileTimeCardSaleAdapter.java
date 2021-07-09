@@ -1,33 +1,24 @@
 package com.wyc.cloudapp.adapter.business;
 
 import android.app.Dialog;
-import android.content.Context;
-import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.CustomizationView.InterceptLinearLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForList;
-import com.wyc.cloudapp.bean.OnceCardInfo;
-import com.wyc.cloudapp.bean.OnceCardSaleInfo;
+import com.wyc.cloudapp.bean.TimeCardSaleInfo;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
-import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.FontSizeTagHandler;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -36,7 +27,7 @@ import butterknife.ButterKnife;
 /**
  * @ProjectName: AndroidClient
  * @Package: com.wyc.cloudapp.adapter.business
- * @ClassName: MobileOnceCardSaleAdapter
+ * @ClassName: MobileTimeCardSaleAdapter
  * @Description: 次卡销售数据适配器
  * @Author: wyc
  * @CreateDate: 2021-06-30 15:56
@@ -45,13 +36,13 @@ import butterknife.ButterKnife;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class MobileOnceCardSaleAdapter extends AbstractDataAdapterForList<OnceCardSaleInfo, MobileOnceCardSaleAdapter.MyViewHolder> implements View.OnClickListener {
+public class MobileTimeCardSaleAdapter extends AbstractDataAdapterForList<TimeCardSaleInfo, MobileTimeCardSaleAdapter.MyViewHolder> implements View.OnClickListener {
 
     private final MainActivity mContext;
     private View mCurrentItemView;
     private int mCurrentIndex;
 
-    public MobileOnceCardSaleAdapter(MainActivity context){
+    public MobileTimeCardSaleAdapter(MainActivity context){
         mContext = context;
         mData = new ArrayList<>();
     }
@@ -117,7 +108,7 @@ public class MobileOnceCardSaleAdapter extends AbstractDataAdapterForList<OnceCa
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        final OnceCardSaleInfo saleInfo = getItem(position);
+        final TimeCardSaleInfo saleInfo = getItem(position);
         if (null != saleInfo){
             if(!holder._minus_btn.hasOnClickListeners()){
                 holder._minus_btn.setOnClickListener(this);
@@ -171,26 +162,28 @@ public class MobileOnceCardSaleAdapter extends AbstractDataAdapterForList<OnceCa
         }
     }
 
-    public void addOnceCard(OnceCardSaleInfo saleInfo){
+    public void addTimeCard(TimeCardSaleInfo saleInfo){
         boolean isExist = false;
         int index = 0;
-        for (OnceCardSaleInfo info : mData){
+        for (TimeCardSaleInfo info : mData){
             index++;
-            if (info.equals(saleInfo)){
+            if (info.equalsWithTimeCardInfo(saleInfo)){
                 info.setNum(saleInfo.getNum() + info.getNum());
                 isExist = true;
                 break;
             }
         }
         if (!isExist){
+            index = mData.size();
+            saleInfo.setRowId(index);
             mData.add(saleInfo);
-            index = mData.size() - 1;
         }
         mCurrentIndex = index;
         notifyDataSetChanged();
     }
+
     private void modifyCurrentNum(int n){
-        final OnceCardSaleInfo saleInfo = getItem(mCurrentIndex);
+        final TimeCardSaleInfo saleInfo = getItem(mCurrentIndex);
         if (saleInfo != null){
             int num = saleInfo.getNum() + n;
             if (Utils.notGreaterDouble(num,0.0)){
@@ -202,7 +195,7 @@ public class MobileOnceCardSaleAdapter extends AbstractDataAdapterForList<OnceCa
         }
     }
     public void alterNumber(){
-        final OnceCardSaleInfo saleInfo = getItem(mCurrentIndex);
+        final TimeCardSaleInfo saleInfo = getItem(mCurrentIndex);
         if (null != saleInfo){
             ChangeNumOrPriceDialog dialog = new ChangeNumOrPriceDialog(mContext,"新数量",String.format(Locale.CHINA,"%d",saleInfo.getNum()));
             dialog.setYesOnclickListener(myDialog -> {

@@ -72,6 +72,7 @@ import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.constants.MessageID;
+import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
@@ -465,7 +466,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
             mCurrentTimestamp += (1000 + System.currentTimeMillis() - mCurrentTimestamp);
             view.postDelayed(this::startSyncCurrentTime,1000);
         }
-        mCurrentTimeViewTv.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(mCurrentTimestamp));
+        mCurrentTimeViewTv.setText(new SimpleDateFormat(FormatDateTimeUtils.YYYY_MM_DD_1, Locale.CHINA).format(mCurrentTimestamp));
     }
     private void initGoodsInfoAdapter(){
         mGoodsInfoViewAdapter = new GoodsInfoViewAdapter(this);

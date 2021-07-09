@@ -14,6 +14,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.MobileTransferDetailsAdapter;
 import com.wyc.cloudapp.callback.PasswordEditTextReplacement;
+import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.text.SimpleDateFormat;
@@ -150,7 +151,7 @@ public final class MobileTransferDialog extends AbstractTransferDialog {
             ti_code_tv.setText(object.getString("ti_code"));
             if (mTransferDetailsAdapter.isTransferAmtNotVisible())payable_amt.setTransformationMethod(new PasswordEditTextReplacement());
 
-            final SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+            final SimpleDateFormat sf = new SimpleDateFormat(FormatDateTimeUtils.YYYY_MM_DD_1, Locale.CHINA);
             ti_start_time_tv.setText(sf.format(object.getLongValue("order_b_date") * 1000));
             ti_end_time_tv.setText(sf.format(object.getLongValue("order_e_date") * 1000));
 

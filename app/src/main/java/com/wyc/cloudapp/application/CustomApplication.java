@@ -29,6 +29,7 @@ import com.wyc.cloudapp.logger.AndroidLogAdapter;
 import com.wyc.cloudapp.logger.DiskLogAdapter;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.constants.MessageID;
+import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.io.File;
@@ -518,7 +519,7 @@ public final class CustomApplication extends Application {
                 long old_offline_time = Utils.getNotKeyAsNumberDefault(object,"v",Long.valueOf(offline_time));
                 int max_offline_hours = 72;
                 if (offline_time - old_offline_time > max_offline_hours * 3600 * 1000){
-                    final SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+                    final SimpleDateFormat sf = new SimpleDateFormat(FormatDateTimeUtils.YYYY_MM_DD_1, Locale.CHINA);
                     final String sz_offline_time = String.format(Locale.CHINA,"离线时间已超过%d小时;最后离线时间:%s,当前时间:%s",max_offline_hours,sf.format(new Date(old_offline_time)),sf.format(new Date()));
                     MyDialog.displayErrorMessage(context,sz_offline_time);
                     code = false;

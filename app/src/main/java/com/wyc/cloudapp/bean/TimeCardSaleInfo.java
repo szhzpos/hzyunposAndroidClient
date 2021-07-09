@@ -5,17 +5,14 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.room.Entity;
 
-import com.wyc.cloudapp.utils.Utils;
-
-import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Objects;
 
 /**
  * @ProjectName: AndroidClient
  * @Package: com.wyc.cloudapp.bean
- * @ClassName: OnceCardSaleInfo
+ * @ClassName: TimeCardSaleInfo
  * @Description: 次卡销售信息
  * @Author: wyc
  * @CreateDate: 2021-06-30 15:58
@@ -24,36 +21,46 @@ import java.util.Objects;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public final class OnceCardSaleInfo implements Parcelable {
+@Entity(tableName = "timeCardSaleDetails",primaryKeys = {"rowId","order_no"})
+public final class TimeCardSaleInfo implements Parcelable {
+    private int rowId;
     private int num;
     private double amt;
     private double price;
     private int once_card_id;
     private String name;
     private double discountAmt;
+    /*
+     * 对应的销售订单号
+     * */
+    @NonNull
+    private String order_no;
 
-    public OnceCardSaleInfo(){
+    public TimeCardSaleInfo(){
 
     }
 
-
-    protected OnceCardSaleInfo(Parcel in) {
+    protected TimeCardSaleInfo(Parcel in) {
+        rowId = in.readInt();
         num = in.readInt();
         amt = in.readDouble();
         price = in.readDouble();
         once_card_id = in.readInt();
         name = in.readString();
         discountAmt = in.readDouble();
+        order_no = in.readString();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(rowId);
         dest.writeInt(num);
         dest.writeDouble(amt);
         dest.writeDouble(price);
         dest.writeInt(once_card_id);
         dest.writeString(name);
         dest.writeDouble(discountAmt);
+        dest.writeString(order_no);
     }
 
     @Override
@@ -61,21 +68,29 @@ public final class OnceCardSaleInfo implements Parcelable {
         return 0;
     }
 
-    public static final Creator<OnceCardSaleInfo> CREATOR = new Creator<OnceCardSaleInfo>() {
+    public static final Creator<TimeCardSaleInfo> CREATOR = new Creator<TimeCardSaleInfo>() {
         @Override
-        public OnceCardSaleInfo createFromParcel(Parcel in) {
-            return new OnceCardSaleInfo(in);
+        public TimeCardSaleInfo createFromParcel(Parcel in) {
+            return new TimeCardSaleInfo(in);
         }
 
         @Override
-        public OnceCardSaleInfo[] newArray(int size) {
-            return new OnceCardSaleInfo[size];
+        public TimeCardSaleInfo[] newArray(int size) {
+            return new TimeCardSaleInfo[size];
         }
     };
 
     public void setNum(int n){
         num = n;
         amt = n * price;
+    }
+
+    public void setRowId(int rowId) {
+        this.rowId = rowId;
+    }
+
+    public int getRowId() {
+        return rowId;
     }
 
     public int getNum() {
@@ -122,27 +137,37 @@ public final class OnceCardSaleInfo implements Parcelable {
         return discountAmt;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(once_card_id,name,price,num, amt);
+
+    public void setOrder_no(@NonNull String order_no) {
+        this.order_no = order_no;
+    }
+    @NonNull
+    public String getOrder_no() {
+        return order_no;
     }
 
     @Override
-    public boolean equals(@Nullable Object other) {
-        if (this == other){
-            return true;
-        }
-        if (!(other instanceof OnceCardSaleInfo)) {
-            return false;
-        }
-        OnceCardSaleInfo rhs = ((OnceCardSaleInfo) other);
-        return once_card_id == rhs.once_card_id;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TimeCardSaleInfo that = (TimeCardSaleInfo) o;
+        return rowId == that.rowId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(rowId);
+    }
+
+    public boolean equalsWithTimeCardInfo(TimeCardSaleInfo o){
+        if (o == null)return false;
+        return once_card_id == o.once_card_id;
     }
 
     @NonNull
     @Override
     public String toString() {
-        return OnceCardInfo.class.getName() + '@' + Integer.toHexString(System.identityHashCode(this)) + '{' +
+        return TimeCardInfo.class.getName() + '@' + Integer.toHexString(System.identityHashCode(this)) + '{' +
                 "once_card_id = " +
                 once_card_id +
                 ",\r\n name = " +
@@ -153,11 +178,11 @@ public final class OnceCardSaleInfo implements Parcelable {
     }
 
     public static class Builder{
-        private final OnceCardSaleInfo mInfo;
+        private final TimeCardSaleInfo mInfo;
         public Builder(){
-            mInfo = new OnceCardSaleInfo();
+            mInfo = new TimeCardSaleInfo();
         }
-        public Builder onceCardId(int id){
+        public Builder timeCardId(int id){
             mInfo.setOnce_card_id(id);
             return this;
         }
@@ -177,8 +202,7 @@ public final class OnceCardSaleInfo implements Parcelable {
             mInfo.setAmt(a);
             return this;
         }
-
-        public OnceCardSaleInfo build(){
+        public TimeCardSaleInfo build(){
             return mInfo;
         }
     }

@@ -33,6 +33,7 @@ import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.dialog.baseDialog.BusinessSelectGoodsDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
@@ -509,8 +510,8 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractMobileActi
         setInventoryTask(object);
 
         mOrderCodeTv.setText(object.getString("pcd_code"));
-        mDateTv.setText(Utils.formatDataWithTimestamp(object.getLongValue("addtime") * 1000));
-        mDateTv.setText(Utils.formatDataWithTimestamp(object.getLongValue("addtime") * 1000));
+        mDateTv.setText(FormatDateTimeUtils.formatDataWithTimestamp(object.getLongValue("addtime") * 1000));
+        mDateTv.setText(FormatDateTimeUtils.formatDataWithTimestamp(object.getLongValue("addtime") * 1000));
         setSaleOperator(object.getString("js_pt_user_id"),object.getString("js_pt_user_name"));
         mRemarkEt.setText(object.getString("remark"));
 

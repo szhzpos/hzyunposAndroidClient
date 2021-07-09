@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * @ProjectName: AndroidClient
@@ -375,7 +376,6 @@ final public class VipInfo implements Serializable {
         return sb.toString();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public int hashCode() {
         int result = 1;
@@ -389,9 +389,7 @@ final public class VipInfo implements Serializable {
         if (other == this) {
             return true;
         }
-        if (!(other instanceof VipInfo)) {
-            return false;
-        }
+        if (other == null ||(getClass() != other.getClass()))return false;
         VipInfo rhs = ((VipInfo) other);
         return member_id == rhs.member_id && (card_code != null && card_code.equals(rhs.card_code));
     }

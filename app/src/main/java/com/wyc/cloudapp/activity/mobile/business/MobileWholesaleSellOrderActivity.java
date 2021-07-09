@@ -14,6 +14,7 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
@@ -54,7 +55,7 @@ public class MobileWholesaleSellOrderActivity extends AbstractMobileBusinessOrde
         @Override
         protected void showOrder() {
             super.showOrder();
-            setView(mDateTv, "",Utils.formatDataWithTimestamp(mOrderInfo.getLongValue("addtime") * 1000));
+            setView(mDateTv, "", FormatDateTimeUtils.formatDataWithTimestamp(mOrderInfo.getLongValue("addtime") * 1000));
             setView(mOrderCodeTv, "",Utils.getNullStringAsEmpty(mOrderInfo,"order_code"));
             setSourceOrder("",Utils.getNullStringAsEmpty(mOrderInfo,"pfd_code"));
         }

@@ -26,6 +26,7 @@ import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
@@ -259,7 +260,7 @@ public class MobileInventoryOrderDetailActivity extends AbstractMobileActivity {
         final ViewGroup date_layout = findViewById(R.id.date_layout);
         date_layout.setVisibility(View.VISIBLE);
         final TextView m_business_date_tv = date_layout.findViewById(R.id.m_business_date_tv);
-        m_business_date_tv.setText(Utils.formatDataWithTimestamp(mTaskInfo.getLongValue("addtime") * 1000));
+        m_business_date_tv.setText(FormatDateTimeUtils.formatDataWithTimestamp(mTaskInfo.getLongValue("addtime") * 1000));
 
     }
     private void initStores(){

@@ -14,6 +14,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.NormalTransferDetailsAdapter;
 import com.wyc.cloudapp.callback.PasswordEditTextReplacement;
+import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -79,8 +80,8 @@ public final class NormalTransferDialog extends AbstractTransferDialog {
             rdeposit_sum_amt_tv.setText(String.format(Locale.CHINA,"%.2f",object.getDoubleValue("recharge_money")));
 
             final Editable editable = transfer_time.getEditableText();
-            editable.append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(object.getLongValue("order_b_date") * 1000)).append(" ").append(mContext.getString(R.string.to_sz)).append(" ").
-                    append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(object.getLongValue("order_e_date") * 1000));
+            editable.append(new SimpleDateFormat(FormatDateTimeUtils.YYYY_MM_DD_1, Locale.CHINA).format(object.getLongValue("order_b_date") * 1000)).append(" ").append(mContext.getString(R.string.to_sz)).append(" ").
+                    append(new SimpleDateFormat(FormatDateTimeUtils.YYYY_MM_DD_1, Locale.CHINA).format(object.getLongValue("order_e_date") * 1000));
 
             payable_amt.setText(String.format(Locale.CHINA,"%.2f",object.getDoubleValue("sj_money")));
         }

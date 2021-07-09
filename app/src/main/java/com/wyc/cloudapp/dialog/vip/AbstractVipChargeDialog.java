@@ -31,6 +31,7 @@ import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
+import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
@@ -889,7 +890,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
             info.append("会员积分：".concat(Utils.getNullStringAsEmpty(member,"points_sum"))).append(new_line);
             info.append("会员电话：".concat(mobile)).append(new_line);
 
-            info.append("时    间：".concat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(money_order.getLongValue("addtime") * 1000))).append(new_line);
+            info.append("时    间：".concat(new SimpleDateFormat(FormatDateTimeUtils.YYYY_MM_DD_1, Locale.CHINA).format(money_order.getLongValue("addtime") * 1000))).append(new_line);
             if (welfare.size() != 0){
                 for (int i = 0,size = welfare.size();i < size;i++){
                     if (i == 0)info.append("优惠信息").append(new_line);

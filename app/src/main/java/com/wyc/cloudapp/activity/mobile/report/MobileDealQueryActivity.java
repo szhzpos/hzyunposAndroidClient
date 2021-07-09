@@ -28,6 +28,7 @@ import com.wyc.cloudapp.adapter.report.MobileGoodsDetailsAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
@@ -95,7 +96,7 @@ public final class MobileDealQueryActivity extends AbstractReportActivity {
             view.setBackground(getDrawable(R.drawable.mobile_report_date_btn_style));
         }
 
-        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+        final SimpleDateFormat sdf = new SimpleDateFormat(FormatDateTimeUtils.YYYY_MM_DD_1, Locale.CHINA);
         final Calendar rightNow = Calendar.getInstance();
         rightNow.setTimeZone(TimeZone.getDefault());
         long start_time = -1,end_time = -1;
@@ -468,7 +469,7 @@ public final class MobileDealQueryActivity extends AbstractReportActivity {
 
             order_code_tv.setText(object.getString("order_code"));
             stores_name_tv.setText(object.getString("stores_name"));
-            order_time_tv.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(object.getLongValue("addtime") * 1000));
+            order_time_tv.setText(new SimpleDateFormat(FormatDateTimeUtils.YYYY_MM_DD_1, Locale.CHINA).format(object.getLongValue("addtime") * 1000));
             order_amt_tv.setText(String.format(Locale.CHINA,"%.2f",object.getDoubleValue("discount_price")));
 
             final String member_card = Utils.getNullStringAsEmpty(object,"member_card");

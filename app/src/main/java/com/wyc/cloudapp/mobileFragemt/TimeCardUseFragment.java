@@ -6,7 +6,7 @@ import com.wyc.cloudapp.application.CustomApplication;
 /**
  * @ProjectName: AndroidClient
  * @Package: com.wyc.cloudapp.mobileFragemt
- * @ClassName: OnceCardUseFragment
+ * @ClassName: TimeCardUseFragment
  * @Description: 次卡使用
  * @Author: wyc
  * @CreateDate: 2021-07-07 11:28
@@ -15,7 +15,7 @@ import com.wyc.cloudapp.application.CustomApplication;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public final class OnceCardUseFragment extends AbstractMobileFragment {
+public final class TimeCardUseFragment extends AbstractMobileFragment {
     @Override
     protected int getRootLayout() {
         return R.layout.once_card_use_fragment;

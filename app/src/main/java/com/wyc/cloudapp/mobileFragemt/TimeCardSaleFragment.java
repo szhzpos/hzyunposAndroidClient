@@ -19,16 +19,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.CustomizationView.BasketView;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.mobile.OnceCardPayActivity;
-import com.wyc.cloudapp.activity.mobile.SelectOnceCardActivity;
+import com.wyc.cloudapp.activity.mobile.SelectTimeCardActivity;
+import com.wyc.cloudapp.activity.mobile.TimeCardPayActivity;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
-import com.wyc.cloudapp.adapter.business.MobileOnceCardSaleAdapter;
+import com.wyc.cloudapp.adapter.business.MobileTimeCardSaleAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.bean.OnceCardData;
-import com.wyc.cloudapp.bean.OnceCardInfo;
-import com.wyc.cloudapp.bean.OnceCardSaleInfo;
+import com.wyc.cloudapp.bean.TimeCardData;
+import com.wyc.cloudapp.bean.TimeCardInfo;
+import com.wyc.cloudapp.bean.TimeCardSaleInfo;
 import com.wyc.cloudapp.bean.VipInfo;
 import com.wyc.cloudapp.constants.InterfaceURL;
+import com.wyc.cloudapp.data.room.entity.TimeCardSaleOrder;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
@@ -49,7 +50,7 @@ import static android.app.Activity.RESULT_OK;
 /**
  * @ProjectName: AndroidClient
  * @Package: com.wyc.cloudapp.mobileFragemt
- * @ClassName: OnceCardSaleFragment
+ * @ClassName: TimeCardSaleFragment
  * @Description: 次卡销售
  * @Author: wyc
  * @CreateDate: 2021-07-07 11:05
@@ -58,9 +59,9 @@ import static android.app.Activity.RESULT_OK;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public final class OnceCardSaleFragment extends AbstractMobileFragment {
+public final class TimeCardSaleFragment extends AbstractMobileFragment {
     private VipInfo mVip;
-    private MobileOnceCardSaleAdapter mSaleAdapter;
+    private MobileTimeCardSaleAdapter mSaleAdapter;
     private EditText _search_content;
 
     @BindView(R.id.basketView)
@@ -82,7 +83,7 @@ public final class OnceCardSaleFragment extends AbstractMobileFragment {
         initSearchContent();
         initVipBtn();
         initSaleBtn();
-        initSaleOnceCardAdapter();
+        initSaleTimeCardAdapter();
         initCheckoutBtn();
     }
 
@@ -105,24 +106,31 @@ public final class OnceCardSaleFragment extends AbstractMobileFragment {
         final Button onceCard_checkout_btn = findViewById(R.id.onceCard_checkout_btn);
         onceCard_checkout_btn.setOnClickListener(v -> {
             if (mVip != null){
-                OnceCardPayActivity.start(this,mVip, (ArrayList<OnceCardSaleInfo>) mSaleAdapter.getList(),getSaleManId());
+                TimeCardPayActivity.start(this,disposeOrder());
             }else {
                 _vip_btn.callOnClick();
             }
         });
     }
 
-    private void initSaleOnceCardAdapter(){
+    public TimeCardSaleOrder disposeOrder(){
+        return new TimeCardSaleOrder.Builder().vip_openid(mVip.getOpenid())
+                .vip_card_no(mVip.getCard_code()).vip_name(mVip.getName()).vip_mobile(mVip.getMobile())
+                .amt(Double.parseDouble(sale_amt_tv.getText().toString())).saleman(getSaleManId())
+                .operator(mContext.getCashierCode()).saleInfo(mSaleAdapter.getList()).build();
+    }
+
+    private void initSaleTimeCardAdapter(){
         final RecyclerView sale_once_card_list = findViewById(R.id.sale_once_card_list);
-        mSaleAdapter = new MobileOnceCardSaleAdapter(mContext);
+        mSaleAdapter = new MobileTimeCardSaleAdapter(mContext);
         mSaleAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
                 int num = 0;
                 double amt = 0.0;
-                List<OnceCardSaleInfo> saleInfoList = mSaleAdapter.getList();
+                List<TimeCardSaleInfo> saleInfoList = mSaleAdapter.getList();
                 if (null != saleInfoList && saleInfoList.size() != 0){
-                    for (OnceCardSaleInfo info : saleInfoList){
+                    for (TimeCardSaleInfo info : saleInfoList){
                         num += info.getNum();
                         amt += info.getAmt();
                     }
@@ -193,7 +201,7 @@ public final class OnceCardSaleFragment extends AbstractMobileFragment {
         });
         search.setOnKeyListener((v, keyCode, event) -> {
             if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_UP){
-                queryOnceCardByName(search.getText().toString());
+                queryTimeCardByName(search.getText().toString());
                 return true;
             }
             return false;
@@ -203,9 +211,9 @@ public final class OnceCardSaleFragment extends AbstractMobileFragment {
                 final float dx = motionEvent.getX();
                 final int w = search.getWidth();
                 if (dx > (w - search.getCompoundPaddingRight())) {
-                    queryOnceCardByName(search.getText().toString());
+                    queryTimeCardByName(search.getText().toString());
                 }else if(dx < search.getCompoundPaddingLeft()){
-                    SelectOnceCardActivity.start(this);
+                    SelectTimeCardActivity.start(this);
                 }
             }
             return false;
@@ -213,7 +221,7 @@ public final class OnceCardSaleFragment extends AbstractMobileFragment {
         _search_content = search;
     }
 
-    private void queryOnceCardByName(String name) {
+    private void queryTimeCardByName(String name) {
         final JSONObject object = new JSONObject();
         object.put("appid",mContext.getAppId());
         object.put("channel",1);
@@ -222,7 +230,7 @@ public final class OnceCardSaleFragment extends AbstractMobileFragment {
         }
         final ProgressDialog progressDialog = ProgressDialog.show(mContext,"",getString(R.string.hints_query_data_sz),false,true);
         HttpUtils.sendAsyncPost(mContext.getUrl() + InterfaceURL.ONCE_CARD, HttpRequest.generate_request_parm(object,mContext.getAppSecret()))
-                .enqueue(new ObjectCallback<OnceCardData>(OnceCardData.class,true) {
+                .enqueue(new ObjectCallback<TimeCardData>(TimeCardData.class,true) {
                     @Override
                     protected void onError(String msg) {
                         MyDialog.toastMessage(msg);
@@ -230,13 +238,13 @@ public final class OnceCardSaleFragment extends AbstractMobileFragment {
                     }
 
                     @Override
-                    protected void onSuccessForResult(OnceCardData d, String hint) {
-                        List<OnceCardInfo> list = d.getCard();
+                    protected void onSuccessForResult(TimeCardData d, String hint) {
+                        List<TimeCardInfo> list = d.getCard();
                         if (null != list){
                             if (list.size() == 1){
                                 add(list.get(0));
                             }else
-                                SelectOnceCardActivity.startForResult(mContext, (ArrayList<OnceCardInfo>) list);
+                                SelectTimeCardActivity.startForResult(mContext, (ArrayList<TimeCardInfo>) list);
                         }
                         progressDialog.dismiss();
                     }
@@ -246,11 +254,11 @@ public final class OnceCardSaleFragment extends AbstractMobileFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (resultCode == RESULT_OK){
-            if (requestCode == SelectOnceCardActivity.SELECT_ONCE_CARD){
+            if (requestCode == SelectTimeCardActivity.SELECT_ONCE_CARD){
                 if (null != data){
-                    add(SelectOnceCardActivity.getOnceCardInfo(data));
+                    add(SelectTimeCardActivity.getTimeCardInfo(data));
                 }
-            }else if (requestCode == OnceCardPayActivity.ONCE_CARD_REQUEST_PAY){
+            }else if (requestCode == TimeCardPayActivity.ONCE_CARD_REQUEST_PAY){
                 clearContent();
             }
         }
@@ -266,12 +274,12 @@ public final class OnceCardSaleFragment extends AbstractMobileFragment {
         sale_man_tv.setTag(Utils.getNullStringAsEmpty(object, TreeListBaseAdapter.COL_ID));
         sale_man_tv.setText(Utils.getNullStringAsEmpty(object, TreeListBaseAdapter.COL_NAME));
     }
-    private void add(OnceCardInfo info){
-        final OnceCardSaleInfo saleInfo = new OnceCardSaleInfo.Builder()
-                .onceCardId(info.getOnce_card_id())
+    private void add(TimeCardInfo info){
+        final TimeCardSaleInfo saleInfo = new TimeCardSaleInfo.Builder()
+                .timeCardId(info.getOnce_card_id())
                 .name(info.getTitle())
                 .price(info.getPrice())
                 .num(1).build();
-        mSaleAdapter.addOnceCard(saleInfo);
+        mSaleAdapter.addTimeCard(saleInfo);
     }
 }

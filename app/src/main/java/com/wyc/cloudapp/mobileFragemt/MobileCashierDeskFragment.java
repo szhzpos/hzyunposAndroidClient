@@ -36,7 +36,7 @@ public final class MobileCashierDeskFragment extends AbstractJumpFragment {
     @Override
     protected List<Integer> getIgnoreView() {
         final List<Integer> ids = new ArrayList<>();
-        if (!verifyOnceCardPermissions()){
+        if (!verifyTimeCardPermissions()){
             ids.add(R.id.once_card_layout);
         }
         if (!verifyGiftCardPermissions()){
@@ -45,7 +45,7 @@ public final class MobileCashierDeskFragment extends AbstractJumpFragment {
         return ids;
     }
 
-    private boolean verifyOnceCardPermissions(){
+    private boolean verifyTimeCardPermissions(){
         return mContext.verifyPermissions("27",null,false);
     }
     private boolean verifyGiftCardPermissions(){

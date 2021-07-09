@@ -52,6 +52,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -697,10 +698,6 @@ public final class Utils {
 
     public static boolean isNotEmpty(final String sz){
         return sz != null && !sz.isEmpty();
-    }
-
-    public static String formatDataWithTimestamp(long t){
-        return new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA).format(t );
     }
 
 }
