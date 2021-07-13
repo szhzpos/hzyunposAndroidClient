@@ -138,7 +138,7 @@ public abstract class AbstractPayDialog extends AbstractDialogMainActivity imple
         }
         if (mPayCode.getVisibility() == View.VISIBLE && mPayCode.length() == 0){
             mPayCode.requestFocus();
-            return MyDialog.ToastMessage(mPayCode,mContext.getString(R.string.not_empty_hint_sz,mPayCode.getHint().toString()),mContext,getWindow(),false);
+            return MyDialog.ToastMessage(mPayCode,mContext.getString(R.string.not_empty_hint_sz,mPayCode.getHint()),mContext,getWindow(),false);
         }
         return true;
     }

@@ -1,7 +1,6 @@
 package com.wyc.cloudapp.activity.mobile;
 
 import android.content.Intent;
-import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.text.Editable;
@@ -23,12 +22,13 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.PayDetailViewAdapter;
-import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
+import com.wyc.cloudapp.adapter.PayMethodAdapterForObj;
 import com.wyc.cloudapp.bean.TimeCardPayInfo;
 import com.wyc.cloudapp.bean.TimeCardSaleInfo;
-import com.wyc.cloudapp.bean.VipInfo;
+import com.wyc.cloudapp.bean.UnifiedPayResult;
 import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.data.room.AppDatabase;
+import com.wyc.cloudapp.data.room.entity.PayMethod;
 import com.wyc.cloudapp.data.room.entity.TimeCardPayDetail;
 import com.wyc.cloudapp.data.room.entity.TimeCardSaleOrder;
 import com.wyc.cloudapp.decoration.PayMethodItemDecoration;
@@ -60,11 +60,12 @@ public class TimeCardPayActivity extends AbstractMobileActivity {
     public static final int ONCE_CARD_REQUEST_PAY = 0x000000dd;
     private static final String ORDER_INFO = "o";
 
-    private PayMethodViewAdapter mPayMethodViewAdapter;
+    private PayMethodAdapterForObj mPayMethodViewAdapter;
     private RecyclerView mPayMethodView;
     private PayDetailViewAdapter mPayDetailViewAdapter;
-    private JSONObject PayMethod;
+    private PayMethod mPayMethod;
     private TimeCardSaleOrder mOrder;
+    CustomProgressDialog mProgressDialog;
 
     private double mPay_balance,mPay_amt,mCashAmt,mOrder_amt,mDiscount_amt,mActual_amt,mZlAmt,mAmt_received;
 
@@ -192,12 +193,7 @@ public class TimeCardPayActivity extends AbstractMobileActivity {
     }
 
     private double getSaleAmt(){
-        double amt = 0.0;
-        List<TimeCardSaleInfo> saleInfoList = mOrder.getSaleInfo();
-        for (TimeCardSaleInfo info : saleInfoList){
-            amt += info.getAmt();
-        }
-        return amt;
+        return mOrder.getAmt();
     }
     private double getDiscountAmt(){
         double amt = 0.0;
@@ -222,8 +218,7 @@ public class TimeCardPayActivity extends AbstractMobileActivity {
         }
         try {
             mOrder.setTime(formatCurrentTime(FormatDateTimeUtils.YYYY_MM_DD_1));
-            AppDatabase.getInstance().TimeCardSaleOrderDao().insertWithDetails(mOrder,mOrder.getSaleInfo(),payDetails);
-            Logger.d(AppDatabase.getInstance().TimeCardSaleOrderDao().getAll());
+            mOrder.save(payDetails);
             startPay();
         }catch (SQLiteException e){
             e.printStackTrace();
@@ -232,7 +227,7 @@ public class TimeCardPayActivity extends AbstractMobileActivity {
     }
 
     private void startPay(){
-        final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,"正在支付...");
+        mProgressDialog = CustomProgressDialog.showProgress(this,"正在支付...");
         final JSONObject param = new JSONObject();
         param.put("appid",getAppId());
         param.put("member_openid",mOrder.getVip_openid());
@@ -246,7 +241,7 @@ public class TimeCardPayActivity extends AbstractMobileActivity {
                     @Override
                     protected void onError(String msg) {
                         MyDialog.toastMessage(msg);
-                        progressDialog.dismiss();
+                        dismissProgress();
                     }
 
                     @Override
@@ -254,41 +249,58 @@ public class TimeCardPayActivity extends AbstractMobileActivity {
                         //提交支付
                         try {
                             TimeCardPayInfo.PayInfo payInfo = d.getPay_info();
-                            final JSONObject pay = new JSONObject();
-                            pay.put("appid",getAppId());
-                            pay.put("order_code",payInfo.getOrder_code());
-                            pay.put("pay_method",PayMethod.getString("pay_method_id"));
-                            if (PayMethodViewAdapter.isVipPay(PayMethod)){
-                                final ChangeNumOrPriceDialog password_dialog = new ChangeNumOrPriceDialog(TimeCardPayActivity.this,"请输入密码","");
-                                if (password_dialog.exec() == 0){
-                                    progressDialog.dismiss();
-                                    return;
-                                }
-                                pay.put("pwd",password_dialog.getContentToStr());
-                            }
-                            HttpUtils.sendAsyncPost(getUrl() + InterfaceURL.ONCE_CARD_PAY,HttpRequest.generate_request_parm(pay,getAppSecret()))
-                                    .enqueue(new ObjectCallback<String>(String.class) {
-                                        @Override
-                                        protected void onError(String msg) {
-                                            MyDialog.toastMessage(msg);
-                                            progressDialog.dismiss();
-                                        }
+                            final String online_order_no = payInfo.getOrder_code();
 
-                                        @Override
-                                        protected void onSuccessForResult(String d, String hint) {
-                                            setResult(RESULT_OK);
-                                            finish();
-                                            MyDialog.toastMessage(hint);
-                                            progressDialog.dismiss();
-                                        }
-                                    });
+                            //更新状态以及保存线上单号
+                            mOrder.updateOnlineOrderNo(online_order_no);
+
+                            final JSONArray payDetails = mPayDetailViewAdapter.getDatas();
+                            for (int i = 0,size = payDetails.size();i < size;i ++){
+                                final JSONObject object = payDetails.getJSONObject(i);
+                                final PayMethod payMethod = AppDatabase.getInstance().PayMethodDao().getPayMethodById(object.getIntValue("pay_method_id"));
+                                if (payMethod.isCheckApi()){
+                                    final UnifiedPayResult result = payMethod.payWithApi(TimeCardPayActivity.this,payInfo.getPay_money(),
+                                            online_order_no,mOrder.getOrder_no(),object.getString("v_num"),getLocalClassName());
+
+                                    if (result.isSuccess()){
+                                        uploadPayInfo(online_order_no,payMethod.getPay_method_id());
+                                    }else MyDialog.toastMessage(result.getInfo());
+                                }else uploadPayInfo(online_order_no,payMethod.getPay_method_id());
+                            }
                         }catch (Exception e){
                             e.printStackTrace();
-                            progressDialog.dismiss();
                             MyDialog.toastMessage("获取次卡支付信息错误:" + e.getLocalizedMessage());
                         }
+                        dismissProgress();
                     }
                 });
+    }
+
+    private void uploadPayInfo(final String online_order_no,int pay_method_id){
+        final JSONObject pay = new JSONObject();
+        pay.put("appid",getAppId());
+        pay.put("order_code",online_order_no);
+        pay.put("pay_method",pay_method_id);
+        HttpUtils.sendAsyncPost(getUrl() + InterfaceURL.ONCE_CARD_PAY,HttpRequest.generate_request_parm(pay,getAppSecret()))
+                .enqueue(new ObjectCallback<String>(String.class) {
+                    @Override
+                    protected void onError(String msg) {
+                        MyDialog.toastMessage(msg);
+                        dismissProgress();
+                    }
+
+                    @Override
+                    protected void onSuccessForResult(String d, String hint) {
+                        mOrder.success();
+                        setResult(RESULT_OK);
+                        finish();
+                        MyDialog.toastMessage(hint);
+                        dismissProgress();
+                    }
+                });
+    }
+    private void dismissProgress(){
+        if (mProgressDialog != null)mProgressDialog.dismiss();
     }
 
     private JSONArray getCards(){
@@ -347,8 +359,8 @@ public class TimeCardPayActivity extends AbstractMobileActivity {
     }
 
     private void initPayMethod(){
-        mPayMethodViewAdapter = new PayMethodViewAdapter(this,mPayDetailViewAdapter);
-        mPayMethodViewAdapter.setDatas("6");
+        mPayMethodViewAdapter = new PayMethodAdapterForObj(this,mPayDetailViewAdapter);
+        mPayMethodViewAdapter.setData("6");
         mPayMethodViewAdapter.setOnItemClickListener((object) -> {
             //次卡销售只支持一种付款方式，选择之前先清除已付款的记录
             if (!mPayDetailViewAdapter.isEmpty()){
@@ -359,24 +371,29 @@ public class TimeCardPayActivity extends AbstractMobileActivity {
             }
             try {
                 if (verifyPayBalance()){
-                    PayMethod = Utils.JsondeepCopy(object);
-                    final String PayMethodId = PayMethod.getString("pay_method_id");
+                    mPayMethod = object.clone();
+                    final String payMethodId = String.valueOf(mPayMethod.getPay_method_id());
 
-                    if (PayMethodViewAdapter.getCashMethodId().equals(PayMethodId)) {
-                        PayMethod.put("pay_code",getCashPayCode());
-                        PayMethod.put("pamt",mCashAmt);
-                        PayMethod.put("pzl",String.format(Locale.CHINA,"%.2f",mZlAmt));
-                        PayMethod.put("v_num","");
-                        mPayDetailViewAdapter.addPayDetail(PayMethod);
+                    final JSONObject detail = new JSONObject();
+                    detail.put("pay_method_id",payMethodId);
+                    if (String.valueOf(PayMethod.CASH_METHOD_ID).equals(payMethodId)) {
+                        detail.put("pay_code",getCashPayCode());
+                        detail.put("pamt",mCashAmt);
+                        detail.put("pzl",String.format(Locale.CHINA,"%.2f",mZlAmt));
+                        detail.put("v_num","");
+                        mPayDetailViewAdapter.addPayDetail(detail);
                     } else {
-                        if (Utils.equalDouble(mPay_balance, 0) && mPayDetailViewAdapter.findPayDetailById(PayMethodId) == null) {//剩余金额为零，同时不存在此付款方式的记录。
+                        if (Utils.equalDouble(mPay_balance, 0) && mPayDetailViewAdapter.findPayDetailById(payMethodId) == null) {//剩余金额为零，同时不存在此付款方式的记录。
                             mPayMethodViewAdapter.showDefaultPayMethod();
                             MyDialog.SnackbarMessage(getWindow(), "剩余金额为零！", getCurrentFocus());
                         } else {
-                            if (PayMethodViewAdapter.isVipPay(PayMethod)){
-                                PayMethod.put("card_code",mOrder.getVip_card_no());
+                            detail.put("name", mPayMethod.getName());
+                            detail.put("xtype",mPayMethod.getXtype());
+                            detail.put("is_check",mPayMethod.getIs_check());
+                            if (mPayMethod.isVipPay()){
+                                detail.put("card_code",mOrder.getVip_card_no());
                             }
-                            final PayMethodDialogImp payMethodDialogImp = new PayMethodDialogImp(TimeCardPayActivity.this, PayMethod);
+                            final PayMethodDialogImp payMethodDialogImp = new PayMethodDialogImp(TimeCardPayActivity.this, detail);
                             payMethodDialogImp.setModifyPayAmt(false).setPayAmt(mPay_balance);
                             final int code = payMethodDialogImp.exec();
                             mPayMethodViewAdapter.showDefaultPayMethod();
@@ -458,7 +475,7 @@ public class TimeCardPayActivity extends AbstractMobileActivity {
     }
 
     private void triggerDefaultPay(){
-        final String id = PayMethodViewAdapter.getDefaultPayMethodId();
+        final int id = mPayMethodViewAdapter.getDefaultPayMethodId();
         final int index = mPayMethodViewAdapter.findPayMethodIndexById(id);
         if (index != -1){
             RecyclerView.ViewHolder viewHolder = mPayMethodView.findViewHolderForAdapterPosition(index);
@@ -467,7 +484,7 @@ public class TimeCardPayActivity extends AbstractMobileActivity {
             }else
                 mPayMethodView.scrollToPosition(index);//如果找不到view则滚动
         }else {
-            MyDialog.ToastMessage(String.format(Locale.CHINA,"ID为%s的支付方式不存在!",id),this,getWindow());
+            MyDialog.ToastMessage(String.format(Locale.CHINA,"ID为%d的支付方式不存在!",id),this,getWindow());
         }
     }
 
@@ -512,7 +529,7 @@ public class TimeCardPayActivity extends AbstractMobileActivity {
 
     public static void start(@NonNull Fragment context,TimeCardSaleOrder order){
         if (order == null){
-            throw new IllegalArgumentException("the second parameter can't empty...");
+            throw new IllegalArgumentException("the second parameter must not be empty...");
         }
         Intent intent = new Intent(context.getContext(), TimeCardPayActivity.class)
                 .putExtra(ORDER_INFO,order);

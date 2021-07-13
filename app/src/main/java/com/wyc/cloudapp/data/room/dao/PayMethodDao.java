@@ -29,4 +29,6 @@ public interface PayMethodDao {
     PayMethod getPayMethodById(int id);
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertAll(List<PayMethod> payMethods);
+    @Query("select *  from pay_method where status = 1 and support like '%' || :support_code || '%' order by sort")
+    List<PayMethod> getPayMethodBySupport(String support_code);
 }

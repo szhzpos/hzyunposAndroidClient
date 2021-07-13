@@ -12,9 +12,11 @@ package com.wyc.cloudapp.constants;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class InterfaceURL {
+public final class InterfaceURL {
     public static final String VIP_GRADE = "/api/member/get_member_grade";
     public static final String ONCE_CARD = "/api/once_cards/index";
     public static final String ONCE_CARD_UPLOAD = "/api/once_cards/place_order";
     public static final String ONCE_CARD_PAY = "/api/once_cards/pay";
+    public static final String UNIFIED_PAY = "/api/pay2/index";
+    public static final String UNIFIED_PAY_QUERY = "/api/pay2_query/query";
 }

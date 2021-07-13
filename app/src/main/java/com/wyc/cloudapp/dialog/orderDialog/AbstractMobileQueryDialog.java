@@ -40,6 +40,9 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.TimeZone;
 
+import static com.wyc.cloudapp.utils.FormatDateTimeUtils.setEndTime;
+import static com.wyc.cloudapp.utils.FormatDateTimeUtils.setStartTime;
+
 public abstract class AbstractMobileQueryDialog extends AbstractDialogMainActivity {
     protected long mStartTime,mEndTime;
     protected Button mCurrentDateBtn;
@@ -198,21 +201,11 @@ public abstract class AbstractMobileQueryDialog extends AbstractDialogMainActivi
         query();
     };
 
-    private void setStartTime(final Calendar calendar){
-        calendar.set(Calendar.HOUR_OF_DAY,0);
-        calendar.set(Calendar.MINUTE,0);
-        calendar.set(Calendar.SECOND,0);
-    }
-    private void setEndTime(final Calendar calendar){
-        calendar.set(Calendar.HOUR_OF_DAY,23);
-        calendar.set(Calendar.MINUTE,59);
-        calendar.set(Calendar.SECOND,59);
-    }
 
     @SuppressLint("ClickableViewAccessibility")
     private void initSearchContent(){
-        final EditText order_vip__search = findViewById(R.id.order_vip__search);
-        order_vip__search.setTransformationMethod(new ReplacementTransformationMethod() {
+        final EditText order_vip_search = findViewById(R.id.order_vip__search);
+        order_vip_search.setTransformationMethod(new ReplacementTransformationMethod() {
             @Override
             protected char[] getOriginal() {
                 return new char[]{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
@@ -225,25 +218,25 @@ public abstract class AbstractMobileQueryDialog extends AbstractDialogMainActivi
                         'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
             }
         });
-        order_vip__search.setOnKeyListener((v, keyCode, event) -> {
+        order_vip_search.setOnKeyListener((v, keyCode, event) -> {
             if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_UP){
                 if (mCurrentDateBtn != null)mCurrentDateBtn.callOnClick();
                 return true;
             }
             return false;
         });
-        order_vip__search.setOnTouchListener((view, motionEvent) -> {
+        order_vip_search.setOnTouchListener((view, motionEvent) -> {
             if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                 final float dx = motionEvent.getX();
-                final int w = order_vip__search.getWidth();
-                if (dx > (w - order_vip__search.getCompoundPaddingRight())) {
+                final int w = order_vip_search.getWidth();
+                if (dx > (w - order_vip_search.getCompoundPaddingRight())) {
                     if (mCurrentDateBtn != null)mCurrentDateBtn.callOnClick();
                 }
             }
             return false;
         });
 
-        mSearchContent = order_vip__search;
+        mSearchContent = order_vip_search;
     }
 
     private void initSwitchCondition(){

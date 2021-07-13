@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.data.room.entity;
 
+import android.os.CountDownTimer;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -9,9 +10,11 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.TimeCardSaleInfo;
 import com.wyc.cloudapp.bean.VipInfo;
+import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.data.room.AppDatabase;
 
 import java.text.SimpleDateFormat;
@@ -267,9 +270,37 @@ public final class TimeCardSaleOrder implements Parcelable {
         this.saleInfo = saleInfo;
     }
 
+    public String getStatusName(){
+        if (status == 1){
+            return CustomApplication.self().getString(R.string.success);
+        }else if (status == 2){
+            return CustomApplication.self().getString(R.string.failure);
+        }else if (status == 3){
+            return CustomApplication.self().getString(R.string.paying);
+        }else return CustomApplication.self().getString(R.string.uploading);
+    }
+
+    public void save(List<TimeCardPayDetail> payDetails){
+        AppDatabase.getInstance().TimeCardSaleOrderDao().insertWithDetails(this,saleInfo,payDetails);
+    }
+    public void updateOnlineOrderNo(String _order_no){//保存线上订单并更新状态为正在支付
+        AppDatabase.getInstance().TimeCardSaleOrderDao().updateOrder(order_no,_order_no,3);
+    }
+    public void success(){
+        AppDatabase.getInstance().TimeCardSaleOrderDao().updateOrder(order_no,1);
+    }
+
+    public String getCashierName(){
+        return SQLiteHelper.getString("select cas_name from cashier_info where cas_code = '"+ operator + "'",null);
+    }
+
+    public int getDetailNum(){
+        return AppDatabase.getInstance().TimeCardSaleDetailDao().getCountsById(order_no);
+    }
+
     private static String generateOrderNo() {
         int row = AppDatabase.getInstance().TimeCardSaleOrderDao().count() + 1;
-        return "CK" + CustomApplication.self().getPosNum() + "-" + new SimpleDateFormat("yyMMddHHmmss", Locale.CHINA).format(new Date()) + "-" + String.format(Locale.CHINA,"%05d",row);
+        return "CK" + CustomApplication.self().getPosNum() + "-" + new SimpleDateFormat("yyMMddHHmmss", Locale.CHINA).format(new Date()) + "-" + String.format(Locale.CHINA,"%04d",row);
     }
 
     @Override

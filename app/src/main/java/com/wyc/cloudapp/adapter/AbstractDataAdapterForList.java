@@ -20,8 +20,8 @@ import java.util.List;
  * @Version: 1.0
  */
 public abstract class AbstractDataAdapterForList<E,T extends AbstractDataAdapter.SuperViewHolder> extends AbstractDataAdapter<List<E>,T> {
-    public final void setDataForList(final List<E> array){
-        mData = array;
+    public final void setDataForList(final List<E> data){
+        mData = data;
         if (Looper.myLooper() != Looper.getMainLooper()){
             CustomApplication.runInMainThread(this::notifyDataSetChanged);
         }else

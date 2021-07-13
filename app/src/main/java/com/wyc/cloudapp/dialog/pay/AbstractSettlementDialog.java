@@ -32,6 +32,7 @@ import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.PayDetailViewAdapter;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.constants.RetailOrderStatus;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.decoration.PayMethodItemDecoration;
@@ -1045,10 +1046,10 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                             unified_pay_query = pay_method_json.getString("unified_pay_query");
 
                             if ("null".equals(unified_pay_order) || "".equals(unified_pay_order)){
-                                unified_pay_order = "/api/pay2/index";
+                                unified_pay_order = InterfaceURL.UNIFIED_PAY;
                             }
                             if ("null".equals(unified_pay_query) || "".equals(unified_pay_query)){
-                                unified_pay_query = "/api/pay2_query/query";
+                                unified_pay_query = InterfaceURL.UNIFIED_PAY_QUERY;
                             }
 
                             final JSONObject data_ = new JSONObject();

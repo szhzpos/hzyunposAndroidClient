@@ -7,12 +7,14 @@ import com.wyc.cloudapp.logger.Logger;
 
 import java.util.Objects;
 import java.util.Stack;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public final class JEventLoop {
     private static final ThreadLocal<Stack<JEventLoop>> sThreadLocal = new ThreadLocal<>();
     private int mCode = 0;
     private Handler mHandler;
-    private volatile boolean mDone,mExec;
+    private volatile boolean mDone;
+    private final AtomicInteger mExec = new AtomicInteger();
     private final Object mLock = new Object();
     public JEventLoop(){
     }
@@ -58,15 +60,21 @@ public final class JEventLoop {
 
             //当mDone 为true时才退出循环，防止非当前对象退出
             while (!mDone){
-                mExec = true;
+                mExec.incrementAndGet();
                 try {
                     Looper.loop();
                 }catch (ExitException ignored){
                 }
             }
-            mExec = false;
+            mExec.decrementAndGet();
 
-            if (stack.pop() != this)throw new IllegalThreadStateException("JEventLoop internal error");
+            JEventLoop cur;
+            if (mExec.get() == 0){
+                cur = stack.pop();
+            }else cur = stack.peek();
+
+            if (cur != this)throw new IllegalThreadStateException("JEventLoop internal error");
+
             Logger.d("%s线程exit,JEventLoop:<%s>,数量:%d,mCode:%d",Thread.currentThread().getName(),this,stack.size(),mCode);
             if (!stack.isEmpty()){
                 final JEventLoop loop = stack.peek();
@@ -91,6 +99,6 @@ public final class JEventLoop {
     }
 
     private void exit(){
-        if (mExec)throw new ExitException();
+        if (mExec.get() > 0)throw new ExitException();
     }
 }

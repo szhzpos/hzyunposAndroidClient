@@ -39,7 +39,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
-        <activity android:name=".activity.mobile.TimeCardSaleActivity"></activity>
+        <activity android:name=".activity.mobile.TimeCardQueryActivity"></activity>
+        <activity android:name=".activity.mobile.TimeCardSaleActivity" />
         <activity
             android:name=".activity.mobile.TimeCardPayActivity"
             android:theme="@style/notFullActivity" />

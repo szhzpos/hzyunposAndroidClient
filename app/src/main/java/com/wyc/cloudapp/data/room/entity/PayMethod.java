@@ -1,8 +1,24 @@
 package com.wyc.cloudapp.data.room.entity;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
+
+import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.UnifiedPayResult;
+import com.wyc.cloudapp.constants.InterfaceURL;
+import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
+import com.wyc.cloudapp.dialog.JEventLoop;
+import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.Utils;
+import com.wyc.cloudapp.utils.http.HttpRequest;
+import com.wyc.cloudapp.utils.http.HttpUtils;
+import com.wyc.cloudapp.utils.http.callback.TypeCallback;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -20,7 +36,7 @@ import java.util.Objects;
  * @Version: 1.0
  */
 @Entity(tableName = "pay_method")
-public final class PayMethod implements Serializable {
+public final class PayMethod implements Serializable,Cloneable {
     @PrimaryKey
     private int pay_method_id;
     private String name;
@@ -48,6 +64,19 @@ public final class PayMethod implements Serializable {
     private Integer is_enable;
     @ColumnInfo(defaultValue = "1")
     private Integer is_moling;
+
+    @Ignore
+    public static final int CASH_METHOD_ID = 1;//现金支付方式id
+    @Ignore
+    public static final int VIP_METHOD_ID = 5;//会员支付方式id
+    @Ignore
+    private boolean isCur = false;
+    @Ignore
+    private boolean isDefault;
+
+    public boolean isVipPay(){
+        return pay_method_id == VIP_METHOD_ID;
+    }
 
     public int getPay_method_id() {
         return pay_method_id;
@@ -217,6 +246,144 @@ public final class PayMethod implements Serializable {
         this.is_moling = is_moling;
     }
 
+    public boolean isCur() {
+        return isCur;
+    }
+
+    public void setCur(boolean cur) {
+        isCur = cur;
+    }
+
+    public boolean isDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(boolean aDefault) {
+        isDefault = aDefault;
+    }
+
+    public boolean isCheckApi(){
+        return is_check == 1;
+    }
+
+    /*
+    * @param pay_amt 支付金额
+    * @param order_code 支付订单号
+    * @param order_code_son 子支付订单号，可以用于之后的支付状态查询
+    * @param pay_code 需要校验的支付码(比如微信的付款码)
+    * @param tag 做日志记录使用，如果为null 则不记录此次付款。
+    *
+    * @return UnifiedPayResult
+    * */
+    public UnifiedPayResult payWithApi(MainActivity activity, double pay_amt, @NonNull String order_code, @NonNull String order_code_son, @NonNull String pay_code, String tag){
+        final UnifiedPayResult result = new UnifiedPayResult();
+
+        String unified_pay_order = getUnified_pay_order();
+        final JEventLoop loop = new JEventLoop();
+
+        if (!Utils.isNotEmpty(unified_pay_order)){
+            unified_pay_order = InterfaceURL.UNIFIED_PAY;
+        }
+        final JSONObject param = new JSONObject();
+        param.put("appid",activity.getAppId());
+        param.put("stores_id",activity.getStoreId());
+        param.put("order_code",order_code);
+        param.put("pos_num",activity.getPosNum());
+        param.put("is_wuren",2);
+        param.put("order_code_son",order_code_son);
+        param.put("pay_money",pay_amt);
+        param.put("pay_method",pay_method_id);
+        param.put("pay_code_str",pay_code);
+
+        final String sz_param = HttpRequest.generate_request_parm(param,activity.getAppSecret());
+        String url = activity.getUrl() + unified_pay_order;
+
+        Logger.i("%s:url:%s%s,param:%s",tag,url ,unified_pay_order,sz_param);
+        HttpUtils.sendAsyncPost(url,sz_param).enqueue(new TypeCallback<UnifiedPayResult>(UnifiedPayResult.class) {
+            @Override
+            protected void onError(String msg) {
+                result.failure(msg);
+                loop.done(0);
+            }
+
+            @Override
+            protected void onSuccess(UnifiedPayResult data) {
+                Logger.i("%s支付返回:%s",tag,data);
+
+                int res_code = data.getRes_code();
+                switch (res_code){
+                    case UnifiedPayResult.SUCCESS:
+                    case UnifiedPayResult.FAILURE:
+                        loop.done(1);
+                        break;
+                    case UnifiedPayResult.INPUT_PASSWORD:
+                    case UnifiedPayResult.PASSWORD_POP:
+                        while (res_code == UnifiedPayResult.INPUT_PASSWORD || res_code == UnifiedPayResult.PASSWORD_POP){
+                            queryPay(activity, loop, data, tag);
+                            res_code = data.getRes_code();
+                        }
+                        break;
+                }
+                result.copy(data);
+                loop.done(1);
+            }
+        });
+        loop.exec();
+        return result;
+    }
+    private void queryPay(MainActivity activity, JEventLoop loop, final UnifiedPayResult result, String tag){
+
+        final JSONObject param = new JSONObject();
+        param.put("appid",CustomApplication.self().getAppId());
+        param.put("pay_code",result.getPay_code());
+        param.put("order_code_son",result.getOrder_code_son());
+
+        if (result.getRes_code() == 4){
+            final ChangeNumOrPriceDialog password_dialog = new ChangeNumOrPriceDialog(activity,"请输入密码","");
+            int code = password_dialog.exec();
+            if (code == 0){
+                result.failure("密码验证已取消！");
+                return;
+            }else {
+                param.put("pay_password",password_dialog.getContentToStr());
+            }
+        }
+        String unified_pay_query = getUnified_pay_query();
+        if (!Utils.isNotEmpty(unified_pay_query)){
+            unified_pay_query = InterfaceURL.UNIFIED_PAY_QUERY;
+        }
+
+        final String sz_param = HttpRequest.generate_request_parm(param,activity.getAppSecret());
+        String url = activity.getUrl() + unified_pay_query;
+
+        Logger.i("%s查询请求:url:%s,param:%s",tag,url ,sz_param);
+        HttpUtils.sendAsyncPost(url,sz_param).enqueue(new TypeCallback<UnifiedPayResult>(UnifiedPayResult.class) {
+            @Override
+            protected void onError(String msg) {
+                result.failure(msg);
+                loop.done(0);
+            }
+
+            @Override
+            protected void onSuccess(UnifiedPayResult data) {
+                Logger.i("%s查询请求返回:%s",tag,data);
+                result.copy(data);
+                loop.done(1);
+            }
+        });
+        loop.exec();
+    }
+
+    @NonNull
+    @Override
+    public PayMethod clone() {
+        try {
+            return (PayMethod)super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -253,6 +420,10 @@ public final class PayMethod implements Serializable {
                 ", is_open=" + is_open +
                 ", support='" + support + '\'' +
                 ", is_enable=" + is_enable +
+                ", is_moling=" + is_moling +
+                ", isCur=" + isCur +
+                ", isDefault=" + isDefault +
                 '}';
     }
+
 }

@@ -50,17 +50,6 @@ public class ChangeNumOrPriceDialog extends AbstractDialogMainActivity {
         super.closeWindow();
     }
 
-    @Override
-    public void dismiss(){
-        super.dismiss();
-        if (null != mNew_price_text)mNew_price_text.getText().clear();
-    }
-    @Override
-    public void show(){
-        super.show();
-    }
-
-
     public ChangeNumOrPriceDialog setNoOnclickListener(onNoOnclickListener onNoOnclickListener) {
         this.noOnclickListener = onNoOnclickListener;
         return this;
@@ -76,21 +65,22 @@ public class ChangeNumOrPriceDialog extends AbstractDialogMainActivity {
         double value = 0.0;
         try {
             if (editable.length() == 0){
-                if (null == mInitVal)
-                    value = 0.0;
-                else
-                    value = Double.valueOf(mInitVal);
+                value = Double.parseDouble(mInitVal);
             }else{
-                value = Double.valueOf(editable.toString());
+                value = Double.parseDouble(editable.toString());
             }
         }catch (NumberFormatException e){
             e.printStackTrace();
         }
+        editable.clear();
         return value;
     }
 
     public String getContentToStr(){
-        return mNew_price_text.getText().toString();
+        final Editable editable = mNew_price_text.getText();
+        String r = editable.toString();
+        editable.clear();
+        return r;
     }
 
     public interface onYesOnclickListener {

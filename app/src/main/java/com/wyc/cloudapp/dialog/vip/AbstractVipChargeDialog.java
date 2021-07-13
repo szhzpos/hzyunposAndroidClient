@@ -23,6 +23,7 @@ import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.VipInfo;
+import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.JEventLoop;
@@ -656,10 +657,10 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                                                 pay_code = mPayMethodSelected.getString(PAY_CODE_LABEL);
 
                                         if ("null".equals(unified_pay_order) || "".equals(unified_pay_order)){
-                                            unified_pay_order = "/api/pay2/index";
+                                            unified_pay_order = InterfaceURL.UNIFIED_PAY;
                                         }
                                         if ("null".equals(unified_pay_query) || "".equals(unified_pay_query)){
-                                            unified_pay_query = "/api/pay2_query/query";
+                                            unified_pay_query = InterfaceURL.UNIFIED_PAY_QUERY;
                                         }
 
                                         mProgressDialog.setMessage("正在发起支付请求...").refreshMessage();

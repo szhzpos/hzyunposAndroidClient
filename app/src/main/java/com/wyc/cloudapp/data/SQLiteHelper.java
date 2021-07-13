@@ -60,7 +60,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
 
     public static String DATABASE_NAME(String storesId){
         //数据库名称order_门店编号
-        if (!Utils.isNotEmpty(storesId))throw new IllegalArgumentException("storesId cant not empty...");
+        if (!Utils.isNotEmpty(storesId))throw new IllegalArgumentException("storesId must not be empty...");
         return String.format(Locale.CHINA,"%sorder_%s",Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/",storesId);
     }
 

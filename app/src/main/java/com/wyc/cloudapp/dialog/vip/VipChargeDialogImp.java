@@ -18,6 +18,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.SaleActivity;
+import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.decoration.PayMethodItemDecoration;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -34,7 +35,7 @@ import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-
+@Deprecated
 public final class VipChargeDialogImp extends AbstractPayDialog {
     private JSONObject mVip;
     private Myhandler mHandler;
@@ -201,10 +202,10 @@ public final class VipChargeDialogImp extends AbstractPayDialog {
                                                     unified_pay_query = mPayMethod.getString("unified_pay_query");
 
                                             if ("null".equals(unified_pay_order) || "".equals(unified_pay_order)){
-                                                unified_pay_order = "/api/pay2/index";
+                                                unified_pay_order = InterfaceURL.UNIFIED_PAY;
                                             }
                                             if ("null".equals(unified_pay_query) || "".equals(unified_pay_query)){
-                                                unified_pay_query = "/api/pay2_query/query";
+                                                unified_pay_query = InterfaceURL.UNIFIED_PAY_QUERY;
                                             }
 
                                             mProgressDialog.setMessage("正在发起支付请求...").refreshMessage();

@@ -5,6 +5,7 @@ import androidx.room.Insert;
 import androidx.room.Query;
 
 import com.wyc.cloudapp.bean.TimeCardSaleInfo;
+import com.wyc.cloudapp.data.room.entity.TimeCardPayDetail;
 
 import java.util.List;
 
@@ -21,11 +22,17 @@ import java.util.List;
  * @Version: 1.0
  */
 @Dao
-public interface TimeCardSaleDetailDao {
+public abstract class TimeCardSaleDetailDao {
     @Query("select * from timeCardSaleDetails")
-    List<TimeCardSaleInfo> getAll();
+    public abstract  List<TimeCardSaleInfo> getAll();
     @Insert
-    void insertAll(TimeCardSaleInfo ...saleInfo);
+    public abstract  void insertAll(TimeCardSaleInfo ...saleInfo);
     @Insert
-    void insertAll(List<TimeCardSaleInfo> saleInfo);
+    public abstract  void insertAll(List<TimeCardSaleInfo> saleInfo);
+
+    public int getCountsById(String id){
+        return getDetailById(id).size();
+    }
+    @Query("select * from timeCardSaleDetails where order_no=:id")
+    public abstract  List<TimeCardSaleInfo> getDetailById(String id);
 }

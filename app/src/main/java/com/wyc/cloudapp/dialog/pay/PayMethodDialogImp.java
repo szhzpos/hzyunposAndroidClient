@@ -49,9 +49,6 @@ public class PayMethodDialogImp extends AbstractPayDialog implements MobileCashi
     protected void initPayMethod(){
         if (mPayMethod != null) {
             if (mPayMethod.getIntValue("is_check") != 2){ //显示付款码输入框
-                mPayCode.postDelayed(()->mPayCode.requestFocus(),350);
-                mPayCode.setVisibility(View.VISIBLE);
-
                 if (mContext.lessThan7Inches()){
                     mPayCode.setOnTouchListener((view, motionEvent) -> {
                         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
@@ -72,6 +69,9 @@ public class PayMethodDialogImp extends AbstractPayDialog implements MobileCashi
                     mPayCode.setText(mPayMethod.getString("card_code"));
                 else
                     mPayCode.setHint(mPayMethod.getString("xtype"));
+
+                mPayCode.postDelayed(()->mPayCode.requestFocus(),350);
+                mPayCode.setVisibility(View.VISIBLE);
 
                 //mPayAmtEt.setEnabled(false);
                 if (Utils.equalDouble(mOriginalPayAmt,0.0)){

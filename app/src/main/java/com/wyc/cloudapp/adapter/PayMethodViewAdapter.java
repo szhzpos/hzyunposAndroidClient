@@ -19,7 +19,10 @@ import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
-
+/*
+* 20210712 sign deprecated
+* */
+@Deprecated
 public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdapter.MyViewHolder> {
     private static final String CASH_METHOD_ID = "1";//现金支付方式id
     private static final String VIP_METHOD_ID = "5";//会员支付方式id

@@ -146,6 +146,7 @@
                 android:background="#A2A0AB"
                 android:drawableTop="@drawable/m_charge_query"
                 android:gravity="center"
+                android:tag="activity.mobile.TimeCardQueryActivity"
                 android:text="@string/once_card_query_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/font_size_18"

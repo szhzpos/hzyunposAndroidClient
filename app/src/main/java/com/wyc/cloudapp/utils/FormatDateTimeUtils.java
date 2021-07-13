@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.utils;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -22,5 +23,16 @@ public final class FormatDateTimeUtils {
     }
     public static String formatCurrentTime(String pattern){
         return new java.text.SimpleDateFormat(pattern, Locale.CHINA).format(new Date());
+    }
+
+    public static void setStartTime(final Calendar calendar){
+        calendar.set(Calendar.HOUR_OF_DAY,0);
+        calendar.set(Calendar.MINUTE,0);
+        calendar.set(Calendar.SECOND,0);
+    }
+    public static void setEndTime(final Calendar calendar){
+        calendar.set(Calendar.HOUR_OF_DAY,23);
+        calendar.set(Calendar.MINUTE,59);
+        calendar.set(Calendar.SECOND,59);
     }
 }

@@ -4,7 +4,9 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.RawQuery;
 import androidx.room.Transaction;
+import androidx.sqlite.db.SimpleSQLiteQuery;
 
 import com.wyc.cloudapp.bean.TimeCardSaleInfo;
 import com.wyc.cloudapp.data.room.AppDatabase;
@@ -38,4 +40,11 @@ public interface TimeCardSaleOrderDao {
     @Transaction
     @Insert(onConflict = OnConflictStrategy.ABORT)
     void insertWithDetails(TimeCardSaleOrder saleOrders, List<TimeCardSaleInfo> saleInfoList, List<TimeCardPayDetail> payDetails);
+
+    @RawQuery
+    List<TimeCardSaleOrder> getOrderByCondition(SimpleSQLiteQuery query);
+    @Query("update timeCardSaleOrder set status = :status,online_order_no=:online_order_no where order_no=:order_no")
+    void updateOrder(String order_no,String online_order_no,int status);
+    @Query("update timeCardSaleOrder set status = :status where order_no=:order_no")
+    void updateOrder(String order_no,int status);
 }

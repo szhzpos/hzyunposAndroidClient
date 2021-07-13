@@ -33,9 +33,12 @@ public final class RoundCornerTabLayout extends TabLayout {
         try {
             Field field = getClass().getSuperclass().getDeclaredField("slidingTabIndicator");
             field.setAccessible(true);
-            LinearLayout linearLayout = (LinearLayout) field.get(this);
-            linearLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
-            linearLayout.setDividerDrawable(ContextCompat.getDrawable(getContext(),R.drawable.tablayout_divider_vertical));
+            final Object o = field.get(this);
+            if (o instanceof LinearLayout){
+                LinearLayout linearLayout = (LinearLayout) o;
+                linearLayout.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
+                linearLayout.setDividerDrawable(ContextCompat.getDrawable(getContext(),R.drawable.tablayout_divider_vertical));
+            }
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }
