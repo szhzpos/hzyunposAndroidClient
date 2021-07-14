@@ -3,6 +3,7 @@ package com.wyc.cloudapp.data.room.dao;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.wyc.cloudapp.data.room.entity.TimeCardPayDetail;
 
@@ -24,8 +25,12 @@ import java.util.List;
 public interface TimeCardPayDetailDao {
     @Query("select * from timeCardPayDetail")
     List<TimeCardPayDetail> getAll();
+    @Query("select * from timeCardPayDetail where order_no=:id")
+    List<TimeCardPayDetail> getAllById(String id);
     @Insert
     void insertAll(TimeCardPayDetail ...details);
     @Insert
     void insertAll(List<TimeCardPayDetail> details);
+    @Update
+    void updateAll(List<TimeCardPayDetail> details);
 }

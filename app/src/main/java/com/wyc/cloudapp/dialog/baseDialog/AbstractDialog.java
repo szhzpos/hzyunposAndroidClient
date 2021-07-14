@@ -68,6 +68,8 @@ public abstract class AbstractDialog extends Dialog {
     @CallSuper
     @Override
     public void onAttachedToWindow() {
+        Window w = getWindow();
+        w.setWindowAnimations(R.style.dialog_anim);
         super.onAttachedToWindow();
 
         //初始化窗口尺寸

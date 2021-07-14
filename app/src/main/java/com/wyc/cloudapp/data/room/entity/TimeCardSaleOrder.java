@@ -10,14 +10,25 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.TimeCardSaleInfo;
 import com.wyc.cloudapp.bean.VipInfo;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.data.room.AppDatabase;
+import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.print.Printer;
+import com.wyc.cloudapp.utils.FormatDateTimeUtils;
+import com.wyc.cloudapp.utils.Utils;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -54,6 +65,8 @@ public final class TimeCardSaleOrder implements Parcelable {
 
     @Ignore
     private List<TimeCardSaleInfo> saleInfo;
+    @Ignore
+    private List<TimeCardPayDetail> payInfo;
 
     public TimeCardSaleOrder() {
         order_no = generateOrderNo();
@@ -116,6 +129,11 @@ public final class TimeCardSaleOrder implements Parcelable {
             return this;
         }
 
+        public Builder payInfo(List<TimeCardPayDetail> payDetailList){
+            order.setPayInfo(payDetailList);
+            return this;
+        }
+
         public TimeCardSaleOrder build(){
             return  order;
         }
@@ -134,6 +152,7 @@ public final class TimeCardSaleOrder implements Parcelable {
         operator = in.readString();
         time = in.readString();
         saleInfo = in.createTypedArrayList(TimeCardSaleInfo.CREATOR);
+        payInfo = in.createTypedArrayList(TimeCardPayDetail.CREATOR);
     }
 
     @Override
@@ -150,6 +169,7 @@ public final class TimeCardSaleOrder implements Parcelable {
         dest.writeString(operator);
         dest.writeString(time);
         dest.writeTypedList(saleInfo);
+        dest.writeTypedList(payInfo);
     }
 
     @Override
@@ -179,7 +199,7 @@ public final class TimeCardSaleOrder implements Parcelable {
     }
 
     public String getOnline_order_no() {
-        return online_order_no;
+        return online_order_no == null ? "" : online_order_no;
     }
 
     public void setOnline_order_no(String online_order_no) {
@@ -259,7 +279,7 @@ public final class TimeCardSaleOrder implements Parcelable {
     }
 
     public List<TimeCardSaleInfo> getSaleInfo() {
-        return saleInfo;
+        return saleInfo == null ? new ArrayList<>() : saleInfo;
     }
 
     public void setSaleInfo(List<TimeCardSaleInfo> saleInfo) {
@@ -268,6 +288,14 @@ public final class TimeCardSaleOrder implements Parcelable {
                 info.setOrder_no(order_no);
             }
         this.saleInfo = saleInfo;
+    }
+
+    public List<TimeCardPayDetail> getPayInfo() {
+        return payInfo == null ? new ArrayList<>() : payInfo;
+    }
+
+    public void setPayInfo(List<TimeCardPayDetail> payInfo) {
+        this.payInfo = payInfo;
     }
 
     public String getStatusName(){
@@ -280,10 +308,13 @@ public final class TimeCardSaleOrder implements Parcelable {
         }else return CustomApplication.self().getString(R.string.uploading);
     }
 
-    public void save(List<TimeCardPayDetail> payDetails){
-        AppDatabase.getInstance().TimeCardSaleOrderDao().insertWithDetails(this,saleInfo,payDetails);
+    public void save(){
+        AppDatabase.getInstance().TimeCardSaleOrderDao().deleteWithDetails(this,saleInfo,payInfo);
+        AppDatabase.getInstance().TimeCardSaleOrderDao().insertWithDetails(this,saleInfo,payInfo);
     }
+
     public void updateOnlineOrderNo(String _order_no){//保存线上订单并更新状态为正在支付
+        setOnline_order_no(_order_no);
         AppDatabase.getInstance().TimeCardSaleOrderDao().updateOrder(order_no,_order_no,3);
     }
     public void success(){
@@ -294,8 +325,8 @@ public final class TimeCardSaleOrder implements Parcelable {
         return SQLiteHelper.getString("select cas_name from cashier_info where cas_code = '"+ operator + "'",null);
     }
 
-    public int getDetailNum(){
-        return AppDatabase.getInstance().TimeCardSaleDetailDao().getCountsById(order_no);
+    public String getSalemanName(){
+        return SQLiteHelper.getString("select sc_name from sales_info where sc_id = '"+ saleman + "'",null);
     }
 
     private static String generateOrderNo() {

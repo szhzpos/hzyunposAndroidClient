@@ -24,29 +24,29 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/sale_id_label"
+            android:id="@+id/order_id_label"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/height_30"
             android:gravity="center"
             android:paddingStart="@dimen/margin_12"
             android:paddingEnd="0dp"
-            android:text="@string/m_sale_order_id_sz"
+            android:text="@string/time_card_order_id"
             android:textColor="@color/label_text_color"
             android:textSize="@dimen/font_size_16"
             app:layout_constraintStart_toStartOf="@id/order_head_info_label"
             app:layout_constraintTop_toBottomOf="@id/order_head_info_label" />
 
         <TextView
-            android:id="@+id/m_sale_id_tv"
+            android:id="@+id/order_id_tv"
             android:layout_width="0dp"
             android:layout_height="@dimen/height_30"
             android:gravity="center_vertical"
-            android:text="N0214-201201034426-0001"
+            android:text="MCZ2020112400001"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/sale_id_label"
-            app:layout_constraintTop_toTopOf="@id/sale_id_label" />
+            app:layout_constraintStart_toEndOf="@id/order_id_label"
+            app:layout_constraintTop_toTopOf="@id/order_id_label" />
 
         <TextView
             android:id="@+id/order_time_label"
@@ -58,8 +58,8 @@
             android:text="@string/m_order_time_sz"
             android:textColor="@color/label_text_color"
             android:textSize="@dimen/font_size_16"
-            app:layout_constraintStart_toStartOf="@id/sale_id_label"
-            app:layout_constraintTop_toBottomOf="@id/sale_id_label" />
+            app:layout_constraintStart_toStartOf="@id/order_id_label"
+            app:layout_constraintTop_toBottomOf="@id/order_id_label" />
 
         <TextView
             android:id="@+id/m_order_time_tv"
@@ -97,6 +97,53 @@
             app:layout_constraintTop_toTopOf="@id/vip_no_label" />
 
         <TextView
+            android:id="@+id/vip_name_label"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center"
+            android:paddingStart="@dimen/margin_12"
+            android:paddingEnd="0dp"
+            android:text="@string/vip_name_colon_sz"
+            android:textColor="@color/label_text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toEndOf="@id/m_vip_no_tv"
+            app:layout_constraintTop_toTopOf="@id/m_vip_no_tv" />
+
+        <TextView
+            android:id="@+id/m_vip_name_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center_vertical"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toEndOf="@id/vip_name_label"
+            app:layout_constraintTop_toTopOf="@id/vip_name_label" />
+
+        <TextView
+            android:id="@+id/vip_mobile_label"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center"
+            android:paddingStart="@dimen/margin_12"
+            android:paddingEnd="0dp"
+            android:text="@string/m_vip_mobile_sz"
+            android:textColor="@color/label_text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toStartOf="@id/vip_no_label"
+            app:layout_constraintTop_toBottomOf="@id/vip_no_label" />
+
+        <TextView
+            android:id="@+id/m_vip_mobile_tv"
+            android:layout_width="@dimen/width_118"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center_vertical"
+            android:text="18174358548"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toEndOf="@id/vip_mobile_label"
+            app:layout_constraintTop_toTopOf="@id/vip_mobile_label" />
+
+        <TextView
             android:id="@+id/sale_man_label"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/height_30"
@@ -106,8 +153,8 @@
             android:text="@string/m_sale_man_sz"
             android:textColor="@color/label_text_color"
             android:textSize="@dimen/font_size_16"
-            app:layout_constraintStart_toEndOf="@id/m_vip_no_tv"
-            app:layout_constraintTop_toTopOf="@id/m_vip_no_tv" />
+            app:layout_constraintEnd_toEndOf="@id/vip_name_label"
+            app:layout_constraintTop_toTopOf="@id/m_vip_mobile_tv" />
 
         <TextView
             android:id="@+id/m_sale_man_tv"
@@ -121,52 +168,28 @@
             app:layout_constraintTop_toTopOf="@id/sale_man_label" />
 
         <TextView
-            android:id="@+id/order_amt_label"
+            android:id="@+id/_amt_label"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/height_30"
             android:gravity="center"
             android:paddingStart="@dimen/margin_12"
             android:paddingEnd="0dp"
-            android:text="@string/m_order_amt_colon_sz"
+            android:text="@string/order_amt_colon"
             android:textColor="@color/label_text_color"
             android:textSize="@dimen/font_size_16"
-            app:layout_constraintStart_toStartOf="@id/order_time_label"
-            app:layout_constraintTop_toBottomOf="@id/vip_no_label" />
+            app:layout_constraintStart_toStartOf="@id/vip_mobile_label"
+            app:layout_constraintTop_toBottomOf="@id/vip_mobile_label" />
 
         <TextView
-            android:id="@+id/m_order_amt_tv"
+            android:id="@+id/_amt_tv"
             android:layout_width="@dimen/width_118"
             android:layout_height="@dimen/height_30"
             android:gravity="center_vertical"
             android:text="@string/zero_p_z_sz"
             android:textColor="@color/orange_1"
             android:textSize="@dimen/font_size_16"
-            app:layout_constraintStart_toEndOf="@id/order_amt_label"
-            app:layout_constraintTop_toTopOf="@id/order_amt_label" />
-
-        <TextView
-            android:id="@+id/disc_amt_label"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/height_30"
-            android:gravity="center"
-            android:paddingStart="@dimen/margin_12"
-            android:paddingEnd="0dp"
-            android:text="@string/m_disc_amt_colon_sz"
-            android:textColor="@color/label_text_color"
-            android:textSize="@dimen/font_size_16"
-            app:layout_constraintStart_toEndOf="@id/m_order_amt_tv"
-            app:layout_constraintTop_toTopOf="@id/m_order_amt_tv" />
-
-        <TextView
-            android:id="@+id/m_disc_amt_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/height_30"
-            android:gravity="center_vertical"
-            android:text="@string/zero_p_z_sz"
-            android:textColor="@color/orange_1"
-            android:textSize="@dimen/font_size_16"
-            app:layout_constraintStart_toEndOf="@id/disc_amt_label"
-            app:layout_constraintTop_toTopOf="@id/disc_amt_label" />
+            app:layout_constraintStart_toEndOf="@id/_amt_label"
+            app:layout_constraintTop_toTopOf="@id/_amt_label" />
 
         <TextView
             android:id="@+id/order_details_label"
@@ -181,12 +204,14 @@
             android:textSize="@dimen/font_size_16"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/order_amt_label" />
+            app:layout_constraintTop_toBottomOf="@+id/_amt_label" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/m_order_details_list"
+            android:id="@+id/_order_details_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="1dp"
+            android:layout_marginBottom="2dp"
             app:layout_constraintBottom_toTopOf="@+id/pay_details_label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -196,7 +221,7 @@
             android:id="@+id/pay_details_label"
             android:layout_width="0dp"
             android:layout_height="@dimen/height_35"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="2dp"
             android:background="@drawable/border_gray"
             android:gravity="center_vertical"
             android:paddingStart="@dimen/margin_5"
@@ -206,59 +231,45 @@
             android:textSize="@dimen/font_size_16"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/m_order_details_list" />
+            app:layout_constraintTop_toBottomOf="@id/_order_details_list" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/m_pay_details_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/pay_details_label" />
+            android:layout_marginStart="@dimen/margin_1"
+            app:layout_constraintStart_toStartOf="@id/pay_details_label"
+            app:layout_constraintTop_toBottomOf="@id/pay_details_label" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/height_58"
-            android:orientation="horizontal"
-            android:padding="@dimen/margin_5"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+    <Button
+        android:id="@+id/m_pay_verify_btn"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_weight="1"
+        android:background="@drawable/button_sub_blue"
+        android:text="@string/verify_pay_sz"
+        android:textColor="@color/white"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/m_print_btn"
+        app:layout_constraintStart_toStartOf="parent" />
 
-            <Button
-                android:id="@+id/m_pay_verify_btn"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="@string/verify_pay_sz"
-                android:textColor="@color/white"
-                android:textSize="@dimen/font_size_16" />
-
-            <Button
-                android:id="@+id/m_refund_btn"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_5"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="@string/m_refund_sz"
-                android:textColor="@color/white"
-                android:textSize="@dimen/font_size_16" />
-
-            <Button
-                android:id="@+id/m_print_btn"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_5"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="@string/m_print_sz"
-                android:textColor="@color/white"
-                android:textSize="@dimen/font_size_16" />
-        </LinearLayout>
-
+    <Button
+        android:id="@+id/m_print_btn"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="5dp"
+        android:layout_weight="1"
+        android:background="@drawable/button_sub_blue"
+        android:text="@string/m_print_sz"
+        android:textColor="@color/white"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintBottom_toBottomOf="@id/m_pay_verify_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/m_pay_verify_btn" />
 </androidx.constraintlayout.widget.ConstraintLayout>

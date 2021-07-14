@@ -1,6 +1,7 @@
 package com.wyc.cloudapp.data.room.dao;
 
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -40,6 +41,10 @@ public interface TimeCardSaleOrderDao {
     @Transaction
     @Insert(onConflict = OnConflictStrategy.ABORT)
     void insertWithDetails(TimeCardSaleOrder saleOrders, List<TimeCardSaleInfo> saleInfoList, List<TimeCardPayDetail> payDetails);
+
+    @Transaction
+    @Delete
+    void deleteWithDetails(TimeCardSaleOrder saleOrders, List<TimeCardSaleInfo> saleInfoList, List<TimeCardPayDetail> payDetails);
 
     @RawQuery
     List<TimeCardSaleOrder> getOrderByCondition(SimpleSQLiteQuery query);

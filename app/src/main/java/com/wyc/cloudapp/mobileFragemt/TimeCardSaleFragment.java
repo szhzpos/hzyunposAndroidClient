@@ -41,6 +41,7 @@ import com.wyc.cloudapp.utils.http.callback.ObjectCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -136,7 +137,7 @@ public final class TimeCardSaleFragment extends AbstractMobileFragment {
                     }
                 }
                 mBasketView.update(num);
-                sale_amt_tv.setText(String.valueOf(amt));
+                sale_amt_tv.setText(String.format(Locale.CHINA,"%.2f",amt));
             }
         });
         sale_once_card_list.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));

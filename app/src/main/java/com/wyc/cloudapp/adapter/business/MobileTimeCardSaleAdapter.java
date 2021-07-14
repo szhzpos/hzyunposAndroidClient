@@ -52,11 +52,11 @@ public class MobileTimeCardSaleAdapter extends AbstractDataAdapterForList<TimeCa
         int id = v.getId();
         switch (id){
             case R.id._minus_btn:
-                btn(v);
+                switchStatus((View) v.getTag());
                 modifyCurrentNum(-1);
                 break;
             case R.id._plus_btn:
-                btn(v);
+                switchStatus((View) v.getTag());
                 modifyCurrentNum(1);
                 break;
             case R.id.alter_num_btn:
@@ -69,11 +69,6 @@ public class MobileTimeCardSaleAdapter extends AbstractDataAdapterForList<TimeCa
                 switchStatus(v);
         }
 
-    }
-    private void btn(View v){
-        View p = (View) v.getParent();
-        if (p != null)p = (View) p.getParent();
-        if (p != null)switchStatus(p);
     }
 
     static class MyViewHolder extends AbstractDataAdapter.SuperViewHolder{
@@ -110,9 +105,11 @@ public class MobileTimeCardSaleAdapter extends AbstractDataAdapterForList<TimeCa
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         final TimeCardSaleInfo saleInfo = getItem(position);
         if (null != saleInfo){
+            holder._minus_btn.setTag(holder.itemView);
             if(!holder._minus_btn.hasOnClickListeners()){
                 holder._minus_btn.setOnClickListener(this);
             }
+            holder._plus_btn.setTag(holder.itemView);
             if(!holder._plus_btn.hasOnClickListeners()){
                 holder._plus_btn.setOnClickListener(this);
             }
@@ -122,8 +119,9 @@ public class MobileTimeCardSaleAdapter extends AbstractDataAdapterForList<TimeCa
             holder.sale_price.setText(String.format(Locale.CHINA,"%.2f",saleInfo.getPrice()));
             holder.sale_num.setText(String.valueOf(saleInfo.getNum()));
             holder.sale_amt.setText(String.format(Locale.CHINA,"%.2f",saleInfo.getAmt()));
+
+            holder.itemView.setTag(position);
             if (mCurrentIndex == position){
-                holder.itemView.setTag(position);
                 holder.itemView.callOnClick();
             }
         }
@@ -166,12 +164,12 @@ public class MobileTimeCardSaleAdapter extends AbstractDataAdapterForList<TimeCa
         boolean isExist = false;
         int index = 0;
         for (TimeCardSaleInfo info : mData){
-            index++;
             if (info.equalsWithTimeCardInfo(saleInfo)){
                 info.setNum(saleInfo.getNum() + info.getNum());
                 isExist = true;
                 break;
             }
+            index++;
         }
         if (!isExist){
             index = mData.size();

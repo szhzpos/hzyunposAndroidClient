@@ -11,6 +11,7 @@ import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.UnifiedPayResult;
 import com.wyc.cloudapp.constants.InterfaceURL;
+import com.wyc.cloudapp.data.room.AppDatabase;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -271,7 +272,7 @@ public final class PayMethod implements Serializable,Cloneable {
     * @param order_code 支付订单号
     * @param order_code_son 子支付订单号，可以用于之后的支付状态查询
     * @param pay_code 需要校验的支付码(比如微信的付款码)
-    * @param tag 做日志记录使用，如果为null 则不记录此次付款。
+    * @param tag 做日志记录使用。
     *
     * @return UnifiedPayResult
     * */
@@ -372,6 +373,10 @@ public final class PayMethod implements Serializable,Cloneable {
             }
         });
         loop.exec();
+    }
+
+    public static PayMethod getMethodById(int id){
+        return AppDatabase.getInstance().PayMethodDao().getPayMethodById(id);
     }
 
     @NonNull

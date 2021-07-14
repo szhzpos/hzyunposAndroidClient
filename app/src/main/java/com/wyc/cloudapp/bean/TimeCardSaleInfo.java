@@ -7,6 +7,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.room.Entity;
 
+import com.wyc.cloudapp.data.room.AppDatabase;
+
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -162,6 +165,10 @@ public final class TimeCardSaleInfo implements Parcelable {
     public boolean equalsWithTimeCardInfo(TimeCardSaleInfo o){
         if (o == null)return false;
         return once_card_id == o.once_card_id;
+    }
+
+    public static List<TimeCardSaleInfo> getSaleInfoById(String id){
+        return AppDatabase.getInstance().TimeCardSaleDetailDao().getDetailById(id);
     }
 
     @NonNull

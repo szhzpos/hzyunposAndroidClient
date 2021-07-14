@@ -167,6 +167,7 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
                 "       b.cas_name,\n" +
                 "       a.discount_price reality_amt,\n" +
                 "       a.total order_amt,\n" +
+                "       (select count(1) from retail_order_goods b where b.order_code = a.order_code) as xnum,\n" +
                 "       a.order_code\n" +
                 "  FROM retail_order a left join cashier_info b on a.cashier_id = b.cas_id ";
     }

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 10,
-    "identityHash": "e14f7c0ca39f6d8780a14b9be2777cc6",
+    "identityHash": "d62a4b6cf58edfe3122f5ce21d0f2480",
     "entities": [
       {
         "tableName": "pay_method",
@@ -295,7 +295,7 @@
       },
       {
         "tableName": "timeCardPayDetail",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`rowId` INTEGER NOT NULL, `order_no` TEXT NOT NULL, `pay_method_id` INTEGER NOT NULL, `amt` REAL NOT NULL, `online_pay_no` TEXT, `status` INTEGER NOT NULL, `operator` TEXT, `pay_time` TEXT, PRIMARY KEY(`rowId`, `order_no`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`rowId` INTEGER NOT NULL, `order_no` TEXT NOT NULL, `pay_method_id` INTEGER NOT NULL, `amt` REAL NOT NULL, `zl_amt` REAL NOT NULL, `online_pay_no` TEXT, `remark` TEXT, `status` INTEGER NOT NULL, `operator` TEXT, `pay_time` TEXT, PRIMARY KEY(`rowId`, `order_no`))",
         "fields": [
           {
             "fieldPath": "rowId",
@@ -322,8 +322,20 @@
             "notNull": true
           },
           {
+            "fieldPath": "zl_amt",
+            "columnName": "zl_amt",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
             "fieldPath": "online_pay_no",
             "columnName": "online_pay_no",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "remark",
+            "columnName": "remark",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -360,7 +372,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e14f7c0ca39f6d8780a14b9be2777cc6')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd62a4b6cf58edfe3122f5ce21d0f2480')"
     ]
   }
 }

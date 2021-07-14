@@ -1,6 +1,7 @@
 package com.wyc.cloudapp.mobileFragemt;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.database.sqlite.SQLiteException;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -22,6 +23,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.android.material.tabs.TabLayout;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.mobile.TimeCardOrderDetailActivity;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForList;
 import com.wyc.cloudapp.adapter.MobileRetailOrderAdapter;
@@ -93,7 +95,7 @@ public class TimeCardSaleQueryFragment extends AbstractMobileFragment {
     private void initOrderList(){
         final RecyclerView _order_list = findViewById(R.id._order_list);
         if (null != _order_list){
-            mAdapter = new OrderAdapter();
+            mAdapter = new OrderAdapter(getContext());
             _order_list.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
             _order_list.setAdapter(mAdapter);
             _order_list.addItemDecoration(new LinearItemDecoration(mContext.getColor(R.color.white)));
@@ -284,12 +286,17 @@ public class TimeCardSaleQueryFragment extends AbstractMobileFragment {
     }
 
     static class OrderAdapter extends AbstractDataAdapterForList<TimeCardSaleOrder,OrderAdapter.MyViewHolder> implements View.OnClickListener {
-
+        private final Context mContext;
+        public OrderAdapter(Context context){
+            mContext = context;
+        }
         @Override
         public void onClick(View v) {
             int id = v.getId();
             if (id == R.id._order_detail){
-                Logger.d(AppDatabase.getInstance().TimeCardSaleDetailDao().getDetailById(Utils.getViewTagValue(v,"")));
+                Object o = v.getTag();
+                if (o instanceof TimeCardSaleOrder)
+                    TimeCardOrderDetailActivity.start(mContext, (TimeCardSaleOrder)o);
             }
         }
 
@@ -334,7 +341,7 @@ public class TimeCardSaleQueryFragment extends AbstractMobileFragment {
                 holder._order_amt.setText(String.format(Locale.CHINA,"%.2f",order.getAmt()));
                 holder._vip_label.setText(String.format(Locale.CHINA,"会员：%s(%s)",order.getVip_name(),order.getVip_mobile()));
 
-                holder._order_detail.setTag(order.getOrder_no());
+                holder._order_detail.setTag(order);
                 if (!holder._order_detail.hasOnClickListeners()){
                     holder._order_detail.setOnClickListener(this);
                 }
