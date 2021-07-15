@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.data.room.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -10,9 +11,9 @@ import androidx.room.Transaction;
 import androidx.sqlite.db.SimpleSQLiteQuery;
 
 import com.wyc.cloudapp.bean.TimeCardSaleInfo;
-import com.wyc.cloudapp.data.room.AppDatabase;
 import com.wyc.cloudapp.data.room.entity.TimeCardPayDetail;
 import com.wyc.cloudapp.data.room.entity.TimeCardSaleOrder;
+import com.wyc.cloudapp.data.room.relation.TimeCardOrderWithSaleDetailAndPayDetail;
 
 import java.util.List;
 
@@ -31,7 +32,7 @@ import java.util.List;
 @Dao
 public interface TimeCardSaleOrderDao {
     @Query("select * from timeCardSaleOrder")
-    List<TimeCardSaleOrder> getAll();
+    LiveData<List<TimeCardSaleOrder>> getAll();
     @Query("select count(rowId) as counts from timeCardSaleOrder")
     int count();
 
@@ -52,4 +53,8 @@ public interface TimeCardSaleOrderDao {
     void updateOrder(String order_no,String online_order_no,int status);
     @Query("update timeCardSaleOrder set status = :status where order_no=:order_no")
     void updateOrder(String order_no,int status);
+
+    @Transaction
+    @Query("select * from timeCardSaleOrder where order_no=:id")
+    TimeCardOrderWithSaleDetailAndPayDetail getOrderWithDetailById(String id);
 }

@@ -15,6 +15,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.sqlite.db.SimpleSQLiteQuery;
@@ -23,6 +25,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.android.material.tabs.TabLayout;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.activity.mobile.TimeCardOrderDetailActivity;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForList;
@@ -38,6 +41,9 @@ import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -85,6 +91,8 @@ public class TimeCardSaleQueryFragment extends AbstractMobileFragment {
 
     @Override
     protected void viewCreated() {
+        EventBus.getDefault().register(this);
+
         initTimeTv();
         initSearchContent();
         initSwitchCondition();
@@ -92,6 +100,20 @@ public class TimeCardSaleQueryFragment extends AbstractMobileFragment {
 
         initTab();
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe
+    public void handleMsg(Integer status){
+        if (null != mAdapter){
+            mAdapter.updateSelectItem(status);
+        }
+    }
+
     private void initOrderList(){
         final RecyclerView _order_list = findViewById(R.id._order_list);
         if (null != _order_list){
@@ -271,7 +293,7 @@ public class TimeCardSaleQueryFragment extends AbstractMobileFragment {
         return CustomApplication.self().getString(R.string.once_card_sale_sz) + CustomApplication.self().getString(R.string.query_sz);
     }
 
-    private SimpleSQLiteQuery generateQueryCondition(final String start,final String end) {
+    private String generateQueryCondition(final String start,final String end) {
         final String content = mSearchContent.getText().toString();
         final StringBuilder where_sql = new StringBuilder("select * from timeCardSaleOrder where online_order_no is not null and time between '"+ start +"' and '"+ end + "'");
         if (!content.isEmpty()){
@@ -282,11 +304,13 @@ public class TimeCardSaleQueryFragment extends AbstractMobileFragment {
             }
         }
         where_sql.append(" order by time desc");
-        return new SimpleSQLiteQuery(where_sql.toString());
+        return where_sql.toString();
     }
 
     static class OrderAdapter extends AbstractDataAdapterForList<TimeCardSaleOrder,OrderAdapter.MyViewHolder> implements View.OnClickListener {
         private final Context mContext;
+        private int mSelectIndex = -1;
+
         public OrderAdapter(Context context){
             mContext = context;
         }
@@ -295,8 +319,20 @@ public class TimeCardSaleQueryFragment extends AbstractMobileFragment {
             int id = v.getId();
             if (id == R.id._order_detail){
                 Object o = v.getTag();
-                if (o instanceof TimeCardSaleOrder)
+                if (o instanceof TimeCardSaleOrder){
+                    mSelectIndex = mData.indexOf(o);
                     TimeCardOrderDetailActivity.start(mContext, (TimeCardSaleOrder)o);
+                }
+
+            }
+        }
+
+        private void updateSelectItem(int status){
+            Logger.d("mSelectIndex:%d,status:%d",mSelectIndex,status);
+            TimeCardSaleOrder order = getItem(mSelectIndex);
+            if (order != null){
+                order.setStatus(status);
+                notifyItemChanged(mSelectIndex);
             }
         }
 
@@ -348,10 +384,10 @@ public class TimeCardSaleQueryFragment extends AbstractMobileFragment {
             }
         }
 
-        private void setData(SimpleSQLiteQuery query){
-            Logger.d("sql:%s",query.getSql());
+        private void setData(String query){
+            Logger.d("sql:%s",query);
             try {
-                setDataForList(AppDatabase.getInstance().TimeCardSaleOrderDao().getOrderByCondition(query));
+                setDataForList(TimeCardSaleOrder.getOrderByCondition(query));
             }catch (SQLiteException e){
                 e.printStackTrace();
                 MyDialog.toastMessage(e.getMessage());

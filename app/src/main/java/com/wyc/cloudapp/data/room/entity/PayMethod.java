@@ -269,7 +269,7 @@ public final class PayMethod implements Serializable,Cloneable {
 
     /*
     * @param pay_amt 支付金额
-    * @param order_code 支付订单号
+    * @param order_code 支付销售订单号
     * @param order_code_son 子支付订单号，可以用于之后的支付状态查询
     * @param pay_code 需要校验的支付码(比如微信的付款码)
     * @param tag 做日志记录使用。
@@ -332,11 +332,15 @@ public final class PayMethod implements Serializable,Cloneable {
         loop.exec();
         return result;
     }
-    private void queryPay(MainActivity activity, JEventLoop loop, final UnifiedPayResult result, String tag){
+    private void queryPay(@NonNull MainActivity activity, JEventLoop loop, final UnifiedPayResult result, String tag){
 
         final JSONObject param = new JSONObject();
         param.put("appid",CustomApplication.self().getAppId());
-        param.put("pay_code",result.getPay_code());
+
+        final String pay_code = result.getPay_code();
+        if (Utils.isNotEmpty(pay_code))
+            param.put("pay_code",result.getPay_code());
+
         param.put("order_code_son",result.getOrder_code_son());
 
         if (result.getRes_code() == 4){
@@ -373,6 +377,13 @@ public final class PayMethod implements Serializable,Cloneable {
             }
         });
         loop.exec();
+    }
+    public UnifiedPayResult queryPayStatus(@NonNull MainActivity activity,@NonNull String third_pay_no,String tag){
+        final JEventLoop loop = new JEventLoop();
+        final UnifiedPayResult result = new UnifiedPayResult();
+        result.setOrder_code_son(third_pay_no);
+        queryPay(activity,loop,result,tag);
+        return result;
     }
 
     public static PayMethod getMethodById(int id){

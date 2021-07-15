@@ -102,6 +102,13 @@ public class TimeCardPayDetail implements Parcelable {
         }
     }
 
+    public void success(){
+        setStatus(1);
+    }
+    public void failure(){
+        setStatus(2);
+    }
+
     protected TimeCardPayDetail(Parcel in) {
         rowId = in.readInt();
         order_no = in.readString();

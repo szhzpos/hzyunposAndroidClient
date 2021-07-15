@@ -5,10 +5,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.core.util.Consumer;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
+import androidx.sqlite.db.SimpleSQLiteQuery;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -16,9 +18,11 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.mobile.TimeCardPayActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.TimeCardSaleInfo;
 import com.wyc.cloudapp.bean.VipInfo;
+import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.data.room.AppDatabase;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -26,6 +30,9 @@ import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
+import com.wyc.cloudapp.utils.http.HttpRequest;
+import com.wyc.cloudapp.utils.http.HttpUtils;
+import com.wyc.cloudapp.utils.http.callback.ObjectCallback;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -318,7 +325,11 @@ public final class TimeCardSaleOrder implements Parcelable {
         AppDatabase.getInstance().TimeCardSaleOrderDao().updateOrder(order_no,_order_no,3);
     }
     public void success(){
+        setStatus(1);
         AppDatabase.getInstance().TimeCardSaleOrderDao().updateOrder(order_no,1);
+    }
+    public boolean isSuccess(){
+        return status == 1;
     }
 
     public String getCashierName(){
@@ -332,6 +343,35 @@ public final class TimeCardSaleOrder implements Parcelable {
     private static String generateOrderNo() {
         int row = AppDatabase.getInstance().TimeCardSaleOrderDao().count() + 1;
         return "CK" + CustomApplication.self().getPosNum() + "-" + new SimpleDateFormat("yyMMddHHmmss", Locale.CHINA).format(new Date()) + "-" + String.format(Locale.CHINA,"%04d",row);
+    }
+
+    public static List<TimeCardSaleOrder> getOrderByCondition(String query){
+        return AppDatabase.getInstance().TimeCardSaleOrderDao().getOrderByCondition(new SimpleSQLiteQuery(query));
+    }
+
+    public void uploadPayInfo(Consumer<String> success,Consumer<String> error){
+        final JSONObject pay = new JSONObject();
+        pay.put("appid",CustomApplication.self().getAppId());
+        pay.put("order_code",online_order_no);
+        if (payInfo == null || payInfo.isEmpty()){
+            MyDialog.toastMessage("支付信息为空...");
+            return;
+        }
+        pay.put("pay_method",payInfo.get(0).getPay_method_id());
+        HttpUtils.sendAsyncPost(CustomApplication.self().getUrl() + InterfaceURL.ONCE_CARD_PAY, HttpRequest.generate_request_parm(pay,CustomApplication.self().getAppSecret()))
+                .enqueue(new ObjectCallback<String>(String.class) {
+                    @Override
+                    protected void onError(String msg) {
+                        if (null != error)error.accept(msg);
+                    }
+
+                    @Override
+                    protected void onSuccessForResult(String d, String hint) {
+                        success();
+                        if (null != success)
+                            success.accept(hint);
+                    }
+                });
     }
 
     @Override
@@ -349,7 +389,7 @@ public final class TimeCardSaleOrder implements Parcelable {
 
     @Override
     public String toString() {
-        return "TimeCardSaleOrder{" +
+        return super.toString() +"{" +
                 "order_no='" + order_no + '\'' +
                 ", online_order_no='" + online_order_no + '\'' +
                 ", vip_openid='" + vip_openid + '\'' +

@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.util.Consumer;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -270,22 +271,34 @@ public class TimeCardPayActivity extends AbstractMobileActivity {
 
                                     if (result.isSuccess()){
                                         allSuccess = true;
-                                        detail.setStatus(1);
+                                        detail.success();
+                                        detail.setOnline_pay_no(result.getOrder_code());
                                     }else {
+                                        detail.failure();
                                         MyDialog.toastMessage(result.getInfo());
                                         allSuccess = false;
                                         break;
                                     }
                                 }else {
                                     allSuccess = true;
-                                    detail.setStatus(1);
+                                    detail.success();
                                 }
                             }
                             //更新支付状态
                             TimeCardPayDetail.update(payDetails);
 
                             if (allSuccess){
-                                uploadPayInfo(online_order_no,payDetails.get(0).getPay_method_id());
+                                mOrder.uploadPayInfo(s -> {
+                                    print(TimeCardPayActivity.this,mOrder);
+
+                                    setResult(RESULT_OK);
+                                    finish();
+                                    MyDialog.toastMessage(hint);
+                                    dismissProgress();
+                                }, s -> {
+                                    MyDialog.toastMessage(s);
+                                    dismissProgress();
+                                });
                             }else dismissProgress();
                         }catch (Exception e){
                             e.printStackTrace();
@@ -296,32 +309,6 @@ public class TimeCardPayActivity extends AbstractMobileActivity {
                 });
     }
 
-    private void uploadPayInfo(final String online_order_no,int pay_method_id){
-        final JSONObject pay = new JSONObject();
-        pay.put("appid",getAppId());
-        pay.put("order_code",online_order_no);
-        pay.put("pay_method",pay_method_id);
-        HttpUtils.sendAsyncPost(getUrl() + InterfaceURL.ONCE_CARD_PAY,HttpRequest.generate_request_parm(pay,getAppSecret()))
-                .enqueue(new ObjectCallback<String>(String.class) {
-                    @Override
-                    protected void onError(String msg) {
-                        MyDialog.toastMessage(msg);
-                        dismissProgress();
-                    }
-
-                    @Override
-                    protected void onSuccessForResult(String d, String hint) {
-                        mOrder.success();
-
-                        print(TimeCardPayActivity.this,mOrder);
-
-                        setResult(RESULT_OK);
-                        finish();
-                        MyDialog.toastMessage(hint);
-                        dismissProgress();
-                    }
-                });
-    }
     private void dismissProgress(){
         if (mProgressDialog != null)mProgressDialog.dismiss();
     }
@@ -392,9 +379,12 @@ public class TimeCardPayActivity extends AbstractMobileActivity {
             //次卡销售只支持一种付款方式，选择之前先清除已付款的记录
             if (!mPayDetailViewAdapter.isEmpty()){
                 final JSONObject method = mPayDetailViewAdapter.getDatas().getJSONObject(0);
-                if (MyDialog.showMessageToModalDialog(this,getString(R.string.pay_method_exist_hints,method.getString("name"))) == 1){
+                if (object.getPay_method_id() == method.getIntValue("pay_method_id")){
                     mPayDetailViewAdapter.clear();
-                }else return;
+                }else
+                    if (MyDialog.showMessageToModalDialog(this,getString(R.string.pay_method_exist_hints,method.getString("name"))) == 1){
+                        mPayDetailViewAdapter.clear();
+                    }else return;
             }
             try {
                 if (verifyPayBalance()){
@@ -423,10 +413,11 @@ public class TimeCardPayActivity extends AbstractMobileActivity {
                             final PayMethodDialogImp payMethodDialogImp = new PayMethodDialogImp(TimeCardPayActivity.this, detail);
                             payMethodDialogImp.setModifyPayAmt(false).setPayAmt(mPay_balance);
                             final int code = payMethodDialogImp.exec();
-                            mPayMethodViewAdapter.showDefaultPayMethod();
                             if (code == 1){
                                 final JSONObject jsonObject = payMethodDialogImp.getContent();
                                 mPayDetailViewAdapter.addPayDetail(jsonObject);
+                            }else {
+                                mPayMethodViewAdapter.showDefaultPayMethod();
                             }
                         }
                     }
@@ -511,7 +502,7 @@ public class TimeCardPayActivity extends AbstractMobileActivity {
             }else
                 mPayMethodView.scrollToPosition(index);//如果找不到view则滚动
         }else {
-            MyDialog.ToastMessage(String.format(Locale.CHINA,"ID为%d的支付方式不存在!",id),this,getWindow());
+            MyDialog.ToastMessage(getString(R.string.not_exist_hint_sz,"PayMethodId:" + id),this,getWindow());
         }
     }
 

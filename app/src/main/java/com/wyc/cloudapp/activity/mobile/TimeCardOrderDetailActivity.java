@@ -1,7 +1,6 @@
 package com.wyc.cloudapp.activity.mobile;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,21 +10,23 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForList;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
-import com.wyc.cloudapp.adapter.MobileRetailDetailsGoodsInfoAdapter;
-import com.wyc.cloudapp.adapter.RetailDetailsPayInfoAdapter;
 import com.wyc.cloudapp.bean.TimeCardSaleInfo;
+import com.wyc.cloudapp.bean.UnifiedPayResult;
 import com.wyc.cloudapp.data.room.entity.PayMethod;
 import com.wyc.cloudapp.data.room.entity.TimeCardPayDetail;
 import com.wyc.cloudapp.data.room.entity.TimeCardSaleOrder;
+import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.logger.Logger;
 
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -67,7 +68,33 @@ public class TimeCardOrderDetailActivity extends AbstractMobileActivity{
 
     @OnClick(R.id.m_pay_verify_btn)
     public void verify(){
-
+        List<TimeCardPayDetail> payDetailList = mOrder.getPayInfo();
+        if (!payDetailList.isEmpty()){
+            TimeCardPayDetail payDetail = payDetailList.get(0);
+            if (mOrder.isSuccess() && payDetail.getStatus() == 1){
+                MyDialog.toastMessage(getString(R.string.success));
+                return;
+            }
+            PayMethod payMethod = PayMethod.getMethodById(payDetail.getPay_method_id());
+            if (null != payMethod){
+                if (payMethod.isCheckApi()){
+                    UnifiedPayResult result = payMethod.queryPayStatus(this,payDetail.getOrder_no(),getLocalClassName());
+                    if (result.isSuccess()){
+                        payDetail.success();
+                        mOrder.uploadPayInfo(s->{
+                            EventBus.getDefault().post(mOrder.getStatus());
+                            MyDialog.toastMessage(s);
+                        }, MyDialog::toastMessage);
+                    }else{
+                        payDetail.failure();
+                        MyDialog.toastMessage(result.getInfo());
+                    }
+                    TimeCardPayDetail.update(payDetailList);
+                }else {
+                    mOrder.uploadPayInfo(MyDialog::toastMessage, MyDialog::toastMessage);
+                }
+            }else MyDialog.toastMessage(getString(R.string.not_exist_hint_sz,"PayMethodId:" + payDetail.getPay_method_id()));
+        }
     }
 
     @OnClick(R.id.m_print_btn)

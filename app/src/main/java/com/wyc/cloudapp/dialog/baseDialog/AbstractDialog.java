@@ -50,6 +50,7 @@ public abstract class AbstractDialog extends Dialog {
     private void init(final Context context){
         mWM = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         final Window window = getWindow();
+        window.setWindowAnimations(R.style.dialog_anim);
         mRootView =  window.getDecorView();
         mLayoutParams = window.getAttributes();
     }
@@ -68,8 +69,6 @@ public abstract class AbstractDialog extends Dialog {
     @CallSuper
     @Override
     public void onAttachedToWindow() {
-        Window w = getWindow();
-        w.setWindowAnimations(R.style.dialog_anim);
         super.onAttachedToWindow();
 
         //初始化窗口尺寸
@@ -87,25 +86,23 @@ public abstract class AbstractDialog extends Dialog {
     }
 
     protected void initWindowSize(){
-        final WindowManager m = (WindowManager)getContext().getSystemService(WINDOW_SERVICE);
-        final Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+        final Display d = mWM.getDefaultDisplay(); // 获取屏幕宽、高用
         final Point point = new Point();
         d.getSize(point);
         final Window dialogWindow = this.getWindow();
-        final WindowManager.LayoutParams lp = dialogWindow.getAttributes();
         dialogWindow.setGravity(Gravity.CENTER);
         double w = getWidthRatio(),h = getHeightRatio();
         if (w < 0.0 || Utils.greaterDouble(w,1.0)){
-            lp.width = (int) w;
+            mLayoutParams.width = (int) w;
         }else {
-            lp.width = (int)(w * point.x);
+            mLayoutParams.width = (int)(w * point.x);
         }
         if (h < 0.0|| Utils.greaterDouble(w,1.0)){
-            lp.height = (int) h;
+            mLayoutParams.height = (int) h;
         }else {
-            lp.height = (int)(h * point.y);
+            mLayoutParams.height = (int)(h * point.y);
         }
-        dialogWindow.setAttributes(lp);
+        dialogWindow.setAttributes(mLayoutParams);
     }
 
     protected double getWidthRatio(){

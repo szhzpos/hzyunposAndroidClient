@@ -121,9 +121,14 @@ public class UnifiedPayResult extends Result {
     }
 
     public void failure(String err){
-        res_code = 2;
+        res_code = FAILURE;
         setStatus("n");
         setInfo(err);
+    }
+
+    @Override
+    public boolean isSuccess() {
+        return super.isSuccess() && res_code == SUCCESS;
     }
 
     @Override
