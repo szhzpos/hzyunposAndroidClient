@@ -111,7 +111,7 @@ public final class HttpRequest {
                     result.append(line);
                 }
                 content.put("flag", 1);
-                content.put("info",Utils.unicode2StringWithStringBuilder(result).toString());
+                content.put("info",result.toString());
             }
             content.put("rsCode", mGetCode);
         } catch (IOException | JSONException e) {
@@ -318,7 +318,7 @@ public final class HttpRequest {
                     }
 
                     content.put("flag", 1);
-                    content.put("info",Utils.unicode2StringWithStringBuilder(result).toString());
+                    content.put("info",result.toString());
                 }else {
                     Map<String,String> map = Utils.parseXml(reader);
                     content.put("flag", 1);

@@ -46,19 +46,22 @@ public final class MobileTransferDialog extends AbstractTransferDialog {
     private void initTransferInfoList(){
         mTransferDetailsAdapter.setDatas(mContext.getCashierId());
         final RecyclerView retail_details_list = findViewById(R.id.retail_details_list),refund_details_list = findViewById(R.id.refund_details_list),
-                recharge_details_list = findViewById(R.id.recharge_details_list);
+                recharge_details_list = findViewById(R.id.recharge_details_list),time_card_details = findViewById(R.id.time_card_details);
 
         retail_details_list.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
         refund_details_list.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
         recharge_details_list.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
+        time_card_details.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
 
         retail_details_list.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
         refund_details_list.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
         recharge_details_list.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
+        time_card_details.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
 
         retail_details_list.setAdapter(new MobileTransferDetailsAdapter(mContext,aggregateRetails()));
         refund_details_list.setAdapter(new MobileTransferDetailsAdapter(mContext,aggregateRefunds()));
         recharge_details_list.setAdapter(new MobileTransferDetailsAdapter(mContext,aggregateDeposits()));
+        time_card_details.setAdapter(new MobileTransferDetailsAdapter(mContext,aggregateTimeCard()));
 
         setFooterInfo();
     }
@@ -137,6 +140,32 @@ public final class MobileTransferDialog extends AbstractTransferDialog {
         deposits.add(object);
 
         return deposits;
+    }
+
+    private JSONArray aggregateTimeCard(){
+        JSONArray timeCard = mTransferDetailsAdapter.getTransferTimeCard();
+        final JSONObject object = new JSONObject();
+        if (null != timeCard){
+            final JSONObject transfer_sum = mTransferDetailsAdapter.getTransferSumInfo();
+            double amt = transfer_sum.getDoubleValue("cards_money");
+            int num = transfer_sum.getIntValue("cardsc_total_orders");
+
+            if (!Utils.equalDouble(amt,0.0) || num != 0){
+                object.put("pay_name","合计");
+            }else{
+                object.put("pay_name","暂无数据");
+            }
+            object.put("order_num",num);
+            object.put("pay_money",amt);
+        }else{
+            timeCard = new JSONArray();
+            object.put("pay_name","暂无数据");
+            object.put("order_num",0.0);
+            object.put("pay_money",0.0);
+        }
+        timeCard.add(object);
+
+        return timeCard;
     }
 
     private void setFooterInfo(){

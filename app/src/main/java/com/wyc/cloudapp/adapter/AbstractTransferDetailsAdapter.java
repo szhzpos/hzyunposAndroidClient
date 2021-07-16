@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Locale;
 
 public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAdapter<AbstractTransferDetailsAdapter.MyViewHolder>  {
-    protected JSONArray mTransferRetails,mTransferRefunds,mTransferDeposits,mTransferOrderCodes,mTransferCardsc;
+    protected JSONArray mTransferRetails,mTransferRefunds,mTransferDeposits,mTransferOrderCodes, mTransferTimeCard;
     protected final JSONObject mTransferSumInfo;
     protected final boolean mTransferAmtNotVisible;
     protected PasswordEditTextReplacement editTextReplacement;
@@ -48,6 +48,9 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
 
     public JSONArray getTransferDeposits(){
         return mTransferDeposits;
+    }
+    public JSONArray getTransferTimeCard(){
+        return mTransferTimeCard;
     }
 
     public void setDatas(final String cas_id){
@@ -98,7 +101,9 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
     private String getTransferStartTime(final String cas_id,final String stores_id,final StringBuilder err){
         final String start_time_where_sql = " transfer_status = 1 and (order_status = 2  or order_status = 4) and stores_id = "+ stores_id +" and cashier_id =" + cas_id,
                 start_time_sql = "select min(addtime) addtime from (select min(addtime) addtime from member_order_info where  transfer_status = 1 and status = 3 and stores_id = "+ stores_id +" and cashier_id =" + cas_id +
-                        " union select min(addtime) addtime from refund_order where "+ start_time_where_sql + " union select min(addtime) addtime from retail_order where "+ start_time_where_sql +") as b";
+                        " union select min(addtime) addtime from refund_order where "+ start_time_where_sql + " union select min(addtime) addtime from retail_order where "+ start_time_where_sql +"" +
+                        " union SELECT  min(time) addtime FROM timeCardSaleOrder where status = 1 and transfer_status = 0 and cas_id="+ cas_id +") as b";
+        Logger.d("start_time_sql:%s",start_time_sql);
         return SQLiteHelper.getString(start_time_sql,err);
     }
 
@@ -205,8 +210,8 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
         double amt = 0.0,total_amt = 0.0,cash_sum_amt = 0.0;
 
         //次卡
-        for (int j = 0,jsize = mTransferCardsc.size();j < jsize;j++){
-            object = mTransferCardsc.getJSONObject(j);
+        for (int j = 0, jsize = mTransferTimeCard.size(); j < jsize; j++){
+            object = mTransferTimeCard.getJSONObject(j);
             object.put("ti_code",ti_code);
 
             pay_method_id = Utils.getNotKeyAsNumberDefault(object,"pay_method",-1);
@@ -252,23 +257,27 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
         boolean code = false;
          final String retail_code_sql = "select cashier_id cas_id,order_code from retail_order where transfer_status = 1 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +"  and (order_status = 2  or order_status = 4) and "+ start_time +" <= addtime and addtime <= strftime('%s','now') group by order_code,cashier_id",
                  refund_code_sql = "select cashier_id cas_id,ro_code order_code from refund_order where transfer_status = 1 and order_status = 2 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +" and "+ start_time +" <= addtime and addtime <= strftime('%s','now') group by ro_code,cashier_id",
-                 deposit_code_sql = "select cashier_id cas_id,order_code from member_order_info where transfer_status = 1 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +" and status = 3 and "+ start_time +" <= addtime and addtime <= strftime('%s','now') group by order_code,cashier_id";
+                 deposit_code_sql = "select cashier_id cas_id,order_code from member_order_info where transfer_status = 1 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +" and status = 3 and "+ start_time +" <= addtime and addtime <= strftime('%s','now') group by order_code,cashier_id",
+                 time_card_code_sql = " select order_no as order_code,cas_id from timeCardSaleOrder where transfer_status = 0 and status = 1 and cas_id = "+ cas_id +" and " + start_time +"  <=  time and time <=strftime('%s','now') group by order_no,cas_id";
 
          Logger.d(retail_code_sql);
          final JSONArray transfer_retail_codes = SQLiteHelper.getListToJson(retail_code_sql,err);
          final JSONArray transfer_refund_codes = SQLiteHelper.getListToJson(refund_code_sql,err);
          final JSONArray transfer_deposit_codes = SQLiteHelper.getListToJson(deposit_code_sql,err);
+         final JSONArray transfer_time_card_codes = SQLiteHelper.getListToJson(time_card_code_sql,err);
 
-         if (null != transfer_retail_codes && null != transfer_refund_codes && null != transfer_deposit_codes ){
+         if (null != transfer_retail_codes && null != transfer_refund_codes && null != transfer_deposit_codes && transfer_time_card_codes != null ){
              if (mTransferOrderCodes == null)mTransferOrderCodes = new JSONArray();
 
              mTransferSumInfo.put("order_num",transfer_retail_codes.size());
              mTransferSumInfo.put("refund_num",transfer_refund_codes.size());
              mTransferSumInfo.put("recharge_num",transfer_deposit_codes.size());
+             mTransferSumInfo.put("cards_num",transfer_time_card_codes.size());
 
              mTransferOrderCodes.addAll(transfer_retail_codes);
              mTransferOrderCodes.addAll(transfer_refund_codes);
              mTransferOrderCodes.addAll(transfer_deposit_codes);
+             mTransferOrderCodes.addAll(transfer_time_card_codes);
 
              if (mTransferOrderCodes.isEmpty()){
                  mTransferSumInfo.clear();
@@ -292,14 +301,18 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
                  refund_sql = "SELECT pay_method,c.name pay_name,count(1) order_num,sum(pay_money) pay_money FROM refund_order_pays a left join pay_method c on a.pay_method = c.pay_method_id inner join refund_order b \n" +
                          "on a.ro_code = b.ro_code where b.transfer_status = 1 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +"  and b.order_status = 2 and a.pay_status = 2 and " + start_time +" <= b.addtime and b.addtime <= strftime('%s','now') group by pay_method",
                  deposit_sql = "SELECT a.pay_method_id pay_method,c.name pay_name ,count(1) order_num,sum(order_money) pay_money FROM member_order_info a left join pay_method c on a.pay_method_id = c.pay_method_id where transfer_status = 1 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +"  and a.status = 3 and " + start_time +" <= addtime and " +
-                         "addtime <= strftime('%s','now') group by a.pay_method_id";
+                         "addtime <= strftime('%s','now') group by a.pay_method_id",
+                 time_card_sql = "SELECT a.pay_method_id as pay_method, b.name pay_name,count(1) order_num,sum(c.amt) pay_money \n" +
+                         "  FROM timeCardPayDetail a left join pay_method b on a.pay_method_id = b.pay_method_id \n" +
+                         "  inner join timeCardSaleOrder c on a.order_no = c.order_no where c.transfer_status = 0 \n" +
+                         "  and c.status = 1 and c.cas_id = " + cas_id +" and a.status = 1 and time between "+ start_time +" and strftime('%s','now') group by pay_method";
 
-         final JSONArray transfer_retails = mTransferRetails = SQLiteHelper.getListToJson(retail_sql,err);
-         final JSONArray transfer_refunds = mTransferRefunds = SQLiteHelper.getListToJson(refund_sql,err);
-         final JSONArray transfer_deposits = mTransferDeposits =  SQLiteHelper.getListToJson(deposit_sql,err);
-         mTransferCardsc = new JSONArray();
+         mTransferRetails = SQLiteHelper.getListToJson(retail_sql,err);
+         mTransferRefunds = SQLiteHelper.getListToJson(refund_sql,err);
+         mTransferDeposits =  SQLiteHelper.getListToJson(deposit_sql,err);
+         mTransferTimeCard = SQLiteHelper.getListToJson(time_card_sql,err);
 
-         return null != transfer_retails && null != transfer_refunds && null != transfer_deposits;
+         return null != mTransferRetails && null != mTransferRefunds && null != mTransferDeposits && mTransferTimeCard != null;
      }
 
     public int verifyTransfer(final StringBuilder info){
@@ -350,10 +363,10 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
         final String where_sql = "where transfer_status = 1 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +"  and (order_status = 2  or order_status = 4) and "+ start_time +" <= addtime and addtime <= "+ end_time,
 
                 retail_order_update_sql = "update retail_order set transfer_time = strftime('%s','now'),transfer_status = 2 " + where_sql,refund_order_update_sql = "update refund_order set transfer_time = strftime('%s','now'),transfer_status = 2 " + where_sql,
-                member_order_info_update_sql = "update member_order_info set transfer_status = 2 where transfer_status = 1 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +"  and status = 3 and " + start_time +" <= addtime and " +
-                        "addtime <= "+ end_time;
+                member_order_info_update_sql = "update member_order_info set transfer_status = 2 where transfer_status = 1 and stores_id = "+ stores_id +" and cashier_id = "+ cas_id +"  and status = 3 and " + start_time +" <= addtime and  addtime <= "+ end_time,
+                time_card_update_sql = "update timeCardSaleOrder set transfer_status = 1 where transfer_status = 0 and status = 1 and cas_id = " + cas_id +" and time between "+ start_time +" and "+ end_time;
 
-        final List<String> update_sql = Arrays.asList(retail_order_update_sql,refund_order_update_sql,member_order_info_update_sql);
+        final List<String> update_sql = Arrays.asList(retail_order_update_sql,refund_order_update_sql,member_order_info_update_sql,time_card_update_sql);
 
         final JSONArray transfer_infos = new JSONArray();
         mTransferSumInfo.put("cashbox_money",cashbox_amt);
@@ -363,7 +376,7 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
         data.put("transfer_order",mTransferOrderCodes);
 
         data.put("transfer_money_info",mTransferRetails);
-        data.put("transfer_once_cardsc",mTransferCardsc);
+        data.put("transfer_once_cardsc", mTransferTimeCard);
         data.put("transfer_recharge_money",mTransferDeposits);
         data.put("transfer_refund_money",mTransferRefunds);
 

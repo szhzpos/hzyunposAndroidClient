@@ -28,6 +28,7 @@ import com.wyc.cloudapp.bean.TimeCardData;
 import com.wyc.cloudapp.bean.TimeCardInfo;
 import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
+import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -113,15 +114,18 @@ public class SelectTimeCardActivity extends AbstractMobileActivity {
         if (Utils.isNotEmpty(name)){
             object.put("title",name);
         }
+        final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,getString(R.string.hints_query_data_sz));
         HttpUtils.sendAsyncPost(getUrl() + InterfaceURL.ONCE_CARD,HttpRequest.generate_request_parm(object,getAppSecret()))
         .enqueue(new ObjectCallback<TimeCardData>(TimeCardData.class,true) {
             @Override
             protected void onError(String msg) {
+                progressDialog.dismiss();
                 MyDialog.toastMessage(msg);
             }
 
             @Override
             protected void onSuccessForResult(TimeCardData d, String hint) {
+                progressDialog.dismiss();
                 mAdapter.setDataForList(d.getCard());
             }
         });

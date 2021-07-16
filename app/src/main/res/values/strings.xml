@@ -93,6 +93,7 @@
     <string name="vip_mobile_colon">会员手机：</string>
     <string name="vip_card_no_colon">会员卡号：</string>
     <string name="sale_order_id">销售单号：</string>
+    <string name="time_card_order">次卡订单</string>
 
     <!-- 新增会员 -->
     <string name="vip_dialog_title_sz">会员信息</string>
@@ -403,6 +404,7 @@
     <!--交班窗口-->
     <string name="transfer_id_sz_colon">交班单号：</string>
     <string name="charge_order_sz">充值单</string>
+    <string name="time_card_order_sz">@string/time_card_order</string>
     <string name="pay_way_sz">收款方式</string>
     <string name="pay_amt_sz">收款金额(元)</string>
     <string name="refund_way_sz">退款方式</string>
@@ -578,7 +580,7 @@
     <string name="transfer_order_num_sz">单数(笔)</string>
     <string name="transfer_operator_sz">交班人：</string>
     <string name="upload_time_sz">上传时间：</string>
-    <string name="times_card_order_sz">次卡订单</string>
+    <string name="times_card_order_sz">@string/time_card_order</string>
     <string name="final_sum_amt_sz">总合计</string>
     <string name="pay_sum_amt_sz">收款合计</string>
     <string name="transfer_cash_unit_sz">交班现金(元)</string>
@@ -739,6 +741,19 @@
     <!-- 次卡销售详情 -->
     <string name="time_card_order_id">@string/sale_order_id</string>
     <string name="time_card_detail">次卡销售详情</string>
+
+    <!-- 次卡使用 -->
+    <string name="time_card_use_vip_no">@string/vip_card_no_colon</string>
+    <string name="time_card_use_vip_mobile">@string/vip_mobile_colon</string>
+    <string name="time_card_use_vip_name">@string/vip_name_colon</string>
+    <string name="time_card_use_vip_grade">会员等级：</string>
+    <string name="time_card_no">卡号：</string>
+    <string name="time_card_name">卡名称：</string>
+    <string name="residue_time">剩余次数：</string>
+    <string name="use_limit">使用限制：</string>
+    <string name="usage_time">已用次数：</string>
+    <string name="valid_date">有效期：</string>
+    <string name="use">扣次</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

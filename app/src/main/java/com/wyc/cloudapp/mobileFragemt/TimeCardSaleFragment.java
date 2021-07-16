@@ -1,7 +1,6 @@
 package com.wyc.cloudapp.mobileFragemt;
 
 import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.text.method.ReplacementTransformationMethod;
 import android.view.KeyEvent;
@@ -31,6 +30,7 @@ import com.wyc.cloudapp.bean.VipInfo;
 import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.data.room.entity.TimeCardSaleOrder;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
+import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
@@ -76,7 +76,7 @@ public final class TimeCardSaleFragment extends AbstractMobileFragment {
 
     @Override
     protected int getRootLayout() {
-        return R.layout.once_card_sale_fragment;
+        return R.layout.time_card_sale_fragment;
     }
 
     @Override
@@ -118,7 +118,7 @@ public final class TimeCardSaleFragment extends AbstractMobileFragment {
         return new TimeCardSaleOrder.Builder().vip_openid(mVip.getOpenid())
                 .vip_card_no(mVip.getCard_code()).vip_name(mVip.getName()).vip_mobile(mVip.getMobile())
                 .amt(Double.parseDouble(sale_amt_tv.getText().toString())).saleman(getSaleManId())
-                .operator(mContext.getCashierCode()).saleInfo(mSaleAdapter.getList()).build();
+                .cas_id(mContext.getCashierId()).saleInfo(mSaleAdapter.getList()).build();
     }
 
     private void initSaleTimeCardAdapter(){
@@ -178,6 +178,7 @@ public final class TimeCardSaleFragment extends AbstractMobileFragment {
 
     public void setVipInfo(final VipInfo vip){
         final TextView vip_name_tv = findViewById(R.id.vip_name);
+        assert vip_name_tv != null;
         if ( vip != null ){
             vip_name_tv.setText(vip.getName());
         }else vip_name_tv.setText("");
@@ -187,6 +188,7 @@ public final class TimeCardSaleFragment extends AbstractMobileFragment {
     @SuppressLint("ClickableViewAccessibility")
     private void initSearchContent(){
         final EditText search = findViewById(R.id.mobile_search_content);
+        assert search != null;
         search.setTransformationMethod(new ReplacementTransformationMethod() {
             @Override
             protected char[] getOriginal() {
@@ -229,7 +231,7 @@ public final class TimeCardSaleFragment extends AbstractMobileFragment {
         if (Utils.isNotEmpty(name)){
             object.put("title",name);
         }
-        final ProgressDialog progressDialog = ProgressDialog.show(mContext,"",getString(R.string.hints_query_data_sz),false,true);
+        final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(mContext,getString(R.string.hints_query_data_sz));
         HttpUtils.sendAsyncPost(mContext.getUrl() + InterfaceURL.ONCE_CARD, HttpRequest.generate_request_parm(object,mContext.getAppSecret()))
                 .enqueue(new ObjectCallback<TimeCardData>(TimeCardData.class,true) {
                     @Override
@@ -242,8 +244,11 @@ public final class TimeCardSaleFragment extends AbstractMobileFragment {
                     protected void onSuccessForResult(TimeCardData d, String hint) {
                         List<TimeCardInfo> list = d.getCard();
                         if (null != list){
-                            if (list.size() == 1){
+                            int size = list.size();
+                            if (size == 1){
                                 add(list.get(0));
+                            }else if (size == 0){
+                                MyDialog.toastMessage(getString(R.string.not_exist_hint_sz, _search_content.getText().toString()));
                             }else
                                 SelectTimeCardActivity.startForResult(mContext, (ArrayList<TimeCardInfo>) list);
                         }

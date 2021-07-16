@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 10,
-    "identityHash": "d62a4b6cf58edfe3122f5ce21d0f2480",
+    "identityHash": "9102c0b60b7d99850ee60351cf74c04c",
     "entities": [
       {
         "tableName": "pay_method",
@@ -151,7 +151,7 @@
       },
       {
         "tableName": "timeCardSaleOrder",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`order_no` TEXT NOT NULL, `online_order_no` TEXT, `vip_openid` TEXT, `vip_card_no` TEXT, `vip_mobile` TEXT, `vip_name` TEXT, `amt` REAL NOT NULL, `status` INTEGER NOT NULL, `saleman` TEXT, `operator` TEXT, `time` TEXT DEFAULT (datetime('now', 'localtime')), PRIMARY KEY(`order_no`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`order_no` TEXT NOT NULL, `online_order_no` TEXT, `vip_openid` TEXT, `vip_card_no` TEXT, `vip_mobile` TEXT, `vip_name` TEXT, `amt` REAL NOT NULL, `status` INTEGER NOT NULL DEFAULT 0, `saleman` TEXT, `cas_id` TEXT, `time` INTEGER NOT NULL DEFAULT 0, `transfer_status` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`order_no`))",
         "fields": [
           {
             "fieldPath": "order_no",
@@ -199,7 +199,8 @@
             "fieldPath": "status",
             "columnName": "status",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": true,
+            "defaultValue": "0"
           },
           {
             "fieldPath": "saleman",
@@ -208,17 +209,24 @@
             "notNull": false
           },
           {
-            "fieldPath": "operator",
-            "columnName": "operator",
+            "fieldPath": "cas_id",
+            "columnName": "cas_id",
             "affinity": "TEXT",
             "notNull": false
           },
           {
             "fieldPath": "time",
             "columnName": "time",
-            "affinity": "TEXT",
-            "notNull": false,
-            "defaultValue": "(datetime('now', 'localtime'))"
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "transfer_status",
+            "columnName": "transfer_status",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
           }
         ],
         "primaryKey": {
@@ -295,7 +303,7 @@
       },
       {
         "tableName": "timeCardPayDetail",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`rowId` INTEGER NOT NULL, `order_no` TEXT NOT NULL, `pay_method_id` INTEGER NOT NULL, `amt` REAL NOT NULL, `zl_amt` REAL NOT NULL, `online_pay_no` TEXT, `remark` TEXT, `status` INTEGER NOT NULL, `operator` TEXT, `pay_time` TEXT, PRIMARY KEY(`rowId`, `order_no`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`rowId` INTEGER NOT NULL, `order_no` TEXT NOT NULL, `pay_method_id` INTEGER NOT NULL, `amt` REAL NOT NULL, `zl_amt` REAL NOT NULL, `online_pay_no` TEXT, `remark` TEXT, `status` INTEGER NOT NULL, `cas_id` TEXT, `pay_time` TEXT, PRIMARY KEY(`rowId`, `order_no`))",
         "fields": [
           {
             "fieldPath": "rowId",
@@ -346,8 +354,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "operator",
-            "columnName": "operator",
+            "fieldPath": "cas_id",
+            "columnName": "cas_id",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -372,7 +380,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd62a4b6cf58edfe3122f5ce21d0f2480')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9102c0b60b7d99850ee60351cf74c04c')"
     ]
   }
 }

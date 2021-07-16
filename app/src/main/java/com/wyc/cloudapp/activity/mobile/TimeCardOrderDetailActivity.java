@@ -111,7 +111,7 @@ public class TimeCardOrderDetailActivity extends AbstractMobileActivity{
         mOrder.setSaleInfo(TimeCardSaleInfo.getSaleInfoById(mOrder.getOrder_no()));
 
         order_id_tv.setText(mOrder.getOnline_order_no());
-        order_time_tv.setText(mOrder.getTime());
+        order_time_tv.setText(mOrder.getFormatTime());
         vip_no_tv.setText(mOrder.getVip_card_no());
         vip_name_tv.setText(mOrder.getVip_name());
         vip_mobile_tv.setText(mOrder.getVip_mobile());

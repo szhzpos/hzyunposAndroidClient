@@ -45,6 +45,7 @@ import com.wyc.cloudapp.utils.Utils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -251,7 +252,7 @@ public class TimeCardSaleQueryFragment extends AbstractMobileFragment {
         final Calendar rightNow = Calendar.getInstance();
         rightNow.setTimeZone(TimeZone.getDefault());
 
-        String start = null,end = null;
+        long start = 0,end = 0;
 
         LinearLayout _query_time_layout = findViewById(R.id._query_time_layout);
         switch (index){
@@ -262,29 +263,36 @@ public class TimeCardSaleQueryFragment extends AbstractMobileFragment {
                 rightNow.add(Calendar.DAY_OF_YEAR,-1);
 
                 setStartTime(rightNow);
-                start = FormatDateTimeUtils.formatDataWithTimestamp(rightNow.getTime().getTime());
+                start = rightNow.getTime().getTime();
 
                 setEndTime(rightNow);
-                end = FormatDateTimeUtils.formatDataWithTimestamp(rightNow.getTime().getTime());
+                end = rightNow.getTime().getTime();
                 break;
             case 2://other
                 _query_time_layout.setVisibility(View.VISIBLE);
-                start = mStartDate.getText() + " 00:00:00";
-                end = mEndDate.getText() + " 23:59:59";
+                final SimpleDateFormat sdf = new SimpleDateFormat(FormatDateTimeUtils.YYYY_MM_DD_1, Locale.CHINA);
+                try {
+                    rightNow.setTime(Objects.requireNonNull(sdf.parse(mStartDate.getText() + " 00:00:00")));
+                    start = rightNow.getTime().getTime();
+                    rightNow.setTime(Objects.requireNonNull(sdf.parse(mEndDate.getText() + " 23:59:59")));
+                    end = rightNow.getTime().getTime();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
                 break;
             default:
                 _query_time_layout.setVisibility(View.GONE);
                 rightNow.setTime(new Date());
 
                 setStartTime(rightNow);
-                start = FormatDateTimeUtils.formatDataWithTimestamp(rightNow.getTime().getTime());
+                start = rightNow.getTime().getTime();
 
                 setEndTime(rightNow);
-                end = FormatDateTimeUtils.formatDataWithTimestamp(rightNow.getTime().getTime());
+                end = rightNow.getTime().getTime();
         }
-        query(start,end);
+        query(start / 1000,end / 1000);
     }
-    private void query(final String start,final String end){
+    private void query(long start,long end){
         mAdapter.setData(generateQueryCondition(start,end));
     }
 
@@ -293,9 +301,9 @@ public class TimeCardSaleQueryFragment extends AbstractMobileFragment {
         return CustomApplication.self().getString(R.string.once_card_sale_sz) + CustomApplication.self().getString(R.string.query_sz);
     }
 
-    private String generateQueryCondition(final String start,final String end) {
+    private String generateQueryCondition(long start,long end) {
         final String content = mSearchContent.getText().toString();
-        final StringBuilder where_sql = new StringBuilder("select * from timeCardSaleOrder where online_order_no is not null and time between '"+ start +"' and '"+ end + "'");
+        final StringBuilder where_sql = new StringBuilder("select * from timeCardSaleOrder where online_order_no is not null and time between "+ start +" and "+ end );
         if (!content.isEmpty()){
             if (Utils.getViewTagValue(mCondition,1) == 1){
                 where_sql.append(" and order_no like '%").append(content).append("'");
@@ -372,7 +380,7 @@ public class TimeCardSaleQueryFragment extends AbstractMobileFragment {
             if (null != order){
                 holder.order_code.setText(order.getOnline_order_no());
                 holder._order_status.setText(order.getStatusName());
-                holder._order_time.setText(order.getTime());
+                holder._order_time.setText(order.getFormatTime());
                 holder._order_cas_name.setText(order.getCashierName());
                 holder._order_amt.setText(String.format(Locale.CHINA,"%.2f",order.getAmt()));
                 holder._vip_label.setText(String.format(Locale.CHINA,"会员：%s(%s)",order.getVip_name(),order.getVip_mobile()));

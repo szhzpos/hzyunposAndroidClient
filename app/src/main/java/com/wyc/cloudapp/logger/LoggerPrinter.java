@@ -26,6 +26,7 @@ import static com.wyc.cloudapp.logger.Logger.INFO;
 import static com.wyc.cloudapp.logger.Logger.VERBOSE;
 import static com.wyc.cloudapp.logger.Logger.WARN;
 import static com.wyc.cloudapp.logger.Utils.checkNotNull;
+import static com.wyc.cloudapp.utils.Utils.unicode2StringWithStringBuilder;
 
 class LoggerPrinter implements Printer {
 
@@ -190,6 +191,6 @@ class LoggerPrinter implements Printer {
   }
 
   @NonNull private String createMessage(@NonNull String message, @Nullable Object... args) {
-    return args == null || args.length == 0 ? message : String.format(message, args);
+    return unicode2StringWithStringBuilder(new StringBuilder(args == null || args.length == 0 ? message : String.format(message, args))).toString();
   }
 }

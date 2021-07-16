@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+
+    <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+        android:id="@+id/search_et"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_50"
+        android:layout_gravity="center"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="2dp"
+        android:background="@drawable/round_border_sub_gray"
+        android:drawableEnd="@drawable/search"
+        android:drawablePadding="@dimen/margin_8"
+        android:ems="10"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:hint="@string/vip_search_hint_sz"
+        android:importantForAutofill="no"
+        android:inputType="textPersonName"
+        android:padding="@dimen/margin_5"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_18"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/use_time_card_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/search_et" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#F7F7F0"
+        android:padding="@dimen/margin_18"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/_vip_no_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/time_card_use_vip_no"
+            android:textColor="@color/label_text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/_vip_no_tv"
+            android:layout_width="@dimen/width_108"
+            android:layout_height="wrap_content"
+            android:textColor="@color/label_text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toEndOf="@id/_vip_no_label"
+            app:layout_constraintTop_toTopOf="@id/_vip_no_label" />
+
+        <TextView
+            android:id="@+id/_vip_mobile_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_18"
+            android:text="@string/time_card_use_vip_mobile"
+            android:textColor="@color/label_text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/_vip_no_label" />
+
+        <TextView
+            android:id="@+id/_vip_mobile_tv"
+            android:layout_width="@dimen/width_108"
+            android:layout_height="wrap_content"
+            android:textColor="@color/label_text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toEndOf="@id/_vip_mobile_label"
+            app:layout_constraintTop_toTopOf="@id/_vip_mobile_label" />
+
+        <TextView
+            android:id="@+id/_vip_name_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_18"
+            android:text="@string/time_card_use_vip_name"
+            android:textColor="@color/label_text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toEndOf="@id/_vip_no_tv"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/_vip_name_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/label_text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toEndOf="@id/_vip_name_label"
+            app:layout_constraintTop_toTopOf="@id/_vip_name_label" />
+
+        <TextView
+            android:id="@+id/_vip_grade_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_18"
+            android:layout_marginTop="@dimen/margin_18"
+            android:text="@string/time_card_use_vip_grade"
+            android:textColor="@color/label_text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toEndOf="@id/_vip_mobile_tv"
+            app:layout_constraintTop_toBottomOf="@id/_vip_no_label" />
+
+        <TextView
+            android:id="@+id/_vip_grade_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/label_text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toEndOf="@id/_vip_grade_label"
+            app:layout_constraintTop_toTopOf="@id/_vip_grade_label" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

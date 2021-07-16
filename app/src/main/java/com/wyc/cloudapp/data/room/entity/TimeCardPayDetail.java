@@ -44,7 +44,7 @@ public class TimeCardPayDetail implements Parcelable {
     private String online_pay_no;
     private String remark;
     private int status;
-    private String operator;
+    private String cas_id;
     private String pay_time;
 
     public TimeCardPayDetail(@NonNull String order_no) {
@@ -89,8 +89,8 @@ public class TimeCardPayDetail implements Parcelable {
             detail.setStatus(status);
             return this;
         }
-        public Builder operator(String operator){
-            detail.setOperator(operator);
+        public Builder cas_id(String cas_id){
+            detail.setCas_id(cas_id);
             return this;
         }
         public Builder pay_time(String pay_time){
@@ -118,7 +118,7 @@ public class TimeCardPayDetail implements Parcelable {
         online_pay_no = in.readString();
         remark = in.readString();
         status = in.readInt();
-        operator = in.readString();
+        cas_id = in.readString();
         pay_time = in.readString();
     }
 
@@ -132,7 +132,7 @@ public class TimeCardPayDetail implements Parcelable {
         dest.writeString(online_pay_no);
         dest.writeString(remark);
         dest.writeInt(status);
-        dest.writeString(operator);
+        dest.writeString(cas_id);
         dest.writeString(pay_time);
     }
 
@@ -222,12 +222,12 @@ public class TimeCardPayDetail implements Parcelable {
         this.status = status;
     }
 
-    public String getOperator() {
-        return operator;
+    public String getCas_id() {
+        return cas_id;
     }
 
-    public void setOperator(String operator) {
-        this.operator = operator;
+    public void setCas_id(String cas_id) {
+        this.cas_id = cas_id;
     }
 
     public String getPay_time() {
@@ -261,7 +261,7 @@ public class TimeCardPayDetail implements Parcelable {
                 ", pay_method_id=" + pay_method_id +
                 ", amt=" + amt +
                 ", online_pay_no='" + online_pay_no + '\'' +
-                ", operator='" + operator + '\'' +
+                ", cas_id='" + cas_id + '\'' +
                 ", pay_time='" + pay_time + '\'' +
                 '}';
     }

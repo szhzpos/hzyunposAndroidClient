@@ -218,12 +218,12 @@ public class TimeCardPayActivity extends AbstractMobileActivity {
             double pamt = object.getDoubleValue("pamt"),zl_amt = object.getDoubleValue("pzl");
             payDetail = new TimeCardPayDetail.Builder(mOrder.getOrder_no())
                     .pay_method_id(object.getIntValue("pay_method_id")).remark(object.getString("v_num"))
-                    .amt(pamt - zl_amt).zl_amt(zl_amt).operator(getCashierCode()).build();
+                    .amt(pamt - zl_amt).zl_amt(zl_amt).cas_id(getCashierId()).build();
 
             payDetails.add(payDetail);
         }
         try {
-            mOrder.setTime(formatCurrentTime(FormatDateTimeUtils.YYYY_MM_DD_1));
+            mOrder.setTime(System.currentTimeMillis() / 1000);
             mOrder.setPayInfo(payDetails);
             mOrder.save();
             startPay();
@@ -587,7 +587,7 @@ public class TimeCardPayActivity extends AbstractMobileActivity {
 
             info.append(context.getString(R.string.store_name_sz).concat(application.getStoreName())).append(new_line);
             info.append(context.getString(R.string.order_sz).concat(order_info.getOnline_order_no())).append(new_line);
-            info.append(context.getString(R.string.time_card_print_order_time).concat(order_info.getTime())).append(new_line);
+            info.append(context.getString(R.string.time_card_print_order_time).concat(order_info.getFormatTime())).append(new_line);
 
             final JSONObject member_parameter = new JSONObject();
             if (!SQLiteHelper.getLocalParameter("MEMBER_PARAMETER",member_parameter)) Logger.d("查询会员参数错误:%s",member_parameter.getString("info"));
@@ -679,8 +679,10 @@ public class TimeCardPayActivity extends AbstractMobileActivity {
         if (order == null){
             throw new IllegalArgumentException("the second parameter must not be empty...");
         }
-        Intent intent = new Intent(context.getContext(), TimeCardPayActivity.class)
-                .putExtra(ORDER_INFO,order);
-        context.startActivityForResult(intent,ONCE_CARD_REQUEST_PAY);
+        if (order.getSaleInfo().isEmpty()){
+            MyDialog.toastMessage("次卡销售记录不能为空！");
+            return;
+        }
+        context.startActivityForResult( new Intent(context.getContext(), TimeCardPayActivity.class).putExtra(ORDER_INFO,order),ONCE_CARD_REQUEST_PAY);
     }
 }

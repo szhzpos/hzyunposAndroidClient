@@ -67,7 +67,7 @@ public final class HttpUtils {
                 content.put("flag",1);
                 if (responseBody != null){
                     if (json){
-                        content.put("info",Utils.unicode2StringWithStringBuilder(new StringBuilder(responseBody.string())).toString());
+                        content.put("info",responseBody.string());
                     }else {
                         try (Reader reader = new InputStreamReader(responseBody.byteStream(),StandardCharsets.UTF_8)){
                             final Map<String,String> map = Utils.parseXml(reader);

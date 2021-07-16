@@ -2,6 +2,7 @@ package com.wyc.cloudapp.bean;
 
 import androidx.annotation.NonNull;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.wyc.cloudapp.utils.http.callback.Result;
 
 import java.util.Objects;
@@ -19,9 +20,13 @@ import java.util.Objects;
  * @Version: 1.0
  */
 public class UnifiedPayResult extends Result {
+    @JSONField(serialize = false)
     public static final int SUCCESS = 1;
+    @JSONField(serialize = false)
     public static final int FAILURE = 2;
+    @JSONField(serialize = false)
     public static final int INPUT_PASSWORD = 3;
+    @JSONField(serialize = false)
     public static final int PASSWORD_POP = 4;
 
     private int res_code;

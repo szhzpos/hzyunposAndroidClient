@@ -7,7 +7,7 @@
     android:background="@color/white">
 
 
-    <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+    <EditText
         android:id="@+id/mobile_search_content"
         android:layout_width="match_parent"
         android:layout_height="@dimen/height_50"

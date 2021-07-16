@@ -225,7 +225,7 @@ public abstract class AbstractTransferDialog extends AbstractDialogMainActivity 
             if (!Utils.equalDouble(refund_money,0.0))
                 info.append(context.getString(R.string.t_f_refund_s_sz)).append(no_visible ? asterisk : String.format(Locale.CHINA,"%.2f",refund_money)).append(new_line);
 
-            info.append(context.getString(R.string.t_f_s_sz)).append(no_visible ? asterisk : String.format(Locale.CHINA,"%.2f",order_money - refund_money)).append(new_line);
+            info.append(context.getString(R.string.t_f_s_sz)).append(no_visible ? asterisk : String.format(Locale.CHINA,"%.2f",order_money + recharge_money + cards_money - refund_money)).append(new_line);
             info.append(line).append(new_line);
 
             info.append(context.getString(R.string.t_f_cash_sz)).append("：").append(no_visible ? asterisk :String.format(Locale.CHINA,"%.2f", order_info.getDoubleValue("sj_money"))).append(new_line);

@@ -126,9 +126,9 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         update_list.add(sale_operator_info_sql);
         update_list.add(auxiliary_barcode_sql);
 
-        update_list.add("CREATE TABLE IF NOT EXISTS `timeCardSaleOrder` (`order_no` TEXT NOT NULL, `online_order_no` TEXT, `vip_openid` TEXT, `vip_card_no` TEXT, `vip_mobile` TEXT, `vip_name` TEXT, `amt` REAL NOT NULL, `status` INTEGER NOT NULL, `saleman` TEXT, `operator` TEXT, `time` TEXT DEFAULT ((datetime('now', 'localtime'))), PRIMARY KEY(`order_no`))");
+        update_list.add("CREATE TABLE IF NOT EXISTS `timeCardSaleOrder` (`order_no` TEXT NOT NULL, `online_order_no` TEXT, `vip_openid` TEXT, `vip_card_no` TEXT, `vip_mobile` TEXT, `vip_name` TEXT, `amt` REAL NOT NULL, `status` INTEGER NOT NULL DEFAULT 0, `saleman` TEXT, `cas_id` TEXT,`transfer_status` INTEGER NOT NULL DEFAULT 0, `time` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`order_no`))");
         update_list.add("CREATE TABLE IF NOT EXISTS `timeCardSaleDetails` (`rowId` INTEGER NOT NULL, `num` INTEGER NOT NULL, `amt` REAL NOT NULL, `price` REAL NOT NULL, `once_card_id` INTEGER NOT NULL, `name` TEXT, `discountAmt` REAL NOT NULL, `order_no` TEXT NOT NULL, PRIMARY KEY(`rowId`, `order_no`))");
-        update_list.add("CREATE TABLE IF NOT EXISTS `timeCardPayDetail` (`rowId` INTEGER NOT NULL, `order_no` TEXT NOT NULL, `pay_method_id` INTEGER NOT NULL, `amt` REAL NOT NULL, `zl_amt` REAL NOT NULL, `online_pay_no` TEXT, `remark` TEXT, `status` INTEGER NOT NULL, `operator` TEXT, `pay_time` TEXT, PRIMARY KEY(`rowId`, `order_no`))");
+        update_list.add("CREATE TABLE IF NOT EXISTS `timeCardPayDetail` (`rowId` INTEGER NOT NULL, `order_no` TEXT NOT NULL, `pay_method_id` INTEGER NOT NULL, `amt` REAL NOT NULL, `zl_amt` REAL NOT NULL, `online_pay_no` TEXT, `remark` TEXT, `status` INTEGER NOT NULL, `cas_id` TEXT, `pay_time` TEXT, PRIMARY KEY(`rowId`, `order_no`))");
         //修改
         if(!checkColumnExists(db,"member_order_info","sc_id")){
             modify_list.add("ALTER TABLE member_order_info ADD COLUMN sc_id  VARCHAR");

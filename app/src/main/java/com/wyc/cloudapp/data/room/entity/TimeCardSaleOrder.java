@@ -64,11 +64,14 @@ public final class TimeCardSaleOrder implements Parcelable {
     private String vip_mobile;
     private String vip_name;
     private double amt;
+    @ColumnInfo(defaultValue = "0")
     private int status;
     private String saleman;
-    private String operator;
-    @ColumnInfo(defaultValue = "(datetime('now', 'localtime'))")
-    private String time;
+    private String cas_id;
+    @ColumnInfo(defaultValue = "0")
+    private long time;
+    @ColumnInfo(defaultValue = "0")
+    private int transfer_status;
 
     @Ignore
     private List<TimeCardSaleInfo> saleInfo;
@@ -119,16 +122,20 @@ public final class TimeCardSaleOrder implements Parcelable {
             order.setStatus(status);
             return this;
         }
-        public Builder operator(String operator){
-            order.setOperator(operator);
+        public Builder cas_id(String cas_id){
+            order.setCas_id(cas_id);
             return this;
         }
         public Builder saleman(String saleman){
             order.setSaleman(saleman);
             return this;
         }
-        public Builder time(String time){
+        public Builder time(long time){
             order.setTime(time);
+            return this;
+        }
+        public Builder transfer_status(int status){
+            order.setTransfer_status(status);
             return this;
         }
         public Builder saleInfo(List<TimeCardSaleInfo> saleInfoList){
@@ -156,8 +163,9 @@ public final class TimeCardSaleOrder implements Parcelable {
         amt = in.readDouble();
         status = in.readInt();
         saleman = in.readString();
-        operator = in.readString();
-        time = in.readString();
+        cas_id = in.readString();
+        time = in.readLong();
+        transfer_status = in.readInt();
         saleInfo = in.createTypedArrayList(TimeCardSaleInfo.CREATOR);
         payInfo = in.createTypedArrayList(TimeCardPayDetail.CREATOR);
     }
@@ -173,8 +181,9 @@ public final class TimeCardSaleOrder implements Parcelable {
         dest.writeDouble(amt);
         dest.writeInt(status);
         dest.writeString(saleman);
-        dest.writeString(operator);
-        dest.writeString(time);
+        dest.writeString(cas_id);
+        dest.writeLong(time);
+        dest.writeInt(transfer_status);
         dest.writeTypedList(saleInfo);
         dest.writeTypedList(payInfo);
     }
@@ -269,20 +278,32 @@ public final class TimeCardSaleOrder implements Parcelable {
         this.saleman = saleman;
     }
 
-    public String getOperator() {
-        return operator;
+    public String getCas_id() {
+        return cas_id;
     }
 
-    public void setOperator(String operator) {
-        this.operator = operator;
+    public void setCas_id(String cas_id) {
+        this.cas_id = cas_id;
     }
 
-    public String getTime() {
+    public long getTime() {
         return time;
     }
 
-    public void setTime(String time) {
+    public String getFormatTime(){
+        return FormatDateTimeUtils.formatDataWithTimestamp(time * 1000);
+    }
+
+    public void setTime(long time) {
         this.time = time;
+    }
+
+    public int getTransfer_status() {
+        return transfer_status;
+    }
+
+    public void setTransfer_status(int transfer_status) {
+        this.transfer_status = transfer_status;
     }
 
     public List<TimeCardSaleInfo> getSaleInfo() {
@@ -333,7 +354,7 @@ public final class TimeCardSaleOrder implements Parcelable {
     }
 
     public String getCashierName(){
-        return SQLiteHelper.getString("select cas_name from cashier_info where cas_code = '"+ operator + "'",null);
+        return SQLiteHelper.getString("select cas_name from cashier_info where cas_id = '"+ cas_id + "'",null);
     }
 
     public String getSalemanName(){
@@ -399,7 +420,7 @@ public final class TimeCardSaleOrder implements Parcelable {
                 ", amt=" + amt +
                 ", status=" + status +
                 ", saleman='" + saleman + '\'' +
-                ", operator='" + operator + '\'' +
+                ", cas_id='" + cas_id + '\'' +
                 ", time='" + time + '\'' +
                 '}';
     }

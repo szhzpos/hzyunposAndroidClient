@@ -95,7 +95,7 @@ public class MobileTimeCardSaleAdapter extends AbstractDataAdapterForList<TimeCa
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        final View view = View.inflate(mContext, R.layout.once_card_sale,null);
+        final View view = View.inflate(mContext, R.layout.time_card_sale,null);
         view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         view.setOnClickListener(this);
         return new MyViewHolder(view);
