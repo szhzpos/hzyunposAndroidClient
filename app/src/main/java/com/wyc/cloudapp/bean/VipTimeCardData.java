@@ -3,6 +3,9 @@ package com.wyc.cloudapp.bean;
 import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.dialog.MyDialog;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -70,7 +73,7 @@ public class VipTimeCardData implements Serializable {
         @JSONField(name = "available_limits")
         private String availableLimits;
         @JSONField(name = "available")
-        private String available;
+        private int available;
         @JSONField(name = "channel")
         private String channel;
         @JSONField(name = "member_card")
@@ -94,13 +97,33 @@ public class VipTimeCardData implements Serializable {
         @JSONField(name = "title")
         private String title;
         @JSONField(name = "available_limit")
-        private String availableLimit;
+        private int availableLimit;
         @JSONField(name = "sy_limit")
         private String syLimit;
         @JSONField(name = "member_name")
         private String memberName;
         @JSONField(name = "barcode_img")
         private String barcodeImg;
+
+        @JSONField(serialize = false)
+        private int sale_num = 1;
+
+        public int getSale_num() {
+            return sale_num;
+        }
+
+        public boolean setSale_num(int sale_num) {
+            if (sale_num < 1){
+                MyDialog.toastMessage(CustomApplication.self().getString(R.string.input_sale_num_less_one_hints));
+                return false;
+            }
+            if (sale_num > available && getAvailableLimit() != 1){
+                MyDialog.toastMessage(CustomApplication.self().getString(R.string.input_sale_num_hints,String.valueOf(available)));
+                return false;
+            }
+            this.sale_num = sale_num;
+            return true;
+        }
 
         public String getQrcodeImg() {
             return qrcodeImg;
@@ -214,11 +237,11 @@ public class VipTimeCardData implements Serializable {
             this.availableLimits = availableLimits;
         }
 
-        public String getAvailable() {
+        public int getAvailable() {
             return available;
         }
 
-        public void setAvailable(String available) {
+        public void setAvailable(int available) {
             this.available = available;
         }
 
@@ -310,11 +333,11 @@ public class VipTimeCardData implements Serializable {
             this.title = title;
         }
 
-        public String getAvailableLimit() {
+        public int getAvailableLimit() {
             return availableLimit;
         }
 
-        public void setAvailableLimit(String availableLimit) {
+        public void setAvailableLimit(int availableLimit) {
             this.availableLimit = availableLimit;
         }
 

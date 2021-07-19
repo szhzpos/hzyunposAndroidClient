@@ -46,7 +46,6 @@
             android:name=".activity.mobile.TimeCardPayActivity"
             android:theme="@style/notFullActivity" />
         <activity android:name=".activity.mobile.SelectTimeCardActivity" />
-        <activity android:name=".activity.mobile.MobileTimeCardSaleActivity" />
         <activity android:name=".activity.mobile.business.EditVipInfoActivity" />
         <activity android:name=".activity.mobile.business.MobileEditGoodInfoActivity" />
         <activity android:name=".activity.mobile.business.MobileVipCategoryInfoActivity" />

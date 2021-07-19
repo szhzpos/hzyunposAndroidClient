@@ -94,6 +94,7 @@
     <string name="vip_card_no_colon">会员卡号：</string>
     <string name="sale_order_id">销售单号：</string>
     <string name="time_card_order">次卡订单</string>
+    <string name="dispose_hints">正在处理…</string>
 
     <!-- 新增会员 -->
     <string name="vip_dialog_title_sz">会员信息</string>
@@ -754,6 +755,14 @@
     <string name="usage_time">已用次数：</string>
     <string name="valid_date">有效期：</string>
     <string name="use">扣次</string>
+    <string name="input_sale_num_hints">当前有效数量:%1$s</string>
+    <string name="input_sale_num_less_one_hints">当前销售数量不能小于1</string>
+    <!-- 次卡使用打印格式-->
+    <string name="use_store">使用门店：</string>
+    <string name="use_order_time">@string/order_time_colon</string>
+    <string name="use_vip_name">@string/vip_name_colon</string>
+    <string name="use_vip_mobile">@string/vip_mobile_colon</string>
+    <string name="use_vip_card">@string/vip_card_no_colon</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

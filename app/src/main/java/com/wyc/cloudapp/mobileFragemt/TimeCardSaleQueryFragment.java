@@ -72,34 +72,11 @@ import static com.wyc.cloudapp.utils.FormatDateTimeUtils.setStartTime;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class TimeCardSaleQueryFragment extends AbstractMobileFragment {
-    private EditText mSearchContent;
-    private OrderAdapter mAdapter;
-
-    @BindView(R.id._tab_layout)
-    TabLayout _tab_layout;
-    @BindView(R.id.m_start_date)
-    TextView mStartDate;
-    @BindView(R.id.m_end_date)
-    TextView mEndDate;
-    @BindView(R.id.switch_condition)
-    TextView mCondition;
-
-    @Override
-    protected int getRootLayout() {
-        return R.layout.time_card_sale_query_fragment;
-    }
-
+public class TimeCardSaleQueryFragment extends AbstractTimeCardQueryFragment {
     @Override
     protected void viewCreated() {
+        super.viewCreated();
         EventBus.getDefault().register(this);
-
-        initTimeTv();
-        initSearchContent();
-        initSwitchCondition();
-        initOrderList();
-
-        initTab();
     }
 
     @Override
@@ -110,195 +87,19 @@ public class TimeCardSaleQueryFragment extends AbstractMobileFragment {
 
     @Subscribe
     public void handleMsg(Integer status){
-        if (null != mAdapter){
-            mAdapter.updateSelectItem(status);
+        if (isVisible() && null != mAdapter){
+            ((OrderAdapter)mAdapter).updateSelectItem(status);
         }
-    }
-
-    private void initOrderList(){
-        final RecyclerView _order_list = findViewById(R.id._order_list);
-        if (null != _order_list){
-            mAdapter = new OrderAdapter(getContext());
-            _order_list.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
-            _order_list.setAdapter(mAdapter);
-            _order_list.addItemDecoration(new LinearItemDecoration(mContext.getColor(R.color.white)));
-        }
-    }
-    private void initSwitchCondition(){
-        final JSONArray array = createSwitchConditionContentAndSetDefaultValue(mCondition);
-        mCondition.setOnClickListener(v -> {
-            final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(mContext,mContext.getString(R.string.query_way_sz));
-            treeListDialog.setData(array,null,true);
-            CustomApplication.runInMainThread(()->{
-                if (treeListDialog.exec() == 1){
-                    final JSONObject object = treeListDialog.getSingleContent();
-                    mCondition.setTag(object.getIntValue(TreeListBaseAdapter.COL_ID));
-                    mCondition.setText(object.getString(TreeListBaseAdapter.COL_NAME));
-                }
-            });
-        });
-    }
-    private JSONArray createSwitchConditionContentAndSetDefaultValue(@NonNull final TextView view){
-        final JSONArray array = getConditionSwitchContent();
-        if (!array.isEmpty()){
-            final JSONObject object = array.getJSONObject(0);
-            view.setTag(object.getIntValue(TreeListBaseAdapter.COL_ID));
-            view.setText(object.getString(TreeListBaseAdapter.COL_NAME));
-        }
-        return array;
-    }
-
-    private JSONArray getConditionSwitchContent() {
-        final JSONArray array = new JSONArray();
-        final String search_hint = mContext.getString(R.string.m_search_hint);
-        if (search_hint != null){
-            final String[] sz = search_hint.split("/");
-            for (int i = 0,length = sz.length;i < length;i ++){
-                final JSONObject object = new JSONObject();
-                object.put(TreeListBaseAdapter.COL_ID,i + 1);
-                object.put(TreeListBaseAdapter.COL_NAME,sz[i]);
-                array.add(object);
-            }
-        }
-        return array;
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private void initSearchContent(){
-        final EditText order_vip_search = findViewById(R.id.order_vip_search);
-        order_vip_search.setTransformationMethod(new ReplacementTransformationMethod() {
-            @Override
-            protected char[] getOriginal() {
-                return new char[]{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
-                        'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
-            }
-
-            @Override
-            protected char[] getReplacement() {
-                return new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
-                        'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
-            }
-        });
-        order_vip_search.setOnKeyListener((v, keyCode, event) -> {
-            if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_UP){
-                _tab_layout.selectTab(_tab_layout.getTabAt(_tab_layout.getSelectedTabPosition()));
-                return true;
-            }
-            return false;
-        });
-        order_vip_search.setOnTouchListener((view, motionEvent) -> {
-            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                final float dx = motionEvent.getX();
-                final int w = order_vip_search.getWidth();
-                if (dx > (w - order_vip_search.getCompoundPaddingRight())) {
-                    _tab_layout.selectTab(_tab_layout.getTabAt(_tab_layout.getSelectedTabPosition()));
-                }
-            }
-            return false;
-        });
-        mSearchContent = order_vip_search;
-    }
-
-    private void initTimeTv(){
-        mStartDate.setText(new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).format(new Date()));
-        mStartDate.setOnClickListener(v -> Utils.showDatePickerDialog(mContext,mStartDate, Calendar.getInstance()));
-        mEndDate.setText(new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).format(new Date()));
-        mEndDate.setOnClickListener(v -> Utils.showDatePickerDialog(mContext,mEndDate, Calendar.getInstance()));
-
-        mStartDate.addTextChangedListener(textWatcher);
-        mEndDate.addTextChangedListener(textWatcher);
-    }
-    private final TextWatcher textWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-            _tab_layout.selectTab(_tab_layout.getTabAt(_tab_layout.getSelectedTabPosition()));
-        }
-    };
-
-    private void initTab(){
-        _tab_layout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                selectTab(tab);
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-                selectTab(tab);
-            }
-        });
-
-        _tab_layout.addTab(_tab_layout.newTab().setText(R.string.today_sz));
-        _tab_layout.addTab(_tab_layout.newTab().setText(R.string.yesterday_sz));
-        _tab_layout.addTab(_tab_layout.newTab().setText(R.string.other_sz));
-    }
-    private void selectTab(TabLayout.Tab tab){
-        int index = tab.getPosition();
-        final Calendar rightNow = Calendar.getInstance();
-        rightNow.setTimeZone(TimeZone.getDefault());
-
-        long start = 0,end = 0;
-
-        LinearLayout _query_time_layout = findViewById(R.id._query_time_layout);
-        switch (index){
-            case 1://today
-                _query_time_layout.setVisibility(View.GONE);
-                rightNow.setTime(new Date());
-
-                rightNow.add(Calendar.DAY_OF_YEAR,-1);
-
-                setStartTime(rightNow);
-                start = rightNow.getTime().getTime();
-
-                setEndTime(rightNow);
-                end = rightNow.getTime().getTime();
-                break;
-            case 2://other
-                _query_time_layout.setVisibility(View.VISIBLE);
-                final SimpleDateFormat sdf = new SimpleDateFormat(FormatDateTimeUtils.YYYY_MM_DD_1, Locale.CHINA);
-                try {
-                    rightNow.setTime(Objects.requireNonNull(sdf.parse(mStartDate.getText() + " 00:00:00")));
-                    start = rightNow.getTime().getTime();
-                    rightNow.setTime(Objects.requireNonNull(sdf.parse(mEndDate.getText() + " 23:59:59")));
-                    end = rightNow.getTime().getTime();
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                break;
-            default:
-                _query_time_layout.setVisibility(View.GONE);
-                rightNow.setTime(new Date());
-
-                setStartTime(rightNow);
-                start = rightNow.getTime().getTime();
-
-                setEndTime(rightNow);
-                end = rightNow.getTime().getTime();
-        }
-        query(start / 1000,end / 1000);
-    }
-    private void query(long start,long end){
-        mAdapter.setData(generateQueryCondition(start,end));
     }
 
     @Override
-    public String getTitle(){
-        return CustomApplication.self().getString(R.string.once_card_sale_sz) + CustomApplication.self().getString(R.string.query_sz);
+    protected OrderAdapter getAdapter() {
+        return new OrderAdapter(mContext);
+    }
+
+    @Override
+    protected void query(long start, long end){
+        ((OrderAdapter)mAdapter).setData(generateQueryCondition(start,end));
     }
 
     private String generateQueryCondition(long start,long end) {
@@ -313,6 +114,11 @@ public class TimeCardSaleQueryFragment extends AbstractMobileFragment {
         }
         where_sql.append(" order by time desc");
         return where_sql.toString();
+    }
+
+    @Override
+    public String getTitle(){
+        return CustomApplication.self().getString(R.string.once_card_sale_sz) + CustomApplication.self().getString(R.string.query_sz);
     }
 
     static class OrderAdapter extends AbstractDataAdapterForList<TimeCardSaleOrder,OrderAdapter.MyViewHolder> implements View.OnClickListener {

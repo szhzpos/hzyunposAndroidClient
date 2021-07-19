@@ -9,7 +9,7 @@
     android:orientation="vertical">
 
     <com.wyc.cloudapp.CustomizationView.RoundCornerTabLayout
-        android:id="@+id/_tab"
+        android:id="@+id/_fragment_tab"
         style="@style/TabStyle"
         android:layout_width="match_parent"
         android:layout_height="@dimen/height_50"
@@ -32,7 +32,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/_tab">
+        app:layout_constraintTop_toBottomOf="@id/_fragment_tab">
 
     </androidx.viewpager2.widget.ViewPager2>
 

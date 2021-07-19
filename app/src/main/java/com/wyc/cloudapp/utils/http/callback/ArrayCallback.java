@@ -10,6 +10,11 @@ public abstract class ArrayCallback<T> extends TypeCallback<ArrayResult<T>> {
     protected ArrayCallback(Class<T> c,boolean main) {
         super(new TypeReference<ArrayResult<T>>(c){}.getType(),main);
     }
+
+    public ArrayCallback(Class<T> tClass) {
+        this(tClass,true);
+    }
+
     @Override
     protected final void onSuccess(ArrayResult<T> data) {
         if (data.isSuccess()){

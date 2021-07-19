@@ -21,7 +21,7 @@ import butterknife.ButterKnife;
 /*次卡销售*/
 public class TimeCardSaleActivity extends AbstractMobileActivity {
 
-    @BindView(R.id._tab)
+    @BindView(R.id._fragment_tab)
     TabLayout _tab;
     @BindView(R.id.view_pager)
     ViewPager2 view_pager;

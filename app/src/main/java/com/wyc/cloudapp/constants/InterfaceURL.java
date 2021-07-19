@@ -20,4 +20,5 @@ public final class InterfaceURL {
     public static final String UNIFIED_PAY = "/api/pay2/index";
     public static final String UNIFIED_PAY_QUERY = "/api/pay2_query/query";
     public static final String VIP_TIME_CARD = "/api/once_cards/member_card";
+    public static final String VIP_TIME_CARD_USE = "/api/once_cards/card_use";
 }
