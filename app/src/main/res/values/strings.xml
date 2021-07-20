@@ -749,7 +749,7 @@
     <string name="time_card_use_vip_name">@string/vip_name_colon</string>
     <string name="time_card_use_vip_grade">会员等级：</string>
     <string name="time_card_no">卡号：</string>
-    <string name="time_card_name">卡名称：</string>
+    <string name="time_card_name">名称：</string>
     <string name="residue_time">剩余次数：</string>
     <string name="use_limit">使用限制：</string>
     <string name="usage_time">已用次数：</string>
@@ -757,6 +757,8 @@
     <string name="use">扣次</string>
     <string name="input_sale_num_hints">当前有效数量:%1$s</string>
     <string name="input_sale_num_less_one_hints">当前销售数量不能小于1</string>
+    <string name="use_time">扣减次数：</string>
+    <string name="use_store_1">门店：</string>
     <!-- 次卡使用打印格式-->
     <string name="use_store">使用门店：</string>
     <string name="use_order_time">@string/order_time_colon</string>

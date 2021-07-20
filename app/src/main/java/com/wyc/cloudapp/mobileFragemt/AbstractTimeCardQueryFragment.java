@@ -24,6 +24,7 @@ import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForList;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.QueryCondition;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
@@ -56,7 +57,7 @@ import static com.wyc.cloudapp.utils.FormatDateTimeUtils.setStartTime;
  */
 public abstract class AbstractTimeCardQueryFragment extends AbstractMobileFragment{
     protected AbstractDataAdapterForList<?,? extends AbstractDataAdapter.SuperViewHolder> mAdapter;
-    protected EditText mSearchContent;
+    private EditText mSearchContent;
 
     @BindView(R.id._tab_layout)
     TabLayout _tab_layout;
@@ -84,7 +85,7 @@ public abstract class AbstractTimeCardQueryFragment extends AbstractMobileFragme
     }
 
     protected abstract AbstractDataAdapterForList<?,? extends AbstractDataAdapter.SuperViewHolder> getAdapter();
-    protected abstract void query(long s,long e);
+    protected abstract void query(@NonNull QueryCondition condition);
 
     private void initOrderList(){
         final RecyclerView _order_list = findViewById(R.id._order_list);
@@ -126,7 +127,11 @@ public abstract class AbstractTimeCardQueryFragment extends AbstractMobileFragme
             final String[] sz = search_hint.split("/");
             for (int i = 0,length = sz.length;i < length;i ++){
                 final JSONObject object = new JSONObject();
-                object.put(TreeListBaseAdapter.COL_ID,i + 1);
+                if (i == 0)
+                    object.put(TreeListBaseAdapter.COL_ID,QueryCondition.ORDER);
+                else
+                    object.put(TreeListBaseAdapter.COL_ID,QueryCondition.VIP_CODE);
+
                 object.put(TreeListBaseAdapter.COL_NAME,sz[i]);
                 array.add(object);
             }
@@ -261,6 +266,7 @@ public abstract class AbstractTimeCardQueryFragment extends AbstractMobileFragme
                 setEndTime(rightNow);
                 end = rightNow.getTime().getTime();
         }
-        query(start / 1000,end / 1000);
+
+        query(new QueryCondition(start / 1000,end / 1000,Utils.getViewTagValue(mCondition,QueryCondition.ORDER),mSearchContent.getText().toString()));
     }
 }

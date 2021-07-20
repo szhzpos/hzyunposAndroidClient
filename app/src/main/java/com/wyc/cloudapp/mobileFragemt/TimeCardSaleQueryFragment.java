@@ -32,6 +32,7 @@ import com.wyc.cloudapp.adapter.AbstractDataAdapterForList;
 import com.wyc.cloudapp.adapter.MobileRetailOrderAdapter;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.QueryCondition;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.data.room.AppDatabase;
 import com.wyc.cloudapp.data.room.entity.TimeCardSaleOrder;
@@ -98,15 +99,15 @@ public class TimeCardSaleQueryFragment extends AbstractTimeCardQueryFragment {
     }
 
     @Override
-    protected void query(long start, long end){
-        ((OrderAdapter)mAdapter).setData(generateQueryCondition(start,end));
+    protected void query(@NonNull QueryCondition condition){
+        ((OrderAdapter)mAdapter).setData(generateQueryCondition(condition));
     }
 
-    private String generateQueryCondition(long start,long end) {
-        final String content = mSearchContent.getText().toString();
-        final StringBuilder where_sql = new StringBuilder("select * from timeCardSaleOrder where online_order_no is not null and time between "+ start +" and "+ end );
+    private String generateQueryCondition(@NonNull QueryCondition condition) {
+        final String content = condition.getCondition();
+        final StringBuilder where_sql = new StringBuilder("select * from timeCardSaleOrder where online_order_no is not null and time between "+ condition.getStart() +" and "+ condition.getEnd() );
         if (!content.isEmpty()){
-            if (Utils.getViewTagValue(mCondition,1) == 1){
+            if (condition.isOrder()){
                 where_sql.append(" and order_no like '%").append(content).append("'");
             }else {
                 where_sql.append(" and vip_card_no ='").append(content).append("'");

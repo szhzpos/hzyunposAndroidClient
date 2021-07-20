@@ -13,9 +13,9 @@ package com.wyc.cloudapp.bean;
  * @Version: 1.0
  */
 public class QueryCondition  {
-    private static final int ORDER = 1;
-    private static final int VIP_CODE= 2;
-    private static final int VIP_MOBILE= 3;
+    public static final int ORDER = 1;
+    public static final int VIP_CODE= 2;
+    public static final int VIP_MOBILE= 3;
 
     private final long start;
     private final long end;

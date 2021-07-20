@@ -259,6 +259,7 @@ public final class TimeCardUseFragment extends AbstractMobileFragment {
                                 order.print(mContext);
 
                                 {
+                                    cardInfo.setSale_num(1);
                                     cardInfo.setUsenum(cardInfo.getUsenum() + order.getUseNum());
                                     if (cardInfo.getAvailableLimit() != 1)
                                         cardInfo.setAvailable(cardInfo.getAvailable() - order.getUseNum());
