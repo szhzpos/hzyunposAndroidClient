@@ -118,8 +118,6 @@ public final class TimeCardUseFragment extends AbstractMobileFragment {
                 final int w = search.getWidth();
                 if (dx > (w - search.getCompoundPaddingRight())) {
                     queryVipTimeCard(search);
-                }else if(dx < search.getCompoundPaddingLeft()){
-                    SelectTimeCardActivity.start(this);
                 }
             }
             return false;

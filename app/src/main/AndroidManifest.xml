@@ -39,7 +39,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
-        <activity android:name=".activity.mobile.TimeCardOrderDetailActivity"></activity>
+        <activity android:name=".activity.mobile.SelectGiftCardActivity"></activity>
+        <activity
+            android:name=".activity.mobile.GiftCardSaleActivity"
+            android:windowSoftInputMode="adjustResize|stateUnchanged" />
+        <activity android:name=".activity.mobile.TimeCardOrderDetailActivity" />
         <activity android:name=".activity.mobile.TimeCardQueryActivity" />
         <activity android:name=".activity.mobile.TimeCardSaleActivity" />
         <activity

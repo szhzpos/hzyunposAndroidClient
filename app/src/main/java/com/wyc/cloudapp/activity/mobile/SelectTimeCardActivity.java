@@ -24,6 +24,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForList;
+import com.wyc.cloudapp.adapter.AbstractSelectAdapter;
 import com.wyc.cloudapp.bean.TimeCardData;
 import com.wyc.cloudapp.bean.TimeCardInfo;
 import com.wyc.cloudapp.constants.InterfaceURL;
@@ -47,115 +48,46 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class SelectTimeCardActivity extends AbstractMobileActivity {
-    public static final int SELECT_ONCE_CARD = 0x000000cc;
-    private static final String ITEM_KEY = "I";
-    private TimeCardAdapter mAdapter;
-    private EditText mSearch;
+public final class SelectTimeCardActivity extends AbstractSelectActivity<TimeCardInfo, SelectTimeCardActivity.TimeCardAdapter> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED);
         setMiddleText(getString(R.string.select_once_card));
 
-        initTimeCardInfo();
-
-        initSearchContent();
-
-        showActivity();
-    }
-
-    private void initTimeCardInfo(){
-        final RecyclerView once_card_list = findViewById(R.id.once_card_list);
-        mAdapter = new TimeCardAdapter(this);
-        once_card_list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
-        once_card_list.addItemDecoration(new LinearItemDecoration(this.getColor(R.color.gray_subtransparent),3));
-        mAdapter.setSelectListener(this::setResult);
-        once_card_list.setAdapter(mAdapter);
-    }
-    private void setResult(TimeCardInfo cardInfo){
-        final Intent intent = new Intent();
-        intent.putExtra(ITEM_KEY,cardInfo);
-        setResult(RESULT_OK,intent);
-        finish();
-    }
-    public static TimeCardInfo getTimeCardInfo(@NonNull Intent intent){
-        return intent.getParcelableExtra(ITEM_KEY);
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private void initSearchContent(){
-        final EditText search = findViewById(R.id.search_once_card);
-        search.setOnKeyListener((v, keyCode, event) -> {
-            if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_UP){
-                loadTimeCard();
-                return true;
-            }
-            return false;
-        });
-        search.setOnTouchListener((view, motionEvent) -> {
-            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                final float dx = motionEvent.getX();
-                final int w = search.getWidth();
-                if (dx > (w - search.getCompoundPaddingRight())) {
-                    loadTimeCard();
-                }
-            }
-            return false;
-        });
-        mSearch = search;
-    }
-
-    private void loadTimeCard(){
-        final JSONObject object = new JSONObject();
-        object.put("appid",getAppId());
-        object.put("channel",1);
-        final String name = mSearch.getText().toString();
-        if (Utils.isNotEmpty(name)){
-            object.put("title",name);
-        }
-        final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,getString(R.string.hints_query_data_sz));
-        HttpUtils.sendAsyncPost(getUrl() + InterfaceURL.ONCE_CARD,HttpRequest.generate_request_parm(object,getAppSecret()))
-        .enqueue(new ObjectCallback<TimeCardData>(TimeCardData.class,true) {
-            @Override
-            protected void onError(String msg) {
-                progressDialog.dismiss();
-                MyDialog.toastMessage(msg);
-            }
-
-            @Override
-            protected void onSuccessForResult(TimeCardData d, String hint) {
-                progressDialog.dismiss();
-                mAdapter.setDataForList(d.getCard());
-            }
-        });
     }
 
     @Override
-    protected int getContentLayoutId() {
-        return R.layout.activity_select_once_card;
-    }
-    public static void start(Fragment context){
-        context.startActivityForResult(new Intent(context.getContext(), SelectTimeCardActivity.class),SELECT_ONCE_CARD);
-    }
-    public static void startForResult(Activity context,final ArrayList<TimeCardInfo> result){
-        final Intent intent = new Intent(context, SelectTimeCardActivity.class);
-        intent.putParcelableArrayListExtra("result",result);
-        context.startActivityForResult(intent,SELECT_ONCE_CARD);
+    protected TimeCardAdapter getAdapter() {
+        return new TimeCardAdapter(this);
     }
 
-    private void showActivity(){
-        final Intent intent = getIntent();
-        if (null != intent){
-            List<TimeCardInfo> data = intent.getParcelableArrayListExtra("result");
-            if (null !=data){
-                mAdapter.setDataForList(data);
-            }else loadTimeCard();
-        }else loadTimeCard();
+    @Override
+    protected void loadData(String c) {
+        final JSONObject object = new JSONObject();
+        object.put("appid",getAppId());
+        object.put("channel",1);
+        if (Utils.isNotEmpty(c)){
+            object.put("title",c);
+        }
+        final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,getString(R.string.hints_query_data_sz));
+        HttpUtils.sendAsyncPost(getUrl() + InterfaceURL.ONCE_CARD,HttpRequest.generate_request_parm(object,getAppSecret()))
+                .enqueue(new ObjectCallback<TimeCardData>(TimeCardData.class,true) {
+                    @Override
+                    protected void onError(String msg) {
+                        progressDialog.dismiss();
+                        MyDialog.toastMessage(msg);
+                    }
+
+                    @Override
+                    protected void onSuccessForResult(TimeCardData d, String hint) {
+                        progressDialog.dismiss();
+                        setData(d.getCard());
+                    }
+                });
     }
 
-    static class TimeCardAdapter extends AbstractDataAdapterForList<TimeCardInfo, TimeCardAdapter.MyViewHolder> implements View.OnClickListener{
-        private OnSelectFinishListener mListener;
+    static class TimeCardAdapter extends AbstractSelectAdapter<TimeCardInfo, TimeCardAdapter.MyViewHolder> implements View.OnClickListener{
         private final SelectTimeCardActivity mContext;
         public TimeCardAdapter(SelectTimeCardActivity context){
             mContext = context;
@@ -163,10 +95,10 @@ public class SelectTimeCardActivity extends AbstractMobileActivity {
 
         @Override
         public void onClick(View v) {
-            if (mListener != null){
+            if (hasListener()){
                 int id = Utils.getViewTagValue(v,-1);
                 TimeCardInfo cardInfo = getItem(id);
-                if (cardInfo != null)mListener.onFinish(cardInfo);
+                invoke(cardInfo);
             }
         }
 
@@ -226,14 +158,6 @@ public class SelectTimeCardActivity extends AbstractMobileActivity {
                 holder.available_times_tv.setText(String.format(Locale.CHINA,"%d次",cardInfo.getAvailable()));
             holder.price_tv.setText(String.format(Locale.CHINA,"￥%.2f",cardInfo.getPrice()));
             holder.itemView.setTag(position);
-        }
-
-        public interface OnSelectFinishListener{
-            void onFinish(TimeCardInfo cardInfo);
-        }
-
-        public void setSelectListener(OnSelectFinishListener mListener) {
-            this.mListener = mListener;
         }
     }
 }

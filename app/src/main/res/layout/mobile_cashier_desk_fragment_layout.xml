@@ -170,6 +170,7 @@
                 android:background="#9A8C4A"
                 android:drawableTop="@drawable/gift_card"
                 android:gravity="center"
+                android:tag="activity.mobile.GiftCardSaleActivity"
                 android:text="@string/gift_card_sale_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/font_size_18"
