@@ -54,6 +54,7 @@ class SelectGiftCardActivity : AbstractSelectActivity<GiftCardInfo, SelectGiftCa
     }
 
 
+
     class GiftCardAdapter (context:MainActivity): AbstractSelectAdapter<GiftCardInfo, GiftCardAdapter.MyViewHolder>(),View.OnClickListener {
         private var mContext:MainActivity = context;
 
@@ -74,7 +75,11 @@ class SelectGiftCardActivity : AbstractSelectActivity<GiftCardInfo, SelectGiftCa
         }
 
         override fun onClick(v: View) {
-            TODO("Not yet implemented")
+            val obj = v.tag
+            if (obj is Int){
+                val giftCardInfo : GiftCardInfo = getItem(obj);
+                invoke(giftCardInfo)
+            }
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -86,11 +91,11 @@ class SelectGiftCardActivity : AbstractSelectActivity<GiftCardInfo, SelectGiftCa
 
         override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
             val giftCardInfo : GiftCardInfo? = getItem(position);
-            holder.id_tv.setText(String.format(Locale.CHINA,"%d、",position + 1))
+            holder.id_tv.setText(String.format("%d、",position + 1))
             holder.name_tv.text = giftCardInfo?.shoppingName
-            holder.card_code_tv.text =  String.format(Locale.CHINA,"%s%s",mContext.getString(R.string.gift_card_code),giftCardInfo?.cardNo)
-            holder.face_value_tv.text = String.format(Locale.CHINA,"%s%.2f",mContext.getString(R.string.gift_card_face_value),giftCardInfo?.faceMoney)
-            holder.price_tv.text = String.format(Locale.CHINA,"%s%.2f",mContext.getString(R.string.gift_card_sale_price),giftCardInfo?.price)
+            holder.card_code_tv.text =  String.format("%s%s",mContext.getString(R.string.gift_card_code),giftCardInfo?.cardNo)
+            holder.face_value_tv.text = String.format("%s%.2f",mContext.getString(R.string.gift_card_face_value),giftCardInfo?.faceMoney)
+            holder.price_tv.text = String.format("%s%.2f",mContext.getString(R.string.gift_card_sale_price),giftCardInfo?.price)
             holder.itemView.tag = position
         }
     }

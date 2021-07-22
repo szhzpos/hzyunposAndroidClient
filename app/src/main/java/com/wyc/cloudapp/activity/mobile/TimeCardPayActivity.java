@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.activity.mobile;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
@@ -26,12 +27,15 @@ import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.PayDetailViewAdapter;
 import com.wyc.cloudapp.adapter.PayMethodAdapterForObj;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.CardPay;
+import com.wyc.cloudapp.bean.PayDetailInfo;
 import com.wyc.cloudapp.bean.TimeCardPayInfo;
 import com.wyc.cloudapp.bean.TimeCardSaleInfo;
 import com.wyc.cloudapp.bean.UnifiedPayResult;
 import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.data.room.AppDatabase;
+import com.wyc.cloudapp.data.room.entity.GiftCardSaleOrder;
 import com.wyc.cloudapp.data.room.entity.PayMethod;
 import com.wyc.cloudapp.data.room.entity.TimeCardPayDetail;
 import com.wyc.cloudapp.data.room.entity.TimeCardSaleOrder;
@@ -61,7 +65,7 @@ import butterknife.ButterKnife;
 
 import static com.wyc.cloudapp.utils.FormatDateTimeUtils.formatCurrentTime;
 
-public class TimeCardPayActivity extends AbstractMobileActivity {
+public class TimeCardPayActivity<T extends CardPay<?>> extends AbstractMobileActivity {
     public static final int ONCE_CARD_REQUEST_PAY = 0x000000dd;
     private static final String ORDER_INFO = "o";
 
@@ -69,7 +73,7 @@ public class TimeCardPayActivity extends AbstractMobileActivity {
     private RecyclerView mPayMethodView;
     private PayDetailViewAdapter mPayDetailViewAdapter;
     private PayMethod mPayMethod;
-    private TimeCardSaleOrder mOrder;
+    private T mOrder;
     CustomProgressDialog mProgressDialog;
 
     private double mPay_balance,mPay_amt,mCashAmt,mOrder_amt,mDiscount_amt,mActual_amt,mZlAmt,mAmt_received;
@@ -200,133 +204,14 @@ public class TimeCardPayActivity extends AbstractMobileActivity {
     private double getSaleAmt(){
         return mOrder.getAmt();
     }
-    private double getDiscountAmt(){
-        double amt = 0.0;
-        List<TimeCardSaleInfo> saleInfoList = mOrder.getSaleInfo();
-        for (TimeCardSaleInfo info : saleInfoList){
-            amt += info.getDiscountAmt();
-        }
-        return amt;
-    }
 
     private void save(){
-        List<TimeCardPayDetail> payDetails = new ArrayList<>();
-        JSONArray array = mPayDetailViewAdapter.getDatas();
-        TimeCardPayDetail payDetail = null;
-        for (int i = 0,size = array.size();i < size;i ++){
-            final JSONObject object = array.getJSONObject(i);
-            double pamt = object.getDoubleValue("pamt"),zl_amt = object.getDoubleValue("pzl");
-            payDetail = new TimeCardPayDetail.Builder(mOrder.getOrder_no())
-                    .pay_method_id(object.getIntValue("pay_method_id")).remark(object.getString("v_num"))
-                    .amt(pamt - zl_amt).zl_amt(zl_amt).cas_id(getCashierId()).build();
-
-            payDetails.add(payDetail);
-        }
         try {
-            mOrder.setTime(System.currentTimeMillis() / 1000);
-            mOrder.setPayInfo(payDetails);
-            mOrder.save();
-            startPay();
+            mOrder.save(this,mPayDetailViewAdapter.getDatas().toJavaList(PayDetailInfo.class));
         }catch (SQLiteException e){
             e.printStackTrace();
             MyDialog.toastMessage(e.getMessage());
         }
-    }
-
-    private void startPay(){
-        mProgressDialog = CustomProgressDialog.showProgress(this,"正在支付...");
-        final JSONObject param = new JSONObject();
-        param.put("appid",getAppId());
-        param.put("member_openid",mOrder.getVip_openid());
-        param.put("origin",5);
-        param.put("stores_id",getStoreId());
-        param.put("cards",getCards().toString());
-        param.put("sales_id",mOrder.getSaleman());
-        param.put("cas_id",getCashierId());
-        HttpUtils.sendAsyncPost(getUrl() + InterfaceURL.ONCE_CARD_UPLOAD, HttpRequest.generate_request_parm(param,getAppSecret()))//生成订单
-                .enqueue(new ObjectCallback<TimeCardPayInfo>(TimeCardPayInfo.class) {
-                    @Override
-                    protected void onError(String msg) {
-                        MyDialog.toastMessage(msg);
-                        dismissProgress();
-                    }
-
-                    @Override
-                    protected void onSuccessForResult(TimeCardPayInfo d, String hint) {
-                        //提交支付
-                        try {
-                            TimeCardPayInfo.PayInfo payInfo = d.getPay_info();
-                            final String online_order_no = payInfo.getOrder_code();
-
-                            //更新状态以及保存线上单号
-                            mOrder.updateOnlineOrderNo(online_order_no);
-
-                            boolean allSuccess = false;
-                            final List<TimeCardPayDetail> payDetails = mOrder.getPayInfo();
-                            for (TimeCardPayDetail detail : payDetails){
-                                final PayMethod payMethod = AppDatabase.getInstance().PayMethodDao().getPayMethodById(detail.getPay_method_id());
-                                if (payMethod.isCheckApi()){
-                                    final UnifiedPayResult result = payMethod.payWithApi(TimeCardPayActivity.this,payInfo.getPay_money(),
-                                            online_order_no,mOrder.getOrder_no(),detail.getRemark(),getLocalClassName());
-
-                                    if (result.isSuccess()){
-                                        allSuccess = true;
-                                        detail.success();
-                                        detail.setOnline_pay_no(result.getOrder_code());
-                                    }else {
-                                        detail.failure();
-                                        MyDialog.toastMessage(result.getInfo());
-                                        allSuccess = false;
-                                        break;
-                                    }
-                                }else {
-                                    allSuccess = true;
-                                    detail.success();
-                                }
-                            }
-                            //更新支付状态
-                            TimeCardPayDetail.update(payDetails);
-
-                            if (allSuccess){
-                                mOrder.uploadPayInfo(s -> {
-                                    print(TimeCardPayActivity.this,mOrder);
-
-                                    setResult(RESULT_OK);
-                                    finish();
-                                    MyDialog.toastMessage(hint);
-                                    dismissProgress();
-                                }, s -> {
-                                    MyDialog.toastMessage(s);
-                                    dismissProgress();
-                                });
-                            }else dismissProgress();
-                        }catch (Exception e){
-                            e.printStackTrace();
-                            dismissProgress();
-                            MyDialog.displayErrorMessage(TimeCardPayActivity.this,"次卡支付错误:" + e.getLocalizedMessage());
-                        }
-                    }
-                });
-    }
-
-    private void dismissProgress(){
-        if (mProgressDialog != null)mProgressDialog.dismiss();
-    }
-
-    public static void print(MainActivity context,TimeCardSaleOrder order){
-        CustomApplication.execute(()-> Printer.print(context,get_print_content(context,order)));
-    }
-
-    private JSONArray getCards(){
-        List<TimeCardSaleInfo> saleInfoList = mOrder.getSaleInfo();
-        final JSONArray array = new JSONArray();
-        for (TimeCardSaleInfo saleInfo : saleInfoList){
-            final JSONObject object = new JSONObject();
-            object.put("once_card_id",saleInfo.getOnce_card_id());
-            object.put("num",saleInfo.getNum());
-            array.add(object);
-        }
-        return array;
     }
 
     private void initPayContent(){
@@ -337,7 +222,7 @@ public class TimeCardPayActivity extends AbstractMobileActivity {
     private void calculatePayContent(){
         clearContent();
         mAmt_received = Utils.formatDouble(mPayDetailViewAdapter == null ? 0.0 :mPayDetailViewAdapter.getPaySumAmt(),2);
-        mDiscount_amt = Utils.formatDouble(getDiscountAmt(),2);
+        mDiscount_amt = Utils.formatDouble(mOrder.getDiscountAmt(),2);
         mActual_amt = Utils.formatDouble(getSaleAmt(),2);
         mOrder_amt = Utils.formatDouble(mActual_amt + mDiscount_amt,2);
         mPay_amt = mActual_amt;
@@ -540,142 +425,12 @@ public class TimeCardPayActivity extends AbstractMobileActivity {
         }
     };
 
-    private static String get_print_content(final MainActivity context,TimeCardSaleOrder order_info){
-        final JSONObject print_format_info = new JSONObject();
-        String content = "";
-        if (SQLiteHelper.getLocalParameter("v_f_info",print_format_info)){
-            if (print_format_info.getIntValue("f") == R.id.vip_c_format){
-                switch (print_format_info.getIntValue("f_z")){
-                    case R.id.f_58:
-                        content = c_format_58(context,print_format_info,order_info);
-                        break;
-                    case R.id.f_76:
-                        break;
-                    case R.id.f_80:
-                        break;
-                }
-            }else {
-                context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.f_not_sz), context,context.getWindow()));
-            }
-        }else
-            context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_f_err_hint_sz,print_format_info.getString("info")), context,context.getWindow()));
-
-        return content;
-    }
-
-    private static String c_format_58(final MainActivity context, final JSONObject format_info, final TimeCardSaleOrder order_info){
-        final StringBuilder info = new StringBuilder(),out = new StringBuilder();
-
-        final String store_name = Utils.getNullStringAsEmpty(format_info,"s_n");
-        final String new_line =  "\n";
-        final String footer_c = Utils.getNullStringAsEmpty(format_info,"f_c");
-
-        int print_count = Utils.getNotKeyAsNumberDefault(format_info,"p_c",1);
-        int footer_space = Utils.getNotKeyAsNumberDefault(format_info,"f_s",5);
-
-        final CustomApplication application = CustomApplication.self();
-
-        while (print_count-- > 0) {//打印份数
-            if (info.length() > 0){
-                info.append(new_line).append(new_line);
-                out.append(info);
-                continue;
-            }
-            info.append(Printer.commandToStr(Printer.DOUBLE_HEIGHT)).append(Printer.commandToStr(Printer.ALIGN_CENTER))
-                    .append(store_name.length() == 0 ? application.getStoreName() : store_name).append(new_line).append(new_line).append(Printer.commandToStr(Printer.NORMAL)).
-                    append(Printer.commandToStr(Printer.ALIGN_LEFT));
-
-            info.append(context.getString(R.string.store_name_sz).concat(application.getStoreName())).append(new_line);
-            info.append(context.getString(R.string.order_sz).concat(order_info.getOnline_order_no())).append(new_line);
-            info.append(context.getString(R.string.time_card_print_order_time).concat(order_info.getFormatTime())).append(new_line);
-
-            final JSONObject member_parameter = new JSONObject();
-            if (!SQLiteHelper.getLocalParameter("MEMBER_PARAMETER",member_parameter)) Logger.d("查询会员参数错误:%s",member_parameter.getString("info"));
-            String vip_name = order_info.getVip_name(),card_code = order_info.getVip_card_no(),mobile = order_info.getVip_mobile();
-            if (Utils.getNotKeyAsNumberDefault(member_parameter,"member_secret_protect",0) == 1){
-                if (vip_name.length() > 2)
-                    vip_name = vip_name.replace(vip_name.substring(1),Printer.REPLACEMENT);
-                else {
-                    vip_name = vip_name.concat(Printer.REPLACEMENT);
-                }
-                int len = card_code.length();
-                if (len <= 3){
-                    card_code = card_code.concat(Printer.REPLACEMENT);
-                }else if (len <= 7){
-                    card_code = card_code.replace(card_code.substring(3,len - 1),Printer.REPLACEMENT);
-                }else {
-                    card_code = card_code.replace(card_code.substring(3,7),Printer.REPLACEMENT);
-                }
-                int mobile_len = mobile.length();
-                if (mobile_len <= 3){
-                    mobile = mobile.concat(Printer.REPLACEMENT);
-                }else if (len <= 7){
-                    mobile = mobile.replace(mobile.substring(3,len - 1),Printer.REPLACEMENT);
-                }else {
-                    mobile = mobile.replace(mobile.substring(3,7),Printer.REPLACEMENT);
-                }
-            }
-
-            //info.append(context.getString(R.string.oper_sz).concat("：").concat(order_info.getCashierName())).append(new_line);
-            info.append(context.getString(R.string.time_card_print_vip_name).concat(vip_name)).append(new_line);
-            info.append(context.getString(R.string.time_card_print_vip_mobile).concat(mobile)).append(new_line);
-            info.append(context.getString(R.string.time_card_print_vip_card).concat(card_code)).append(new_line);
-            info.append(context.getString(R.string.time_card_print_num).concat(String.valueOf(order_info.getSaleInfo().size()))).append(new_line);
-            info.append(context.getString(R.string.time_card_print_amt).concat(String.format(Locale.CHINA,"%.2f元",order_info.getAmt()))).append(new_line);
-
-            final List<TimeCardPayDetail> payDetails = order_info.getPayInfo();
-            final StringBuilder stringBuilder = new StringBuilder();
-            for (TimeCardPayDetail detail : payDetails){
-                final PayMethod payMethod = AppDatabase.getInstance().PayMethodDao().getPayMethodById(detail.getPay_method_id());
-                if (null == payMethod)continue;
-                if (stringBuilder.length() > 0){
-                    stringBuilder.append(new_line);
-                }
-                stringBuilder.append(payMethod.getName());
-            }
-            info.append(context.getString(R.string.time_card_print_pay_method).concat(stringBuilder.toString())).append(new_line);
-
-            final List<TimeCardSaleInfo> saleInfoList = order_info.getSaleInfo();
-            String line_58 = application.getString(R.string.line_58),space_sz = " ",name;
-            stringBuilder.delete(0,stringBuilder.length());
-            stringBuilder.append(line_58).append(new_line);
-            for(TimeCardSaleInfo saleInfo : saleInfoList){
-                name = saleInfo.getName();
-                int space = 8 - name.length();
-                if (space > 0){
-                    final StringBuilder sb = new StringBuilder(name);
-                    for (int i = 0;i < space;i ++){
-                        sb.append(space_sz);
-                    }
-                    name = sb.toString();
-                }else {
-                    name = name.substring(0,7);
-                }
-                stringBuilder.append(String.format(Locale.CHINA,"%s  %d张 %.2f元%s",name,saleInfo.getNum(),saleInfo.getAmt(),new_line));
-            }
-            stringBuilder.append(line_58);
-            info.append(stringBuilder).append(new_line);
-
-            if (footer_c.isEmpty()){
-                info.append(context.getString(R.string.hotline_sz)).append(Utils.getNullOrEmptyStringAsDefault(application.getStoreInfo(),"telphone","")).append(new_line);
-                info.append(context.getString(R.string.stores_address_sz)).append(Utils.getNullOrEmptyStringAsDefault(application.getStoreInfo(),"region","")).append(new_line);
-            }else {
-                info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(footer_c).append(Printer.commandToStr(Printer.ALIGN_LEFT));
-            }
-
-            for (int i = 0; i < footer_space; i++) info.append(" ").append(new_line);
-        }
-        out.append(info);
-
-        return out.toString();
-    }
-
     @Override
     protected int getContentLayoutId() {
         return R.layout.activity_once_card_pay;
     }
 
-    public static void start(@NonNull Fragment context,TimeCardSaleOrder order){
+    public static <T extends CardPay<?>> void start(@NonNull Fragment context,T order){
         if (order == null){
             throw new IllegalArgumentException("the second parameter must not be empty...");
         }
@@ -684,5 +439,16 @@ public class TimeCardPayActivity extends AbstractMobileActivity {
             return;
         }
         context.startActivityForResult( new Intent(context.getContext(), TimeCardPayActivity.class).putExtra(ORDER_INFO,order),ONCE_CARD_REQUEST_PAY);
+    }
+
+    public static <T extends CardPay<?>> void star(@NonNull Activity context,T order){
+        if (order == null){
+            throw new IllegalArgumentException("the second parameter must not be empty...");
+        }
+        if (order.getSaleInfo().isEmpty()){
+            MyDialog.toastMessage("购物卡销售记录不能为空！");
+            return;
+        }
+        context.startActivityForResult( new Intent(context,TimeCardPayActivity.class).putExtra(ORDER_INFO,order),ONCE_CARD_REQUEST_PAY);
     }
 }

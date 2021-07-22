@@ -99,7 +99,7 @@ public class TimeCardOrderDetailActivity extends AbstractMobileActivity{
 
     @OnClick(R.id.m_print_btn)
     public void print(){
-        TimeCardPayActivity.print(this,mOrder);
+        mOrder.print(this);
     }
 
     private void initOrder(){

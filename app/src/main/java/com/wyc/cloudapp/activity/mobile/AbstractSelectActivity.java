@@ -3,50 +3,24 @@ package com.wyc.cloudapp.activity.mobile;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractSelectAdapter;
-import com.wyc.cloudapp.bean.TimeCardData;
-import com.wyc.cloudapp.bean.TimeCardInfo;
-import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
-import com.wyc.cloudapp.dialog.CustomProgressDialog;
-import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.utils.Utils;
-import com.wyc.cloudapp.utils.http.HttpRequest;
-import com.wyc.cloudapp.utils.http.HttpUtils;
-import com.wyc.cloudapp.utils.http.callback.ObjectCallback;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
 
 /**
  * @ProjectName: AndroidClient
@@ -61,7 +35,7 @@ import okhttp3.Response;
  * @Version: 1.0
  */
 public abstract class AbstractSelectActivity<E extends Parcelable,T extends AbstractSelectAdapter<E,?>> extends AbstractMobileActivity {
-    public static final int SELECT_ONCE_CARD = 0x000000cc;
+    public static final int SELECT_ITEM = 0x000000cc;
     private static final String ITEM_KEY = "I";
     private T mAdapter;
     private EditText mSearch;
@@ -130,15 +104,15 @@ public abstract class AbstractSelectActivity<E extends Parcelable,T extends Abst
         return R.layout.activity_select_once_card;
     }
     public static <T extends Class<? extends Activity>> void startWithFragment(Fragment context, T cls){
-        context.startActivityForResult(new Intent(context.getContext(), cls),SELECT_ONCE_CARD);
+        context.startActivityForResult(new Intent(context.getContext(), cls), SELECT_ITEM);
     }
     public static <T extends Class<? extends Activity>> void start(Activity context,T cls){
-        context.startActivityForResult(new Intent(context, cls),SELECT_ONCE_CARD);
+        context.startActivityForResult(new Intent(context, cls), SELECT_ITEM);
     }
     public static <E extends Parcelable,T extends Class<? extends Activity>> void startForResult(Activity context, final ArrayList<E> result,T cls){
         final Intent intent = new Intent(context,cls);
         intent.putParcelableArrayListExtra("result",result);
-        context.startActivityForResult(intent,SELECT_ONCE_CARD);
+        context.startActivityForResult(intent, SELECT_ITEM);
     }
 
     private void showActivity(){

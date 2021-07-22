@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 10,
-    "identityHash": "9102c0b60b7d99850ee60351cf74c04c",
+    "identityHash": "7957955554d705affc3368ee4cdf86a4",
     "entities": [
       {
         "tableName": "pay_method",
@@ -375,12 +375,227 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "GiftCardSaleOrder",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`order_no` TEXT NOT NULL, `online_order_no` TEXT NOT NULL, `amt` REAL NOT NULL, `status` INTEGER NOT NULL DEFAULT 0, `saleId` TEXT NOT NULL, `cas_id` TEXT NOT NULL, `store_id` TEXT NOT NULL, `time` INTEGER NOT NULL DEFAULT 0, `transfer_status` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`order_no`))",
+        "fields": [
+          {
+            "fieldPath": "order_no",
+            "columnName": "order_no",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "online_order_no",
+            "columnName": "online_order_no",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "amt",
+            "columnName": "amt",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "saleId",
+            "columnName": "saleId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cas_id",
+            "columnName": "cas_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "store_id",
+            "columnName": "store_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "time",
+            "columnName": "time",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "transfer_status",
+            "columnName": "transfer_status",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "order_no"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "GiftCardSaleDetail",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`rowId` INTEGER NOT NULL, `num` INTEGER NOT NULL, `amt` REAL NOT NULL, `price` REAL NOT NULL, `face_value` REAL NOT NULL, `gift_card_code` TEXT NOT NULL, `name` TEXT, `discountAmt` REAL NOT NULL, `order_no` TEXT NOT NULL, PRIMARY KEY(`rowId`, `order_no`))",
+        "fields": [
+          {
+            "fieldPath": "rowId",
+            "columnName": "rowId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "num",
+            "columnName": "num",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "amt",
+            "columnName": "amt",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "price",
+            "columnName": "price",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "face_value",
+            "columnName": "face_value",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "gift_card_code",
+            "columnName": "gift_card_code",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "discountAmt",
+            "columnName": "discountAmt",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "order_no",
+            "columnName": "order_no",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "rowId",
+            "order_no"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "GiftCardPayDetail",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`rowId` INTEGER NOT NULL, `order_no` TEXT NOT NULL, `pay_method_id` INTEGER NOT NULL, `amt` REAL NOT NULL, `zl_amt` REAL NOT NULL, `online_pay_no` TEXT, `remark` TEXT, `status` INTEGER NOT NULL, `cas_id` TEXT, `pay_time` TEXT, PRIMARY KEY(`rowId`, `order_no`))",
+        "fields": [
+          {
+            "fieldPath": "rowId",
+            "columnName": "rowId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "order_no",
+            "columnName": "order_no",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pay_method_id",
+            "columnName": "pay_method_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "amt",
+            "columnName": "amt",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "zl_amt",
+            "columnName": "zl_amt",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "online_pay_no",
+            "columnName": "online_pay_no",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "remark",
+            "columnName": "remark",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cas_id",
+            "columnName": "cas_id",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "pay_time",
+            "columnName": "pay_time",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "rowId",
+            "order_no"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9102c0b60b7d99850ee60351cf74c04c')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7957955554d705affc3368ee4cdf86a4')"
     ]
   }
 }

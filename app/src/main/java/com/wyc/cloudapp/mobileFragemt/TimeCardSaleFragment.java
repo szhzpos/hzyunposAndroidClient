@@ -260,7 +260,7 @@ public final class TimeCardSaleFragment extends AbstractMobileFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (resultCode == RESULT_OK){
-            if (requestCode == SelectTimeCardActivity.SELECT_ONCE_CARD){
+            if (requestCode == SelectTimeCardActivity.SELECT_ITEM){
                 if (null != data){
                     add(SelectTimeCardActivity.getItem(data));
                 }
