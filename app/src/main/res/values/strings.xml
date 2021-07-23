@@ -773,5 +773,6 @@
     <string name="gift_card_code">卡号：</string>
     <string name="gift_card_face_value">面额：</string>
     <string name="gift_card_sale_price">售价：</string>
-
+    <string name="gift_card_pay">购物卡结账</string>
+    <string name="hints_pay_detail_not_empty">支付信息不能为空…</string>
 </resources>

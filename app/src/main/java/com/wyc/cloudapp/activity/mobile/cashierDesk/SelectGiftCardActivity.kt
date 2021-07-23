@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.activity.mobile
+package com.wyc.cloudapp.activity.mobile.cashierDesk
 
 import android.os.Bundle
 import android.view.View
@@ -18,7 +18,6 @@ import com.wyc.cloudapp.utils.Utils
 import com.wyc.cloudapp.utils.http.HttpRequest
 import com.wyc.cloudapp.utils.http.HttpUtils
 import com.wyc.cloudapp.utils.http.callback.ArrayCallback
-import java.util.*
 
 class SelectGiftCardActivity : AbstractSelectActivity<GiftCardInfo, SelectGiftCardActivity.GiftCardAdapter>() {
 
@@ -38,7 +37,7 @@ class SelectGiftCardActivity : AbstractSelectActivity<GiftCardInfo, SelectGiftCa
         if (Utils.isNotEmpty(c)){
             obj["card_no"] = c;
         }
-        val progressDialog : CustomProgressDialog = CustomProgressDialog.showProgress(this,getString(R.string.hints_query_data_sz));
+        val progressDialog : CustomProgressDialog = CustomProgressDialog.showProgress(this, getString(R.string.hints_query_data_sz));
         HttpUtils.sendAsyncPost(url + InterfaceURL.GIFT_CARD_INFO, HttpRequest.generate_request_parm(obj, appSecret))
                 .enqueue(object : ArrayCallback<GiftCardInfo>(GiftCardInfo::class.java){
                     override fun onError(msg: String?) {
@@ -55,8 +54,8 @@ class SelectGiftCardActivity : AbstractSelectActivity<GiftCardInfo, SelectGiftCa
 
 
 
-    class GiftCardAdapter (context:MainActivity): AbstractSelectAdapter<GiftCardInfo, GiftCardAdapter.MyViewHolder>(),View.OnClickListener {
-        private var mContext:MainActivity = context;
+    class GiftCardAdapter (context: MainActivity): AbstractSelectAdapter<GiftCardInfo, GiftCardAdapter.MyViewHolder>(), View.OnClickListener {
+        private var mContext: MainActivity = context;
 
         class MyViewHolder(itemView: View) : SuperViewHolder(itemView){
             @BindView(R.id.id_tv)
@@ -70,7 +69,7 @@ class SelectGiftCardActivity : AbstractSelectActivity<GiftCardInfo, SelectGiftCa
             @BindView(R.id.price_tv)
             lateinit var price_tv : TextView;
             init {
-                ButterKnife.bind(this,itemView)
+                ButterKnife.bind(this, itemView)
             }
         }
 
@@ -78,12 +77,16 @@ class SelectGiftCardActivity : AbstractSelectActivity<GiftCardInfo, SelectGiftCa
             val obj = v.tag
             if (obj is Int){
                 val giftCardInfo : GiftCardInfo = getItem(obj);
+                if (giftCardInfo.isSale){
+                    MyDialog.toastMessage("已出售...")
+                    return
+                }
                 invoke(giftCardInfo)
             }
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-            val view : View = View.inflate(mContext,R.layout.mobile_gift_card_info_adapter,null);
+            val view : View = View.inflate(mContext, R.layout.mobile_gift_card_info_adapter, null);
             view.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mContext.resources.getDimension(R.dimen.once_card_item_height).toInt())
             view.setOnClickListener(this)
             return MyViewHolder(view)

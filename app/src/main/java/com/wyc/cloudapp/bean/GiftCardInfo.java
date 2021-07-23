@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.wyc.cloudapp.dialog.MyDialog;
 
 import java.util.Objects;
 
@@ -60,6 +61,10 @@ public final class GiftCardInfo implements Parcelable {
 
     public GiftCardInfo(){
 
+    }
+
+    public boolean isSale(){
+        return status == 2;
     }
 
     protected GiftCardInfo(Parcel in) {

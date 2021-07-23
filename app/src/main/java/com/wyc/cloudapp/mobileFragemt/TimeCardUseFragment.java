@@ -1,7 +1,6 @@
 package com.wyc.cloudapp.mobileFragemt;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.text.method.ReplacementTransformationMethod;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -13,14 +12,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.activity.mobile.SelectTimeCardActivity;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForList;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -30,7 +27,6 @@ import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
@@ -39,7 +35,6 @@ import com.wyc.cloudapp.utils.http.callback.ObjectCallback;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

@@ -1,65 +1,31 @@
 package com.wyc.cloudapp.mobileFragemt;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.sqlite.SQLiteException;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.text.method.ReplacementTransformationMethod;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.sqlite.db.SimpleSQLiteQuery;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.google.android.material.tabs.TabLayout;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.activity.mobile.TimeCardOrderDetailActivity;
+import com.wyc.cloudapp.activity.mobile.cashierDesk.TimeCardOrderDetailActivity;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForList;
-import com.wyc.cloudapp.adapter.MobileRetailOrderAdapter;
-import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.QueryCondition;
-import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.data.room.AppDatabase;
 import com.wyc.cloudapp.data.room.entity.TimeCardSaleOrder;
-import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.FormatDateTimeUtils;
-import com.wyc.cloudapp.utils.Utils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
-import java.util.TimeZone;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.wyc.cloudapp.utils.FormatDateTimeUtils.setEndTime;
-import static com.wyc.cloudapp.utils.FormatDateTimeUtils.setStartTime;
 
 /**
  * @ProjectName: AndroidClient

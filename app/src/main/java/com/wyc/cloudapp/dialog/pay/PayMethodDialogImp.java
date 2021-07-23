@@ -13,11 +13,9 @@ import androidx.annotation.NonNull;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.activity.SaleActivity;
-import com.wyc.cloudapp.activity.mobile.MobileCashierActivity;
+import com.wyc.cloudapp.activity.mobile.cashierDesk.MobileCashierActivity;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.constants.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 
 import static com.wyc.cloudapp.constants.ScanCallbackCode.PAY_REQUEST_CODE;

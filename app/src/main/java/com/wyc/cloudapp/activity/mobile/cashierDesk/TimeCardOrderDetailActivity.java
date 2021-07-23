@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.activity.mobile;
+package com.wyc.cloudapp.activity.mobile.cashierDesk;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForList;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.bean.TimeCardSaleInfo;
@@ -20,9 +21,7 @@ import com.wyc.cloudapp.bean.UnifiedPayResult;
 import com.wyc.cloudapp.data.room.entity.PayMethod;
 import com.wyc.cloudapp.data.room.entity.TimeCardPayDetail;
 import com.wyc.cloudapp.data.room.entity.TimeCardSaleOrder;
-import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.logger.Logger;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -36,7 +35,7 @@ import butterknife.OnClick;
 /*
 * 次卡订单详情
 * */
-public class TimeCardOrderDetailActivity extends AbstractMobileActivity{
+public class TimeCardOrderDetailActivity extends AbstractMobileActivity {
 
     @BindView(R.id.order_id_tv)
     TextView order_id_tv;

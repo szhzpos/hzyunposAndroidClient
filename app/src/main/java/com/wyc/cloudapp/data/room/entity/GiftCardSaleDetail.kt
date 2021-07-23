@@ -4,6 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.NonNull
 import androidx.room.Entity
+import com.wyc.cloudapp.utils.Utils
 
 /**
  *
@@ -18,7 +19,7 @@ import androidx.room.Entity
  * @UpdateRemark:   更新说明
  * @Version:        1.0
  */
-@Entity(tableName = "GiftCardSaleDetail",primaryKeys = arrayOf("rowId","order_no"))
+@Entity(tableName = "GiftCardSaleDetail", primaryKeys = arrayOf("rowId", "order_no"))
 class GiftCardSaleDetail():Parcelable {
     private var rowId = 0
     private var num = 0
@@ -26,6 +27,7 @@ class GiftCardSaleDetail():Parcelable {
     private var price = 0.0
     private var face_value = 0.0
     private var gift_card_code = ""
+    private var card_chip_no = ""
     private var name: String? = null
     private var discountAmt = 0.0
     /*
@@ -41,6 +43,7 @@ class GiftCardSaleDetail():Parcelable {
         price = parcel.readDouble()
         face_value = parcel.readDouble()
         gift_card_code = parcel.readString() ?: ""
+        card_chip_no = parcel.readString() ?: ""
         name = parcel.readString()
         discountAmt = parcel.readDouble()
         order_no = parcel.readString() ?: ""
@@ -53,6 +56,7 @@ class GiftCardSaleDetail():Parcelable {
         parcel.writeDouble(price)
         parcel.writeDouble(face_value)
         parcel.writeString(gift_card_code)
+        parcel.writeString(card_chip_no)
         parcel.writeString(name)
         parcel.writeDouble(discountAmt)
         parcel.writeString(order_no)
@@ -77,8 +81,9 @@ class GiftCardSaleDetail():Parcelable {
     fun getRowId(): Int {
         return rowId
     }
-    fun setNum(n:Int){
+    fun setNum(n: Int){
         num = n
+        amt = n * price
     }
     fun getNum(): Int {
         return num
@@ -95,7 +100,7 @@ class GiftCardSaleDetail():Parcelable {
     fun getPrice(): Double {
         return price
     }
-    fun setFace_value(f:Double){
+    fun setFace_value(f: Double){
         face_value = f;
     }
     fun getFace_value(): Double {
@@ -107,7 +112,15 @@ class GiftCardSaleDetail():Parcelable {
     fun setGift_card_code(code: String){
         gift_card_code = code
     }
-    fun setName(n:String?){
+
+    fun getCard_chip_no():String{
+        return card_chip_no
+    }
+    fun setCard_chip_no(code: String){
+        card_chip_no = code
+    }
+
+    fun setName(n: String?){
         name = n
     }
     fun getName(): String? {
@@ -119,10 +132,12 @@ class GiftCardSaleDetail():Parcelable {
     fun getDiscountAmt(): Double {
         return discountAmt
     }
-    fun setOrder_no(no:String){
+    fun setOrder_no(no: String){
+        if (!Utils.isNotEmpty(no)) throw IllegalArgumentException("order_no must not be empty.")
         order_no = no
     }
     fun getOrder_no(): String {
+        if (!Utils.isNotEmpty(order_no)) throw IllegalArgumentException("order_no must not be empty.")
         return order_no
     }
 
@@ -141,43 +156,45 @@ class GiftCardSaleDetail():Parcelable {
         return rowId
     }
 
-    override fun toString(): String {
-        return "GiftCardSaleDetail(rowId=$rowId, num=$num, amt=$amt, price=$price, face_value=$face_value, gift_card_id=$gift_card_code, name=$name, discountAmt=$discountAmt, order_no=$order_no)"
-    }
+
 
     fun equalsWithTimeCardInfo(o: GiftCardSaleDetail?): Boolean {
         return if (o == null) false else gift_card_code == o.gift_card_code
     }
 
+    override fun toString(): String {
+        return "GiftCardSaleDetail(rowId=$rowId, num=$num, amt=$amt, price=$price, face_value=$face_value, gift_card_code='$gift_card_code', card_chip_no='$card_chip_no', name=$name, discountAmt=$discountAmt, order_no='$order_no')"
+    }
+
     class Builder {
         private val mInfo: GiftCardSaleDetail = GiftCardSaleDetail()
         fun giftCode(code: String): Builder {
-            mInfo.gift_card_code = code
+            mInfo.setGift_card_code(code)
+            return this
+        }
+
+        fun card_chip_no(code: String):Builder{
+            mInfo.setCard_chip_no(code)
             return this
         }
 
         fun name(sz: String?): Builder {
-            mInfo.name = sz
+            mInfo.setName(sz)
             return this
         }
 
         fun price(p: Double): Builder {
-            mInfo.price = p
+            mInfo.setPrice(p)
             return this
         }
 
         fun face_value(p: Double): Builder {
-            mInfo.face_value = p
+            mInfo.setFace_value(p)
             return this
         }
 
         fun num(n: Int): Builder {
-            mInfo.num = n
-            return this
-        }
-
-        fun amt(a: Double): Builder {
-            mInfo.amt = a
+            mInfo.setNum(n)
             return this
         }
 

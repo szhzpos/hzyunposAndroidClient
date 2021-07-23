@@ -9,6 +9,9 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.TimeCardSaleInfo;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.data.room.dao.GiftCardPayDetailDao;
+import com.wyc.cloudapp.data.room.dao.GiftCardSaleDetailDao;
+import com.wyc.cloudapp.data.room.dao.GiftCardSaleOrderDao;
 import com.wyc.cloudapp.data.room.dao.PayMethodDao;
 import com.wyc.cloudapp.data.room.dao.TimeCardPayDetailDao;
 import com.wyc.cloudapp.data.room.dao.TimeCardSaleDetailDao;
@@ -27,6 +30,10 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract TimeCardSaleOrderDao TimeCardSaleOrderDao();
     public abstract TimeCardPayDetailDao TimeCardPayDetailDao();
     public abstract TimeCardSaleDetailDao TimeCardSaleDetailDao();
+
+    public abstract GiftCardSaleOrderDao GiftCardSaleOrderDao();
+    public abstract GiftCardSaleDetailDao GiftCardSaleDetailDao();
+    public abstract GiftCardPayDetailDao GiftCardPayDetailDao();
 
     private static AppDatabase DB;
     public static AppDatabase getInstance(){

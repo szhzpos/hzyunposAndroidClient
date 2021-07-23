@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.wyc.cloudapp.CustomizationView.TopDrawableTextView;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.mobile.cashierDesk.MobileCashierActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;

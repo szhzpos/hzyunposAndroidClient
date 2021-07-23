@@ -6,10 +6,9 @@ import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.activity.mobile.MobileCashierActivity;
+import com.wyc.cloudapp.activity.mobile.cashierDesk.MobileCashierActivity;
 import com.wyc.cloudapp.constants.ScanCallbackCode;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.constants.MessageID;
 
 public class MobileVipChargeDialog extends AbstractVipChargeDialog implements MobileCashierActivity.ScanCallback  {
     public MobileVipChargeDialog(@NonNull MainActivity context) {

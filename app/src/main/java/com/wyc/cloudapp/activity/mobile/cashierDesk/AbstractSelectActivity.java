@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.activity.mobile;
+package com.wyc.cloudapp.activity.mobile.cashierDesk;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.AbstractSelectAdapter;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 
@@ -102,17 +103,6 @@ public abstract class AbstractSelectActivity<E extends Parcelable,T extends Abst
     @Override
     protected final int getContentLayoutId() {
         return R.layout.activity_select_once_card;
-    }
-    public static <T extends Class<? extends Activity>> void startWithFragment(Fragment context, T cls){
-        context.startActivityForResult(new Intent(context.getContext(), cls), SELECT_ITEM);
-    }
-    public static <T extends Class<? extends Activity>> void start(Activity context,T cls){
-        context.startActivityForResult(new Intent(context, cls), SELECT_ITEM);
-    }
-    public static <E extends Parcelable,T extends Class<? extends Activity>> void startForResult(Activity context, final ArrayList<E> result,T cls){
-        final Intent intent = new Intent(context,cls);
-        intent.putParcelableArrayListExtra("result",result);
-        context.startActivityForResult(intent, SELECT_ITEM);
     }
 
     private void showActivity(){

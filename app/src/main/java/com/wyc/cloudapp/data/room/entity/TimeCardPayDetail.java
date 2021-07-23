@@ -65,6 +65,10 @@ public class TimeCardPayDetail implements Parcelable {
             detail = new TimeCardPayDetail(order_no);
             detail.setPay_time(FormatDateTimeUtils.formatCurrentTime(FormatDateTimeUtils.YYYY_MM_DD_1));
         }
+        public Builder rowId(int r_id){
+            detail.setRowId(r_id);
+            return this;
+        }
         public Builder pay_method_id(int id){
             detail.setPay_method_id(id);
             return this;

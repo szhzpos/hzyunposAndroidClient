@@ -3,6 +3,9 @@ package com.wyc.cloudapp.data.room.entity
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.room.Entity
+import com.wyc.cloudapp.data.room.AppDatabase
+import com.wyc.cloudapp.utils.FormatDateTimeUtils
+import com.wyc.cloudapp.utils.Utils
 
 /**
  *
@@ -64,14 +67,86 @@ class GiftCardPayDetail():Parcelable {
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<GiftCardPayDetail> {
-        override fun createFromParcel(parcel: Parcel): GiftCardPayDetail {
-            return GiftCardPayDetail(parcel)
+    companion object{
+        @JvmField val  CREATOR:Parcelable.Creator<GiftCardPayDetail> = object : Parcelable.Creator<GiftCardPayDetail> {
+            override fun createFromParcel(parcel: Parcel): GiftCardPayDetail {
+                return GiftCardPayDetail(parcel)
+            }
+
+            override fun newArray(size: Int): Array<GiftCardPayDetail?> {
+                return arrayOfNulls(size)
+            }
         }
 
-        override fun newArray(size: Int): Array<GiftCardPayDetail?> {
-            return arrayOfNulls(size)
+        @JvmStatic
+        fun update(data: List<GiftCardPayDetail>) {
+            AppDatabase.getInstance().GiftCardPayDetailDao().updateAll(data)
         }
+    }
+
+    class Builder(order_no: String) {
+        private val detail: GiftCardPayDetail = GiftCardPayDetail()
+        fun pay_method_id(id: Int): Builder {
+            detail.pay_method_id = id
+            return this
+        }
+
+        fun rowId(r_id:Int):Builder{
+            detail.rowId = r_id
+            return this
+        }
+
+        fun amt(amt: Double): Builder {
+            detail.amt = amt
+            return this
+        }
+
+        fun zl_amt(amt: Double): Builder {
+            detail.zl_amt = amt
+            return this
+        }
+
+        fun online_pay_no(pay_no: String?): Builder {
+            detail.online_pay_no = pay_no
+            return this
+        }
+
+        fun remark(remark: String?): Builder {
+            detail.remark = remark
+            return this
+        }
+
+        fun status(status: Int): Builder {
+            detail.status = status
+            return this
+        }
+
+        fun cas_id(cas_id: String?): Builder {
+            detail.cas_id = cas_id
+            return this
+        }
+
+        fun pay_time(pay_time: String?): Builder {
+            detail.pay_time = pay_time
+            return this
+        }
+
+        fun build(): GiftCardPayDetail {
+            return detail
+        }
+
+        init {
+            if (!Utils.isNotEmpty(order_no)) throw IllegalArgumentException("order_no must not be empty.")
+            detail.pay_time = FormatDateTimeUtils.formatCurrentTime(FormatDateTimeUtils.YYYY_MM_DD_1)
+            detail.order_no = order_no;
+        }
+    }
+
+    fun success() {
+        status = 1
+    }
+    fun failure(){
+        status - 2
     }
 
     override fun equals(other: Any?): Boolean {

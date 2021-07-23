@@ -1,7 +1,6 @@
-package com.wyc.cloudapp.activity.mobile
+package com.wyc.cloudapp.activity.mobile.cashierDesk
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.method.ReplacementTransformationMethod
@@ -13,18 +12,15 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
 import com.alibaba.fastjson.JSONObject
 import com.wyc.cloudapp.CustomizationView.BasketView
 import com.wyc.cloudapp.R
-import com.wyc.cloudapp.activity.mobile.AbstractSelectActivity.getItem
-import com.wyc.cloudapp.activity.mobile.AbstractSelectActivity.start
+import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity
 import com.wyc.cloudapp.adapter.MobileGiftCardSaleAdapter
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter
-import com.wyc.cloudapp.bean.CardPay
 import com.wyc.cloudapp.bean.GiftCardInfo
 import com.wyc.cloudapp.constants.InterfaceURL
 import com.wyc.cloudapp.data.room.entity.GiftCardSaleDetail
@@ -41,7 +37,7 @@ import com.wyc.cloudapp.utils.http.callback.ArrayCallback
 open class GiftCardSaleActivity : AbstractMobileActivity() {
     private lateinit var mSaleAdapter: MobileGiftCardSaleAdapter
     @BindView(R.id._search_content)
-    lateinit var search_content:EditText
+    lateinit var search_content: EditText
 
     @BindView(R.id.basketView)
     lateinit var mBasketView: BasketView
@@ -64,12 +60,12 @@ open class GiftCardSaleActivity : AbstractMobileActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == Activity.RESULT_OK) {
+        if (resultCode == RESULT_OK) {
             if (requestCode == SelectTimeCardActivity.SELECT_ITEM) {
                 if (null != data) {
-                    add(getItem(data))
+                    add(AbstractSelectActivity.getItem(data))
                 }
-            } else if (requestCode == TimeCardPayActivity.ONCE_CARD_REQUEST_PAY) {
+            } else if (requestCode == CardPayBaseActivity.ONCE_CARD_REQUEST_PAY) {
                 clearContent()
             }
         }
@@ -78,13 +74,14 @@ open class GiftCardSaleActivity : AbstractMobileActivity() {
 
     private fun initCheckoutBtn() {
         val onceCard_checkout_btn = findViewById<Button>(R.id._checkout_btn)
-        onceCard_checkout_btn.setOnClickListener {
-            TimeCardPayActivity.star<CardPay<GiftCardSaleDetail>>(this, disposeOrder())
+        onceCard_checkout_btn?.setOnClickListener {
+            GiftCardPayActivity.start(this,disposeOrder())
         }
     }
 
     private fun disposeOrder(): GiftCardSaleOrder {
-        return GiftCardSaleOrder.Builder().build()
+        return GiftCardSaleOrder.Builder().amt(sale_amt_tv.text.toString().toDouble()).
+        saleman(getSaleManId()).cas_id(cashierId).saleInfo(mSaleAdapter.list).build()
     }
 
     @OnClick(R.id._other_fun_btn)
@@ -99,13 +96,13 @@ open class GiftCardSaleActivity : AbstractMobileActivity() {
     private fun initSaleList() {
         val list = findViewById<RecyclerView>(R.id.sale_gift_card_list)
         mSaleAdapter = MobileGiftCardSaleAdapter(this)
-        mSaleAdapter.registerAdapterDataObserver(object : AdapterDataObserver() {
+        mSaleAdapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onChanged() {
                 var num = 0
                 var amt = 0.0
                 val saleInfoList: List<GiftCardSaleDetail>? = mSaleAdapter.list
-                if (null != saleInfoList && saleInfoList.isNotEmpty()) {
-                    for (info in saleInfoList) {
+                saleInfoList?.let {
+                    for (info in it) {
                         num += info.getNum()
                         amt += info.getAmt()
                     }
@@ -144,7 +141,7 @@ open class GiftCardSaleActivity : AbstractMobileActivity() {
                         'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z')
             }
         }
-        _search_content?.setOnKeyListener(object : View.OnKeyListener{
+        _search_content?.setOnKeyListener(object : View.OnKeyListener {
             override fun onKey(v: View, keyCode: Int, event: KeyEvent): Boolean {
                 if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.action == KeyEvent.ACTION_UP){
                     queryGiftCardByCode(_search_content.text.toString())
@@ -160,7 +157,7 @@ open class GiftCardSaleActivity : AbstractMobileActivity() {
                 if (dx > (w - _search_content.compoundPaddingRight)) {
                     queryGiftCardByCode(_search_content.text.toString())
                 }else if(dx < _search_content.compoundPaddingLeft){
-                    start(this,SelectGiftCardActivity::class.java)
+                    QueryGiftCardInfoActivity.start(this)
                 }
             }
             false
@@ -168,14 +165,17 @@ open class GiftCardSaleActivity : AbstractMobileActivity() {
     }
 
     private fun queryGiftCardByCode(id:String) {
-        val obj = JSONObject();
-        obj["appid"] = appId;
-        obj["pos_num"] = posNum;
-        obj["stores_id"] = storeId;
-        if (Utils.isNotEmpty(id)){
-            obj["card_no"] = id;
+        if (!Utils.isNotEmpty(id)){
+            MyDialog.toastMessage(getString(R.string.not_empty_hint_sz, getString(R.string.input_gift_card_hints)))
+            return
         }
-        val progressDialog : CustomProgressDialog = CustomProgressDialog.showProgress(this,getString(R.string.hints_query_data_sz));
+        val obj = JSONObject()
+        obj["appid"] = appId
+        obj["pos_num"] = posNum
+        obj["stores_id"] = storeId
+        obj["card_no"] = id
+
+        val progressDialog : CustomProgressDialog = CustomProgressDialog.showProgress(this, getString(R.string.hints_query_data_sz));
         HttpUtils.sendAsyncPost(url + InterfaceURL.GIFT_CARD_INFO, HttpRequest.generate_request_parm(obj, appSecret))
                 .enqueue(object : ArrayCallback<GiftCardInfo>(GiftCardInfo::class.java){
                     override fun onError(msg: String?) {
@@ -184,7 +184,15 @@ open class GiftCardSaleActivity : AbstractMobileActivity() {
                     }
 
                     override fun onSuccessForResult(d: List<GiftCardInfo>?, hint: String?) {
-
+                        d?.let {
+                            if (it.size == 1){
+                                val giftCardInfo = it[0]
+                                if (!giftCardInfo.isSale){
+                                    add(giftCardInfo)
+                                }else MyDialog.toastMessage("已出售...")
+                            }
+                        }
+                        MyDialog.toastMessage(hint)
                         progressDialog.dismiss()
                     }
                 })
@@ -198,7 +206,9 @@ open class GiftCardSaleActivity : AbstractMobileActivity() {
     private fun add(info: GiftCardInfo) {
         val saleInfo = GiftCardSaleDetail.Builder()
                 .giftCode(info.cardNo)
+                .card_chip_no(info.cardChipNo)
                 .name(info.shoppingName)
+                .face_value(info.faceMoney)
                 .price(info.price)
                 .num(1).build()
         mSaleAdapter.addGiftCard(saleInfo)

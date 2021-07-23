@@ -1,34 +1,27 @@
-package com.wyc.cloudapp.activity.mobile;
+package com.wyc.cloudapp.activity.mobile.cashierDesk;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
+import android.os.Parcelable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
-import com.wyc.cloudapp.adapter.AbstractDataAdapterForList;
 import com.wyc.cloudapp.adapter.AbstractSelectAdapter;
 import com.wyc.cloudapp.bean.TimeCardData;
 import com.wyc.cloudapp.bean.TimeCardInfo;
 import com.wyc.cloudapp.constants.InterfaceURL;
-import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
@@ -39,7 +32,6 @@ import com.wyc.cloudapp.utils.http.callback.ObjectCallback;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -60,6 +52,16 @@ public final class SelectTimeCardActivity extends AbstractSelectActivity<TimeCar
     @Override
     protected TimeCardAdapter getAdapter() {
         return new TimeCardAdapter(this);
+    }
+
+    public static void startWithFragment(Fragment context){
+        context.startActivityForResult(new Intent(context.getContext(), SelectTimeCardActivity.class), SELECT_ITEM);
+    }
+
+    public static void startForResult(Activity context, final ArrayList<TimeCardInfo> result){
+        final Intent intent = new Intent(context,SelectTimeCardActivity.class);
+        intent.putParcelableArrayListExtra("result",result);
+        context.startActivityForResult(intent, SELECT_ITEM);
     }
 
     @Override

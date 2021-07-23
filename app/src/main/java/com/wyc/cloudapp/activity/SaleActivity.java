@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.wyc.cloudapp.activity.mobile.MobileCashierActivity;
+import com.wyc.cloudapp.activity.mobile.cashierDesk.MobileCashierActivity;
 import com.wyc.cloudapp.adapter.AbstractSaleGoodsAdapter;
 import com.wyc.cloudapp.adapter.MobileSaleGoodsAdapter;
 import com.wyc.cloudapp.adapter.NormalSaleGoodsAdapter;

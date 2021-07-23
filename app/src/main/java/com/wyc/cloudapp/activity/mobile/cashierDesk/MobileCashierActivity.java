@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.activity.mobile;
+package com.wyc.cloudapp.activity.mobile.cashierDesk;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;

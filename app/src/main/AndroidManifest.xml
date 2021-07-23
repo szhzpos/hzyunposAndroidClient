@@ -39,17 +39,21 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
-        <activity android:name=".activity.mobile.SelectGiftCardActivity"></activity>
+        <activity android:name=".activity.mobile.cashierDesk.QueryGiftCardInfoActivity"></activity>
         <activity
-            android:name=".activity.mobile.GiftCardSaleActivity"
-            android:windowSoftInputMode="adjustResize|stateUnchanged" />
-        <activity android:name=".activity.mobile.TimeCardOrderDetailActivity" />
-        <activity android:name=".activity.mobile.TimeCardQueryActivity" />
-        <activity android:name=".activity.mobile.TimeCardSaleActivity" />
-        <activity
-            android:name=".activity.mobile.TimeCardPayActivity"
+            android:name=".activity.mobile.cashierDesk.GiftCardPayActivity"
             android:theme="@style/notFullActivity" />
-        <activity android:name=".activity.mobile.SelectTimeCardActivity" />
+        <activity
+            android:name=".activity.mobile.cashierDesk.TimeCardPayActivity"
+            android:theme="@style/notFullActivity" />
+        <activity android:name=".activity.mobile.cashierDesk.SelectGiftCardActivity" />
+        <activity
+            android:name=".activity.mobile.cashierDesk.GiftCardSaleActivity"
+            android:windowSoftInputMode="adjustResize|stateUnchanged" />
+        <activity android:name=".activity.mobile.cashierDesk.TimeCardOrderDetailActivity" />
+        <activity android:name=".activity.mobile.cashierDesk.TimeCardQueryActivity" />
+        <activity android:name=".activity.mobile.cashierDesk.TimeCardSaleActivity" />
+        <activity android:name=".activity.mobile.cashierDesk.SelectTimeCardActivity" />
         <activity android:name=".activity.mobile.business.EditVipInfoActivity" />
         <activity android:name=".activity.mobile.business.MobileEditGoodInfoActivity" />
         <activity android:name=".activity.mobile.business.MobileVipCategoryInfoActivity" />
@@ -107,7 +111,7 @@
         <activity android:name=".activity.mobile.business.AbstractMobileBusinessOrderActivity" />
         <activity android:name=".activity.mobile.MobileSetupActivity" />
         <activity android:name=".activity.SaleActivity" />
-        <activity android:name=".activity.mobile.MobileCashierActivity" />
+        <activity android:name=".activity.mobile.cashierDesk.MobileCashierActivity" />
         <activity android:name=".activity.mobile.MobileNavigationActivity" />
         <activity
             android:name=".activity.NormalMainActivity"

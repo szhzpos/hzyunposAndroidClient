@@ -18,8 +18,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.CustomizationView.BasketView;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.mobile.SelectTimeCardActivity;
-import com.wyc.cloudapp.activity.mobile.TimeCardPayActivity;
+import com.wyc.cloudapp.activity.mobile.cashierDesk.CardPayBaseActivity;
+import com.wyc.cloudapp.activity.mobile.cashierDesk.SelectTimeCardActivity;
+import com.wyc.cloudapp.activity.mobile.cashierDesk.TimeCardPayActivity;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.adapter.business.MobileTimeCardSaleAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -216,7 +217,7 @@ public final class TimeCardSaleFragment extends AbstractMobileFragment {
                 if (dx > (w - search.getCompoundPaddingRight())) {
                     queryTimeCardByName(search.getText().toString());
                 }else if(dx < search.getCompoundPaddingLeft()){
-                    SelectTimeCardActivity.startWithFragment(this,SelectTimeCardActivity.class);
+                    SelectTimeCardActivity.startWithFragment(this);
                 }
             }
             return false;
@@ -250,7 +251,7 @@ public final class TimeCardSaleFragment extends AbstractMobileFragment {
                             }else if (size == 0){
                                 MyDialog.toastMessage(getString(R.string.not_exist_hint_sz, _search_content.getText().toString()));
                             }else
-                                SelectTimeCardActivity.startForResult(mContext, (ArrayList<TimeCardInfo>) list,SelectTimeCardActivity.class);
+                                SelectTimeCardActivity.startForResult(mContext, (ArrayList<TimeCardInfo>) list);
                         }
                         progressDialog.dismiss();
                     }
@@ -264,7 +265,7 @@ public final class TimeCardSaleFragment extends AbstractMobileFragment {
                 if (null != data){
                     add(SelectTimeCardActivity.getItem(data));
                 }
-            }else if (requestCode == TimeCardPayActivity.ONCE_CARD_REQUEST_PAY){
+            }else if (requestCode == CardPayBaseActivity.ONCE_CARD_REQUEST_PAY){
                 clearContent();
             }
         }

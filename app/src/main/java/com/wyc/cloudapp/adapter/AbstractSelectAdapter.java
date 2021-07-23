@@ -4,9 +4,6 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-import com.wyc.cloudapp.activity.mobile.SelectTimeCardActivity;
-import com.wyc.cloudapp.bean.TimeCardInfo;
-
 /**
  * @ProjectName: AndroidClient
  * @Package: com.wyc.cloudapp.adapter

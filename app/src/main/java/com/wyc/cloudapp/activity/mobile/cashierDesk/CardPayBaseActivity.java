@@ -1,7 +1,5 @@
-package com.wyc.cloudapp.activity.mobile;
+package com.wyc.cloudapp.activity.mobile.cashierDesk;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.text.Editable;
@@ -10,12 +8,11 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.util.Consumer;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,65 +20,42 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.PayDetailViewAdapter;
 import com.wyc.cloudapp.adapter.PayMethodAdapterForObj;
-import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.bean.CardPay;
+import com.wyc.cloudapp.bean.ICardPay;
 import com.wyc.cloudapp.bean.PayDetailInfo;
-import com.wyc.cloudapp.bean.TimeCardPayInfo;
-import com.wyc.cloudapp.bean.TimeCardSaleInfo;
-import com.wyc.cloudapp.bean.UnifiedPayResult;
-import com.wyc.cloudapp.constants.InterfaceURL;
-import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.data.room.AppDatabase;
-import com.wyc.cloudapp.data.room.entity.GiftCardSaleOrder;
 import com.wyc.cloudapp.data.room.entity.PayMethod;
-import com.wyc.cloudapp.data.room.entity.TimeCardPayDetail;
-import com.wyc.cloudapp.data.room.entity.TimeCardSaleOrder;
 import com.wyc.cloudapp.decoration.PayMethodItemDecoration;
 import com.wyc.cloudapp.decoration.SuperItemDecoration;
-import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
-import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.pay.AbstractSettlementDialog;
 import com.wyc.cloudapp.dialog.pay.PayMethodDialogImp;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.print.Printer;
-import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
-import com.wyc.cloudapp.utils.http.HttpRequest;
-import com.wyc.cloudapp.utils.http.HttpUtils;
-import com.wyc.cloudapp.utils.http.callback.ObjectCallback;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.wyc.cloudapp.utils.FormatDateTimeUtils.formatCurrentTime;
-
-public class TimeCardPayActivity<T extends CardPay<?>> extends AbstractMobileActivity {
+public class CardPayBaseActivity<T extends ICardPay<?>> extends AbstractMobileActivity {
     public static final int ONCE_CARD_REQUEST_PAY = 0x000000dd;
-    private static final String ORDER_INFO = "o";
+    protected static final String ORDER_INFO = "o";
 
     private PayMethodAdapterForObj mPayMethodViewAdapter;
     private RecyclerView mPayMethodView;
     private PayDetailViewAdapter mPayDetailViewAdapter;
     private PayMethod mPayMethod;
     private T mOrder;
-    CustomProgressDialog mProgressDialog;
 
     private double mPay_balance,mPay_amt,mCashAmt,mOrder_amt,mDiscount_amt,mActual_amt,mZlAmt,mAmt_received;
 
-    @BindView(R.id.vip_name)
-    TextView vip_name;
-    @BindView(R.id.vip_phone_num)
-    TextView vip_phone_num;
+    @BindView(R.id.vip_info_linearLayout)
+    LinearLayout vip_info_linearLayout;
+
     @BindView(R.id.order_amt)
     TextView order_amt;
     @BindView(R.id.dis_sum_amt)
@@ -96,7 +70,6 @@ public class TimeCardPayActivity<T extends CardPay<?>> extends AbstractMobileAct
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mOrder = getIntent().getParcelableExtra(ORDER_INFO);
 
         WindowManager.LayoutParams attributes = getWindow().getAttributes();
         attributes.dimAmount = 0.5f;
@@ -109,7 +82,7 @@ public class TimeCardPayActivity<T extends CardPay<?>> extends AbstractMobileAct
 
         ButterKnife.bind(this);
 
-        setMiddleText(getString(R.string.once_card_pay));
+        mOrder = getIntent().getParcelableExtra(ORDER_INFO);
 
         initPayDetailViewAdapter();
         initPayMethod();
@@ -160,8 +133,13 @@ public class TimeCardPayActivity<T extends CardPay<?>> extends AbstractMobileAct
     }
 
     private void showVip(){
-        vip_name.setText(mOrder.getVip_name());
-        vip_phone_num.setText(mOrder.getVip_mobile());
+        if (Utils.isNotEmpty(mOrder.getVip_card_no())){
+            vip_info_linearLayout.setVisibility(View.VISIBLE);
+            TextView vip_name = vip_info_linearLayout.findViewById(R.id.vip_name),
+                    vip_phone_num = vip_info_linearLayout.findViewById(R.id.vip_phone_num);
+            vip_name.setText(mOrder.getVip_name());
+            vip_phone_num.setText(mOrder.getVip_mobile());
+        }
     }
 
     private void initPayDetailViewAdapter() {
@@ -194,7 +172,7 @@ public class TimeCardPayActivity<T extends CardPay<?>> extends AbstractMobileAct
                     if (Utils.equalDouble(sale_amt,rec_pay_amt)){//再次验证销售金额以及付款金额是否相等
                         save();
                     }else{
-                        MyDialog.displayErrorMessage(TimeCardPayActivity.this, String.format(Locale.CHINA,"销售金额:%f  不等于 付款金额:%f",sale_amt,rec_pay_amt));
+                        MyDialog.displayErrorMessage(CardPayBaseActivity.this, String.format(Locale.CHINA,"销售金额:%f  不等于 付款金额:%f",sale_amt,rec_pay_amt));
                     }
                 }
             }
@@ -295,7 +273,7 @@ public class TimeCardPayActivity<T extends CardPay<?>> extends AbstractMobileAct
                             if (mPayMethod.isVipPay()){
                                 detail.put("card_code",mOrder.getVip_card_no());
                             }
-                            final PayMethodDialogImp payMethodDialogImp = new PayMethodDialogImp(TimeCardPayActivity.this, detail);
+                            final PayMethodDialogImp payMethodDialogImp = new PayMethodDialogImp(CardPayBaseActivity.this, detail);
                             payMethodDialogImp.setModifyPayAmt(false).setPayAmt(mPay_balance);
                             final int code = payMethodDialogImp.exec();
                             if (code == 1){
@@ -427,28 +405,6 @@ public class TimeCardPayActivity<T extends CardPay<?>> extends AbstractMobileAct
 
     @Override
     protected int getContentLayoutId() {
-        return R.layout.activity_once_card_pay;
-    }
-
-    public static <T extends CardPay<?>> void start(@NonNull Fragment context,T order){
-        if (order == null){
-            throw new IllegalArgumentException("the second parameter must not be empty...");
-        }
-        if (order.getSaleInfo().isEmpty()){
-            MyDialog.toastMessage("次卡销售记录不能为空！");
-            return;
-        }
-        context.startActivityForResult( new Intent(context.getContext(), TimeCardPayActivity.class).putExtra(ORDER_INFO,order),ONCE_CARD_REQUEST_PAY);
-    }
-
-    public static <T extends CardPay<?>> void star(@NonNull Activity context,T order){
-        if (order == null){
-            throw new IllegalArgumentException("the second parameter must not be empty...");
-        }
-        if (order.getSaleInfo().isEmpty()){
-            MyDialog.toastMessage("购物卡销售记录不能为空！");
-            return;
-        }
-        context.startActivityForResult( new Intent(context,TimeCardPayActivity.class).putExtra(ORDER_INFO,order),ONCE_CARD_REQUEST_PAY);
+        return R.layout.activity_card_pay;
     }
 }

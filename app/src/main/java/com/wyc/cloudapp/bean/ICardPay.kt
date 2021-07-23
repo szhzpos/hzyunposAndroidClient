@@ -6,7 +6,7 @@ import com.wyc.cloudapp.activity.MainActivity
 /*
 * 泛型参数 S 表示销售明细类型 P 支付明细类型
 * */
-interface CardPay<S> :Parcelable{
+interface ICardPay<S> :Parcelable{
     fun getVip_openid():String?{
         return ""
     }
@@ -22,6 +22,7 @@ interface CardPay<S> :Parcelable{
     fun getDiscountAmt():Double{
         return 0.0;
     }
+
     fun getAmt():Double
     fun getSaleInfo():List<S>
     fun getOrder_no():String

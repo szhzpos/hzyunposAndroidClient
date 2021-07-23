@@ -16,7 +16,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.bean.CardPay;
+import com.wyc.cloudapp.bean.ICardPay;
 import com.wyc.cloudapp.bean.PayDetailInfo;
 import com.wyc.cloudapp.bean.TimeCardPayInfo;
 import com.wyc.cloudapp.bean.TimeCardSaleInfo;
@@ -58,7 +58,7 @@ import static android.app.Activity.RESULT_OK;
  * @Version: 1.0
  */
 @Entity(tableName = "timeCardSaleOrder")
-public final class TimeCardSaleOrder implements CardPay<TimeCardSaleInfo> {
+public final class TimeCardSaleOrder implements ICardPay<TimeCardSaleInfo> {
     @PrimaryKey
     @NonNull
     private String order_no;
@@ -408,7 +408,7 @@ public final class TimeCardSaleOrder implements CardPay<TimeCardSaleInfo> {
                                     if (result.isSuccess()){
                                         allSuccess = true;
                                         detail.success();
-                                        detail.setOnline_pay_no(result.getOrder_code());
+                                        detail.setOnline_pay_no(result.getPay_code());
                                     }else {
                                         detail.failure();
                                         MyDialog.toastMessage(result.getInfo());
@@ -425,7 +425,7 @@ public final class TimeCardSaleOrder implements CardPay<TimeCardSaleInfo> {
 
                             if (allSuccess){
                                 uploadPayInfo(s -> {
-                                    TimeCardSaleOrder.this.print(activity);
+                                    print(activity);
 
                                     activity.setResult(RESULT_OK);
                                     activity.finish();
@@ -595,10 +595,11 @@ public final class TimeCardSaleOrder implements CardPay<TimeCardSaleInfo> {
     private void setOrderPayInfo(MainActivity context,@NotNull List<PayDetailInfo> payDetailList) {
         final List<TimeCardPayDetail> payDetails = new ArrayList<>();
         double pamt = 0.0,zl_amt = 0.0;
+        int index = 1;
         for (PayDetailInfo payDetailInfo : payDetailList){
             pamt = payDetailInfo.getPay_amt();
             zl_amt = payDetailInfo.getZl_amt();
-            final TimeCardPayDetail payDetail = new TimeCardPayDetail.Builder(getOrder_no()).
+            final TimeCardPayDetail payDetail = new TimeCardPayDetail.Builder(getOrder_no()).rowId(index++).
                     pay_method_id(payDetailInfo.getMethod_id()).remark(payDetailInfo.getV_num())
                     .amt(pamt - zl_amt).zl_amt(zl_amt).cas_id(context.getCashierId()).build();
             payDetails.add(payDetail);
@@ -638,9 +639,9 @@ public final class TimeCardSaleOrder implements CardPay<TimeCardSaleInfo> {
     public void uploadPayInfo(Consumer<String> success,Consumer<String> error){
         final JSONObject pay = new JSONObject();
         pay.put("appid",CustomApplication.self().getAppId());
-        pay.put("order_code",online_order_no);
+        pay.put("order_code",getOnline_order_no());
         if (payInfo == null || payInfo.isEmpty()){
-            MyDialog.toastMessage("支付信息为空...");
+            MyDialog.toastMessage(CustomApplication.self().getString(R.string.hints_pay_detail_not_empty));
             return;
         }
         pay.put("pay_method",payInfo.get(0).getPay_method_id());
