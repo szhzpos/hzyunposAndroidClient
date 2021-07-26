@@ -220,7 +220,7 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
                 tv.setText(String.format(Locale.CHINA,"高:%d x 宽:%d DPI:%d 版本号:%s",displayMetrics.heightPixels,displayMetrics.widthPixels,displayMetrics.densityDpi,packageInfo.versionName));
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
-                MyDialog.ToastMessage(e.getMessage(),this,getWindow());
+                MyDialog.ToastMessage(e.getMessage(), getWindow());
             }
         }
     }
@@ -272,7 +272,7 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
             mConnParam = conn_param;
         } else {
             mProgressDialog.dismiss();
-            MyDialog.ToastMessage("连接参数不能为空!",this,getWindow());
+            MyDialog.ToastMessage("连接参数不能为空!", getWindow());
             final View view = findViewById(R.id.setup_ico);
             if (null != view)view.callOnClick();
         }
@@ -683,14 +683,14 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
                 mUserIdEt.selectAll();
                 mUserIdEt.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake_x));
                 if (msg.obj instanceof String)
-                    MyDialog.ToastMessage(mUserIdEt,msg.obj.toString(),this,null);
+                    MyDialog.ToastMessage(mUserIdEt,msg.obj.toString(), getWindow());
                 break;
             case MessageID.LOGIN_PW_ERROR_ID://密码错误
                 mPasswordEt.requestFocus();
                 mPasswordEt.selectAll();
                 mPasswordEt.startAnimation(AnimationUtils.loadAnimation(this, R.anim.shake_x));
                 if (msg.obj instanceof String)
-                    MyDialog.ToastMessage(mPasswordEt,msg.obj.toString(),this,null);
+                    MyDialog.ToastMessage(mPasswordEt,msg.obj.toString(), getWindow());
                 break;
             case MessageID.SYNC_DIS_INFO_ID://资料同步进度信息
                 mProgressDialog.setMessage(msg.obj.toString()).refreshMessage().show();

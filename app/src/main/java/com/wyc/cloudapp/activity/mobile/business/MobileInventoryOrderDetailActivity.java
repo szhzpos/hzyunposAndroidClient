@@ -151,7 +151,7 @@ public class MobileInventoryOrderDetailActivity extends AbstractMobileActivity {
         final StringBuilder err = new StringBuilder();
         final JSONArray array = SQLiteHelper.getListToJson(sql,err);
         if (null == array){
-            MyDialog.ToastMessage(err.toString(),this,null);
+            MyDialog.ToastMessage(err.toString(), null);
         }
         return array;
     }
@@ -260,7 +260,7 @@ public class MobileInventoryOrderDetailActivity extends AbstractMobileActivity {
         final ViewGroup date_layout = findViewById(R.id.date_layout);
         date_layout.setVisibility(View.VISIBLE);
         final TextView m_business_date_tv = date_layout.findViewById(R.id.m_business_date_tv);
-        m_business_date_tv.setText(FormatDateTimeUtils.formatDataWithTimestamp(mTaskInfo.getLongValue("addtime") * 1000));
+        m_business_date_tv.setText(FormatDateTimeUtils.formatTimeWithTimestamp(mTaskInfo.getLongValue("addtime") * 1000));
 
     }
     private void initStores(){

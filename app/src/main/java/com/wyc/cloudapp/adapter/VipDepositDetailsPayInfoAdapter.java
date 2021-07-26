@@ -95,7 +95,7 @@ public final class VipDepositDetailsPayInfoAdapter extends AbstractPayInfoAdapte
             mContext.runOnUiThread(this::notifyDataSetChanged);
         }else{
             mData = new JSONArray();
-            mContext.runOnUiThread(()->MyDialog.ToastMessage("加载付款明细错误：" + err,mContext,null));
+            mContext.runOnUiThread(()->MyDialog.ToastMessage("加载付款明细错误：" + err, null));
         }
     }
 }

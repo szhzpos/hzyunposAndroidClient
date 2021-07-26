@@ -266,7 +266,7 @@ public class CardPayBaseActivity<T extends ICardPay<?>> extends AbstractMobileAc
                     } else {
                         if (Utils.equalDouble(mPay_balance, 0) && mPayDetailViewAdapter.findPayDetailById(payMethodId) == null) {//剩余金额为零，同时不存在此付款方式的记录。
                             mPayMethodViewAdapter.showDefaultPayMethod();
-                            MyDialog.SnackbarMessage(getWindow(), "剩余金额为零！", getCurrentFocus());
+                            MyDialog.SnackBarMessage(getWindow(), "剩余金额为零！", getCurrentFocus());
                         } else {
                             detail.put("xtype",mPayMethod.getXtype());
                             detail.put("is_check",mPayMethod.getIs_check());
@@ -289,7 +289,7 @@ public class CardPayBaseActivity<T extends ICardPay<?>> extends AbstractMobileAc
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                MyDialog.ToastMessage("付款错误：" + e.getMessage(), this,null);
+                MyDialog.ToastMessage("付款错误：" + e.getMessage(), null);
             }
         });
         final RecyclerView recyclerView = findViewById(R.id.pay_method_list);
@@ -365,7 +365,7 @@ public class CardPayBaseActivity<T extends ICardPay<?>> extends AbstractMobileAc
             }else
                 mPayMethodView.scrollToPosition(index);//如果找不到view则滚动
         }else {
-            MyDialog.ToastMessage(getString(R.string.not_exist_hint_sz,"PayMethodId:" + id),this,getWindow());
+            MyDialog.ToastMessage(getString(R.string.not_exist_hint_sz,"PayMethodId:" + id), getWindow());
         }
     }
 

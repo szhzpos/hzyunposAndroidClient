@@ -18,10 +18,12 @@ import com.wyc.cloudapp.bean.ICardPay
 import com.wyc.cloudapp.bean.PayDetailInfo
 import com.wyc.cloudapp.bean.UnifiedPayResult
 import com.wyc.cloudapp.constants.InterfaceURL
+import com.wyc.cloudapp.data.SQLiteHelper
 import com.wyc.cloudapp.data.room.AppDatabase
 import com.wyc.cloudapp.data.room.dao.GiftCardSaleOrderDao
 import com.wyc.cloudapp.dialog.CustomProgressDialog
 import com.wyc.cloudapp.dialog.MyDialog
+import com.wyc.cloudapp.fragment.PrintFormatFragment
 import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.http.HttpRequest
 import com.wyc.cloudapp.utils.http.HttpUtils
@@ -322,6 +324,28 @@ class GiftCardSaleOrder():ICardPay<GiftCardSaleDetail> {
 
     private fun print(activity: MainActivity){
         Logger.d("print")
+    }
+    fun get_print_content(context: MainActivity): String? {
+        var content: String? = ""
+        if (context.printStatus) {
+            val print_format_info = JSONObject()
+            if (SQLiteHelper.getLocalParameter("g_card_sale", print_format_info)) {
+                if (print_format_info.getIntValue("f") == PrintFormatFragment.GIFT_CARD_SALE_FORMAT_ID) {
+                    when (print_format_info.getIntValue("f_z")) {
+                        R.id.f_58 -> {
+
+                        }
+                        R.id.f_76 -> {
+                        }
+                        R.id.f_80 -> {
+                        }
+                    }
+                } else {
+                    context.runOnUiThread { MyDialog.ToastMessage(context.getString(R.string.f_not_sz), context.window) }
+                }
+            } else context.runOnUiThread { MyDialog.ToastMessage(context.getString(R.string.l_p_f_err_hint_sz, print_format_info.getString("info")), context.window) }
+        }
+        return content
     }
 
     private fun uploadPayInfo(amt: Double, suc: androidx.core.util.Consumer<String>, failure: androidx.core.util.Consumer<String>){

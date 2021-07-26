@@ -49,7 +49,7 @@ public abstract class AbstractRetailOrderDetailsDialog extends AbstractOrderDeta
     protected void verify_pay(){
         if (null != mPayRecord){
             if (mPayRecord.getIntValue("pay_status") == 2){
-                MyDialog.ToastMessage("支付成功!",mContext,getWindow());
+                MyDialog.ToastMessage("支付成功!", getWindow());
                 return;
             }
             final CustomProgressDialog mProgressDialog = new CustomProgressDialog(mContext);
@@ -59,12 +59,12 @@ public abstract class AbstractRetailOrderDetailsDialog extends AbstractOrderDeta
                     verify();
                 }catch (Exception e){
                     e.printStackTrace();
-                    mContext.runOnUiThread(()-> MyDialog.ToastMessage(e.getMessage(),mContext,getWindow()));
+                    mContext.runOnUiThread(()-> MyDialog.ToastMessage(e.getMessage(), getWindow()));
                 }
                 mContext.runOnUiThread(mProgressDialog::dismiss);
             });
         }else {
-            MyDialog.ToastMessage("请选择验证记录！",mContext,getWindow());
+            MyDialog.ToastMessage("请选择验证记录！", getWindow());
         }
     }
 
@@ -87,7 +87,7 @@ public abstract class AbstractRetailOrderDetailsDialog extends AbstractOrderDeta
                     pay_time = date.getTime() / 1000; ;
             } catch (ParseException e) {
                 e.printStackTrace();
-                mContext.runOnUiThread(()-> MyDialog.ToastMessage("格式化时间错误：" + e.getLocalizedMessage(),mContext,getWindow()));
+                mContext.runOnUiThread(()-> MyDialog.ToastMessage("格式化时间错误：" + e.getLocalizedMessage(), getWindow()));
             }
             query_status = true;
             pay_status = 2;
@@ -224,6 +224,6 @@ public abstract class AbstractRetailOrderDetailsDialog extends AbstractOrderDeta
                 mContext.runOnUiThread(this::showOrderInfo);
             }
         }
-        mContext.runOnUiThread(()-> MyDialog.ToastMessage(err.toString(),mContext,getWindow()));
+        mContext.runOnUiThread(()-> MyDialog.ToastMessage(err.toString(), getWindow()));
     }
 }

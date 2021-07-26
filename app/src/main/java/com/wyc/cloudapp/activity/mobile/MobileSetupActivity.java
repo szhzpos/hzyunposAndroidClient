@@ -59,6 +59,6 @@ public class MobileSetupActivity extends AbstractMobileActivity {
             mCurrentFragment = current;
             ft.commit();
         }else
-            MyDialog.ToastMessage("暂不支持此功能!",this,getWindow());
+            MyDialog.ToastMessage("暂不支持此功能!", getWindow());
     }
 }

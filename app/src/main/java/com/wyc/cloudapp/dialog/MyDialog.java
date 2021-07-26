@@ -1,21 +1,16 @@
 package com.wyc.cloudapp.dialog;
 
-import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Looper;
 import android.text.method.ScrollingMovementMethod;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -262,8 +257,8 @@ public final class MyDialog extends AbstractDialogContext {
         dialog.exec();
     }
 
-    public static boolean ToastMessage(View anchor,final String message,final Context context,final Window window,boolean b){
-        if(!b)ToastMessage(anchor,message,context,window);//条件为假是提示信息
+    public static boolean ToastMessage(View anchor, final String message, final Window window, boolean b){
+        if(!b)ToastMessage(anchor,message, window);//条件为假是提示信息
         return b;
     }
 
@@ -274,39 +269,35 @@ public final class MyDialog extends AbstractDialogContext {
         Toast.makeText(CustomApplication.self(),message,Toast.LENGTH_SHORT).show();
     }
 
-    public static void ToastMessage(final String message, @NonNull final Context context, final Window window){
-        final Toast toast = new Toast(context);
-        if (null != window){
-            window.setCallback(new WindowCallback(window,toast));
-        }else if (context instanceof Activity){
-            Window w = ((Activity)context).getWindow();
-            w.setCallback(new WindowCallback(w,toast));
-        }
-        View bg = LayoutInflater.from(context).inflate(R.layout.toast_bg,null);
+    public static void ToastMessage(final String message, final Window window){
+        @SuppressLint("InflateParams")
+        View bg = LayoutInflater.from(CustomApplication.self()).inflate(R.layout.toast_bg,null);
         if (bg != null){
             TextView mess = bg.findViewById(R.id.message);
             if (mess != null){
+                final Toast toast = new Toast(CustomApplication.self());
+                if (null != window){
+                    window.setCallback(new WindowCallback(window,toast));
+                }
                 toast.setView(bg);
                 mess.setTextColor(Color.WHITE);
                 mess.setText(message);
                 toast.setGravity(Gravity.CENTER,0,0);
-                //toast.setDuration(Toast.LENGTH_LONG);
                 toast.show();
             }
         }
     }
-    public static void ToastMessage(View anchor,final String message, @NonNull final Context context, final Window window){
-        final Toast toast = new Toast(context);
-        if (null != window){
-            window.setCallback(new WindowCallback(window,toast));
-        }else if (context instanceof Activity){
-            Window w = ((Activity)context).getWindow();
-            w.setCallback(new WindowCallback(w,toast));
-        }
-        final View bg = LayoutInflater.from(context).inflate(R.layout.toast_bg,null);
+
+    public static void ToastMessage(View anchor, final String message, final Window window){
+        @SuppressLint("InflateParams")
+        final View bg = LayoutInflater.from(CustomApplication.self()).inflate(R.layout.toast_bg,null);
         if (bg != null){
             final TextView mess = bg.findViewById(R.id.message);
             if (mess != null){
+                final Toast toast = new Toast(CustomApplication.self());
+                if (null != window){
+                    window.setCallback(new WindowCallback(window,toast));
+                }
                 toast.setView(bg);
                 mess.setTextColor(Color.WHITE);
                 mess.setText(message);
@@ -315,18 +306,18 @@ public final class MyDialog extends AbstractDialogContext {
                 }else{
                     int[] location = new int[2];
                     anchor.getLocationOnScreen(location);
-                    toast.setGravity( Gravity.TOP|Gravity.START,location[0] - Utils.dpToPx(context,72),location[1] + anchor.getMeasuredHeight() / 4);
+                    toast.setGravity( Gravity.TOP|Gravity.START,location[0] - Utils.dpToPx(CustomApplication.self(),72),location[1] + anchor.getMeasuredHeight() / 4);
                 }
                 toast.show();
             }
         }
     }
 
-    public static boolean SnackbarMessage(final Window window, final String message, View anchor, boolean b){
-        if(!b) SnackbarMessage( window, message, anchor);
+    public static boolean SnackBarMessage(final Window window, final String message, View anchor, boolean b){
+        if(!b) SnackBarMessage( window, message, anchor);
         return b;
     }
-    public static void SnackbarMessage(final Window window, final String message, View anchor){
+    public static void SnackBarMessage(final Window window, final String message, View anchor){
         if (null != window){
             final Snackbar snackbar = Snackbar.make(window.getDecorView(),message, Snackbar.LENGTH_LONG);
             window.setCallback(new WindowCallback(window,snackbar));

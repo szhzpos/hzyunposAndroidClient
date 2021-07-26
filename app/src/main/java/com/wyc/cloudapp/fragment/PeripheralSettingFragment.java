@@ -53,9 +53,9 @@ public class PeripheralSettingFragment extends AbstractParameterFragment {
         array.add(content);
 
         if (!SQLiteHelper.execSQLByBatchFromJson(array,"local_parameter",null,err,1)){
-            MyDialog.ToastMessage(null,err.toString(),mContext,null);
+            MyDialog.ToastMessage(null,err.toString(), null);
         }else{
-            MyDialog.ToastMessage(null,"保存成功！",mContext,null);
+            MyDialog.ToastMessage(null,"保存成功！", null);
         }
 
         return false;
@@ -148,7 +148,7 @@ public class PeripheralSettingFragment extends AbstractParameterFragment {
                     }
                 }
             }else
-                MyDialog.ToastMessage("加载串口秤参数错误：" + object.getString("info"),mContext,null);
+                MyDialog.ToastMessage("加载串口秤参数错误：" + object.getString("info"), null);
         }
         return object;
     }

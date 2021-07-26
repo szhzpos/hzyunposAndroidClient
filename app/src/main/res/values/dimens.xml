@@ -194,4 +194,6 @@
     <dimen name="business_order_item_height">@dimen/height_45</dimen>
     <dimen name="add_archive_item_height">40dp</dimen>
     <dimen name="once_card_item_height">@dimen/height_68</dimen>
+    <dimen name="gift_card_info_top_margin">@dimen/margin_18</dimen>
+    <string name="selected">确认选择</string>
 </resources>

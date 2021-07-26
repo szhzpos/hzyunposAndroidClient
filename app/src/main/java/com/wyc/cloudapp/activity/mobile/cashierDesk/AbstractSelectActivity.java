@@ -37,7 +37,7 @@ import java.util.List;
  */
 public abstract class AbstractSelectActivity<E extends Parcelable,T extends AbstractSelectAdapter<E,?>> extends AbstractMobileActivity {
     public static final int SELECT_ITEM = 0x000000cc;
-    private static final String ITEM_KEY = "I";
+    public static final String ITEM_KEY = "I";
     private T mAdapter;
     private EditText mSearch;
     @Override

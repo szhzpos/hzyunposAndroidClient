@@ -56,20 +56,20 @@ public abstract class AbstractChargeOrderDetailsDialog extends AbstractOrderDeta
                             disposeChargeById(mPayRecord,err);
                             mContext.runOnUiThread(()-> {
                                 if (mChargeDetailsPayInfoAdapter != null)mChargeDetailsPayInfoAdapter.notifyDataSetChanged();
-                                MyDialog.ToastMessage(err.toString(),mContext,getWindow());
+                                MyDialog.ToastMessage(err.toString(), getWindow());
                             });
                         }
                     }catch (Exception e){
                         e.printStackTrace();
-                        mContext.runOnUiThread(()-> MyDialog.ToastMessage(e.getMessage(),mContext,getWindow()));
+                        mContext.runOnUiThread(()-> MyDialog.ToastMessage(e.getMessage(), getWindow()));
                     }
                     mContext.runOnUiThread(mProgressDialog::dismiss);
                 });
             }else{
-                MyDialog.ToastMessage(mPayRecord.getString("status_name"),mContext,getWindow());
+                MyDialog.ToastMessage(mPayRecord.getString("status_name"), getWindow());
             }
         }else {
-            MyDialog.ToastMessage("请选择验证记录！",mContext,getWindow());
+            MyDialog.ToastMessage("请选择验证记录！", getWindow());
         }
     }
 

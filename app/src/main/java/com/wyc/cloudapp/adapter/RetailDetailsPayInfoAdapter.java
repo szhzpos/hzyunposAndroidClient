@@ -94,7 +94,7 @@ public final class RetailDetailsPayInfoAdapter extends AbstractPayInfoAdapter<Re
             mContext.runOnUiThread(this::notifyDataSetChanged);
         }else{
             mData = new JSONArray();
-            mContext.runOnUiThread(()->MyDialog.ToastMessage("加载付款明细错误：" + err,mContext,null));
+            mContext.runOnUiThread(()->MyDialog.ToastMessage("加载付款明细错误：" + err, null));
         }
 
     }

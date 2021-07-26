@@ -889,7 +889,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
                     myDialog.dismiss();
                 }).setNoOnclickListener(Dialog::dismiss).show();
         }else{
-            MyDialog.ToastMessage("请选择需要修改的商品!",mContext,null);
+            MyDialog.ToastMessage("请选择需要修改的商品!", null);
         }
     }
 

@@ -64,7 +64,7 @@ public final class MobileCashierDeskFragment extends AbstractJumpFragment {
                             app.manualSync();
                         }
                     }else {
-                        MyDialog.ToastMessage("网络异常不允许同步!",context,null);
+                        MyDialog.ToastMessage("网络异常不允许同步!", null);
                     }
                 }else if (v_id ==R.id.fd_shift_exchange_tv){
                     final Activity activity = getActivity();
@@ -102,7 +102,7 @@ public final class MobileCashierDeskFragment extends AbstractJumpFragment {
                 }
             }catch (ActivityNotFoundException e){
                 e.printStackTrace();
-                MyDialog.ToastMessage("暂不支持此功能!",context,null);
+                MyDialog.ToastMessage("暂不支持此功能!", null);
             }
         }
     }

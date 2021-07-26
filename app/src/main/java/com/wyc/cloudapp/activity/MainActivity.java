@@ -3,10 +3,7 @@ package com.wyc.cloudapp.activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -246,7 +243,7 @@ public class MainActivity extends BaseActivity {
 
             object.put("v",!print_s);
             if (!SQLiteHelper.saveLocalParameter("print_s",object,"打印开关",err)){
-                MyDialog.ToastMessage("保存打印状态错误:" + err,this,getWindow());
+                MyDialog.ToastMessage("保存打印状态错误:" + err, getWindow());
             }
         }
     }

@@ -55,7 +55,7 @@ public class MobileWholesaleSellOrderActivity extends AbstractMobileBusinessOrde
         @Override
         protected void showOrder() {
             super.showOrder();
-            setView(mDateTv, "", FormatDateTimeUtils.formatDataWithTimestamp(mOrderInfo.getLongValue("addtime") * 1000));
+            setView(mDateTv, "", FormatDateTimeUtils.formatTimeWithTimestamp(mOrderInfo.getLongValue("addtime") * 1000));
             setView(mOrderCodeTv, "",Utils.getNullStringAsEmpty(mOrderInfo,"order_code"));
             setSourceOrder("",Utils.getNullStringAsEmpty(mOrderInfo,"pfd_code"));
         }

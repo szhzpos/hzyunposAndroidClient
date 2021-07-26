@@ -41,7 +41,7 @@ public final class ReportFragment extends AbstractJumpFragment {
             startActivity(intent);
         }catch (ActivityNotFoundException e){
             e.printStackTrace();
-            MyDialog.ToastMessage("暂不支持" + title,mContext,null);
+            MyDialog.ToastMessage("暂不支持" + title, null);
         }
     }
 }

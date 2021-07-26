@@ -42,7 +42,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         if (SQLiteHelper.getLocalParameter("g_i_show",jsonObject)){
             mShowPic = (Utils.getNotKeyAsNumberDefault(jsonObject,"s",1) == 1);
         }else{
-            MyDialog.ToastMessage("加载是否显示商品图片参数错误：" + jsonObject.getString("info"),mContext,null);
+            MyDialog.ToastMessage("加载是否显示商品图片参数错误：" + jsonObject.getString("info"), null);
         }
     }
 
@@ -187,7 +187,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         if (mDatas != null){
             this.notifyDataSetChanged();
         }else{
-            MyDialog.ToastMessage("加载商品错误：" + err,mContext,null);
+            MyDialog.ToastMessage("加载商品错误：" + err, null);
         }
     }
 
@@ -234,7 +234,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
                 }
             }
         }else{
-            MyDialog.ToastMessage("搜索商品错误：" + err,mContext,null);
+            MyDialog.ToastMessage("搜索商品错误：" + err, null);
         }
         return code;
     }
@@ -518,6 +518,6 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     }
 
     private boolean loadScaleSetting(final JSONObject scaleSetting){
-        return MyDialog.ToastMessage(null,"加载条码秤参数错误：" + scaleSetting.getString("info"),mContext,null,SQLiteHelper.getLocalParameter("scale_setting",scaleSetting));
+        return MyDialog.ToastMessage(null,"加载条码秤参数错误：" + scaleSetting.getString("info"), null,SQLiteHelper.getLocalParameter("scale_setting",scaleSetting));
     }
 }

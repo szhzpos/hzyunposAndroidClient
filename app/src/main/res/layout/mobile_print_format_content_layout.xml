@@ -258,7 +258,7 @@
             android:text="@string/print_c_sz"
             android:textColor="@color/text_color"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/c_count" />
+            app:layout_constraintTop_toTopOf="@id/r_c_count" />
 
         <TextView
             android:id="@+id/c_count_label"
@@ -273,9 +273,10 @@
 
         <EditText
             android:id="@+id/c_count"
-            android:layout_width="@dimen/width_45"
+            android:layout_width="@dimen/width_35"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_1"
+            android:layout_marginStart="@dimen/margin_1"
+            android:layout_marginBottom="8dp"
             android:background="@drawable/round_border_sub_gray"
             android:ems="10"
             android:inputType="number"
@@ -302,7 +303,7 @@
 
         <EditText
             android:id="@+id/v_c_count"
-            android:layout_width="@dimen/width_45"
+            android:layout_width="@dimen/width_35"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/margin_1"
             android:background="@drawable/round_border_sub_gray"
@@ -331,10 +332,10 @@
 
         <EditText
             android:id="@+id/r_c_count"
-            android:layout_width="@dimen/width_45"
+            android:layout_width="@dimen/width_35"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_1"
-            android:layout_marginBottom="5dp"
+            android:layout_marginStart="@dimen/margin_1"
+            android:layout_marginBottom="8dp"
             android:background="@drawable/round_border_sub_gray"
             android:ems="10"
             android:inputType="number"
@@ -344,9 +345,9 @@
             android:text="@string/one_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/g_card_label"
             app:layout_constraintStart_toEndOf="@id/r_c_count_label"
-            app:layout_constraintTop_toBottomOf="@id/print_c_label" />
+            app:layout_constraintTop_toBottomOf="@+id/c_count" />
 
         <TextView
             android:id="@+id/t_c_count_label"
@@ -361,9 +362,8 @@
 
         <EditText
             android:id="@+id/t_c_count"
-            android:layout_width="@dimen/width_45"
+            android:layout_width="@dimen/width_35"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_1"
             android:background="@drawable/round_border_sub_gray"
             android:ems="10"
             android:inputType="number"
@@ -375,6 +375,95 @@
             android:textSize="@dimen/font_size_16"
             app:layout_constraintEnd_toEndOf="@id/v_c_count"
             app:layout_constraintTop_toTopOf="@id/r_c_count" />
+
+        <TextView
+            android:id="@+id/time_format_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_5"
+            android:text="@string/time_card_sale_format"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_12"
+            app:layout_constraintBottom_toBottomOf="@id/t_card_count"
+            app:layout_constraintStart_toEndOf="@id/v_c_count"
+            app:layout_constraintTop_toTopOf="@id/t_card_count" />
+
+        <EditText
+            android:id="@+id/t_card_count"
+            android:layout_width="@dimen/width_35"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_1"
+            android:background="@drawable/round_border_sub_gray"
+            android:ems="10"
+            android:inputType="number"
+            android:padding="@dimen/margin_2"
+            android:paddingTop="@dimen/size_0"
+            android:selectAllOnFocus="true"
+            android:text="@string/one_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintBottom_toBottomOf="@id/v_c_count"
+            app:layout_constraintStart_toEndOf="@id/time_format_label"
+            app:layout_constraintTop_toTopOf="@id/v_c_count" />
+
+        <TextView
+            android:id="@+id/t_card_use_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/time_card_use_format"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_12"
+            app:layout_constraintBottom_toBottomOf="@id/t_c_count"
+            app:layout_constraintEnd_toEndOf="@id/time_format_label"
+            app:layout_constraintTop_toTopOf="@id/t_c_count" />
+
+        <EditText
+            android:id="@+id/t_card_use_count"
+            android:layout_width="@dimen/width_35"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_1"
+            android:background="@drawable/round_border_sub_gray"
+            android:ems="10"
+            android:inputType="number"
+            android:padding="@dimen/margin_2"
+            android:paddingTop="@dimen/size_0"
+            android:selectAllOnFocus="true"
+            android:text="@string/one_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toEndOf="@id/t_card_use_label"
+            app:layout_constraintTop_toTopOf="@id/r_c_count" />
+
+        <TextView
+            android:id="@+id/g_card_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/gift_card_sale_format"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_12"
+            app:layout_constraintBottom_toBottomOf="@id/g_card_count"
+            app:layout_constraintStart_toStartOf="@id/r_c_count_label"
+            app:layout_constraintTop_toTopOf="@id/g_card_count" />
+
+        <EditText
+            android:id="@+id/g_card_count"
+            android:layout_width="@dimen/width_35"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_1"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/round_border_sub_gray"
+            android:ems="10"
+            android:inputType="number"
+            android:padding="@dimen/margin_2"
+            android:paddingTop="@dimen/size_0"
+            android:selectAllOnFocus="true"
+            android:text="@string/one_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/g_card_label"
+            app:layout_constraintTop_toBottomOf="@id/r_c_count" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button

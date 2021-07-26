@@ -135,7 +135,7 @@ public final class MobileRetailOrderAdapter extends AbstractQueryDataAdapter<Mob
                         }
                     });
                 }else{
-                    MyDialog.ToastMessage(v,Utils.getNullStringAsEmpty(curr,"order_status_name"),mContext,null);
+                    MyDialog.ToastMessage(v,Utils.getNullStringAsEmpty(curr,"order_status_name"), null);
                 }
             }
         }
@@ -156,6 +156,6 @@ public final class MobileRetailOrderAdapter extends AbstractQueryDataAdapter<Mob
         if (mData != null){
             notifyDataSetChanged();
         }else
-            MyDialog.ToastMessage("加载充值订单错误：" + err,mContext,null);
+            MyDialog.ToastMessage("加载充值订单错误：" + err, null);
     }
 }

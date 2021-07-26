@@ -233,7 +233,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         }).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe(array -> {
             mSupplierList = array;
             setDefaultSupplier();
-        }, throwable -> MyDialog.ToastMessage("查询供应商信息错误:" + throwable.getMessage(),this,getWindow()));
+        }, throwable -> MyDialog.ToastMessage("查询供应商信息错误:" + throwable.getMessage(), getWindow()));
     }
     private void initSupplier(){
         final TextView supplier_et = findViewById(R.id.a_supplier_et);
@@ -349,7 +349,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
             final JSONObject retJson = httpRequest.sendPost("http://adm.hzyunpos.com/api/getgoods/get_goods",sz_param,true);
             switch (retJson.getIntValue("flag")){
                 case 0:
-                    runOnUiThread(()-> MyDialog.ToastMessage("查询商品信息错误:" + retJson.getString("info"),this,getWindow()));
+                    runOnUiThread(()-> MyDialog.ToastMessage("查询商品信息错误:" + retJson.getString("info"), getWindow()));
                     break;
                 case 1:
                     runOnUiThread(()-> showGoodsInfo(JSONObject.parseObject(retJson.getString("info"))));
@@ -425,12 +425,12 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
             final JSONObject retJson = httpRequest.sendPost(getUrl() + "/api/goods_set/get_onlycode_barcode",sz_param,true);
             switch (retJson.getIntValue("flag")){
                 case 0:
-                    runOnUiThread(()-> MyDialog.ToastMessage("生成条码信息错误:" + retJson.getString("info"),this,getWindow()));
+                    runOnUiThread(()-> MyDialog.ToastMessage("生成条码信息错误:" + retJson.getString("info"), getWindow()));
                     break;
                 case 1:
                     final JSONObject info_obj = JSONObject.parseObject(retJson.getString("info"));
                     if ("n".equals(Utils.getNullOrEmptyStringAsDefault(info_obj,"status","n"))){
-                        runOnUiThread(()-> MyDialog.ToastMessage("生成条码信息错误:" + info_obj.getString("info"),this,getWindow()));
+                        runOnUiThread(()-> MyDialog.ToastMessage("生成条码信息错误:" + info_obj.getString("info"), getWindow()));
                     }else{
                         final JSONObject data = info_obj.getJSONObject("data");
                         if (data != null){
@@ -544,7 +544,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
 
             mBrandList = parse_brand_info(Utils.getNullObjectAsEmptyJsonArray(data,"brand"));
             setDefaultBrand();
-        }, throwable -> MyDialog.ToastMessage("查询商品基本信息错误:" + throwable.getMessage(),this,getWindow()));
+        }, throwable -> MyDialog.ToastMessage("查询商品基本信息错误:" + throwable.getMessage(), getWindow()));
     }
 
     private JSONObject getDefaultCategory(){
@@ -786,32 +786,32 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
                 only_coding = mItemIdEt.getText().toString(),supplier = mSupplierTv.getText().toString();
         if (barcode == null || barcode.isEmpty()){
             mBarcodeEt.requestFocus();
-            MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.barcode_sz)),this,getWindow());
+            MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.barcode_sz)), getWindow());
             return data;
         }
         if (name.isEmpty()){
             mNameEt.requestFocus();
-            MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.g_name_sz)),this,getWindow());
+            MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.g_name_sz)), getWindow());
             return data;
         }
         if (supplier.isEmpty()){
             mSupplierTv.requestFocus();
-            MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.supplier_setting)),this,getWindow());
+            MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.supplier_setting)), getWindow());
             return data;
         }
         if (category.isEmpty()){
             mCategoryTv.requestFocus();
-            MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.d_category_sz)),this,getWindow());
+            MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.d_category_sz)), getWindow());
             return data;
         }
         if (unit.isEmpty()){
             mUnitTv.requestFocus();
-            MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.unit_sz)),this,getWindow());
+            MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.unit_sz)), getWindow());
             return data;
         }
         if (only_coding.isEmpty()){
             mItemIdEt.requestFocus();
-            MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.item_no_sz)),this,getWindow());
+            MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.item_no_sz)), getWindow());
             return data;
         }
 

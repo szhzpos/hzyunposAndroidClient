@@ -91,7 +91,7 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractMobileActi
                     if (BusinessSelectGoodsDialog.selectGoodsWithBarcodeId(object,barcode_id,WholesalePriceType.BUYING_PRICE)){
                         addGoodsDetails(object,false);
                     }else {
-                        MyDialog.ToastMessage(object.getString("info"),this,getWindow());
+                        MyDialog.ToastMessage(object.getString("info"), getWindow());
                     }
                 }
             }else if (requestCode == BusinessSelectGoodsDialog.BARCODE_REQUEST_CODE){
@@ -164,7 +164,7 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractMobileActi
                 }
             }
         }else {
-            MyDialog.ToastMessage(err.toString(),this,null);
+            MyDialog.ToastMessage(err.toString(), null);
         }
         return data;
     }
@@ -285,7 +285,7 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractMobileActi
                 }
             }else if (id == R.id.m_business_save_btn){
                 if (mAdapter.isEmpty()){
-                    MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.goods_i_sz)),v.getContext(),getWindow());
+                    MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.goods_i_sz)), getWindow());
                 }else
                     uploadOrderInfo();
             }
@@ -333,7 +333,7 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractMobileActi
                     runOnUiThread(()-> Toast.makeText(this,e.getLocalizedMessage(),Toast.LENGTH_LONG));
                 }
             }else {
-                runOnUiThread(()-> MyDialog.ToastMessage(getString(R.string.query_business_order_id_hint_sz,retJson.getString("info")),this,null));
+                runOnUiThread(()-> MyDialog.ToastMessage(getString(R.string.query_business_order_id_hint_sz,retJson.getString("info")), null));
             }
         });
     }
@@ -510,8 +510,8 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractMobileActi
         setInventoryTask(object);
 
         mOrderCodeTv.setText(object.getString("pcd_code"));
-        mDateTv.setText(FormatDateTimeUtils.formatDataWithTimestamp(object.getLongValue("addtime") * 1000));
-        mDateTv.setText(FormatDateTimeUtils.formatDataWithTimestamp(object.getLongValue("addtime") * 1000));
+        mDateTv.setText(FormatDateTimeUtils.formatTimeWithTimestamp(object.getLongValue("addtime") * 1000));
+        mDateTv.setText(FormatDateTimeUtils.formatTimeWithTimestamp(object.getLongValue("addtime") * 1000));
         setSaleOperator(object.getString("js_pt_user_id"),object.getString("js_pt_user_name"));
         mRemarkEt.setText(object.getString("remark"));
 

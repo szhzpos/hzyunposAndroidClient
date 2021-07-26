@@ -45,7 +45,7 @@ public abstract class MobileWholesaleBaseActivity extends AbstractMobileQuerySou
     @Override
     protected void showOrder() {
         super.showOrder();
-        setView(mDateTv, "", FormatDateTimeUtils.formatDataWithTimestamp(mOrderInfo.getLongValue("addtime") * 1000));
+        setView(mDateTv, "", FormatDateTimeUtils.formatTimeWithTimestamp(mOrderInfo.getLongValue("addtime") * 1000));
         setSettlementType();
         setCustomer(Utils.getNullStringAsEmpty(mOrderInfo,"c_s_id"),Utils.getNullStringAsEmpty(mOrderInfo,"cs_xname"));
     }

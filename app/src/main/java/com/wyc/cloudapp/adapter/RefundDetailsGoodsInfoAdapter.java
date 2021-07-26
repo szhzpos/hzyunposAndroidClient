@@ -77,7 +77,7 @@ public final class RefundDetailsGoodsInfoAdapter extends AbstractTableDataAdapte
             notifyDataSetChanged();
         }else{
             mData = new JSONArray();
-            MyDialog.ToastMessage("加载商品明细错误：" + err,mContext,null);
+            MyDialog.ToastMessage("加载商品明细错误：" + err, null);
         }
     }
 

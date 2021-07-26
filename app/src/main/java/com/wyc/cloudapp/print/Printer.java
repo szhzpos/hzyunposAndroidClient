@@ -295,7 +295,7 @@ public final class Printer {
                 }
             }
         }else {
-            MyDialog.ToastMessage("读取打印机设置错误：" + object.getString("info"),context,null);
+            MyDialog.ToastMessage("读取打印机设置错误：" + object.getString("info"), null);
         }
     }
 
@@ -337,11 +337,11 @@ public final class Printer {
                                 Logger.d("count:%d,bytes.length:%d",count,length);
                             } catch (IOException e) {
                                 e.printStackTrace();
-                                context.runOnUiThread(()->MyDialog.ToastMessage("打印错误：" + e.getMessage(),context,null));
+                                context.runOnUiThread(()->MyDialog.ToastMessage("打印错误：" + e.getMessage(), null));
                             }
                         }
                     }else{
-                        context.runOnUiThread(()->MyDialog.ToastMessage("蓝牙已关闭！",context,null));
+                        context.runOnUiThread(()->MyDialog.ToastMessage("蓝牙已关闭！", null));
                     }
                 }
             });
@@ -413,16 +413,16 @@ public final class Printer {
                                     connection.close();
                                 }
                             }else{
-                                context.runOnUiThread(()->MyDialog.ToastMessage("独占访问打印机错误！",context,null));
+                                context.runOnUiThread(()->MyDialog.ToastMessage("独占访问打印机错误！", null));
                             }
                         }else{
-                            context.runOnUiThread(()->MyDialog.ToastMessage("打开打印机连接错误！",context,null));
+                            context.runOnUiThread(()->MyDialog.ToastMessage("打开打印机连接错误！", null));
                         }
                     }else{
-                        context.runOnUiThread(()->MyDialog.ToastMessage("未找到USB输出端口！",context,null));
+                        context.runOnUiThread(()->MyDialog.ToastMessage("未找到USB输出端口！", null));
                     }
                 }else{
-                    context.runOnUiThread(()->MyDialog.ToastMessage("未找到打印机设备！",context,null));
+                    context.runOnUiThread(()->MyDialog.ToastMessage("未找到打印机设备！", null));
                 }
             }
         });

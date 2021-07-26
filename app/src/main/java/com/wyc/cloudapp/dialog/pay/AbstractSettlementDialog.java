@@ -232,7 +232,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                         double mol_amt = mMolAmt = myDialog.getContent();
                         if (!Utils.equalDouble(mol_amt,0.0)){
                             if (mActual_amt - mol_amt < 0){
-                                MyDialog.ToastMessage("抹零金额不能大于应收金额!",mContext,changeNumOrPriceDialog.getWindow());
+                                MyDialog.ToastMessage("抹零金额不能大于应收金额!", changeNumOrPriceDialog.getWindow());
                                 return;
                             }
                             if (mContext.verifyDiscountPermissions(1 - mol_amt / mActual_amt,null)){
@@ -255,7 +255,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                         myDialog.dismiss();
                     }).show();
                 }else
-                    MyDialog.ToastMessage("已设置自动抹零",mContext,getWindow());
+                    MyDialog.ToastMessage("已设置自动抹零", getWindow());
             });
         }
     }
@@ -321,7 +321,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             }else
                 mPayMethodView.scrollToPosition(index);//如果找不到view则滚动
         }else {
-            MyDialog.ToastMessage(String.format(Locale.CHINA,"ID为%s的支付方式不存在!",id),mContext,getWindow());
+            MyDialog.ToastMessage(String.format(Locale.CHINA,"ID为%s的支付方式不存在!",id), getWindow());
         }
     }
 
@@ -376,7 +376,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                         mPayDetailViewAdapter.addPayDetail(pay_method_copy);
                     } else {
                         if (Utils.equalDouble(mPay_balance, 0) && mPayDetailViewAdapter.findPayDetailById(pay_method_id) == null) {//剩余金额为零，同时不存在此付款方式的记录。
-                            MyDialog.SnackbarMessage(mWindow, "剩余金额为零！", getCurrentFocus());
+                            MyDialog.SnackBarMessage(mWindow, "剩余金额为零！", getCurrentFocus());
                         } else {
                             if (mVip != null && PayMethodViewAdapter.isVipPay(pay_method_copy)){
                                 pay_method_copy.put("card_code",mVip.getString("card_code"));
@@ -418,11 +418,11 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                         }
                     }
                 }else{
-                    MyDialog.SnackbarMessage(mWindow,mContext.getString(R.string.pay_amt_less_zero_hints),mPayBalanceTv);
+                    MyDialog.SnackBarMessage(mWindow,mContext.getString(R.string.pay_amt_less_zero_hints),mPayBalanceTv);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                MyDialog.ToastMessage("付款错误：" + e.getMessage(), mContext,null);
+                MyDialog.ToastMessage("付款错误：" + e.getMessage(), null);
             }
         });
         final RecyclerView recyclerView = findViewById(R.id.pay_method_list);
@@ -500,7 +500,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                         }
                     }
                 }else{
-                    MyDialog.SnackbarMessage(mWindow,mContext.getString(R.string.pay_amt_less_zero_hints),mPayBalanceTv);
+                    MyDialog.SnackBarMessage(mWindow,mContext.getString(R.string.pay_amt_less_zero_hints),mPayBalanceTv);
                 }
             }
         });
@@ -606,7 +606,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                 Logger.d("mMolAmt:%f,sum：%f",mMolAmt,sale_sum_amt);
             }
         }else{
-            MyDialog.ToastMessage("自动抹零错误：" + object.getString("info"), mContext,null);
+            MyDialog.ToastMessage("自动抹零错误：" + object.getString("info"), null);
         }
     }
 /*    private void autoMol(){//自动抹零
@@ -646,7 +646,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                 }
             }
         }else{
-            MyDialog.ToastMessage("自动抹零错误：" + object.getString("info"), mContext,null);
+            MyDialog.ToastMessage("自动抹零错误：" + object.getString("info"), null);
         }
     }
     private double disposeMolRule(int rule){
@@ -1291,7 +1291,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                     else{
                         cm.setText(mPayBalanceTv.getText());
                         cm.selectAll();
-                        MyDialog.ToastMessage("找零不能大于100", mContext,AbstractSettlementDialog.this.getWindow());
+                        MyDialog.ToastMessage("找零不能大于100", AbstractSettlementDialog.this.getWindow());
                     }
                 }else{
                     mZlAmt = 0.00;
@@ -1505,13 +1505,13 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                                 break;
                         }
                     }else {
-                        context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_c_err_hint_sz,order_info.getString("info")), context,context.getWindow()));
+                        context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_c_err_hint_sz,order_info.getString("info")), context.getWindow()));
                     }
                 }else {
-                    context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.f_not_sz), context,context.getWindow()));
+                    context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.f_not_sz), context.getWindow()));
                 }
             }else
-                context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_f_err_hint_sz,print_format_info.getString("info")), context,context.getWindow()));
+                context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_f_err_hint_sz,print_format_info.getString("info")), context.getWindow()));
         }
         return content;
     }

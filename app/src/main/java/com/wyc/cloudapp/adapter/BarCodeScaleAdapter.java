@@ -16,7 +16,6 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.Utils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -142,7 +141,7 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         if (mDatas != null){
             notifyDataSetChanged();
         }else{
-            MyDialog.ToastMessage("加载称信息错误：" + err,mContext,null);
+            MyDialog.ToastMessage("加载称信息错误：" + err, null);
         }
     }
 
@@ -160,7 +159,7 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                             mDatas.remove(i);
                             mCurrentItemIndexMap.remove(t_id);
                         }else{
-                            MyDialog.ToastMessage("删除称信息错误：" + err,mContext,null);
+                            MyDialog.ToastMessage("删除称信息错误：" + err, null);
                         }
                         break;
                     }
@@ -191,7 +190,7 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         if (SQLiteHelper.saveFormJson(scale,"barcode_scalse_info",null,svae_type,err)){
             setDatas();
         }else{
-            MyDialog.ToastMessage("保存条码秤错误：" + err,mContext,null);
+            MyDialog.ToastMessage("保存条码秤错误：" + err, null);
         }
     }
 

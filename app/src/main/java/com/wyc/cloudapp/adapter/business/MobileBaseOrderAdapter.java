@@ -64,7 +64,7 @@ public abstract class MobileBaseOrderAdapter<T  extends MobileBaseOrderAdapter.M
         holder.wh_name_tv.setText(mContext.getStoreName());
         holder.audit_tv.setText("1".equals(object.getString("sh_status")) ? mContext.getString(R.string.unaudited_sz) : mContext.getString(R.string.audited_sz));
         holder.amt_tv.setText(String.format(Locale.CHINA,"%.2f", Utils.getNotKeyAsNumberDefault(object,"total",0.0)));
-        holder.date_tv.setText(FormatDateTimeUtils.formatDataWithTimestamp(object.getLongValue("addtime") * 1000));
+        holder.date_tv.setText(FormatDateTimeUtils.formatTimeWithTimestamp(object.getLongValue("addtime") * 1000));
 
         bindViewHolder(holder,object);
     }

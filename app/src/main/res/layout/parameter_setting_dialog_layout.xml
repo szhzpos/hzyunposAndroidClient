@@ -23,7 +23,7 @@
         app:tabPaddingStart="@dimen/margin_12"
         app:tabRippleColor="@color/white"
         app:tabSelectedTextColor="@color/white"
-        app:tabTextAppearance="@style/TabStyle" />
+        app:tabTextAppearance="@style/TabText" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"

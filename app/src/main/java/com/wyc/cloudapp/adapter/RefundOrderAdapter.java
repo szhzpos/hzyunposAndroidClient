@@ -110,7 +110,7 @@ public final class RefundOrderAdapter extends AbstractQueryDataAdapter<RefundOrd
                         sql = RetailOrderAdapter.getQuery() +" where order_code = '" + sz_order_code + "'";
 
                 if (!SQLiteHelper.execSql(retail_order_info,sql)){
-                    MyDialog.ToastMessage("查询零售单据错误：" + retail_order_info.getString("info"),mContext,null);
+                    MyDialog.ToastMessage("查询零售单据错误：" + retail_order_info.getString("info"), null);
                 }
             }
         }
@@ -149,6 +149,6 @@ public final class RefundOrderAdapter extends AbstractQueryDataAdapter<RefundOrd
         if (mData != null){
             notifyDataSetChanged();
         }else
-            MyDialog.ToastMessage("加载退货单据错误：" + err,mContext,null);
+            MyDialog.ToastMessage("加载退货单据错误：" + err, null);
     }
 }

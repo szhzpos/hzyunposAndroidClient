@@ -102,7 +102,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                     if (BusinessSelectGoodsDialog.selectGoodsWithBarcodeId(object,barcode_id,price_type)){
                         addGoodsDetails(object,false);
                     }else {
-                        MyDialog.ToastMessage(object.getString("info"),this,getWindow());
+                        MyDialog.ToastMessage(object.getString("info"), getWindow());
                     }
                 }
             }else if (requestCode == BusinessSelectGoodsDialog.BARCODE_REQUEST_CODE){
@@ -270,7 +270,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                     runOnUiThread(()-> Toast.makeText(this,e.getLocalizedMessage(),Toast.LENGTH_LONG));
                 }
             }else {
-                runOnUiThread(()-> MyDialog.ToastMessage(getString(R.string.query_business_order_id_hint_sz,retJson.getString("info")),this,null));
+                runOnUiThread(()-> MyDialog.ToastMessage(getString(R.string.query_business_order_id_hint_sz,retJson.getString("info")), null));
             }
         });
     }
@@ -381,7 +381,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                 }
             }else if (id == R.id.m_business_save_btn){
                 if (mAdapter.isEmpty()){
-                    MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.goods_i_sz)),v.getContext(),getWindow());
+                    MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.goods_i_sz)), getWindow());
                 }else
                     uploadOrderInfo();
             }else if (id == R.id.m_business_audit_btn){
@@ -439,7 +439,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
 
     private void auditOrder(){
         if (!Utils.isNotEmpty(mOrderID)){
-            MyDialog.ToastMessage("请先保存单据!",this,getWindow());
+            MyDialog.ToastMessage("请先保存单据!", getWindow());
             return;
         }
         showProgress(getString(R.string.auditing_hints));
@@ -538,7 +538,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                 }
             }
         }else {
-            MyDialog.ToastMessage(err.toString(),this,null);
+            MyDialog.ToastMessage(err.toString(), null);
         }
         return data;
     }

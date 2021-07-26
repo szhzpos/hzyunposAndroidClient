@@ -35,6 +35,6 @@ public abstract class AbstractChargeOrderAdapter<T extends AbstractTableDataAdap
         if (mData != null){
             notifyDataSetChanged();
         }else
-            MyDialog.ToastMessage("加载充值订单错误：" + err,mContext,null);
+            MyDialog.ToastMessage("加载充值订单错误：" + err, null);
     }
 }

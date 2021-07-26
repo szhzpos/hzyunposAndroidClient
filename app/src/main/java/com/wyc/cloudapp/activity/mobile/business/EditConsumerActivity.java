@@ -152,11 +152,11 @@ public class EditConsumerActivity extends AbstractEditArchiveActivity {
     private void submit(boolean reset){
         final String code = mConsumerCode.getText().toString(),name = mConsumerName.getText().toString();
         if (code.isEmpty()){
-            MyDialog.ToastMessage(mConsumerCode,getString(R.string.not_empty_hint_sz,getString(R.string.consumer_code_sz)),this,getWindow());
+            MyDialog.ToastMessage(mConsumerCode,getString(R.string.not_empty_hint_sz,getString(R.string.consumer_code_sz)), getWindow());
             return;
         }
         if (name.isEmpty()){
-            MyDialog.ToastMessage(mConsumerName,getString(R.string.not_empty_hint_sz,getString(R.string.consumer_name_sz)),this,getWindow());
+            MyDialog.ToastMessage(mConsumerName,getString(R.string.not_empty_hint_sz,getString(R.string.consumer_name_sz)), getWindow());
             return;
         }
         showProgress();

@@ -2,13 +2,7 @@ package com.wyc.cloudapp.dialog.barcodeScales;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.Point;
 import android.os.Bundle;
-import android.view.Display;
-import android.view.Gravity;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
@@ -24,8 +18,6 @@ import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogContext;
 
 import java.util.List;
 import java.util.concurrent.Future;
-
-import static android.content.Context.WINDOW_SERVICE;
 
 public class BarCodeScaleDownDialog extends AbstractDialogContext {
     private BarCodeScaleAdapter mBarCodeScaleAdapter;
@@ -120,7 +112,7 @@ public class BarCodeScaleDownDialog extends AbstractDialogContext {
     private boolean isDownloadFinished(){
         if (mFutureList != null){
             for (Future<Boolean> future : mFutureList){
-                if (!MyDialog.ToastMessage(null,"正在下载,请稍后操作!",mContext,getWindow(),future.isDone())){
+                if (!MyDialog.ToastMessage(null,"正在下载,请稍后操作!", getWindow(),future.isDone())){
                     return false;
                 }
             }

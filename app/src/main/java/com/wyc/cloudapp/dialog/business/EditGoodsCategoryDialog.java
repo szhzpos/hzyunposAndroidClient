@@ -57,12 +57,12 @@ public class EditGoodsCategoryDialog extends AbstractEditArchiveDialog {
         final String category_code = mCategoryCodeTv.getText().toString(),category_name = mCategoryNameEt.getText().toString();
         if (!Utils.isNotEmpty(category_code)){
             final String code_hint = mContext.getString(R.string.category_code_sz);
-            MyDialog.ToastMessage(mCategoryCodeTv,mContext.getString(R.string.not_empty_hint_sz,code_hint.substring(0,code_hint.length() - 1)),mContext,getWindow());
+            MyDialog.ToastMessage(mCategoryCodeTv,mContext.getString(R.string.not_empty_hint_sz,code_hint.substring(0,code_hint.length() - 1)), getWindow());
             return;
         }
         if (!Utils.isNotEmpty(category_name)){
             final String name_hint = mContext.getString(R.string.category_name_colon_sz);
-            MyDialog.ToastMessage(mCategoryNameEt,mContext.getString(R.string.not_empty_hint_sz,name_hint.substring(0,name_hint.length() - 1)),mContext,getWindow());
+            MyDialog.ToastMessage(mCategoryNameEt,mContext.getString(R.string.not_empty_hint_sz,name_hint.substring(0,name_hint.length() - 1)), getWindow());
             return;
         }
 
@@ -161,7 +161,7 @@ public class EditGoodsCategoryDialog extends AbstractEditArchiveDialog {
                 return String.format(Locale.CHINA,"%s%02d",super_code,index + 1);
             }
         }else {
-            MyDialog.ToastMessage(err.toString(),mContext,getWindow());
+            MyDialog.ToastMessage(err.toString(), getWindow());
         }
         return "";
     }

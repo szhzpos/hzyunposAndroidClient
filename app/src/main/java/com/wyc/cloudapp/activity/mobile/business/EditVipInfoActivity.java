@@ -11,13 +11,9 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
@@ -29,7 +25,6 @@ import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.tree.TreeListDialogForObj;
 import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
@@ -41,12 +36,6 @@ import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.ObservableEmitter;
-import io.reactivex.rxjava3.core.ObservableOnSubscribe;
-import io.reactivex.rxjava3.functions.Consumer;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class EditVipInfoActivity extends AbstractEditArchiveActivity {
     private List<VipGrade> vipGradeList;
@@ -233,22 +222,22 @@ public class EditVipInfoActivity extends AbstractEditArchiveActivity {
         final JSONObject param = new JSONObject();
         if (!Utils.isNotEmpty(p_num)){
             p_num_et.requestFocus();
-            MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.vip_ph_num_not_colon_sz)),this,getWindow());
+            MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.vip_ph_num_not_colon_sz)), getWindow());
             return param;
         }
         if (!Utils.isNotEmpty(card_no)){
             card_et.requestFocus();
-            MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.card_code_sz)),this,getWindow());
+            MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.card_code_sz)), getWindow());
             return param;
         }
         if (!Utils.isNotEmpty(name)){
             name_et.requestFocus();
-            MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.vip_name_sz)),this,getWindow());
+            MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.vip_name_sz)), getWindow());
             return param;
         }
         if (!Utils.isNotEmpty(birthday)){
             mVipBirthday.requestFocus();
-            MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.input_birthday_hint_sz)),this,getWindow());
+            MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.input_birthday_hint_sz)), getWindow());
             return param;
         }
 

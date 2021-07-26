@@ -262,7 +262,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
             if (mData != null){
                 this.notifyDataSetChanged();
             }else{
-                MyDialog.ToastMessage("加载类别错误：" + err,mContext,null);
+                MyDialog.ToastMessage("加载类别错误：" + err, null);
             }
         }
     }
@@ -424,7 +424,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
             if (mData != null){
                 this.notifyDataSetChanged();
             }else{
-                MyDialog.ToastMessage("加载商品错误：" + err,mContext,null);
+                MyDialog.ToastMessage("加载商品错误：" + err, null);
             }
         }
 
@@ -452,7 +452,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
                     notifyDataSetChanged();
                 }
             }else{
-                MyDialog.ToastMessage("搜索商品错误：" + err,mContext,null);
+                MyDialog.ToastMessage("搜索商品错误：" + err, null);
             }
         }
     }

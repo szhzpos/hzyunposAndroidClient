@@ -121,7 +121,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                 array.add(object);
             }
         }else {
-            MyDialog.ToastMessage("查询营业员错误:" + err,activity,null);
+            MyDialog.ToastMessage("查询营业员错误:" + err, null);
         }
         return array;
     }
@@ -193,13 +193,13 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                     e.printStackTrace();
                     CustomApplication.runInMainThread(()-> {
                         restInfo();
-                        MyDialog.ToastMessage(e.getMessage(),mContext,getWindow());
+                        MyDialog.ToastMessage(e.getMessage(), getWindow());
                     });
                 }
                 CustomApplication.runInMainThread(()->mProgressDialog.dismiss());
             });
         }else{
-            MyDialog.ToastMessage(mSearchContent,mSearchContent.getHint().toString(),mContext,getWindow());
+            MyDialog.ToastMessage(mSearchContent,mSearchContent.getHint().toString(), getWindow());
         }
     }
 
@@ -411,7 +411,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
             mobile_pay_method.setText(Utils.getNullStringAsEmpty(default_cash,"name"));
             mPayMethodSelected = default_cash;
         }else{
-            MyDialog.ToastMessage(err.toString(),mContext,getWindow());
+            MyDialog.ToastMessage(err.toString(), getWindow());
         }
     }
 
@@ -488,21 +488,21 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
 
     private boolean verify(){
         if (mVip == null){
-            MyDialog.ToastMessage(mVip_card_id,mContext.getString(R.string.not_empty_hint_sz,mContext.getString(R.string.vip_dialog_title_sz)),mContext,getWindow());
+            MyDialog.ToastMessage(mVip_card_id,mContext.getString(R.string.not_empty_hint_sz,mContext.getString(R.string.vip_dialog_title_sz)), getWindow());
             return false;
         }
         if (checkChargeAmtEqualZero()){
             mChargeAmtEt.requestFocus();
-            MyDialog.ToastMessage(mChargeAmtEt,mContext.getString(R.string.not_zero_hint_sz,mContext.getString(R.string.deposit_amt_sz)),mContext,getWindow());
+            MyDialog.ToastMessage(mChargeAmtEt,mContext.getString(R.string.not_zero_hint_sz,mContext.getString(R.string.deposit_amt_sz)), getWindow());
             return false;
         }else if (checkMinChargeAmt()){
             mChargeAmtEt.requestFocus();
-            MyDialog.ToastMessage(mChargeAmtEt,String.format(Locale.CHINA,"本会员级别最小充值金额:%.2f",mVip.getMin_recharge_money()),mContext,getWindow());
+            MyDialog.ToastMessage(mChargeAmtEt,String.format(Locale.CHINA,"本会员级别最小充值金额:%.2f",mVip.getMin_recharge_money()), getWindow());
             return false;
         }
 
         if (mPayMethodSelected == null){
-            MyDialog.ToastMessage(mContext.getString(R.string.pay_m_hint_sz),mContext,getWindow());
+            MyDialog.ToastMessage(mContext.getString(R.string.pay_m_hint_sz), getWindow());
             return false;
         }
 
@@ -546,7 +546,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
     private void chargeSuccess(final VipInfo member){
         CustomApplication.runInMainThread(()->{
             mProgressDialog.dismiss();
-            MyDialog.ToastMessage("充值成功！",mContext,getWindow());
+            MyDialog.ToastMessage("充值成功！", getWindow());
             restChargeInfo();
             showVipInfo(member);
         });
@@ -815,7 +815,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    MyDialog.ToastMessage("参数解析错误：" + e.getMessage(),mContext,getWindow());
+                    MyDialog.ToastMessage("参数解析错误：" + e.getMessage(), getWindow());
                 }
             });
         }
@@ -932,15 +932,15 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                         }
                     }catch (JSONException e){
                         e.printStackTrace();
-                        context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_c_err_hint_sz,e.getLocalizedMessage()), context,context.getWindow()));
+                        context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_c_err_hint_sz,e.getLocalizedMessage()), context.getWindow()));
                     }
                 }else
-                    context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_c_err_hint_sz,xnote.getString("info")), context,context.getWindow()));
+                    context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_c_err_hint_sz,xnote.getString("info")), context.getWindow()));
             }else {
-                context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.f_not_sz), context,context.getWindow()));
+                context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.f_not_sz), context.getWindow()));
             }
         }else
-            context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_f_err_hint_sz,print_format_info.getString("info")), context,context.getWindow()));
+            context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_f_err_hint_sz,print_format_info.getString("info")), context.getWindow()));
 
         return content;
     }
@@ -963,9 +963,9 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                 loop.done(0);
         });
         if (loop.exec() == 1){
-            MyDialog.ToastMessage(order_code.toString(),context,null);
+            MyDialog.ToastMessage(order_code.toString(), null);
         }else {
-            MyDialog.ToastMessage(order_code.toString(),context,null);
+            MyDialog.ToastMessage(order_code.toString(), null);
         }
         dialog.dismiss();
     }

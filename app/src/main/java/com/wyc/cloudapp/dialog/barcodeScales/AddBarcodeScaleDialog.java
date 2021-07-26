@@ -106,7 +106,7 @@ public class AddBarcodeScaleDialog extends AbstractDialogContext {
                             mProductType.setTag(class_name);
                         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
                             e.printStackTrace();
-                            MyDialog.ToastMessage("设置默认端口错误：" + e.getMessage(),mContext,getWindow());
+                            MyDialog.ToastMessage("设置默认端口错误：" + e.getMessage(), getWindow());
                         }
                     }
                 });
@@ -287,13 +287,13 @@ public class AddBarcodeScaleDialog extends AbstractDialogContext {
         final String name = mScaleName.getText().toString(),p_type = mProductType.getText().toString(),ip = getIP(),port = mPort.getText().toString();
 
         if (p_type.isEmpty()){
-            MyDialog.ToastMessage(mProductType,"型号不能为空",mContext,getWindow());
+            MyDialog.ToastMessage(mProductType,"型号不能为空", getWindow());
         }else if (ip.isEmpty()){
-            MyDialog.ToastMessage(mIP,"IP不能为空",mContext,getWindow());
+            MyDialog.ToastMessage(mIP,"IP不能为空", getWindow());
         }else if (port.isEmpty()){
-            MyDialog.ToastMessage(mPort,"端口不能为空",mContext,getWindow());
+            MyDialog.ToastMessage(mPort,"端口不能为空", getWindow());
         }else if (mCategoryInfo.size() == 0){
-            MyDialog.ToastMessage("商品分类不能为空",mContext,getWindow());
+            MyDialog.ToastMessage("商品分类不能为空", getWindow());
         }else{
             if (mModifyScale != null){
                 object.put("_id",mModifyScale.getIntValue("_id"));

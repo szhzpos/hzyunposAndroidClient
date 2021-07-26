@@ -121,7 +121,7 @@ public final class GoodsManageViewAdapter extends AbstractTableDataAdapter<Goods
             }
             notifyDataSetChanged();
         }else{
-            MyDialog.ToastMessage("加载商品明细错误：" + err,mContext,null);
+            MyDialog.ToastMessage("加载商品明细错误：" + err, null);
         }
     }
 

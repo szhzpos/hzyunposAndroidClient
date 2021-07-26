@@ -18,8 +18,12 @@ import java.util.Locale;
  */
 public final class FormatDateTimeUtils {
     public static final String YYYY_MM_DD_1 = "yyyy-MM-dd HH:mm:ss";
-    public static String formatDataWithTimestamp(long t){
-        return new java.text.SimpleDateFormat(YYYY_MM_DD_1, Locale.CHINA).format(t );
+    public static final String YYYY_MM_DD_2 = "yyyy-MM-dd";
+    public static String formatTimeWithTimestamp(Long t){
+        return new java.text.SimpleDateFormat(YYYY_MM_DD_1, Locale.CHINA).format(t);
+    }
+    public static String formatDate(Long t){
+        return new java.text.SimpleDateFormat(YYYY_MM_DD_2, Locale.CHINA).format(t);
     }
     public static String formatCurrentTime(String pattern){
         return new java.text.SimpleDateFormat(pattern, Locale.CHINA).format(new Date());

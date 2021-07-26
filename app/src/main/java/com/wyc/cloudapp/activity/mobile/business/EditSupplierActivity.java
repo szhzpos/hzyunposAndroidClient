@@ -152,11 +152,11 @@ public class EditSupplierActivity extends AbstractEditArchiveActivity {
     private void submit(boolean reset){
         final String code = mSupplierCode.getText().toString(),name = mSupplierName.getText().toString();
         if (code.isEmpty()){
-            MyDialog.ToastMessage(mSupplierCode,getString(R.string.not_empty_hint_sz,getString(R.string.supplier_code_sz)),this,getWindow());
+            MyDialog.ToastMessage(mSupplierCode,getString(R.string.not_empty_hint_sz,getString(R.string.supplier_code_sz)), getWindow());
             return;
         }
         if (name.isEmpty()){
-            MyDialog.ToastMessage(mSupplierName,getString(R.string.not_empty_hint_sz,getString(R.string.supplier_name_sz)),this,getWindow());
+            MyDialog.ToastMessage(mSupplierName,getString(R.string.not_empty_hint_sz,getString(R.string.supplier_name_sz)), getWindow());
             return;
         }
         showProgress();

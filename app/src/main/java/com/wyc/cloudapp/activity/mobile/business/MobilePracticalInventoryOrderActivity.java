@@ -95,7 +95,7 @@ public class MobilePracticalInventoryOrderActivity extends AbstractMobileActivit
             startActivity(intent);
         }catch (ActivityNotFoundException e){
             e.printStackTrace();
-            MyDialog.ToastMessage("暂不支持" + title,this,null);
+            MyDialog.ToastMessage("暂不支持" + title, null);
         }
     };
 

@@ -207,7 +207,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                 }
             }
         }else
-            MyDialog.ToastMessage("加载打印机参数错误：" + object.getString("info"),mApplication,null);
+            MyDialog.ToastMessage("加载打印机参数错误：" + object.getString("info"), null);
     }
 
     private void launchSync(){
@@ -265,7 +265,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                 });
                 last_reprint_btn.setOnClickListener(v -> Printer.print(this, AbstractSettlementDialog.get_print_content(this,last_order_code.getText().toString(),false)));
             }else {
-                MyDialog.ToastMessage(order_info.getString("info"),this,getWindow());
+                MyDialog.ToastMessage(order_info.getString("info"), getWindow());
             }
         }
     }
@@ -312,7 +312,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
             try {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getUrl())));
             }catch (ActivityNotFoundException e){
-                MyDialog.ToastMessage("系统未安装浏览器!",this,getWindow());
+                MyDialog.ToastMessage("系统未安装浏览器!", getWindow());
             }
         });
     }
@@ -524,7 +524,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                                     addGoodsInfoDialog.show();
                                 }
                             } else
-                                MyDialog.ToastMessage("无此商品!", context, getWindow());
+                                MyDialog.ToastMessage("无此商品!", getWindow());
                         });
                     }
                 }
@@ -645,7 +645,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         tmp_order.setNum(HangBillDialog.getHangCounts(activity));
         tmp_order.setOnClickListener(v -> {
             if (isAdjustPriceMode()){
-                MyDialog.ToastMessage(mSaleGoodsRecyclerView,"调价模式不允许挂单操作!",activity,null);
+                MyDialog.ToastMessage(mSaleGoodsRecyclerView,"调价模式不允许挂单操作!", null);
             }else {
                 final JSONArray datas = mSaleGoodsAdapter.getData();
                 final HangBillDialog hangBillDialog = new HangBillDialog(activity);
@@ -654,9 +654,9 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                     if (hangBillDialog.save(datas,mVipInfo,err)){
                         tmp_order.setNum(HangBillDialog.getHangCounts(activity));
                         resetOrderInfo();
-                        MyDialog.ToastMessage(mSaleGoodsRecyclerView,"挂单成功！",activity,null);
+                        MyDialog.ToastMessage(mSaleGoodsRecyclerView,"挂单成功！", null);
                     }else{
-                        MyDialog.ToastMessage(mSaleGoodsRecyclerView,"保存挂单错误：" + err,activity,null);
+                        MyDialog.ToastMessage(mSaleGoodsRecyclerView,"保存挂单错误：" + err, null);
                     }
                 }else{
                     if (HangBillDialog.getHangCounts(activity) > 0){
@@ -676,7 +676,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                                         mSaleGoodsAdapter.addSaleGoods(goods_info);
                                         hangBillDialog.dismiss();
                                     }else{
-                                        if (!isAdjustPriceMode()) MyDialog.ToastMessage("选择商品错误：" + goods_info.getString("info"),this,null);
+                                        if (!isAdjustPriceMode()) MyDialog.ToastMessage("选择商品错误：" + goods_info.getString("info"), null);
                                         return;
                                     }
                                 }
@@ -685,7 +685,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                         hangBillDialog.setOnDismissListener(dialog -> tmp_order.setNum(HangBillDialog.getHangCounts(activity)));
                         hangBillDialog.show();
                     }else{
-                        MyDialog.ToastMessage(mSaleGoodsRecyclerView,"无挂单信息！",activity,null);
+                        MyDialog.ToastMessage(mSaleGoodsRecyclerView,"无挂单信息！", null);
                     }
                 }
             }
@@ -701,11 +701,11 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
             if (b){
                 b = false;
                 imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(this,printer,Utils.dpToPx(this,15),Utils.dpToPx(this,15)));
-                MyDialog.ToastMessage(imageView,"打印功能已关闭！",this,getWindow());
+                MyDialog.ToastMessage(imageView,"打印功能已关闭！", getWindow());
             }else{
                 b = true;
                 imageView.setImageBitmap(printer);
-                MyDialog.ToastMessage(imageView,"打印功能已开启！",this,getWindow());
+                MyDialog.ToastMessage(imageView,"打印功能已开启！", getWindow());
             }
             saveAndShowPrintStatus(b,true);
         });
@@ -723,7 +723,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
             if (type){
                 object.put("v",print_s);
                 if (!SQLiteHelper.saveLocalParameter("print_s",object,"打印开关",err)){
-                    MyDialog.ToastMessage(imageView,"保存打印状态错误:" + err,this,getWindow());
+                    MyDialog.ToastMessage(imageView,"保存打印状态错误:" + err, getWindow());
                 }
             }else {
                 if (SQLiteHelper.getLocalParameter("print_s",object)){
@@ -743,7 +743,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     }
     private void showPayDialog(){
         if (isAdjustPriceMode()){
-            MyDialog.ToastMessage(mSaleGoodsRecyclerView,"调价模式不允许收款操作!",this,null);
+            MyDialog.ToastMessage(mSaleGoodsRecyclerView,"调价模式不允许收款操作!", null);
         }else {
             if (!mSaleGoodsAdapter.isEmpty()){
                 if (!getSingleRefundStatus()){
@@ -754,7 +754,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                             mApplication.sync_retail_order();
                             showLastOrderInfo();
                             resetOrderInfo();
-                            MyDialog.SnackbarMessage(getWindow(),"结账成功！", mOrderCodeTv);
+                            MyDialog.SnackBarMessage(getWindow(),"结账成功！", mOrderCodeTv);
                         }else {
                             //取消之后重置订单号
                             resetOrderCode();
@@ -765,7 +765,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                     refundDialog.show();
                 }
             }else{
-                MyDialog.SnackbarMessage(getWindow(),"已选商品为空！!",getCurrentFocus());
+                MyDialog.SnackBarMessage(getWindow(),"已选商品为空！!",getCurrentFocus());
             }
         }
     }
@@ -858,7 +858,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
             hideLastOrderInfo();
             mSaleGoodsAdapter.addSaleGoods(content);
         }else{
-            if (!isAdjustPriceMode()) MyDialog.ToastMessage("选择商品错误：" + content.getString("info"),this,null);
+            if (!isAdjustPriceMode()) MyDialog.ToastMessage("选择商品错误：" + content.getString("info"), null);
         }
     }
     private boolean isAdjustPriceMode(){

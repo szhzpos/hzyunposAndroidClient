@@ -128,7 +128,7 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
                         }
                     });
                 }else{
-                    order_status_tv.postDelayed(()-> MyDialog.ToastMessage(order_status_tv,order_status_tv.getText().toString(),mContext,mDialog.getWindow()),100);
+                    order_status_tv.postDelayed(()-> MyDialog.ToastMessage(order_status_tv,order_status_tv.getText().toString(), mDialog.getWindow()),100);
                 }
             }
         }
@@ -145,7 +145,7 @@ public final class RetailOrderAdapter extends AbstractQueryDataAdapter<RetailOrd
         if (mData != null){
             notifyDataSetChanged();
         }else
-            MyDialog.ToastMessage("加载销售单据错误：" + err,mContext,null);
+            MyDialog.ToastMessage("加载销售单据错误：" + err, null);
     }
     public static String getQuery(){
         return "SELECT \n" +

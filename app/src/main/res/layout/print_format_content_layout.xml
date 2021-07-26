@@ -369,6 +369,75 @@
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_16" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_5"
+                android:text="@string/time_card_sale_format"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_12" />
+
+            <EditText
+                android:id="@+id/t_card_count"
+                android:layout_width="@dimen/width_35"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_1"
+                android:background="@drawable/round_border_sub_gray"
+                android:ems="10"
+                android:inputType="number"
+                android:padding="@dimen/margin_2"
+                android:paddingTop="@dimen/size_0"
+                android:selectAllOnFocus="true"
+                android:text="@string/one_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="@string/time_card_use_format"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_12" />
+
+            <EditText
+                android:id="@+id/t_card_use_count"
+                android:layout_width="@dimen/width_45"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_1"
+                android:background="@drawable/round_border_sub_gray"
+                android:ems="10"
+                android:inputType="number"
+                android:padding="@dimen/margin_2"
+                android:paddingTop="@dimen/size_0"
+                android:selectAllOnFocus="true"
+                android:text="@string/one_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="@string/gift_card_sale_format"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_12" />
+
+            <EditText
+                android:id="@+id/g_card_count"
+                android:layout_width="@dimen/width_45"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_1"
+                android:background="@drawable/round_border_sub_gray"
+                android:ems="10"
+                android:inputType="number"
+                android:padding="@dimen/margin_2"
+                android:paddingTop="@dimen/size_0"
+                android:selectAllOnFocus="true"
+                android:text="@string/one_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
         </LinearLayout>
     </LinearLayout>
 

@@ -158,11 +158,11 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
                     }
                     mWvalueEt.setText(String.format(Locale.CHINA,"%.2f",1.0));
                 }else {
-                    MyDialog.ToastMessage("查询促销信息错误：" +object.getString("info"),mContext,getWindow());
+                    MyDialog.ToastMessage("查询促销信息错误：" +object.getString("info"), getWindow());
                 }
             }
         }else{
-            MyDialog.ToastMessage("初始化商品错误：" + object.getString("info"),mContext,getWindow());
+            MyDialog.ToastMessage("初始化商品错误：" + object.getString("info"), getWindow());
         }
     }
 
@@ -191,12 +191,12 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
                         }
                         @Override
                         public void onError(String err) {
-                            mContext.runOnUiThread(()-> MyDialog.ToastMessage("读串口错误：" + err,mContext,getWindow()));
+                            mContext.runOnUiThread(()-> MyDialog.ToastMessage("读串口错误：" + err, getWindow()));
                         }
                     }).startRead();
                 }
             }else{
-                MyDialog.ToastMessage("读串口错误：" + Utils.getNullStringAsEmpty(object,"info"),mContext,getWindow());
+                MyDialog.ToastMessage("读串口错误：" + Utils.getNullStringAsEmpty(object,"info"), getWindow());
             }
         }
     }

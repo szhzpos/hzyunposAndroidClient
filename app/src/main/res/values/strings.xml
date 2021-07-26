@@ -175,7 +175,7 @@
     <string name="f_76_sz">76小票</string>
     <string name="f_80_sz">80小票</string>
     <string name="checkout_format_sz">收款小票</string>
-    <string name="vip_c_format_sz">会员充值小票</string>
+    <string name="vip_c_format_sz">充值小票</string>
     <string name="sel_f_sz">选择格式：</string>
     <string name="stores_name_sz">门店名称：</string>
     <string name="footer_info_sz">表尾内容：</string>
@@ -731,6 +731,7 @@
     <string name="failure">失败</string>
     <string name="order_amt_colon">订单金额：</string>
     <!-- 次卡打印格式 -->
+    <string name="time_card_sale_format">次卡购买小票</string>
     <string name="time_card_print_pay_method">@string/pay_method_name_colon_sz</string>
     <string name="time_card_print_order_time">@string/order_time_colon</string>
     <string name="time_card_print_vip_name">@string/vip_name_colon</string>
@@ -760,12 +761,12 @@
     <string name="use_time">扣减次数：</string>
     <string name="use_store_1">门店：</string>
     <!-- 次卡使用打印格式-->
+    <string name="time_card_use_format">次卡扣次小票</string>
     <string name="use_store">使用门店：</string>
     <string name="use_order_time">@string/order_time_colon</string>
     <string name="use_vip_name">@string/vip_name_colon</string>
     <string name="use_vip_mobile">@string/vip_mobile_colon</string>
     <string name="use_vip_card">@string/vip_card_no_colon</string>
-
     <!--购物卡销售-->
     <string name="input_gift_card_hints">请输入购物卡卡号</string>
     <string name="gift_card_sale">购物卡销售</string>
@@ -775,4 +776,19 @@
     <string name="gift_card_sale_price">售价：</string>
     <string name="gift_card_pay">购物卡结账</string>
     <string name="hints_pay_detail_not_empty">支付信息不能为空…</string>
+    <!--购物卡信息-->
+    <string name="gift_card_info">购物卡信息</string>
+    <string name="gift_card_name">购物卡名称：</string>
+    <string name="gift_card_code_">购物卡编号：</string>
+    <string name="gift_card_status">购物卡状态：</string>
+    <string name="gift_card_face_value_">购物卡面额：</string>
+    <string name="gift_card_price">购物卡售价：</string>
+    <string name="gift_card_balance">购物卡余额：</string>
+    <string name="use_validity">使用有效期：</string>
+    <string name="made_card_time">制卡时间：</string>
+    <string name="sold">已售出</string>
+    <string name="unsold">未售出</string>
+    <string name="hint_unfounded">未查询到购物卡信息</string>
+    <!--购物卡销售打印-->
+    <string name="gift_card_sale_format">购物卡购买小票</string>
 </resources>

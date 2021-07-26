@@ -76,9 +76,9 @@ public class BaseParameterFragment extends AbstractParameterFragment {
         content.put(p_desc_key,"自动抹零设置");
         array.add(content);
         if (!SQLiteHelper.execSQLByBatchFromJson(array,"local_parameter",null,err,1)){
-            MyDialog.ToastMessage(null,err.toString(),mContext,null);
+            MyDialog.ToastMessage(null,err.toString(), null);
         }else{
-            MyDialog.ToastMessage(null,"保存成功！",mContext,null);
+            MyDialog.ToastMessage(null,"保存成功！", null);
         }
         return false;
     }
@@ -185,7 +185,7 @@ public class BaseParameterFragment extends AbstractParameterFragment {
             if (SQLiteHelper.getLocalParameter("d_s_period",value_obj)){
                 group.check(Utils.getNotKeyAsNumberDefault(value_obj,"id",R.id._a_month));//触发click事件,不需要单独保存value
             }else{
-                MyDialog.ToastMessage("加载数据保存周期参数错误：" + value_obj.getString("info"),mContext,null);
+                MyDialog.ToastMessage("加载数据保存周期参数错误：" + value_obj.getString("info"), null);
             }
         }
         return value_obj;
@@ -221,7 +221,7 @@ public class BaseParameterFragment extends AbstractParameterFragment {
                     dual_v.setVisibility(View.GONE);
                 }
             }else{
-                MyDialog.ToastMessage("加载双屏设置参数错误：" + value_obj.getString("info"),mContext,null);
+                MyDialog.ToastMessage("加载双屏设置参数错误：" + value_obj.getString("info"), null);
             }
         }
 
@@ -240,7 +240,7 @@ public class BaseParameterFragment extends AbstractParameterFragment {
             if (SQLiteHelper.getLocalParameter("g_i_show",value_obj)){
                 sh.setChecked(Utils.getNotKeyAsNumberDefault(value_obj,"s",1) == 1);
             }else{
-                MyDialog.ToastMessage("加载商品显示图片参数错误：" + value_obj.getString("info"),mContext,null);
+                MyDialog.ToastMessage("加载商品显示图片参数错误：" + value_obj.getString("info"), null);
             }
         }
 
@@ -259,7 +259,7 @@ public class BaseParameterFragment extends AbstractParameterFragment {
             if (SQLiteHelper.getLocalParameter("sec_l_c_show",value_obj)){
                 sh.setChecked(value_obj.getIntValue("s") == 1);
             }else{
-                MyDialog.ToastMessage("加载商品显示图片参数错误：" + value_obj.getString("info"),mContext,null);
+                MyDialog.ToastMessage("加载商品显示图片参数错误：" + value_obj.getString("info"), null);
             }
         }
         return value_obj;
@@ -298,7 +298,7 @@ public class BaseParameterFragment extends AbstractParameterFragment {
                 sh.setChecked(status == 1);
                 rg.setVisibility(status == 1 ? View.VISIBLE :View.GONE);
             }else{
-                MyDialog.ToastMessage("加载自动抹零参数错误：" + value_obj.getString("info"),mContext,null);
+                MyDialog.ToastMessage("加载自动抹零参数错误：" + value_obj.getString("info"), null);
             }
         }
 

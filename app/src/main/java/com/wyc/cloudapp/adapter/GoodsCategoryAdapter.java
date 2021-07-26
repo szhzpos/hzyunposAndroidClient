@@ -139,7 +139,7 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
         if (mDatas != null){
             this.notifyDataSetChanged();
         }else{
-            MyDialog.ToastMessage("加载类别错误：" + err,mContext,null);
+            MyDialog.ToastMessage("加载类别错误：" + err, null);
         }
     }
 
@@ -178,7 +178,7 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
         if (SQLiteHelper.getLocalParameter("sec_l_c_show",jsonObject)){
             mChildShow = jsonObject.getIntValue("s") == 1;
         }else{
-            MyDialog.ToastMessage("加载是否显示商品二级类别参数错误：" + jsonObject.getString("info"),mContext,null);
+            MyDialog.ToastMessage("加载是否显示商品二级类别参数错误：" + jsonObject.getString("info"), null);
         }
     }
 
@@ -198,7 +198,7 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
         final JSONArray categorys = new JSONArray();
         final StringBuilder err = new StringBuilder();
         generateDatas(null,categorys,err);
-        if (err.length() != 0)MyDialog.ToastMessage(err.toString(),context,null);
+        if (err.length() != 0)MyDialog.ToastMessage(err.toString(), null);
         return categorys;
     }
     private static void generateDatas(final JSONObject parent,final JSONArray categorys,final StringBuilder err){

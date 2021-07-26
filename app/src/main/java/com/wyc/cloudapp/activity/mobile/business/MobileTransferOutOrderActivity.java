@@ -90,7 +90,7 @@ public class MobileTransferOutOrderActivity extends AbstractMobileBusinessOrderA
                     }
                 }
             }else {
-                MyDialog.ToastMessage(err.toString(),this,null);
+                MyDialog.ToastMessage(err.toString(), null);
             }
             return data;
         }
@@ -116,7 +116,7 @@ public class MobileTransferOutOrderActivity extends AbstractMobileBusinessOrderA
             super.showOrder();
             setTransferInWarehouse(Utils.getNullStringAsEmpty(mOrderInfo,"dr_wh_id"),Utils.getNullStringAsEmpty(mOrderInfo,"dr_wh_name"));
             setView(mOrderCodeTv,Utils.getNullStringAsEmpty(mOrderInfo,"ckd_id"),Utils.getNullStringAsEmpty(mOrderInfo,"ckd_code"));
-            setView(mDateTv, "", FormatDateTimeUtils.formatDataWithTimestamp(mOrderInfo.getLongValue("addtime") * 1000));
+            setView(mDateTv, "", FormatDateTimeUtils.formatTimeWithTimestamp(mOrderInfo.getLongValue("addtime") * 1000));
         }
 
         @Override

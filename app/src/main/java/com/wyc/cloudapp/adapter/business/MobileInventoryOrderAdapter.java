@@ -13,7 +13,6 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
-import com.wyc.cloudapp.utils.Utils;
 
 /**
  * @ProjectName: CloudApp
@@ -69,6 +68,6 @@ public class MobileInventoryOrderAdapter extends AbstractBusinessOrderDataAdapte
 
         holder.inventory_way_tv.setText(object.getString("task_mode_name"));
 
-        holder.date_tv.setText(FormatDateTimeUtils.formatDataWithTimestamp(object.getLongValue("addtime") * 1000));
+        holder.date_tv.setText(FormatDateTimeUtils.formatTimeWithTimestamp(object.getLongValue("addtime") * 1000));
     }
 }

@@ -9,19 +9,16 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.data.room.AppDatabase;
-import com.wyc.cloudapp.data.room.entity.PayMethod;
-import com.wyc.cloudapp.data.room.entity.TimeCardPayDetail;
-import com.wyc.cloudapp.data.room.entity.TimeCardSaleOrder;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.Utils;
-import com.wyc.cloudapp.utils.http.callback.Result;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+
+import static com.wyc.cloudapp.fragment.PrintFormatFragment.TIME_CARD_USE_FORMAT_ID;
 
 /**
  * @ProjectName: AndroidClient
@@ -231,8 +228,8 @@ public final class VipTimeCardUseOrder{
     private String get_print_content(final MainActivity context){
         final JSONObject print_format_info = new JSONObject();
         String content = "";
-        if (SQLiteHelper.getLocalParameter("v_f_info",print_format_info)){
-            if (print_format_info.getIntValue("f") == R.id.vip_c_format){
+        if (SQLiteHelper.getLocalParameter("t_card_use",print_format_info)){
+            if (print_format_info.getIntValue("f") == TIME_CARD_USE_FORMAT_ID){
                 switch (print_format_info.getIntValue("f_z")){
                     case R.id.f_58:
                         content = c_format_58(context,print_format_info);
@@ -243,10 +240,10 @@ public final class VipTimeCardUseOrder{
                         break;
                 }
             }else {
-                context.runOnUiThread(()-> MyDialog.ToastMessage(context.getString(R.string.f_not_sz), context,context.getWindow()));
+                context.runOnUiThread(()-> MyDialog.ToastMessage(context.getString(R.string.f_not_sz), context.getWindow()));
             }
         }else
-            context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_f_err_hint_sz,print_format_info.getString("info")), context,context.getWindow()));
+            context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_f_err_hint_sz,print_format_info.getString("info")), context.getWindow()));
 
         return content;
     }

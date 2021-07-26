@@ -116,7 +116,7 @@ public final class RefundDialogAdapter extends RecyclerView.Adapter<RefundDialog
 
                             returnable_num = Double.valueOf(holder.returnable_num_tv.getText().toString());
                             if (num > returnable_num){
-                                MyDialog.ToastMessage("退货数量不能大于可退数量！",mContext,mDialog.getWindow());
+                                MyDialog.ToastMessage("退货数量不能大于可退数量！", mDialog.getWindow());
                                 holder.cur_refund_num_et.setText(String.format(Locale.CHINA,"%.3f",returnable_num));
                                 holder.cur_refund_num_et.setSelection(holder.cur_refund_num_et.length() - 1);
                             }else{
@@ -165,7 +165,7 @@ public final class RefundDialogAdapter extends RecyclerView.Adapter<RefundDialog
                 if (isChecked){
                     final String sz_returnable_num = returnable_num_tv.getText().toString();
                     if (Utils.equalDouble(Double.valueOf(sz_returnable_num),0.0)){
-                        mContext.runOnUiThread(()->MyDialog.ToastMessage(returnable_num_tv,"当前可退数量为零！",mContext,mDialog.getWindow()));
+                        mContext.runOnUiThread(()->MyDialog.ToastMessage(returnable_num_tv,"当前可退数量为零！", mDialog.getWindow()));
                     }
                     cur_refund_num_et.setText(sz_returnable_num);
                 }

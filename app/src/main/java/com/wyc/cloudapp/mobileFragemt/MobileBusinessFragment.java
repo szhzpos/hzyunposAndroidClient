@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -32,10 +31,10 @@ public final class MobileBusinessFragment extends AbstractJumpFragment {
                 startActivity(intent);
             }catch (ActivityNotFoundException e){
                 e.printStackTrace();
-                MyDialog.ToastMessage("暂不支持" + title,mContext,null);
+                MyDialog.ToastMessage("暂不支持" + title, null);
             }
         }else {
-            MyDialog.ToastMessage("当前用户没有没权限处理此业务!",mContext,null);
+            MyDialog.ToastMessage("当前用户没有没权限处理此业务!", null);
         }
     }
 }

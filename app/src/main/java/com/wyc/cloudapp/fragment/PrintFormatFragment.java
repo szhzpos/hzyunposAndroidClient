@@ -43,6 +43,9 @@ import java.util.HashMap;
 import static android.app.Activity.RESULT_OK;
 
 public class PrintFormatFragment extends AbstractParameterFragment {
+    public static final int TIME_CARD_SALE_FORMAT_ID = 100;
+    public static final int TIME_CARD_USE_FORMAT_ID = 101;
+    public static final int GIFT_CARD_SALE_FORMAT_ID = 102;
     public static final String ACTION_USB_PERMISSION = "com.wyc.cloudapp.USB_PERMISSION";
     private static final int REQUEST_BLUETOOTH__PERMISSIONS = 0xabc8;
     private static final int REQUEST_BLUETOOTH_ENABLE = 0X8888;
@@ -76,9 +79,9 @@ public class PrintFormatFragment extends AbstractParameterFragment {
 
         final StringBuilder err = new StringBuilder();
         if (!SQLiteHelper.execSQLByBatchFromJson(array,"local_parameter",null,err,1)){
-            MyDialog.ToastMessage(null,err.toString(),mContext,null);
+            MyDialog.ToastMessage(null,err.toString(), null);
         }else{
-            MyDialog.ToastMessage(null,"保存成功！",mContext,null);
+            MyDialog.ToastMessage(null,"保存成功！", null);
         }
         return false;
     }
@@ -158,7 +161,7 @@ public class PrintFormatFragment extends AbstractParameterFragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 final String tmp = mPrintIdAdapter.getItem(position);
-                if (null != tmp){
+                if (Utils.isNotEmpty(tmp)){
                     String[] vals = tmp.split("\t");
                     if (vals.length > 1){
                         RadioGroup radioGroup = findViewById(R.id.print_way);
@@ -234,7 +237,7 @@ public class PrintFormatFragment extends AbstractParameterFragment {
                 p_count.setText(Utils.getNullOrEmptyStringAsDefault(object,"p_c","1"));
                 footer_space.setText(Utils.getNullOrEmptyStringAsDefault(object,"f_s","5"));
             }else{
-                MyDialog.ToastMessage("加载打印格式参数错误：" + object.getString("info"),mContext,null);
+                MyDialog.ToastMessage("加载打印格式参数错误：" + object.getString("info"), null);
             }
         }
         return content;
@@ -246,7 +249,8 @@ public class PrintFormatFragment extends AbstractParameterFragment {
         final RadioGroup fzrg = findViewById(R.id.format_size_rg);
         final EditText stores_name_et = findViewById(R.id.stores_name),footer_c_et = findViewById(R.id.footer_c),
                 p_count_et = findViewById(R.id.c_count),footer_space_et = findViewById(R.id.footer_space),
-                v_c_count_et = findViewById(R.id.v_c_count),r_c_count_et = findViewById(R.id.r_c_count),t_c_count_et = findViewById(R.id.t_c_count);
+                v_c_count_et = findViewById(R.id.v_c_count),r_c_count_et = findViewById(R.id.r_c_count),t_c_count_et = findViewById(R.id.t_c_count),
+                t_card_count = findViewById(R.id.t_card_count),t_card_use_count = findViewById(R.id.t_card_use_count),g_card_count = findViewById(R.id.g_card_count);
 
         if (way){
             int size_id = fzrg.getCheckedRadioButtonId();
@@ -263,7 +267,7 @@ public class PrintFormatFragment extends AbstractParameterFragment {
 
             content.put("parameter_id","c_f_info");
             content.put("parameter_content",object);
-            content.put("parameter_desc","结账小票打印格式信息");
+            content.put("parameter_desc","结账小票打印格式");
             array.add(content);
 
             //充值单
@@ -277,7 +281,7 @@ public class PrintFormatFragment extends AbstractParameterFragment {
             content = new JSONObject();
             content.put("parameter_id", "v_f_info");
             content.put("parameter_content",object);
-            content.put("parameter_desc","充值小票打印格式信息");
+            content.put("parameter_desc","充值小票打印格式");
             array.add(content);
 
             //退货单
@@ -291,7 +295,7 @@ public class PrintFormatFragment extends AbstractParameterFragment {
             content = new JSONObject();
             content.put("parameter_id", "r_f_info");
             content.put("parameter_content",object);
-            content.put("parameter_desc","退货小票打印格式信息");
+            content.put("parameter_desc","退货小票打印格式");
             array.add(content);
 
             //交班单
@@ -305,7 +309,49 @@ public class PrintFormatFragment extends AbstractParameterFragment {
             content = new JSONObject();
             content.put("parameter_id", "t_f_info");
             content.put("parameter_content",object);
-            content.put("parameter_desc","交班小票打印格式信息");
+            content.put("parameter_desc","交班小票打印格式");
+            array.add(content);
+
+            //次卡购买小票
+            object = new JSONObject();
+            object.put("f",TIME_CARD_SALE_FORMAT_ID);
+            object.put("f_z",size_id);
+            object.put("s_n",stores_name);
+            object.put("f_c",footer_c);
+            object.put("p_c",t_card_count.getText().toString());
+            object.put("f_s",footer_space);
+            content = new JSONObject();
+            content.put("parameter_id", "t_card_sale");
+            content.put("parameter_content",object);
+            content.put("parameter_desc","次卡购买小票");
+            array.add(content);
+
+            //次卡购买小票
+            object = new JSONObject();
+            object.put("f",TIME_CARD_USE_FORMAT_ID);
+            object.put("f_z",size_id);
+            object.put("s_n",stores_name);
+            object.put("f_c",footer_c);
+            object.put("p_c",t_card_use_count.getText().toString());
+            object.put("f_s",footer_space);
+            content = new JSONObject();
+            content.put("parameter_id", "t_card_use");
+            content.put("parameter_content",object);
+            content.put("parameter_desc","次卡扣次小票");
+            array.add(content);
+
+            //购物卡购买小票
+            object = new JSONObject();
+            object.put("f",GIFT_CARD_SALE_FORMAT_ID);
+            object.put("f_z",size_id);
+            object.put("s_n",stores_name);
+            object.put("f_c",footer_c);
+            object.put("p_c",t_card_use_count.getText().toString());
+            object.put("f_s",footer_space);
+            content = new JSONObject();
+            content.put("parameter_id", "g_card_sale");
+            content.put("parameter_content",object);
+            content.put("parameter_desc","购物卡购买小票");
             array.add(content);
         }else{
             boolean code = SQLiteHelper.getLocalParameter("c_f_info",object);
@@ -328,7 +374,7 @@ public class PrintFormatFragment extends AbstractParameterFragment {
                 if (code)t_c_count_et.setText(Utils.getNullOrEmptyStringAsDefault(object,"p_c","1"));
 
             }else{
-                MyDialog.ToastMessage("加载打印格式参数错误：" + object.getString("info"),mContext,null);
+                MyDialog.ToastMessage("加载打印格式参数错误：" + object.getString("info"), null);
             }
         }
         return array;
@@ -373,13 +419,13 @@ public class PrintFormatFragment extends AbstractParameterFragment {
                 mPrintIdAdapter.clear();
                 mPrintIdAdapter.add(printer_info);
             }else
-                MyDialog.ToastMessage("加载打印机参数错误：" + object.getString("info"),mContext,null);
+                MyDialog.ToastMessage("加载打印机参数错误：" + object.getString("info"), null);
         }
 
         return object;
     }
 
-    private BroadcastReceiver usb_bluetooth_receiver = new BroadcastReceiver() {
+    private final BroadcastReceiver usb_bluetooth_receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String szAction = intent.getAction();
@@ -465,7 +511,7 @@ public class PrintFormatFragment extends AbstractParameterFragment {
                             if (!intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                                 if(device != null){
                                     mPrintIdAdapter.remove("vid:" + device.getVendorId() + "\tpid:" + device.getProductId());
-                                    MyDialog.ToastMessage("拒绝权限将无法使用USB打印机",mContext,null);
+                                    MyDialog.ToastMessage("拒绝权限将无法使用USB打印机", null);
                                 }
                             }
                         }
@@ -479,12 +525,11 @@ public class PrintFormatFragment extends AbstractParameterFragment {
         RadioGroup radioGroup = findViewById(R.id.print_way);
         switch (radioGroup.getCheckedRadioButtonId()){
             case R.id.bluetooth_p:
-                if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    if ((ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION))){
-                        PrintFormatFragment.this.requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},REQUEST_BLUETOOTH__PERMISSIONS );
-                        //MyDialog.ToastMessage("App不能搜索蓝牙打印机，请设置允许App定位权限",mContext,null);
+                if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    if ((ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION))){
+                        PrintFormatFragment.this.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_BLUETOOTH__PERMISSIONS );
                     }else {
-                        PrintFormatFragment.this.requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},REQUEST_BLUETOOTH__PERMISSIONS );
+                        PrintFormatFragment.this.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_BLUETOOTH__PERMISSIONS );
                     }
                 }else{
                     startBlueToothDiscovery();//开始扫描
@@ -510,7 +555,7 @@ public class PrintFormatFragment extends AbstractParameterFragment {
                 }, Dialog::dismiss);
             }
         else
-            MyDialog.ToastMessage("设备不支持蓝牙功能！",mContext,null);
+            MyDialog.ToastMessage("设备不支持蓝牙功能！", null);
     }
     private void stopBlueToothDiscovery(){
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();

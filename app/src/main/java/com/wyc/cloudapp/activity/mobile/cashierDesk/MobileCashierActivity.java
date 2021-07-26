@@ -143,9 +143,9 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
             if (hangBillDialog.save(datas,mVipInfo,err)){
                 tmp_order.setNum(HangBillDialog.getHangCounts(this));
                 resetOrderInfo();
-                MyDialog.ToastMessage("挂单成功！",this,null);
+                MyDialog.ToastMessage("挂单成功！", null);
             }else{
-                MyDialog.ToastMessage("保存挂单错误：" + err,this,null);
+                MyDialog.ToastMessage("保存挂单错误：" + err, null);
             }
         }else{
             if (HangBillDialog.getHangCounts(this) > 0){
@@ -161,7 +161,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
                                 mSaleGoodsAdapter.addSaleGoods(goods_info);
                                 hangBillDialog.dismiss();
                             }else{
-                                MyDialog.ToastMessage("选择商品错误：" + goods_info.getString("info"),this,null);
+                                MyDialog.ToastMessage("选择商品错误：" + goods_info.getString("info"), null);
                                 return;
                             }
                         }
@@ -173,7 +173,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
                 });
                 hangBillDialog.show();
             }else{
-                MyDialog.ToastMessage("无挂单信息！",this,null);
+                MyDialog.ToastMessage("无挂单信息！", null);
             }
         }
     }
@@ -220,7 +220,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
                         if (dialog.exec() == 1){
                             mApplication.sync_retail_order();
                             resetOrderInfo();
-                            MyDialog.ToastMessage("结账成功!",this,null);
+                            MyDialog.ToastMessage("结账成功!", getWindow());
                         }
                     }
                 }else {
@@ -228,7 +228,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
                     refundDialog.show();
                 }
             }else{
-                MyDialog.ToastMessage("已选商品为空!",this,null);
+                MyDialog.ToastMessage("已选商品为空!", getWindow());
             }
         });
     }
@@ -391,7 +391,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
                         addGoodsInfoDialog.show();
                     }
                 } else
-                    MyDialog.ToastMessage("无此商品!", this, getWindow());
+                    MyDialog.ToastMessage("无此商品!", getWindow());
             });
             return false;
         }
@@ -458,7 +458,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
             if (mSaleGoodsAdapter.isEmpty()){
                 super.onBackPressed();
             }else{
-                MyDialog.ToastMessage("已存在销售商品!",this,null);
+                MyDialog.ToastMessage("已存在销售商品!", null);
             }
         }
     }
@@ -491,7 +491,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
         if (mGoodsInfoViewAdapter.getSingleGoods(content,null,mGoodsInfoViewAdapter.getGoodsId(jsonObject))){
             mSaleGoodsAdapter.addSaleGoods(content);
         }else{
-            MyDialog.ToastMessage("选择商品错误：" + content.getString("info"),this,null);
+            MyDialog.ToastMessage("选择商品错误：" + content.getString("info"), null);
         }
     }
     @Override

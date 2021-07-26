@@ -11,6 +11,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.bean.TimeCardSaleInfo;
 import com.wyc.cloudapp.data.room.entity.GiftCardSaleDetail;
+import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.ArrayList;
@@ -107,7 +108,7 @@ public class MobileGiftCardSaleAdapter extends AbstractSelectAdapter<GiftCardSal
         int index = 0;
         for (GiftCardSaleDetail info : mData){
             if (info.equalsWithTimeCardInfo(saleInfo)){
-                info.setNum(saleInfo.getNum() + info.getNum());
+                MyDialog.toastMessage(String.format(Locale.CHINA,"已存在购物卡<%s>",saleInfo.getName()));
                 isExist = true;
                 break;
             }

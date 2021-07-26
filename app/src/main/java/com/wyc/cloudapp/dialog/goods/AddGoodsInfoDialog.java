@@ -366,12 +366,12 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
             final JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + "/api/goods_set/get_bases",sz_param,true);
             switch (retJson.getIntValue("flag")){
                 case 0:
-                    mContext.runOnUiThread(()-> MyDialog.ToastMessage("查询商品基本信息错误:" + retJson.getString("info"),mContext,getWindow()));
+                    mContext.runOnUiThread(()-> MyDialog.ToastMessage("查询商品基本信息错误:" + retJson.getString("info"), getWindow()));
                     break;
                 case 1:
                     final JSONObject info_obj = JSONObject.parseObject(retJson.getString("info"));
                     if ("n".equals(Utils.getNullOrEmptyStringAsDefault(info_obj,"status","n"))){
-                        mContext.runOnUiThread(()-> MyDialog.ToastMessage("查询商品基本信息错误:" + info_obj.getString("info"),mContext,getWindow()));
+                        mContext.runOnUiThread(()-> MyDialog.ToastMessage("查询商品基本信息错误:" + info_obj.getString("info"), getWindow()));
                     }else{
                         final JSONObject data = info_obj.getJSONObject("data");
                         mUnitList = parse_unit_info(Utils.getNullObjectAsEmptyJsonArray(data,"units"));
@@ -443,13 +443,13 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
             switch (retJson.getIntValue("flag")){
                 case 0:
                     mContext.runOnUiThread(()->{
-                        MyDialog.ToastMessage("查询供应商信息错误:" + retJson.getString("info"),mContext,getWindow());
+                        MyDialog.ToastMessage("查询供应商信息错误:" + retJson.getString("info"), getWindow());
                     });
                     break;
                 case 1:
                     final JSONObject info_obj = JSONObject.parseObject(retJson.getString("info"));
                     if ("n".equals(Utils.getNullOrEmptyStringAsDefault(info_obj,"status","n"))){
-                        mContext.runOnUiThread(()-> MyDialog.ToastMessage("查询供应商信息错误:" + info_obj.getString("info"),mContext,getWindow()));
+                        mContext.runOnUiThread(()-> MyDialog.ToastMessage("查询供应商信息错误:" + info_obj.getString("info"), getWindow()));
                     }else{
                         final JSONArray data = info_obj.getJSONArray("data");
                         mSupplierList = parse_supplier_info_and_set_default(data);
@@ -471,12 +471,12 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
             final JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + "/api/goods_set/get_onlycode_barcode",sz_param,true);
             switch (retJson.getIntValue("flag")){
                 case 0:
-                    mContext.runOnUiThread(()-> MyDialog.ToastMessage("生成条码信息错误:" + retJson.getString("info"),mContext,getWindow()));
+                    mContext.runOnUiThread(()-> MyDialog.ToastMessage("生成条码信息错误:" + retJson.getString("info"), getWindow()));
                     break;
                 case 1:
                     final JSONObject info_obj = JSONObject.parseObject(retJson.getString("info"));
                     if ("n".equals(Utils.getNullOrEmptyStringAsDefault(info_obj,"status","n"))){
-                        mContext.runOnUiThread(()-> MyDialog.ToastMessage("生成条码信息错误:" + info_obj.getString("info"),mContext,getWindow()));
+                        mContext.runOnUiThread(()-> MyDialog.ToastMessage("生成条码信息错误:" + info_obj.getString("info"), getWindow()));
                     }else{
                         final JSONObject data = info_obj.getJSONObject("data");
                         if (data != null){
@@ -546,7 +546,7 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
             final JSONObject retJson = httpRequest.sendPost("http://adm.hzyunpos.com/api/getgoods/get_goods",sz_param,true);
             switch (retJson.getIntValue("flag")){
                 case 0:
-                    mContext.runOnUiThread(()-> MyDialog.ToastMessage("查询商品信息错误:" + retJson.getString("info"),mContext,getWindow()));
+                    mContext.runOnUiThread(()-> MyDialog.ToastMessage("查询商品信息错误:" + retJson.getString("info"), getWindow()));
                     break;
                 case 1:
                     mContext.runOnUiThread(()-> showGoodsInfo(JSONObject.parseObject(retJson.getString("info"))));
@@ -665,27 +665,27 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
         final String barcode = mBarcode,name = mNameEt.getText().toString(),category = mCategoryEt.getText().toString(),unit = mUnitEt.getText().toString(),only_coding = mItemIdEt.getText().toString();
         if (barcode == null || barcode.isEmpty()){
             mBarcodeEt.requestFocus();
-            MyDialog.ToastMessage(activity.getString(R.string.not_empty_hint_sz,activity.getString(R.string.barcode_sz)),activity,getWindow());
+            MyDialog.ToastMessage(activity.getString(R.string.not_empty_hint_sz,activity.getString(R.string.barcode_sz)), getWindow());
             return data;
         }
         if (name.isEmpty()){
             mNameEt.requestFocus();
-            MyDialog.ToastMessage(activity.getString(R.string.not_empty_hint_sz,activity.getString(R.string.g_name_sz)),activity,getWindow());
+            MyDialog.ToastMessage(activity.getString(R.string.not_empty_hint_sz,activity.getString(R.string.g_name_sz)), getWindow());
             return data;
         }
         if (category.isEmpty()){
             mCategoryEt.requestFocus();
-            MyDialog.ToastMessage(activity.getString(R.string.not_empty_hint_sz,activity.getString(R.string.d_category_sz)),activity,getWindow());
+            MyDialog.ToastMessage(activity.getString(R.string.not_empty_hint_sz,activity.getString(R.string.d_category_sz)), getWindow());
             return data;
         }
         if (unit.isEmpty()){
             mUnitEt.requestFocus();
-            MyDialog.ToastMessage(activity.getString(R.string.not_empty_hint_sz,activity.getString(R.string.unit_sz)),activity,getWindow());
+            MyDialog.ToastMessage(activity.getString(R.string.not_empty_hint_sz,activity.getString(R.string.unit_sz)), getWindow());
             return data;
         }
         if (only_coding.isEmpty()){
             mItemIdEt.requestFocus();
-            MyDialog.ToastMessage(activity.getString(R.string.not_empty_hint_sz,activity.getString(R.string.item_no_sz)),activity,getWindow());
+            MyDialog.ToastMessage(activity.getString(R.string.not_empty_hint_sz,activity.getString(R.string.item_no_sz)), getWindow());
             return data;
         }
 

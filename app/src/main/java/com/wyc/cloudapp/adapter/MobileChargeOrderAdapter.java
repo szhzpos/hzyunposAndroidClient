@@ -119,7 +119,7 @@ public final class MobileChargeOrderAdapter extends AbstractChargeOrderAdapter<M
                         }
                     });
                 }else{
-                    MyDialog.ToastMessage(v,"订单状态不正常不能退款!",mContext,null);
+                    MyDialog.ToastMessage(v,"订单状态不正常不能退款!", null);
                 }
             }
         }

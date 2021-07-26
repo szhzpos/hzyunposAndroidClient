@@ -244,7 +244,7 @@ public final class VipInfoDialog extends AbstractDialogMainActivity {
 
             });
         }else{
-            MyDialog.ToastMessage(mSearchContent,mSearchContent.getHint().toString(),mContext,getWindow());
+            MyDialog.ToastMessage(mSearchContent,mSearchContent.getHint().toString(), getWindow());
         }
     }
 
@@ -332,7 +332,7 @@ public final class VipInfoDialog extends AbstractDialogMainActivity {
             switch (msg.what){
                 case MessageID.DIS_ERR_INFO_ID:
                     if (msg.obj instanceof String)
-                        MyDialog.ToastMessage(msg.obj.toString(),dialog.mContext,dialog.getWindow());
+                        MyDialog.ToastMessage(msg.obj.toString(), dialog.getWindow());
                     break;
                 case MessageID.QUERY_VIP_INFO_ID:
                     if (msg.obj instanceof JSONArray){

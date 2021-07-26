@@ -138,16 +138,16 @@ public final class RefundDialog extends AbstractDialogMainActivity {
                                             mRefundDialogAdapter.notifyDataSetChanged();
                                         }
                                         mProgressDialog.dismiss();
-                                        MyDialog.ToastMessage(err.toString(),mContext,getWindow());
+                                        MyDialog.ToastMessage(err.toString(), getWindow());
                                     });
                                 });
                             }else{
                                 if (mRefundBtn != null) mRefundBtn.setVisibility(View.GONE);
-                                MyDialog.ToastMessage("断网状态不允许退单！",mContext,null);
+                                MyDialog.ToastMessage("断网状态不允许退单！", null);
                             }
                         }else {
                             mOrderCodeEt.requestFocus();
-                            MyDialog.ToastMessage(mOrderCodeEt,mContext.getString(R.string.not_empty_hint_sz,mContext.getString(R.string.retail_order_code_sz)),mContext,getWindow());
+                            MyDialog.ToastMessage(mOrderCodeEt,mContext.getString(R.string.not_empty_hint_sz,mContext.getString(R.string.retail_order_code_sz)), getWindow());
                         }
                     });
                     mQueryBtn = query_btn;
@@ -288,7 +288,7 @@ public final class RefundDialog extends AbstractDialogMainActivity {
                             dialog.dismiss();
                         }).show();
                     }else
-                        MyDialog.ToastMessage("无可退商品！",mContext,getWindow());
+                        MyDialog.ToastMessage("无可退商品！", getWindow());
                 }
             });
         }
@@ -325,7 +325,7 @@ public final class RefundDialog extends AbstractDialogMainActivity {
                 if (err.length() != 0){
                     mContext.runOnUiThread(()->{
                         mProgressDialog.dismiss();
-                        MyDialog.ToastMessage(err.toString(),mContext,getWindow());
+                        MyDialog.ToastMessage(err.toString(), getWindow());
                     });
                 }else {
                     mContext.runOnUiThread(()->{
@@ -417,7 +417,7 @@ public final class RefundDialog extends AbstractDialogMainActivity {
             order_code = prefix + "0000".substring(order_code.length()) + order_code;
         }else{
             order_code = prefix + "0001";;
-            MyDialog.ToastMessage("生成订单号错误：" + orders.getString("info"),context,null);
+            MyDialog.ToastMessage("生成订单号错误：" + orders.getString("info"), null);
         }
         return order_code;
     }
@@ -715,13 +715,13 @@ public final class RefundDialog extends AbstractDialogMainActivity {
                                 break;
                         }
                     }else {
-                        context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_c_err_hint_sz,order_info.getString("info")), context,context.getWindow()));
+                        context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_c_err_hint_sz,order_info.getString("info")), context.getWindow()));
                     }
                 }else {
-                    context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.f_not_sz), context,context.getWindow()));
+                    context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.f_not_sz), context.getWindow()));
                 }
             }else
-                context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_f_err_hint_sz,print_format_info.getString("info")), context,context.getWindow()));
+                context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_f_err_hint_sz,print_format_info.getString("info")), context.getWindow()));
         }
         return content;
     }

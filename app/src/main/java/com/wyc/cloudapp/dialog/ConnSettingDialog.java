@@ -136,7 +136,7 @@ public class ConnSettingDialog extends AbstractDialogContext {
                         save(shop_id);
                     }
                 }else{
-                    MyDialog.SnackbarMessage(getWindow(),mContext.getString(R.string.not_empty_hint_sz,"商户号"),getCurrentFocus());
+                    MyDialog.SnackBarMessage(getWindow(),mContext.getString(R.string.not_empty_hint_sz,"商户号"),getCurrentFocus());
                 }
             });
         }
@@ -171,7 +171,7 @@ public class ConnSettingDialog extends AbstractDialogContext {
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                MyDialog.ToastMessage("显示门店信息错误：" + e.getMessage(),mContext,null);
+                MyDialog.ToastMessage("显示门店信息错误：" + e.getMessage(), getWindow());
             }
         }else {
             final View view = findViewById(R.id.ip_fo);

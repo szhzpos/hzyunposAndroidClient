@@ -12,7 +12,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
-import com.wyc.cloudapp.utils.Utils;
 
 /**
  * @ProjectName: CloudApp
@@ -52,7 +51,7 @@ public class MobileTransferInOrderAdapter extends MobileBaseOrderAdapter<MobileT
     void bindViewHolder(MyViewHolder holder, JSONObject object) {
         holder.order_code_tv.setText(Html.fromHtml("<u>" + object.getString("ckd_code") + "</u>"));
         holder.order_code_tv.setTag(object.getString("ckd_id"));
-        holder.date_tv.setText(FormatDateTimeUtils.formatDataWithTimestamp(object.getLongValue("addtime") * 1000));
+        holder.date_tv.setText(FormatDateTimeUtils.formatTimeWithTimestamp(object.getLongValue("addtime") * 1000));
         holder.transfer_out_wh_tv.setText(object.getString("wh_name"));
         holder.audit_tv.setText("1".equals(object.getString("qr_status")) ? mContext.getString(R.string.unconfirm_receipt) : mContext.getString(R.string.confirmed_receipt));
     }

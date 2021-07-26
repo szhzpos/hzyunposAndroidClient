@@ -91,17 +91,17 @@ public class EditVipCategoryDialog extends AbstractEditArchiveDialog {
         final String category_name = mVipCategory.getText().toString(),discount = mVipDiscount.getText().toString(),ratio = mVipIntegralRatio.getText().toString();
         if (!Utils.isNotEmpty(category_name)){
             final String code_hint = mContext.getString(R.string.vip_category_name_sz);
-            MyDialog.ToastMessage(mVipCategory,mContext.getString(R.string.not_empty_hint_sz,code_hint.substring(0,code_hint.length() - 1)),mContext,getWindow());
+            MyDialog.ToastMessage(mVipCategory,mContext.getString(R.string.not_empty_hint_sz,code_hint.substring(0,code_hint.length() - 1)), getWindow());
             return;
         }
         if (!Utils.isNotEmpty(discount)){
             final String name_hint = mContext.getString(R.string.vip_discount_colon_sz);
-            MyDialog.ToastMessage(mVipDiscount,mContext.getString(R.string.not_empty_hint_sz,name_hint.substring(0,name_hint.length() - 1)),mContext,getWindow());
+            MyDialog.ToastMessage(mVipDiscount,mContext.getString(R.string.not_empty_hint_sz,name_hint.substring(0,name_hint.length() - 1)), getWindow());
             return;
         }
         if (!Utils.isNotEmpty(ratio)){
             final String name_hint = mContext.getString(R.string.vip_integral_ratio_sz);
-            MyDialog.ToastMessage(mVipIntegralRatio,mContext.getString(R.string.not_empty_hint_sz,name_hint.substring(0,name_hint.length() - 1)),mContext,getWindow());
+            MyDialog.ToastMessage(mVipIntegralRatio,mContext.getString(R.string.not_empty_hint_sz,name_hint.substring(0,name_hint.length() - 1)), getWindow());
             return;
         }
 

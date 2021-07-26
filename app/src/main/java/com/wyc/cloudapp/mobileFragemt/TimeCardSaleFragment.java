@@ -100,7 +100,11 @@ public final class TimeCardSaleFragment extends AbstractMobileFragment {
         if (_clear_btn.getVisibility() == View.GONE){
             _clear_btn.setVisibility(View.VISIBLE);
             if (!_clear_btn.hasOnClickListeners())
-                _clear_btn.setOnClickListener(v -> mSaleAdapter.clear());
+                _clear_btn.setOnClickListener(v -> {
+                    if (!mSaleAdapter.isEmpty() && MyDialog.showMessageToModalDialog(mContext,"是否清空?") == 1){
+                        mSaleAdapter.clear();
+                    }
+                });
         }else _clear_btn.setVisibility(View.GONE);
     }
 

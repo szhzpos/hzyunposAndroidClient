@@ -18,16 +18,13 @@ import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.room.Dao;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import com.wyc.cloudapp.activity.LoginActivity;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.data.room.AppDatabase;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.FileUtils;
@@ -79,7 +76,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                     }catch (SQLiteCantOpenDatabaseException e){
                         CustomApplication.execute(()-> {
                             Looper.prepare();
-                            MyDialog.ToastMessage("打开数据库错误：" + e.getLocalizedMessage(),context,null);
+                            MyDialog.ToastMessage("打开数据库错误：" + e.getLocalizedMessage(), null);
                             Looper.loop();
                         });
                         SystemClock.sleep(3000);
@@ -1158,6 +1155,19 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         }while(cursor.moveToNext());
         return dataList.toString();
     }
+
+    public static  @Nullable String getCashierNameById(String cas_id){
+        return SQLiteHelper.getString("select cas_name from cashier_info where cas_id = '"+ cas_id + "'",null);
+    }
+
+    public static @Nullable String getShopAssistantById(String sc_id){
+        return SQLiteHelper.getString("select sc_name from sales_info where sc_id = '"+ sc_id + "'",null);
+    }
+
+    public static @Nullable String getStoreNameById(String s_id){
+        return SQLiteHelper.getString("select stores_name from shop_stores where stores_id = '"+ s_id + "'",null);
+    }
+
     private void initTables(SQLiteDatabase db) throws SQLiteException {
 
         List<String> list = new ArrayList<>();

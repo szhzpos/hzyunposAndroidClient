@@ -106,12 +106,12 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
                 if (verifyDeleteBillPermissions()){
                     final StringBuilder err = new StringBuilder();
                     if (!deleteBill(mCurrentHangId,err)){
-                        MyDialog.ToastMessage("删除挂单信息错误：" + err, mContext, getWindow());
+                        MyDialog.ToastMessage("删除挂单信息错误：" + err, getWindow());
                     }
                 }
             }
         } else {
-            MyDialog.ToastMessage("请选择需要删除的记录！", mContext, getWindow());
+            MyDialog.ToastMessage("请选择需要删除的记录！", getWindow());
         }
     }
 
@@ -299,7 +299,7 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
                 }
             }catch (SQLiteException e){
                 e.printStackTrace();
-                mContext.runOnUiThread(()->MyDialog.ToastMessage(e.getMessage(),mContext,getWindow()));
+                mContext.runOnUiThread(()->MyDialog.ToastMessage(e.getMessage(), getWindow()));
             }
         }
     }
@@ -316,7 +316,7 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
                 }
             }catch (SQLiteException e){
                 e.printStackTrace();
-                mContext.runOnUiThread(()->MyDialog.ToastMessage(e.getMessage(),mContext,getWindow()));
+                mContext.runOnUiThread(()->MyDialog.ToastMessage(e.getMessage(), getWindow()));
             }
         }
     }
@@ -364,7 +364,7 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
                     }
                 }
             }else{
-                MyDialog.ToastMessage("显示会员信息错误：" + object.getString("info"),mContext,getWindow());
+                MyDialog.ToastMessage("显示会员信息错误：" + object.getString("info"), getWindow());
             }
         }
     }
@@ -388,12 +388,12 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
                                         if (deleteBill(mCurrentHangId, err)) {
                                             mGetListener.onGet(barcode_ids, vips.getJSONObject(0));
                                         } else {
-                                            MyDialog.ToastMessage("删除挂单信息错误：" + err, mContext, null);
+                                            MyDialog.ToastMessage("删除挂单信息错误：" + err, null);
                                         }
                                     });
                                 } catch (JSONException e) {
                                     e.printStackTrace();
-                                    mContext.runOnUiThread(() -> MyDialog.ToastMessage(e.getMessage(), mContext, null));
+                                    mContext.runOnUiThread(() -> MyDialog.ToastMessage(e.getMessage(), null));
                                 }
                                 progressDialog.dismiss();
                             });
@@ -401,14 +401,14 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
                             if (deleteBill(mCurrentHangId, err)) {
                                 mGetListener.onGet(barcode_ids, null);
                             } else {
-                                MyDialog.ToastMessage("删除挂单信息错误：" + err, mContext, getWindow());
+                                MyDialog.ToastMessage("删除挂单信息错误：" + err, getWindow());
                             }
                         }
                     }else{
-                        MyDialog.ToastMessage("查询会员信息错误：" + object.getString("info"),mContext,getWindow());
+                        MyDialog.ToastMessage("查询会员信息错误：" + object.getString("info"), getWindow());
                     }
                 } else {
-                    MyDialog.ToastMessage("查询挂单明细错误：" + err, mContext, getWindow());
+                    MyDialog.ToastMessage("查询挂单明细错误：" + err, getWindow());
                 }
             }
         }
@@ -493,7 +493,7 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
     private int getHangId(){
         final JSONObject data = new JSONObject();
         if (!SQLiteHelper.execSql(data,"select ifnull(max(hang_id),0) + 1 hang_id from hangbill where cas_id = " + mContext.getCashierId())){
-            mContext.runOnUiThread(()->MyDialog.ToastMessage("查询挂单号错误：" + data.getString("info"),mContext,mContext.getWindow()));
+            mContext.runOnUiThread(()->MyDialog.ToastMessage("查询挂单号错误：" + data.getString("info"), mContext.getWindow()));
             return 0;
         }
         return data.getIntValue("hang_id");
@@ -502,7 +502,7 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
     public static int getHangCounts(MainActivity context){
         final JSONObject data = new JSONObject();
         if (!SQLiteHelper.execSql(data,"select count(1) hang_counts from hangbill where cas_id = " + context.getCashierId())){
-            context.runOnUiThread(()->MyDialog.ToastMessage("查询挂单数错误：" + data.getString("info"),context,context.getWindow()));
+            context.runOnUiThread(()->MyDialog.ToastMessage("查询挂单数错误：" + data.getString("info"), context.getWindow()));
             return 0;
         }
         return data.getIntValue("hang_counts");

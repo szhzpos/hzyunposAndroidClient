@@ -184,7 +184,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
             setDefaultPayMethod();
             this.notifyDataSetChanged();
         }else{
-            MyDialog.ToastMessage("加载支付方式错误：" + err,mContext,null);
+            MyDialog.ToastMessage("加载支付方式错误：" + err, null);
         }
     }
 
@@ -195,7 +195,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
             setDefaultPayMethod();
             this.notifyDataSetChanged();
         }else{
-            MyDialog.ToastMessage("加载支付方式错误：" + err,mContext,null);
+            MyDialog.ToastMessage("加载支付方式错误：" + err, null);
         }
     }
 

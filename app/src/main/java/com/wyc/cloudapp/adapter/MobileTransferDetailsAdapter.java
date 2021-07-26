@@ -87,7 +87,7 @@ public final class MobileTransferDetailsAdapter extends AbstractTransferDetailsA
             mTransferSumInfo.put("stores_id",stores_id);
             mTransferSumInfo.put("ti_code",ti_code);
         }
-        if (err.length() != 0)mContext.runOnUiThread(()-> MyDialog.ToastMessage(err.toString(),mContext,null));
+        if (err.length() != 0)mContext.runOnUiThread(()-> MyDialog.ToastMessage(err.toString(), null));
     }
 
     public void setDatas(final JSONArray array){

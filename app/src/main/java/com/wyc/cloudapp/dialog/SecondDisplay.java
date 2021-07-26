@@ -157,7 +157,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
                             mCurrentBarcodeId = barcode_id;
                         }
                     }else{
-                        CustomApplication.runInMainThread(()->MyDialog.ToastMessage(object.getString("info"), mContext,getWindow()));
+                        CustomApplication.runInMainThread(()->MyDialog.ToastMessage(object.getString("info"), getWindow()));
                     }
                 });
             }
@@ -193,7 +193,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
         final File img_dir = new File(mAdFilePath);
         if (!img_dir.exists()){
             if (!img_dir.mkdir()){
-                MyDialog.ToastMessage("初始化广告图片目录错误！",mContext,getWindow());
+                MyDialog.ToastMessage("初始化广告图片目录错误！", getWindow());
                 return;
             }
         }else{
@@ -245,7 +245,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
                                     if (img_obj.getIntValue("flag") == 0){
                                         final String error = err.concat(img_obj.getString("info"));
                                         Logger.d("load_img_err:%s",error);
-                                        if (activity != null)activity.runOnUiThread(()->MyDialog.ToastMessage(error,mContext,getWindow()));
+                                        if (activity != null)activity.runOnUiThread(()->MyDialog.ToastMessage(error, getWindow()));
                                     }
                                 }
                             }else {
@@ -254,14 +254,14 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
                         }
                         mAdFileNames = img_dir.list();
                     }else{
-                        if (activity != null)activity.runOnUiThread(()->MyDialog.ToastMessage(err + retJson.getString("info"),mContext,getWindow()));
+                        if (activity != null)activity.runOnUiThread(()->MyDialog.ToastMessage(err + retJson.getString("info"), getWindow()));
                     }
                 }else{
-                    if (activity != null)activity.runOnUiThread(()->MyDialog.ToastMessage(err + retJson.getString("info"), mContext,getWindow()));
+                    if (activity != null)activity.runOnUiThread(()->MyDialog.ToastMessage(err + retJson.getString("info"), getWindow()));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-                if (activity != null)activity.runOnUiThread(()->MyDialog.ToastMessage(err + e.getMessage(), mContext,getWindow()));
+                if (activity != null)activity.runOnUiThread(()->MyDialog.ToastMessage(err + e.getMessage(), getWindow()));
             }
         });
     }
@@ -365,7 +365,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
                 }
             }
         }else{
-            MyDialog.ToastMessage("初始化双屏错误：" + object.getString("info"),context,null);
+            MyDialog.ToastMessage("初始化双屏错误：" + object.getString("info"), null);
         }
         return secondDisplay;
     }

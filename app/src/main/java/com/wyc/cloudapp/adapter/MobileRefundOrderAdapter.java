@@ -139,6 +139,6 @@ public final class MobileRefundOrderAdapter extends AbstractQueryDataAdapter<Mob
         if (mData != null){
             notifyDataSetChanged();
         }else
-            MyDialog.ToastMessage("加载退货单据错误：" + err,mContext,null);
+            MyDialog.ToastMessage("加载退货单据错误：" + err, null);
     }
 }

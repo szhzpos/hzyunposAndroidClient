@@ -113,17 +113,17 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
             ok_btn.setOnClickListener(view -> {
                 if (m_vip_p_num_et.length() < 11){
                     m_vip_p_num_et.requestFocus();
-                    MyDialog.ToastMessage(m_vip_p_num_et.getHint().toString(),mContext,getWindow());
+                    MyDialog.ToastMessage(m_vip_p_num_et.getHint().toString(), getWindow());
                     return;
                 }
                 if (m_card_id_et.length() == 0){
                     m_card_id_et.requestFocus();
-                    MyDialog.ToastMessage(m_card_id_et.getHint().toString(),mContext,getWindow());
+                    MyDialog.ToastMessage(m_card_id_et.getHint().toString(), getWindow());
                     return;
                 }
                 if (m_vip_birthday_et.length() == 0){
                     m_vip_birthday_et.requestFocus();
-                    MyDialog.ToastMessage(m_vip_birthday_et.getHint().toString(),mContext,getWindow());
+                    MyDialog.ToastMessage(m_vip_birthday_et.getHint().toString(), getWindow());
                     return;
                 }
 
@@ -400,14 +400,14 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
             switch (msg.what){
                 case MessageID.DIS_ERR_INFO_ID:
                     if (msg.obj instanceof String)
-                        MyDialog.ToastMessage(msg.obj.toString(),dialog.mContext,dialog.getWindow());
+                        MyDialog.ToastMessage(msg.obj.toString(), dialog.getWindow());
                     break;
                 case MessageID.QUERY_VIP_LEVEL_ID:
                     dialog.initVipLevel();
                     break;
                     case MessageID.ADD_VIP_INFO_ID:
                         if (msg.obj instanceof String)
-                            MyDialog.ToastMessage(msg.obj.toString(),dialog.mContext,dialog.getWindow());
+                            MyDialog.ToastMessage(msg.obj.toString(), dialog.getWindow());
 
                         if (dialog.mYesOnclickListener != null){
                             dialog.mYesOnclickListener.onYesClick(dialog);

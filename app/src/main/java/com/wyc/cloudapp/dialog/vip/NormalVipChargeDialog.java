@@ -7,7 +7,6 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 
-import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.bean.VipInfo;
@@ -51,13 +50,13 @@ public class NormalVipChargeDialog extends AbstractVipChargeDialog {
                         mPayCodeEt.requestFocus();
                         final String xtype = Utils.getNullStringAsEmpty(mPayMethodSelected,"xtype");
                         mPayCodeEt.setHint(xtype);
-                        mPayCodeEt.postDelayed(()-> MyDialog.ToastMessage(mPayCodeEt,xtype,mContext,getWindow()),300);
+                        mPayCodeEt.postDelayed(()-> MyDialog.ToastMessage(mPayCodeEt,xtype, getWindow()),300);
                         return false;
                     }else {
                         mPayMethodSelected.put(PAY_CODE_LABEL,pay_code);
                     }
                 }else {
-                    MyDialog.ToastMessage(mContext.getString(R.string.pay_m_hint_sz),mContext,getWindow());
+                    MyDialog.ToastMessage(mContext.getString(R.string.pay_m_hint_sz), getWindow());
                 }
             }else {
                 if (null != mPayCodeEt){
@@ -67,7 +66,7 @@ public class NormalVipChargeDialog extends AbstractVipChargeDialog {
                 }
             }
         }else {
-            MyDialog.ToastMessage(mContext.getString(R.string.pay_m_hint_sz),mContext,getWindow());
+            MyDialog.ToastMessage(mContext.getString(R.string.pay_m_hint_sz), getWindow());
             return false;
         }
         return true;

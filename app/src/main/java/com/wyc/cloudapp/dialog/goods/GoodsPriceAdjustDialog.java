@@ -68,17 +68,17 @@ public final class GoodsPriceAdjustDialog extends AbstractDialogSaleActivity {
         final String retail_price = mNewRetailPriceEt.getText().toString(),vip_price = mNewVipPriceEt.getText().toString();
         if (retail_price.isEmpty()){
             mNewRetailPriceEt.requestFocus();
-            MyDialog.ToastMessage(mNewRetailPriceEt,mContext.getString(R.string.not_empty_hint_sz,mNewRetailPriceEt.getHint()),mContext,getWindow());
+            MyDialog.ToastMessage(mNewRetailPriceEt,mContext.getString(R.string.not_empty_hint_sz,mNewRetailPriceEt.getHint()), getWindow());
             return;
         }
 
         final JSONObject object = new JSONObject(),goods = new JSONObject();
         if (!SQLiteHelper.execSql(object,"SELECT pt_user_id FROM cashier_info where cas_code = '"+ mContext.getCashierCode() +"'")){
-            MyDialog.ToastMessage(object.getString("info"),mContext,getWindow());
+            MyDialog.ToastMessage(object.getString("info"), getWindow());
             return;
         }
         if ("".equals(Utils.getNullStringAsEmpty(object,"pt_user_id"))){
-            MyDialog.ToastMessage(mContext.getString(R.string.not_empty_hint_sz,"制单人"),mContext,getWindow());
+            MyDialog.ToastMessage(mContext.getString(R.string.not_empty_hint_sz,"制单人"), getWindow());
             return;
         }
         final JSONArray array = new JSONArray();

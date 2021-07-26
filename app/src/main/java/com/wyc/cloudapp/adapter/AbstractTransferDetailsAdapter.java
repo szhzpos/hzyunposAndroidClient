@@ -91,7 +91,7 @@ public abstract class AbstractTransferDetailsAdapter extends AbstractQueryDataAd
                 mTransferSumInfo.put("ti_code",ti_code);
             }
         }
-        if (err.length() != 0)mContext.runOnUiThread(()->MyDialog.ToastMessage(err.toString(),mContext,null));
+        if (err.length() != 0)mContext.runOnUiThread(()->MyDialog.ToastMessage(err.toString(), null));
     }
 
     private boolean verifyShowAmtPermissions(){//是否显示金额权限

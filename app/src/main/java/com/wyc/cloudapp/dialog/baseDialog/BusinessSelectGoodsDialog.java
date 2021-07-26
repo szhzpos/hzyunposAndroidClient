@@ -183,7 +183,7 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
                             mNumEt.setText(String.valueOf(old_num));
                             mNumEt.selectAll();
                             mNumEt.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.shake_x));
-                            MyDialog.ToastMessage(mNumEt,"当前数量不能大于来源单据数量!",mContext,getWindow());
+                            MyDialog.ToastMessage(mNumEt,"当前数量不能大于来源单据数量!", getWindow());
                         }
                     }
                     price = Double.parseDouble(mPriceEt.getText().toString());
@@ -287,18 +287,18 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
                             Logger.d_json(mContentObj.toString());
                             showGoods();
                         }else {
-                            MyDialog.ToastMessage(mContentObj.getString("info"),mContext,getWindow());
+                            MyDialog.ToastMessage(mContentObj.getString("info"), getWindow());
                             mContentObj = null;
                         }
                     }
                 }else {
-                    MyDialog.ToastMessage(mBarcodeEt,mContext.getNotExistHintsString(String.format(Locale.CHINA,"商品条码%s",barcode)),mContext,getWindow());
+                    MyDialog.ToastMessage(mBarcodeEt,mContext.getNotExistHintsString(String.format(Locale.CHINA,"商品条码%s",barcode)), getWindow());
                 }
             }else {
-                MyDialog.ToastMessage(mBarcodeEt,err.toString(),mContext,getWindow());
+                MyDialog.ToastMessage(mBarcodeEt,err.toString(), getWindow());
             }
         }else {
-            MyDialog.ToastMessage(mBarcodeEt,mContext.getNotEmptyHintsString("搜索内容"),mContext,getWindow());
+            MyDialog.ToastMessage(mBarcodeEt,mContext.getNotEmptyHintsString("搜索内容"), getWindow());
         }
     }
 

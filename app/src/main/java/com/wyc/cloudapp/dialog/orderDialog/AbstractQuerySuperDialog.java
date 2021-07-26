@@ -151,7 +151,7 @@ public abstract class AbstractQuerySuperDialog extends AbstractDialogMainActivit
                 cashier_et.setOnClickListener(etClickListener);
                 setCashierEt(cashier_et);
             }else{
-                MyDialog.ToastMessage(cashier_et,"初始化收银员错误：" + err,mContext,getWindow());
+                MyDialog.ToastMessage(cashier_et,"初始化收银员错误：" + err, getWindow());
             }
         }
     }

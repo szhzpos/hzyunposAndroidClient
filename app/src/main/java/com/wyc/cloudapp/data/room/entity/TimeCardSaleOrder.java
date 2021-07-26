@@ -44,6 +44,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
+import static com.wyc.cloudapp.fragment.PrintFormatFragment.TIME_CARD_SALE_FORMAT_ID;
 
 /**
  * @ProjectName: AndroidClient
@@ -310,7 +311,7 @@ public final class TimeCardSaleOrder implements ICardPay<TimeCardSaleInfo> {
     }
 
     public String getFormatTime(){
-        return FormatDateTimeUtils.formatDataWithTimestamp(time * 1000);
+        return FormatDateTimeUtils.formatTimeWithTimestamp(time * 1000);
     }
 
     public void setTime(long time) {
@@ -453,8 +454,8 @@ public final class TimeCardSaleOrder implements ICardPay<TimeCardSaleInfo> {
     private static String get_print_content(final MainActivity context,TimeCardSaleOrder order_info){
         final JSONObject print_format_info = new JSONObject();
         String content = "";
-        if (SQLiteHelper.getLocalParameter("v_f_info",print_format_info)){
-            if (print_format_info.getIntValue("f") == R.id.vip_c_format){
+        if (SQLiteHelper.getLocalParameter("t_card_sale",print_format_info)){
+            if (print_format_info.getIntValue("f") == TIME_CARD_SALE_FORMAT_ID){
                 switch (print_format_info.getIntValue("f_z")){
                     case R.id.f_58:
                         content = c_format_58(context,print_format_info,order_info);
@@ -465,10 +466,10 @@ public final class TimeCardSaleOrder implements ICardPay<TimeCardSaleInfo> {
                         break;
                 }
             }else {
-                context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.f_not_sz), context,context.getWindow()));
+                context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.f_not_sz), context.getWindow()));
             }
         }else
-            context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_f_err_hint_sz,print_format_info.getString("info")), context,context.getWindow()));
+            context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_f_err_hint_sz,print_format_info.getString("info")), context.getWindow()));
 
         return content;
     }
@@ -620,11 +621,11 @@ public final class TimeCardSaleOrder implements ICardPay<TimeCardSaleInfo> {
     }
 
     public @Nullable String getCashierName(){
-        return SQLiteHelper.getString("select cas_name from cashier_info where cas_id = '"+ cas_id + "'",null);
+        return SQLiteHelper.getCashierNameById(cas_id);
     }
 
     public @Nullable String getSalemanName(){
-        return SQLiteHelper.getString("select sc_name from sales_info where sc_id = '"+ saleman + "'",null);
+        return SQLiteHelper.getShopAssistantById(saleman);
     }
 
     private static String generateOrderNo() {

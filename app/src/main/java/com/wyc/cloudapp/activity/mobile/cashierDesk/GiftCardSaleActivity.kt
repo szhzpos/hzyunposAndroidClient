@@ -56,7 +56,6 @@ open class GiftCardSaleActivity : AbstractMobileActivity() {
         initSearchContent()
         initSaleBtn()
         initSaleList()
-        initCheckoutBtn()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -72,11 +71,9 @@ open class GiftCardSaleActivity : AbstractMobileActivity() {
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    private fun initCheckoutBtn() {
-        val onceCard_checkout_btn = findViewById<Button>(R.id._checkout_btn)
-        onceCard_checkout_btn?.setOnClickListener {
-            GiftCardPayActivity.start(this,disposeOrder())
-        }
+    @OnClick(R.id._checkout_btn)
+    fun checkout(){
+        GiftCardPayActivity.start(this,disposeOrder())
     }
 
     private fun disposeOrder(): GiftCardSaleOrder {
@@ -89,7 +86,11 @@ open class GiftCardSaleActivity : AbstractMobileActivity() {
         val _clear_btn = findViewById<Button>(R.id._clear_btn)
         if (_clear_btn.visibility == View.GONE) {
             _clear_btn.visibility = View.VISIBLE
-            if (!_clear_btn.hasOnClickListeners()) _clear_btn.setOnClickListener { mSaleAdapter.clear() }
+            if (!_clear_btn.hasOnClickListeners()) _clear_btn.setOnClickListener {
+                if (!mSaleAdapter.isEmpty && MyDialog.showMessageToModalDialog(this,"是否清空?") == 1){
+                    mSaleAdapter.clear()
+                }
+            }
         } else _clear_btn.visibility = View.GONE
     }
 

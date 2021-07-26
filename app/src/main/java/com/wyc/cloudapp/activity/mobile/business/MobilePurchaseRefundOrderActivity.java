@@ -115,7 +115,7 @@ public class MobilePurchaseRefundOrderActivity extends AbstractMobileBusinessOrd
         protected void showOrder() {
             super.showOrder();
             setView(mOrderCodeTv, "", Utils.getNullStringAsEmpty(mOrderInfo, "cgd_code"));
-            setView(mDateTv, "", FormatDateTimeUtils.formatDataWithTimestamp(mOrderInfo.getLongValue("addtime") * 1000));
+            setView(mDateTv, "", FormatDateTimeUtils.formatTimeWithTimestamp(mOrderInfo.getLongValue("addtime") * 1000));
             setSourceOrder("",Utils.getNullStringAsEmpty(mOrderInfo,"out_cgd_code"));
         }
 

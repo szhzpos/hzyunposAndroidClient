@@ -28,7 +28,7 @@ public class MobileVipChargeDialog extends AbstractVipChargeDialog implements Mo
                 }
             }
         }else {
-            MyDialog.ToastMessage(mContext.getString(R.string.pay_m_hint_sz),mContext,getWindow());
+            MyDialog.ToastMessage(mContext.getString(R.string.pay_m_hint_sz), getWindow());
             return false;
         }
         return true;

@@ -101,7 +101,7 @@ public class MobileTransferInOrderDetailActivity extends AbstractMobileActivity 
         final JSONObject object = mOrderInfo;
         setView(mOrderCodeTv,Utils.getNullStringAsEmpty(object,"ckd_id"), Utils.getNullStringAsEmpty(object,"ckd_code"));
         setView(mSaleOperatorTv, Utils.getNullStringAsEmpty(object,"js_pt_user_id"), Utils.getNullStringAsEmpty(object,"js_pt_user_name"));
-        setView(mDateTv, "", FormatDateTimeUtils.formatDataWithTimestamp(object.getLongValue("addtime") * 1000));
+        setView(mDateTv, "", FormatDateTimeUtils.formatTimeWithTimestamp(object.getLongValue("addtime") * 1000));
         setView(mRemarkEt, "", Utils.getNullStringAsEmpty(object, "remark"));
         setView(mTransferOutWhTv,Utils.getNullStringAsEmpty(object,"wh_id"), Utils.getNullStringAsEmpty(object,"wh_name"));
 

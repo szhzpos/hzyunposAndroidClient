@@ -361,7 +361,7 @@ public final class VipChargeDialogImp extends AbstractPayDialog {
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        MyDialog.ToastMessage("参数解析错误：" + e.getMessage(),mContext,mDialogWindow);
+                        MyDialog.ToastMessage("参数解析错误：" + e.getMessage(), mDialogWindow);
                     }
                 });
             }
@@ -378,7 +378,7 @@ public final class VipChargeDialogImp extends AbstractPayDialog {
     @Override
     public boolean verify(){
        if (mPayMethod == null)mPayMethod = mPayMethodViewAdapter.getDefaultPayMethod();
-       return MyDialog.ToastMessage(null,"会员信息不能为空！",mContext,mDialogWindow,mVip != null) && super.verify();
+       return MyDialog.ToastMessage(null,"会员信息不能为空！", mDialogWindow,mVip != null) && super.verify();
     }
 
     private String generate_pay_son_order_id(){
@@ -396,13 +396,13 @@ public final class VipChargeDialogImp extends AbstractPayDialog {
             switch (msg.what){
                 case MessageID.DIS_ERR_INFO_ID:
                     if (msg.obj instanceof String)
-                        MyDialog.ToastMessage(msg.obj.toString(),dialog.mContext,dialog.mDialogWindow);
+                        MyDialog.ToastMessage(msg.obj.toString(), dialog.mDialogWindow);
                     break;
                 case MessageID.VIP_C_SUCCESS_ID:
                     if (msg.obj instanceof JSONObject){
                         Logger.d_json( msg.obj.toString());
                         dialog.mVip = (JSONObject) msg.obj;
-                        MyDialog.ToastMessage("充值成功！",dialog.mContext,dialog.mDialogWindow);
+                        MyDialog.ToastMessage("充值成功！", dialog.mDialogWindow);
                         if (dialog.mYesOnclickListener != null){
                             dialog.mYesOnclickListener.onYesClick(dialog);
                         }
