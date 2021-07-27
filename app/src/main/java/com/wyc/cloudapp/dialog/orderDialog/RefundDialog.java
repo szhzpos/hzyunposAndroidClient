@@ -339,7 +339,7 @@ public final class RefundDialog extends AbstractDialogMainActivity {
                             mRemarkEt.getText().clear();
                         }
                     });
-                    Printer.print(mContext,get_print_content(mContext,mRefundCode,!isRefundCheck));
+                    Printer.print(get_print_content(mContext,mRefundCode,!isRefundCheck));
                 }
             });
 

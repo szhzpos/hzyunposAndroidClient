@@ -57,8 +57,6 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractMobileActi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initTitle();
-
         initStores();
         initSaleOperator();
         initOrderCode();
@@ -326,14 +324,14 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractMobileActi
                     if (HttpUtils.checkBusinessSuccess(info)){
                         CustomApplication.runInMainThread(()-> mOrderCodeTv.setText(info.getString("code")));
                     }else {
-                        runOnUiThread(()-> Toast.makeText(this,info.getString("info"),Toast.LENGTH_LONG));
+                        MyDialog.ToastMessageInMainThread(info.getString("info"));
                     }
                 }catch (JSONException e){
                     e.printStackTrace();
-                    runOnUiThread(()-> Toast.makeText(this,e.getLocalizedMessage(),Toast.LENGTH_LONG));
+                    MyDialog.ToastMessageInMainThread(e.getLocalizedMessage());
                 }
             }else {
-                runOnUiThread(()-> MyDialog.ToastMessage(getString(R.string.query_business_order_id_hint_sz,retJson.getString("info")), null));
+                MyDialog.ToastMessageInMainThread(getString(R.string.query_business_order_id_hint_sz,retJson.getString("info")));
             }
         });
     }
@@ -365,7 +363,7 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractMobileActi
                 if (HttpUtils.checkBusinessSuccess(info)){
                     CustomApplication.runInMainThread(()->{
                         resetBusinessOrderInfo();
-                        Toast.makeText(this,getString(R.string.upload_order_success_hints),Toast.LENGTH_LONG).show();
+                        MyDialog.toastMessage(getString(R.string.upload_order_success_hints));
                     });
                 }else {
                     err = info.getString("info");
@@ -404,10 +402,6 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractMobileActi
         return R.layout.activity_mobile_inventory_add_order_acitity;
     }
 
-    private void initTitle(){
-        final Intent intent = getIntent();
-        if (intent != null)setMiddleText(intent.getStringExtra("title"));
-    }
     private void showProgress(final String mess){
         if (mProgressDialog == null)
             mProgressDialog = CustomProgressDialog.showProgress(this,mess);
@@ -440,7 +434,7 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractMobileActi
                     if (HttpUtils.checkBusinessSuccess(info)){
                         final JSONArray data = Utils.getNullObjectAsEmptyJsonArray(info,"data");
                         if (data.isEmpty()){
-                            CustomApplication.runInMainThread(()-> Toast.makeText(MobilePracticalInventoryAddOrderActivity.this,"当前没有盘点任务...",Toast.LENGTH_LONG).show());
+                            MyDialog.ToastMessageInMainThread("当前没有盘点任务...");
                         }else {
                             CustomApplication.runInMainThread(()->setInventoryTask(data.getJSONObject(0)));
                         }

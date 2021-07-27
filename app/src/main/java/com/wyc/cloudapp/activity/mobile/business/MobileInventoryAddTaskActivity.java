@@ -36,7 +36,7 @@ public class MobileInventoryAddTaskActivity extends AbstractMobileActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initTitle();
+
         initStores();
 
         mOrderCodeTv = findViewById(R.id.m_business_order_tv);
@@ -95,7 +95,7 @@ public class MobileInventoryAddTaskActivity extends AbstractMobileActivity {
                 if (HttpUtils.checkBusinessSuccess(info)){
                     CustomApplication.runInMainThread(()->{
                         finish();
-                        Toast.makeText(this,getString(R.string.upload_order_success_hints),Toast.LENGTH_LONG).show();
+                        MyDialog.toastMessage(getString(R.string.upload_order_success_hints));
                     });
                 }else {
                     err = info.getString("info");
@@ -141,7 +141,7 @@ public class MobileInventoryAddTaskActivity extends AbstractMobileActivity {
                 if (HttpUtils.checkBusinessSuccess(info)){
                     CustomApplication.runInMainThread(()->{
                         finish();
-                        Toast.makeText(this,getString(R.string.upload_order_success_hints),Toast.LENGTH_LONG).show();
+                        MyDialog.toastMessage(getString(R.string.upload_order_success_hints));
                     });
                 }else {
                     err = info.getString("info");
@@ -245,12 +245,6 @@ public class MobileInventoryAddTaskActivity extends AbstractMobileActivity {
         return !code;
     }
 
-
-    private void initTitle(){
-        final Intent intent = getIntent();
-        if (intent != null)setMiddleText(intent.getStringExtra("title"));
-    }
-
     private void queryData(){
         if (isShowOrder()){
             mTaskInfo = JSONObject.parseObject(getIntent().getStringExtra("order_id"));
@@ -326,14 +320,14 @@ public class MobileInventoryAddTaskActivity extends AbstractMobileActivity {
                     if (HttpUtils.checkBusinessSuccess(info)){
                         CustomApplication.runInMainThread(()-> mOrderCodeTv.setText(info.getString("code")));
                     }else {
-                        runOnUiThread(()-> Toast.makeText(this,info.getString("info"),Toast.LENGTH_LONG));
+                        MyDialog.ToastMessageInMainThread(info.getString("info"));
                     }
                 }catch (JSONException e){
                     e.printStackTrace();
-                    runOnUiThread(()-> Toast.makeText(this,e.getLocalizedMessage(),Toast.LENGTH_LONG));
+                    MyDialog.ToastMessageInMainThread(e.getLocalizedMessage());
                 }
             }else {
-                runOnUiThread(()-> MyDialog.ToastMessage(getString(R.string.query_business_order_id_hint_sz,retJson.getString("info")), null));
+                MyDialog.ToastMessageInMainThread(getString(R.string.query_business_order_id_hint_sz,retJson.getString("info")));
             }
         });
     }

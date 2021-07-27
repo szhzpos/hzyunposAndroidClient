@@ -267,16 +267,16 @@ public final class Printer {
         return new String(bytes, StandardCharsets.US_ASCII);
     }
 
-    public static void print(@NonNull final Activity context, @NonNull final String content){
+    public static void print(@NonNull final String content){
         if (content.isEmpty())return;
         try {
-            print(context,content.getBytes(CHARACTER_SET));
+            print(content.getBytes(CHARACTER_SET));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
     }
 
-    public static void print(@NonNull final Activity context, @NonNull final byte[] inbyte){
+    public static void print(@NonNull final byte[] inbyte){
         if (inbyte.length == 0)return;
 
         final JSONObject object = new JSONObject();
@@ -287,10 +287,10 @@ public final class Printer {
             if (vals.length > 1){
                 switch (status_id){
                     case R.id.bluetooth_p:
-                        bluetooth_print(context,inbyte,vals[1]);
+                        bluetooth_print(inbyte,vals[1]);
                         break;
                     case R.id.usb_p:
-                        usb_print_byte(context,vals[0].substring(vals[0].indexOf(":") + 1),vals[1].substring(vals[1].indexOf(":") + 1),inbyte);
+                        usb_print_byte(vals[0].substring(vals[0].indexOf(":") + 1),vals[1].substring(vals[1].indexOf(":") + 1),inbyte);
                         break;
                 }
             }
@@ -299,7 +299,7 @@ public final class Printer {
         }
     }
 
-    private static void bluetooth_print(@NonNull final Activity context,final  byte[] content,final String device_addr){
+    private static void bluetooth_print(final byte[] content, final String device_addr){
         if(content != null && device_addr != null){
             CustomApplication.execute(()->{
                 BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -337,24 +337,24 @@ public final class Printer {
                                 Logger.d("count:%d,bytes.length:%d",count,length);
                             } catch (IOException e) {
                                 e.printStackTrace();
-                                context.runOnUiThread(()->MyDialog.ToastMessage("打印错误：" + e.getMessage(), null));
+                                CustomApplication.postAtFrontOfQueue(()->MyDialog.ToastMessage("打印错误：" + e.getMessage(), null));
                             }
                         }
                     }else{
-                        context.runOnUiThread(()->MyDialog.ToastMessage("蓝牙已关闭！", null));
+                        CustomApplication.postAtFrontOfQueue(()->MyDialog.ToastMessage("蓝牙已关闭！", null));
                     }
                 }
             });
         }
     }
 
-    private static void usb_print_byte(@NonNull final Activity context,final String vid,final String pid,final byte[] in_bytes){
+    private static void usb_print_byte(final String vid, final String pid, final byte[] in_bytes){
         CustomApplication.execute(()->{
             UsbDevice device = null;
             UsbInterface usbInterface = null;
             UsbEndpoint usbOutEndpoint = null,usbInEndpoint = null,tmpEndpoint;
             UsbDeviceConnection connection = null;
-            UsbManager manager = (UsbManager)context.getSystemService(Context.USB_SERVICE);
+            UsbManager manager = (UsbManager)CustomApplication.self().getSystemService(Context.USB_SERVICE);
             if (manager != null){
                 HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
                 for(String sz:deviceList.keySet()){
@@ -413,16 +413,16 @@ public final class Printer {
                                     connection.close();
                                 }
                             }else{
-                                context.runOnUiThread(()->MyDialog.ToastMessage("独占访问打印机错误！", null));
+                                CustomApplication.postAtFrontOfQueue(()->MyDialog.ToastMessage("独占访问打印机错误！", null));
                             }
                         }else{
-                            context.runOnUiThread(()->MyDialog.ToastMessage("打开打印机连接错误！", null));
+                            CustomApplication.postAtFrontOfQueue(()->MyDialog.ToastMessage("打开打印机连接错误！", null));
                         }
                     }else{
-                        context.runOnUiThread(()->MyDialog.ToastMessage("未找到USB输出端口！", null));
+                        CustomApplication.postAtFrontOfQueue(()->MyDialog.ToastMessage("未找到USB输出端口！", null));
                     }
                 }else{
-                    context.runOnUiThread(()->MyDialog.ToastMessage("未找到打印机设备！", null));
+                    CustomApplication.postAtFrontOfQueue(()->MyDialog.ToastMessage("未找到打印机设备！", null));
                 }
             }
         });

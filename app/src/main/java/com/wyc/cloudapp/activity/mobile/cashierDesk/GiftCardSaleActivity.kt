@@ -50,7 +50,6 @@ open class GiftCardSaleActivity : AbstractMobileActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setMiddleText(getString(R.string.gift_card_sale))
         ButterKnife.bind(this)
 
         initSearchContent()
@@ -130,7 +129,7 @@ open class GiftCardSaleActivity : AbstractMobileActivity() {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private fun initSearchContent():Unit {
+    private fun initSearchContent() {
         val _search_content = findViewById<EditText>(R.id._search_content);
         _search_content?.transformationMethod = object : ReplacementTransformationMethod() {
             override fun getOriginal(): CharArray {
@@ -157,6 +156,7 @@ open class GiftCardSaleActivity : AbstractMobileActivity() {
                 val w:Int = _search_content.width
                 if (dx > (w - _search_content.compoundPaddingRight)) {
                     queryGiftCardByCode(_search_content.text.toString())
+                    return@setOnTouchListener true
                 }else if(dx < _search_content.compoundPaddingLeft){
                     QueryGiftCardInfoActivity.start(this)
                 }
@@ -167,7 +167,7 @@ open class GiftCardSaleActivity : AbstractMobileActivity() {
 
     private fun queryGiftCardByCode(id:String) {
         if (!Utils.isNotEmpty(id)){
-            MyDialog.toastMessage(getString(R.string.not_empty_hint_sz, getString(R.string.input_gift_card_hints)))
+            MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz, getString(R.string.input_gift_card_hints)),window)
             return
         }
         val obj = JSONObject()

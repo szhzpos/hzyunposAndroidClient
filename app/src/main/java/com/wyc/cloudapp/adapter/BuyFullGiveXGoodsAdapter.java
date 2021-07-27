@@ -11,6 +11,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
@@ -76,7 +77,7 @@ public class BuyFullGiveXGoodsAdapter extends TreeListBaseAdapterForJson<BuyFull
                 holder._retail_price_tv.setText(String.format(Locale.CHINA,"%.2f",content.getDoubleValue("markup_price")));
                 holder.remark_tv.setText(content.getString("remark"));
             }else {
-                Toast.makeText(mContext,goods.getString("info"),Toast.LENGTH_LONG).show();
+                MyDialog.toastMessage(goods.getString("info"));
             }
         }
     }

@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.SaleActivity;
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.barcodeScales.BarCodeScaleDownDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
 import com.wyc.cloudapp.dialog.goods.GoodsManageDialog;
@@ -114,7 +113,7 @@ public final class MoreFunDialog extends AbstractDialogSaleActivity {
         final Button btn = findViewById(R.id.o_cashbox);
         btn.setOnClickListener(v -> {
             if (mContext.verifyOpenCashboxPermissions())
-                Printer.print(mContext, Printer.commandToStr(Printer.OPEN_CASHBOX));
+                Printer.print(Printer.commandToStr(Printer.OPEN_CASHBOX));
         });
     }
     private void initSyncBtn(){

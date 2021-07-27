@@ -25,6 +25,7 @@ import com.wyc.cloudapp.adapter.report.CashierTransferNameAdapter;
 import com.wyc.cloudapp.adapter.report.TransferDetailsAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.JEventLoop;
+import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
@@ -146,7 +147,7 @@ public class MobileCashierTransfer extends AbstractReportActivity {
             }
         });
         final int code = loop.exec();
-        if (code != 1)Toast.makeText(this,err.toString(),Toast.LENGTH_LONG).show();
+        if (code != 1) MyDialog.toastMessage(err.toString());
         progressDialog.dismiss();
     }
 
@@ -275,7 +276,7 @@ public class MobileCashierTransfer extends AbstractReportActivity {
 
         } catch (ParseException e) {
             e.printStackTrace();
-            Toast.makeText(this,"加载门店信息错误:" + e.getMessage(),Toast.LENGTH_LONG).show();
+            MyDialog.toastMessage("加载门店信息错误:" + e.getMessage());
         }
     };
 
@@ -328,7 +329,7 @@ public class MobileCashierTransfer extends AbstractReportActivity {
             }
         });
         final int code = loop.exec();
-        if (code != 1)Toast.makeText(this,err.toString(),Toast.LENGTH_SHORT).show();
+        if (code != 1)MyDialog.toastMessage(err.toString());
         progressDialog.dismiss();
     }
 
@@ -354,7 +355,7 @@ public class MobileCashierTransfer extends AbstractReportActivity {
                     object.put("s",start_t);
                     object.put("e",end_t);
                 }else {
-                    Toast.makeText(this,"只能查询180日内的数据!",Toast.LENGTH_SHORT).show();
+                    MyDialog.toastMessage("只能查询180日内的数据!");
                 }
             }catch (JSONException | ParseException e){
                 e.printStackTrace();
@@ -538,7 +539,7 @@ public class MobileCashierTransfer extends AbstractReportActivity {
                         Logger.d_json(mData.toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        Toast.makeText(this,"加载门店信息错误:" + e.getMessage(),Toast.LENGTH_LONG).show();
+                        MyDialog.toastMessage("加载门店信息错误:" + e.getMessage());
                     }
                 }
             }

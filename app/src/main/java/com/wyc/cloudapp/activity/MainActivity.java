@@ -237,9 +237,8 @@ public class MainActivity extends BaseActivity {
 
             boolean print_s = object.getBooleanValue("v");
             if (print_s){
-                Toast.makeText(this,"打印功能已关闭！",Toast.LENGTH_SHORT).show();
-            }else
-                Toast.makeText(this,"打印功能已开启！",Toast.LENGTH_SHORT).show();
+                MyDialog.toastMessage("打印功能已关闭！");
+            }else MyDialog.toastMessage("打印功能已开启！");
 
             object.put("v",!print_s);
             if (!SQLiteHelper.saveLocalParameter("print_s",object,"打印开关",err)){

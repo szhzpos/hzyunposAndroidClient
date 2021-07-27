@@ -56,7 +56,7 @@ public abstract class AbstractReportActivity extends AbstractMobileActivity {
     }
 
     private void initMenu() {
-        setLeftText(getIntent().getStringExtra("title"));
+        setLeftText(getCustomTitle());
         setMiddleText(getStoreName());
     }
 }

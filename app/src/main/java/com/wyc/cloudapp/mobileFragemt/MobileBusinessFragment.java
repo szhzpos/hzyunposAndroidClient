@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -26,7 +27,7 @@ public final class MobileBusinessFragment extends AbstractJumpFragment {
             final Intent intent = new Intent();
             intent.setClassName(mContext,mContext.getPackageName().concat(".") + v.getTag());
             final String title = v instanceof TextView ? ((TextView)v).getText().toString() : "";
-            intent.putExtra("title",title);
+            intent.putExtra(AbstractMobileActivity.TITLE_KEY,title);
             try {
                 startActivity(intent);
             }catch (ActivityNotFoundException e){

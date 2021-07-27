@@ -4,13 +4,13 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.wyc.cloudapp.R
+import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity
 import com.wyc.cloudapp.data.room.entity.GiftCardSaleOrder
 import com.wyc.cloudapp.dialog.MyDialog
 
 class GiftCardPayActivity : CardPayBaseActivity<GiftCardSaleOrder>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setMiddleText(getString(R.string.gift_card_pay))
     }
     companion object{
         @JvmStatic
@@ -20,7 +20,8 @@ class GiftCardPayActivity : CardPayBaseActivity<GiftCardSaleOrder>() {
                 MyDialog.toastMessage("购物卡销售记录不能为空！")
                 return
             }
-            context.startActivityForResult(Intent(context, GiftCardPayActivity::class.java).putExtra(ORDER_INFO, order), ONCE_CARD_REQUEST_PAY)
+            context.startActivityForResult(Intent(context, GiftCardPayActivity::class.java).putExtra(ORDER_INFO, order)
+                    .putExtra(AbstractMobileActivity.TITLE_KEY,context.getString(R.string.gift_card_pay)), ONCE_CARD_REQUEST_PAY)
         }
     }
 }

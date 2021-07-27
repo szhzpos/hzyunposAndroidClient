@@ -74,7 +74,7 @@ public abstract class AbstractTransferDialog extends AbstractDialogMainActivity 
                     dialog.setYesOnclickListener(myDialog -> {
                         final StringBuilder err  = new StringBuilder();
                         if (mTransferDetailsAdapter.saveTransferDetailInfo(dialog.getContent(),err)){
-                            Printer.print(mContext,get_print_content(mContext,mTransferDetailsAdapter.getTransferSumInfo().getString("ti_code"),mTransferDetailsAdapter.isTransferAmtNotVisible()));
+                            Printer.print(get_print_content(mContext,mTransferDetailsAdapter.getTransferSumInfo().getString("ti_code"),mTransferDetailsAdapter.isTransferAmtNotVisible()));
                             mContext.runOnUiThread(()-> {
                                 if (mFinishListener != null)mFinishListener.onFinish();
                                 transferSuccess();

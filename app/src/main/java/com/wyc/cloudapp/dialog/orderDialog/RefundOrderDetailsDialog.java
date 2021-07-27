@@ -58,7 +58,7 @@ public class RefundOrderDetailsDialog extends AbstractDialogMainActivity {
     private void initReprint(){
         final Button reprint_btn = findViewById(R.id.reprint_btn);
         if (null != reprint_btn){
-            reprint_btn.setOnClickListener(v -> Printer.print(mContext, RefundDialog.get_print_content(mContext, mRefundOrderCode,false)));
+            reprint_btn.setOnClickListener(v -> Printer.print(RefundDialog.get_print_content(mContext, mRefundOrderCode,false)));
         }
     }
     private void showOrderInfo(){

@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.activity.mobile.cashierDesk.MobileCashierActivity;
 import com.wyc.cloudapp.activity.mobile.MobileNavigationActivity;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -79,7 +80,7 @@ public final class MobileCashierDeskFragment extends AbstractJumpFragment {
                 }else if (v_id == R.id.fg_refund_tv){
                     final Intent intent = new Intent();
                     intent.setClass(context, MobileCashierActivity.class);
-                    intent.putExtra("title",context.getString(R.string.fg_casher_sz));
+                    intent.putExtra(AbstractMobileActivity.TITLE_KEY,context.getString(R.string.fg_casher_sz));
                     intent.putExtra("singleRefundStatus",true);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
@@ -97,7 +98,7 @@ public final class MobileCashierDeskFragment extends AbstractJumpFragment {
                 }else{
                     final Intent intent = new Intent();
                     intent.setClassName(context,context.getPackageName().concat(".") + v.getTag());
-                    if (v instanceof TextView)intent.putExtra("title",((TextView)v).getText());
+                    if (v instanceof TextView)intent.putExtra(AbstractMobileActivity.TITLE_KEY,((TextView)v).getText());
                     startActivity(intent);
                 }
             }catch (ActivityNotFoundException e){

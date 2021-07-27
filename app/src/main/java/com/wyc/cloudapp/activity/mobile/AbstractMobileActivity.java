@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.activity.mobile;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 
 public abstract class AbstractMobileActivity extends MainActivity {
+    public static final String TITLE_KEY = "TL";
     private TextView mLeft,mMiddle,mRight;
     @Override
     @CallSuper
@@ -33,8 +35,15 @@ public abstract class AbstractMobileActivity extends MainActivity {
         mMiddle = findViewById(R.id.middle_title_tv);
         mRight = findViewById(R.id.right_title_tv);
 
+        mMiddle.setText(getCustomTitle());
         //默认退出
         mLeft.setOnClickListener(v -> onBackPressed());
+    }
+
+    protected String getCustomTitle(){
+        final Intent intent = getIntent();
+        if (intent != null)return intent.getStringExtra(TITLE_KEY);
+        return "";
     }
 
     private void setContentLayout() {

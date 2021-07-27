@@ -89,7 +89,7 @@ public class MobileRetailOrderDetailsDialog extends AbstractRetailOrderDetailsDi
     @Override
     protected void initReprint() {
         final Button m_print_btn = findViewById(R.id.m_print_btn);
-        if (m_print_btn != null)m_print_btn.setOnClickListener(v -> Printer.print(mContext, AbstractSettlementDialog.get_print_content(mContext, Utils.getNullStringAsEmpty(mOrderInfo,"order_code"),false)));
+        if (m_print_btn != null)m_print_btn.setOnClickListener(v -> Printer.print(AbstractSettlementDialog.get_print_content(mContext, Utils.getNullStringAsEmpty(mOrderInfo,"order_code"),false)));
     }
 
     @Override

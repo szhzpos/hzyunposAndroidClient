@@ -3,7 +3,6 @@ package com.wyc.cloudapp.mobileFragemt;
 import android.annotation.SuppressLint;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.text.method.ReplacementTransformationMethod;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -142,19 +141,6 @@ public abstract class AbstractTimeCardQueryFragment extends AbstractMobileFragme
     @SuppressLint("ClickableViewAccessibility")
     private void initSearchContent(){
         final EditText order_vip_search = findViewById(R.id.order_vip_search);
-        order_vip_search.setTransformationMethod(new ReplacementTransformationMethod() {
-            @Override
-            protected char[] getOriginal() {
-                return new char[]{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
-                        'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
-            }
-
-            @Override
-            protected char[] getReplacement() {
-                return new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
-                        'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
-            }
-        });
         order_vip_search.setOnKeyListener((v, keyCode, event) -> {
             if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_UP){
                 _tab_layout.selectTab(_tab_layout.getTabAt(_tab_layout.getSelectedTabPosition()));

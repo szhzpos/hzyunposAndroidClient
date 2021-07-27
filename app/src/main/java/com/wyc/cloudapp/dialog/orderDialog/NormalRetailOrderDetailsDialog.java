@@ -112,7 +112,7 @@ public class NormalRetailOrderDetailsDialog extends AbstractRetailOrderDetailsDi
     protected void initReprint(){
         final Button reprint_btn = findViewById(R.id.reprint_btn);
         if (null != reprint_btn){
-            reprint_btn.setOnClickListener(v -> Printer.print(mContext, AbstractSettlementDialog.get_print_content(mContext, Utils.getNullStringAsEmpty(mOrderInfo,"order_code"),false)));
+            reprint_btn.setOnClickListener(v -> Printer.print(AbstractSettlementDialog.get_print_content(mContext, Utils.getNullStringAsEmpty(mOrderInfo,"order_code"),false)));
         }
     }
     @Override

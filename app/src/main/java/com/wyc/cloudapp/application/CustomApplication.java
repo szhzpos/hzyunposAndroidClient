@@ -22,6 +22,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.squareup.leakcanary.LeakCanary;
 import com.wyc.cloudapp.BuildConfig;
+import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.data.room.AppDatabase;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -115,15 +116,15 @@ public final class CustomApplication extends Application {
                     return true;
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(context, "初始化仓库信息错误：" + e.getMessage(),Toast.LENGTH_LONG).show();
+                    MyDialog.toastMessage("初始化仓库信息错误：" + e.getMessage());
                     return false;
                 }
             }else {
-                Toast.makeText(context, "初始化收银员信息错误：" + cas_info.getString("info"),Toast.LENGTH_LONG).show();
+                MyDialog.toastMessage(mApplication.getString(R.string.init_cas_hint,cas_info.getString("info")));
                 return false;
             }
         }else{
-            Toast.makeText(context, "初始化收银员信息错误：" + cas_info.getString("info"),Toast.LENGTH_LONG).show();
+            MyDialog.toastMessage(mApplication.getString(R.string.init_cas_hint,cas_info.getString("info")));
             return false;
         }
     }
@@ -349,7 +350,7 @@ public final class CustomApplication extends Application {
         final StringBuilder err = new StringBuilder();
         for (String name : names){
             if (SQLiteHelper.execDelete(name,null,null,err) < 0){
-                Toast.makeText(this,err,Toast.LENGTH_LONG).show();
+                MyDialog.toastMessage(err.toString());
             }
         }
     }
@@ -498,7 +499,7 @@ public final class CustomApplication extends Application {
                 Logger.w("%s%s",sz, Utils.formatStackTrace(t.getStackTrace()));
                 handler.post(()->{
                     if (mApplication.mActivities.isEmpty()){
-                        Toast.makeText(mApplication,sz,Toast.LENGTH_LONG).show();
+                        MyDialog.toastMessage(sz);
                     }else
                         MyDialog.showErrorMessageToModalDialog(mApplication.mActivities.lastElement(),sz);
                 });
@@ -526,7 +527,7 @@ public final class CustomApplication extends Application {
                 }
             }
         }else {
-            Toast.makeText(context,object.getString("info"),Toast.LENGTH_LONG).show();
+            MyDialog.toastMessage(object.getString("info"));
         }
         return code;
     }
@@ -568,7 +569,7 @@ public final class CustomApplication extends Application {
         if (!SQLiteHelper.saveLocalParameter("offline_time",object,"前台离线时间",err)){
             err.insert(0,"保存离线时间错误:");
             Logger.e(err.toString());
-            Toast.makeText(context,err.toString(),Toast.LENGTH_LONG).show();
+            MyDialog.toastMessage(err.toString());
         }
     }
 }

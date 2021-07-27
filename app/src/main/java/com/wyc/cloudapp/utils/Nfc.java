@@ -12,6 +12,8 @@ import android.os.Handler;
 import android.widget.Toast;
 import java.io.IOException;
 import java.util.Properties;
+
+import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 public class Nfc {
     private boolean isEnbleNfc = false;
@@ -26,10 +28,10 @@ public class Nfc {
         if(bReadCard == 1){
             mNfcAdapter = NfcAdapter.getDefaultAdapter(activity);
             if (mNfcAdapter == null) {
-                Toast.makeText(activity, "NFC is not available", Toast.LENGTH_LONG).show();
+                MyDialog.toastMessage("NFC is not available");
             }else{
                 if (!mNfcAdapter.isEnabled()){
-                    Toast.makeText(activity, "请打开NFC功能！", Toast.LENGTH_LONG).show();
+                    MyDialog.toastMessage("请打开NFC功能！");
                 }else{
                     passwrod = properties.getProperty("read_card_password","").trim();
                     isEnbleNfc = true;

@@ -27,6 +27,7 @@ import com.wyc.cloudapp.adapter.report.MobileDealQueryAdapter;
 import com.wyc.cloudapp.adapter.report.MobileGoodsDetailsAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.JEventLoop;
+import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
@@ -195,7 +196,7 @@ public final class MobileDealQueryActivity extends AbstractReportActivity {
 
         } catch (JSONException | ParseException e) {
             e.printStackTrace();
-            Toast.makeText(this,"加载门店信息错误:" + e.getMessage(),Toast.LENGTH_LONG).show();
+            MyDialog.toastMessage("加载门店信息错误:" + e.getMessage());
         }
     };
 
@@ -221,7 +222,7 @@ public final class MobileDealQueryActivity extends AbstractReportActivity {
                     object.put("s",start_t);
                     object.put("e",end_t);
                 }else {
-                    Toast.makeText(this,"只能查询60日内的数据!",Toast.LENGTH_SHORT).show();
+                    MyDialog.toastMessage("只能查询60日内的数据!");
                 }
             }catch ( JSONException | ParseException e){
                 e.printStackTrace();
@@ -261,7 +262,7 @@ public final class MobileDealQueryActivity extends AbstractReportActivity {
             }
         });
         final int code = loop.exec();
-        if (code != 1)Toast.makeText(this,err.toString(),Toast.LENGTH_LONG).show();
+        if (code != 1)MyDialog.toastMessage(err.toString());
         progressDialog.dismiss();
     }
 
@@ -277,7 +278,7 @@ public final class MobileDealQueryActivity extends AbstractReportActivity {
                 order = orders.size();
                 order_moneys = data.getDoubleValue("discount_prices");
             }else {
-                Toast.makeText(this,"暂无数据!",Toast.LENGTH_SHORT).show();
+                MyDialog.toastMessage("暂无数据!");
             }
             mAdapter.setDataForArray(orders);
             orders_num_tv.setText(String.valueOf(order));
@@ -373,7 +374,7 @@ public final class MobileDealQueryActivity extends AbstractReportActivity {
             }
         });
         final int code = loop.exec();
-        if (code != 1) Toast.makeText(this,err.toString(),Toast.LENGTH_LONG).show();
+        if (code != 1) MyDialog.toastMessage(err.toString());
         progressDialog.dismiss();
     }
     private void initVipAndOrder(){
@@ -458,7 +459,7 @@ public final class MobileDealQueryActivity extends AbstractReportActivity {
 
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Toast.makeText(this,e.getLocalizedMessage(),Toast.LENGTH_SHORT).show();
+                    MyDialog.toastMessage(e.getLocalizedMessage());
                 }
             }
         }

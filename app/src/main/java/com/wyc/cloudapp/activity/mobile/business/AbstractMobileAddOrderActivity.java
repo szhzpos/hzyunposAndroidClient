@@ -61,7 +61,6 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
         super.onCreate(savedInstanceState);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED);
 
-        initTitle();
         initView();
 
         CustomApplication.runInMainThread(this::queryData);
@@ -263,14 +262,14 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                     if (HttpUtils.checkBusinessSuccess(info)){
                         CustomApplication.runInMainThread(()-> mOrderCodeTv.setText(info.getString("code")));
                     }else {
-                        runOnUiThread(()-> Toast.makeText(this,info.getString("info"),Toast.LENGTH_LONG));
+                        MyDialog.ToastMessageInMainThread(info.getString("info"));
                     }
                 }catch (JSONException e){
                     e.printStackTrace();
-                    runOnUiThread(()-> Toast.makeText(this,e.getLocalizedMessage(),Toast.LENGTH_LONG));
+                    MyDialog.ToastMessageInMainThread(e.getLocalizedMessage());
                 }
             }else {
-                runOnUiThread(()-> MyDialog.ToastMessage(getString(R.string.query_business_order_id_hint_sz,retJson.getString("info")), null));
+                MyDialog.ToastMessageInMainThread(getString(R.string.query_business_order_id_hint_sz,retJson.getString("info")));
             }
         });
     }
@@ -411,7 +410,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                             auditOrder();
                         }else {
                             resetBusinessOrderInfo();
-                            Toast.makeText(this, getString(R.string.upload_order_success_hints), Toast.LENGTH_LONG).show();
+                            MyDialog.toastMessage(getString(R.string.upload_order_success_hints));
                         }
                     });
                 }else {
@@ -460,7 +459,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                 if (HttpUtils.checkBusinessSuccess(info)){
                     CustomApplication.runInMainThread(()->{
                         resetBusinessOrderInfo();
-                        Toast.makeText(mApplication,getString(R.string.audited_sz),Toast.LENGTH_LONG).show();
+                        MyDialog.toastMessage(getString(R.string.audited_sz));
                     });
                 }else {
                     err = info.getString("info");
@@ -604,11 +603,6 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
     private void initFooterView(){
         mSumNumTv = findViewById(R.id.business_sum_num_tv);
         mSumAmtTv = findViewById(R.id.business_sum_amt_tv);
-    }
-
-    private void initTitle(){
-        final Intent intent = getIntent();
-        if (intent != null)setMiddleText(intent.getStringExtra("title"));
     }
 
     private void queryData(){

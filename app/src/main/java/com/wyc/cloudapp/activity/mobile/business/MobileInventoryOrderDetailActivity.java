@@ -1,6 +1,5 @@
 package com.wyc.cloudapp.activity.mobile.business;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +41,6 @@ public class MobileInventoryOrderDetailActivity extends AbstractMobileActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        initTitle();
         initStores();
         initView();
         initAuditBtn();
@@ -121,7 +119,7 @@ public class MobileInventoryOrderDetailActivity extends AbstractMobileActivity {
                 if (HttpUtils.checkBusinessSuccess(info)){
                     CustomApplication.runInMainThread(()->{
                         finish();
-                        Toast.makeText(this,getString(R.string.audited_sz),Toast.LENGTH_LONG).show();
+                        MyDialog.toastMessage(getString(R.string.audited_sz));
                     });
                 }else {
                     err = info.getString("info");
@@ -179,12 +177,6 @@ public class MobileInventoryOrderDetailActivity extends AbstractMobileActivity {
         boolean code = "1".equals(way);
         category_layout.setVisibility(code ? View.GONE : View.VISIBLE);
         return !code;
-    }
-
-
-    private void initTitle(){
-        final Intent intent = getIntent();
-        if (intent != null)setMiddleText(intent.getStringExtra("title"));
     }
 
     private void queryData(){

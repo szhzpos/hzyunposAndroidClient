@@ -49,7 +49,6 @@ public class MobileTransferInOrderDetailActivity extends AbstractMobileActivity 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initTitle();
         initView();
         CustomApplication.runInMainThread(this::queryData);
     }
@@ -171,7 +170,7 @@ public class MobileTransferInOrderDetailActivity extends AbstractMobileActivity 
                 if (HttpUtils.checkBusinessSuccess(info)){
                     CustomApplication.runInMainThread(()->{
                         resetBusinessOrderInfo();
-                        Toast.makeText(this,getString(R.string.confirmed_receipt),Toast.LENGTH_LONG).show();
+                        MyDialog.toastMessage(getString(R.string.confirmed_receipt));
                     });
                 }else {
                     err = info.getString("info");
@@ -247,11 +246,6 @@ public class MobileTransferInOrderDetailActivity extends AbstractMobileActivity 
     private void initFooterView(){
         mSumNumTv = findViewById(R.id.business_sum_num_tv);
         mSumAmtTv = findViewById(R.id.business_sum_amt_tv);
-    }
-
-    private void initTitle(){
-        final Intent intent = getIntent();
-        if (intent != null)setMiddleText(intent.getStringExtra("title"));
     }
 
     private void queryData(){

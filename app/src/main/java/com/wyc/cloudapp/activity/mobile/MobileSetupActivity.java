@@ -26,7 +26,6 @@ public class MobileSetupActivity extends AbstractMobileActivity {
     private void intiFragment(){
         final Intent intent = getIntent();
         final String name = intent.getStringExtra("frag");
-        setMiddleText(intent.getStringExtra("title"));
         if (null != name)showFragment(name);
     }
 

@@ -344,7 +344,7 @@ public final class VipChargeDialogImp extends AbstractPayDialog {
                                                             }else {
                                                                 mHandler.obtainMessage(MessageID.VIP_C_SUCCESS_ID,member).sendToTarget();
                                                                 if (mContext.getPrintStatus()){
-                                                                    Printer.print(mContext, AbstractVipChargeDialog.get_print_content(mContext,order_code));
+                                                                    Printer.print(AbstractVipChargeDialog.get_print_content(mContext,order_code));
                                                                 }
                                                             }
                                                         }else {

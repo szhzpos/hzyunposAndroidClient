@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 
@@ -109,7 +110,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
                 @Override
                 public void run() {
                     Looper.prepare();
-                    Toast.makeText(mContext, R.string.tip_crash,Toast.LENGTH_LONG).show();
+                    MyDialog.toastMessage(CustomApplication.self().getString(R.string.tip_crash));
                     Looper.loop();
                 }
             }.start();

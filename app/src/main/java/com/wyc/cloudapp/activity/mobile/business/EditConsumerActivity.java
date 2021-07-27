@@ -10,6 +10,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.bean.Consumer;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -44,7 +45,6 @@ public class EditConsumerActivity extends AbstractEditArchiveActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setMiddleText(getString(getIntent().getBooleanExtra("modify",false) ? R.string.modify_consumer_sz : R.string.new_consumer_sz));
 
         initDefaultPrice();
         initSettlementWay();
@@ -227,6 +227,7 @@ public class EditConsumerActivity extends AbstractEditArchiveActivity {
         final Intent intent = new Intent();
         intent.setClass(context,EditConsumerActivity.class);
         intent.putExtra("key",modify);
+        intent.putExtra(AbstractMobileActivity.TITLE_KEY,context.getString(modify ? R.string.modify_consumer_sz : R.string.new_consumer_sz));
         intent.putExtra("obj",obj);
         context.startActivity(intent);
     }

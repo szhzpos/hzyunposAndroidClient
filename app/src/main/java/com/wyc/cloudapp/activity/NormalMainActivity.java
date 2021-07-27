@@ -263,7 +263,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                     close_tv.setOnClickListener(null);
                     last_reprint_btn.setOnClickListener(null);
                 });
-                last_reprint_btn.setOnClickListener(v -> Printer.print(this, AbstractSettlementDialog.get_print_content(this,last_order_code.getText().toString(),false)));
+                last_reprint_btn.setOnClickListener(v -> Printer.print(AbstractSettlementDialog.get_print_content(this,last_order_code.getText().toString(),false)));
             }else {
                 MyDialog.ToastMessage(order_info.getString("info"), getWindow());
             }
@@ -344,7 +344,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                             if (present())window.dismiss();
                         }else if (id == R.id.pop_o_cashbox){
                             if (verifyOpenCashboxPermissions()){
-                                Printer.print(this, Printer.commandToStr(Printer.OPEN_CASHBOX));
+                                Printer.print(Printer.commandToStr(Printer.OPEN_CASHBOX));
                                 window.dismiss();
                             }
                         }else if (id == R.id.pop_sale_man_btn){

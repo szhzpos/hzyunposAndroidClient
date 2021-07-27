@@ -13,9 +13,9 @@
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
@@ -41,7 +41,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
-        <activity android:name=".activity.mobile.cashierDesk.QueryGiftCardInfoActivity"></activity>
+        <activity android:name=".activity.mobile.cashierDesk.GiftCardOrderDetailActivity"></activity>
+        <activity android:name=".activity.mobile.cashierDesk.GiftCardOrderQueryActivity" />
+        <activity android:name=".activity.mobile.cashierDesk.QueryGiftCardInfoActivity" />
         <activity
             android:name=".activity.mobile.cashierDesk.GiftCardPayActivity"
             android:theme="@style/notFullActivity" />

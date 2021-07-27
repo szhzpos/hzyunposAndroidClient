@@ -222,7 +222,7 @@ public final class VipTimeCardUseOrder{
     }
 
     public void print(final MainActivity activity){
-        CustomApplication.execute(()-> Printer.print(activity,get_print_content(activity)));
+        CustomApplication.execute(()-> Printer.print(get_print_content(activity)));
     }
 
     private String get_print_content(final MainActivity context){

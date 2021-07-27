@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.bean.TreeListItem;
 import com.wyc.cloudapp.bean.VipGrade;
@@ -72,8 +73,6 @@ public class EditVipInfoActivity extends AbstractEditArchiveActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setMiddleText(getString(R.string.add_vip_sz));
-
         initGrade();
         initSaleMan();
         initVipBirthdayEt();
@@ -269,7 +268,7 @@ public class EditVipInfoActivity extends AbstractEditArchiveActivity {
 
     public static void start(MobileVipManageActivity context){
         final Intent intent = new Intent();
-        intent.setClass(context,EditVipInfoActivity.class);
+        intent.setClass(context,EditVipInfoActivity.class).putExtra(AbstractMobileActivity.TITLE_KEY,context.getString(R.string.add_vip_sz));
         context.startActivity(intent);
     }
 }

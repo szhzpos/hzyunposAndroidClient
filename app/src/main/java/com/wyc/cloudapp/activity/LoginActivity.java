@@ -165,7 +165,7 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
         if (requestCode == REQUEST_STORAGE_PERMISSIONS) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 //onResume 请求存储权限，如果拒绝是无法进入软件的，如果同意用户登录之后才能打开数据库，所以此处无业务代码。
-                Toast.makeText(this,"ACQUIRE WRITE_EXTERNAL_STORAGE SUCCESSFULLY",Toast.LENGTH_SHORT).show();
+                MyDialog.toastMessage("ACQUIRE WRITE_EXTERNAL_STORAGE SUCCESSFULLY");
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);

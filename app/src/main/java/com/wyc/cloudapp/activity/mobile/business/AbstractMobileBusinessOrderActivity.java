@@ -73,7 +73,7 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
 
     private boolean verifyPermission(){
         boolean code = verifyPermissions(getPermissionId(),null,false);
-        if (!code) Toast.makeText(this,"当前操作员没有此功能权限!",Toast.LENGTH_LONG).show();
+        if (!code) MyDialog.toastMessage("当前操作员没有此功能权限!");
         return code;
     }
 
@@ -89,8 +89,6 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
     }
 
     private void initTitle(){
-        final Intent intent = getIntent();
-        if (intent != null)setMiddleText(intent.getStringExtra("title"));
         setRightText(getString(R.string.add_sz));
         setRightListener(v -> add());
     }
@@ -98,7 +96,7 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
         final CharSequence title = getRightText().toString() + getMiddleText();
         final Intent intent = new Intent();
         intent.setClass(this, jumpAddTarget());
-        intent.putExtra("title", title);
+        intent.putExtra(AbstractMobileActivity.TITLE_KEY, title);
         try {
             startActivity(intent);
         }catch (ActivityNotFoundException e){

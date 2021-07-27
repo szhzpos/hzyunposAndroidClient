@@ -798,7 +798,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                                                         }else {
                                                             chargeSuccess(member.toJavaObject(VipInfo.class));
                                                             if (mContext.getPrintStatus()){
-                                                                Printer.print(mContext,get_print_content(mContext,order_code));
+                                                                Printer.print(get_print_content(mContext,order_code));
                                                             }
                                                         }
                                                     }else {
@@ -1151,7 +1151,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                         int index = SQLiteHelper.verifyUpdateResult(rows);
                         if (index == -1){
                             if (context.getPrintStatus()){
-                                Printer.print(context,get_print_content(context,origin_order_code));
+                                Printer.print(get_print_content(context,origin_order_code));
                             }
                             object.put("info",info_json.getString("info"));
                             return true;

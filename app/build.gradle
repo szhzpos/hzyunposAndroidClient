@@ -90,6 +90,10 @@ android {
             }
         }
     }
+
+    dataBinding{
+        android.buildFeatures.dataBinding = true
+    }
 }
 
 dependencies {

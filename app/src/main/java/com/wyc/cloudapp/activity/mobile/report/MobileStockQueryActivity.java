@@ -27,6 +27,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.report.MobileStockQueryAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
@@ -85,12 +86,12 @@ public class MobileStockQueryActivity extends AbstractReportActivity {
                 final JSONObject retJson = HttpUtils.sendPost(mUrl + "/api/goods_set/get_bases", HttpRequest.generate_request_parm(object, mAppSecret),true);
                 switch (retJson.getIntValue("flag")){
                     case 0:
-                        runOnUiThread(()-> Toast.makeText(this,"查询商品基本信息错误:" + retJson.getString("info"),Toast.LENGTH_SHORT).show());
+                        MyDialog.ToastMessageInMainThread(CustomApplication.self().getString(R.string.query_goods_hint, retJson.getString("info")));
                         break;
                     case 1:
                         final JSONObject info_obj = JSONObject.parseObject(retJson.getString("info"));
                         if ("n".equals(info_obj.getString("status"))){
-                            runOnUiThread(()-> Toast.makeText(this,"查询商品基本信息错误:" + info_obj.getString("info"),Toast.LENGTH_SHORT).show());
+                            MyDialog.ToastMessageInMainThread(CustomApplication.self().getString(R.string.query_goods_hint,info_obj.getString("info")));
                         }else{
                             final JSONObject data = info_obj.getJSONObject("data");
 
@@ -119,7 +120,7 @@ public class MobileStockQueryActivity extends AbstractReportActivity {
 
             }catch (Exception e){
                 e.printStackTrace();
-                runOnUiThread(()-> Toast.makeText(this,"查询商品基本信息错误:" + e.getMessage(),Toast.LENGTH_SHORT).show());
+                MyDialog.ToastMessageInMainThread(CustomApplication.self().getString(R.string.query_goods_hint,e.getMessage()));
             }
         });
     }

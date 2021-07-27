@@ -71,10 +71,10 @@ public class TimeCardSaleQueryFragment extends AbstractTimeCardQueryFragment {
 
     private String generateQueryCondition(@NonNull QueryCondition condition) {
         final String content = condition.getCondition();
-        final StringBuilder where_sql = new StringBuilder("select * from timeCardSaleOrder where online_order_no is not null and time between "+ condition.getStart() +" and "+ condition.getEnd() );
+        final StringBuilder where_sql = new StringBuilder("select * from timeCardSaleOrder where time between "+ condition.getStart() +" and "+ condition.getEnd() );
         if (!content.isEmpty()){
             if (condition.isOrder()){
-                where_sql.append(" and order_no like '%").append(content).append("'");
+                where_sql.append(" and online_order_no like '%").append(content).append("'");
             }else {
                 where_sql.append(" and vip_card_no ='").append(content).append("'");
             }
@@ -168,7 +168,7 @@ public class TimeCardSaleQueryFragment extends AbstractTimeCardQueryFragment {
         private void setData(String query){
             Logger.d("sql:%s",query);
             try {
-                setDataForList(TimeCardSaleOrder.getOrderByCondition(query));
+                CustomApplication.execute(()->setDataForList(TimeCardSaleOrder.getOrderByCondition(query)));
             }catch (SQLiteException e){
                 e.printStackTrace();
                 MyDialog.toastMessage(e.getMessage());

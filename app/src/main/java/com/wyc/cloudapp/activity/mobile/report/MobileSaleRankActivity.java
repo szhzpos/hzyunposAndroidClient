@@ -18,6 +18,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.report.MobileSaleRankAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.JEventLoop;
+import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -146,7 +147,7 @@ public final class MobileSaleRankActivity extends AbstractReportActivity {
 
         } catch (JSONException e) {
             e.printStackTrace();
-            Toast.makeText(this,"加载门店信息错误:" + e.getMessage(),Toast.LENGTH_LONG).show();
+            MyDialog.toastMessage("加载门店信息错误:" + e.getMessage());
         }
     };
 
@@ -180,7 +181,7 @@ public final class MobileSaleRankActivity extends AbstractReportActivity {
                                 mAdapter.setDataForArray(data.getJSONArray("goods"));
                             }else {
                                 mAdapter.setDataForArray(null);
-                                Toast.makeText(activity,info.getString("info"),Toast.LENGTH_SHORT).show();
+                                MyDialog.toastMessage(info.getString("info"));
                             }
                         });
                         loop.done(1);
@@ -193,7 +194,7 @@ public final class MobileSaleRankActivity extends AbstractReportActivity {
             }
         });
         final int code = loop.exec();
-        if (code != 1)Toast.makeText(this,err.toString(),Toast.LENGTH_LONG).show();
+        if (code != 1)MyDialog.toastMessage(err.toString());
         progressDialog.dismiss();
     }
 

@@ -458,7 +458,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
             if (mSaleGoodsAdapter.isEmpty()){
                 super.onBackPressed();
             }else{
-                MyDialog.ToastMessage("已存在销售商品!", null);
+                MyDialog.ToastMessage("已存在销售商品!", getWindow());
             }
         }
     }

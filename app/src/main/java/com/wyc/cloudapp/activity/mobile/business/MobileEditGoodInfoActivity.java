@@ -146,7 +146,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
                             @Override
                             public void onDenied(List<String> permissions, boolean never) {
                                 if (never){
-                                    Toast.makeText(MobileEditGoodInfoActivity.this,getString(R.string.camera_permission_hint),Toast.LENGTH_LONG).show();
+                                    MyDialog.toastMessage(getString(R.string.camera_permission_hint));
                                 }
                             }
                         });
@@ -179,7 +179,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
                     goods_img.setImageBitmap(BitmapFactory.decodeStream(inputStream));
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Toast.makeText(this,e.getLocalizedMessage(),Toast.LENGTH_SHORT).show();
+                    MyDialog.toastMessage(e.getLocalizedMessage());
                 }
             }else if (requestCode == CHOOSE_PHOTO){
                 mImageUri = intent.getData();
@@ -1021,7 +1021,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         if (SQLiteHelper.execSql(mGoodsObj,sql.toString())){
             showGoods(mGoodsObj);
         }else {
-            Toast.makeText(this,"查询商品信息错误..." + mGoodsObj.getString("info"),Toast.LENGTH_LONG).show();
+            MyDialog.toastMessage("查询商品信息错误..." + mGoodsObj.getString("info"));
         }
     }
     private void showGoods(final JSONObject goods){

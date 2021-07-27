@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.adapter.business.MobileWholesaleRefundOrderAdapter;
@@ -162,7 +163,7 @@ public class MobileWholesaleRefundOrderActivity extends AbstractMobileBusinessOr
         protected Intent launchSourceActivity() {
             final Intent intent = super.launchSourceActivity();
             intent.setClass(this,MobileWholesaleSellOrderActivity.class);
-            intent.putExtra("title",getString(R.string.select_anything_hint,getString(R.string.wholesale_sale_sz)));
+            intent.putExtra(AbstractMobileActivity.TITLE_KEY,getString(R.string.select_anything_hint,getString(R.string.wholesale_sale_sz)));
             return intent;
         }
     }

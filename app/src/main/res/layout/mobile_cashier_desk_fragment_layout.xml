@@ -184,6 +184,7 @@
                 android:background="#ACBA95"
                 android:drawableTop="@drawable/m_charge_query"
                 android:gravity="center"
+                android:tag="activity.mobile.cashierDesk.GiftCardOrderQueryActivity"
                 android:text="@string/gift_card_query_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/font_size_18"

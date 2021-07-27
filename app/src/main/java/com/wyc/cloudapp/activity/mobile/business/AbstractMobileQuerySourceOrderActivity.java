@@ -75,12 +75,12 @@ public abstract class AbstractMobileQuerySourceOrderActivity extends AbstractMob
         final JSONObject object = new JSONObject();
         if (SQLiteHelper.execSql(object,String.format(Locale.CHINA,"SELECT stores_name,stores_id,wh_id FROM shop_stores where wh_id = '%s'", Utils.getNullStringAsEmpty(order,"wh_id")))){
             if (object.isEmpty()){
-                Toast.makeText(this,"仓库对应门店信息不存在!",Toast.LENGTH_SHORT).show();
+                MyDialog.toastMessage("仓库对应门店信息不存在!");
             }else{
                 setView(mWarehouseTv,Utils.getNullStringAsEmpty(object,"stores_id"),Utils.getNullStringAsEmpty(object,"stores_name"));
             }
         }else {
-            Toast.makeText(this,"查询门店信息错误," + object.getString("info"),Toast.LENGTH_SHORT).show();
+            MyDialog.toastMessage("查询门店信息错误:" + object.getString("info"));
         }
     }
 

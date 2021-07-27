@@ -10,6 +10,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.bean.Supplier;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -45,8 +46,6 @@ public class EditSupplierActivity extends AbstractEditArchiveActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setMiddleText(getString(getIntent().getBooleanExtra(KEY,false) ? R.string.modify_supplier_sz : R.string.new_supplier_sz));
-
         initCooperationWay();
         initSettlementWay();
 
@@ -226,7 +225,7 @@ public class EditSupplierActivity extends AbstractEditArchiveActivity {
     public static void start(MobileSupplierInfoActivity context, boolean modify, final Parcelable obj){
         final Intent intent = new Intent();
         intent.setClass(context,EditSupplierActivity.class);
-        intent.putExtra(KEY,modify);
+        intent.putExtra(KEY,modify).putExtra(AbstractMobileActivity.TITLE_KEY,context.getString(modify ? R.string.modify_supplier_sz : R.string.new_supplier_sz));
         intent.putExtra("obj",obj);
         context.startActivity(intent);
     }

@@ -448,7 +448,7 @@ public final class TimeCardSaleOrder implements ICardPay<TimeCardSaleInfo> {
 
 
     public void print(MainActivity context ){
-        CustomApplication.execute(()-> Printer.print(context,get_print_content(context,this)));
+        CustomApplication.execute(()-> Printer.print(get_print_content(context,this)));
     }
 
     private static String get_print_content(final MainActivity context,TimeCardSaleOrder order_info){

@@ -20,6 +20,7 @@ import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.JEventLoop;
+import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -148,7 +149,7 @@ public class MobileStockQueryAdapter extends AbstractDataAdapterForJson<MobileSt
             }
         });
         final int code = loop.exec();
-        if (code != 1) Toast.makeText(mContext,err.toString(),Toast.LENGTH_SHORT).show();
+        if (code != 1) MyDialog.toastMessage(err.toString());
         progressDialog.dismiss();
         mDataSize = getItemCount();
         notifyDataSetChanged();

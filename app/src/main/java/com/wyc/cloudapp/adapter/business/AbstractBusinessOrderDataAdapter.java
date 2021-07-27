@@ -7,9 +7,11 @@ import android.widget.Toast;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.activity.mobile.business.AbstractMobileBusinessOrderActivity;
 import com.wyc.cloudapp.activity.mobile.business.MobilePracticalInventoryOrderActivity;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
+import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
 
 /**
@@ -42,15 +44,15 @@ public abstract class AbstractBusinessOrderDataAdapter<T extends AbstractDataAda
                 activity.finish();
             }else {
                 intent.setClass(activity, activity.jumpAddTarget());
-                intent.putExtra("title", mContext.getString(R.string.order_detail_sz));
+                intent.putExtra(AbstractMobileActivity.TITLE_KEY, mContext.getString(R.string.order_detail_sz));
                 activity.startActivity(intent);
             }
         }else if (mContext instanceof MobilePracticalInventoryOrderActivity){
             final MobilePracticalInventoryOrderActivity activity = (MobilePracticalInventoryOrderActivity)mContext;
             intent.setClass(activity, activity.jumpAddTarget());
-            intent.putExtra("title", mContext.getString(R.string.order_detail_sz));
+            intent.putExtra(AbstractMobileActivity.TITLE_KEY, mContext.getString(R.string.order_detail_sz));
             activity.startActivity(intent);
         }else
-            Toast.makeText(mContext,mContext.getLocalClassName() + "未实现详情功能...",Toast.LENGTH_LONG).show();
+            MyDialog.toastMessage("未实现详情功能...");
     }
 }

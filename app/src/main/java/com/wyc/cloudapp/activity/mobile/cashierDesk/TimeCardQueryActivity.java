@@ -27,8 +27,7 @@ public class TimeCardQueryActivity extends AbstractMobileActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setMiddleText(getString(R.string.once_card_query_sz));
-        ButterKnife.bind(this);
+         ButterKnife.bind(this);
 
         init();
     }

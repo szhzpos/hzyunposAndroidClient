@@ -70,7 +70,7 @@ public class MobilePracticalInventoryOrderActivity extends AbstractMobileActivit
 
     private boolean verifyPermission(){
         boolean code = verifyPermissions("43",null,false);
-        if (!code) Toast.makeText(this,"当前操作员没有此功能权限!",Toast.LENGTH_LONG).show();
+        if (!code)MyDialog.toastMessage("当前操作员没有此功能权限!");
         return code;
     }
 
@@ -81,8 +81,6 @@ public class MobilePracticalInventoryOrderActivity extends AbstractMobileActivit
     }
 
     private void initTitle(){
-        final Intent intent = getIntent();
-        if (intent != null)setMiddleText(intent.getStringExtra("title"));
         setRightText(getString(R.string.add_sz));
         setRightListener(v -> add());
     }
@@ -90,7 +88,7 @@ public class MobilePracticalInventoryOrderActivity extends AbstractMobileActivit
         final CharSequence title = getRightText().toString() + getMiddleText();
         final Intent intent = new Intent();
         intent.setClass(this, MobilePracticalInventoryAddOrderActivity.class);
-        intent.putExtra("title", title);
+        intent.putExtra(AbstractMobileActivity.TITLE_KEY, title);
         try {
             startActivity(intent);
         }catch (ActivityNotFoundException e){

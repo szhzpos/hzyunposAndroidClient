@@ -8,15 +8,13 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import androidx.sqlite.db.SimpleSQLiteQuery
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.activity.MainActivity
 import com.wyc.cloudapp.application.CustomApplication
-import com.wyc.cloudapp.bean.GiftCardSaleResult
-import com.wyc.cloudapp.bean.ICardPay
-import com.wyc.cloudapp.bean.PayDetailInfo
-import com.wyc.cloudapp.bean.UnifiedPayResult
+import com.wyc.cloudapp.bean.*
 import com.wyc.cloudapp.constants.InterfaceURL
 import com.wyc.cloudapp.data.SQLiteHelper
 import com.wyc.cloudapp.data.room.AppDatabase
@@ -25,6 +23,9 @@ import com.wyc.cloudapp.dialog.CustomProgressDialog
 import com.wyc.cloudapp.dialog.MyDialog
 import com.wyc.cloudapp.fragment.PrintFormatFragment
 import com.wyc.cloudapp.logger.Logger
+import com.wyc.cloudapp.print.Printer
+import com.wyc.cloudapp.utils.FormatDateTimeUtils
+import com.wyc.cloudapp.utils.Utils
 import com.wyc.cloudapp.utils.http.HttpRequest
 import com.wyc.cloudapp.utils.http.HttpUtils
 import com.wyc.cloudapp.utils.http.callback.ObjectCallback
@@ -51,9 +52,8 @@ class GiftCardSaleOrder():ICardPay<GiftCardSaleDetail> {
     @NonNull
     private var order_no: String = generateOrderNo()
 
-    var online_order_no:String = ""
-        get() = field
-        set(value) {field = value}
+    @ColumnInfo(name = "online_order_no")
+    private var online_order_no:String = ""
 
     private var amt:Double = 0.0
 
@@ -71,15 +71,12 @@ class GiftCardSaleOrder():ICardPay<GiftCardSaleDetail> {
         set(value) {field = value}
 
     @ColumnInfo(defaultValue = "-1")
-
     var store_id = CustomApplication.self().storeId
         get() = field
         set(value) {field = value}
 
     @ColumnInfo(defaultValue = "0")
-    var time:Long = 0
-        get() = field
-        set(value) {field = value}
+    private var time:Long = 0
 
     @ColumnInfo(defaultValue = "0")
     var transfer_status:Int = 0
@@ -138,13 +135,26 @@ class GiftCardSaleOrder():ICardPay<GiftCardSaleDetail> {
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<GiftCardSaleOrder> {
-        override fun createFromParcel(parcel: Parcel): GiftCardSaleOrder {
-            return GiftCardSaleOrder(parcel)
-        }
+    companion object{
+        @JvmField
+        val CREATOR : Parcelable.Creator<GiftCardSaleOrder>  = object : Parcelable.Creator<GiftCardSaleOrder> {
+            override fun createFromParcel(parcel: Parcel): GiftCardSaleOrder {
+                return GiftCardSaleOrder(parcel)
+            }
 
-        override fun newArray(size: Int): Array<GiftCardSaleOrder?> {
-            return arrayOfNulls(size)
+            override fun newArray(size: Int): Array<GiftCardSaleOrder?> {
+                return arrayOfNulls(size)
+            }
+        }
+        @JvmStatic
+        fun getOrderList(start: Long, end: Long, order_no: String):List<GiftCardSaleOrder>{
+            val where_sql = java.lang.StringBuilder("select * from GiftCardSaleOrder where time between $start and $end")
+            if (Utils.isNotEmpty(order_no)){
+                where_sql.append(" and online_order_no like '%").append(order_no).append("'")
+            }
+            where_sql.append(" order by time desc")
+            Logger.d("sql:%s",where_sql)
+            return AppDatabase.getInstance().GiftCardSaleOrderDao().getOrderById(SimpleSQLiteQuery(where_sql.toString()))
         }
     }
 
@@ -226,9 +236,35 @@ class GiftCardSaleOrder():ICardPay<GiftCardSaleDetail> {
         } else CustomApplication.self().getString(R.string.uploading)
     }
 
+    fun getFormatTime(): String? {
+        return FormatDateTimeUtils.formatTimeWithTimestamp(time * 1000)
+    }
+
+    fun getDetailCount():Int{
+        return AppDatabase.getInstance().GiftCardSaleOrderDao().detailCount(order_no)
+    }
+
+    fun getCasName():String?{
+        return SQLiteHelper.getCashierNameById(cas_id)
+    }
+
     private fun generateOrderNo(): String {
-        val row = AppDatabase.getInstance().TimeCardSaleOrderDao().count() + 1
+        val row = AppDatabase.getInstance().GiftCardSaleOrderDao().count() + 1
         return "GW" + CustomApplication.self().posNum + "-" + SimpleDateFormat("yyMMddHHmmss", Locale.CHINA).format(Date()) + "-" + String.format(Locale.CHINA, "%04d", row)
+    }
+
+    fun setOnline_order_no(value: String){
+        online_order_no = value;
+    }
+    fun getOnline_order_no(): String {
+        return online_order_no;
+    }
+
+    fun setTime(value: Long){
+        time = value;
+    }
+    fun getTime():Long{
+        return time;
     }
 
     override fun getAmt(): Double {
@@ -253,6 +289,7 @@ class GiftCardSaleOrder():ICardPay<GiftCardSaleDetail> {
 
         startPay(a)
     }
+
     private fun startPay(activity: MainActivity) {
         val progressDialog = CustomProgressDialog.showProgress(activity, "正在支付...")
         val param = JSONObject()
@@ -323,17 +360,17 @@ class GiftCardSaleOrder():ICardPay<GiftCardSaleDetail> {
     }
 
     private fun print(activity: MainActivity){
-        Logger.d("print")
+        CustomApplication.execute { Printer.print(get_print_content(activity)) }
     }
-    fun get_print_content(context: MainActivity): String? {
-        var content: String? = ""
+    fun get_print_content(context: MainActivity): String {
+        var content = ""
         if (context.printStatus) {
             val print_format_info = JSONObject()
             if (SQLiteHelper.getLocalParameter("g_card_sale", print_format_info)) {
                 if (print_format_info.getIntValue("f") == PrintFormatFragment.GIFT_CARD_SALE_FORMAT_ID) {
                     when (print_format_info.getIntValue("f_z")) {
                         R.id.f_58 -> {
-
+                            content = c_format_58(context, print_format_info, this)
                         }
                         R.id.f_76 -> {
                         }
@@ -346,6 +383,63 @@ class GiftCardSaleOrder():ICardPay<GiftCardSaleDetail> {
             } else context.runOnUiThread { MyDialog.ToastMessage(context.getString(R.string.l_p_f_err_hint_sz, print_format_info.getString("info")), context.window) }
         }
         return content
+    }
+
+    private fun c_format_58(context: MainActivity, format_info: JSONObject, order_info: GiftCardSaleOrder): String {
+        val info = StringBuilder()
+        val out = StringBuilder()
+        val store_name = Utils.getNullStringAsEmpty(format_info, "s_n")
+        val new_line = "\n"
+        val footer_c = Utils.getNullStringAsEmpty(format_info, "f_c")
+        var print_count = Utils.getNotKeyAsNumberDefault(format_info, "p_c", 1)
+        val footer_space = Utils.getNotKeyAsNumberDefault(format_info, "f_s", 5)
+        val application = CustomApplication.self()
+        while (print_count-- > 0) { //打印份数
+            if (info.isNotEmpty()) {
+                info.append(new_line).append(new_line)
+                out.append(info)
+                continue
+            }
+            info.append(Printer.commandToStr(Printer.DOUBLE_HEIGHT)).append(Printer.commandToStr(Printer.ALIGN_CENTER))
+                    .append(if (store_name.length == 0) application.storeName else store_name).append(new_line).append(new_line).append(Printer.commandToStr(Printer.NORMAL)).append(Printer.commandToStr(Printer.ALIGN_LEFT))
+            info.append(context.getString(R.string.store_name_sz) + application.storeName).append(new_line)
+            info.append(context.getString(R.string.order_sz) + order_info.online_order_no).append(new_line)
+            info.append(context.getString(R.string.order_time_colon) + order_info.getFormatTime()).append(new_line)
+
+
+            val stringBuilder = StringBuilder()
+            val saleInfoList = order_info.getSaleInfo()
+            val line_58 = application.getString(R.string.line_58)
+            stringBuilder.append(line_58).append(new_line).append(context.getString(R.string.gift_card_header_print)).append(new_line)
+            for (saleInfo in saleInfoList) {
+                stringBuilder.append(String.format(Locale.CHINA, "%s\n     %s   %.2f元   %.2f元\n", saleInfo.getName(), saleInfo.getGift_card_code(), saleInfo.getFace_value(), saleInfo.getPrice(), new_line))
+            }
+            stringBuilder.append(line_58).append(new_line)
+            info.append(stringBuilder)
+            info.append(context.getString(R.string.gift_card_sale_num_print) + order_info.getSaleInfo().size.toString()).append(new_line)
+            info.append(context.getString(R.string.order_amt_colon) + String.format(Locale.CHINA, "%.2f元", order_info.getAmt())).append(new_line)
+
+            stringBuilder.delete(0, stringBuilder.length)
+            val payDetails = order_info.payInfo
+            for (detail in payDetails) {
+                val payMethod = AppDatabase.getInstance().PayMethodDao().getPayMethodById(detail.pay_method_id) ?: continue
+                if (stringBuilder.isNotEmpty()) {
+                    stringBuilder.append(new_line)
+                }
+                stringBuilder.append(payMethod.name)
+            }
+            info.append(context.getString(R.string.pay_method_name_colon_sz) + stringBuilder.toString()).append(new_line).append(line_58).append(new_line)
+
+            if (footer_c.isEmpty()) {
+                info.append(context.getString(R.string.hotline_sz)).append(Utils.getNullOrEmptyStringAsDefault(application.storeInfo, "telphone", "")).append(new_line)
+                info.append(context.getString(R.string.stores_address_sz)).append(Utils.getNullOrEmptyStringAsDefault(application.storeInfo, "region", "")).append(new_line)
+            } else {
+                info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(footer_c).append(Printer.commandToStr(Printer.ALIGN_LEFT))
+            }
+            for (i in 0 until footer_space) info.append(" ").append(new_line)
+        }
+        out.append(info)
+        return out.toString()
     }
 
     private fun uploadPayInfo(amt: Double, suc: androidx.core.util.Consumer<String>, failure: androidx.core.util.Consumer<String>){

@@ -1235,7 +1235,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             if (index == -1){
                 if (mPayStatus){
                     if (mContext.getPrintStatus()){
-                        Printer.print(mContext, AbstractSettlementDialog.get_print_content(mContext,order_code,open_cashbox));
+                        Printer.print(AbstractSettlementDialog.get_print_content(mContext,order_code,open_cashbox));
                     }
                     paySuccess();
                 }

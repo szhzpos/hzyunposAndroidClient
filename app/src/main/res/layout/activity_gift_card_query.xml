@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <com.wyc.cloudapp.CustomizationView.RoundCornerTabLayout
+        android:id="@+id/_tab_layout"
+        style="@style/TabStyle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_45"
+        android:layout_marginStart="@dimen/size_45"
+        android:layout_marginTop="@dimen/margin_5"
+        android:layout_marginEnd="@dimen/size_45"
+        android:layout_marginBottom="@dimen/margin_5" />
+
+    <LinearLayout
+        android:id="@+id/_query_time_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_40"
+        android:layout_marginStart="@dimen/margin_18"
+        android:layout_marginTop="@dimen/margin_12"
+        android:layout_marginEnd="@dimen/margin_18"
+        android:orientation="horizontal"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/m_start_date"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/round_border_sub_gray"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/margin_8"
+            android:paddingEnd="0dp"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/size_5"
+            android:layout_marginEnd="@dimen/size_5"
+            android:text="@string/to_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_18" />
+
+        <TextView
+            android:id="@+id/m_end_date"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/round_border_sub_gray"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/margin_8"
+            android:paddingEnd="0dp"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/order_search"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_45"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/margin_5"
+        android:background="@drawable/round_border_sub_gray"
+        android:drawableEnd="@drawable/search"
+        android:drawablePadding="@dimen/margin_8"
+        android:ems="10"
+        android:hint="@string/order_hints"
+        android:importantForAutofill="no"
+        android:inputType="textPersonName"
+        android:padding="@dimen/margin_5"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_18" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/_order_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/margin_5"
+        android:layout_weight="1" />
+</LinearLayout>

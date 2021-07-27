@@ -30,7 +30,6 @@ public class TimeCardSaleActivity extends AbstractMobileActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setMiddleText(getString(R.string.once_card_sale_sz));
         ButterKnife.bind(this);
 
         init();
