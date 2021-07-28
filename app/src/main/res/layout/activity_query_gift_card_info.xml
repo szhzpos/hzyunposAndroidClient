@@ -1,218 +1,233 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white"
-    android:orientation="vertical"
-    tools:context=".activity.mobile.cashierDesk.MobileCashierActivity">
-
-    <EditText
-        android:id="@+id/search_gift_card"
+<layout>
+    <data>
+        <variable
+            name="giftCardInfo"
+            type="com.wyc.cloudapp.bean.GiftCardInfo" />
+    </data>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/height_50"
-        android:layout_gravity="center"
-        android:background="@drawable/round_border_sub_gray"
-        android:drawableStart="@drawable/back"
-        android:drawableEnd="@drawable/search"
-        android:drawablePadding="@dimen/margin_8"
-        android:ems="10"
-        android:hint="@string/input_gift_card_hints"
-        android:importantForAutofill="no"
-        android:inputType="textPersonName"
-        android:padding="@dimen/margin_5"
-        android:selectAllOnFocus="true"
-        android:singleLine="true"
-        android:textColor="@color/text_color"
-        android:textSize="@dimen/font_size_18" />
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:orientation="vertical"
+        tools:context=".activity.mobile.cashierDesk.MobileCashierActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <TextView
-            android:id="@+id/name_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gift_card_info_top_margin"
-            android:text="@string/gift_card_name"
+        <EditText
+            android:id="@+id/search_gift_card"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_50"
+            android:layout_gravity="center"
+            android:background="@drawable/round_border_sub_gray"
+            android:drawableStart="@drawable/back"
+            android:drawableEnd="@drawable/search"
+            android:drawablePadding="@dimen/margin_8"
+            android:ems="10"
+            android:hint="@string/input_gift_card_hints"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            android:padding="@dimen/margin_5"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
             android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16"
-            app:layout_constraintEnd_toStartOf="@+id/gift_card_name"
-            app:layout_constraintHorizontal_bias="0.3"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textSize="@dimen/font_size_18" />
 
-        <TextView
-            android:id="@+id/gift_card_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/name_label"
-            app:layout_constraintTop_toTopOf="@id/name_label" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/card_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gift_card_info_top_margin"
-            android:text="@string/gift_card_code_"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16"
-            app:layout_constraintStart_toStartOf="@id/name_label"
-            app:layout_constraintTop_toBottomOf="@id/name_label" />
+            <TextView
+                android:id="@+id/name_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gift_card_info_top_margin"
+                android:text="@string/gift_card_name"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                app:layout_constraintEnd_toStartOf="@+id/gift_card_name"
+                app:layout_constraintHorizontal_bias="0.3"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/gift_card_code"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16"
-            app:layout_constraintStart_toEndOf="@id/card_label"
-            app:layout_constraintTop_toTopOf="@id/card_label" />
+            <TextView
+                android:id="@+id/gift_card_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                android:text="@{giftCardInfo.shoppingName}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/name_label"
+                app:layout_constraintTop_toTopOf="@id/name_label" />
 
-        <TextView
-            android:id="@+id/status_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gift_card_info_top_margin"
-            android:text="@string/gift_card_status"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16"
-            app:layout_constraintStart_toStartOf="@id/card_label"
-            app:layout_constraintTop_toBottomOf="@id/card_label" />
+            <TextView
+                android:id="@+id/card_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gift_card_info_top_margin"
+                android:text="@string/gift_card_code_"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                app:layout_constraintStart_toStartOf="@id/name_label"
+                app:layout_constraintTop_toBottomOf="@id/name_label" />
 
-        <TextView
-            android:id="@+id/gift_card_status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16"
-            app:layout_constraintStart_toEndOf="@id/status_label"
-            app:layout_constraintTop_toTopOf="@id/status_label" />
+            <TextView
+                android:id="@+id/gift_card_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                android:text="@{giftCardInfo.cardNo}"
+                app:layout_constraintStart_toEndOf="@id/card_label"
+                app:layout_constraintTop_toTopOf="@id/card_label" />
 
-        <TextView
-            android:id="@+id/face_value_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gift_card_info_top_margin"
-            android:text="@string/gift_card_face_value_"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16"
-            app:layout_constraintStart_toStartOf="@id/status_label"
-            app:layout_constraintTop_toBottomOf="@id/status_label" />
+            <TextView
+                android:id="@+id/status_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gift_card_info_top_margin"
+                android:text="@string/gift_card_status"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                app:layout_constraintStart_toStartOf="@id/card_label"
+                app:layout_constraintTop_toBottomOf="@id/card_label" />
 
-        <TextView
-            android:id="@+id/gift_card_face_value"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16"
-            app:layout_constraintStart_toEndOf="@id/face_value_label"
-            app:layout_constraintTop_toTopOf="@id/face_value_label" />
+            <TextView
+                android:id="@+id/gift_card_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                android:text="@{giftCardInfo.getStatusName}"
+                app:layout_constraintStart_toEndOf="@id/status_label"
+                app:layout_constraintTop_toTopOf="@id/status_label" />
 
-        <TextView
-            android:id="@+id/price_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gift_card_info_top_margin"
-            android:text="@string/gift_card_price"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16"
-            app:layout_constraintStart_toStartOf="@id/face_value_label"
-            app:layout_constraintTop_toBottomOf="@id/face_value_label" />
+            <TextView
+                android:id="@+id/face_value_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gift_card_info_top_margin"
+                android:text="@string/gift_card_face_value_"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                app:layout_constraintStart_toStartOf="@id/status_label"
+                app:layout_constraintTop_toBottomOf="@id/status_label" />
 
-        <TextView
-            android:id="@+id/gift_card_price"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16"
-            app:layout_constraintStart_toEndOf="@id/price_label"
-            app:layout_constraintTop_toTopOf="@id/price_label" />
+            <TextView
+                android:id="@+id/gift_card_face_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                android:text="@{String.valueOf(giftCardInfo.faceMoney)}"
+                app:layout_constraintStart_toEndOf="@id/face_value_label"
+                app:layout_constraintTop_toTopOf="@id/face_value_label" />
 
-        <TextView
-            android:id="@+id/balance_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gift_card_info_top_margin"
-            android:text="@string/gift_card_balance"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16"
-            app:layout_constraintStart_toStartOf="@id/price_label"
-            app:layout_constraintTop_toBottomOf="@id/price_label" />
+            <TextView
+                android:id="@+id/price_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gift_card_info_top_margin"
+                android:text="@string/gift_card_price"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                app:layout_constraintStart_toStartOf="@id/face_value_label"
+                app:layout_constraintTop_toBottomOf="@id/face_value_label" />
 
-        <TextView
-            android:id="@+id/gift_card_balance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16"
-            app:layout_constraintStart_toEndOf="@id/balance_label"
-            app:layout_constraintTop_toTopOf="@id/balance_label" />
+            <TextView
+                android:id="@+id/gift_card_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                android:text="@{String.valueOf(giftCardInfo.price)}"
+                app:layout_constraintStart_toEndOf="@id/price_label"
+                app:layout_constraintTop_toTopOf="@id/price_label" />
 
-        <TextView
-            android:id="@+id/validity_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gift_card_info_top_margin"
-            android:text="@string/use_validity"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16"
-            app:layout_constraintStart_toStartOf="@id/balance_label"
-            app:layout_constraintTop_toBottomOf="@id/balance_label" />
+            <TextView
+                android:id="@+id/balance_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gift_card_info_top_margin"
+                android:text="@string/gift_card_balance"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                app:layout_constraintStart_toStartOf="@id/price_label"
+                app:layout_constraintTop_toBottomOf="@id/price_label" />
 
-        <TextView
-            android:id="@+id/use_validity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16"
-            app:layout_constraintStart_toEndOf="@id/validity_label"
-            app:layout_constraintTop_toTopOf="@id/validity_label" />
+            <TextView
+                android:id="@+id/gift_card_balance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                android:text="@{String.valueOf(giftCardInfo.balance)}"
+                app:layout_constraintStart_toEndOf="@id/balance_label"
+                app:layout_constraintTop_toTopOf="@id/balance_label" />
 
-        <TextView
-            android:id="@+id/time_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/gift_card_info_top_margin"
-            android:text="@string/made_card_time"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16"
-            app:layout_constraintEnd_toEndOf="@id/validity_label"
-            app:layout_constraintTop_toBottomOf="@id/validity_label" />
+            <TextView
+                android:id="@+id/validity_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gift_card_info_top_margin"
+                android:text="@string/use_validity"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                app:layout_constraintStart_toStartOf="@id/balance_label"
+                app:layout_constraintTop_toBottomOf="@id/balance_label" />
 
-        <TextView
-            android:id="@+id/made_card_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16"
-            android:visibility="visible"
-            app:layout_constraintStart_toEndOf="@id/time_label"
-            app:layout_constraintTop_toTopOf="@id/time_label" />
+            <TextView
+                android:id="@+id/use_validity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                android:text="@{giftCardInfo.getValidity}"
+                app:layout_constraintStart_toEndOf="@id/validity_label"
+                app:layout_constraintTop_toTopOf="@id/validity_label" />
 
-        <Button
-            android:id="@+id/select_btn"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/round_shape_main_color"
-            android:text="@string/selected"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            <TextView
+                android:id="@+id/time_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gift_card_info_top_margin"
+                android:text="@string/made_card_time"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                app:layout_constraintEnd_toEndOf="@id/validity_label"
+                app:layout_constraintTop_toBottomOf="@id/validity_label" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/made_card_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                android:text="@{giftCardInfo.getMadeTime}"
+                android:visibility="visible"
+                app:layout_constraintStart_toEndOf="@id/time_label"
+                app:layout_constraintTop_toTopOf="@id/time_label" />
 
-</LinearLayout>
+            <Button
+                android:id="@+id/select_btn"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/round_shape_main_color"
+                android:text="@string/selected"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+</layout>

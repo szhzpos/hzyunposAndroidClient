@@ -4,7 +4,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 
 import java.util.Objects;
 
@@ -269,6 +272,17 @@ public final class GiftCardInfo implements Parcelable {
 
     public void setMakecardId(String makecardId) {
         this.makecardId = makecardId;
+    }
+
+    public String getStatusName(){
+        return isSale() ? CustomApplication.self().getString(R.string.sold) : CustomApplication.self().getString(R.string.unsold);
+    }
+
+    public String getValidity(){
+       return String.format("%s至%s", FormatDateTimeUtils.formatDate(startTime * 1000), FormatDateTimeUtils.formatDate(endTime * 1000));
+    }
+    public String getMadeTime(){
+        return FormatDateTimeUtils.formatTimeWithTimestamp(addtime * 1000);
     }
 
     @Override

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="giftCardSaleDetail"
+            type="com.wyc.cloudapp.data.room.entity.GiftCardSaleDetail" />
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/goods_title"
+            android:layout_width="@dimen/table_goods_title_width"
+            android:layout_height="@dimen/height_30"
+            android:layout_marginStart="8dp"
+            android:gravity="center_vertical"
+            android:paddingTop="@dimen/margin_5"
+            android:paddingBottom="@dimen/margin_5"
+            android:text="@{giftCardSaleDetail.getFormatName}"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/price_label"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center"
+            android:paddingTop="@dimen/margin_5"
+            android:paddingBottom="@dimen/margin_5"
+            android:text="@string/gift_card_face_value"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toStartOf="@id/price"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/goods_title" />
+
+        <TextView
+            android:id="@+id/face_value"
+            android:layout_width="@dimen/width_88"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center_vertical"
+            android:paddingTop="@dimen/margin_5"
+            android:paddingBottom="@dimen/margin_5"
+            android:text="@{String.valueOf(giftCardSaleDetail.face_value)}"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toEndOf="@id/price_label"
+            app:layout_constraintTop_toTopOf="@id/price_label" />
+
+        <TextView
+            android:id="@+id/price"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center"
+            android:paddingTop="@dimen/margin_5"
+            android:paddingBottom="@dimen/margin_5"
+            android:textColor="@color/orange_1"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/price_label"
+            app:layout_constraintTop_toTopOf="@id/face_value" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

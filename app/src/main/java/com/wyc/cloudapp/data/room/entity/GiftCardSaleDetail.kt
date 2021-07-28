@@ -4,6 +4,8 @@ import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.NonNull
 import androidx.room.Entity
+import com.wyc.cloudapp.bean.TimeCardSaleInfo
+import com.wyc.cloudapp.data.room.AppDatabase
 import com.wyc.cloudapp.utils.Utils
 
 /**
@@ -66,13 +68,21 @@ class GiftCardSaleDetail():Parcelable {
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<GiftCardSaleDetail> {
-        override fun createFromParcel(parcel: Parcel): GiftCardSaleDetail {
-            return GiftCardSaleDetail(parcel)
-        }
+    companion object {
+        @JvmField
+        val CREATOR : Parcelable.Creator<GiftCardSaleDetail> = object:Parcelable.Creator<GiftCardSaleDetail>
+        {
+            override fun createFromParcel(parcel: Parcel): GiftCardSaleDetail {
+                return GiftCardSaleDetail(parcel)
+            }
 
-        override fun newArray(size: Int): Array<GiftCardSaleDetail?> {
-            return arrayOfNulls(size)
+            override fun newArray(size: Int): Array<GiftCardSaleDetail?> {
+                return arrayOfNulls(size)
+            }
+        }
+        @JvmStatic
+        fun getSaleDetailById(id: String): List<GiftCardSaleDetail>? {
+            return AppDatabase.getInstance().GiftCardSaleDetailDao().getDetailById(id)
         }
     }
     fun setRowId(id: Int){
@@ -156,10 +166,12 @@ class GiftCardSaleDetail():Parcelable {
         return rowId
     }
 
-
-
     fun equalsWithTimeCardInfo(o: GiftCardSaleDetail?): Boolean {
         return if (o == null) false else gift_card_code == o.gift_card_code
+    }
+
+    fun getFormatName():String{
+        return String.format("%s(%s)",name,gift_card_code)
     }
 
     override fun toString(): String {

@@ -85,12 +85,7 @@ class GiftCardSaleOrder():ICardPay<GiftCardSaleDetail> {
 
     @Ignore
     private var saleInfo:List<GiftCardSaleDetail> = ArrayList()
-        set(value) {
-            field = value
-            field.listIterator().forEach {
-                it.setOrder_no(order_no)
-            }
-        }
+
     @Ignore
     var payInfo:List<GiftCardPayDetail> = ArrayList()
         get() = field
@@ -113,7 +108,7 @@ class GiftCardSaleOrder():ICardPay<GiftCardSaleDetail> {
         store_id = parcel.readString() ?: ""
         time = parcel.readLong()
         transfer_status = parcel.readInt()
-        saleInfo = parcel.createTypedArrayList(GiftCardSaleDetail) ?: ArrayList()
+        saleInfo = parcel.createTypedArrayList(GiftCardSaleDetail.CREATOR) ?: ArrayList()
         payInfo = parcel.createTypedArrayList(GiftCardPayDetail.CREATOR) ?: ArrayList()
     }
 
@@ -216,7 +211,7 @@ class GiftCardSaleOrder():ICardPay<GiftCardSaleDetail> {
         }
 
         fun saleInfo(saleInfoList: List<GiftCardSaleDetail>?): Builder {
-            order.saleInfo = saleInfoList ?: ArrayList()
+            order.setSaleInfo(saleInfoList ?: ArrayList())
             return this
         }
 
@@ -273,6 +268,13 @@ class GiftCardSaleOrder():ICardPay<GiftCardSaleDetail> {
 
     override fun getSaleInfo(): List<GiftCardSaleDetail> {
         return saleInfo
+    }
+
+    fun setSaleInfo(value:List<GiftCardSaleDetail>?){
+        saleInfo = value ?: ArrayList()
+        saleInfo.listIterator().forEach {
+            it.setOrder_no(order_no)
+        }
     }
 
     override fun getOrder_no(): String {
@@ -359,29 +361,27 @@ class GiftCardSaleOrder():ICardPay<GiftCardSaleDetail> {
                 })
     }
 
-    private fun print(activity: MainActivity){
+    public fun print(activity: MainActivity){
         CustomApplication.execute { Printer.print(get_print_content(activity)) }
     }
-    fun get_print_content(context: MainActivity): String {
+    private fun get_print_content(context: MainActivity): String {
         var content = ""
-        if (context.printStatus) {
-            val print_format_info = JSONObject()
-            if (SQLiteHelper.getLocalParameter("g_card_sale", print_format_info)) {
-                if (print_format_info.getIntValue("f") == PrintFormatFragment.GIFT_CARD_SALE_FORMAT_ID) {
-                    when (print_format_info.getIntValue("f_z")) {
-                        R.id.f_58 -> {
-                            content = c_format_58(context, print_format_info, this)
-                        }
-                        R.id.f_76 -> {
-                        }
-                        R.id.f_80 -> {
-                        }
+        val print_format_info = JSONObject()
+        if (SQLiteHelper.getLocalParameter("g_card_sale", print_format_info)) {
+            if (print_format_info.getIntValue("f") == PrintFormatFragment.GIFT_CARD_SALE_FORMAT_ID) {
+                when (print_format_info.getIntValue("f_z")) {
+                    R.id.f_58 -> {
+                        content = c_format_58(context, print_format_info, this)
                     }
-                } else {
-                    context.runOnUiThread { MyDialog.ToastMessage(context.getString(R.string.f_not_sz), context.window) }
+                    R.id.f_76 -> {
+                    }
+                    R.id.f_80 -> {
+                    }
                 }
-            } else context.runOnUiThread { MyDialog.ToastMessage(context.getString(R.string.l_p_f_err_hint_sz, print_format_info.getString("info")), context.window) }
-        }
+            } else {
+                context.runOnUiThread { MyDialog.ToastMessage(context.getString(R.string.f_not_sz), context.window) }
+            }
+        } else context.runOnUiThread { MyDialog.ToastMessage(context.getString(R.string.l_p_f_err_hint_sz, print_format_info.getString("info")), context.window) }
         return content
     }
 

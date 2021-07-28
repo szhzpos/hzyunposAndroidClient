@@ -82,6 +82,10 @@ class GiftCardPayDetail():Parcelable {
         fun update(data: List<GiftCardPayDetail>) {
             AppDatabase.getInstance().GiftCardPayDetailDao().updateAll(data)
         }
+        @JvmStatic
+        fun getPayDetailById(id:String):List<GiftCardPayDetail>?{
+            return AppDatabase.getInstance().GiftCardPayDetailDao().getAllById(id)
+        }
     }
 
     class Builder(order_no: String) {
@@ -147,6 +151,10 @@ class GiftCardPayDetail():Parcelable {
     }
     fun failure(){
         status - 2
+    }
+
+    fun getMethodName():String{
+        return AppDatabase.getInstance().PayMethodDao().getPayMethodById(pay_method_id)?.name ?: ""
     }
 
     override fun equals(other: Any?): Boolean {

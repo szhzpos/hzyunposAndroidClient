@@ -284,6 +284,7 @@ public final class MyDialog extends AbstractDialogContext {
                 mess.setText(message);
                 toast.setGravity(Gravity.CENTER,0,0);
                 toast.show();
+                mess.setOnClickListener(v -> toast.cancel());
             }
         }
     }

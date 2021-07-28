@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <variable
+            name="title"
+            type="com.wyc.cloudapp.activity.ITitle" />
+
+    </data>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".activity.mobile.AbstractMobileActivity">
+        <LinearLayout
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_58"
+            android:background="@color/activity_title_color">
+
+            <TextView
+                android:id="@+id/left_title_tv"
+                android:layout_width="@dimen/mobile_activity_title_left_right_tv_width"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:drawableStart="@drawable/back_ico"
+                android:paddingStart="@dimen/margin_5"
+                android:paddingEnd="@dimen/size_0"
+                android:text="@{title.leftText}"
+                android:onClick="@{title.onLeftClick}"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:id="@+id/middle_title_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="@dimen/margin_1"
+                android:text="@{title.middleText}"
+                android:onClick="@{title.onMiddleClick}"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/font_size_20" />
+
+            <TextView
+                android:id="@+id/right_title_tv"
+                android:layout_width="@dimen/mobile_activity_title_left_right_tv_width"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:paddingStart="@dimen/margin_0"
+                android:paddingEnd="@dimen/margin_5"
+                android:text="@{title.rightText}"
+                android:onClick="@{title.onRightClick}"
+                android:textAlignment="viewEnd"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/font_size_16" />
+        </LinearLayout>
+
+    </LinearLayout>
+</layout>
