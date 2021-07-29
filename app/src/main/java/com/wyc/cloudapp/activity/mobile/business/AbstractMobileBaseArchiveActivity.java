@@ -26,12 +26,8 @@ public abstract class AbstractMobileBaseArchiveActivity extends AbstractMobileAc
         setTitle();
     }
     private void setTitle(){
-        setMiddleText(title());
         setRightText(getString(R.string.add_sz));
         setRightListener(v -> add());
     }
     protected abstract void add();
-    protected String title(){
-        return getIntent().getStringExtra(TITLE_KEY);
-    }
 }

@@ -401,7 +401,7 @@ public final class TimeCardSaleOrder implements ICardPay<TimeCardSaleInfo> {
                             boolean allSuccess = false;
                             final List<TimeCardPayDetail> payDetails = getPayInfo();
                             for (TimeCardPayDetail detail : payDetails){
-                                final PayMethod payMethod = AppDatabase.getInstance().PayMethodDao().getPayMethodById(detail.getPay_method_id());
+                                final PayMethod payMethod = PayMethod.getMethodById(detail.getPay_method_id());
                                 if (payMethod.isCheckApi()){
                                     final UnifiedPayResult result = payMethod.payWithApi(activity,payInfo.getPay_money(),
                                             online_order_no,getOrder_no(),detail.getRemark(),getClass().getSimpleName());

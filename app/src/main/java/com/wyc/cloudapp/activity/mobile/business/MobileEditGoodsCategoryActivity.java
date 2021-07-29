@@ -40,11 +40,6 @@ public class MobileEditGoodsCategoryActivity extends AbstractMobileBaseArchiveAc
         dialog.show();
     }
 
-    @Override
-    protected String title() {
-        return getIntent().getStringExtra(TITLE_KEY);
-    }
-
     private void initCategoryList(){
         final RecyclerView item_list = findViewById(R.id.goods_category_list);
         mAdapter = new EditGoodsCategoryAdapter(this,true);

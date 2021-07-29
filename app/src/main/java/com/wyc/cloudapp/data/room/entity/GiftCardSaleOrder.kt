@@ -317,7 +317,7 @@ class GiftCardSaleOrder():ICardPay<GiftCardSaleDetail> {
 
                                 var allSuccess = false
                                 for (payDetail in payInfo) {
-                                    val payMethod: PayMethod = AppDatabase.getInstance().PayMethodDao().getPayMethodById(payDetail.pay_method_id)
+                                    val payMethod: PayMethod = PayMethod.getMethodById(payDetail.pay_method_id)
                                     if (payMethod.isCheckApi) {
                                         val payResult: UnifiedPayResult = payMethod.payWithApi(activity, d.orderMoney, d.orderCode, getOrder_no(), payDetail.remark
                                                 ?: "", GiftCardSaleOrder.toString())

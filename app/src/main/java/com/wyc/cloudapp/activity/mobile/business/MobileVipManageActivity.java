@@ -153,11 +153,6 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
         }
     }
 
-    @Override
-    protected String title() {
-        return getString(R.string.vip_record_sz);
-    }
-
     private final static class VipRecordAdapter extends AbstractDataAdapterForJson<VipRecordAdapter.MyViewHolder> implements View.OnClickListener{
         private final MainActivity mContext;
         private int mCurrentRow;
