@@ -42,20 +42,10 @@
         android:layout_height="match_parent">
 
         <LinearLayout
+            android:id="@+id/root"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
-
-            <ViewStub
-                android:id="@+id/layout_content"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout="@layout/edit_goods_category_dialog"
-                app:layout_constraintBottom_toTopOf="@id/ok_btn"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-        </LinearLayout>
+            android:orientation="vertical"/>
     </ScrollView>
 
 </LinearLayout>

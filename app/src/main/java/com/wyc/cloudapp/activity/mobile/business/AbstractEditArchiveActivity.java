@@ -1,7 +1,10 @@
 package com.wyc.cloudapp.activity.mobile.business;
 
 import android.os.Bundle;
-import android.view.ViewStub;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
@@ -32,9 +35,11 @@ public abstract class AbstractEditArchiveActivity extends AbstractMobileActivity
     }
 
     private void initLayout(){
-        final ViewStub viewStub = findViewById(R.id.layout_content);
-        viewStub.setLayoutResource(getLayout());
-        viewStub.inflate();
+        final LinearLayout linearLayout = findViewById(R.id.root);
+        if (null != linearLayout) {
+            linearLayout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            View.inflate(this,getLayout(), linearLayout);
+        }
     }
 
     protected final void showProgress(){

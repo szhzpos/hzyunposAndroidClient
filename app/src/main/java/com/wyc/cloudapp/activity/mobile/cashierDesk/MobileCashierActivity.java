@@ -27,6 +27,7 @@ import com.wyc.cloudapp.CustomizationView.InterceptLinearLayout;
 import com.wyc.cloudapp.CustomizationView.TmpOrderButton;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.SaleActivity;
+import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -410,7 +411,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
         left.setText(R.string.back);
 
         final Intent intent = getIntent();
-        middle.setText(intent.getStringExtra("title"));
+        middle.setText(intent.getStringExtra(AbstractMobileActivity.TITLE_KEY));
 
         boolean singleRefundStatus = intent.getBooleanExtra("singleRefundStatus",false);
         if (singleRefundStatus){

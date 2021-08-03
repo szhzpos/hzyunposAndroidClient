@@ -12,7 +12,6 @@ import android.widget.LinearLayout;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import com.wyc.cloudapp.R;
 public final class KeyboardView extends LinearLayout implements View.OnClickListener {
-    private Context mContext;
     private OnCurrentFocusListener mCurrentFocusListener;
     private Button mCancel,mOk;
     public KeyboardView(Context context) {
@@ -25,7 +24,6 @@ public final class KeyboardView extends LinearLayout implements View.OnClickList
 
     public KeyboardView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mContext = context;
     }
 
     @Override
@@ -58,7 +56,7 @@ public final class KeyboardView extends LinearLayout implements View.OnClickList
                                     if (view != null) {
                                         int index = view.getSelectionStart(), end = view.getSelectionEnd();
                                         if (index != end && end == view.getText().length()) {
-                                            view.setText(mContext.getString(R.string.space_sz));
+                                            view.setText(getResources().getString(R.string.space_sz));
                                         } else {
                                             if (index == 0) return;
                                             view.getText().delete(index - 1, index);
@@ -113,7 +111,7 @@ public final class KeyboardView extends LinearLayout implements View.OnClickList
     }
 
     public void layout(int res_id){
-        LayoutInflater.from(mContext).inflate(res_id, this, true);
+        LayoutInflater.from(getContext()).inflate(res_id, this, true);
         initKeyboard();
     }
 
