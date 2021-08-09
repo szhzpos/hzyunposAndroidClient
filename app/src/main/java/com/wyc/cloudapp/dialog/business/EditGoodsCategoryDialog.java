@@ -104,6 +104,7 @@ public class EditGoodsCategoryDialog extends AbstractEditArchiveDialog {
         parent.setItem_name(mContext.getString(R.string.all_category_sz));
         if (mCategory == null){
             mCategory = new TreeListItem();
+            mCategory.setLevel(-1);
             mCategory.setP_ref(parent);
         }else {
             if (null == mCategory.getP_ref()){
