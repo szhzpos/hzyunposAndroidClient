@@ -33,7 +33,7 @@ import java.util.List;
 public interface TimeCardSaleOrderDao {
     @Query("select * from timeCardSaleOrder")
     LiveData<List<TimeCardSaleOrder>> getAll();
-    @Query("select count(rowId) as counts from timeCardSaleOrder")
+    @Query("select count(rowId) as counts from timeCardSaleOrder where date(time,'unixepoch' ) = date('now')")
     int count();
 
     @Insert

@@ -56,6 +56,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -324,7 +325,8 @@ public final class Utils {
     }
     public static JSONArray JsondeepCopy(@Nullable final JSONArray jsons){
         if (jsons == null)return new JSONArray();
-        return JSON.parseArray(jsons.toJSONString());
+        final JSONArray array = JSON.parseArray(jsons.toJSONString());
+        return array == null ? new JSONArray() : array;
     }
 
     public static String getNullOrEmptyStringAsDefault(@Nullable final JSONObject object,final String key, final String default_v){

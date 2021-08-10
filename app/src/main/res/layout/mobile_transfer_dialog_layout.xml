@@ -290,60 +290,94 @@
 
             </LinearLayout>
 
+            <!--次卡-->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/mobile_transfer_content_title_height"
+                android:background="@drawable/bottom_separator"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/margin_12"
+                android:paddingEnd="0dp"
+                android:text="@string/time_card_order_sz"
+                android:textColor="@color/blue"
+                android:textSize="@dimen/font_size_18" />
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@drawable/bottom_separator"
-                android:orientation="vertical"
-                android:visibility="visible">
+                android:layout_height="45dp"
+                android:background="@drawable/bottom_separator_green"
+                android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/mobile_transfer_content_title_height"
-                    android:background="@drawable/bottom_separator"
-                    android:gravity="center_vertical"
-                    android:paddingStart="@dimen/margin_12"
-                    android:paddingEnd="0dp"
-                    android:text="@string/time_card_order_sz"
-                    android:textColor="@color/blue"
-                    android:textSize="@dimen/font_size_18" />
+                    android:layout_width="@dimen/mobile_transfer_details_col01_width"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/pay_way_sz"
+                    android:textSize="16sp" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="45dp"
-                    android:background="@drawable/bottom_separator_green"
-                    android:orientation="horizontal">
+                <TextView
+                    android:layout_width="188dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/pay_amt_sz"
+                    android:textSize="16sp" />
 
-                    <TextView
-                        android:layout_width="@dimen/mobile_transfer_details_col01_width"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:text="@string/pay_way_sz"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:layout_width="188dp"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:text="@string/pay_amt_sz"
-                        android:textSize="16sp" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/order_num_sz"
-                        android:textSize="16sp" />
-                </LinearLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/time_card_details"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/order_num_sz"
+                    android:textSize="16sp" />
             </LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/time_card_details"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <!--购物卡-->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/mobile_transfer_content_title_height"
+                android:background="@drawable/bottom_separator"
+                android:gravity="center_vertical"
+                android:paddingStart="@dimen/margin_12"
+                android:paddingEnd="0dp"
+                android:text="@string/gift_card_order_sz"
+                android:textColor="@color/blue"
+                android:textSize="@dimen/font_size_18" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:background="@drawable/bottom_separator_green"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="@dimen/mobile_transfer_details_col01_width"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/pay_way_sz"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="188dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/pay_amt_sz"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/order_num_sz"
+                    android:textSize="16sp" />
+            </LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/gift_card_details"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
         </LinearLayout>
     </ScrollView>
 

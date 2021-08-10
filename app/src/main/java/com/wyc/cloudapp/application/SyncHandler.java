@@ -607,12 +607,13 @@ final class SyncHandler extends Handler {
 
     private void uploadTransferOrderInfo(final String appid,final String url,final String appSecret){
         //上传交班单据
-        String transfer_sum_sql = "SELECT sj_money,cards_num oncecard_num,cards_money oncecard_money,\n" +
+        String transfer_sum_sql = "SELECT  shopping_num,shopping_money,sj_money,cards_num oncecard_num,cards_money oncecard_money,\n" +
                 "       order_money,order_e_date,order_b_date,recharge_num,recharge_money,refund_num,\n" +
                 "       refund_money,cashbox_money unpaid_money,sum_money,ti_code,transfer_time,order_num,cas_id,stores_id FROM transfer_info where upload_status = 1 limit 100",details_where_sql = "where ti_code  = ",
                 transfer_orders_sql = "SELECT ifnull(order_code,'') order_code FROM transfer_order ",
                 transfer_retails_sql = "SELECT order_num,pay_method,pay_money FROM transfer_money_info ",transfer_cards_sql = "SELECT order_num,pay_method,pay_money FROM transfer_once_cardsc ",
-                transfer_recharge_sql = "SELECT order_num,pay_method,pay_money FROM transfer_recharge_money ",transfer_refund_sql = "SELECT order_num,pay_method,pay_money FROM transfer_refund_money ";
+                transfer_recharge_sql = "SELECT order_num,pay_method,pay_money FROM transfer_recharge_money ",transfer_refund_sql = "SELECT order_num,pay_method,pay_money FROM transfer_refund_money ",
+                transfer_gift_sql = "SELECT order_num,pay_method,pay_money FROM transfer_gift_money ";
         final StringBuilder err = new StringBuilder();
 
         final JSONArray transfer_sum_arr = SQLiteHelper.getListToJson(transfer_sum_sql,err);
@@ -624,67 +625,68 @@ final class SyncHandler extends Handler {
                 transfer_sum_obj = transfer_sum_arr.getJSONObject(i);
                 ti_code = transfer_sum_obj.getString("ti_code");
 
+                if (!Utils.isNotEmpty(ti_code))continue;
+
                 sz_ti_code.delete(0,sz_ti_code.length()).append(details_where_sql).append("'").append(ti_code).append("'");
                 Logger.d("sz_ti_code:%s",sz_ti_code);
 
-                if (sz_ti_code.length() != 0){
+                sql_sb.delete(0,sql_sb.length()).append(transfer_orders_sql).append(sz_ti_code);
+                final JSONArray transfer_orders_arr = SQLiteHelper.getListToValue(sql_sb.toString(),err);
 
-                    sql_sb.delete(0,sql_sb.length()).append(transfer_orders_sql).append(sz_ti_code);
-                    final JSONArray transfer_orders_arr = SQLiteHelper.getListToValue(sql_sb.toString(),err);
+                sql_sb.delete(0,sql_sb.length()).append(transfer_retails_sql).append(sz_ti_code);
+                final JSONArray transfer_retails_arr = SQLiteHelper.getListToJson(sql_sb.toString(),err);
 
-                    sql_sb.delete(0,sql_sb.length()).append(transfer_retails_sql).append(sz_ti_code);
-                    final JSONArray transfer_retails_arr = SQLiteHelper.getListToJson(sql_sb.toString(),err);
+                sql_sb.delete(0,sql_sb.length()).append(transfer_cards_sql).append(sz_ti_code);
+                final JSONArray transfer_cards_arr = SQLiteHelper.getListToJson(sql_sb.toString(),err);
 
-                    sql_sb.delete(0,sql_sb.length()).append(transfer_cards_sql).append(sz_ti_code);
-                    final JSONArray transfer_cards_arr = SQLiteHelper.getListToJson(sql_sb.toString(),err);
+                sql_sb.delete(0,sql_sb.length()).append(transfer_gift_sql).append(sz_ti_code);
+                final JSONArray transfer_gift_arr = SQLiteHelper.getListToJson(sql_sb.toString(),err);
 
-                    sql_sb.delete(0,sql_sb.length()).append(transfer_recharge_sql).append(sz_ti_code);
-                    final JSONArray transfer_recharge_arr = SQLiteHelper.getListToJson(sql_sb.toString(),err);
+                sql_sb.delete(0,sql_sb.length()).append(transfer_recharge_sql).append(sz_ti_code);
+                final JSONArray transfer_recharge_arr = SQLiteHelper.getListToJson(sql_sb.toString(),err);
 
-                    sql_sb.delete(0,sql_sb.length()).append(transfer_refund_sql).append(sz_ti_code);
-                    final JSONArray transfer_refund_arr = SQLiteHelper.getListToJson(sql_sb.toString(),err);
+                sql_sb.delete(0,sql_sb.length()).append(transfer_refund_sql).append(sz_ti_code);
+                final JSONArray transfer_refund_arr = SQLiteHelper.getListToJson(sql_sb.toString(),err);
 
-                    if (null != transfer_orders_arr && null != transfer_retails_arr && transfer_cards_arr != null && transfer_recharge_arr != null && transfer_refund_arr != null){
-                        final JSONObject data = new JSONObject(),send_data = new JSONObject();
+                if (null != transfer_orders_arr && null != transfer_retails_arr && transfer_cards_arr != null && transfer_recharge_arr != null && transfer_refund_arr != null){
+                    final JSONObject data = new JSONObject(),send_data = new JSONObject();
 
-                        data.put("order_arr",transfer_sum_obj);
-                        data.put("order_list",transfer_orders_arr);
-                        data.put("retail_money",transfer_retails_arr);
-                        data.put("refund_money",transfer_refund_arr);
-                        data.put("recharge_money",transfer_recharge_arr);
-                        data.put("oncecard_money",transfer_cards_arr);
-                        data.put("shopping_money",new JSONArray());
+                    data.put("order_arr",transfer_sum_obj);
+                    data.put("order_list",transfer_orders_arr);
+                    data.put("retail_money",transfer_retails_arr);
+                    data.put("refund_money",transfer_refund_arr);
+                    data.put("recharge_money",transfer_recharge_arr);
+                    data.put("oncecard_money",transfer_cards_arr);
+                    data.put("shopping_money",transfer_gift_arr);
 
-                        Logger.d_json(data.toJSONString());
+                    Logger.d_json(data.toJSONString());
 
-                        send_data.put("appid",appid);
-                        send_data.put("data",data);
+                    send_data.put("appid",appid);
+                    send_data.put("data",data);
 
-                        JSONObject retJson = mHttp.sendPost(url + "/api/transfer/transfer_upload",HttpRequest.generate_request_parm(send_data,appSecret),true);
-                        switch (retJson.getIntValue("flag")){
-                            case 0:
-                                err.append(retJson.getString("info")).append(" sz_ti_code:").append(sz_ti_code);
-                                break;
-                            case 1:
-                                retJson = JSON.parseObject(retJson.getString("info"));
-                                final ContentValues values = new ContentValues();
-                                switch (retJson.getString("status")){
-                                    case "n":
-                                        values.put("upload_status",3);
-                                        err.append(retJson.getString("info")).append(" sz_ti_code:").append(sz_ti_code);
-                                        break;
-                                    case "y":
-                                        ti_code = retJson.getString("ti_code");
-                                        values.put("upload_status",2);
-                                        break;
-                                }
-                                values.put("upload_time",System.currentTimeMillis() / 1000);
-                                SQLiteHelper.execUpdateSql("transfer_info",values,"ti_code = ?",new String[]{ti_code},err);
-                                break;
-                        }
+                    JSONObject retJson = mHttp.sendPost(url + "/api/transfer/transfer_upload",HttpRequest.generate_request_parm(send_data,appSecret),true);
+                    switch (retJson.getIntValue("flag")){
+                        case 0:
+                            err.append(retJson.getString("info")).append(" sz_ti_code:").append(sz_ti_code);
+                            break;
+                        case 1:
+                            retJson = JSON.parseObject(retJson.getString("info"));
+                            final ContentValues values = new ContentValues();
+                            switch (retJson.getString("status")){
+                                case "n":
+                                    values.put("upload_status",3);
+                                    err.append(retJson.getString("info")).append(" sz_ti_code:").append(sz_ti_code);
+                                    break;
+                                case "y":
+                                    ti_code = retJson.getString("ti_code");
+                                    values.put("upload_status",2);
+                                    break;
+                            }
+                            values.put("upload_time",System.currentTimeMillis() / 1000);
+                            SQLiteHelper.execUpdateSql("transfer_info",values,"ti_code = ?",new String[]{ti_code},err);
+                            break;
                     }
                 }
-
             }
         }
         if (err.length() != 0){

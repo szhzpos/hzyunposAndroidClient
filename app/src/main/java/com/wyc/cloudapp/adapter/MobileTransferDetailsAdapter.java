@@ -14,6 +14,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
@@ -31,6 +32,26 @@ public final class MobileTransferDetailsAdapter extends AbstractTransferDetailsA
             _order_num = itemView.findViewById(R.id._order_num);
             _amt = itemView.findViewById(R.id._amt);
         }
+    }
+
+
+    public JSONArray getTransferRetails(){
+        return Utils.JsondeepCopy(mTransferRetails);
+    }
+
+    public JSONArray getTransferRefunds(){
+        return Utils.JsondeepCopy(mTransferRefunds);
+    }
+
+    public JSONArray getTransferDeposits(){
+        return Utils.JsondeepCopy(mTransferDeposits);
+    }
+    public JSONArray getTransferTimeCard(){
+        return Utils.JsondeepCopy(mTransferTimeCard);
+    }
+
+    public JSONArray getTransferGiftCard() {
+        return Utils.JsondeepCopy(mTransferGiftCard);
     }
 
     @NonNull
@@ -77,6 +98,7 @@ public final class MobileTransferDetailsAdapter extends AbstractTransferDetailsA
             cash_sum_amt += disposeTransferRefunds(ti_code);
             cash_sum_amt += disposeTransferDeposits(ti_code);
             cash_sum_amt += disposeTransferCardsc(ti_code);
+            cash_sum_amt += disposeTransferGift(ti_code);
 
             mTransferSumInfo.put("cas_id",cas_id);
             mTransferSumInfo.put("order_b_date",start_time);

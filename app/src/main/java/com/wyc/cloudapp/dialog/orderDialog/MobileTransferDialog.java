@@ -46,44 +46,46 @@ public final class MobileTransferDialog extends AbstractTransferDialog {
     private void initTransferInfoList(){
         mTransferDetailsAdapter.setDatas(mContext.getCashierId());
         final RecyclerView retail_details_list = findViewById(R.id.retail_details_list),refund_details_list = findViewById(R.id.refund_details_list),
-                recharge_details_list = findViewById(R.id.recharge_details_list),time_card_details = findViewById(R.id.time_card_details);
+                recharge_details_list = findViewById(R.id.recharge_details_list),time_card_details = findViewById(R.id.time_card_details),gift_card_details = findViewById(R.id.gift_card_details);
 
         retail_details_list.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
         refund_details_list.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
         recharge_details_list.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
         time_card_details.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
+        gift_card_details.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
 
         retail_details_list.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
         refund_details_list.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
         recharge_details_list.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
         time_card_details.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
+        gift_card_details.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
 
         retail_details_list.setAdapter(new MobileTransferDetailsAdapter(mContext,aggregateRetails()));
         refund_details_list.setAdapter(new MobileTransferDetailsAdapter(mContext,aggregateRefunds()));
         recharge_details_list.setAdapter(new MobileTransferDetailsAdapter(mContext,aggregateDeposits()));
         time_card_details.setAdapter(new MobileTransferDetailsAdapter(mContext,aggregateTimeCard()));
+        gift_card_details.setAdapter(new MobileTransferDetailsAdapter(mContext,aggregateGiftCard()));
 
         setFooterInfo();
     }
 
     private JSONArray aggregateRetails(){
-        JSONArray retails = mTransferDetailsAdapter.getTransferRetails();
+        final JSONArray retails = ((MobileTransferDetailsAdapter)mTransferDetailsAdapter).getTransferRetails();
         final JSONObject object = new JSONObject();
-        if (null != retails){
+        if (!retails.isEmpty()){
             final JSONObject transfer_sum = mTransferDetailsAdapter.getTransferSumInfo();
             double amt = transfer_sum.getDoubleValue("order_money");
             int num = transfer_sum.getIntValue("retail_total_orders");
 
             if (!Utils.equalDouble(amt,0.0) || num != 0){
-                object.put("pay_name","合计");
+                object.put("pay_name",mContext.getString(R.string.sum));
             }else{
-                object.put("pay_name","暂无数据");
+                object.put("pay_name",mContext.getString(R.string.Not_data));
             }
             object.put("order_num",num);
             object.put("pay_money",amt);
         }else{
-            retails = new JSONArray();
-            object.put("pay_name","暂无数据");
+            object.put("pay_name",mContext.getString(R.string.Not_data));
             object.put("order_num",0.0);
             object.put("pay_money",0.0);
         }
@@ -92,23 +94,22 @@ public final class MobileTransferDialog extends AbstractTransferDialog {
         return retails;
     }
     private JSONArray aggregateRefunds(){
-        JSONArray refunds = mTransferDetailsAdapter.getTransferRefunds();
+        final JSONArray refunds = ((MobileTransferDetailsAdapter)mTransferDetailsAdapter).getTransferRefunds();
         final JSONObject object = new JSONObject();
-        if (null != refunds){
+        if (!refunds.isEmpty()){
             final JSONObject transfer_sum = mTransferDetailsAdapter.getTransferSumInfo();
             double amt = transfer_sum.getDoubleValue("refund_money");
             int num = transfer_sum.getIntValue("refund_total_orders");
 
             if (!Utils.equalDouble(amt,0.0) || num != 0){
-                object.put("pay_name","合计");
+                object.put("pay_name",mContext.getString(R.string.sum));
             }else{
-                object.put("pay_name","暂无数据");
+                object.put("pay_name",mContext.getString(R.string.Not_data));
             }
             object.put("order_num",num);
             object.put("pay_money",amt);
         }else{
-            refunds = new JSONArray();
-            object.put("pay_name","暂无数据");
+            object.put("pay_name",mContext.getString(R.string.Not_data));
             object.put("order_num",0.0);
             object.put("pay_money",0.0);
         }
@@ -117,23 +118,22 @@ public final class MobileTransferDialog extends AbstractTransferDialog {
         return refunds;
     }
     private JSONArray aggregateDeposits(){
-        JSONArray deposits = mTransferDetailsAdapter.getTransferDeposits();
+        final JSONArray deposits = ((MobileTransferDetailsAdapter)mTransferDetailsAdapter).getTransferDeposits();
         final JSONObject object = new JSONObject();
-        if (null != deposits){
+        if (!deposits.isEmpty()){
             final JSONObject transfer_sum = mTransferDetailsAdapter.getTransferSumInfo();
             double amt = transfer_sum.getDoubleValue("recharge_money");
             int num = transfer_sum.getIntValue("deposits_total_orders");
 
             if (!Utils.equalDouble(amt,0.0) || num != 0){
-                object.put("pay_name","合计");
+                object.put("pay_name",mContext.getString(R.string.sum));
             }else{
-                object.put("pay_name","暂无数据");
+                object.put("pay_name",mContext.getString(R.string.Not_data));
             }
             object.put("order_num",num);
             object.put("pay_money",amt);
         }else{
-            deposits = new JSONArray();
-            object.put("pay_name","暂无数据");
+            object.put("pay_name",mContext.getString(R.string.Not_data));
             object.put("order_num",0.0);
             object.put("pay_money",0.0);
         }
@@ -143,29 +143,53 @@ public final class MobileTransferDialog extends AbstractTransferDialog {
     }
 
     private JSONArray aggregateTimeCard(){
-        JSONArray timeCard = mTransferDetailsAdapter.getTransferTimeCard();
+        final JSONArray timeCard = ((MobileTransferDetailsAdapter)mTransferDetailsAdapter).getTransferTimeCard();
         final JSONObject object = new JSONObject();
-        if (null != timeCard){
+        if (!timeCard.isEmpty()){
             final JSONObject transfer_sum = mTransferDetailsAdapter.getTransferSumInfo();
             double amt = transfer_sum.getDoubleValue("cards_money");
             int num = transfer_sum.getIntValue("cardsc_total_orders");
 
             if (!Utils.equalDouble(amt,0.0) || num != 0){
-                object.put("pay_name","合计");
+                object.put("pay_name",mContext.getString(R.string.sum));
             }else{
-                object.put("pay_name","暂无数据");
+                object.put("pay_name",mContext.getString(R.string.Not_data));
             }
             object.put("order_num",num);
             object.put("pay_money",amt);
         }else{
-            timeCard = new JSONArray();
-            object.put("pay_name","暂无数据");
+            object.put("pay_name",mContext.getString(R.string.Not_data));
             object.put("order_num",0.0);
             object.put("pay_money",0.0);
         }
         timeCard.add(object);
 
         return timeCard;
+    }
+
+    private JSONArray aggregateGiftCard(){
+        final JSONArray giftCard = ((MobileTransferDetailsAdapter)mTransferDetailsAdapter).getTransferGiftCard();
+        final JSONObject object = new JSONObject();
+        if (!giftCard.isEmpty()){
+            final JSONObject transfer_sum = mTransferDetailsAdapter.getTransferSumInfo();
+            double amt = transfer_sum.getDoubleValue("shopping_money");
+            int num = transfer_sum.getIntValue("gift_total_orders");
+
+            if (!Utils.equalDouble(amt,0.0) || num != 0){
+                object.put("pay_name",mContext.getString(R.string.sum));
+            }else{
+                object.put("pay_name",mContext.getString(R.string.Not_data));
+            }
+            object.put("order_num",num);
+            object.put("pay_money",amt);
+        }else{
+            object.put("pay_name",mContext.getString(R.string.Not_data));
+            object.put("order_num",0.0);
+            object.put("pay_money",0.0);
+        }
+        giftCard.add(object);
+
+        return giftCard;
     }
 
     private void setFooterInfo(){

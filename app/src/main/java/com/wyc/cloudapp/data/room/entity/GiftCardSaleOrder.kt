@@ -14,7 +14,10 @@ import com.alibaba.fastjson.JSONObject
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.activity.MainActivity
 import com.wyc.cloudapp.application.CustomApplication
-import com.wyc.cloudapp.bean.*
+import com.wyc.cloudapp.bean.GiftCardSaleResult
+import com.wyc.cloudapp.bean.ICardPay
+import com.wyc.cloudapp.bean.PayDetailInfo
+import com.wyc.cloudapp.bean.UnifiedPayResult
 import com.wyc.cloudapp.constants.InterfaceURL
 import com.wyc.cloudapp.data.SQLiteHelper
 import com.wyc.cloudapp.data.room.AppDatabase
@@ -148,7 +151,7 @@ class GiftCardSaleOrder():ICardPay<GiftCardSaleDetail> {
                 where_sql.append(" and online_order_no like '%").append(order_no).append("'")
             }
             where_sql.append(" order by time desc")
-            Logger.d("sql:%s",where_sql)
+            Logger.d("sql:%s", where_sql)
             return AppDatabase.getInstance().GiftCardSaleOrderDao().getOrderById(SimpleSQLiteQuery(where_sql.toString()))
         }
     }
@@ -270,7 +273,7 @@ class GiftCardSaleOrder():ICardPay<GiftCardSaleDetail> {
         return saleInfo
     }
 
-    fun setSaleInfo(value:List<GiftCardSaleDetail>?){
+    fun setSaleInfo(value: List<GiftCardSaleDetail>?){
         saleInfo = value ?: ArrayList()
         saleInfo.listIterator().forEach {
             it.setOrder_no(order_no)
@@ -410,9 +413,10 @@ class GiftCardSaleOrder():ICardPay<GiftCardSaleDetail> {
             val stringBuilder = StringBuilder()
             val saleInfoList = order_info.getSaleInfo()
             val line_58 = application.getString(R.string.line_58)
-            stringBuilder.append(line_58).append(new_line).append(context.getString(R.string.gift_card_header_print)).append(new_line)
+            stringBuilder.append(line_58).append(Printer.commandToStr(Printer.LINE_SPACING_2)).append("名称  卡号      面额       售价")
+                    .append(Printer.commandToStr(Printer.LINE_SPACING_2)).append(new_line).append(line_58).append(new_line)
             for (saleInfo in saleInfoList) {
-                stringBuilder.append(String.format(Locale.CHINA, "%s\n     %s   %.2f元   %.2f元\n", saleInfo.getName(), saleInfo.getGift_card_code(), saleInfo.getFace_value(), saleInfo.getPrice(), new_line))
+                stringBuilder.append(String.format(Locale.CHINA, "%s\n     %s     %.2f元   %.2f元\n", saleInfo.getName(), saleInfo.getGift_card_code(), saleInfo.getFace_value(), saleInfo.getPrice(), new_line))
             }
             stringBuilder.append(line_58).append(new_line)
             info.append(stringBuilder)

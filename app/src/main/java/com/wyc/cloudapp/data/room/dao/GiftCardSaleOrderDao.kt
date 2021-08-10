@@ -11,7 +11,7 @@ interface GiftCardSaleOrderDao {
     @RawQuery
     fun getOrderById(query: SimpleSQLiteQuery):List<GiftCardSaleOrder>
 
-    @Query("select count(rowId) as counts from GiftCardSaleOrder")
+    @Query("select count(rowId) as counts from GiftCardSaleOrder where date(time,'unixepoch' ) = date('now')")
     fun count(): Int
 
     @Query("select count(1) as counts from GiftCardSaleDetail where order_no =:order_no")

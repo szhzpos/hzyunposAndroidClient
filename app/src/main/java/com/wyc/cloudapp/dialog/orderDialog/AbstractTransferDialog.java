@@ -166,6 +166,7 @@ public abstract class AbstractTransferDialog extends AbstractDialogMainActivity 
             info.append(line).append(new_line);
 
             JSONObject tmp;
+            //商品销售
             final JSONArray retail_moneys = Utils.getNullObjectAsEmptyJsonArray(order_info,"retail_moneys");
             if (!retail_moneys.isEmpty()){
                 info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(asterisk).append(context.getString(R.string.t_f_retail_sz)).append(asterisk).append(new_line).append(Printer.commandToStr(Printer.ALIGN_LEFT));
@@ -177,7 +178,7 @@ public abstract class AbstractTransferDialog extends AbstractDialogMainActivity 
                 }
                 info.append(line).append(new_line);
             }
-
+            //商品退货
             final JSONArray refund_moneys = Utils.getNullObjectAsEmptyJsonArray(order_info,"refund_moneys");
             if (!refund_moneys.isEmpty()){
                 info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(asterisk).append(context.getString(R.string.t_f_refund_sz)).append(asterisk).append(new_line).append(Printer.commandToStr(Printer.ALIGN_LEFT));
@@ -189,7 +190,7 @@ public abstract class AbstractTransferDialog extends AbstractDialogMainActivity 
                 }
                 info.append(line).append(new_line);
             }
-
+            //会员充值
             final JSONArray recharge_moneys = Utils.getNullObjectAsEmptyJsonArray(order_info,"recharge_moneys");
             if (!recharge_moneys.isEmpty()){
                 info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(asterisk).append(context.getString(R.string.t_f_deposit_sz)).append(asterisk).append(new_line).append(Printer.commandToStr(Printer.ALIGN_LEFT));
@@ -201,6 +202,7 @@ public abstract class AbstractTransferDialog extends AbstractDialogMainActivity 
                 }
                 info.append(line).append(new_line);
             }
+            //次卡销售
             final JSONArray oncecard_moneys = Utils.getNullObjectAsEmptyJsonArray(order_info,"oncecard_moneys");
             if (!oncecard_moneys.isEmpty()){
                 info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(asterisk).append(context.getString(R.string.t_f_cards_sz)).append(asterisk).append(new_line).append(Printer.commandToStr(Printer.ALIGN_LEFT));
@@ -212,9 +214,22 @@ public abstract class AbstractTransferDialog extends AbstractDialogMainActivity 
                 }
                 info.append(line).append(new_line);
             }
+            //购物卡销售
+            final JSONArray gift_moneys = Utils.getNullObjectAsEmptyJsonArray(order_info,"shopping_moneys");
+            if (!gift_moneys.isEmpty()){
+                info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(asterisk).append(context.getString(R.string.t_f_gift_sz)).append(asterisk).append(new_line).append(Printer.commandToStr(Printer.ALIGN_LEFT));
+                info.append(context.getString(R.string.t_f_detail_h_sz).replace("-"," ")).append(new_line).append(line).append(new_line);
+                for (int i = 0,size = gift_moneys.size();i < size;i++){
+                    tmp = gift_moneys.getJSONObject(i);
+                    info.append(Printer.printThreeData(3,Utils.getNullStringAsEmpty(tmp,"name"),no_visible ? asterisk : String.format(Locale.CHINA,"%.2f",tmp.getDoubleValue("pay_money")),
+                            String.valueOf(tmp.getIntValue("order_num")))).append(new_line);
+                }
+                info.append(line).append(new_line);
+            }
 
             double order_money = order_info.getDoubleValue("order_money"),refund_money = order_info.getDoubleValue("refund_money"),
-                    recharge_money = order_info.getDoubleValue("recharge_money"),cards_money = order_info.getDoubleValue("cards_money");
+                    recharge_money = order_info.getDoubleValue("recharge_money"),cards_money = order_info.getDoubleValue("cards_money"),
+                    gift_money = order_info.getDoubleValue("shopping_money");
 
             if (!Utils.equalDouble(order_money,0.0))
                 info.append(context.getString(R.string.t_f_retail_s_sz)).append(no_visible ? asterisk : String.format(Locale.CHINA,"%.2f",order_money)).append(new_line);
@@ -222,6 +237,8 @@ public abstract class AbstractTransferDialog extends AbstractDialogMainActivity 
                 info.append(context.getString(R.string.t_f_deposit_s_sz)).append(no_visible ? asterisk : String.format(Locale.CHINA,"%.2f",recharge_money)).append(new_line);
             if (!Utils.equalDouble(cards_money,0.0))
                 info.append(context.getString(R.string.t_f_cards_s_sz)).append(no_visible ? asterisk : String.format(Locale.CHINA,"%.2f",cards_money)).append(new_line);
+            if (!Utils.equalDouble(gift_money,0.0))
+                info.append(context.getString(R.string.t_f_gift_s_sz)).append(no_visible ? asterisk : String.format(Locale.CHINA,"%.2f",gift_money)).append(new_line);
             if (!Utils.equalDouble(refund_money,0.0))
                 info.append(context.getString(R.string.t_f_refund_s_sz)).append(no_visible ? asterisk : String.format(Locale.CHINA,"%.2f",refund_money)).append(new_line);
 
@@ -282,11 +299,12 @@ public abstract class AbstractTransferDialog extends AbstractDialogMainActivity 
     private static boolean getPrintOrderInfo(final String ti_code,final JSONObject order_info) {
         boolean code = false;
         final String details_where_sql = " where ti_code = '"+ ti_code +"'",
-                transfer_sum_sql = "SELECT a.sj_money,a.cards_num,a.cards_money,a.order_money,datetime(a.order_e_date, 'unixepoch', 'localtime') order_e_date,datetime(a.order_b_date, 'unixepoch', 'localtime') order_b_date" +
+                transfer_sum_sql = "SELECT a.shopping_num,a.shopping_money,a.sj_money,a.cards_num,a.cards_money,a.order_money,datetime(a.order_e_date, 'unixepoch', 'localtime') order_e_date,datetime(a.order_b_date, 'unixepoch', 'localtime') order_b_date" +
                 ",a.recharge_num,a.recharge_money,a.refund_num, a.refund_money,a.cashbox_money,a.sum_money,a.ti_code,datetime(a.transfer_time, 'unixepoch', 'localtime') transfer_time,a.order_num," +
                 "a.cas_id,a.stores_id,b.stores_name,b.telphone,b.region,c.cas_name FROM transfer_info a inner join shop_stores b on a.stores_id = b.stores_id inner join cashier_info c on a.cas_id = c.cas_id" + details_where_sql,
                 transfer_retails_sql = "SELECT a.order_num,b.name,a.pay_money FROM transfer_money_info a left join pay_method b on a.pay_method = b.pay_method_id" + details_where_sql,
                 transfer_cards_sql = "SELECT a.order_num,b.name,a.pay_money  FROM transfer_once_cardsc a left join pay_method b on a.pay_method = b.pay_method_id" + details_where_sql,
+                transfer_gift_sql = "SELECT a.order_num,b.name,a.pay_money  FROM transfer_gift_money a left join pay_method b on a.pay_method = b.pay_method_id" + details_where_sql,
                 transfer_recharge_sql = "SELECT a.order_num,b.name,a.pay_money  FROM transfer_recharge_money a left join pay_method b on a.pay_method = b.pay_method_id" + details_where_sql,
                 transfer_refund_sql = "SELECT a.order_num,b.name,a.pay_money FROM transfer_refund_money a left join pay_method b on a.pay_method = b.pay_method_id" + details_where_sql;
 
@@ -294,14 +312,15 @@ public abstract class AbstractTransferDialog extends AbstractDialogMainActivity 
             final StringBuilder err = new StringBuilder();
 
             final JSONArray transfer_retails_arr = SQLiteHelper.getListToJson(transfer_retails_sql,err),transfer_cards_arr = SQLiteHelper.getListToJson(transfer_cards_sql,err),
-                    transfer_recharge_arr = SQLiteHelper.getListToJson(transfer_recharge_sql,err),transfer_refund_arr = SQLiteHelper.getListToJson(transfer_refund_sql,err);
+                    transfer_recharge_arr = SQLiteHelper.getListToJson(transfer_recharge_sql,err),transfer_refund_arr = SQLiteHelper.getListToJson(transfer_refund_sql,err),
+                    gift_arr = SQLiteHelper.getListToJson(transfer_gift_sql,err);
 
-            if (null != transfer_retails_arr && transfer_cards_arr != null && transfer_recharge_arr != null && transfer_refund_arr != null){
+            if (null != transfer_retails_arr && transfer_cards_arr != null && transfer_recharge_arr != null && transfer_refund_arr != null && null != gift_arr){
                 order_info.put("retail_moneys",transfer_retails_arr);
                 order_info.put("refund_moneys",transfer_refund_arr);
                 order_info.put("recharge_moneys",transfer_recharge_arr);
                 order_info.put("oncecard_moneys",transfer_cards_arr);
-                order_info.put("shopping_moneys",new JSONArray());
+                order_info.put("shopping_moneys",gift_arr);
 
                 Logger.d_json(order_info.toJSONString());
 

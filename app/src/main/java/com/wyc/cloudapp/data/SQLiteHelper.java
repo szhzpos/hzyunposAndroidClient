@@ -47,7 +47,7 @@ import static android.database.Cursor.FIELD_TYPE_NULL;
 import static android.database.Cursor.FIELD_TYPE_STRING;
 
 public final class SQLiteHelper extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 10;
+    public static final int DATABASE_VERSION = 11;
     private static volatile SQLiteDatabase mDb;
 
     private SQLiteHelper(Context context,final String databaseName){
@@ -118,10 +118,16 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 "    barcode_id    VARCHAR,\n" +
                 "    fuzhu_barcode VARCHAR,\n" +
                 "    status        INTEGER\n" +
-                ");\n";
+                ");\n",sql_transfer_gift_info = "CREATE TABLE IF NOT EXISTS transfer_gift_money (\n" +//交班购物卡信息
+                "    order_num  INTEGER DEFAULT (0),\n" +
+                "    pay_money  REAL,\n" +
+                "    pay_method INTEGER,\n" +
+                "    ti_code    VARCHAR,\n" +
+                "    ti_id      INTEGER PRIMARY KEY AUTOINCREMENT);" +
         update_list.add(sales_info_sql);
         update_list.add(sale_operator_info_sql);
         update_list.add(auxiliary_barcode_sql);
+        update_list.add(sql_transfer_gift_info);
 
         update_list.add("CREATE TABLE IF NOT EXISTS `timeCardSaleOrder` (`order_no` TEXT NOT NULL, `online_order_no` TEXT, `vip_openid` TEXT, `vip_card_no` TEXT, `vip_mobile` TEXT, `vip_name` TEXT, `amt` REAL NOT NULL, `status` INTEGER NOT NULL DEFAULT 0, `saleman` TEXT, `cas_id` TEXT,`transfer_status` INTEGER NOT NULL DEFAULT 0, `time` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`order_no`))");
         update_list.add("CREATE TABLE IF NOT EXISTS `timeCardSaleDetails` (`rowId` INTEGER NOT NULL, `num` INTEGER NOT NULL, `amt` REAL NOT NULL, `price` REAL NOT NULL, `once_card_id` INTEGER NOT NULL, `name` TEXT, `discountAmt` REAL NOT NULL, `order_no` TEXT NOT NULL, PRIMARY KEY(`rowId`, `order_no`))");
@@ -131,34 +137,40 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         update_list.add("CREATE TABLE IF NOT EXISTS `GiftCardSaleDetail` (`rowId` INTEGER NOT NULL, `num` INTEGER NOT NULL, `amt` REAL NOT NULL, `price` REAL NOT NULL, `face_value` REAL NOT NULL, `gift_card_code` TEXT NOT NULL, `card_chip_no` TEXT NOT NULL, `name` TEXT, `discountAmt` REAL NOT NULL, `order_no` TEXT NOT NULL, PRIMARY KEY(`rowId`, `order_no`))");
         update_list.add("CREATE TABLE IF NOT EXISTS `GiftCardPayDetail` (`rowId` INTEGER NOT NULL, `order_no` TEXT NOT NULL, `pay_method_id` INTEGER NOT NULL, `amt` REAL NOT NULL, `zl_amt` REAL NOT NULL, `online_pay_no` TEXT, `remark` TEXT, `status` INTEGER NOT NULL, `cas_id` TEXT, `pay_time` TEXT, PRIMARY KEY(`rowId`, `order_no`))");
         //修改
-        if(!checkColumnExists(db,"member_order_info","sc_id")){
+        if(checkColumnNotExists(db, "member_order_info", "sc_id")){
             modify_list.add("ALTER TABLE member_order_info ADD COLUMN sc_id  VARCHAR");
         }
-        if(!checkColumnExists(db,"member_order_info","order_type")){//1 充值单  2 会员退款单
+        if(checkColumnNotExists(db, "member_order_info", "order_type")){//1 充值单  2 会员退款单
             modify_list.add("ALTER TABLE member_order_info ADD COLUMN order_type  INTEGER DEFAULT (1)");
         }
-        if(!checkColumnExists(db,"member_order_info","origin_order_code")){
+        if(checkColumnNotExists(db, "member_order_info", "origin_order_code")){
             modify_list.add("ALTER TABLE member_order_info ADD COLUMN origin_order_code  VARCHAR");
         }
-        if(!checkColumnExists(db,"pay_method","is_moling")){
+        if(checkColumnNotExists(db, "pay_method", "is_moling")){
             modify_list.add("ALTER TABLE pay_method ADD COLUMN is_moling INTEGER DEFAULT (1)");
         }
-        if(!checkColumnExists(db,"shop_stores","wh_id")){
+        if(checkColumnNotExists(db, "shop_stores", "wh_id")){
             modify_list.add("ALTER TABLE shop_stores ADD COLUMN wh_id VARCHAR");
         }
 
-        if(!checkColumnExists(db,"shop_category","category_code")){
+        if(checkColumnNotExists(db, "shop_category", "category_code")){
             modify_list.add("ALTER TABLE shop_category ADD COLUMN category_code VARCHAR");
         }
-        if(!checkColumnExists(db,"barcode_info","current_goods")){
+        if(checkColumnNotExists(db, "barcode_info", "current_goods")){
             modify_list.add("ALTER TABLE barcode_info ADD COLUMN current_goods INTEGER DEFAULT (1)");
         }
-        if(!checkColumnExists(db,"barcode_info","spec_str")){
+        if(checkColumnNotExists(db, "barcode_info", "spec_str")){
             modify_list.add("ALTER TABLE barcode_info ADD COLUMN spec_str VARCHAR");
         }
-        if(!checkColumnExists(db,"barcode_info","cash_flow_ratio")){
+        if(checkColumnNotExists(db, "barcode_info", "cash_flow_ratio")){
             modify_list.add("ALTER TABLE barcode_info ADD COLUMN cash_flow_ratio REAL DEFAULT (0.00)");
         }
+
+        if(checkColumnNotExists(db, "transfer_info", "shopping_num") && checkColumnNotExists(db, "transfer_info", "shopping_money")){
+            modify_list.add("ALTER TABLE transfer_info ADD COLUMN shopping_num INTEGER DEFAULT (0)");
+            modify_list.add("ALTER TABLE transfer_info ADD COLUMN shopping_money REAL DEFAULT (0.00)");
+        }
+
 
         try {
             db.beginTransaction();
@@ -235,8 +247,8 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
        return code;
     }
 
-    private static boolean checkColumnExists(SQLiteDatabase db,String tableName, String columnName) throws SQLiteException {
-        boolean result = false ;
+    private static boolean checkColumnNotExists(SQLiteDatabase db, String tableName, String columnName) throws SQLiteException {
+        boolean result;
         Cursor cursor = null ;
         try{
             cursor = db.rawQuery( "select 1 from sqlite_master where name = ? and sql like ?"
@@ -247,7 +259,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 cursor.close() ;
             }
         }
-        return result ;
+        return !result;
     }
 
     private static boolean execSQLByBatchFromJson(@NonNull JSONArray jsonArray, String table, StringBuilder err, int type) {
