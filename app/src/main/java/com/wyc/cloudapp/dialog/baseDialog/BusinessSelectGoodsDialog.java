@@ -9,7 +9,6 @@ import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
@@ -58,14 +57,14 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
     private String mGoodsCategory;
 
     public BusinessSelectGoodsDialog(@NonNull MainActivity context) {
-        super(context, context.getString(R.string.scan_code_label));
+        this(context, null);
     }
 
     public BusinessSelectGoodsDialog(@NonNull MainActivity context,final JSONObject object) {
         this(context,false,object);
     }
     public BusinessSelectGoodsDialog(@NonNull MainActivity context,boolean source,final JSONObject object) {
-        this(context);
+        super(context, context.getString(R.string.scan_code_label));
         if (isModify = object != null){
             mContentObj = Utils.JsondeepCopy(object);
         }
@@ -97,7 +96,6 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
         if (isModify){
-            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
             showGoods();
         }
     }
@@ -271,7 +269,7 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
                 where_sql = where_sql.concat(" and category_id in ("+ mGoodsCategory +")");
             }
             final StringBuilder err = new StringBuilder();
-            final JSONArray barcode_ids = SQLiteHelper.getListToValue("select barcode_id from barcode_info" + where_sql,err);
+            final JSONArray barcode_ids = SQLiteHelper.getListToValue("select barcode_id from barcode_info" + where_sql + " union select barcode_id from auxiliary_barcode_info where status = 1 and fuzhu_barcode = '"+ barcode +"'",err);
             if (barcode_ids != null){
                 int size = barcode_ids.size();
                 if (size != 0){
@@ -309,9 +307,11 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
         double num = 0.0,price = 0.0;
 
         if (isModify){
-            mBarcodeEt.setText(object.getString("barcode"));
             mBarcodeEt.setInputType(InputType.TYPE_NULL);
         }
+
+        mBarcodeEt.setText(object.getString("barcode"));
+
         num = Utils.getNotKeyAsNumberDefault(object,"xnum",1.00);
         price = object.getDoubleValue("price");
 
@@ -321,10 +321,12 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
 
         if (mPriceEt != null){
             mPriceEt.requestFocus();
-            CustomApplication.runInMainThread(()->mPriceEt.selectAll());
+            CustomApplication.postDelayed(()->{Utils.setFocus(mContext,mPriceEt);},50);
             mPriceEt.setText(String.valueOf(price));
-        }else
+        }else{
             mNumEt.requestFocus();
+        }
+
 
         if (isModify){
             mUnitTv.setTag(object.getString("unit_id"));
