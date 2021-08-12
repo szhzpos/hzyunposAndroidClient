@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
     <external-path name="hzposupdatefile" path="hzposupdatefile"/>
+    <external-path name="img_pic" path="hzYunPos/goods_img/"/>
     <!--files-path  相当于 getFilesDir（）-->
     <files-path
         name="files"

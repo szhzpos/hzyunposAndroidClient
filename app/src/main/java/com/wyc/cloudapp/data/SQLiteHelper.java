@@ -72,8 +72,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                     try {
                         final SQLiteHelper sqLiteHelper = new SQLiteHelper(context,DATABASE_NAME(storesId));
                         mDb = sqLiteHelper.getWritableDatabase();
-
-                    }catch (SQLiteCantOpenDatabaseException e){
+                    }catch (SQLiteException e){
                         CustomApplication.execute(()-> {
                             Looper.prepare();
                             MyDialog.ToastMessage("打开数据库错误：" + e.getLocalizedMessage(), null);
@@ -136,6 +135,13 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         update_list.add("CREATE TABLE IF NOT EXISTS `GiftCardSaleOrder` (`order_no` TEXT NOT NULL, `online_order_no` TEXT NOT NULL, `amt` REAL NOT NULL, `status` INTEGER NOT NULL DEFAULT 0, `saleId` TEXT NOT NULL, `cas_id` TEXT NOT NULL, `store_id` TEXT DEFAULT '-1', `time` INTEGER NOT NULL DEFAULT 0, `transfer_status` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`order_no`))");
         update_list.add("CREATE TABLE IF NOT EXISTS `GiftCardSaleDetail` (`rowId` INTEGER NOT NULL, `num` INTEGER NOT NULL, `amt` REAL NOT NULL, `price` REAL NOT NULL, `face_value` REAL NOT NULL, `gift_card_code` TEXT NOT NULL, `card_chip_no` TEXT NOT NULL, `name` TEXT, `discountAmt` REAL NOT NULL, `order_no` TEXT NOT NULL, PRIMARY KEY(`rowId`, `order_no`))");
         update_list.add("CREATE TABLE IF NOT EXISTS `GiftCardPayDetail` (`rowId` INTEGER NOT NULL, `order_no` TEXT NOT NULL, `pay_method_id` INTEGER NOT NULL, `amt` REAL NOT NULL, `zl_amt` REAL NOT NULL, `online_pay_no` TEXT, `remark` TEXT, `status` INTEGER NOT NULL, `cas_id` TEXT, `pay_time` TEXT, PRIMARY KEY(`rowId`, `order_no`))");
+
+        if (oldVersion <= 10){
+            update_list.add("delete from barcode_info;");
+            update_list.add("DROP TABLE pay_method;");
+            update_list.add("CREATE TABLE `pay_method` (`pay_method_id` INTEGER NOT NULL, `name` TEXT, `status` INTEGER, `remark` TEXT, `is_check` INTEGER, `shortcut_key` TEXT, `sort` INTEGER, `xtype` TEXT, `pay_img` TEXT, `master_img` TEXT, `is_show_client` INTEGER, `is_cardno` INTEGER DEFAULT 1, `is_scan` INTEGER DEFAULT 2, `wr_btn_img` TEXT, `unified_pay_order` TEXT, `unified_pay_query` TEXT, `rule` TEXT, `is_open` INTEGER DEFAULT 1, `support` TEXT, `is_enable` INTEGER DEFAULT 1, PRIMARY KEY(`pay_method_id`));");
+        }
+
         //修改
         if(checkColumnNotExists(db, "member_order_info", "sc_id")){
             modify_list.add("ALTER TABLE member_order_info ADD COLUMN sc_id  VARCHAR");
@@ -170,7 +176,6 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             modify_list.add("ALTER TABLE transfer_info ADD COLUMN shopping_num INTEGER DEFAULT (0)");
             modify_list.add("ALTER TABLE transfer_info ADD COLUMN shopping_money REAL DEFAULT (0.00)");
         }
-
 
         try {
             db.beginTransaction();
@@ -251,8 +256,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         boolean result;
         Cursor cursor = null ;
         try{
-            cursor = db.rawQuery( "select 1 from sqlite_master where name = ? and sql like ?"
-                    , new String[]{tableName , "%" + columnName + "%"} );
+            cursor = db.rawQuery( "select 1 from sqlite_master where name = '"+ tableName +"' and sql like '%" + columnName + "%'", null);
             result = null != cursor && cursor.moveToFirst() ;
         }finally{
             if(null != cursor && !cursor.isClosed()){

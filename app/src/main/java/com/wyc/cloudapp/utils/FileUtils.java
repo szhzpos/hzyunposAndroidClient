@@ -12,6 +12,7 @@ import android.provider.MediaStore;
 
 import androidx.core.content.FileProvider;
 
+import com.wyc.cloudapp.BuildConfig;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.logger.Logger;
 
@@ -184,12 +185,15 @@ public class FileUtils {
     public static Uri createCropImageFile() {
         String imageFileName = "clip_wyc_." +  Bitmap.CompressFormat.JPEG.toString();
         String storageDir = CustomApplication.getGoodsImgSavePath();
-        return Uri.parse("file://" + File.separator +storageDir + File.separator + imageFileName);
+        return Uri.parse("file://" + File.separator +storageDir + imageFileName);
     }
     public static Uri createCaptureImageFile() {
         String imageFileName = "capture_wyc_." +  Bitmap.CompressFormat.JPEG.toString();
         String storageDir = CustomApplication.getGoodsImgSavePath();
-        return Uri.parse("file://" + File.separator +storageDir + File.separator + imageFileName);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+            return FileProvider.getUriForFile(CustomApplication.self(), BuildConfig.APPLICATION_ID + ".FileProvider", new File(storageDir + imageFileName));
+        }
+        return Uri.parse("file://" + File.separator +storageDir + imageFileName);
     }
 
     public static String getRealPathFromURI(Context context, Uri contentURI) {

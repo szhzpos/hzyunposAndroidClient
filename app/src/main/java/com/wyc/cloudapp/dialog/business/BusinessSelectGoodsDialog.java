@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.dialog.baseDialog;
+package com.wyc.cloudapp.dialog.business;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -27,6 +27,7 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.constants.WholesalePriceType;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -36,7 +37,7 @@ import java.util.Locale;
  * @ProjectName: CloudApp
  * @Package: com.wyc.cloudapp.dialog.goods
  * @ClassName: BusinessSelectGoodsDialog
- * @Description: 业务单价选择商品对话框
+ * @Description: 业务单据选择商品对话框
  * @Author: wyc
  * @CreateDate: 2021/2/25 17:10
  * @UpdateUser: 更新者
@@ -112,12 +113,23 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
             setCodeAndExit(1);
         }else if (id == R.id.cancel_btn){
             setCodeAndExit(0);
+        }else if (id == R.id.num_tv || id == R.id.price_tv){
+            final EditText editText = (EditText)v;
+            final Object o = editText.getTag();
+            if (null == o){
+                editText.selectAll();
+                editText.setTag(true);
+            }else {
+                editText.setTag(null);
+                editText.setSelection(editText.getSelectionStart(),editText.getSelectionEnd());
+            }
         }
     }
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         final int id = v.getId();
         if (hasFocus){
+            v.setTag(true);
             if (id == R.id.num_tv){
                 mNumEt.removeTextChangedListener(mTextWatcherWithNum);
                 mNumEt.addTextChangedListener(mTextWatcherWithNum);
@@ -149,12 +161,14 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
         mNumEt = findViewById(R.id.num_tv);
         mUnitTv = findViewById(R.id.unit_tv);
         mNumEt.setOnFocusChangeListener(this);
+        mNumEt.setOnClickListener(this);
 
         final LinearLayout price_amt_layout = findViewById(R.id.price_and_amt_layout);
         if (price_amt_layout != null){
-            mPriceEt = findViewById(R.id.price_tv);
-            mAmtTv = findViewById(R.id.amt_tv);
+            mPriceEt = price_amt_layout.findViewById(R.id.price_tv);
+            mAmtTv = price_amt_layout.findViewById(R.id.amt_tv);
             mPriceEt.setOnFocusChangeListener(this);
+            mPriceEt.setOnClickListener(this);
         }
     }
     protected final TextWatcher mTextWatcherWithNum = new TextWatcher() {
@@ -320,11 +334,11 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
         mNumEt.setText(String.valueOf(num));
 
         if (mPriceEt != null){
-            mPriceEt.requestFocus();
             CustomApplication.postDelayed(()->{Utils.setFocus(mContext,mPriceEt);},50);
             mPriceEt.setText(String.valueOf(price));
+            if (mAmtTv != null)mAmtTv.setText(String.format(Locale.CHINA,"%.2f",num * price));
         }else{
-            mNumEt.requestFocus();
+            CustomApplication.postDelayed(()->{Utils.setFocus(mContext,mNumEt);},50);
         }
 
 
@@ -342,19 +356,19 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
         String key;
         switch (price_type){//1零售价，2优惠价，3配送价，4批发价，5参考进货价
             case WholesalePriceType.RETAIL_PRICE:
-                key = "ps_price,cost_price,trade_price,buying_price,retail_price price";
+                key = "ps_price,cost_price,trade_price,(buying_price * conversion) buying_price,retail_price price";
                 break;
             case WholesalePriceType.COST_PRICE:
-                key = "ps_price,cost_price price,trade_price,buying_price,retail_price";
+                key = "ps_price,cost_price price,trade_price,(buying_price * conversion) buying_price,retail_price";
                 break;
             case WholesalePriceType.PS_PRICE:
-                key = "ps_price price,cost_price,trade_price,buying_price,retail_price";
+                key = "ps_price price,cost_price,trade_price,(buying_price * conversion) buying_price,retail_price";
                 break;
             case WholesalePriceType.TRADE_PRICE:
-                key = "ps_price,cost_price,trade_price price,buying_price,retail_price";
+                key = "ps_price,cost_price,trade_price price,(buying_price * conversion) buying_price,retail_price";
                 break;
             default:
-                key = "ps_price,cost_price,trade_price,buying_price price,retail_price";
+                key = "ps_price,cost_price,trade_price,(buying_price * conversion) price,retail_price";
         }
 
         final String sql = "SELECT points_max_money,stock_unit_name,stock_unit_id,conversion,attr_code,\n" +

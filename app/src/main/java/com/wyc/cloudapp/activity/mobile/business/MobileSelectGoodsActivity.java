@@ -406,7 +406,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
         }
 
         private final String common_sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(case type when 2 then only_coding else barcode end,'') barcode," +
-                "type,buying_price price,retail_price,cost_price,ps_price,trade_price,ifnull(img_url,'') img_url from barcode_info " +
+                "type,(buying_price * conversion) price,retail_price,cost_price,ps_price,trade_price,ifnull(img_url,'') img_url from barcode_info " +
                 "where (goods_status = 1 and barcode_status = 1) and ";
 
         private void setDatas(int id){
@@ -433,7 +433,8 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
             final StringBuilder err = new StringBuilder();
             String sql_where,full_sql;
 
-            sql_where = "(barcode like '%" + search_content + "%' or only_coding like '%" + search_content +"%' or mnemonic_code like '%" + search_content +"%')";
+            sql_where = "( goods_title like '%"+ search_content +"%' or barcode like '%" + search_content + "%' or only_coding like '%" + search_content +"%' or mnemonic_code like '%" + search_content +"%' or " +
+                    "barcode_id in (select barcode_id from auxiliary_barcode_info where status = 1 and fuzhu_barcode = '" + search_content + "'))";
             if (Utils.isNotEmpty(mContext.mGoodsCategory)){
                 sql_where = sql_where.concat(" and category_id in (" + mContext.mGoodsCategory +")");
             }

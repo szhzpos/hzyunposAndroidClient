@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -31,7 +30,7 @@ import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
-import com.wyc.cloudapp.dialog.baseDialog.BusinessSelectGoodsDialog;
+import com.wyc.cloudapp.dialog.business.BusinessSelectGoodsDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
@@ -273,6 +272,7 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractMobileActi
                 final Intent intent = new Intent(MobilePracticalInventoryAddOrderActivity.this, MobileSelectGoodsActivity.class);
                 intent.putExtra(MobileSelectGoodsActivity.TITLE_KEY,getString(R.string.select_goods_label));
                 intent.putExtra(MobileSelectGoodsActivity.IS_SEL_KEY,true);
+                intent.putExtra(MobileSelectGoodsActivity.MODIFIABLE,false);
                 intent.putExtra(MobileSelectGoodsActivity.TASK_CATEGORY_KEY,mTaskCategory);
                 startActivityForResult(intent, MobileSelectGoodsActivity.SELECT_GOODS_CODE);
             }else if (id == R.id.m_business_scan_btn){
@@ -434,9 +434,17 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractMobileActi
                     if (HttpUtils.checkBusinessSuccess(info)){
                         final JSONArray data = Utils.getNullObjectAsEmptyJsonArray(info,"data");
                         if (data.isEmpty()){
-                            MyDialog.ToastMessageInMainThread("当前没有盘点任务...");
+                            MyDialog.ToastMessageInMainThread(getString(R.string.none_inventory_task_hint));
+                            finish();
                         }else {
-                            CustomApplication.runInMainThread(()->setInventoryTask(data.getJSONObject(0)));
+                            final JSONObject object = data.getJSONObject(0);
+                            if (Utils.getNotKeyAsNumberDefault(object,"status",1) != 3)
+                                CustomApplication.runInMainThread(()->setInventoryTask(object));
+                            else{
+                                finish();
+                                MyDialog.ToastMessageInMainThread(getString(R.string.none_inventory_task_hint));
+                            }
+
                         }
                     }else throw new JSONException(info.getString("info"));
                 }catch (JSONException e){

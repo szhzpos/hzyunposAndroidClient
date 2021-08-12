@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
  * @ProjectName: AndroidClient
  * @Package: com.wyc.cloudapp.adapter
  * @ClassName: AbstractSelectAdapter
- * @Description: java类作用描述
+ * @Description: 选择功能适配器
  * @Author: wyc
  * @CreateDate: 2021-07-21 16:03
  * @UpdateUser: 更新者

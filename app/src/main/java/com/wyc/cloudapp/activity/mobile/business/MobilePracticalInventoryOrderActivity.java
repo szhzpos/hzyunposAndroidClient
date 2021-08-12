@@ -107,7 +107,7 @@ public class MobilePracticalInventoryOrderActivity extends AbstractMobileActivit
                     ,getColor(R.color.transparent), Utils.dpToPx(this,1),getColor(R.color.blue)));
         });
         query_time_btn_layout.setClickListener(mClickListener);
-        CustomApplication.runInMainThread(today::callOnClick);
+        query_time_btn_layout.post(today::callOnClick);
     }
     private final View.OnClickListener mClickListener = v -> {
         final Button btn = (Button) v;

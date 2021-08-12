@@ -38,6 +38,7 @@
     <string name="num_colon_sz">数量：</string>
     <string name="amt_sz">金额：</string>
     <string name="b_z_sz">条码/助记码/货号</string>
+    <string name="b_z_n_sz">条码/名称/助记码/货号</string>
     <string name="del">回退</string>
     <string name="clear">清除</string>
     <string name="shop_id_sz">商户号：</string>
@@ -507,6 +508,7 @@
     <string name="vip_category_sz">会员类别</string>
     <string name="upload_business_order_hint_sz">上传业务单据错误:%1$s!</string>
     <string name="query_business_order_id_hint_sz">查询订单编号错误:%1$s!</string>
+    <string name="none_inventory_task_hint">当前没有盘点任务…</string>
     <!--新增业务订单-->
     <string name="pick_goods_sz">选商品</string>
     <string name="supplier_colon_sz">货商：</string>

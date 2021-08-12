@@ -161,7 +161,12 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         mImageUri = FileUtils.createCaptureImageFile();
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT,mImageUri);
-        startActivityForResult(intent, REQUEST_CAPTURE_IMG);
+        try {
+            startActivityForResult(intent, REQUEST_CAPTURE_IMG);
+        }catch (Exception e){
+            e.printStackTrace();
+            MyDialog.toastMessage(e.getMessage());
+        }
     }
 
 
@@ -887,21 +892,23 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         CustomApplication.execute(()->{
 
             HttpRequest httpRequest = new HttpRequest();
-            //上传图片
-            try {
-                JSONObject ret_json = httpRequest.uploadFileForPost(getUrl() + "/api/imgupload/index",new File(new URI(mImageUri.toString())));
-                if (HttpUtils.checkRequestSuccess(ret_json)){
-                    ret_json = JSONObject.parseObject(ret_json.getString("info"));
-                    if (HttpUtils.checkBusinessSuccess(ret_json)){
-                        ret_json = ret_json.getJSONObject("data");
-                        data.put("pic_id",ret_json.getString("imgs_id"));
+            if (null != mImageUri){
+                //上传图片
+                try {
+                    JSONObject ret_json = httpRequest.uploadFileForPost(getUrl() + "/api/imgupload/index",new File(new URI(mImageUri.toString())));
+                    if (HttpUtils.checkRequestSuccess(ret_json)){
+                        ret_json = JSONObject.parseObject(ret_json.getString("info"));
+                        if (HttpUtils.checkBusinessSuccess(ret_json)){
+                            ret_json = ret_json.getJSONObject("data");
+                            data.put("pic_id",ret_json.getString("imgs_id"));
+                        }else throw new Exception(ret_json.getString("info"));
                     }else throw new Exception(ret_json.getString("info"));
-                }else throw new Exception(ret_json.getString("info"));
-            } catch (Exception e) {
-                e.printStackTrace();
-                loop.done(0);
-                err.append(e);
-                return;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    loop.done(0);
+                    err.append(e);
+                    return;
+                }
             }
 
             data.put("operation_mode",1);//判断后台操作员权限

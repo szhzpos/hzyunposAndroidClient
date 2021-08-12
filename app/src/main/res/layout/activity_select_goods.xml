@@ -16,7 +16,7 @@
         android:drawableEnd="@drawable/search"
         android:drawablePadding="@dimen/margin_8"
         android:ems="10"
-        android:hint="@string/b_z_sz"
+        android:hint="@string/b_z_n_sz"
         android:importantForAutofill="no"
         android:inputType="textPersonName"
         android:padding="@dimen/margin_5"

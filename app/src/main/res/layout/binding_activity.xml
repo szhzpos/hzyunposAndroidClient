@@ -6,13 +6,12 @@
             type="com.wyc.cloudapp.activity.ITitle" />
 
     </data>
+
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        tools:context=".activity.mobile.AbstractMobileActivity">
+        android:orientation="vertical">
         <LinearLayout
             android:id="@+id/title"
             android:layout_width="match_parent"
@@ -29,7 +28,7 @@
                 android:paddingStart="@dimen/margin_5"
                 android:paddingEnd="@dimen/size_0"
                 android:text="@{title.leftText}"
-                android:onClick="@{title.onLeftClick}"
+                android:onClick="@{title::onLeftClick}"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/font_size_16" />
 
@@ -42,7 +41,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="@dimen/margin_1"
                 android:text="@{title.middleText}"
-                android:onClick="@{title.onMiddleClick}"
+                android:onClick="@{title::onMiddleClick}"
                 android:textAlignment="center"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/font_size_20" />
@@ -56,7 +55,7 @@
                 android:paddingStart="@dimen/margin_0"
                 android:paddingEnd="@dimen/margin_5"
                 android:text="@{title.rightText}"
-                android:onClick="@{title.onRightClick}"
+                android:onClick="@{title::onRightClick}"
                 android:textAlignment="viewEnd"
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/font_size_16" />

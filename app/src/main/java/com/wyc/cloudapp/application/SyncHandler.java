@@ -1042,7 +1042,7 @@ final class SyncHandler extends Handler {
                 object = JSON.parseObject(object.getString("info"));
                 success = "y".equals(object.getString("status"));
             }
-            if (!success)Logger.e("标记已获买满送X信息错误:" + object.getString("info"));
+            if (!success)Logger.e(getMarkErrorMsg("买满送X",object.getString("info")));
         }
     }
 
