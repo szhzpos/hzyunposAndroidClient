@@ -1,6 +1,5 @@
 package com.wyc.cloudapp.mobileFragemt;
 
-import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -42,12 +41,12 @@ public final class MyFragment extends AbstractJumpFragment {
     @Override
     protected void triggerItemClick(View v) {
         final int id = v.getId();
-        final Intent intent = new Intent(mContext, MobileSetupActivity.class);
+        final String title = v instanceof TextView ? ((TextView)v).getText().toString() : "";
         if (id == R.id.m_print_options_tv){
-            intent.putExtra("frag","PrintFormatFragment");
-            if (v instanceof TextView)intent.putExtra("title",((TextView)v).getText());
+            MobileSetupActivity.startRetailPrintSetting(title);
+        }else if (id == R.id.business_print_tv){
+            MobileSetupActivity.startBusinessPrintSetting(title);
         }
-        startActivity(intent);
     }
 
     @Override

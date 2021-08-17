@@ -164,6 +164,8 @@
     <string name="ml_y_sz">四舍五入到元</string>
     <string name="ml_j_sz">四舍五入到角</string>
     <string name="printer_setting_sz">打印机设置</string>
+    <string name="retail_printer_setting">零售打印设置</string>
+    <string name="business_printer_setting">后台打印设置</string>
     <string name="bluetooth_p_sz">蓝牙</string>
     <string name="USB_p_sz">USB</string>
     <string name="print_way_sz">打印方式:</string>
@@ -509,6 +511,7 @@
     <string name="upload_business_order_hint_sz">上传业务单据错误:%1$s!</string>
     <string name="query_business_order_id_hint_sz">查询订单编号错误:%1$s!</string>
     <string name="none_inventory_task_hint">当前没有盘点任务…</string>
+    <string name="applying_order">要货申请单</string>
     <!--新增业务订单-->
     <string name="pick_goods_sz">选商品</string>
     <string name="supplier_colon_sz">货商：</string>
@@ -808,4 +811,20 @@
     <string name="order_hints">销售单号</string>
     <string name="gift_card_sale_num">@string/sale_num</string>
     <string name="gift_card_order_detail">购物卡销售明细</string>
+
+    <!--后台单据打印设置-->
+    <string name="print_way">打印接口</string>
+    <string name="printer">打印机</string>
+    <string name="paper_spec">纸张规格</string>
+    <string name="print_type">打印方式</string>
+    <string name="print_num">打印份数</string>
+    <string name="print_template">打印模板设置</string>
+    <string name="default_template_format">默认小票格式</string>
+    <string name="ask_print_hints">询问提示</string>
+    <string name="auto_print">自动打印</string>
+    <string name="forbid_print">禁止打印</string>
+    <string name="spec_58">58mm</string>
+    <string name="spec_76">76mm</string>
+    <string name="spec_80">80mm</string>
+    <string name="bluetooth_way">蓝牙打印</string>
 </resources>

@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data >
+        <variable
+            name="setting"
+            type="com.wyc.cloudapp.bean.BusinessOrderPrintSetting" />
+    </data>
+
+    <com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:padding="@dimen/margin_5"
+        app:ItemPadding="@dimen/margin_5">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/business_print_item_height"
+        android:background="@drawable/round_style"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="@string/print_way"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <TextView
+            android:id="@+id/way_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableEnd="@drawable/small_fold"
+            android:gravity="center_vertical|end"
+            android:text="@{setting.way.description}"
+            android:tag="@{setting.way.ordinal()}"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/business_print_item_height"
+        android:background="@drawable/round_style"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="@string/printer"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <TextView
+            android:id="@+id/printer_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableEnd="@drawable/small_fold"
+            android:gravity="center_vertical|end"
+            android:text="@{setting.printer}"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/business_print_item_height"
+        android:background="@drawable/round_style"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="@string/paper_spec"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <TextView
+            android:id="@+id/paper_spec_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableEnd="@drawable/small_fold"
+            android:gravity="center_vertical|end"
+            android:text="@{setting.spec.description}"
+            android:tag = "@{setting.spec.ordinal()}"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/business_print_item_height"
+        android:background="@drawable/round_style"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="@string/print_type"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <TextView
+            android:id="@+id/print_type_tv"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableEnd="@drawable/small_fold"
+            android:gravity="center_vertical|end"
+            android:text="@{setting.type.description}"
+            android:tag="@{setting.type.ordinal()}"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/business_print_item_height"
+        android:background="@drawable/round_style"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="@string/print_num"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/mobile_minus_btn2"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/mobile_p_m_btn_size"
+            android:layout_height="@dimen/mobile_p_m_btn_size"
+            android:layout_marginStart="@dimen/size_35"
+            android:background="@drawable/minus" />
+
+        <TextView
+            android:id="@+id/print_num_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:padding="@dimen/margin_8"
+            android:text="@{String.valueOf(setting.print_num)}"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_22" />
+
+        <Button
+            android:id="@+id/mobile_plus_btn2"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/mobile_p_m_btn_size"
+            android:layout_height="@dimen/mobile_p_m_btn_size"
+            android:layout_marginEnd="@dimen/margin_18"
+            android:background="@drawable/plus" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/print_template_tv"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/business_print_item_height"
+        android:background="@drawable/round_style"
+        android:drawableEnd="@drawable/small_fold"
+        android:gravity="center_vertical"
+        android:padding="5dp"
+        android:text="@string/print_template"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/format_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/round_style"
+        android:padding="@dimen/margin_5"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/purchase_label"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="@string/purchase_order_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/purchase_tv"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/height_30"
+            android:layout_weight="1"
+            android:drawableEnd="@drawable/small_fold"
+            android:gravity="center_vertical|end"
+            android:text="@string/default_template_format"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/purchase_label" />
+
+        <TextView
+            android:id="@+id/purchase_in_label"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="@string/warehouse_order_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/purchase_label" />
+
+        <TextView
+            android:id="@+id/purchase_in_tv"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/height_30"
+            android:layout_weight="1"
+            android:drawableEnd="@drawable/small_fold"
+            android:gravity="center_vertical|end"
+            android:text="@string/default_template_format"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/purchase_in_label" />
+
+        <TextView
+            android:id="@+id/wholesale_label"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="@string/wholesale_order_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/purchase_in_label" />
+
+        <TextView
+            android:id="@+id/wholesale_tv"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/height_30"
+            android:layout_weight="1"
+            android:drawableEnd="@drawable/small_fold"
+            android:gravity="center_vertical|end"
+            android:text="@string/default_template_format"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/wholesale_label" />
+
+        <TextView
+            android:id="@+id/wholesale_label1"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="@string/wholesale_order_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/purchase_in_label" />
+
+        <TextView
+            android:id="@+id/wholesale_sold_tv"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/height_30"
+            android:layout_weight="1"
+            android:drawableEnd="@drawable/small_fold"
+            android:gravity="center_vertical|end"
+            android:text="@string/default_template_format"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/wholesale_label1" />
+
+        <TextView
+            android:id="@+id/wholesale_label3"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="@string/wholesale_refund_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/wholesale_label1" />
+
+        <TextView
+            android:id="@+id/wholesale_returned_tv"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/height_30"
+            android:layout_weight="1"
+            android:drawableEnd="@drawable/small_fold"
+            android:gravity="center_vertical|end"
+            android:text="@string/default_template_format"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/wholesale_label3" />
+
+        <TextView
+            android:id="@+id/other_label"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="@string/other_inventory_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/wholesale_label3" />
+
+        <TextView
+            android:id="@+id/other_in_out_tv"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/height_30"
+            android:layout_weight="1"
+            android:drawableEnd="@drawable/small_fold"
+            android:gravity="center_vertical|end"
+            android:text="@string/default_template_format"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/other_label" />
+
+        <TextView
+            android:id="@+id/applying_label"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="@string/applying_order"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/other_label" />
+
+        <TextView
+            android:id="@+id/applying_order_tv"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/height_30"
+            android:layout_weight="1"
+            android:drawableEnd="@drawable/small_fold"
+            android:gravity="center_vertical|end"
+            android:text="@string/default_template_format"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/applying_label" />
+
+        <TextView
+            android:id="@+id/distribution_label"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="@string/distribution_warehousing_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/applying_label" />
+
+        <TextView
+            android:id="@+id/distribution_in_order_tv"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/height_30"
+            android:layout_weight="1"
+            android:drawableEnd="@drawable/small_fold"
+            android:gravity="center_vertical|end"
+            android:text="@string/default_template_format"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/distribution_label" />
+
+        <TextView
+            android:id="@+id/distribution_out_label"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_30"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:text="@string/distribution_warehouse_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/distribution_label" />
+
+        <TextView
+            android:id="@+id/distribution_out_order_tv"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/height_30"
+            android:layout_weight="1"
+            android:drawableEnd="@drawable/small_fold"
+            android:gravity="center_vertical|end"
+            android:text="@string/default_template_format"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/distribution_out_label" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout>
+</layout>
