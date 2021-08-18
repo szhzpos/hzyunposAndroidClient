@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * @ProjectName: CloudApp
@@ -23,6 +24,15 @@ import java.util.Locale;
  * @Version: 1.0
  */
 public final class TreeListItem implements Cloneable,Serializable {
+
+    public TreeListItem(){
+
+    }
+    public TreeListItem(@NonNull final String id,final String name){
+        item_id = id;
+        item_name = name;
+    }
+
         /*    Item{
             p_ref,level,unfold,isSel,item_id,item_name,kids; <p_ref , kids>存在上下级时必须存在
         }*/
@@ -123,19 +133,30 @@ public final class TreeListItem implements Cloneable,Serializable {
         return item_id == null || "".equals(item_id);
     }
 
-    @NonNull
     @Override
     public String toString() {
-        return String.format(Locale.CHINA,"item_id:%s,item_name:%s",item_id,item_name);
+        return "TreeListItem{" +
+                "p_ref=" + p_ref +
+                ", level=" + level +
+                ", unfold=" + unfold +
+                ", isSel=" + isSel +
+                ", item_id='" + item_id + '\'' +
+                ", code='" + code + '\'' +
+                ", item_name='" + item_name + '\'' +
+                ", kids=" + kids +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TreeListItem that = (TreeListItem) o;
+        return Objects.equals(item_id, that.item_id);
     }
 
     @Override
     public int hashCode() {
-        return super.hashCode();
-    }
-
-    @Override
-    public boolean equals(@Nullable Object obj) {
-        return super.equals(obj);
+        return Objects.hash(item_id);
     }
 }

@@ -24,6 +24,7 @@ import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.BusinessOrderPrintSetting;
 import com.wyc.cloudapp.constants.WholesalePriceType;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
@@ -32,6 +33,7 @@ import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.dialog.business.BusinessSelectGoodsDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
@@ -184,7 +186,36 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
         initOrderDetailsList();
         initFooterView();
         initFunctionBtn();
+    }
 
+    private void showPrint(){
+        if (isAudit()){
+            setRightText(getString(R.string.m_print_sz) + "    ");
+            setRightListener(v -> print(false));
+        }
+    }
+
+    private void print(boolean ask){
+        final BusinessOrderPrintSetting setting = BusinessOrderPrintSetting.getSetting();
+        if (ask && setting.getType() == BusinessOrderPrintSetting.Type.ASK){
+            MyDialog.displayAskMessage(this, getString(R.string.ask_print_hint), myDialog -> {
+                resetBusinessOrderInfo();
+                printContent(setting);
+            }, MyDialog::dismiss);
+        }else {
+            if (ask)resetBusinessOrderInfo();
+            printContent(setting);
+        }
+    }
+    private void printContent(BusinessOrderPrintSetting setting){
+        Logger.d(setting);
+        if (setting.getWay() == BusinessOrderPrintSetting.Way.BLUETOOTH_PRINT){
+            Printer.printByBluetooth(getPrintContent(setting.getPrint_num()),setting.getPrinterAddress());
+        }
+    }
+
+    protected String getPrintContent(int time){
+        return "";
     }
 
     protected final boolean isAudit(){
@@ -287,6 +318,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                     view.setVisibility(View.GONE);
                 }
             }
+            showPrint();
         }else if (Utils.isNotEmpty(mOrderID)){
             business_main.setCentreLabel(getString(R.string.saved_sz));
         }
@@ -457,8 +489,8 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                 final JSONObject info = JSON.parseObject(retJson.getString("info"));
                 if (HttpUtils.checkBusinessSuccess(info)){
                     CustomApplication.runInMainThread(()->{
-                        resetBusinessOrderInfo();
                         MyDialog.toastMessage(getString(R.string.audited_sz));
+                        print(true);
                     });
                 }else {
                     err = info.getString("info");

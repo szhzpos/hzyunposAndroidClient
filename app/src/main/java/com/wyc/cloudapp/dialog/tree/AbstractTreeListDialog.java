@@ -57,6 +57,11 @@ public abstract class AbstractTreeListDialog<D,S> extends AbstractDialogContext 
 
     }
 
+    @Override
+    protected double getWidthRatio() {
+        return 0.98;
+    }
+
     public AbstractTreeListDialog<D,S> setData(final D obj, final D selectItems, boolean singleSelection){
         mSingleSelection = singleSelection;
         mData = obj;

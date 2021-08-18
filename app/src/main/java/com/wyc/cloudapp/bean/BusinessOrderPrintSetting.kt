@@ -1,7 +1,12 @@
 package com.wyc.cloudapp.bean
 
+import androidx.databinding.DataBindingUtil
+import com.alibaba.fastjson.JSONObject
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.application.CustomApplication
+import com.wyc.cloudapp.data.SQLiteHelper
+import com.wyc.cloudapp.databinding.MoblieBusinessPrintSettingBinding
+import com.wyc.cloudapp.dialog.MyDialog
 import java.io.Serializable
 
 /**
@@ -49,6 +54,38 @@ class BusinessOrderPrintSetting:Serializable {
         set(value) {
             field = value
         }
+    fun getPrinterAddress():String{
+        if (printer.contains("@")){
+            return printer.split("@")[1]
+        }
+        return ""
+    }
+
+    companion object{
+        @JvmStatic
+        fun combinationPrinter(a:String,n:String):String{
+            return String.format("%s@%s",n,a)
+        }
+        @JvmStatic
+        fun getSetting():BusinessOrderPrintSetting{
+            val para = JSONObject()
+            if (!SQLiteHelper.getLocalParameter("b_order_print", para)){
+                MyDialog.toastMessage(para.getString("info"))
+                return BusinessOrderPrintSetting()
+            }
+            return JSONObject.parseObject(para.toString(), BusinessOrderPrintSetting::class.java)?: BusinessOrderPrintSetting()
+        }
+        @JvmStatic
+        fun saveSetting(setting: BusinessOrderPrintSetting?){
+            setting?.run {
+                val err = StringBuilder()
+                if (!SQLiteHelper.saveLocalParameter("b_order_print", JSONObject.toJSON(this) as? JSONObject, "业务单据打印参数", err)){
+                    MyDialog.toastMessage(err.toString())
+                }else MyDialog.toastMessage(CustomApplication.self().getString(R.string.success))
+            }
+        }
+    }
+
     var spec:Spec = Spec.SPEC_58
         get() = field
         set(value) {
@@ -61,7 +98,9 @@ class BusinessOrderPrintSetting:Serializable {
         }
     var print_num = 1
         get() = field
-        set(value) {field = value}
+        set(value) {
+            if (value < 0)field = 0 else field = value
+        }
 
     override fun toString(): String {
         return "BusinessOrderPrintSetting(way=${way.description}, printer='$printer', spec=${spec.description}, type=${type.description}, print_num=$print_num)"

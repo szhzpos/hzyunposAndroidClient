@@ -3,6 +3,7 @@ package com.wyc.cloudapp.activity.mobile;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -39,6 +40,11 @@ public class MobileSetupActivity extends AbstractMobileActivity {
     public void onBackPressed(){
         super.onBackPressed();
         finish();
+    }
+
+    public void setRightTitle(final String title,final View.OnClickListener listener ){
+        setRightText(title);
+        setRightListener(listener);
     }
 
     private void showFragment(final String name){

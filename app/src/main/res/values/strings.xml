@@ -99,6 +99,7 @@
     <string name="sale_num">购买数量：</string>
     <string name="query_goods_hint">查询商品基本信息错误:%1$s</string>
     <string name="init_cas_hint">初始化收银员信息错误：%1$s</string>
+    <string name="searching_bluetooth">正在搜索蓝牙打印机…</string>
 
     <!-- 新增会员 -->
     <string name="vip_dialog_title_sz">会员信息</string>
@@ -827,4 +828,5 @@
     <string name="spec_76">76mm</string>
     <string name="spec_80">80mm</string>
     <string name="bluetooth_way">蓝牙打印</string>
+    <string name="ask_print_hint">是否打印?</string>
 </resources>

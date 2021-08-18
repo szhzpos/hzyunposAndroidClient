@@ -341,14 +341,8 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
             CustomApplication.postDelayed(()->{Utils.setFocus(mContext,mNumEt);},50);
         }
 
-
-        if (isModify){
-            mUnitTv.setTag(object.getString("unit_id"));
-            mUnitTv.setText(object.getString("unit_name"));
-        }else {
-            mUnitTv.setTag(object.getString("stock_unit_id"));
-            mUnitTv.setText(object.getString("stock_unit_name"));
-        }
+        mUnitTv.setTag(object.getString("unit_id"));
+        mUnitTv.setText(object.getString("unit_name"));
     }
 
 

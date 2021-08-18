@@ -28,6 +28,7 @@ import android.widget.Spinner;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -36,19 +37,20 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.BluetoothUtils;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.HashMap;
 
 import static android.app.Activity.RESULT_OK;
+import static com.wyc.cloudapp.utils.BluetoothUtils.REQUEST_BLUETOOTH__PERMISSIONS;
 
 public class PrintFormatFragment extends AbstractParameterFragment {
     public static final int TIME_CARD_SALE_FORMAT_ID = 100;
     public static final int TIME_CARD_USE_FORMAT_ID = 101;
     public static final int GIFT_CARD_SALE_FORMAT_ID = 102;
     public static final String ACTION_USB_PERMISSION = "com.wyc.cloudapp.USB_PERMISSION";
-    private static final int REQUEST_BLUETOOTH__PERMISSIONS = 0xabc8;
-    private static final int REQUEST_BLUETOOTH_ENABLE = 0X8888;
+
     private static final String mTitle = "打印设置";
     private ArrayAdapter<String> mPrintIdAdapter;
     private CustomProgressDialog mProgressDialog;
@@ -124,7 +126,7 @@ public class PrintFormatFragment extends AbstractParameterFragment {
     @Override
     public void onPause(){
         super.onPause();
-        stopBlueToothDiscovery();
+        BluetoothUtils.stopBlueToothDiscovery();
     }
 
     @Override
@@ -138,7 +140,7 @@ public class PrintFormatFragment extends AbstractParameterFragment {
     public void onRequestPermissionsResult(int requestCode,@NonNull String[] permissions,@NonNull  int[]  grantResults) {
         if (requestCode == REQUEST_BLUETOOTH__PERMISSIONS) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                startBlueToothDiscovery();//开始扫描
+                BluetoothUtils.startBlueToothDiscovery(this);//开始扫描
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -146,8 +148,8 @@ public class PrintFormatFragment extends AbstractParameterFragment {
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent){//蓝牙开启回调
-        if (resultCode == RESULT_OK && requestCode == REQUEST_BLUETOOTH_ENABLE){
-            startBlueToothDiscovery();//开始扫描
+        if (resultCode == RESULT_OK && requestCode == BluetoothUtils.REQUEST_BLUETOOTH_ENABLE){
+            BluetoothUtils.startBlueToothDiscovery(this);//开始扫描
         }
     }
 
@@ -167,8 +169,8 @@ public class PrintFormatFragment extends AbstractParameterFragment {
                         RadioGroup radioGroup = findViewById(R.id.print_way);
                         switch (radioGroup.getCheckedRadioButtonId()){
                             case R.id.bluetooth_p:
-                                bondBlueTooth(vals[1]);
-                                stopBlueToothDiscovery();
+                                BluetoothUtils.bondBlueTooth(vals[1]);
+                                BluetoothUtils.stopBlueToothDiscovery();
                                 break;
                             case R.id.usb_p:
                                 startUSBDiscoveryAndAuth(vals[0].substring(vals[0].indexOf(":") + 1),vals[1].substring(vals[1].indexOf(":") + 1));
@@ -406,7 +408,7 @@ public class PrintFormatFragment extends AbstractParameterFragment {
                 if (vals.length > 1){
                     switch (status_id){
                         case R.id.bluetooth_p:
-                            bondBlueTooth(vals[1]);
+                            BluetoothUtils.bondBlueTooth(vals[1]);
                             break;
                         case R.id.usb_p:
                             startUSBDiscoveryAndAuth(vals[0],vals[1]);
@@ -468,8 +470,8 @@ public class PrintFormatFragment extends AbstractParameterFragment {
                         break;
                     case BluetoothAdapter.ACTION_DISCOVERY_STARTED:
                         if (mProgressDialog != null){
-                            mProgressDialog.setOnCancelListener(dialog -> stopBlueToothDiscovery());
-                            mProgressDialog.setMessage("正在搜索蓝牙打印机...").refreshMessage();
+                            mProgressDialog.setOnCancelListener(dialog -> BluetoothUtils.stopBlueToothDiscovery());
+                            mProgressDialog.setMessage(getString(R.string.searching_bluetooth)).refreshMessage();
                             if (!mProgressDialog.isShowing())mProgressDialog.show();
                         }
                         if (mPrintIdAdapter != null && mPrintIdAdapter.getCount() != 0){
@@ -532,7 +534,7 @@ public class PrintFormatFragment extends AbstractParameterFragment {
                         PrintFormatFragment.this.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_BLUETOOTH__PERMISSIONS );
                     }
                 }else{
-                    startBlueToothDiscovery();//开始扫描
+                    BluetoothUtils.startBlueToothDiscovery(this);//开始扫描
                 }
                 break;
             case R.id.usb_p:
@@ -540,39 +542,7 @@ public class PrintFormatFragment extends AbstractParameterFragment {
                 break;
         }
     }
-    private void startBlueToothDiscovery(){
-        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (bluetoothAdapter != null )
-            if (bluetoothAdapter.isEnabled()) {
-                if (!bluetoothAdapter.isDiscovering()) {
-                    bluetoothAdapter.startDiscovery();
-                }
-            }else {
-                MyDialog.displayAskMessage(mContext, "蓝牙已关闭，是否开启蓝牙功能？", myDialog -> {
-                    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                    startActivityForResult(enableBtIntent,REQUEST_BLUETOOTH_ENABLE);//请求开启蓝牙
-                    myDialog.dismiss();
-                }, Dialog::dismiss);
-            }
-        else
-            MyDialog.ToastMessage("设备不支持蓝牙功能！", null);
-    }
-    private void stopBlueToothDiscovery(){
-        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (bluetoothAdapter != null){
-            if (bluetoothAdapter.isDiscovering())
-                bluetoothAdapter.cancelDiscovery();
-        }
-    }
-    private void bondBlueTooth(final String addr){
-        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (bluetoothAdapter != null){
-            BluetoothDevice device = bluetoothAdapter.getRemoteDevice(addr);
-            if (device.getBondState() == BluetoothDevice.BOND_NONE){
-                device.createBond();
-            }
-        }
-    }
+
     private void startUSBDiscoveryAndAuth(final String vid, final String pid){
         UsbManager manager = (UsbManager)mContext.getSystemService(Context.USB_SERVICE);
         if (null != manager){

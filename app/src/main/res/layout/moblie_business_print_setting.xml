@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <data >
         <variable
             name="setting"
             type="com.wyc.cloudapp.bean.BusinessOrderPrintSetting" />
     </data>
 
-    <com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white"
@@ -147,7 +147,7 @@
             android:layout_weight="1" />
 
         <Button
-            android:id="@+id/mobile_minus_btn2"
+            android:id="@+id/minus"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/mobile_p_m_btn_size"
             android:layout_height="@dimen/mobile_p_m_btn_size"
@@ -162,10 +162,10 @@
             android:padding="@dimen/margin_8"
             android:text="@{String.valueOf(setting.print_num)}"
             android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_22" />
+            android:textSize="@dimen/font_size_18" />
 
         <Button
-            android:id="@+id/mobile_plus_btn2"
+            android:id="@+id/plus"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/mobile_p_m_btn_size"
             android:layout_height="@dimen/mobile_p_m_btn_size"

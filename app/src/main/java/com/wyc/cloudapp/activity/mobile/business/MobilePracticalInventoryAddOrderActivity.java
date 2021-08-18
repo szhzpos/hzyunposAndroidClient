@@ -423,6 +423,7 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractMobileActi
         final JSONObject parameterObj = new JSONObject();
         parameterObj.put("appid",getAppId());
         parameterObj.put("wh_id",getWhId());
+        parameterObj.put("status",2);
         parameterObj.put("pt_user_id",getPtUserId());
 
         showProgress(getString(R.string.hints_query_data_sz));
@@ -437,14 +438,18 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractMobileActi
                             MyDialog.ToastMessageInMainThread(getString(R.string.none_inventory_task_hint));
                             finish();
                         }else {
-                            final JSONObject object = data.getJSONObject(0);
-                            if (Utils.getNotKeyAsNumberDefault(object,"status",1) != 3)
-                                CustomApplication.runInMainThread(()->setInventoryTask(object));
-                            else{
+                            boolean isFind = false;
+                            for (int i = 0,size = data.size();i < size; i ++){
+                                final JSONObject object = data.getJSONObject(i);
+                                if (Utils.getNotKeyAsNumberDefault(object,"status",1) != 3){
+                                    CustomApplication.runInMainThread(()->setInventoryTask(object));
+                                    isFind = true;
+                                }
+                            }
+                            if (!isFind){
                                 finish();
                                 MyDialog.ToastMessageInMainThread(getString(R.string.none_inventory_task_hint));
                             }
-
                         }
                     }else throw new JSONException(info.getString("info"));
                 }catch (JSONException e){
@@ -518,6 +523,8 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractMobileActi
         mRemarkEt.setText(object.getString("remark"));
 
         mTaskCategory = object.getString("task_category");
+
+        Logger.d_json(mOrderInfo);
 
         mAdapter.setDataForArray(Utils.getNullObjectAsEmptyJsonArray(mOrderInfo,"goods_list"));
     }

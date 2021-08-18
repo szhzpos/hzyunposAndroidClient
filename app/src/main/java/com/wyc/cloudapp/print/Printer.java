@@ -299,6 +299,16 @@ public final class Printer {
         }
     }
 
+    public static void printByBluetooth(final String c,final String device_addr){
+        if (Utils.isNotEmpty(c)){
+            try {
+                bluetooth_print(c.getBytes(CHARACTER_SET),device_addr);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private static void bluetooth_print(final byte[] content, final String device_addr){
         if(content != null && device_addr != null){
             CustomApplication.execute(()->{
