@@ -30,8 +30,8 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.dialog.business.BusinessSelectGoodsDialog;
+import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.Utils;
@@ -45,18 +45,16 @@ import java.util.Locale;
 
 
 public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActivity {
-
     private AbstractBusinessOrderDetailsDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> mAdapter;
     private JSONArray mSupplierList;
     private RecyclerView mDetailsView;
     private CustomProgressDialog mProgressDialog;
     private TextView mSumNumTv,mSumAmtTv;
+    private WeakReference<ScanCallback> mScanCallback;
+    private String mOrderID;
 
     protected JSONObject mOrderInfo;
     protected TextView mSupplierTV,mSaleOperatorTv,mWarehouseTv,mOrderCodeTv,mDateTv,mRemarkEt;
-
-    private WeakReference<ScanCallback> mScanCallback;
-    private String mOrderID;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -197,24 +195,37 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
 
     private void print(boolean ask){
         final BusinessOrderPrintSetting setting = BusinessOrderPrintSetting.getSetting();
-        if (ask && setting.getType() == BusinessOrderPrintSetting.Type.ASK){
-            MyDialog.displayAskMessage(this, getString(R.string.ask_print_hint), myDialog -> {
-                resetBusinessOrderInfo();
-                printContent(setting);
-            }, MyDialog::dismiss);
+        if (ask){
+            switch (setting.getType()){
+                case ASK:
+                    if (setting.getType() == BusinessOrderPrintSetting.Type.ASK){
+                        MyDialog.displayAskMessage(this, getString(R.string.ask_print_hint), myDialog -> {
+                            printContent(setting);
+                            resetBusinessOrderInfo();
+                        }, myDialog -> {
+                            myDialog.dismiss();
+                            resetBusinessOrderInfo();
+                        });
+                    }
+                    break;
+                case AUTO:
+                    printContent(setting);
+                    resetBusinessOrderInfo();
+                    break;
+                default:
+            }
         }else {
-            if (ask)resetBusinessOrderInfo();
             printContent(setting);
         }
     }
     private void printContent(BusinessOrderPrintSetting setting){
         Logger.d(setting);
         if (setting.getWay() == BusinessOrderPrintSetting.Way.BLUETOOTH_PRINT){
-            Printer.printByBluetooth(getPrintContent(setting.getPrint_num()),setting.getPrinterAddress());
+            Printer.printByBluetooth(getPrintContent(setting),setting.getPrinterAddress());
         }
     }
 
-    protected String getPrintContent(int time){
+    protected String getPrintContent(BusinessOrderPrintSetting setting){
         return "";
     }
 

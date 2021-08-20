@@ -55,7 +55,7 @@ class MobileBusinessPrintFragment: AbstractMobileFragment() {
     override fun viewCreated() {
         if (mContext is MobileSetupActivity){
             val abs = mContext as MobileSetupActivity
-            abs.setRightTitle(getString(R.string.save_sz)) { BusinessOrderPrintSetting.saveSetting(DataBindingUtil.bind<MoblieBusinessPrintSettingBinding>(rootView)?.setting) }
+            abs.setRightTitle(getString(R.string.save_sz)) { DataBindingUtil.bind<MoblieBusinessPrintSettingBinding>(rootView)?.setting?.saveSetting() }
         }
         initParam()
     }
@@ -89,6 +89,15 @@ class MobileBusinessPrintFragment: AbstractMobileFragment() {
         if (resultCode == Activity.RESULT_OK && requestCode == BluetoothUtils.REQUEST_BLUETOOTH_ENABLE) {
             BluetoothUtils.startBlueToothDiscovery(this)
         }
+    }
+
+    override fun onBackPressed(): Boolean {
+        if (DataBindingUtil.bind<MoblieBusinessPrintSettingBinding>(rootView)?.setting?.isChange() == true){
+            if (MyDialog.showMessageToModalDialog(mContext,"是否保存?") == 1){
+                DataBindingUtil.bind<MoblieBusinessPrintSettingBinding>(rootView)?.setting?.saveSetting()
+            }
+        }
+        return super.onBackPressed()
     }
 
     private fun showProgress(sz:String){
@@ -212,10 +221,12 @@ class MobileBusinessPrintFragment: AbstractMobileFragment() {
         treeListDialog.setData(convertType(), null, true)
         if (treeListDialog.exec() == 1) {
             val obj = treeListDialog.singleContent
-            (view as TextView).text = obj.item_name
+            if (!obj.isEmpty){
+                (view as TextView).text = obj.item_name
 
-            val setting:BusinessOrderPrintSetting? = DataBindingUtil.bind<MoblieBusinessPrintSettingBinding>(rootView)?.setting
-            setting?.type = BusinessOrderPrintSetting.Type.valueOf(obj.item_id)
+                val setting:BusinessOrderPrintSetting? = DataBindingUtil.bind<MoblieBusinessPrintSettingBinding>(rootView)?.setting
+                setting?.type = BusinessOrderPrintSetting.Type.valueOf(obj.item_id)
+            }
         }
     }
     private fun convertType(): List<TreeListItem> {

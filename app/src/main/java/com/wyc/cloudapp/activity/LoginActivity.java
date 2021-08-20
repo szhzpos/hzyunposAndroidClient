@@ -135,7 +135,10 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
 
     @Override
     public void onBackPressed(){
-        mCancelBtn.callOnClick();
+        if (mProgressDialog.isShowing())
+            mProgressDialog.cancel();
+        else
+            mCancelBtn.callOnClick();
     }
 
     @Override

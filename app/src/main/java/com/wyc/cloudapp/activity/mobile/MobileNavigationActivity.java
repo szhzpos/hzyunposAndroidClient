@@ -169,6 +169,12 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
         startActivity(intent);
     }
 
+    @Override
+    public void onDestroy(){
+        mApplication.registerHandleMessage(null);
+        super.onDestroy();
+    }
+
     public void transfer(){
         if (AbstractTransferDialog.verifyTransferPermissions(this)){
             final AbstractTransferDialog transferDialog = new MobileTransferDialog(this);

@@ -98,7 +98,7 @@ public class CustomProgressDialog extends Dialog
 
     public CustomProgressDialog setCancel(boolean b){
         setCancelable(b);
-        setCanceledOnTouchOutside(b);
+        //setCanceledOnTouchOutside(b);
         return this;
     }
 

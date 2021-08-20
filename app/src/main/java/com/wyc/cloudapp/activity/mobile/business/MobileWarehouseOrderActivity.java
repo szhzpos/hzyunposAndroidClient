@@ -13,12 +13,18 @@ import com.wyc.cloudapp.adapter.business.MobileWarehouseOrderAdapter;
 import com.wyc.cloudapp.adapter.business.MobileWarehouseOrderDetailsAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.BusinessOrderPrintContent;
+import com.wyc.cloudapp.bean.BusinessOrderPrintSetting;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /*采购入库单*/
 public final class MobileWarehouseOrderActivity extends AbstractMobileBusinessOrderActivity{
@@ -169,5 +175,46 @@ public final class MobileWarehouseOrderActivity extends AbstractMobileBusinessOr
             return "rkd_id";
         }
 
+        @Override
+        protected String getPrintContent(BusinessOrderPrintSetting setting) {
+            final BusinessOrderPrintContent.Builder Builder = new BusinessOrderPrintContent.Builder();
+            final List<BusinessOrderPrintContent.Goods> details = new ArrayList<>();
+            JSONArray goods_list;
+            if (null == mOrderInfo){
+                goods_list = getOrderDetails();
+                Builder.company(getStoreName())
+                        .orderName(getString(R.string.warehouse_order_sz))
+                        .storeName(mWarehouseTv.getText().toString())
+                        .supOrCus(mSupplierTV.getText().toString())
+                        .operator(mSaleOperatorTv.getText().toString())
+                        .orderNo(mOrderCodeTv.getText().toString())
+                        .operateDate(FormatDateTimeUtils.formatCurrentTime(FormatDateTimeUtils.YYYY_MM_DD_1))
+                        .remark(mRemarkEt.getText().toString());
+            }else {
+                goods_list = mOrderInfo.getJSONArray("goods_list");
+                Builder.company(getStoreName())
+                        .orderName(getString(R.string.warehouse_order_sz))
+                        .storeName(getStoreName())
+                        .supOrCus(mOrderInfo.getString("gs_name"))
+                        .operator(mOrderInfo.getString(getSaleOperatorNameKey()))
+                        .orderNo(mOrderInfo.getString("rkd_code"))
+                        .operateDate(mOrderInfo.getString("add_datetime"))
+                        .remark(mOrderInfo.getString("remark"));
+            }
+            for (int i = 0,size = goods_list.size();i < size; i++){
+                final JSONObject object = goods_list.getJSONObject(i);
+                final BusinessOrderPrintContent.Goods goods = new BusinessOrderPrintContent.Goods.Builder()
+                        .barcodeId(object.getString("barcode_id"))
+                        .barcode(object.getString("barcode"))
+                        .name(object.getString("goods_title"))
+                        .unit(object.getString("unit_name"))
+                        .num(object.getDoubleValue("xnum"))
+                        .price(object.getDoubleValue("price"))
+                        .build();
+
+                details.add(goods);
+            }
+            return Builder.goodsList(details).build().format58(this,setting);
+        }
     }
 }

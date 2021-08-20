@@ -37,4 +37,8 @@ public abstract class AbstractBaseFragment extends Fragment {
     protected View getRootView(){
         return mRootView;
     }
+
+    public boolean onBackPressed(){
+        return true;
+    }
 }

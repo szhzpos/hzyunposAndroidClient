@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -12,6 +13,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.fragment.AbstractBaseFragment;
+import com.wyc.cloudapp.mobileFragemt.AbstractMobileFragment;
 import com.wyc.cloudapp.mobileFragemt.MobileBusinessPrintFragment;
 import com.wyc.cloudapp.mobileFragemt.MobilePrintFormatFragment;
 
@@ -38,8 +40,14 @@ public class MobileSetupActivity extends AbstractMobileActivity {
 
     @Override
     public void onBackPressed(){
-        super.onBackPressed();
-        finish();
+         if (exit())super.onBackPressed();
+    }
+    private boolean exit(){
+        final Fragment fragment = mFragmentManager.findFragmentById(R.id.mobile_setup_fragment_container);
+        if (fragment instanceof AbstractBaseFragment){
+            return ((AbstractBaseFragment)fragment).onBackPressed();
+        }
+        return true;
     }
 
     public void setRightTitle(final String title,final View.OnClickListener listener ){

@@ -1,13 +1,13 @@
 package com.wyc.cloudapp.bean
 
-import androidx.databinding.DataBindingUtil
 import com.alibaba.fastjson.JSONObject
+import com.alibaba.fastjson.annotation.JSONField
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.data.SQLiteHelper
-import com.wyc.cloudapp.databinding.MoblieBusinessPrintSettingBinding
 import com.wyc.cloudapp.dialog.MyDialog
 import java.io.Serializable
+import kotlin.properties.Delegates
 
 /**
  *
@@ -23,7 +23,8 @@ import java.io.Serializable
  * @Version:        1.0
  */
 class BusinessOrderPrintSetting:Serializable {
-
+    @JSONField(serialize = false)
+    private var change = false
     enum class Way(s: String)  {
         BLUETOOTH_PRINT(CustomApplication.self().getString(R.string.bluetooth_way));
         val description:String = s
@@ -43,17 +44,10 @@ class BusinessOrderPrintSetting:Serializable {
         val description:String = s
     }
 
-    var way:Way = Way.BLUETOOTH_PRINT
-        get() {return Way.BLUETOOTH_PRINT
-        }
-        set(value) {
-            field = value
-        }
-    var printer:String = ""
-        get() = field
-        set(value) {
-            field = value
-        }
+    var way:Way by change(Way.BLUETOOTH_PRINT)
+
+    var printer:String by change("")
+
     fun getPrinterAddress():String{
         if (printer.contains("@")){
             return printer.split("@")[1]
@@ -73,37 +67,37 @@ class BusinessOrderPrintSetting:Serializable {
                 MyDialog.toastMessage(para.getString("info"))
                 return BusinessOrderPrintSetting()
             }
-            return JSONObject.parseObject(para.toString(), BusinessOrderPrintSetting::class.java)?: BusinessOrderPrintSetting()
-        }
-        @JvmStatic
-        fun saveSetting(setting: BusinessOrderPrintSetting?){
-            setting?.run {
-                val err = StringBuilder()
-                if (!SQLiteHelper.saveLocalParameter("b_order_print", JSONObject.toJSON(this) as? JSONObject, "业务单据打印参数", err)){
-                    MyDialog.toastMessage(err.toString())
-                }else MyDialog.toastMessage(CustomApplication.self().getString(R.string.success))
-            }
+            val setting = JSONObject.parseObject(para.toString(), BusinessOrderPrintSetting::class.java)?: BusinessOrderPrintSetting()
+            setting.change = false
+            return setting
         }
     }
 
-    var spec:Spec = Spec.SPEC_58
-        get() = field
-        set(value) {
-            field = value
+    fun saveSetting(){
+        val err = StringBuilder()
+        if (!SQLiteHelper.saveLocalParameter("b_order_print", JSONObject.toJSON(this) as? JSONObject, "业务单据打印参数", err)){
+            MyDialog.toastMessage(err.toString())
+        }else {
+            change = false
+            MyDialog.toastMessage(CustomApplication.self().getString(R.string.success))
         }
-    var type:Type = Type.ASK
-        get() = field
-        set(value) {
-            field = value
-        }
-    var print_num = 1
-        get() = field
-        set(value) {
-            if (value < 0)field = 0 else field = value
-        }
+    }
+
+    var spec:Spec by change(Spec.SPEC_58)
+
+    var type:Type by change(Type.ASK)
+
+    var print_num by change(1)
 
     override fun toString(): String {
         return "BusinessOrderPrintSetting(way=${way.description}, printer='$printer', spec=${spec.description}, type=${type.description}, print_num=$print_num)"
     }
 
-}
+    private fun <T> change(iv:T) = Delegates.observable(iv, { _, oldValue, newValue ->
+        if (oldValue != newValue)change = true
+    })
+
+    fun isChange():Boolean{
+        return change
+    }
+ }

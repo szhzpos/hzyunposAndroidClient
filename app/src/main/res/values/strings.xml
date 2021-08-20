@@ -829,4 +829,15 @@
     <string name="spec_80">80mm</string>
     <string name="bluetooth_way">蓝牙打印</string>
     <string name="ask_print_hint">是否打印?</string>
+
+    <!--后台单据打印设置-->
+    <string name="in_store">入库门店</string>
+    <string name="sup">@string/supplier_name_sz</string>
+    <string name="oper">经办人</string>
+    <string name="order_no">单据编号</string>
+    <string name="date">开单日期</string>
+    <string name="handlerName">经手</string>
+    <string name="accountant">财务</string>
+    <string name="auditor">审核</string>
+    <string name="signer">签收</string>
 </resources>
