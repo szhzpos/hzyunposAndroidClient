@@ -13,6 +13,8 @@ import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter
 import com.wyc.cloudapp.adapter.business.MobilePurchaseRefundOrderAdapter;
 import com.wyc.cloudapp.adapter.business.MobilePurchaseRefundOrderDetailsAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.OrderPrintContentBase;
+import com.wyc.cloudapp.bean.BusinessOrderPrintSetting;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
@@ -20,6 +22,9 @@ import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /*采购退货单*/
 public class MobilePurchaseRefundOrderActivity extends AbstractMobileBusinessOrderActivity {
@@ -176,5 +181,47 @@ public class MobilePurchaseRefundOrderActivity extends AbstractMobileBusinessOrd
             return "cgd_id";
         }
 
+        @Override
+        protected String getPrintContent(BusinessOrderPrintSetting setting) {
+            final OrderPrintContentBase.Builder Builder = new OrderPrintContentBase.Builder();
+            final List<OrderPrintContentBase.Goods> details = new ArrayList<>();
+            JSONArray goods_list;
+            final String name = getString(R.string.purchase_refund_order_sz);
+            if (null == mOrderInfo){
+                goods_list = getOrderDetails();
+                Builder.company(getStoreName())
+                        .orderName(name)
+                        .storeName(mWarehouseTv.getText().toString())
+                        .supOrCus(mSupplierTV.getText().toString())
+                        .operator(mSaleOperatorTv.getText().toString())
+                        .orderNo(mOrderCodeTv.getText().toString())
+                        .operateDate(FormatDateTimeUtils.formatCurrentTime(FormatDateTimeUtils.YYYY_MM_DD_1))
+                        .remark(mRemarkEt.getText().toString());
+            }else {
+                goods_list = mOrderInfo.getJSONArray("goods_list");
+                Builder.company(getStoreName())
+                        .orderName(name)
+                        .storeName(getStoreName())
+                        .supOrCus(mOrderInfo.getString("gs_name"))
+                        .operator(mOrderInfo.getString(getSaleOperatorNameKey()))
+                        .orderNo(mOrderInfo.getString("cgd_code"))
+                        .operateDate(FormatDateTimeUtils.formatTimeWithTimestamp(mOrderInfo.getLongValue("addtime") * 1000))
+                        .remark(mOrderInfo.getString("remark"));
+            }
+            for (int i = 0,size = goods_list.size();i < size; i++){
+                final JSONObject object = goods_list.getJSONObject(i);
+                final OrderPrintContentBase.Goods goods = new OrderPrintContentBase.Goods.Builder()
+                        .barcodeId(object.getString("barcode_id"))
+                        .barcode(object.getString("barcode"))
+                        .name(object.getString("goods_title"))
+                        .unit(object.getString("unit_name"))
+                        .num(object.getDoubleValue("xnum"))
+                        .price(object.getDoubleValue("price"))
+                        .build();
+
+                details.add(goods);
+            }
+            return Builder.goodsList(details).build().format58(this,setting);
+        }
     }
 }

@@ -74,12 +74,14 @@ class BusinessOrderPrintSetting:Serializable {
     }
 
     fun saveSetting(){
-        val err = StringBuilder()
-        if (!SQLiteHelper.saveLocalParameter("b_order_print", JSONObject.toJSON(this) as? JSONObject, "业务单据打印参数", err)){
-            MyDialog.toastMessage(err.toString())
-        }else {
-            change = false
-            MyDialog.toastMessage(CustomApplication.self().getString(R.string.success))
+        CustomApplication.execute {
+            val err = StringBuilder()
+            if (!SQLiteHelper.saveLocalParameter("b_order_print", JSONObject.toJSON(this) as? JSONObject, "业务单据打印参数", err)){
+                MyDialog.toastMessage(err.toString())
+            }else {
+                change = false
+                MyDialog.ToastMessageInMainThread(CustomApplication.self().getString(R.string.success))
+            }
         }
     }
 

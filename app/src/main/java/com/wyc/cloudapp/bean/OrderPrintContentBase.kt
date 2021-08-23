@@ -21,7 +21,7 @@ import kotlin.collections.ArrayList
  * @UpdateRemark:   更新说明
  * @Version:        1.0
  */
-class BusinessOrderPrintContent private constructor():Serializable {
+open class OrderPrintContentBase :Serializable {
     var company:String? = ""
         get() = field
         private set(value) {
@@ -163,7 +163,7 @@ class BusinessOrderPrintContent private constructor():Serializable {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as BusinessOrderPrintContent
+        other as OrderPrintContentBase
 
         if (orderNo != other.orderNo) return false
 
@@ -174,8 +174,7 @@ class BusinessOrderPrintContent private constructor():Serializable {
         return orderNo.hashCode()
     }
 
-    class Builder {
-        private val obj = BusinessOrderPrintContent()
+    open class Builder(private val obj: OrderPrintContentBase = OrderPrintContentBase()) {
         fun company(v: String?):Builder{
             obj.company = v
             return this
@@ -212,9 +211,13 @@ class BusinessOrderPrintContent private constructor():Serializable {
             obj.goodsList = l
             return this
         }
-        fun build():BusinessOrderPrintContent{
+        fun build():OrderPrintContentBase{
             return obj
         }
+    }
+
+    open fun getSupOrCusLabel(context: MainActivity):String{
+       return context.getString(R.string.sup)
     }
 
     fun format58(context: MainActivity, printSetting: BusinessOrderPrintSetting):String{
@@ -242,7 +245,7 @@ class BusinessOrderPrintContent private constructor():Serializable {
             info.append(line).append(Printer.commandToStr(Printer.ALIGN_LEFT)).append(new_line)
 
             printItem(info, context.getString(R.string.in_store), storeName)
-            printItem(info, context.getString(R.string.sup), supOrCus)
+            printItem(info,getSupOrCusLabel(context), supOrCus)
             printItem(info, "  " + context.getString(R.string.oper), operator)
             printItem(info, context.getString(R.string.order_no), orderNo)
             printItem(info, context.getString(R.string.date), operateDate)

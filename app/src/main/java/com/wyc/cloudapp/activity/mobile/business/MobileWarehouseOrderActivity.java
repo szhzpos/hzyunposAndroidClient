@@ -13,7 +13,7 @@ import com.wyc.cloudapp.adapter.business.MobileWarehouseOrderAdapter;
 import com.wyc.cloudapp.adapter.business.MobileWarehouseOrderDetailsAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.bean.BusinessOrderPrintContent;
+import com.wyc.cloudapp.bean.OrderPrintContentBase;
 import com.wyc.cloudapp.bean.BusinessOrderPrintSetting;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -177,8 +177,8 @@ public final class MobileWarehouseOrderActivity extends AbstractMobileBusinessOr
 
         @Override
         protected String getPrintContent(BusinessOrderPrintSetting setting) {
-            final BusinessOrderPrintContent.Builder Builder = new BusinessOrderPrintContent.Builder();
-            final List<BusinessOrderPrintContent.Goods> details = new ArrayList<>();
+            final OrderPrintContentBase.Builder Builder = new OrderPrintContentBase.Builder();
+            final List<OrderPrintContentBase.Goods> details = new ArrayList<>();
             JSONArray goods_list;
             if (null == mOrderInfo){
                 goods_list = getOrderDetails();
@@ -203,7 +203,7 @@ public final class MobileWarehouseOrderActivity extends AbstractMobileBusinessOr
             }
             for (int i = 0,size = goods_list.size();i < size; i++){
                 final JSONObject object = goods_list.getJSONObject(i);
-                final BusinessOrderPrintContent.Goods goods = new BusinessOrderPrintContent.Goods.Builder()
+                final OrderPrintContentBase.Goods goods = new OrderPrintContentBase.Goods.Builder()
                         .barcodeId(object.getString("barcode_id"))
                         .barcode(object.getString("barcode"))
                         .name(object.getString("goods_title"))

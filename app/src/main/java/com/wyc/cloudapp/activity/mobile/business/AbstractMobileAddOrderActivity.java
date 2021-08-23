@@ -10,12 +10,12 @@ import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout;
 import com.wyc.cloudapp.R;
@@ -27,6 +27,8 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.BusinessOrderPrintSetting;
 import com.wyc.cloudapp.constants.WholesalePriceType;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.data.viewModel.OrderIdViewModel;
+import com.wyc.cloudapp.data.viewModel.OrderViewModel;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -62,7 +64,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
 
         initView();
 
-        CustomApplication.runInMainThread(this::queryData);
+        queryData();
     }
 
     @Override
@@ -290,29 +292,8 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
     }
 
     private void generateOrderCode() {
-        CustomApplication.execute(()->{
-            final JSONObject parameterObj = new JSONObject();
-            parameterObj.put("appid",getAppId());
-            parameterObj.put("prefix",generateOrderCodePrefix());
-            final String sz_param = HttpRequest.generate_request_parm(parameterObj,getAppSecret());
-            final JSONObject retJson = HttpUtils.sendPost(getUrl() + "/api/codes/mk_code",sz_param,true);
-
-            if (HttpUtils.checkRequestSuccess(retJson)){
-                try {
-                    final JSONObject info = JSON.parseObject(retJson.getString("info"));
-                    if (HttpUtils.checkBusinessSuccess(info)){
-                        CustomApplication.runInMainThread(()-> mOrderCodeTv.setText(info.getString("code")));
-                    }else {
-                        MyDialog.ToastMessageInMainThread(info.getString("info"));
-                    }
-                }catch (JSONException e){
-                    e.printStackTrace();
-                    MyDialog.ToastMessageInMainThread(e.getLocalizedMessage());
-                }
-            }else {
-                MyDialog.ToastMessageInMainThread(getString(R.string.query_business_order_id_hint_sz,retJson.getString("info")));
-            }
-        });
+         new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
+                .get(OrderIdViewModel.class).init(generateOrderCodePrefix()).observe(this, s -> mOrderCodeTv.setText(s));
     }
 
     private void setOrderStatus(){
@@ -664,22 +645,17 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
             parameterObj.put("pt_user_id",getPtUserId());
             parameterObj.put(getOrderIDKey(),id);
 
-            final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,getString(R.string.hints_query_data_sz));
-            CustomApplication.execute(()->{
-                final JSONObject retJson = HttpUtils.sendPost(getUrl() + condition.getString("api"), HttpRequest.generate_request_parm(parameterObj,getAppSecret()),true);
-                if (HttpUtils.checkRequestSuccess(retJson)){
-                    try {
-                        final JSONObject info = JSONObject.parseObject(retJson.getString("info"));
-                        if (HttpUtils.checkBusinessSuccess(info)){
-                            mOrderInfo = info.getJSONObject("data");
-                            runOnUiThread(this::showOrder);
-                        }else throw new JSONException(info.getString("info"));
-                    }catch (JSONException e){
-                        e.printStackTrace();
-                        MyDialog.ToastMessageInMainThread(e.getMessage());
-                    }
-                }
-                progressDialog.dismiss();
+            final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,getString(R.string.hints_query_data_sz)).setCancel(true);
+            new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
+                    .get(OrderViewModel.class).getCurrentModel(getUrl() + condition.getString("api"),HttpRequest.generate_request_parm(parameterObj,getAppSecret()))
+                    .observe(this, jsonObject -> {
+                        mOrderInfo = jsonObject;
+                        showOrder();
+                        progressDialog.dismiss();
+                    });
+            progressDialog.setOnCancelListener(dialog -> {
+                dialog.dismiss();
+                finish();
             });
         }
     }

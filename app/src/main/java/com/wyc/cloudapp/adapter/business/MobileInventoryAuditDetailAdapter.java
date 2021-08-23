@@ -11,6 +11,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
+import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
@@ -58,12 +59,12 @@ public class MobileInventoryAuditDetailAdapter extends AbstractBusinessOrderData
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         final JSONObject object = mData.getJSONObject(position);
         holder.barcode_tv.setText(object.getString("barcode"));
-        holder.name_tv.setText(object.getString("goods_title"));
+        holder.name_tv.setText(String.format(Locale.CHINA,"%s(%s)",object.getString("goods_title"),object.getString("unit_name")));
 
         holder.lock_stock_num_tv.setText(String.format(Locale.CHINA,"%.2f",object.getDoubleValue("lock_stock_num")));
         holder.app_num_tv.setText(String.format(Locale.CHINA,"%.2f",object.getDoubleValue("app_xnum")));
         holder.manual_num_tv.setText(String.format(Locale.CHINA,"%.2f",object.getDoubleValue("xnum")));
         holder.practical_sum_tv.setText(String.format(Locale.CHINA,"%.2f",object.getDoubleValue("sum_xnum")));
-        holder.profit_loss_sum_tv.setText(String.format(Locale.CHINA,"%.2f",object.getDoubleValue("yk_xnum")));
+        holder.profit_loss_sum_tv.setText(String.format(Locale.CHINA,"%.2f",object.getDoubleValue("yk_num")));
     }
 }

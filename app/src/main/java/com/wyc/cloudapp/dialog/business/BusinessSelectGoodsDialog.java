@@ -265,7 +265,6 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
                 final float dx = motionEvent.getX();
                 final int w = search.getWidth();
                 if (dx > (w - search.getCompoundPaddingRight())) {
-                    search.requestFocus();
                     final Intent intent = new Intent("com.google.zxing.client.android.SCAN");
                     mContext.startActivityForResult(intent, BARCODE_REQUEST_CODE);
                 }
@@ -273,6 +272,10 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
             return false;
         });
         mBarcodeEt = search;
+        search.postDelayed(()->{
+            Utils.hideKeyBoard(mBarcodeEt);
+            mBarcodeEt.requestFocus();
+        },100);
     }
 
     private void searchGoods(){

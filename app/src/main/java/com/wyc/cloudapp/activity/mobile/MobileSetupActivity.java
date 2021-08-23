@@ -17,6 +17,8 @@ import com.wyc.cloudapp.mobileFragemt.AbstractMobileFragment;
 import com.wyc.cloudapp.mobileFragemt.MobileBusinessPrintFragment;
 import com.wyc.cloudapp.mobileFragemt.MobilePrintFormatFragment;
 
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+
 public class MobileSetupActivity extends AbstractMobileActivity {
     private FragmentManager mFragmentManager;
     @Override
@@ -40,7 +42,8 @@ public class MobileSetupActivity extends AbstractMobileActivity {
 
     @Override
     public void onBackPressed(){
-         if (exit())super.onBackPressed();
+         if (exit())
+             finish();
     }
     private boolean exit(){
         final Fragment fragment = mFragmentManager.findFragmentById(R.id.mobile_setup_fragment_container);
@@ -79,7 +82,7 @@ public class MobileSetupActivity extends AbstractMobileActivity {
 
     private static void start(final String which,final String title){
         final Context context = CustomApplication.self();
-        context.startActivity(new Intent(context, MobileSetupActivity.class).putExtra("w",which).putExtra(AbstractMobileActivity.TITLE_KEY,title));
+        context.startActivity(new Intent(context, MobileSetupActivity.class).addFlags(FLAG_ACTIVITY_NEW_TASK).putExtra("w",which).putExtra(AbstractMobileActivity.TITLE_KEY,title));
     }
 
     public static void startRetailPrintSetting(final String title){

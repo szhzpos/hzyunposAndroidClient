@@ -90,4 +90,9 @@ public class MobileInventoryOrderDetailsAdapter extends  AbstractBusinessOrderDe
     public String getNumKey() {
         return "app_xnum";
     }
+
+    @Override
+    protected String[] getCumulativeKey() {
+        return new String[]{"app_xnum"};
+    }
 }

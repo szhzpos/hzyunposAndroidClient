@@ -20,7 +20,7 @@ public class SuperItemDecoration extends RecyclerView.ItemDecoration {
 
     @Override
     protected void finalize(){
-        Logger.d(getClass().getName() + " finalized");
+        Logger.d(getClass().getSimpleName() + " finalized");
     }
 
     private void getVerSpacing(int viewHeight,int m_height){

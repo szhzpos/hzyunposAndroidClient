@@ -5,17 +5,24 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.lifecycle.ViewModelProvider;
+
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.bean.BusinessOrderPrintSetting;
+import com.wyc.cloudapp.bean.OrderPrintContentBase;
+import com.wyc.cloudapp.bean.WholesalePrintContext;
+import com.wyc.cloudapp.data.viewModel.ConsumerViewModel;
 import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
-import com.wyc.cloudapp.utils.http.HttpRequest;
-import com.wyc.cloudapp.utils.http.HttpUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @ProjectName: CloudApp
@@ -34,7 +41,6 @@ public abstract class MobileWholesaleBaseActivity extends AbstractMobileQuerySou
     private JSONArray mCustomerList;
     private int mPriceType = 1;
     private TextView mSettlementWayTv;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,6 +107,10 @@ public abstract class MobileWholesaleBaseActivity extends AbstractMobileQuerySou
         return Utils.getViewTagValue(mBusinessCustomerTv,"-1");
     }
 
+    protected String getCustomerName(){
+        return mBusinessCustomerTv.getText().toString();
+    }
+
     protected void setCustomer(final String _id,final String code){
         setView(mBusinessCustomerTv,_id,code);
     }
@@ -118,27 +128,10 @@ public abstract class MobileWholesaleBaseActivity extends AbstractMobileQuerySou
                 mPriceType = object.getIntValue("price_type");
             }
         }));
-        loadCustomer();
-    }
 
-    private void loadCustomer(){
-        CustomApplication.execute(()->{
-            final HttpRequest httpRequest = new HttpRequest();
-            final JSONObject object = new JSONObject();
-            object.put("appid",getAppId());
-            object.put("stores_id",getStoreId());
-            final String sz_param = HttpRequest.generate_request_parm(object,getAppSecret());
-            final JSONObject retJson = httpRequest.sendPost(this.getUrl() + "/api/supplier_search/customer_xlist",sz_param,true);
-            if (HttpUtils.checkRequestSuccess(retJson)){
-                final JSONObject info_obj = JSONObject.parseObject(retJson.getString("info"));
-                if (HttpUtils.checkBusinessSuccess(info_obj)){
-                    final JSONArray data = info_obj.getJSONArray("data");
-                    mCustomerList = parse_customer_info_and_set_default(data);
-                }else {
-                    MyDialog.ToastMessageInMainThread("查询客户信息错误:" + info_obj.getString("info"));
-                }
-            }
-        });
+        new ViewModelProvider(this,
+                ViewModelProvider.AndroidViewModelFactory.getInstance(CustomApplication.self())).get(ConsumerViewModel.class)
+                .getCurrentModel().observe(this, consumers -> mCustomerList = parse_customer_info_and_set_default(JSONArray.parseArray(JSON.toJSONString(consumers))));
     }
 
     public int getCustomerPriceType(){
@@ -165,7 +158,6 @@ public abstract class MobileWholesaleBaseActivity extends AbstractMobileQuerySou
 
                 //
                 if (!isShowOrder() && "0000".equals(Utils.getNullStringAsEmpty(tmp,"cs_code"))  && mBusinessCustomerTv != null){
-
                     CustomApplication.runInMainThread(()->{
                         mBusinessCustomerTv.setText(name);
                         mBusinessCustomerTv.setTag(id);
@@ -175,5 +167,51 @@ public abstract class MobileWholesaleBaseActivity extends AbstractMobileQuerySou
             }
         }
         return array;
+    }
+
+    @Override
+    protected String getPrintContent(BusinessOrderPrintSetting setting) {
+        final OrderPrintContentBase.Builder Builder = new OrderPrintContentBase.Builder(new WholesalePrintContext());
+        final List<OrderPrintContentBase.Goods> details = new ArrayList<>();
+        final String name = getOrderPrintName();
+        JSONArray goods_list;
+        if (null == mOrderInfo){
+            goods_list = getOrderDetails();
+            Builder.company(getStoreName())
+                    .orderName(name)
+                    .storeName(mWarehouseTv.getText().toString())
+                    .supOrCus(getCustomerName())
+                    .operator(mSaleOperatorTv.getText().toString())
+                    .orderNo(mOrderCodeTv.getText().toString())
+                    .operateDate(FormatDateTimeUtils.formatCurrentTime(FormatDateTimeUtils.YYYY_MM_DD_1))
+                    .remark(mRemarkEt.getText().toString());
+        }else {
+            goods_list = mOrderInfo.getJSONArray("goods_list");
+            Builder.company(getStoreName())
+                    .orderName(name)
+                    .storeName(getStoreName())
+                    .supOrCus(mOrderInfo.getString("cs_xname"))
+                    .operator(mOrderInfo.getString(getSaleOperatorNameKey()))
+                    .orderNo(mOrderInfo.getString("order_code"))
+                    .operateDate(FormatDateTimeUtils.formatTimeWithTimestamp(mOrderInfo.getLongValue("addtime") * 1000))
+                    .remark(mOrderInfo.getString("remark"));
+        }
+        for (int i = 0,size = goods_list.size();i < size; i++){
+            final JSONObject object = goods_list.getJSONObject(i);
+            final OrderPrintContentBase.Goods goods = new OrderPrintContentBase.Goods.Builder()
+                    .barcodeId(object.getString("barcode_id"))
+                    .barcode(object.getString("barcode"))
+                    .name(object.getString("goods_title"))
+                    .unit(object.getString("unit_name"))
+                    .num(object.getDoubleValue("xnum"))
+                    .price(object.getDoubleValue("price"))
+                    .build();
+
+            details.add(goods);
+        }
+        return Builder.goodsList(details).build().format58(this,setting);
+    }
+    protected String getOrderPrintName(){
+        return getString(R.string.wholesale_order_sz);
     }
 }

@@ -123,6 +123,11 @@ public class MobileWholesaleSellOrderActivity extends AbstractMobileBusinessOrde
         }
 
         @Override
+        protected String getOrderPrintName() {
+            return getString(R.string.wholesale_sale_sz);
+        }
+
+        @Override
         protected void querySourceOrderInfo(final String id){
             final JSONObject parameterObj = new JSONObject();
             parameterObj.put("appid",getAppId());

@@ -124,6 +124,10 @@ public class MobileWholesaleRefundOrderActivity extends AbstractMobileBusinessOr
         protected int getContentLayoutId() {
             return R.layout.activity_mobile_add_wholesale_refund_order;
         }
+        @Override
+        protected String getOrderPrintName() {
+            return getString(R.string.wholesale_refund_sz);
+        }
 
         @Override
         protected void querySourceOrderInfo(String order_id) {

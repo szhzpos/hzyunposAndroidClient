@@ -93,9 +93,7 @@ class MobileBusinessPrintFragment: AbstractMobileFragment() {
 
     override fun onBackPressed(): Boolean {
         if (DataBindingUtil.bind<MoblieBusinessPrintSettingBinding>(rootView)?.setting?.isChange() == true){
-            if (MyDialog.showMessageToModalDialog(mContext,"是否保存?") == 1){
-                DataBindingUtil.bind<MoblieBusinessPrintSettingBinding>(rootView)?.setting?.saveSetting()
-            }
+            DataBindingUtil.bind<MoblieBusinessPrintSettingBinding>(rootView)?.setting?.saveSetting()
         }
         return super.onBackPressed()
     }

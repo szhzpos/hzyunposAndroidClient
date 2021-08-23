@@ -10,6 +10,7 @@ import com.wyc.cloudapp.utils.Utils;
 
 import java.io.Serializable;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * @ProjectName: CloudApp
@@ -23,10 +24,11 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public final class Consumer implements Serializable, Parcelable {
+public final class Consumer implements Parcelable {
     private String c_s_id;
     private String cs_code;
     private String cs_name;
+    private String cs_xname;
     private String address;
     private String name;
     private String mobile;
@@ -44,6 +46,7 @@ public final class Consumer implements Serializable, Parcelable {
         c_s_id = in.readString();
         cs_code = in.readString();
         cs_name = in.readString();
+        cs_xname = in.readString();
         address = in.readString();
         name = in.readString();
         mobile = in.readString();
@@ -59,6 +62,7 @@ public final class Consumer implements Serializable, Parcelable {
         dest.writeString(c_s_id);
         dest.writeString(cs_code);
         dest.writeString(cs_name);
+        dest.writeString(cs_xname);
         dest.writeString(address);
         dest.writeString(name);
         dest.writeString(mobile);
@@ -126,6 +130,14 @@ public final class Consumer implements Serializable, Parcelable {
         return name;
     }
 
+    public String getCs_xname() {
+        return cs_xname;
+    }
+
+    public void setCs_xname(String cs_xname) {
+        this.cs_xname = cs_xname;
+    }
+
     public void setMobile(String mobile) {
         this.mobile = mobile;
     }
@@ -177,19 +189,35 @@ public final class Consumer implements Serializable, Parcelable {
         return Utils.isNotEmpty(c_s_id);
     }
 
-    @NonNull
     @Override
     public String toString() {
-        return String.format(Locale.CHINA,"cs_id[%s]-cs_code[%s]-cs_name[%s]",c_s_id,cs_code,cs_name);
+        return "Consumer{" +
+                "c_s_id='" + c_s_id + '\'' +
+                ", cs_code='" + cs_code + '\'' +
+                ", cs_name='" + cs_name + '\'' +
+                ", cs_xname='" + cs_xname + '\'' +
+                ", address='" + address + '\'' +
+                ", name='" + name + '\'' +
+                ", mobile='" + mobile + '\'' +
+                ", roles='" + roles + '\'' +
+                ", cs_kf_price=" + cs_kf_price +
+                ", cs_kf_price_name='" + cs_kf_price_name + '\'' +
+                ", customer_settlement_cycle_id=" + customer_settlement_cycle_id +
+                ", customer_settlement_cycle_name='" + customer_settlement_cycle_name + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Consumer consumer = (Consumer) o;
+        return Objects.equals(c_s_id, consumer.c_s_id) &&
+                Objects.equals(cs_code, consumer.cs_code);
     }
 
     @Override
     public int hashCode() {
-        return super.hashCode();
-    }
-
-    @Override
-    public boolean equals(@Nullable Object obj) {
-        return super.equals(obj);
+        return Objects.hash(c_s_id, cs_code);
     }
 }
