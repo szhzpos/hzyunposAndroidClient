@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.data.viewModel
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.alibaba.fastjson.JSONException
 import com.alibaba.fastjson.JSONObject
@@ -27,10 +28,10 @@ import kotlinx.coroutines.launch
  * @UpdateRemark:   更新说明
  * @Version:        1.0
  */
-class OrderViewModel:ViewModel() {
-    private val currentModel: LiveDataBase<JSONObject>  = LiveDataBase()
-    fun getCurrentModel(url:String,param:String):LiveDataBase<JSONObject>{
-        return currentModel.init {
+class OrderViewModel:ViewModelBase() {
+    private val currentModel: MutableLiveData<JSONObject>  = MutableLiveData()
+    fun getCurrentModel(url:String,param:String):MutableLiveData<JSONObject>{
+        launchWithHandler {
             val retJson = HttpUtils.sendPost(url,param, true)
             if (HttpUtils.checkRequestSuccess(retJson)) {
                 try {
@@ -44,5 +45,6 @@ class OrderViewModel:ViewModel() {
                 }
             }
         }
+        return currentModel
     }
 }

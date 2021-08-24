@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.data.viewModel
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.JSONException
@@ -23,10 +24,10 @@ import com.wyc.cloudapp.utils.http.HttpUtils
  * @UpdateRemark:   更新说明
  * @Version:        1.0
  */
-class OrderIdViewModel :ViewModel() {
-    private val currentModel: LiveDataBase<String>  = LiveDataBase()
-    fun init(prefix: String):LiveDataBase<String> {
-        currentModel.init {
+class OrderIdViewModel :ViewModelBase() {
+    private val currentModel: MutableLiveData<String>  = MutableLiveData()
+    fun init(prefix: String):MutableLiveData<String> {
+        launchWithHandler {
             val app = CustomApplication.self()
             val parameterObj = JSONObject()
             parameterObj["appid"] = app.getAppId()

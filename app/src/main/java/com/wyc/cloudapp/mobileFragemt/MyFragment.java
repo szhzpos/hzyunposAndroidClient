@@ -15,9 +15,9 @@ public final class MyFragment extends AbstractJumpFragment {
         final Button exit = findViewById(R.id.m_exit_btn);
         exit.setOnClickListener(v -> {
             if (MyDialog.showMessageToModalDialog(mContext,"是否退出登录?") == 1){
+                mContext.finish();
                 CustomApplication.self().resetSync();
                 LoginActivity.start(mContext);
-                mContext.finish();
             }
         });
     }

@@ -134,7 +134,7 @@ class GiftCardOrderQueryActivity : AbstractMobileActivity() {
     private fun initSearchContent(){
         val search:EditText? = findViewById(R.id.order_search)
         search?.let {
-            it.setOnKeyListener{ view: View, keyCode: Int, keyEvent: KeyEvent ->
+            it.setOnKeyListener{ _: View, keyCode: Int, keyEvent: KeyEvent ->
                 if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && keyEvent.action == KeyEvent.ACTION_UP) {
                     _tab_layout.selectTab(_tab_layout.getTabAt(_tab_layout.selectedTabPosition))
                     return@setOnKeyListener true

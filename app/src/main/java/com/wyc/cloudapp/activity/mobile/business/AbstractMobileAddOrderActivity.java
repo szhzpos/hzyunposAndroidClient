@@ -25,10 +25,12 @@ import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.BusinessOrderPrintSetting;
+import com.wyc.cloudapp.bean.Supplier;
 import com.wyc.cloudapp.constants.WholesalePriceType;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.data.viewModel.OrderIdViewModel;
 import com.wyc.cloudapp.data.viewModel.OrderViewModel;
+import com.wyc.cloudapp.data.viewModel.SupplierViewModel;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -43,6 +45,7 @@ import com.wyc.cloudapp.utils.http.HttpUtils;
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 
@@ -215,6 +218,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                     resetBusinessOrderInfo();
                     break;
                 default:
+                    resetBusinessOrderInfo();
             }
         }else {
             printContent(setting);
@@ -222,8 +226,12 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
     }
     private void printContent(BusinessOrderPrintSetting setting){
         Logger.d(setting);
-        if (setting.getWay() == BusinessOrderPrintSetting.Way.BLUETOOTH_PRINT){
-            Printer.printByBluetooth(getPrintContent(setting),setting.getPrinterAddress());
+        if (Utils.isNotEmpty(setting.getPrinter())){
+            if (setting.getWay() == BusinessOrderPrintSetting.Way.BLUETOOTH_PRINT){
+                Printer.printByBluetooth(getPrintContent(setting),setting.getPrinterAddress());
+            }
+        }else {
+            MyDialog.toastMessage(getString(R.string.printer_empty_hint));
         }
     }
 
@@ -318,31 +326,16 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
     }
 
     private void getSupplier(){
-        CustomApplication.execute(()->{
-            final HttpRequest httpRequest = new HttpRequest();
-            final JSONObject object = new JSONObject();
-            object.put("appid",getAppId());
-            object.put("stores_id",getStoreId());
-            final String sz_param = HttpRequest.generate_request_parm(object,getAppSecret());
-            final JSONObject retJson = httpRequest.sendPost(this.getUrl() + "/api/supplier_search/xlist",sz_param,true);
-            if (HttpUtils.checkRequestSuccess(retJson)){
-                final JSONObject info_obj = JSONObject.parseObject(retJson.getString("info"));
-                if (HttpUtils.checkBusinessSuccess(info_obj)){
-                    final JSONArray data = info_obj.getJSONArray("data");
-                    mSupplierList = parse_supplier_info_and_set_default(data);
-                }else {
-                    MyDialog.ToastMessageInMainThread("查询供应商信息错误:" + info_obj.getString("info"));
-                }
-            }
-        });
+        new ViewModelProvider(this).get(SupplierViewModel.class).getCurrentModel()
+                .observe(this, suppliers -> mSupplierList = parse_supplier_info_and_set_default(suppliers));
     }
-    private JSONArray parse_supplier_info_and_set_default(final JSONArray suppliers){
+    private JSONArray parse_supplier_info_and_set_default(final List<Supplier> suppliers){
         final JSONArray array  = new JSONArray();
         if (suppliers != null){
             JSONObject object;
-            for (int i = 0,size = suppliers.size();i < size;i++){
-                final JSONObject tmp = suppliers.getJSONObject(i);
-                final String id = Utils.getNullOrEmptyStringAsDefault(tmp,"gs_id",""),name = Utils.getNullStringAsEmpty(tmp,"gs_name");
+
+            for (Supplier supplier : suppliers){
+                final String id = supplier.getGs_id(),name = supplier.getGs_name();
                 object = new JSONObject();
                 object.put("level",0);
                 object.put("unfold",false);
@@ -352,7 +345,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                 array.add(object);
 
                 //
-                if (!isShowOrder() && "0000".equals(Utils.getNullStringAsEmpty(tmp,"gs_code")) && mSupplierTV != null){
+                if (!isShowOrder() && "0000".equals(supplier.getCs_code()) && mSupplierTV != null){
                     CustomApplication.runInMainThread(()->{
                         mSupplierTV.setText(name);
                         mSupplierTV.setTag(id);

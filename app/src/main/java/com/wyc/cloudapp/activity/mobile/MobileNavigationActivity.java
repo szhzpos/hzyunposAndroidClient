@@ -170,9 +170,9 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
     }
 
     @Override
-    public void onDestroy(){
+    public void finish() {
+        super.finish();
         mApplication.registerHandleMessage(null);
-        super.onDestroy();
     }
 
     public void transfer(){

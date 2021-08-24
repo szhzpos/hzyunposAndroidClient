@@ -114,8 +114,11 @@
 }
 
 # 保留 Parcelable 序列化类不被混淆
--keep class * implements android.os.Parcelable {
-    public static final android.os.Parcelable$Creator *;
+-keep class * implements android.os.Parcelable { public static final android.os.Parcelable$Creator *;}
+-keepclassmembers class * implements android.os.Parcelable{
+    public <fields>;
+    private <fields>;
+    <methods>;
 }
 
 # 保留 Serializable 序列化的类不被混淆

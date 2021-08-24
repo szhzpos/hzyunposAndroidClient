@@ -129,9 +129,10 @@ public abstract class MobileWholesaleBaseActivity extends AbstractMobileQuerySou
             }
         }));
 
-        new ViewModelProvider(this,
-                ViewModelProvider.AndroidViewModelFactory.getInstance(CustomApplication.self())).get(ConsumerViewModel.class)
-                .getCurrentModel().observe(this, consumers -> mCustomerList = parse_customer_info_and_set_default(JSONArray.parseArray(JSON.toJSONString(consumers))));
+        new ViewModelProvider(this).get(ConsumerViewModel.class)
+                .getCurrentModel().observe(this, consumers -> {
+                    mCustomerList = parse_customer_info_and_set_default(JSONArray.parseArray(JSON.toJSONString(consumers)));
+        });
     }
 
     public int getCustomerPriceType(){
@@ -192,7 +193,7 @@ public abstract class MobileWholesaleBaseActivity extends AbstractMobileQuerySou
                     .storeName(getStoreName())
                     .supOrCus(mOrderInfo.getString("cs_xname"))
                     .operator(mOrderInfo.getString(getSaleOperatorNameKey()))
-                    .orderNo(mOrderInfo.getString("order_code"))
+                    .orderNo(Utils.getNullStringAsEmpty(mOrderInfo,"refund_code"))
                     .operateDate(FormatDateTimeUtils.formatTimeWithTimestamp(mOrderInfo.getLongValue("addtime") * 1000))
                     .remark(mOrderInfo.getString("remark"));
         }

@@ -3,13 +3,9 @@ package com.wyc.cloudapp.bean;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.wyc.cloudapp.utils.Utils;
 
-import java.io.Serializable;
-import java.util.Locale;
+import java.util.Objects;
 
 /**
  * @ProjectName: CloudApp
@@ -27,6 +23,11 @@ public final class Supplier implements Parcelable {
     private String c_s_id;
     private String cs_code;
     private String cs_name;
+
+    private String gs_id;
+    private String gs_code;
+    private String gs_name;
+
     private String name;
     private String mobile;
     private String roles;
@@ -44,6 +45,11 @@ public final class Supplier implements Parcelable {
         c_s_id = in.readString();
         cs_code = in.readString();
         cs_name = in.readString();
+
+        gs_id = in.readString();
+        gs_code = in.readString();
+        gs_name = in.readString();
+
         name = in.readString();
         mobile = in.readString();
         roles = in.readString();
@@ -76,6 +82,11 @@ public final class Supplier implements Parcelable {
         dest.writeString(c_s_id);
         dest.writeString(cs_code);
         dest.writeString(cs_name);
+
+        dest.writeString(gs_id);
+        dest.writeString(gs_code);
+        dest.writeString(gs_name);
+
         dest.writeString(name);
         dest.writeString(mobile);
         dest.writeString(roles);
@@ -108,6 +119,30 @@ public final class Supplier implements Parcelable {
 
     public String getCs_name() {
         return cs_name;
+    }
+
+    public String getGs_id() {
+        return gs_id;
+    }
+
+    public void setGs_id(String gs_id) {
+        this.gs_id = gs_id;
+    }
+
+    public String getGs_code() {
+        return gs_code;
+    }
+
+    public void setGs_code(String gs_code) {
+        this.gs_code = gs_code;
+    }
+
+    public String getGs_name() {
+        return gs_name;
+    }
+
+    public void setGs_name(String gs_name) {
+        this.gs_name = gs_name;
     }
 
     public void setMobile(String mobile) {
@@ -178,19 +213,39 @@ public final class Supplier implements Parcelable {
         return Utils.isNotEmpty(c_s_id);
     }
 
-    @NonNull
     @Override
     public String toString() {
-        return String.format(Locale.CHINA,"gs_id[%s]-gs_code[%s]-gs_name[%s]",c_s_id,cs_code,cs_name);
+        return "Supplier{" +
+                "c_s_id='" + c_s_id + '\'' +
+                ", cs_code='" + cs_code + '\'' +
+                ", cs_name='" + cs_name + '\'' +
+                ", gs_id='" + gs_id + '\'' +
+                ", gs_code='" + gs_code + '\'' +
+                ", gs_name='" + gs_name + '\'' +
+                ", name='" + name + '\'' +
+                ", mobile='" + mobile + '\'' +
+                ", roles='" + roles + '\'' +
+                ", address='" + address + '\'' +
+                ", hz_method=" + hz_method +
+                ", hz_method_name='" + hz_method_name + '\'' +
+                ", supplier_settlement_cycle_id=" + supplier_settlement_cycle_id +
+                ", supplier_settlement_cycle_name='" + supplier_settlement_cycle_name + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Supplier supplier = (Supplier) o;
+        return Objects.equals(c_s_id, supplier.c_s_id) &&
+                Objects.equals(cs_code, supplier.cs_code) &&
+                Objects.equals(gs_id, supplier.gs_id) &&
+                Objects.equals(gs_code, supplier.gs_code);
     }
 
     @Override
     public int hashCode() {
-        return super.hashCode();
-    }
-
-    @Override
-    public boolean equals(@Nullable Object obj) {
-        return super.equals(obj);
+        return Objects.hash(c_s_id, cs_code, gs_id, gs_code);
     }
 }

@@ -842,4 +842,5 @@
     <string name="accountant">财务</string>
     <string name="auditor">审核</string>
     <string name="signer">签收</string>
+    <string name="printer_empty_hint">打印机未设置</string>
 </resources>

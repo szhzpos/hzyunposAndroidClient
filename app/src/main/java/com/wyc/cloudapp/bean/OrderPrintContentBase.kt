@@ -48,7 +48,7 @@ open class OrderPrintContentBase :Serializable {
         private set(value) {
             field = value?:""
         }
-    var orderNo:String = ""
+    var orderNo:String? = ""
         get() = field
         private set(value) {
             field = value?:""
@@ -72,12 +72,12 @@ open class OrderPrintContentBase :Serializable {
 
 
     class Goods private constructor(){
-        var barcodeId:String = ""
+        var barcodeId:String? = ""
             get() = field
             private set(value) {
-                field = value
+                field = value?:""
             }
-        var barcode:String = ""
+        var barcode:String? = ""
             get() = field
             private set(value) {
                 field = value?:""
@@ -92,15 +92,15 @@ open class OrderPrintContentBase :Serializable {
             private set(value) {
                 field = value?:""
             }
-        var price:Double = 0.00
+        var price:Double? = 0.00
             get() = field
             private set(value) {
-                field = value
+                field = value?:0.0
             }
-        var num:Double = 0.00
+        var num:Double? = 0.00
             get() = field
             private set(value) {
-                field = value
+                field = value?:0.0
             }
 
         override fun toString(): String {
@@ -124,19 +124,19 @@ open class OrderPrintContentBase :Serializable {
 
         class Builder(){
             private val obj = Goods()
-            fun barcodeId(s: String):Builder{
+            fun barcodeId(s: String?):Builder{
                 obj.barcodeId = s
                 return this
             }
-            fun barcode(s: String):Builder{
+            fun barcode(s: String?):Builder{
                 obj.barcode = s
                 return this
             }
-            fun name(s: String):Builder{
+            fun name(s: String?):Builder{
                 obj.name = s
                 return this
             }
-            fun unit(s: String):Builder{
+            fun unit(s: String?):Builder{
                 obj.unit = s
                 return this
             }
@@ -255,20 +255,20 @@ open class OrderPrintContentBase :Serializable {
 
             var sum_num = 0.0
             var sum_amt = 0.0
-            var sum = 0.0
+            var sum: Double
 
             info.append(context.getString(R.string.b_f_header_sz).replace("-", " ")).append(new_line_2).append(new_line).append(line).append(new_line)
 
             goodsList?.forEachIndexed { index, it ->
-                sum = it.num * it.price
-                sum_num += it.num
+                sum = it.num?.times(it.price!!) ?: 0.0
+                sum_num += it.num!!
                 sum_amt += sum
 
                 if (index != 0) info.append(new_line_10)
 
                 info.append(Printer.commandToStr(Printer.BOLD)).append(String.format("%s(%s)", it.name, it.unit)).append(new_line).append(new_line_d).append(Printer.commandToStr(Printer.BOLD_CANCEL))
-                info.append(Printer.printTwoData(1, {s:String->   var v = s
-                                                                        if (Utils.isNotEmpty(s))if (s.length > 13)v = s.substring(0..12)
+                info.append(Printer.printTwoData(1, {s:String?->  var v = s
+                                                                        if (Utils.isNotEmpty(s))if (s!!.length > 13)v = s.substring(0..12)
                                                                         v
                                                                   }(it.barcode),
                         Printer.printThreeData(16, String.format("%.2f", it.price), String.format("%.2f", it.num), String.format(Locale.CHINA, "%.2f", sum)))).append(new_line)
