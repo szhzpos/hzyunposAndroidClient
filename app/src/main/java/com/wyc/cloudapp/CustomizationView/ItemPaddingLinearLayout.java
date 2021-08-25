@@ -77,6 +77,7 @@ public class ItemPaddingLinearLayout extends LinearLayout {
             mPaint.getTextBounds(label,0,label.length(),mTextBounds);
         }
         mCentreLabel = label;
+        invalidate();
     }
 
     public ItemPaddingLinearLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {

@@ -2,6 +2,7 @@ package com.wyc.cloudapp.dialog.business;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
@@ -33,6 +34,9 @@ import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 /**
  * @ProjectName: CloudApp
  * @Package: com.wyc.cloudapp.dialog.goods
@@ -51,9 +55,10 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
     private String mBarcode;
     private EditText mBarcodeEt,mNumEt,mPriceEt;
     private TextView mItemNoTv,mNameTv,mAmtTv,mUnitTv;
-    private boolean isModify = false,hasSourceOrder = false;
-    private static int mPriceType = WholesalePriceType.BUYING_PRICE;
+    private boolean hasSourceOrder;
+    private int mPriceType = WholesalePriceType.BUYING_PRICE;
     private View.OnClickListener mDelListener;
+    private OnContinueListener mContinueListener;
     /*需要过滤商品类别*/
     private String mGoodsCategory;
 
@@ -66,7 +71,7 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
     }
     public BusinessSelectGoodsDialog(@NonNull MainActivity context,boolean source,final JSONObject object) {
         super(context, context.getString(R.string.scan_code_label));
-        if (isModify = object != null){
+        if (object != null){
             mContentObj = Utils.JsondeepCopy(object);
         }
         hasSourceOrder = source;
@@ -96,9 +101,13 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
-        if (isModify){
+        if (isModify()){
             showGoods();
         }
+    }
+
+    private boolean isModify(){
+        return mContentObj != null && !mContentObj.isEmpty();
     }
 
     @Override
@@ -113,6 +122,13 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
             setCodeAndExit(1);
         }else if (id == R.id.cancel_btn){
             setCodeAndExit(0);
+        }else if (id == R.id.continue_btn){
+            if (mContinueListener != null){
+                final JSONObject object = getContentObj();
+                if (object != null && !object.isEmpty())
+                    mContinueListener.onContinue(getContentObj());
+            }
+            reset();
         }else if (id == R.id.num_tv || id == R.id.price_tv){
             final EditText editText = (EditText)v;
             final Object o = editText.getTag();
@@ -140,6 +156,8 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
                 mPriceEt.addTextChangedListener(mTextWatcherWithPrice);
 
                 mNumEt.removeTextChangedListener(mTextWatcherWithNum);
+            }else if (id == R.id.barcode_tv){
+                Utils.hideKeyBoard((EditText)v);
             }
         }else {
             if (id == R.id.num_tv){
@@ -153,6 +171,21 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
     public void callback(String code) {
         if (null != mBarcodeEt)mBarcodeEt.setText(code);
         searchGoods();
+    }
+
+    private void reset(){
+        mContentObj = null;
+        hasSourceOrder = false;
+
+        mBarcodeEt.requestFocus();
+        mBarcodeEt.setText(R.string.space_sz);
+        if (!mBarcodeEt.isEnabled())mBarcodeEt.setEnabled(true);
+
+        mItemNoTv.setText(R.string.space_sz);
+        mNameTv.setText(R.string.space_sz);
+        mNumEt.setText(R.string.zero_p_z_sz);
+        if (mPriceEt != null)mPriceEt.setText(R.string.zero_p_z_sz);
+        mUnitTv.setText(R.string.space_sz);
     }
 
     private void initView(){
@@ -184,8 +217,8 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
 
         @Override
         public void afterTextChanged(Editable s) {
+            double num = 0.00,price = 0.00;
             if (s.length() > 0){
-                double num = 0.00,price = 0.00;
                 try {
                     num = Double.parseDouble(s.toString());
                     if (hasSourceOrder){
@@ -202,8 +235,8 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
                 }catch (NumberFormatException e){
                     e.printStackTrace();
                 }
-                if (null != mAmtTv)mAmtTv.setText(String.format(Locale.CHINA,"%.3f",price * num));
             }
+            if (null != mAmtTv)mAmtTv.setText(String.format(Locale.CHINA,"%.3f",price * num));
         }
     };
 
@@ -220,16 +253,16 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
 
         @Override
         public void afterTextChanged(Editable s) {
+            double price = 0.0,num = 0.0;
             if (s.length() > 0){
-                double price = Double.parseDouble(s.toString()),num = Double.parseDouble(mNumEt.getText().toString());
                 try {
                     price = Double.parseDouble(s.toString());
                     num = Double.parseDouble(mNumEt.getText().toString());
                 }catch (NumberFormatException e){
                     e.printStackTrace();
                 }
-                mAmtTv.setText(String.format(Locale.CHINA,"%.3f",price * num));
             }
+            mAmtTv.setText(String.format(Locale.CHINA,"%.3f",price * num));
         }
     };
 
@@ -271,11 +304,23 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
             }
             return false;
         });
+        if(!isModify()){
+            search.setOnFocusChangeListener(this);
+            search.postDelayed(search::requestFocus,100);
+        }else{
+            search.setCompoundDrawables( null, null, null, null);
+            search.setEnabled(false);
+        }
         mBarcodeEt = search;
-        search.postDelayed(()->{
-            Utils.hideKeyBoard(mBarcodeEt);
-            mBarcodeEt.requestFocus();
-        },100);
+    }
+    private void setBarcodeDrawable(boolean clear){
+        if (clear){
+            mBarcodeEt.setCompoundDrawables( null, null, null, null);
+        }else {
+            Drawable drawable = mContext.getResources().getDrawable(R.drawable.scan,null);
+            drawable .setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+            mBarcodeEt.setCompoundDrawables( null, null, drawable, null);
+        }
     }
 
     private void searchGoods(){
@@ -322,10 +367,6 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
         if (null == object)return;
 
         double num = 0.0,price = 0.0;
-
-        if (isModify){
-            mBarcodeEt.setInputType(InputType.TYPE_NULL);
-        }
 
         mBarcodeEt.setText(object.getString("barcode"));
 
@@ -382,13 +423,28 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
         ok_btn.setOnClickListener(this);
         cancel_btn.setOnClickListener(this);
 
-        if (isModify && mDelListener != null){
+        if (isModify() && mDelListener != null){
             del_btn.setVisibility(View.VISIBLE);
             del_btn.setOnClickListener(v -> {
                 mDelListener.onClick(v);
                 dismiss();
             });
         }
+
+        final Button btn = findViewById(R.id.continue_btn);
+        if (isModify()){
+            btn.setVisibility(View.GONE);
+        }else {
+            btn.setOnClickListener(this);
+        }
+    }
+
+    public interface OnContinueListener{
+        void onContinue(@NonNull JSONObject object);
+    }
+    public BusinessSelectGoodsDialog setContinueListener(OnContinueListener listener){
+        mContinueListener = listener;
+        return this;
     }
 
     @Override

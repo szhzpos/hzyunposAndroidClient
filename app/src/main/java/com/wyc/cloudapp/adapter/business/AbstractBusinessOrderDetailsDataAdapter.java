@@ -31,6 +31,7 @@ import com.wyc.cloudapp.utils.Utils;
 public abstract class AbstractBusinessOrderDetailsDataAdapter<T extends AbstractTableDataAdapter.SuperViewHolder > extends AbstractDataAdapterForJson<T> {
     protected MainActivity mContext;
 
+    private boolean isChange = false;
     private View mCurrentItemView;
     private int mCurrentItemIndex = -1;
     private OnItemSelectListener mSelectListener;
@@ -117,12 +118,14 @@ public abstract class AbstractBusinessOrderDetailsDataAdapter<T extends Abstract
                 index = mData.size() - 1;
             }
             mCurrentItemIndex = index;
+            isChange = true;
             notifyDataSetChanged();
         }
     }
     public void deleteDetails(){
         if (mData != null && 0 <= mCurrentItemIndex && mCurrentItemIndex < mData.size()){
             mData.remove(mCurrentItemIndex);
+            isChange = true;
             notifyDataSetChanged();
         }
     }
@@ -137,6 +140,10 @@ public abstract class AbstractBusinessOrderDetailsDataAdapter<T extends Abstract
             }
         }
         return -1;
+    }
+
+    public boolean isChange(){
+        return isChange;
     }
 
     public abstract JSONObject updateGoodsDetail(final JSONObject object);

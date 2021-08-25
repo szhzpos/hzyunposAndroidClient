@@ -277,7 +277,7 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractMobileActi
                 startActivityForResult(intent, MobileSelectGoodsActivity.SELECT_GOODS_CODE);
             }else if (id == R.id.m_business_scan_btn){
                 final BusinessSelectGoodsDialog dialog = new SelectGoodsDialog(MobilePracticalInventoryAddOrderActivity.this);
-                dialog.setGoodsCategory(mTaskCategory);
+                dialog.setContinueListener(object -> addGoodsDetails(object,false)).setGoodsCategory(mTaskCategory);
                 if (dialog.exec() == 1){
                     addGoodsDetails(dialog.getContentObj(),false);
                 }

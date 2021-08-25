@@ -125,8 +125,8 @@ public abstract class AbstractDialog extends Dialog {
     @Override
     @CallSuper
     public void dismiss(){
-        super.dismiss();
         hideInputMethod();
+        super.dismiss();
         if (mEventLoop != null)mEventLoop.done(mCode);
     }
 

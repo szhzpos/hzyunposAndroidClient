@@ -56,7 +56,6 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
     private CustomProgressDialog mProgressDialog;
     private TextView mSumNumTv,mSumAmtTv;
     private WeakReference<ScanCallback> mScanCallback;
-    private String mOrderID;
 
     protected JSONObject mOrderInfo;
     protected TextView mSupplierTV,mSaleOperatorTv,mWarehouseTv,mOrderCodeTv,mDateTv,mRemarkEt;
@@ -122,7 +121,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
 
     @Override
     public void onBackPressed() {
-        if (!isAudit() && !mAdapter.isEmpty()){
+        if (!isAudit() && !mAdapter.isEmpty() && mAdapter.isChange()){
             CustomApplication.runInMainThread(()->{
                 if (MyDialog.showMessageToModalDialog(this,"已选择商品，是否退出？") == 1){
                     super.onBackPressed();
@@ -305,7 +304,6 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
     }
 
     private void setOrderStatus(){
-        mOrderID = Utils.getNullStringAsEmpty(mOrderInfo,getOrderIDKey());
         final ItemPaddingLinearLayout business_main = findViewById(R.id.business_add_main_layout);
         if (isAudit()){
             business_main.setIgnore(true);
@@ -319,10 +317,9 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                 }
             }
             showPrint();
-        }else if (Utils.isNotEmpty(mOrderID)){
+        }else if (!"".equals(Utils.getNullStringAsEmpty(mOrderInfo,getOrderIDKey()))){
             business_main.setCentreLabel(getString(R.string.saved_sz));
         }
-
     }
 
     private void getSupplier(){
@@ -391,6 +388,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                 startActivityForResult(intent, MobileSelectGoodsActivity.SELECT_GOODS_CODE);
             }else if (id == R.id.m_business_scan_btn){
                 final BusinessSelectGoodsDialog dialog = new BusinessSelectGoodsDialog(AbstractMobileAddOrderActivity.this);
+                dialog.setContinueListener(object -> addGoodsDetails(object,false));
                 if (dialog.exec() == 1){
                     addGoodsDetails(dialog.getContentObj(),false);
                 }
@@ -420,8 +418,10 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                 final JSONObject info = JSON.parseObject(retJson.getString("info"));
                 Logger.d_json(retJson.toString());
                 if (HttpUtils.checkBusinessSuccess(info)){
-                    mOrderID = info.getString(getOrderIDKey());
+                    mOrderInfo = new JSONObject();
+                    mOrderInfo.put(getOrderIDKey(),info.getString(getOrderIDKey()));
                     CustomApplication.runInMainThread(()->{
+                        setOrderStatus();
                         if (MyDialog.showMessageToModalDialog(this,String.format(Locale.CHINA,"%s,%s",getString(R.string.upload_order_success_hints),getString(R.string.ask_audit_hints))) == 1){
                             auditOrder();
                         }else {
@@ -453,7 +453,8 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
     }
 
     private void auditOrder(){
-        if (!Utils.isNotEmpty(mOrderID)){
+        final String orderId = Utils.getNullStringAsEmpty(mOrderInfo,getOrderIDKey());
+        if (!Utils.isNotEmpty(orderId)){
             MyDialog.ToastMessage("请先保存单据!", getWindow());
             return;
         }
@@ -463,7 +464,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
             param_obj.put("appid",getAppId());
             param_obj.put("stores_id",getStoreId());
             param_obj.put("pt_user_id",getPtUserId());
-            param_obj.put(getOrderIDKey(),mOrderID);
+            param_obj.put(getOrderIDKey(),orderId);
 
             Logger.d_json(param_obj.toString());
 

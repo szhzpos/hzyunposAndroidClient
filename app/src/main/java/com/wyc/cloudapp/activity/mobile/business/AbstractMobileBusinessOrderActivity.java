@@ -354,7 +354,9 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
     private void initStartDateAndTime(){
         final TextView start_date = findViewById(R.id.m_start_date);
         if (null != start_date) {
-            start_date.setText(new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).format(new Date()));
+            final Calendar rightNow = Calendar.getInstance();
+            rightNow.add(Calendar.DATE,-6);
+            start_date.setText(new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).format(rightNow.getTime()));
             start_date.setOnClickListener(v -> Utils.showDatePickerDialog(this,mCurrentDateBtn,(TextView) v, Calendar.getInstance()));
             mStartDateTv = start_date;
         }

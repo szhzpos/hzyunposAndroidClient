@@ -28,10 +28,9 @@
         android:autofillHints=""
         android:background="@drawable/bottom_separator"
         android:drawableEnd="@drawable/scan"
-        android:inputType="number"
+        android:inputType="none"
         android:paddingStart="@dimen/margin_5"
         android:paddingEnd="0dp"
-        android:selectAllOnFocus="true"
         android:textColor="@color/label_text_color"
         android:textSize="@dimen/font_size_16"
         app:layout_constraintEnd_toEndOf="parent"
@@ -216,7 +215,7 @@
         android:visibility="visible"
         app:layout_constraintEnd_toStartOf="@+id/cancel_btn"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/continue_btn"
         app:layout_constraintTop_toBottomOf="@id/price_and_amt_layout" />
 
     <Button
@@ -233,6 +232,21 @@
         app:layout_constraintEnd_toStartOf="@+id/del_btn"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/ok_btn" />
+
+    <Button
+        android:id="@+id/continue_btn"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="@dimen/width_88"
+        android:layout_height="@dimen/height_45"
+        android:background="@drawable/round_shape_main_color"
+        android:text="@string/continue_input"
+        android:textColor="@color/white_pink"
+        android:textSize="@dimen/font_size_18"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ok_btn"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/del_btn"
