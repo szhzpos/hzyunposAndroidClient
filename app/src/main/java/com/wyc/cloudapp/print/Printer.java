@@ -45,6 +45,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.locks.LockSupport;
 
 import static android.content.Context.WINDOW_SERVICE;
 
@@ -326,7 +327,7 @@ public final class Printer {
                                 //outputStream.write(RESET);
 
                                 byte[] tmpBytes;
-                                int length = content.length,max_length = 64;
+                                int length = content.length,max_length = 128;
                                 int count = length / max_length,tmp_c = 0,mod_length = 0;
 
                                 if (count == 0){
@@ -341,6 +342,8 @@ public final class Printer {
 
                                         outputStream.write(tmpBytes);
                                         outputStream.flush();
+
+                                        LockSupport.parkUntil(50);
 
                                         tmp_c++;
                                     }

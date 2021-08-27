@@ -14,8 +14,16 @@ import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter
 import com.wyc.cloudapp.adapter.business.MobileOtherWarehouseOrderAdapter;
 import com.wyc.cloudapp.adapter.business.MobileOtherWarehouseOrderDetailsAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.BusinessOrderPrintSetting;
+import com.wyc.cloudapp.bean.OrderPrintContentBase;
+import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
+import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /*其他出入库单*/
 public final class MobileOtherWarehouseOrderActivity extends AbstractMobileBusinessOrderActivity {
 
@@ -59,7 +67,7 @@ public final class MobileOtherWarehouseOrderActivity extends AbstractMobileBusin
                 if (treeListDialog.exec() == 1){
                     final JSONObject object = treeListDialog.getSingleContent();
                     out_in_type_tv.setText(object.getString(TreeListBaseAdapter.COL_NAME));
-                    out_in_type_tv.setTag(object.getString(TreeListBaseAdapter.COL_ID));
+                    out_in_type_tv.setTag(Utils.getNullOrEmptyStringAsDefault(object,TreeListBaseAdapter.COL_ID,"-1"));
                 }
             }));
             mOutInTypeTv = out_in_type_tv;
@@ -102,17 +110,34 @@ public final class MobileOtherWarehouseOrderActivity extends AbstractMobileBusin
             }
         }
 
+        private String getOutInType(){
+            final JSONArray array = getOutInTypes();
+            final String bgd_type = Utils.getNullStringAsEmpty(mOrderInfo,"bgd_type");
+            for (int i = 0,size = array.size();i < size;i ++){
+                final JSONObject object = array.getJSONObject(i);
+                if (bgd_type.equals(object.getString(TreeListBaseAdapter.COL_ID))){
+                    return object.getString(TreeListBaseAdapter.COL_NAME);
+                }
+            }
+            return "";
+        }
+
         @Override
         protected JSONObject generateUploadCondition() {
-            final JSONObject upload_obj = super.generateUploadCondition(),object = new JSONObject();
+            final JSONObject object = new JSONObject();
+            final String bgd_type = Utils.getViewTagValue(mOutInTypeTv,"-1");
+            if (!"-1".equals(bgd_type)){
+                final JSONObject upload_obj = super.generateUploadCondition();
+                upload_obj.put("bgd_code",mOrderCodeTv.getText().toString());
+                upload_obj.put("bgd_id", Utils.getNullStringAsEmpty(mOrderInfo,getOrderIDKey()));
+                upload_obj.put("bgd_type",Utils.getViewTagValue(mOutInTypeTv,"-1"));
+                upload_obj.put("goods_list_json",getGoodsList());
 
-            upload_obj.put("bgd_code",mOrderCodeTv.getText().toString());
-            upload_obj.put("bgd_id", Utils.getNullStringAsEmpty(mOrderInfo,getOrderIDKey()));
-            upload_obj.put("bgd_type",Utils.getViewTagValue(mOutInTypeTv,"-1"));
-            upload_obj.put("goods_list_json",getGoodsList());
-
-            object.put("api","/api/bgd/add");
-            object.put("upload_obj",upload_obj);
+                object.put("api","/api/bgd/add");
+                object.put("upload_obj",upload_obj);
+            }else {
+                MyDialog.toastMessage(getString(R.string.input_hint,getString(R.string.out_in)));
+            }
             return object;
         }
 
@@ -164,6 +189,49 @@ public final class MobileOtherWarehouseOrderActivity extends AbstractMobileBusin
         @Override
         protected String getOrderIDKey() {
             return "bgd_id";
+        }
+
+        @Override
+        protected String getPrintContent(BusinessOrderPrintSetting setting) {
+            final OrderPrintContentBase.Builder Builder = new OrderPrintContentBase.Builder();
+            final List<OrderPrintContentBase.Goods> details = new ArrayList<>();
+            JSONArray goods_list;
+            final String name = getString(R.string.other_inventory_sz);
+            if (isNewOrder()){
+                goods_list = getOrderDetails();
+                Builder.company(getStoreName())
+                        .orderName(name)
+                        .storeName(mWarehouseTv.getText().toString())
+                        .inOutType(mOutInTypeTv.getText().toString())
+                        .operator(mSaleOperatorTv.getText().toString())
+                        .orderNo(mOrderCodeTv.getText().toString())
+                        .operateDate(FormatDateTimeUtils.formatCurrentTime(FormatDateTimeUtils.YYYY_MM_DD_1))
+                        .remark(mRemarkEt.getText().toString());
+            }else {
+                goods_list = mOrderInfo.getJSONArray("goods_list");
+                Builder.company(getStoreName())
+                        .orderName(name)
+                        .storeName(getStoreName())
+                        .inOutType(getOutInType())
+                        .operator(mOrderInfo.getString(getSaleOperatorNameKey()))
+                        .orderNo(mOrderInfo.getString("bgd_code"))
+                        .operateDate(FormatDateTimeUtils.formatTimeWithTimestamp(mOrderInfo.getLongValue("addtime") * 1000))
+                        .remark(mOrderInfo.getString("remark"));
+            }
+            for (int i = 0,size = goods_list.size();i < size; i++){
+                final JSONObject object = goods_list.getJSONObject(i);
+                final OrderPrintContentBase.Goods goods = new OrderPrintContentBase.Goods.Builder()
+                        .barcodeId(object.getString("barcode_id"))
+                        .barcode(object.getString("barcode"))
+                        .name(object.getString("goods_title"))
+                        .unit(object.getString("unit_name"))
+                        .num(object.getDoubleValue("xnum"))
+                        .price(object.getDoubleValue("price"))
+                        .build();
+
+                details.add(goods);
+            }
+            return Builder.goodsList(details).build().format58(this,setting);
         }
     }
 

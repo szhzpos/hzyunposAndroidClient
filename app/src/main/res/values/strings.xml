@@ -844,4 +844,5 @@
     <string name="signer">签收</string>
     <string name="printer_empty_hint">打印机未设置</string>
     <string name="continue_input">继续</string>
+    <string name="out_in">出入库类型</string>
 </resources>

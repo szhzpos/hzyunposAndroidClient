@@ -9,14 +9,7 @@ import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter
 import com.wyc.cloudapp.adapter.business.MobileAddWholesaleOrderDetailAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.adapter.business.MobileWholesaleOrderAdapter;
-import com.wyc.cloudapp.bean.BusinessOrderPrintSetting;
-import com.wyc.cloudapp.bean.OrderPrintContentBase;
-import com.wyc.cloudapp.bean.WholesalePrintContext;
-import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /*批发订货单*/
 public final class MobileWholesaleOrderActivity extends AbstractMobileBusinessOrderActivity {

@@ -3,8 +3,12 @@ package com.wyc.cloudapp.utils;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -65,5 +69,17 @@ public class BluetoothUtils {
                 }
             }
         }
+    }
+
+    public static void attachReceiver(@NonNull final Context context, @NonNull BroadcastReceiver receiver){
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+        intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        intentFilter.addAction(BluetoothDevice.ACTION_FOUND);
+        intentFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
+        context.registerReceiver(receiver,intentFilter);
+    }
+    public static void detachReceiver(@NonNull final Context context, @NonNull BroadcastReceiver receiver){
+        context.unregisterReceiver(receiver);
     }
 }

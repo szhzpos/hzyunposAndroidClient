@@ -15,7 +15,7 @@ import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.BusinessOrderPrintSetting;
 import com.wyc.cloudapp.bean.OrderPrintContentBase;
-import com.wyc.cloudapp.bean.WholesalePrintContext;
+import com.wyc.cloudapp.bean.WholesalePrintContent;
 import com.wyc.cloudapp.data.viewModel.ConsumerViewModel;
 import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
@@ -172,11 +172,11 @@ public abstract class MobileWholesaleBaseActivity extends AbstractMobileQuerySou
 
     @Override
     protected String getPrintContent(BusinessOrderPrintSetting setting) {
-        final OrderPrintContentBase.Builder Builder = new OrderPrintContentBase.Builder(new WholesalePrintContext());
+        final OrderPrintContentBase.Builder Builder = new OrderPrintContentBase.Builder(new WholesalePrintContent());
         final List<OrderPrintContentBase.Goods> details = new ArrayList<>();
         final String name = getOrderPrintName();
         JSONArray goods_list;
-        if (null == mOrderInfo){
+        if (isNewOrder()){
             goods_list = getOrderDetails();
             Builder.company(getStoreName())
                     .orderName(name)

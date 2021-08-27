@@ -43,6 +43,13 @@ open class OrderPrintContentBase :Serializable {
         private set(value) {
             field = value?:""
         }
+
+    var inOutType:String? = ""
+        get() = field
+        private set(value) {
+            field = value?:""
+        }
+
     var operator:String? = ""
         get() = field
         private set(value) {
@@ -191,6 +198,10 @@ open class OrderPrintContentBase :Serializable {
             obj.supOrCus = v
             return this
         }
+        fun inOutType(v: String?):Builder{
+            obj.inOutType = v
+            return this
+        }
         fun operator(v: String?):Builder{
             obj.operator = v
             return this
@@ -246,6 +257,7 @@ open class OrderPrintContentBase :Serializable {
 
             printItem(info, context.getString(R.string.in_store), storeName)
             printItem(info,getSupOrCusLabel(context), supOrCus)
+            printItem(info, context.getString(R.string.out_in), inOutType)
             printItem(info, "  " + context.getString(R.string.oper), operator)
             printItem(info, context.getString(R.string.order_no), orderNo)
             printItem(info, context.getString(R.string.date), operateDate)

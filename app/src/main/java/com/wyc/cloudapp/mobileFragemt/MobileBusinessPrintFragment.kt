@@ -16,19 +16,16 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
 import butterknife.BindView
 import butterknife.OnClick
-import com.alibaba.fastjson.JSONObject
 import com.hjq.permissions.OnPermissionCallback
 import com.hjq.permissions.XXPermissions
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.activity.mobile.MobileSetupActivity
 import com.wyc.cloudapp.bean.BusinessOrderPrintSetting
 import com.wyc.cloudapp.bean.TreeListItem
-import com.wyc.cloudapp.data.SQLiteHelper
 import com.wyc.cloudapp.databinding.MoblieBusinessPrintSettingBinding
 import com.wyc.cloudapp.dialog.CustomProgressDialog
 import com.wyc.cloudapp.dialog.MyDialog
 import com.wyc.cloudapp.dialog.tree.TreeListDialogForObj
-import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.BluetoothUtils
 import java.util.*
 import kotlin.collections.ArrayList
@@ -68,12 +65,7 @@ class MobileBusinessPrintFragment: AbstractMobileFragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
-        val intentFilter = IntentFilter()
-        intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED)
-        intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
-        intentFilter.addAction(BluetoothDevice.ACTION_FOUND)
-        intentFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
-        context.registerReceiver(receiver, intentFilter)
+        BluetoothUtils.attachReceiver(context,receiver)
     }
     override fun onPause() {
         super.onPause()
@@ -82,7 +74,7 @@ class MobileBusinessPrintFragment: AbstractMobileFragment() {
 
     override fun onDetach() {
         super.onDetach()
-        context?.unregisterReceiver(receiver)
+        BluetoothUtils.detachReceiver(context!!,receiver)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {

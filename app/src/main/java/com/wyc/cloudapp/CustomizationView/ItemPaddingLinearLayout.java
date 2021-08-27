@@ -99,7 +99,7 @@ public class ItemPaddingLinearLayout extends LinearLayout {
 
     @Override
     public boolean onInterceptTouchEvent (MotionEvent ev){
-        if (ignore){
+        if (ignore && !(ev.getAction() == MotionEvent.ACTION_MOVE || ev.getAction() == MotionEvent.ACTION_DOWN)){//过滤滑动
             return true;
         }else
             return super.onInterceptTouchEvent(ev);

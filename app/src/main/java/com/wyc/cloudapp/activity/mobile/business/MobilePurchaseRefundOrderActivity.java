@@ -187,7 +187,7 @@ public class MobilePurchaseRefundOrderActivity extends AbstractMobileBusinessOrd
             final List<OrderPrintContentBase.Goods> details = new ArrayList<>();
             JSONArray goods_list;
             final String name = getString(R.string.purchase_refund_order_sz);
-            if (null == mOrderInfo){
+            if (isNewOrder()){
                 goods_list = getOrderDetails();
                 Builder.company(getStoreName())
                         .orderName(name)

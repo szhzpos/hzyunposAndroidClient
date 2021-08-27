@@ -162,7 +162,10 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
     protected JSONObject generateUploadCondition(){
         final JSONObject upload_obj = new JSONObject();
         upload_obj.put("pt_user_id",getPtUserId());
-        upload_obj.put("gs_id", Utils.getViewTagValue(mSupplierTV,""));
+
+        if (null != mSupplierTV)
+            upload_obj.put("gs_id",Utils.getViewTagValue(mSupplierTV,""));
+
         upload_obj.put(getSaleOperatorKey(),Utils.getViewTagValue(mSaleOperatorTv,""));
         upload_obj.put("remark",mRemarkEt.getText().toString());
 
@@ -248,7 +251,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
 
     protected final String getOrderValidityDate(){
         final Calendar now = Calendar.getInstance();
-        now.add(Calendar.MONTH,1);;
+        now.add(Calendar.MONTH,1);
         return new SimpleDateFormat("yyyy-MM-dd",Locale.CHINA).format(now.getTime());
     }
 
@@ -404,9 +407,12 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
     };
 
     private void uploadOrderInfo(){
+        final JSONObject condition = generateUploadCondition();
+        if (condition.isEmpty())return;
+
         showProgress(getString(R.string.upload_order_hints));
         CustomApplication.execute(()->{
-            final JSONObject condition = generateUploadCondition(),param_obj = condition.getJSONObject("upload_obj");
+            final JSONObject param_obj = condition.getJSONObject("upload_obj");
             param_obj.put("appid",getAppId());
             param_obj.put("stores_id",getStoreId());
 
@@ -419,7 +425,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                 Logger.d_json(retJson.toString());
                 if (HttpUtils.checkBusinessSuccess(info)){
                     mOrderInfo = new JSONObject();
-                    mOrderInfo.put(getOrderIDKey(),info.getString(getOrderIDKey()));
+                    mOrderInfo.put(getOrderIDKey(),info.getString(getOrderIDKey()));//新建单据 订单对象只能包含一个数据项并且key是getOrderIDKey的返回值；如果此条件改变了，请务必确保isNewOrder方法的判断条件一致
                     CustomApplication.runInMainThread(()->{
                         setOrderStatus();
                         if (MyDialog.showMessageToModalDialog(this,String.format(Locale.CHINA,"%s,%s",getString(R.string.upload_order_success_hints),getString(R.string.ask_audit_hints))) == 1){
@@ -438,6 +444,9 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
             }
             mProgressDialog.dismiss();
         });
+    }
+    protected boolean isNewOrder(){
+        return null == mOrderInfo || (mOrderInfo.size() == 1 && mOrderInfo.containsKey(getOrderIDKey()));
     }
 
     private void showProgress(final String mess){

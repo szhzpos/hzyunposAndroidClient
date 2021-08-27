@@ -180,7 +180,7 @@ public final class MobileWarehouseOrderActivity extends AbstractMobileBusinessOr
             final OrderPrintContentBase.Builder Builder = new OrderPrintContentBase.Builder();
             final List<OrderPrintContentBase.Goods> details = new ArrayList<>();
             JSONArray goods_list;
-            if (null == mOrderInfo){
+            if (isNewOrder()){
                 goods_list = getOrderDetails();
                 Builder.company(getStoreName())
                         .orderName(getString(R.string.warehouse_order_sz))

@@ -133,7 +133,7 @@ public class MobilePurchaseOrderActivity extends AbstractMobileBusinessOrderActi
             final List<OrderPrintContentBase.Goods> details = new ArrayList<>();
             final String name = getString(R.string.purchase_order_sz);
             JSONArray goods_list;
-            if (null == mOrderInfo){
+            if (isNewOrder()){
                 goods_list = getOrderDetails();
                 Builder.company(getStoreName())
                         .orderName(name)

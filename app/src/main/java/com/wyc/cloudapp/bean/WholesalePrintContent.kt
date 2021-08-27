@@ -16,7 +16,7 @@ import com.wyc.cloudapp.activity.MainActivity
  * @UpdateRemark:   更新说明
  * @Version:        1.0
  */
-class WholesalePrintContext:OrderPrintContentBase() {
+class WholesalePrintContent:OrderPrintContentBase() {
     override fun getSupOrCusLabel(context: MainActivity):String{
         return context.getString(R.string.consumer_name_sz)
     }
