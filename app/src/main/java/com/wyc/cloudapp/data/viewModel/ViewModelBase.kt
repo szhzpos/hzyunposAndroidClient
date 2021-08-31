@@ -3,7 +3,6 @@ package com.wyc.cloudapp.data.viewModel
 import androidx.lifecycle.ViewModel
 import com.alibaba.fastjson.JSONObject
 import com.alibaba.fastjson.TypeReference
-import com.wyc.cloudapp.bean.Consumer
 import com.wyc.cloudapp.dialog.MyDialog
 import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.http.HttpUtils
@@ -11,6 +10,7 @@ import com.wyc.cloudapp.utils.http.callback.ArrayResult
 import kotlinx.coroutines.*
 import okhttp3.Call
 import okhttp3.Callback
+import kotlin.coroutines.*
 
 /**
  *
@@ -30,18 +30,20 @@ open class ViewModelBase:ViewModel(),CoroutineScope by CoroutineScope(Dispatcher
     @Volatile
     private var  isFinish:Boolean = false
     protected fun launchWithHandler(block: suspend CoroutineScope.() -> Unit){
-        launch(CoroutineExceptionHandler { _, exception ->
-            exception.printStackTrace()
-            MyDialog.ToastMessageInMainThread("CoroutineExceptionHandler：${exception.message}")
-        }) {
-            try {
-                block.invoke(this)
-            }catch (e:CancellationException){
-                e.printStackTrace()
+        block.createCoroutine(this,object :Continuation<Unit>{
+            override val context: CoroutineContext
+                get() = coroutineContext
+
+            override fun resumeWith(result: Result<Unit>) {
+                result.onFailure {
+                    it.printStackTrace()
+                    MyDialog.ToastMessageInMainThread("ViewModelBase：${it.message}")
+                }
                 close()
             }
-        }
+        }).resume(Unit)
     }
+
     private fun close(){
         if (null != call){
             if (!isFinish){
@@ -54,6 +56,7 @@ open class ViewModelBase:ViewModel(),CoroutineScope by CoroutineScope(Dispatcher
         close()
         cancel()
     }
+
     protected fun netRequestAsync(url:String,param:String,back:Callback){
         call = HttpUtils.sendAsyncPost(url,param)
         call!!.enqueue(back)

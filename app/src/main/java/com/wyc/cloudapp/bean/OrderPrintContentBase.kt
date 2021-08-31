@@ -38,6 +38,13 @@ open class OrderPrintContentBase :Serializable {
         private set(value) {
             field = value?:""
         }
+
+    var outStoreName:String? = ""
+        get() = field
+        private set(value) {
+            field = value?:""
+        }
+
     var supOrCus:String? = ""
         get() = field
         private set(value) {
@@ -162,9 +169,7 @@ open class OrderPrintContentBase :Serializable {
 
     }
 
-    override fun toString(): String {
-        return "BusinessOrderPrintContent(company=$company, orderName=$orderName, storeName=$storeName, supOrCus=$supOrCus, operator=$operator, orderNo=$orderNo, operateDate=$operateDate, remark=$remark, goodsList=$goodsList)"
-    }
+
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -192,6 +197,10 @@ open class OrderPrintContentBase :Serializable {
         }
         fun storeName(v: String?):Builder{
             obj.storeName = v
+            return this
+        }
+        fun outStoreName(v: String?):Builder{
+            obj.outStoreName = v
             return this
         }
         fun supOrCus(v: String?):Builder{
@@ -231,6 +240,10 @@ open class OrderPrintContentBase :Serializable {
        return context.getString(R.string.sup)
     }
 
+    open fun getInStoreLabel(context: MainActivity):String{
+        return context.getString(R.string.in_store)
+    }
+
     fun format58(context: MainActivity, printSetting: BusinessOrderPrintSetting):String{
         val line = context.getString(R.string.line_58)
         val new_line = "\n"
@@ -255,7 +268,8 @@ open class OrderPrintContentBase :Serializable {
 
             info.append(line).append(Printer.commandToStr(Printer.ALIGN_LEFT)).append(new_line)
 
-            printItem(info, context.getString(R.string.in_store), storeName)
+            printItem(info,context.getString(R.string.out_store), outStoreName)
+            printItem(info,getInStoreLabel(context), storeName)
             printItem(info,getSupOrCusLabel(context), supOrCus)
             printItem(info, context.getString(R.string.out_in), inOutType)
             printItem(info, "  " + context.getString(R.string.oper), operator)
@@ -309,5 +323,9 @@ open class OrderPrintContentBase :Serializable {
             stringBuilder.append("${prefix}：${content}").append("\n")
         }
         return stringBuilder
+    }
+
+    override fun toString(): String {
+        return "OrderPrintContentBase(company=$company, orderName=$orderName, storeName=$storeName, outStoreName=$outStoreName, supOrCus=$supOrCus, inOutType=$inOutType, operator=$operator, orderNo=$orderNo, operateDate=$operateDate, remark=$remark, goodsList=$goodsList)"
     }
 }

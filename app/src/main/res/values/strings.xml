@@ -845,4 +845,6 @@
     <string name="printer_empty_hint">打印机未设置</string>
     <string name="continue_input">继续</string>
     <string name="out_in">出入库类型</string>
+    <string name="out_store">配出门店</string>
+    <string name="in_store_alias">配入门店</string>
 </resources>

@@ -23,15 +23,21 @@ import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
 import com.wyc.cloudapp.adapter.business.MobileBaseOrderDetailsAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.BusinessOrderPrintSetting;
+import com.wyc.cloudapp.bean.OrderPrintContentBase;
+import com.wyc.cloudapp.bean.TransferOutInOrder;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class MobileTransferInOrderDetailActivity extends AbstractMobileActivity {
@@ -83,6 +89,50 @@ public class MobileTransferInOrderDetailActivity extends AbstractMobileActivity 
         mTransferOutWhTv = findViewById(R.id.transfer_out_wh_tv);
     }
 
+    private void showPrint(){
+        if (isAudit()){
+            setRightText(getString(R.string.m_print_sz) + "    ");
+            setRightListener(v -> print(false));
+        }
+    }
+
+    private void print(boolean ask){
+        final BusinessOrderPrintSetting setting = BusinessOrderPrintSetting.getSetting();
+        if (ask){
+            switch (setting.getType()){
+                case ASK:
+                    if (setting.getType() == BusinessOrderPrintSetting.Type.ASK){
+                        MyDialog.displayAskMessage(this, getString(R.string.ask_print_hint), myDialog -> {
+                            printContent(setting);
+                            resetBusinessOrderInfo();
+                        }, myDialog -> {
+                            myDialog.dismiss();
+                            resetBusinessOrderInfo();
+                        });
+                    }
+                    break;
+                case AUTO:
+                    printContent(setting);
+                    resetBusinessOrderInfo();
+                    break;
+                default:
+                    resetBusinessOrderInfo();
+            }
+        }else {
+            printContent(setting);
+        }
+    }
+    private void printContent(BusinessOrderPrintSetting setting){
+        Logger.d(setting);
+        if (Utils.isNotEmpty(setting.getPrinter())){
+            if (setting.getWay() == BusinessOrderPrintSetting.Way.BLUETOOTH_PRINT){
+                Printer.printByBluetooth(getPrintContent(setting),setting.getPrinterAddress());
+            }
+        }else {
+            MyDialog.toastMessage(getString(R.string.printer_empty_hint));
+        }
+    }
+
     protected final boolean isAudit(){
         return Utils.getNotKeyAsNumberDefault(mOrderInfo,"qr_status",1) == 2;
     }
@@ -132,6 +182,7 @@ public class MobileTransferInOrderDetailActivity extends AbstractMobileActivity 
                     view.setVisibility(View.GONE);
                 }
             }
+            showPrint();
         }else if (Utils.isNotEmpty(mOrderID)){
             business_main.setCentreLabel(getString(R.string.saved_sz));
         }
@@ -278,6 +329,52 @@ public class MobileTransferInOrderDetailActivity extends AbstractMobileActivity 
             }
             progressDialog.dismiss();
         });
+    }
+
+    private boolean isNewOrder() {
+        return mOrderInfo == null || mOrderInfo.isEmpty();
+    }
+
+    protected String getPrintContent(BusinessOrderPrintSetting setting) {
+        final TransferOutInOrder.Builder Builder = new TransferOutInOrder.Builder(new TransferOutInOrder());
+        final List<TransferOutInOrder.Goods> details = new ArrayList<>();
+        final String name = getString(R.string.distribution_warehousing_sz);
+        JSONArray goods_list;
+        if (isNewOrder()){
+            goods_list = mAdapter.getData();
+            Builder.company(getStoreName())
+                    .orderName(name)
+                    .storeName(mWarehouseTv.getText().toString())
+                    .outStoreName(mTransferOutWhTv.getText().toString())
+                    .operator(mSaleOperatorTv.getText().toString())
+                    .orderNo(mOrderCodeTv.getText().toString())
+                    .operateDate(FormatDateTimeUtils.formatCurrentTime(FormatDateTimeUtils.YYYY_MM_DD_1))
+                    .remark(mRemarkEt.getText().toString());
+        }else {
+            goods_list = mOrderInfo.getJSONArray("goods_list");
+            Builder.company(getStoreName())
+                    .orderName(name)
+                    .storeName(mOrderInfo.getString("dr_wh_name"))
+                    .outStoreName(mOrderInfo.getString("wh_name"))
+                    .operator(mOrderInfo.getString("js_pt_user_name"))
+                    .orderNo(mOrderInfo.getString("ckd_code"))
+                    .operateDate(mOrderInfo.getString("add_datetime"))
+                    .remark(mOrderInfo.getString("remark"));
+        }
+        for (int i = 0,size = goods_list.size();i < size; i++){
+            final JSONObject object = goods_list.getJSONObject(i);
+            final OrderPrintContentBase.Goods goods = new OrderPrintContentBase.Goods.Builder()
+                    .barcodeId(object.getString("barcode_id"))
+                    .barcode(object.getString("barcode"))
+                    .name(object.getString("goods_title"))
+                    .unit(object.getString("unit_name"))
+                    .num(object.getDoubleValue("xnum"))
+                    .price(object.getDoubleValue("price"))
+                    .build();
+
+            details.add(goods);
+        }
+        return Builder.goodsList(details).build().format58(this,setting);
     }
 
     @Override

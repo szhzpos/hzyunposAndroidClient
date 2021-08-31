@@ -6,7 +6,7 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/item_list"
-        android:layout_width="@dimen/tree_list_w"
+        android:layout_width="match_parent"
         android:layout_height="@dimen/tree_list_h"
         android:background="@drawable/round_border_sub_gray" />
 

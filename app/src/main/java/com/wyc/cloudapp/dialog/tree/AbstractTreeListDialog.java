@@ -13,6 +13,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogContext;
+import com.wyc.cloudapp.utils.Utils;
 
 /**
  * @ProjectName: AndroidClient
@@ -59,7 +60,9 @@ public abstract class AbstractTreeListDialog<D,S> extends AbstractDialogContext 
 
     @Override
     protected double getWidthRatio() {
-        return 0.98;
+        if (Utils.lessThan7Inches(mContext))
+            return 0.98;
+        return mContext.getResources().getDimension(R.dimen.tree_list_w);
     }
 
     public AbstractTreeListDialog<D,S> setData(final D obj, final D selectItems, boolean singleSelection){
