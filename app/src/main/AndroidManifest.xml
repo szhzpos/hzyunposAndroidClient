@@ -41,9 +41,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
+        <activity android:name=".activity.mobile.business.MobileEnquiryOrderActivity$MobileAddEnquiryOrderActivity"/>
+        <activity android:name=".activity.mobile.business.MobileEnquiryOrderActivity" />
+        <activity android:name=".activity.mobile.cashierDesk.GiftCardOrderDetailActivity" />
         <activity
-            android:name=".activity.mobile.cashierDesk.GiftCardOrderDetailActivity"/>
-        <activity android:name=".activity.mobile.cashierDesk.GiftCardOrderQueryActivity"
+            android:name=".activity.mobile.cashierDesk.GiftCardOrderQueryActivity"
             android:windowSoftInputMode="adjustResize|stateUnchanged" />
         <activity android:name=".activity.mobile.cashierDesk.QueryGiftCardInfoActivity" />
         <activity

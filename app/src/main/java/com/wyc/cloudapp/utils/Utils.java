@@ -261,7 +261,7 @@ public final class Utils {
 
     public static String getNonce_str(int length) {
         String SYMBOLS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        char[] nonceChars = new char[SYMBOLS.length() < length ? SYMBOLS.length():length];
+        char[] nonceChars = new char[Math.min(SYMBOLS.length(), length)];
         Random random = new Random();
 
         for (int index = 0; index < nonceChars.length; ++index) {
@@ -272,7 +272,7 @@ public final class Utils {
 
     public static String getNonce_num(int length) {
         String SYMBOLS = "0123456789";
-        char[] nonceChars = new char[SYMBOLS.length() < length ? SYMBOLS.length():length];
+        char[] nonceChars = new char[Math.min(SYMBOLS.length(), length)];
         Random random = new Random();
 
         for (int index = 0; index < nonceChars.length; ++index) {

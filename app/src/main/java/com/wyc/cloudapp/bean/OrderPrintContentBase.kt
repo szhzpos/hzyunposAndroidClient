@@ -244,6 +244,10 @@ open class OrderPrintContentBase :Serializable {
         return context.getString(R.string.in_store)
     }
 
+    open fun getOutStoreLabel(context: MainActivity):String{
+        return context.getString(R.string.in_store)
+    }
+
     fun format58(context: MainActivity, printSetting: BusinessOrderPrintSetting):String{
         val line = context.getString(R.string.line_58)
         val new_line = "\n"
@@ -268,7 +272,7 @@ open class OrderPrintContentBase :Serializable {
 
             info.append(line).append(Printer.commandToStr(Printer.ALIGN_LEFT)).append(new_line)
 
-            printItem(info,context.getString(R.string.out_store), outStoreName)
+            printItem(info,getOutStoreLabel(context), outStoreName)
             printItem(info,getInStoreLabel(context), storeName)
             printItem(info,getSupOrCusLabel(context), supOrCus)
             printItem(info, context.getString(R.string.out_in), inOutType)
@@ -283,27 +287,49 @@ open class OrderPrintContentBase :Serializable {
             var sum_amt = 0.0
             var sum: Double
 
-            info.append(context.getString(R.string.b_f_header_sz).replace("-", " ")).append(new_line_2).append(new_line).append(line).append(new_line)
+            val isEnquiry = this is EnquiryOrderPrintContent
 
-            goodsList?.forEachIndexed { index, it ->
-                sum = it.num?.times(it.price!!) ?: 0.0
-                sum_num += it.num!!
-                sum_amt += sum
+            if (isEnquiry){
+                info.append(context.getString(R.string.enquiry_header_sz).replace("-", " ")).append(new_line_2).append(new_line).append(line).append(new_line)
+                goodsList?.forEachIndexed { index, it ->
+                    sum = it.num?.times(it.price!!) ?: 0.0
+                    sum_num += it.num!!
+                    sum_amt += sum
 
-                if (index != 0) info.append(new_line_10)
+                    if (index != 0) info.append(new_line_10)
 
-                info.append(Printer.commandToStr(Printer.BOLD)).append(String.format("%s(%s)", it.name, it.unit)).append(new_line).append(new_line_d).append(Printer.commandToStr(Printer.BOLD_CANCEL))
-                info.append(Printer.printTwoData(1, {s:String?->  var v = s
-                                                                        if (Utils.isNotEmpty(s))if (s!!.length > 13)v = s.substring(0..12)
-                                                                        v
-                                                                  }(it.barcode),
-                        Printer.printThreeData(16, String.format("%.2f", it.price), String.format("%.2f", it.num), String.format(Locale.CHINA, "%.2f", sum)))).append(new_line)
+                    info.append(Printer.commandToStr(Printer.BOLD)).append(String.format("%s", it.name)).append(new_line).append(new_line_d).append(Printer.commandToStr(Printer.BOLD_CANCEL))
+                    info.append(Printer.printThreeData(1, {s:String?->  var v = s
+                        if (Utils.isNotEmpty(s))if (s!!.length > 13)v = s.substring(0..12)
+                        v
+                    }(it.barcode),String.format("%s", it.unit), String.format("%.2f", it.num))).append(new_line)
+                }
+            }else{
+                info.append(context.getString(R.string.b_f_header_sz).replace("-", " ")).append(new_line_2).append(new_line).append(line).append(new_line)
+
+                goodsList?.forEachIndexed { index, it ->
+                    sum = it.num?.times(it.price!!) ?: 0.0
+                    sum_num += it.num!!
+                    sum_amt += sum
+
+                    if (index != 0) info.append(new_line_10)
+
+                    info.append(Printer.commandToStr(Printer.BOLD)).append(String.format("%s(%s)", it.name, it.unit)).append(new_line).append(new_line_d).append(Printer.commandToStr(Printer.BOLD_CANCEL))
+                    info.append(Printer.printTwoData(1, {s:String?->  var v = s
+                        if (Utils.isNotEmpty(s))if (s!!.length > 13)v = s.substring(0..12)
+                        v
+                    }(it.barcode),
+                            Printer.printThreeData(16, String.format("%.2f", it.price), String.format("%.2f", it.num), String.format(Locale.CHINA, "%.2f", sum)))).append(new_line)
+                }
             }
 
             info.append(line).append(new_line)
 
-            info.append(Printer.printTwoData(1, String.format("%s：%.2f", context.getString(R.string.num_not_colon_sz), sum_num),
-                    String.format("%s：%.2f", context.getString(R.string.amt_not_colon_sz), sum_amt))).append(new_line).append(new_line)
+            if (isEnquiry){
+                info.append(String.format("%s：%.2f", context.getString(R.string.num_not_colon_sz), sum_num)).append(Printer.commandToStr(Printer.ALIGN_RIGHT)).append(new_line).append(new_line)
+            }else
+                info.append(Printer.printTwoData(1, String.format("%s：%.2f", context.getString(R.string.num_not_colon_sz), sum_num),
+                        String.format("%s：%.2f", context.getString(R.string.amt_not_colon_sz), sum_amt))).append(new_line).append(new_line)
 
             info.append(Printer.printTwoData(1, String.format("%s：", context.getString(R.string.handlerName)),
                     String.format("%s：%s", context.getString(R.string.accountant),right_space))).append(new_line).append(new_line)

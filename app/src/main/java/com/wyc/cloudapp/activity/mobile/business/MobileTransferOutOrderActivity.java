@@ -34,9 +34,7 @@ public class MobileTransferOutOrderActivity extends AbstractMobileBusinessOrderA
 
     @Override
     protected JSONObject generateQueryCondition() {
-        final JSONObject condition = new JSONObject();
-        condition.put("api","/api/api_move_out/xlist");
-        return condition;
+        return new JSONObject().fluentPut("api","/api/api_move_out/xlist");
     }
 
     @Override

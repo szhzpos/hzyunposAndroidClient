@@ -46,6 +46,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.locks.LockSupport;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static android.content.Context.WINDOW_SERVICE;
 
@@ -189,13 +191,22 @@ public final class Printer {
         sb.append(rightText);
         return sb.toString();
     }
-
+    public static boolean isContainChinese(String str) {
+        Pattern p = Pattern.compile("[\u4e00-\u9fa5]");
+        Matcher m = p.matcher(str);
+        return m.find();
+    }
     public static String printThreeData(int space,String leftText, String middleText, String rightText) {
         StringBuilder sb = new StringBuilder();
-        // 左边最多显示 LEFT_TEXT_MAX_LENGTH 个汉字 + 两个点
-        if (leftText.length() > LEFT_TEXT_MAX_LENGTH) {
+        int max_left_len = LEFT_LENGTH;
+        if (isContainChinese(leftText)){
+            // 左边最多显示 LEFT_TEXT_MAX_LENGTH 个汉字 + 两个点
+            max_left_len = LEFT_TEXT_MAX_LENGTH;
+        }
+        if (leftText.length() > max_left_len) {
             leftText = leftText.substring(0, LEFT_TEXT_MAX_LENGTH) + "..";
         }
+
         int leftTextLength = getBytesLength(leftText);
         int middleTextLength = getBytesLength(middleText);
         int rightTextLength = getBytesLength(rightText);
@@ -235,7 +246,7 @@ public final class Printer {
             sb.append(leftText).append(spacing);
         }else {
             sb.append(leftText);
-            for (int i = 0,k = left_margin - left_byte_size; i <= k ; i++) {
+            for (int i = 0,k = left_margin - left_byte_size; i < k ; i++) {
                 sb.append(spacing);
             }
         }
@@ -243,25 +254,34 @@ public final class Printer {
         // 计算左侧文字和中间文字的空格长度
         int mid_byte_size = getBytesLength(middleText);
         if (mid_byte_size < mid_right_margin) {
-            for (int i = 0; i <= mid_right_margin - mid_byte_size; i++) {
+            for (int i = 0; i < mid_right_margin - mid_byte_size; i++) {
                 sb.append(spacing);
             }
             sb.append(middleText);
         }else {
-            sb.append(middleText.substring(0,mid_right_margin));
+            sb.append(substringWithChar(middleText,0,mid_right_margin));
         }
 
         int rig_byte_size = getBytesLength(rightText);
         if (rig_byte_size < mid_right_margin) {
-            for (int i = 0; i <= mid_right_margin - rig_byte_size; i++) {
+            for (int i = 0; i < mid_right_margin - rig_byte_size; i++) {
                 sb.append(spacing);
             }
             sb.append(rightText);
         }else {
-            sb.append(rightText.substring(0,mid_right_margin));
+            sb.append(substringWithChar(rightText,0,mid_right_margin));
         }
 
         return sb.toString();
+    }
+    private static String substringWithChar(String sz,int s,int e){
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0,size = sz.length();i < size;i++){
+            if (i >= s && i<= e){
+                stringBuilder.append(sz.charAt(i));
+            }
+        }
+        return stringBuilder.toString();
     }
 
     public static String commandToStr(byte[] bytes){

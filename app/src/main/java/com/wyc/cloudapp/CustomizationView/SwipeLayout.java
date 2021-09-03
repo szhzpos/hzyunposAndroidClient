@@ -53,14 +53,12 @@ public class SwipeLayout extends FrameLayout {
     private void initContentView(final Context context,AttributeSet attrs){
         final TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.SwipeLayout, 0, 0);
         int contentViewId = typedArray.getResourceId(R.styleable.SwipeLayout_layout,0);
-        mContentView = View.inflate(getContext(),contentViewId,null);
+        mContentView = ((FrameLayout)View.inflate(context,contentViewId,this)).getChildAt(0);
         if (mContentView == null){
             final TextView tv = new TextView(getContext());
             tv.setText(R.string.not_found_hint);
             mContentView = tv;
         }
-        mContentView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        addView(mContentView);
         typedArray.recycle();
     }
 

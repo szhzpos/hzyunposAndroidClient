@@ -33,7 +33,7 @@ public abstract class MobileBaseOrderAdapter<T  extends MobileBaseOrderAdapter.M
         super(activity);
     }
 
-    static class MyViewHolder extends AbstractQueryDataAdapter.SuperViewHolder {
+    public static class MyViewHolder extends AbstractQueryDataAdapter.SuperViewHolder {
         TextView order_code_tv,gs_name_tv,wh_name_tv,audit_tv,amt_tv,date_tv;
         MyViewHolder(View itemView) {
             super(itemView);
@@ -63,7 +63,7 @@ public abstract class MobileBaseOrderAdapter<T  extends MobileBaseOrderAdapter.M
         if (holder.gs_name_tv != null)holder.gs_name_tv.setText(object.getString("gs_name"));
         holder.wh_name_tv.setText(mContext.getStoreName());
         holder.audit_tv.setText("1".equals(object.getString("sh_status")) ? mContext.getString(R.string.unaudited_sz) : mContext.getString(R.string.audited_sz));
-        holder.amt_tv.setText(String.format(Locale.CHINA,"%.2f", Utils.getNotKeyAsNumberDefault(object,"total",0.0)));
+        if (holder.amt_tv != null)holder.amt_tv.setText(String.format(Locale.CHINA,"%.2f", Utils.getNotKeyAsNumberDefault(object,"total",0.0)));
         holder.date_tv.setText(FormatDateTimeUtils.formatTimeWithTimestamp(object.getLongValue("addtime") * 1000));
 
         bindViewHolder(holder,object);
