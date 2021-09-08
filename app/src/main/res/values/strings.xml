@@ -724,6 +724,9 @@
     <string name="camera_permission_hint">请打开相机权限…</string>
     <string name="clear_img">清除图片</string>
     <string name="add_img">添加图片</string>
+    <string name="basic_info">基础信息</string>
+    <string name="auxiliary_info">辅助信息</string>
+    <string name="unit_price_info">单位及定价</string>
 
     <!-- 编辑会员-->
     <string name="vip_name">@string/name_sz</string>

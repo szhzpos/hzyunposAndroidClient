@@ -23,7 +23,9 @@ import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.google.android.material.tabs.TabLayout;
 import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
@@ -93,6 +95,8 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
 
     @BindView(R.id.goods_img)
     ImageView goods_img;
+    @BindView(R.id._tab_layout)
+    TabLayout _tab_layout;
 
     private Uri mImageUri;
 
@@ -112,6 +116,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         initBarcode();
         initSupplier();
         initGoodsAttrAndMetering();
+        initTabLayout();
 
         //查询商品辅助档案
         getGoodsBase();
@@ -122,6 +127,28 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         if (isModify){
             getGoodsByBarcodeId();
         }
+    }
+
+    private void initTabLayout(){
+        _tab_layout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+        _tab_layout.addTab(_tab_layout.newTab().setText(getString(R.string.basic_info)));
+        _tab_layout.addTab(_tab_layout.newTab().setText(getString(R.string.auxiliary_info)));
+        _tab_layout.addTab(_tab_layout.newTab().setText(getString(R.string.unit_price_info)));
     }
 
     @OnClick(R.id.clear_img_btn)
@@ -828,13 +855,15 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         data.put("gs_id",Utils.getViewTagValue(mSupplierTv,""));
         data.put("spec_id",Utils.getViewTagValue(mGoodsAttrEt,"1"));
         data.put("only_coding",only_coding);
-        data.put("unit",unit);
+        data.put("unit_name",unit);
         data.put("spec_str",spec_tv.getText().toString());
         data.put("current_goods", getCurPriceFlag());
         data.put("gb_id",Utils.getViewTagValue(mBrandTv,""));
         data.put("cash_flow_mode",Utils.getViewTagValue(hz_method_tv,""));
         data.put("cash_flow_ratio",ly_ratio_tv.getText().toString());
         data.put("origin",place_et.getText().toString());
+        data.put("retail_price",mRetailPriceEt.getText().toString());
+        data.put("goods_id",Utils.getNullStringAsEmpty(mGoodsObj,"goods_id"));
 
         final JSONArray barcode_info = new JSONArray();
         final JSONObject goods = new JSONObject();
@@ -842,15 +871,13 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         goods.put("mnemonic_code",Utils.getNullStringAsEmpty(mGoodsObj,"mnemonic_code"));
         goods.put("goods_spec_code",Utils.getNullStringAsEmpty(mGoodsObj,"goods_spec_code"));
         goods.put("metering_id",getMetering());
-        goods.put("retail_price",mRetailPriceEt.getText().toString());
-        goods.put("sys_unit",unit);
+        goods.put("sys_unit_id",unit);
         goods.put("conversion",Utils.getNullOrEmptyStringAsDefault(mGoodsObj,"conversion","1"));
         goods.put("yh_mode",Utils.getNotKeyAsNumberDefault(mGoodsObj,"yh_mode",0));
         goods.put("yh_price",mVipPriceEt.getText().toString());
         goods.put("cost_price",0);
         goods.put("ps_price",0);
         goods.put("trade_price",pf_price_et.getText().toString());
-        goods.put("goods_id",Utils.getNullStringAsEmpty(mGoodsObj,"goods_id"));
         if (isModify)goods.put("barcode_id",mBarcodeId);
         goods.put("del_status",1);
 
@@ -883,6 +910,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     }
 
     private void addGoods(final JSONObject data,boolean reset){
+        Logger.d_json(data);
         if (data.isEmpty())return;
 
         final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,"正在上传商品信息...");
@@ -924,18 +952,22 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
                     err.append(retJson.getString("info"));
                     break;
                 case 1:
-                    final JSONObject info  = JSON.parseObject(retJson.getString("info"));
-                    switch (Utils.getNullStringAsEmpty(info,"status")){
-                        case "n":
-                            loop.done(0);
-                            err.append(info.getString("info"));
-                            break;
-                        case "y":
-                            if (getNewGoodsAndSave(httpRequest,err)){
-                                loop.done(1);
-                            }else
-                                loop.done(0);
-                            break;
+                    try {
+                        final JSONObject info  = JSON.parseObject(retJson.getString("info"));
+                        switch (Utils.getNullStringAsEmpty(info,"status")){
+                            case "n":
+                                throw new JSONException(info.getString("info"));
+                            case "y":
+                                if (getNewGoodsAndSave(httpRequest,err)){
+                                    loop.done(1);
+                                }else
+                                    loop.done(0);
+                                break;
+                        }
+                    }catch (JSONException e){
+                        e.printStackTrace();
+                        loop.done(0);
+                        err.append(e.getMessage());
                     }
                     break;
             }

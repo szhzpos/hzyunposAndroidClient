@@ -54,6 +54,10 @@
         <item name="android:textSize">@dimen/font_size_18</item>
         <item name="android:textColor">?android:attr/textColorSecondary</item>
     </style>
+    <style name="TabText_14">
+        <item name="android:textSize">@dimen/font_size_14</item>
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+    </style>
     <style name="Widget.AppTheme.ButtonBar.Fullscreen" parent="">
         <item name="android:background">@color/black_overlay</item>
         <item name="android:buttonBarStyle">?android:attr/buttonBarStyle</item>
