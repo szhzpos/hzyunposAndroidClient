@@ -16,6 +16,7 @@
     </declare-styleable>
     <declare-styleable name="ItemPaddingLinearLayout">
         <attr name="ItemPadding" format="dimension"/>
+        <attr name="PaddingColor" format="color"/>
     </declare-styleable>
     <declare-styleable name="SwipeLayout">
         <attr name="layout" format="reference" />

@@ -7,6 +7,7 @@ import com.wyc.cloudapp.dialog.MyDialog
 import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.http.HttpUtils
 import com.wyc.cloudapp.utils.http.callback.ArrayResult
+import com.wyc.cloudapp.utils.http.callback.ObjectResult
 import kotlinx.coroutines.*
 import okhttp3.Call
 import okhttp3.Callback
@@ -37,7 +38,7 @@ open class ViewModelBase:ViewModel(),CoroutineScope by CoroutineScope(Dispatcher
             override fun resumeWith(result: Result<Unit>) {
                 result.onFailure {
                     it.printStackTrace()
-                    MyDialog.ToastMessageInMainThread("ViewModelBase：${it.message}")
+                    MyDialog.ToastMessageInMainThread("${this@ViewModelBase::class.simpleName}：${it.message}")
                 }
                 close()
             }
@@ -70,6 +71,9 @@ open class ViewModelBase:ViewModel(),CoroutineScope by CoroutineScope(Dispatcher
     }
     protected fun <T> parseArray(clazz: Class<T>,value:String?):ArrayResult<T>{
         return JSONObject.parseObject(value, object : TypeReference<ArrayResult<T>>(clazz) {}.type)
+    }
+    protected fun <T> parseObject(clazz: Class<T>,value:String?):ObjectResult<T>{
+        return JSONObject.parseObject(value, object : TypeReference<ObjectResult<T>>(clazz) {}.type)
     }
     protected fun finalize(){
         Logger.d("%s has finalized",javaClass.simpleName)

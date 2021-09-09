@@ -102,6 +102,7 @@
     <string name="searching_bluetooth">正在搜索蓝牙打印机…</string>
     <string name="begin_print">开始打印</string>
     <string name="end_print">结束打印</string>
+    <string name="retail_price_sz">零售价</string>
 
     <!-- 新增会员 -->
     <string name="vip_dialog_title_sz">会员信息</string>
@@ -385,7 +386,7 @@
     <string name="manage_zjm_sz">助记码</string>
     <string name="manage_specification_sz">规格</string>
     <string name="manage_pro_place_sz">产地</string>
-    <string name="manage_retail_price_sz">零售价</string>
+    <string name="manage_retail_price_sz">@string/retail_price_sz</string>
     <string name="manage_vip_price_sz">会员价</string>
     <string name="manage_category_sz">所属分类</string>
     <string name="manage_goods_attr_sz">商品属性</string>
@@ -727,6 +728,15 @@
     <string name="basic_info">基础信息</string>
     <string name="auxiliary_info">辅助信息</string>
     <string name="unit_price_info">单位及定价</string>
+    <string name="action">@string/action_sz</string>
+    <string name="sequence">序号</string>
+    <string name="auxiliary_barcode">辅助条码</string>
+    <string name="barcode">条码</string>
+    <string name="marketing_unit">销售单位</string>
+    <string name="conversion_ratio">换算率</string>
+    <string name="pf_price_not_colon">批发价</string>
+    <string name="shipping_price">配送价</string>
+
 
     <!-- 编辑会员-->
     <string name="vip_name">@string/name_sz</string>

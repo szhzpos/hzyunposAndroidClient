@@ -122,7 +122,7 @@ public final class Supplier implements Parcelable {
     }
 
     public String getGs_id() {
-        return gs_id;
+        return gs_id == null ? "0" : gs_id;
     }
 
     public void setGs_id(String gs_id) {

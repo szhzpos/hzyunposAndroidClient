@@ -221,7 +221,7 @@ public final class TimeCardSaleFragment extends AbstractMobileFragment {
                 if (dx > (w - search.getCompoundPaddingRight())) {
                     queryTimeCardByName(search.getText().toString());
                 }else if(dx < search.getCompoundPaddingLeft()){
-                    SelectTimeCardActivity.startWithFragment(this);
+                    SelectTimeCardActivity.startWithFragment(this,null);
                 }
             }
             return false;
@@ -255,7 +255,7 @@ public final class TimeCardSaleFragment extends AbstractMobileFragment {
                             }else if (size == 0){
                                 MyDialog.toastMessage(getString(R.string.not_exist_hint_sz, _search_content.getText().toString()));
                             }else
-                                SelectTimeCardActivity.startForResult(mContext, (ArrayList<TimeCardInfo>) list);
+                                SelectTimeCardActivity.startWithFragment(TimeCardSaleFragment.this, (ArrayList<TimeCardInfo>) list);
                         }
                         progressDialog.dismiss();
                     }

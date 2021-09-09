@@ -66,13 +66,15 @@ public final class RoundCornerTabLayout extends TabLayout {
 
     @Override
     public void selectTab(@Nullable final TabLayout.Tab tab, boolean updateIndicator){
-        int pos = tab.getPosition();
-        if (pos == 0){
-            setSelectedTabIndicator(mLeft);
-        }else if (pos == getTabCount() - 1){
-            setSelectedTabIndicator(mRight);
-        }else
-            setSelectedTabIndicator(mMiddle);
+        if (null != tab){
+            int pos = tab.getPosition();
+            if (pos == 0){
+                setSelectedTabIndicator(mLeft);
+            }else if (pos == getTabCount() - 1){
+                setSelectedTabIndicator(mRight);
+            }else
+                setSelectedTabIndicator(mMiddle);
+        }
         super.selectTab(tab,updateIndicator);
     }
 }

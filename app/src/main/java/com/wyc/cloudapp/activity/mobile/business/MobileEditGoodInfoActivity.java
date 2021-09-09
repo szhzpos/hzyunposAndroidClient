@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.activity.mobile.business;
 
+import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -13,13 +14,15 @@ import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -32,7 +35,11 @@ import com.hjq.permissions.XXPermissions;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.BarcodeOnlyCodeInfo;
+import com.wyc.cloudapp.bean.Supplier;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.data.viewModel.BarcodeOnlyCodeViewModel;
+import com.wyc.cloudapp.data.viewModel.SupplierViewModel;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -70,7 +77,8 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     private String mBarcode;
     private EditText mBarcodeEt,mGoodsAttrEt,mMeteringEt;
     private TextView mBrandTv,mSupplierTv, mCategoryTv,mUnitTv;
-    private JSONArray mUnitList,mCategoryList,mSupplierList,mBrandList,mAttrList,meteringList;
+    private JSONArray mUnitList,mCategoryList,mBrandList,mAttrList,meteringList;
+    private List<Supplier> mSupplierList;
 
     @BindView(R.id.a_name_et)
     EditText mNameEt;
@@ -97,6 +105,13 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     ImageView goods_img;
     @BindView(R.id._tab_layout)
     TabLayout _tab_layout;
+
+    @BindView(R.id.basic)
+    ViewGroup mBasicLayout;
+    @BindView(R.id.auxiliary)
+    ViewGroup mAuxiliaryLayout;
+    @BindView(R.id.unit_price_layout)
+    ViewGroup mUnitPriceLayout;
 
     private Uri mImageUri;
 
@@ -133,7 +148,30 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         _tab_layout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+                switch (tab.getPosition()){
+                    case 0:
+                        if (mBasicLayout.getVisibility() == View.GONE){
+                            showView(mBasicLayout);
 
+                            hideView(mAuxiliaryLayout);
+                            hideView(mUnitPriceLayout);
+                        }
+                        break;
+                    case  1:
+                        if (mAuxiliaryLayout.getVisibility() == View.GONE){
+                            showView(mAuxiliaryLayout);
+                            hideView(mBasicLayout);
+                            hideView(mUnitPriceLayout);
+                        }
+                        break;
+                    case 2:
+                        if (mUnitPriceLayout.getVisibility() == View.GONE){
+                            showView(mUnitPriceLayout);
+                            hideView(mBasicLayout);
+                            hideView(mAuxiliaryLayout);
+                        }
+                        break;
+                }
             }
 
             @Override
@@ -149,6 +187,50 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         _tab_layout.addTab(_tab_layout.newTab().setText(getString(R.string.basic_info)));
         _tab_layout.addTab(_tab_layout.newTab().setText(getString(R.string.auxiliary_info)));
         _tab_layout.addTab(_tab_layout.newTab().setText(getString(R.string.unit_price_info)));
+    }
+
+    private static class Hide implements Animator.AnimatorListener {
+        private final View mAnimView;
+        public Hide(@NonNull View view){
+            mAnimView = view;
+        }
+        @Override
+        public void onAnimationEnd(Animator animation, boolean isReverse) {
+
+        }
+
+        @Override
+        public void onAnimationStart(Animator animation) {
+
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animation) {
+            mAnimView.setVisibility(View.GONE);
+            mAnimView.setOnClickListener(null);
+        }
+
+        @Override
+        public void onAnimationCancel(Animator animation) {
+            mAnimView.setVisibility(View.GONE);
+            mAnimView.setOnClickListener(null);
+        }
+
+        @Override
+        public void onAnimationRepeat(Animator animation) {
+
+        }
+    }
+    private void hideView(@NonNull View view){
+        if (view.getVisibility() == View.VISIBLE){
+            hideInputMethod();
+            view.animate().alpha(0).scaleY(0).scaleX(0).setDuration(300).setListener(new Hide(view)).start();
+        }
+    }
+    private void showView(@NonNull View view){
+        view.setVisibility(View.VISIBLE);
+        view.animate().setListener(null).cancel();
+        view.animate().alpha(1f).scaleY(1f).scaleX(1f).setDuration(300).start();
     }
 
     @OnClick(R.id.clear_img_btn)
@@ -251,21 +333,10 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     }
 
     private void getSupplier(){
-       Observable.create((ObservableOnSubscribe<JSONArray>) emitter -> {
-            final JSONObject object = new JSONObject();
-            object.put("appid",getAppId());
-            object.put("stores_id",getStoreId());
-            final JSONObject retJson = HttpUtils.sendPost(getUrl() + "/api/supplier_search/xlist",HttpRequest.generate_request_parm(object,getAppSecret()),true);
-            if (HttpUtils.checkRequestSuccess(retJson)){
-                final JSONObject info_obj = JSONObject.parseObject(retJson.getString("info"));
-                if (HttpUtils.checkBusinessSuccess(info_obj)){
-                    emitter.onNext(info_obj.getJSONArray("data"));
-                }else emitter.onError(new Exception(info_obj.getString("info")));
-            }
-        }).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe(array -> {
-            mSupplierList = array;
+        new ViewModelProvider(this).get(SupplierViewModel.class).getCurrentModel().observe(this, suppliers -> {
+            mSupplierList = suppliers;
             setDefaultSupplier();
-        }, throwable -> MyDialog.ToastMessage("查询供应商信息错误:" + throwable.getMessage(), getWindow()));
+        });
     }
     private void initSupplier(){
         final TextView supplier_et = findViewById(R.id.a_supplier_et);
@@ -302,20 +373,19 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     }
 
     private void setHz_method(){
-        final JSONObject supplier = getSupplierById(Utils.getViewTagValue(mSupplierTv,""));
+        final Supplier supplier = getSupplierById(Utils.getViewTagValue(mSupplierTv,""));
         if (null != supplier){
-            final String hz_method = supplier.getString("hz_method");
+            final String hz_method = String.valueOf(supplier.getHz_method());
             hz_method_tv.setTag(hz_method);
-            hz_method_tv.setText(supplier.getString("hz_method_name"));
+            hz_method_tv.setText(supplier.getHz_method_name());
             setLyRatio("1".equals(hz_method) ? View.VISIBLE : View.INVISIBLE);
         }
     }
-    private JSONObject getDefaultSupplier(){
+    private Supplier getDefaultSupplier(){
         if (null == mSupplierList)return null;
-        for (int i = 0,size = mSupplierList.size();i < size;i ++){
-            final JSONObject object = mSupplierList.getJSONObject(i);
-            if (DEFAULT_SUPPLIER_CODE.equals(object.getString("gs_code"))){
-                return object;
+        for (Supplier sup : mSupplierList){
+            if (DEFAULT_SUPPLIER_CODE.equals(sup.getCs_code())){
+                return sup;
             }
         }
         return null;
@@ -323,44 +393,43 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
 
     private void setDefaultSupplier(){
         if (null != mSupplierTv){
-            JSONObject object;
+            Supplier object;
             if (isModify){
                 object = getSupplierById(Utils.getNullStringAsEmpty(mGoodsObj,"gs_id"));
             }else {
                 object = getDefaultSupplier();
             }
             if ( null != object){
-                mSupplierTv.setTag(object.getString("gs_id"));
-                mSupplierTv.setText(object.getString("gs_name"));
+                mSupplierTv.setTag(object.getGs_id());
+                mSupplierTv.setText(object.getGs_name());
             }
         }
     }
 
     private JSONArray parse_supplier_info(){
-        final JSONArray array  = new JSONArray(),suppliers = mSupplierList;
+        final JSONArray array  = new JSONArray();
+        final List<Supplier> suppliers = mSupplierList;
         if (suppliers != null){
             JSONObject object;
-            for (int i = 0,size = suppliers.size();i < size;i++){
-                final JSONObject tmp = suppliers.getJSONObject(i);
-                final int id = Utils.getNotKeyAsNumberDefault(tmp,"gs_id",0);
+            for (Supplier sup : mSupplierList){
+                final int id = Integer.parseInt(sup.getGs_id());
                 object = new JSONObject();
                 object.put("level",0);
                 object.put("unfold",false);
                 object.put("isSel",false);
                 object.put(TreeListBaseAdapter.COL_ID,id);
-                object.put(TreeListBaseAdapter.COL_NAME,Utils.getNullStringAsEmpty(tmp,"gs_name"));
+                object.put(TreeListBaseAdapter.COL_NAME,sup.getCs_name());
                 array.add(object);
             }
         }
         return array;
     }
 
-    private JSONObject getSupplierById(final String gs_id){
+    private Supplier getSupplierById(final String gs_id){
         if (null == mSupplierList)return null;
-        for (int i = 0,size = mSupplierList.size();i < size;i ++){
-            final JSONObject object = mSupplierList.getJSONObject(i);
-            if (object.getString("gs_id").equals(gs_id)){
-                return object;
+        for (Supplier sup : mSupplierList){
+            if (sup.getGs_id().equals(gs_id)){
+                return sup;
             }
         }
         return null;
@@ -446,43 +515,20 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     }
 
     private void getOnlycodeAndBarcode(){
-        CustomApplication.execute(()->{
-            final HttpRequest httpRequest = new HttpRequest();
-            final JSONObject object = new JSONObject();
-            object.put("appid",getAppId());
-            object.put("category_id",Utils.getViewTagValue(mCategoryTv,"7223"));
-            object.put("spec_id",Utils.getViewTagValue(mGoodsAttrEt,"1"));
-
-            final String sz_param = HttpRequest.generate_request_parm(object,getAppSecret());
-            final JSONObject retJson = httpRequest.sendPost(getUrl() + "/api/goods_set/get_onlycode_barcode",sz_param,true);
-            switch (retJson.getIntValue("flag")){
-                case 0:
-                    runOnUiThread(()-> MyDialog.ToastMessage("生成条码信息错误:" + retJson.getString("info"), getWindow()));
-                    break;
-                case 1:
-                    final JSONObject info_obj = JSONObject.parseObject(retJson.getString("info"));
-                    if ("n".equals(Utils.getNullOrEmptyStringAsDefault(info_obj,"status","n"))){
-                        runOnUiThread(()-> MyDialog.ToastMessage("生成条码信息错误:" + info_obj.getString("info"), getWindow()));
-                    }else{
-                        final JSONObject data = info_obj.getJSONObject("data");
-                        if (data != null){
-                            runOnUiThread(()-> setBarcodeAndItemId(data));
-                        }
-                    }
-                    break;
-            }
-        });
+        new ViewModelProvider(this).get(BarcodeOnlyCodeViewModel.class).getCurrentModel(Utils.getViewTagValue(mCategoryTv,"7223")
+                ,Utils.getViewTagValue(mGoodsAttrEt,"1")).observe(this, this::setBarcodeAndItemId);
     }
 
-    private void setBarcodeAndItemId(final @NonNull JSONObject data){
-        final String only_coding = data.getString("only_coding");
+    private void setBarcodeAndItemId(final @NonNull BarcodeOnlyCodeInfo info){
+        Logger.d(info);
+        final String only_coding = info.getOnly_coding();
         if (mItemIdEt != null)mItemIdEt.setText(only_coding);
         if (mBarcodeEt != null){
             if ("2".equals(Utils.getViewTagValue(mGoodsAttrEt,"1"))){
                 mBarcodeEt.setText(only_coding);
             }else{
                 if(mBarcode == null || mBarcode.isEmpty()){
-                    mBarcodeEt.setText(data.getString("barcode"));
+                    mBarcodeEt.setText(info.getBarcode());
                     mBarcodeEt.selectAll();
                 }
             }
@@ -847,9 +893,18 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
             return data;
         }
 
+        data.put("goods_id",Utils.getNullStringAsEmpty(mGoodsObj,"goods_id"));
         data.put("attr_id",0);
         data.put("type",isModify ? 2 : 1);
+
         data.put("buying_price",mPurPriceEt.getText().toString());
+        data.put("retail_price",mRetailPriceEt.getText().toString());
+        data.put("yh_mode",Utils.getNotKeyAsNumberDefault(mGoodsObj,"yh_mode",0));
+        data.put("yh_price",mVipPriceEt.getText().toString());
+        data.put("cost_price",0);
+        data.put("ps_price",0);
+        data.put("trade_price",pf_price_et.getText().toString());
+
         data.put("category_id",Utils.getViewTagValue(mCategoryTv,""));
         data.put("goods_title",name);
         data.put("gs_id",Utils.getViewTagValue(mSupplierTv,""));
@@ -862,8 +917,6 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         data.put("cash_flow_mode",Utils.getViewTagValue(hz_method_tv,""));
         data.put("cash_flow_ratio",ly_ratio_tv.getText().toString());
         data.put("origin",place_et.getText().toString());
-        data.put("retail_price",mRetailPriceEt.getText().toString());
-        data.put("goods_id",Utils.getNullStringAsEmpty(mGoodsObj,"goods_id"));
 
         final JSONArray barcode_info = new JSONArray();
         final JSONObject goods = new JSONObject();

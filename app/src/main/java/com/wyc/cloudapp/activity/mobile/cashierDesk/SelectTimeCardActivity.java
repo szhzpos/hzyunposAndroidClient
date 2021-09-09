@@ -54,8 +54,8 @@ public final class SelectTimeCardActivity extends AbstractSelectActivity<TimeCar
         return new TimeCardAdapter(this);
     }
 
-    public static void startWithFragment(Fragment context){
-        context.startActivityForResult(new Intent(context.getContext(), SelectTimeCardActivity.class), SELECT_ITEM);
+    public static void startWithFragment(Fragment context, final ArrayList<TimeCardInfo> result){
+        context.startActivityForResult(new Intent(context.getContext(), SelectTimeCardActivity.class).putParcelableArrayListExtra("result",result), SELECT_ITEM);
     }
 
     public static void startForResult(Activity context, final ArrayList<TimeCardInfo> result){

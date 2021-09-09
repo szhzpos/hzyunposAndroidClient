@@ -49,16 +49,16 @@ public class BaseActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        hide();
+        hideInputMethod();
         super.onBackPressed();
     }
 
     @Override
     public void finish() {
-        hide();
+        hideInputMethod();
         super.finish();
     }
-    private void hide(){
+    protected final void hideInputMethod(){
         final InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         if (imm != null) {
             imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);

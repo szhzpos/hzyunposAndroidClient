@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.CustomizationView;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.StyleableRes;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.logger.Logger;
@@ -84,18 +86,12 @@ public class ItemPaddingLinearLayout extends LinearLayout {
         this(context, attrs, defStyleAttr,0);
     }
 
+    @SuppressLint("ResourceType")
     public ItemPaddingLinearLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         final TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.ItemPaddingLinearLayout, 0, 0);
-        final int indexCount = typedArray.getIndexCount();
-        for (int i = 0; i < indexCount; i++) {
-            int index = typedArray.getIndex(i);
-            if (index == R.styleable.ItemPaddingLinearLayout_ItemPadding) {
-                init(typedArray.getDimension(index, 2));
-            }
-        }
-
-    }
+        init(typedArray.getDimension(0, 2),typedArray.getColor( 1,Color.TRANSPARENT));
+     }
 
     @Override
     public boolean onInterceptTouchEvent (MotionEvent ev){
@@ -109,13 +105,14 @@ public class ItemPaddingLinearLayout extends LinearLayout {
         ignore = b;
     }
 
-    private void init(float padding){
+    private void init(float padding,int c){
         final GradientDrawable drawable = new GradientDrawable();
         if (getOrientation() == HORIZONTAL){
             drawable.setSize((int) padding,0);
         }else
             drawable.setSize(0,(int) padding);
 
+        drawable.setColor(c);
         setDividerDrawable(drawable);
         setShowDividers(SHOW_DIVIDER_MIDDLE);
     }

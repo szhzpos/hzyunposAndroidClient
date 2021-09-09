@@ -10,6 +10,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -18,7 +19,9 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.BarcodeOnlyCodeInfo;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.data.viewModel.BarcodeOnlyCodeViewModel;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -58,13 +61,21 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
         mItemIdEt = findViewById(R.id.a_item_no_et);
         mVipPriceEt = findViewById(R.id.a_vip_price_et);
 
+        initSupplier();
+
         initUnit();
         initCategory();
         initCkml();
         initBarcode();
-        initSupplier();
+
         initGoodsAttrAndMetering();
         initSaveBtn();
+
+        //
+        getGoodsBase();
+        getGoodsInfoByBarcode();
+        getSupplier();
+        getOnlycodeAndBarcode();
     }
 
     @Override
@@ -76,11 +87,6 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
     @Override
     public void show(){
         super.show();
-
-        getGoodsBase();
-        getGoodsInfoByBarcode();
-        getSupplier();
-        getOnlycodeAndBarcode();
     }
 
     protected double getWidthRatio(){
@@ -460,43 +466,19 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
     }
 
     private void getOnlycodeAndBarcode(){
-        CustomApplication.execute(()->{
-            final HttpRequest httpRequest = new HttpRequest();
-            final JSONObject object = new JSONObject();
-            object.put("appid",mContext.getAppId());
-            object.put("category_id",Utils.getViewTagValue(mCategoryEt,"7223"));
-            object.put("spec_id",Utils.getViewTagValue(mGoodsAttrEt,"1"));
-
-            final String sz_param = HttpRequest.generate_request_parm(object,mContext.getAppSecret());
-            final JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + "/api/goods_set/get_onlycode_barcode",sz_param,true);
-            switch (retJson.getIntValue("flag")){
-                case 0:
-                    mContext.runOnUiThread(()-> MyDialog.ToastMessage("生成条码信息错误:" + retJson.getString("info"), getWindow()));
-                    break;
-                case 1:
-                    final JSONObject info_obj = JSONObject.parseObject(retJson.getString("info"));
-                    if ("n".equals(Utils.getNullOrEmptyStringAsDefault(info_obj,"status","n"))){
-                        mContext.runOnUiThread(()-> MyDialog.ToastMessage("生成条码信息错误:" + info_obj.getString("info"), getWindow()));
-                    }else{
-                        final JSONObject data = info_obj.getJSONObject("data");
-                        if (data != null){
-                            mContext.runOnUiThread(()-> setBarcodeAndItemId(data));
-                        }
-                    }
-                    break;
-            }
-        });
+        new ViewModelProvider(mContext).get(BarcodeOnlyCodeViewModel.class).getCurrentModel(Utils.getViewTagValue(mCategoryEt,"7223")
+                ,Utils.getViewTagValue(mGoodsAttrEt,"1")).observe(mContext, this::setBarcodeAndItemId);
     }
 
-    private void setBarcodeAndItemId(final @NonNull JSONObject data){
-        final String only_coding = data.getString("only_coding");
+    private void setBarcodeAndItemId(final @NonNull BarcodeOnlyCodeInfo data){
+        final String only_coding = data.getOnly_coding();
         if (mItemIdEt != null)mItemIdEt.setText(only_coding);
         if (mBarcodeEt != null){
             if ("2".equals(Utils.getViewTagValue(mGoodsAttrEt,"1"))){
                 mBarcodeEt.setText(only_coding);
             }else{
                 if(mBarcode == null || mBarcode.isEmpty()){
-                    mBarcodeEt.setText(data.getString("barcode"));
+                    mBarcodeEt.setText(data.getBarcode());
                     mBarcodeEt.selectAll();
                 }
             }
