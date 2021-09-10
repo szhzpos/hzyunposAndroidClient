@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.database.sqlite.SQLiteCantOpenDatabaseException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -34,6 +33,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -114,14 +121,14 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 ");",auxiliary_barcode_sql = "CREATE TABLE  IF NOT EXISTS auxiliary_barcode_info (\n" +
                 "    id            INTEGER PRIMARY KEY,\n" +
                 "    g_m_id        INTEGER,\n" +
-                "    barcode_id    VARCHAR,\n" +
-                "    fuzhu_barcode VARCHAR,\n" +
+                "    barcode_id    TEXT,\n" +
+                "    fuzhu_barcode TEXT,\n" +
                 "    status        INTEGER\n" +
                 ");\n",sql_transfer_gift_info = "CREATE TABLE IF NOT EXISTS transfer_gift_money (\n" +//交班购物卡信息
                 "    order_num  INTEGER DEFAULT (0),\n" +
                 "    pay_money  REAL,\n" +
                 "    pay_method INTEGER,\n" +
-                "    ti_code    VARCHAR,\n" +
+                "    ti_code    TEXT,\n" +
                 "    ti_id      INTEGER PRIMARY KEY AUTOINCREMENT);" +
         update_list.add(sales_info_sql);
         update_list.add(sale_operator_info_sql);
@@ -605,6 +612,93 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         }
         return isTrue;
     }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.TYPE)
+    public @interface TableName {
+        String value() default "";
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    public @interface Ignore{
+
+    }
+
+    public static <T> List<T> getBeans(Class<T> tClass)  {
+        String fieldName,methodName,tableName;
+
+        TableName annotation = tClass.getAnnotation(TableName.class);
+        if (annotation != null){
+            tableName = annotation.value();
+        }else {
+            tableName = tClass.getSimpleName();
+        }
+
+        Field[] fields = tClass.getDeclaredFields();
+        Method[] methods = tClass.getMethods();
+        final Map<String,Method> fieldToMethod = new HashMap<>();
+
+        for (Field field : fields){
+            if (field.getAnnotation(Ignore.class) != null)continue;
+
+            fieldName = field.getName();
+            methodName = combinationSetMethod(fieldName);
+            for (Method method : methods){
+                if (methodName.equals(method.getName())){
+                    fieldToMethod.put(fieldName,method);
+                }
+            }
+        }
+
+        final String[] cols = fieldToMethod.keySet().toArray(new String[0]);
+        List<T> results = new ArrayList<>();
+        try (Cursor cursor = mDb.query(tableName,cols,null,null,null,null,null)){
+            int index;
+            Method method;
+            T obj;
+            Constructor<T> constructor = tClass.getConstructor();
+            while (cursor.moveToNext()){
+                obj = constructor.newInstance();
+                for (String colKey : cols){
+                    index = cursor.getColumnIndex(colKey);
+                    int type = cursor.getType(index);
+                    method = fieldToMethod.get(colKey);
+                    if (null == method)continue;
+                    switch (type){
+                        case FIELD_TYPE_FLOAT:
+                            method.invoke(obj,cursor.getFloat(index));
+                            break;
+                        case FIELD_TYPE_INTEGER:
+                            method.invoke(obj,cursor.getInt(index));
+                            break;
+                        case FIELD_TYPE_NULL:
+                            method.invoke(obj, (Object) null);
+                            break;
+                        case FIELD_TYPE_STRING:
+                            method.invoke(obj,cursor.getString(index));
+                            break;
+                    }
+                }
+                results.add(obj);
+            }
+        } catch (SQLiteException | NoSuchMethodException | IllegalAccessException |
+                IllegalArgumentException | InstantiationException | InvocationTargetException e) {
+            e.printStackTrace();
+            Logger.e("getBeans:%s",e.getMessage());
+        }
+        return results;
+    }
+    private static String combinationSetMethod(final String fieldName){
+        return "set" + captureName(fieldName);
+    }
+    private static String captureName(String str) {
+        char[] cs= str.toCharArray();
+        if (cs[0] >= 65 && cs[0] <= 90)return str;
+        cs[0]-= 32;
+        return String.valueOf(cs);
+    }
+
     public static int execUpdateSql(@NonNull final String table,final ContentValues values,final String whereClause,final String[] whereArgs,StringBuilder err){
         int code = -1;
         try {

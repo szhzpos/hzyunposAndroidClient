@@ -11,6 +11,7 @@ import androidx.room.PrimaryKey
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
+import com.alibaba.fastjson.annotation.JSONField
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.activity.MainActivity
 import com.wyc.cloudapp.application.CustomApplication
@@ -87,9 +88,11 @@ class GiftCardSaleOrder():ICardPay<GiftCardSaleDetail> {
         set(value) {field = value}
 
     @Ignore
+    @JSONField(serialize =false)
     private var saleInfo:List<GiftCardSaleDetail> = ArrayList()
 
     @Ignore
+    @JSONField(serialize =false)
     var payInfo:List<GiftCardPayDetail> = ArrayList()
         get() = field
         set(value) {field = value}
