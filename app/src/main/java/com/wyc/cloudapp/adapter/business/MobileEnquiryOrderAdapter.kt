@@ -40,8 +40,8 @@ class MobileEnquiryOrderAdapter(context: MainActivity): MobileBaseOrderAdapter<M
 
     override fun bindViewHolder(holder: MyViewHolder, `object`: JSONObject?) {
         holder.order_code_tv.text = Html.fromHtml("<u>" + `object`!!.getString("yhd_code") + "</u>")
-        holder.order_code_tv.tag = `object`!!.getString("yhd_id")
-        holder.date_tv.text = FormatDateTimeUtils.formatTimeWithTimestamp(`object`!!.getLongValue("addtime") * 1000)
-        holder.target_wh_tv.setText(`object`!!.getString("mb_wh_name"))
+        holder.order_code_tv.tag = `object`.getString("yhd_id")
+        holder.date_tv.text = FormatDateTimeUtils.formatTimeWithTimestamp(`object`.getLongValue("addtime") * 1000)
+        holder.target_wh_tv.setText(`object`.getString("mb_wh_name"))
     }
 }

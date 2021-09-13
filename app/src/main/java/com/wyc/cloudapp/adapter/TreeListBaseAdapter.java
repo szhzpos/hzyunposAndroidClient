@@ -47,8 +47,5 @@ public abstract class TreeListBaseAdapter<D,S,T extends AbstractDataAdapter.Supe
         }
 
         protected abstract int getContentResourceId();
-        protected final <T extends View> T  findViewById(int id){
-            return itemView.findViewById(id);
-        }
     }
 }

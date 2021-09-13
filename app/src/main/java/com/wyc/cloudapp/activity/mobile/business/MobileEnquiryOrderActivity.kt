@@ -58,7 +58,7 @@ class MobileEnquiryOrderActivity : AbstractMobileBusinessOrderActivity() {
             val transfer_in_wh_tv = findViewById<TextView>(R.id.target_wh_tv)
             val sz = getString(R.string.target_store)
             val array = getTransferInWarehouse(transfer_in_wh_tv)
-            transfer_in_wh_tv.setOnClickListener { v: View? ->
+            transfer_in_wh_tv.setOnClickListener { _: View? ->
                 CustomApplication.runInMainThread {
                     val treeListDialog = TreeListDialogForJson(this, sz.substring(0, sz.length - 1))
                     treeListDialog.setData(array, null, true)

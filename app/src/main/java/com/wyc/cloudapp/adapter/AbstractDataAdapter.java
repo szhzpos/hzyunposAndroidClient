@@ -24,7 +24,7 @@ public abstract class AbstractDataAdapter<D,T extends AbstractDataAdapter.SuperV
             super(itemView);
         }
 
-        protected <T extends View> T  findViewById(@IdRes int id){
+       final protected <T extends View> T  findViewById(@IdRes int id){
             return itemView.findViewById(id);
         }
     }

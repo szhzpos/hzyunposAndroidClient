@@ -407,12 +407,12 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
 
         private final String common_sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(case type when 2 then only_coding else barcode end,'') barcode," +
                 "type,(buying_price * conversion) price,retail_price,cost_price,ps_price,trade_price,ifnull(img_url,'') img_url from barcode_info " +
-                "where (goods_status = 1 and barcode_status = 1) and ";
+                "where (goods_status = 1 and barcode_status = 1) and " + (isSelectMode ? "" : "conversion = 1 and ")/*//非业务选择商品隐藏大件商品*/;
 
         private void setDatas(int id){
 
             final StringBuilder err = new StringBuilder();
-            final String sql;
+            String sql;
             if (-1 == id){
                 sql = "select gp_id,-1 goods_id,ifnull(gp_title,'') goods_title,'' unit_id,ifnull(unit_name,'') unit_name,\n" +
                         " -1  barcode_id,ifnull(gp_code,'') barcode,type,gp_price price,gp_price retail_price,0 cost_price,0 ps_price,0 trade_price,ifnull(img_url,'') img_url from goods_group \n" +

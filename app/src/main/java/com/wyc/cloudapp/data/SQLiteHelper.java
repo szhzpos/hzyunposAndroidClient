@@ -44,9 +44,12 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import static android.database.Cursor.FIELD_TYPE_FLOAT;
 import static android.database.Cursor.FIELD_TYPE_INTEGER;
@@ -613,21 +616,29 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         return isTrue;
     }
 
+
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
     public @interface TableName {
         String value() default "";
     }
-
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
-    public @interface Ignore{
-
+    public @interface Ignore{}
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    public @interface Where{
+        int index() default 0;
+    }
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    public @interface OrderBy{
+        int order() default 0;
+        boolean desc() default false;
     }
 
-    public static <T> List<T> getBeans(Class<T> tClass)  {
-        String fieldName,methodName,tableName;
-
+    public static <T> List<T> getBeans(Class<T> tClass,final String ...args)  {
+        String tableName;
         TableName annotation = tClass.getAnnotation(TableName.class);
         if (annotation != null){
             tableName = annotation.value();
@@ -635,25 +646,17 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             tableName = tClass.getSimpleName();
         }
 
-        Field[] fields = tClass.getDeclaredFields();
-        Method[] methods = tClass.getMethods();
-        final Map<String,Method> fieldToMethod = new HashMap<>();
+        final String[] arguments = args.clone();
+        final String where = createWhereClause(tClass);
+        Logger.d("where:%s,arguments:%s",where, Arrays.toString(args));
 
-        for (Field field : fields){
-            if (field.getAnnotation(Ignore.class) != null)continue;
+        final String orderBy = createOrderByClause(tClass);
+        Logger.d("oderBy:%s",orderBy);
 
-            fieldName = field.getName();
-            methodName = combinationSetMethod(fieldName);
-            for (Method method : methods){
-                if (methodName.equals(method.getName())){
-                    fieldToMethod.put(fieldName,method);
-                }
-            }
-        }
-
+        final Map<String, Method> fieldToMethod = createCols(tClass);
         final String[] cols = fieldToMethod.keySet().toArray(new String[0]);
         List<T> results = new ArrayList<>();
-        try (Cursor cursor = mDb.query(tableName,cols,null,null,null,null,null)){
+        try (Cursor cursor = mDb.query(tableName,cols,where, arguments,null,null,orderBy)){
             int index;
             Method method;
             T obj;
@@ -685,7 +688,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         } catch (SQLiteException | NoSuchMethodException | IllegalAccessException |
                 IllegalArgumentException | InstantiationException | InvocationTargetException e) {
             e.printStackTrace();
-            Logger.e("getBeans:%s",e.getMessage());
+            MyDialog.ToastMessageInMainThread("getBeans:" + e.getMessage());
         }
         return results;
     }
@@ -697,6 +700,66 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         if (cs[0] >= 65 && cs[0] <= 90)return str;
         cs[0]-= 32;
         return String.valueOf(cs);
+    }
+    private static <T> Map<String,Method> createCols(final Class<T> tClass){
+        String fieldName,methodName;
+        Field[] fields = tClass.getDeclaredFields();
+        Method[] methods = tClass.getMethods();
+        final Map<String,Method> fieldToMethod = new HashMap<>();
+        for (Field field : fields){
+            if (field.getAnnotation(Ignore.class) != null)continue;
+
+            fieldName = field.getName();
+            methodName = combinationSetMethod(fieldName);
+            for (Method method : methods){
+                if (methodName.equals(method.getName())){
+                    fieldToMethod.put(fieldName,method);
+                }
+            }
+        }
+        return fieldToMethod;
+    }
+    private static <T> String createWhereClause(final Class<T> tClass){
+        final StringBuilder sb  = new StringBuilder();
+        final SortedMap<Integer,String> map = new TreeMap<>();
+        final Field[] fields = tClass.getDeclaredFields();
+        for (Field field : fields){
+            final Where where = field.getAnnotation(Where.class);
+            if (where == null)continue;
+            map.put(where.index(),field.getName());
+        }
+        for (Integer integer : map.keySet()) {
+            final String name = map.get(integer);
+            if (sb.lastIndexOf("?") == -1) {
+                sb.append(name).append("=").append("?");
+            } else {
+                sb.append(" and ").append(name).append("=").append("?");
+            }
+        }
+        return sb.length() > 0 ? sb.toString() : null;
+    }
+    private static <T> String createOrderByClause(final Class<T> tClass){
+        boolean desc = false;
+        final StringBuilder sb  = new StringBuilder();
+        final SortedMap<Integer,String> map = new TreeMap<>();
+        final Field[] fields = tClass.getDeclaredFields();
+        for (Field field : fields){
+            final OrderBy orderBy = field.getAnnotation(OrderBy.class);
+            if (orderBy == null)continue;
+            map.put(orderBy.order(),field.getName());
+            desc = orderBy.desc();
+        }
+        for (Integer integer : map.keySet()) {
+            final String name = map.get(integer);
+            if (sb.length() == 0) {
+                sb.append(name);
+            } else {
+                sb.append(",").append(name);
+            }
+        }
+        if (desc) sb.append(" desc");
+
+        return sb.length() > 0 ? sb.toString() : null;
     }
 
     public static int execUpdateSql(@NonNull final String table,final ContentValues values,final String whereClause,final String[] whereArgs,StringBuilder err){

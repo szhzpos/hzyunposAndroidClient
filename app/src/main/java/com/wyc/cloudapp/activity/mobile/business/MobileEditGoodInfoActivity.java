@@ -21,8 +21,9 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -34,12 +35,17 @@ import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
+import com.wyc.cloudapp.adapter.business.AuxiliaryBarcodeAdapter;
+import com.wyc.cloudapp.adapter.business.MultiUnitAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.AuxiliaryBarcode;
 import com.wyc.cloudapp.bean.BarcodeOnlyCodeInfo;
+import com.wyc.cloudapp.bean.MultiUnitInfo;
 import com.wyc.cloudapp.bean.Supplier;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.data.viewModel.BarcodeOnlyCodeViewModel;
 import com.wyc.cloudapp.data.viewModel.SupplierViewModel;
+import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -118,6 +124,9 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     private boolean isModify;
     private JSONObject mGoodsObj;
 
+    private AuxiliaryBarcodeAdapter mAuxiliaryBarcodeAdapter;
+    private MultiUnitAdapter mMultiUnitAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -142,6 +151,38 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         if (isModify){
             getGoodsByBarcodeId();
         }
+        initAuxiliary();
+        initMultiUnit();
+    }
+
+    private void initAuxiliary(){
+        final RecyclerView auxiliary_list = findViewById(R.id.auxiliary_list);
+        if (null != auxiliary_list){
+            auxiliary_list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
+            auxiliary_list.setAdapter(mAuxiliaryBarcodeAdapter = new AuxiliaryBarcodeAdapter());
+            auxiliary_list.addItemDecoration(new LinearItemDecoration(this.getColor(R.color.gray_subtransparent)));
+
+            if (isModify)
+                CustomApplication.execute(()-> mAuxiliaryBarcodeAdapter.setDataForList(getAuxiliaryBarcodeById(mBarcodeId)));
+        }
+    }
+    private List<AuxiliaryBarcode> getAuxiliaryBarcodeById(final String id){
+        return SQLiteHelper.getBeans(AuxiliaryBarcode.class,id);
+    }
+
+    private void initMultiUnit(){
+        final RecyclerView unit_price_list = findViewById(R.id.unit_price_list);
+        if (null != unit_price_list){
+            unit_price_list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
+            unit_price_list.setAdapter(mMultiUnitAdapter = new MultiUnitAdapter());
+            unit_price_list.addItemDecoration(new LinearItemDecoration(this.getColor(R.color.gray_subtransparent)));
+
+            if (isModify)
+                CustomApplication.execute(()-> mMultiUnitAdapter.setDataForList(getMultiUnit()));
+        }
+    }
+    private List<MultiUnitInfo> getMultiUnit(){
+        return SQLiteHelper.getBeans(MultiUnitInfo.class,Utils.getNullStringAsEmpty(mGoodsObj,"only_coding"));
     }
 
     private void initTabLayout(){
@@ -520,7 +561,6 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     }
 
     private void setBarcodeAndItemId(final @NonNull BarcodeOnlyCodeInfo info){
-        Logger.d(info);
         final String only_coding = info.getOnly_coding();
         if (mItemIdEt != null)mItemIdEt.setText(only_coding);
         if (mBarcodeEt != null){
