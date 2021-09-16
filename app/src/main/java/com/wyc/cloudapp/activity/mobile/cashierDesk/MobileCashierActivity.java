@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.zxing.client.android.CaptureActivity;
 import com.wyc.cloudapp.CustomizationView.BasketView;
 import com.wyc.cloudapp.CustomizationView.InterceptLinearLayout;
 import com.wyc.cloudapp.CustomizationView.TmpOrderButton;
@@ -340,7 +341,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent){//条码回调
         if (resultCode == RESULT_OK ){
-            final String _code = intent.getStringExtra("auth_code");
+            final String _code = intent.getStringExtra(CaptureActivity.CALLBACK_CODE);
             if (requestCode == CODE_REQUEST_CODE) {
                 if (mSearchContent != null)selectGoodsWithSearchContent(_code);
             }else if (requestCode == PAY_REQUEST_CODE){

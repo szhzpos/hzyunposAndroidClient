@@ -15,6 +15,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.google.zxing.client.android.CaptureActivity;
 import com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
@@ -95,7 +96,7 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractMobileActi
                 if (mScanCallback != null){
                     final ScanCallback callback = mScanCallback.get();
                     if (callback != null){
-                        final String _code = data.getStringExtra("auth_code");
+                        final String _code = data.getStringExtra(CaptureActivity.CALLBACK_CODE);
                         callback.callback(_code);
                     }
                 }
@@ -532,7 +533,7 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractMobileActi
     private void setOrderStatus(){
         final ItemPaddingLinearLayout business_main = findViewById(R.id.business_add_main_layout);
         if (isAudit()){
-            business_main.setIgnore(true);
+            business_main.setDisableEvent(true);
             business_main.setCentreLabel(getString(R.string.audited_sz));
         }
     }

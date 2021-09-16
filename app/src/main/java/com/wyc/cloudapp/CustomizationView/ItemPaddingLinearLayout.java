@@ -7,23 +7,20 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.RectShape;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.StyleableRes;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 public class ItemPaddingLinearLayout extends LinearLayout {
-    private boolean ignore = false;
+    private boolean disable = false;
     private String mCentreLabel;
     private Paint mPaint;
     private Rect mTextBounds;
@@ -51,19 +48,30 @@ public class ItemPaddingLinearLayout extends LinearLayout {
         return Utils.isNotEmpty(mCentreLabel) && mTextBounds != null && mPaint != null;
     }
     private void drawLabel(final Canvas canvas){
-
         int width = getMeasuredWidth(),height = getMeasuredHeight();
-
-        final int t_w = mTextBounds.width(),t_h = mTextBounds.height(),w = t_w << 1,h = t_h * 3,left = (width - w) / 2,top = (height - h) / 3;
-        final Rect rect = new Rect(left,top,w + left ,h + top);
+        final int t_w = mTextBounds.width(),t_h = mTextBounds.height(),w = t_w << 1,h = t_h * 3,left = (width - w) >> 1,top = (height - h) / 3;
+        final RectF rect = new RectF(left,top,w + left ,h + top);
 
         canvas.save();
-        canvas.rotate(15,width >> 1,height >> 1);
-        canvas.drawText(mCentreLabel,rect.left + ((w - t_w) >> 1),rect.top + h - t_h,mPaint);
+        matrixToRect(canvas,width,height,rect);
+        canvas.drawText(mCentreLabel,left + ((w - t_w) >> 1),top + h - t_h,mPaint);
         mPaint.setStyle(Paint.Style.STROKE);
         canvas.drawRect(rect,mPaint);
         canvas.restore();
     }
+    private void matrixToRect(Canvas canvas,int width,int height,RectF rect){
+        final float degrees = 15;
+        double r_w = rect.width(),r_h = rect.height();
+        double radian = (Math.PI / 180 * degrees);
+        double new_w = Math.cos(radian) * r_w + Math.sin(radian) * r_h;
+        double new_h = Math.sin(radian) * r_w + Math.cos(radian) * r_h;
+        double scale = Math.min(width / new_w,height / new_h) - 0.05;
+        if (Utils.lessDouble(scale,1.0)){
+            canvas.scale((float)scale, (float)scale,rect.centerX(),rect.centerY());
+        }
+        canvas.rotate(degrees,rect.centerX(),rect.centerY());
+    }
+
     public void setCentreLabel(final String label){
         if (null == label)return;
         if (mPaint == null || mTextBounds == null){
@@ -95,14 +103,19 @@ public class ItemPaddingLinearLayout extends LinearLayout {
 
     @Override
     public boolean onInterceptTouchEvent (MotionEvent ev){
-        if (ignore && !(ev.getAction() == MotionEvent.ACTION_MOVE || ev.getAction() == MotionEvent.ACTION_DOWN)){//过滤滑动
+        if (disable && !(ev.getAction() == MotionEvent.ACTION_MOVE || ev.getAction() == MotionEvent.ACTION_DOWN)){//过滤滑动
             return true;
         }else
             return super.onInterceptTouchEvent(ev);
     }
 
-    public void setIgnore(boolean b){
-        ignore = b;
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        return (disable || super.dispatchKeyEvent(event));
+    }
+
+    public void setDisableEvent(boolean b){
+        disable = b;
     }
 
     private void init(float padding,int c){

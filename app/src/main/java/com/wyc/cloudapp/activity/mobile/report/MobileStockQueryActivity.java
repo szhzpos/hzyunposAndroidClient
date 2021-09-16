@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.zxing.client.android.CaptureActivity;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.report.MobileStockQueryAdapter;
@@ -70,7 +71,7 @@ public class MobileStockQueryActivity extends AbstractReportActivity {
         super.onActivityResult(requestCode, resultCode, intent);
         if (resultCode == RESULT_OK && requestCode == CODE_REQUEST_CODE) {
             if (mQueryConditionEt != null && mQueryBtn != null) {
-                mQueryConditionEt.setText(intent.getStringExtra("auth_code"));
+                mQueryConditionEt.setText(intent.getStringExtra(CaptureActivity.CALLBACK_CODE));
                 mQueryBtn.callOnClick();
             }
         }

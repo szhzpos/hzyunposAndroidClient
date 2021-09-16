@@ -6,10 +6,12 @@ import android.view.ViewGroup
 import android.view.ViewStub
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.CallSuper
 import androidx.recyclerview.widget.RecyclerView
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.adapter.AbstractDataAdapter
 import com.wyc.cloudapp.application.CustomApplication
+import kotlin.collections.ArrayList
 
 /**
  *
@@ -25,6 +27,9 @@ import com.wyc.cloudapp.application.CustomApplication
  * @Version:        1.0
  */
 abstract class AbstractActionAdapter<D : AbstractActionAdapter.Action, T : AbstractActionAdapter.MyViewHolder>: AbstractDataAdapter<MutableList<D>, T>(),View.OnClickListener {
+    init {
+        mData = ArrayList()
+    }
     open class MyViewHolder(itemView: View):AbstractDataAdapter.SuperViewHolder(itemView){
         val action:ImageView = findViewById(R.id.action)
         val sequence:TextView = findViewById(R.id.sequence)
@@ -44,35 +49,34 @@ abstract class AbstractActionAdapter<D : AbstractActionAdapter.Action, T : Abstr
         data?.let {
             holder.action.setOnClickListener(this)
             var drawable = CustomApplication.self().getDrawable(R.drawable.plus)
-            val flag = data.plus
-            if (!flag){
+            if (!data.plus){
                 drawable = CustomApplication.self().getDrawable(R.drawable.minus)
             }
             holder.action.setImageDrawable(drawable)
-            holder.action.tag = data
+            holder.action.tag = position
             holder.sequence.text = (position + 1).toString()
 
-            bindHolder(holder, it,flag)
+            bindHolder(holder, it)
         }
     }
 
     override fun onClick(v: View) {
-        val data = v.tag as Action
-        if (data.plus){
-            val index = mData.size - 1
-            getItem(index)?.let {
-                it.plus = false
+        val pos = v.tag as? Int
+        pos?.let {
+            mData[pos].let {
+                if (it.plus){
+                    getNewData()?.let { d -> mData.add( mData.size - 1, d) }
+                }else{
+                    deleteItem(mData.removeAt(pos))
+                }
+                notifyDataSetChanged()
             }
-            mData.add(getDefaultData())
-        }else{
-            mData.remove(data)
         }
-        notifyDataSetChanged()
     }
 
     fun setDataForList(data: MutableList<D>?) {
         data?.let {
-            it.add(getDefaultData())
+            getNewData()?.let { d -> it.add(d) }
             mData = it
             if (Looper.myLooper() != Looper.getMainLooper()) {
                 CustomApplication.runInMainThread { notifyDataSetChanged() }
@@ -81,9 +85,14 @@ abstract class AbstractActionAdapter<D : AbstractActionAdapter.Action, T : Abstr
     }
 
     abstract fun getContentId():Int
-    abstract fun getDefaultData():D
-    abstract fun bindHolder(holder: T, data: D,flag:Boolean)
+    abstract fun getNewData():D?
+    abstract fun bindHolder(holder: T, data: D)
     abstract fun getViewHolder(itemView: View):T
+    abstract fun deleteItem(data: Action)
+
+    open fun isValid():Boolean{
+        return true
+    }
 
     protected fun getItem(index: Int): D? {
         return if (index in 0 until itemCount && !isEmpty) {
@@ -93,6 +102,15 @@ abstract class AbstractActionAdapter<D : AbstractActionAdapter.Action, T : Abstr
 
     final override fun getItemCount(): Int {
         return if (mData == null) 0 else mData.size
+    }
+
+    @CallSuper
+    open fun getValidData(): MutableList<D> {
+        return if (mData.size > 0) {
+            val data = mData.toMutableList()
+            data.removeAt(data.size - 1)
+            data
+        }else mData
     }
 
     interface Action{

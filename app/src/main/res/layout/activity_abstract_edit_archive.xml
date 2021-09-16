@@ -37,6 +37,16 @@
             android:textColor="@color/blue_white" />
     </LinearLayout>
 
+    <com.wyc.cloudapp.CustomizationView.RoundCornerTabLayout
+        android:id="@+id/_tab_layout"
+        style="@style/TabStyle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_35"
+        android:layout_marginStart="@dimen/size_45"
+        android:layout_marginEnd="@dimen/size_45"
+        android:visibility="gone"
+        app:tabTextAppearance="@style/TabText_14" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">

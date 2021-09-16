@@ -24,7 +24,6 @@ public abstract class AbstractEditArchiveActivity extends AbstractMobileActivity
 
         ButterKnife.bind(this);
     }
-
     @Override
     public void onBackPressed() {
         CustomApplication.runInMainThread(()->{
@@ -62,6 +61,7 @@ public abstract class AbstractEditArchiveActivity extends AbstractMobileActivity
     @OnClick(R.id.cancel_btn)
     protected abstract void saveAndAdd();
     protected boolean isExist(){return true;}
+
 
     @Override
     protected int getContentLayoutId() {

@@ -2,6 +2,7 @@ package com.wyc.cloudapp.bean;
 
 import androidx.annotation.NonNull;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.wyc.cloudapp.adapter.business.AbstractActionAdapter;
 import com.wyc.cloudapp.data.SQLiteHelper;
 
@@ -25,16 +26,23 @@ public class MultiUnitInfo implements Serializable, AbstractActionAdapter.Action
     @SQLiteHelper.OrderBy
     private int barcode_id;
     private String barcode;
+    @JSONField(serialize = false)
+    private int unit_id;
+    @JSONField(name = "sys_unit_name")
     private String unit_name;
     private double conversion;
     private double retail_price;
     private double yh_price;
     private double trade_price;
     private double ps_price;
+    @JSONField(name = "del_status")
+    @SQLiteHelper.Where(index = 1)
+    private int barcode_status;/*条码删除状态 1正常(默认) 2删除此条码*/
 
     @SQLiteHelper.Where()
     private String only_coding;
 
+    @JSONField(serialize = false)
     @SQLiteHelper.Ignore
     private boolean plus;
 
@@ -44,6 +52,19 @@ public class MultiUnitInfo implements Serializable, AbstractActionAdapter.Action
 
     public MultiUnitInfo(boolean flag){
         plus = flag;
+    }
+
+
+    public MultiUnitInfo copy(MultiUnitInfo data){
+        conversion = data.conversion;
+        retail_price = data.retail_price;
+        yh_price = data.yh_price;
+        trade_price = data.trade_price;
+        ps_price = data.ps_price;
+        only_coding = data.only_coding;
+        barcode_status = data.barcode_status;
+        plus = data.plus;
+        return this;
     }
 
     public int getBarcode_id() {
@@ -108,6 +129,22 @@ public class MultiUnitInfo implements Serializable, AbstractActionAdapter.Action
 
     public void setPs_price(double ps_price) {
         this.ps_price = ps_price;
+    }
+
+    public int getUnit_id() {
+        return unit_id;
+    }
+
+    public void setUnit_id(int unit_id) {
+        this.unit_id = unit_id;
+    }
+
+    public int getBarcode_status() {
+        return barcode_status;
+    }
+
+    public void setBarcode_status(int barcode_status) {
+        this.barcode_status = barcode_status;
     }
 
     @Override

@@ -15,6 +15,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,6 +32,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.google.android.material.tabs.TabLayout;
+import com.google.zxing.client.android.CaptureActivity;
 import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
@@ -159,30 +162,30 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         final RecyclerView auxiliary_list = findViewById(R.id.auxiliary_list);
         if (null != auxiliary_list){
             auxiliary_list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
-            auxiliary_list.setAdapter(mAuxiliaryBarcodeAdapter = new AuxiliaryBarcodeAdapter());
-            auxiliary_list.addItemDecoration(new LinearItemDecoration(this.getColor(R.color.gray_subtransparent)));
+            auxiliary_list.setAdapter(mAuxiliaryBarcodeAdapter = new AuxiliaryBarcodeAdapter(this));
+            auxiliary_list.addItemDecoration(new LinearItemDecoration(this.getColor(R.color.gray_subtransparent),2));
 
             if (isModify)
                 CustomApplication.execute(()-> mAuxiliaryBarcodeAdapter.setDataForList(getAuxiliaryBarcodeById(mBarcodeId)));
         }
     }
     private List<AuxiliaryBarcode> getAuxiliaryBarcodeById(final String id){
-        return SQLiteHelper.getBeans(AuxiliaryBarcode.class,id);
+        return SQLiteHelper.getBeans(AuxiliaryBarcode.class,id,"1");
     }
 
     private void initMultiUnit(){
         final RecyclerView unit_price_list = findViewById(R.id.unit_price_list);
         if (null != unit_price_list){
             unit_price_list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
-            unit_price_list.setAdapter(mMultiUnitAdapter = new MultiUnitAdapter());
-            unit_price_list.addItemDecoration(new LinearItemDecoration(this.getColor(R.color.gray_subtransparent)));
+            unit_price_list.setAdapter(mMultiUnitAdapter = new MultiUnitAdapter(this));
+            unit_price_list.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
 
             if (isModify)
                 CustomApplication.execute(()-> mMultiUnitAdapter.setDataForList(getMultiUnit()));
         }
     }
     private List<MultiUnitInfo> getMultiUnit(){
-        return SQLiteHelper.getBeans(MultiUnitInfo.class,Utils.getNullStringAsEmpty(mGoodsObj,"only_coding"));
+        return SQLiteHelper.getBeans(MultiUnitInfo.class,Utils.getNullStringAsEmpty(mGoodsObj,"only_coding"),"1");
     }
 
     private void initTabLayout(){
@@ -228,6 +231,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         _tab_layout.addTab(_tab_layout.newTab().setText(getString(R.string.basic_info)));
         _tab_layout.addTab(_tab_layout.newTab().setText(getString(R.string.auxiliary_info)));
         _tab_layout.addTab(_tab_layout.newTab().setText(getString(R.string.unit_price_info)));
+        _tab_layout.setVisibility(View.VISIBLE);
     }
 
     private static class Hide implements Animator.AnimatorListener {
@@ -248,13 +252,13 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         @Override
         public void onAnimationEnd(Animator animation) {
             mAnimView.setVisibility(View.GONE);
-            mAnimView.setOnClickListener(null);
+            mAnimView.animate().setListener(null);
         }
 
         @Override
         public void onAnimationCancel(Animator animation) {
             mAnimView.setVisibility(View.GONE);
-            mAnimView.setOnClickListener(null);
+            mAnimView.animate().setListener(null);
         }
 
         @Override
@@ -324,7 +328,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent intent){
         if (resultCode == RESULT_OK ){
             if (requestCode == CODE_REQUEST_CODE) {
-                final String _code = intent.getStringExtra("auth_code");
+                final String _code = intent.getStringExtra(CaptureActivity.CALLBACK_CODE);
                 mBarcodeEt.setText(_code);
                 getGoodsInfoByBarcode();
             }else if (requestCode == REQUEST_CAPTURE_IMG) {
@@ -517,19 +521,24 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     }
     private void initUnit(){
         final TextView unit_et = findViewById(R.id.a_unit_et);
-        unit_et.setOnClickListener(v -> {
-            final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(this,getString(R.string.unit_sz));
-            treeListDialog.setData(Utils.JsondeepCopy(mUnitList),null,true);
-            CustomApplication.runInMainThread(()->{
-                if (treeListDialog.exec() == 1){
-                    final JSONObject object = treeListDialog.getSingleContent();
-                    unit_et.setText(object.getString(TreeListBaseAdapter.COL_NAME));
-                    unit_et.setTag(object.getString(TreeListBaseAdapter.COL_ID));
-                }
-            });
-        });
+        unit_et.setOnClickListener(v -> showUnit(mUnitTv));
         mUnitTv = unit_et;
         setDefaultUnit();
+    }
+    public void showUnit(final TextView tv){
+        final TreeListDialogForJson treeListDialog = new TreeListDialogForJson(this,getString(R.string.unit_sz));
+        treeListDialog.setData(Utils.JsondeepCopy(mUnitList),null,true);
+        CustomApplication.runInMainThread(()->{
+            if (treeListDialog.exec() == 1){
+                final JSONObject object = treeListDialog.getSingleContent();
+                tv.setText(object.getString(TreeListBaseAdapter.COL_NAME));
+                tv.setTag(object.getString(TreeListBaseAdapter.COL_ID));
+            }else {
+                if (tv instanceof EditText){
+                    tv.postDelayed(()-> Utils.setFocus(this,(EditText)tv),300);
+                }
+            }
+        });
     }
     private void setDefaultUnit(){
         if (null != mUnitTv){
@@ -900,6 +909,8 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     private JSONObject generateParameter(){
         final JSONObject data = new JSONObject();
 
+        if (!mAuxiliaryBarcodeAdapter.isValid() || !mMultiUnitAdapter.isValid())return data;
+
         final String barcode = mBarcode,name = mNameEt.getText().toString(),category = mCategoryTv.getText().toString(),unit = mUnitTv.getText().toString(),
                 only_coding = mItemIdEt.getText().toString(),supplier = mSupplierTv.getText().toString();
         if (barcode == null || barcode.isEmpty()){
@@ -934,6 +945,8 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         }
 
         data.put("goods_id",Utils.getNullStringAsEmpty(mGoodsObj,"goods_id"));
+        data.put("barcode_id",Utils.getNullStringAsEmpty(mGoodsObj,"barcode_id"));
+        data.put("barcode",barcode);
         data.put("attr_id",0);
         data.put("type",isModify ? 2 : 1);
 
@@ -958,26 +971,12 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         data.put("cash_flow_ratio",ly_ratio_tv.getText().toString());
         data.put("origin",place_et.getText().toString());
 
-        final JSONArray barcode_info = new JSONArray();
-        final JSONObject goods = new JSONObject();
-        goods.put("barcode",barcode);
-        goods.put("mnemonic_code",Utils.getNullStringAsEmpty(mGoodsObj,"mnemonic_code"));
-        goods.put("goods_spec_code",Utils.getNullStringAsEmpty(mGoodsObj,"goods_spec_code"));
-        goods.put("metering_id",getMetering());
-        goods.put("sys_unit_id",unit);
-        goods.put("conversion",Utils.getNullOrEmptyStringAsDefault(mGoodsObj,"conversion","1"));
-        goods.put("yh_mode",Utils.getNotKeyAsNumberDefault(mGoodsObj,"yh_mode",0));
-        goods.put("yh_price",mVipPriceEt.getText().toString());
-        goods.put("cost_price",0);
-        goods.put("ps_price",0);
-        goods.put("trade_price",pf_price_et.getText().toString());
-        if (isModify)goods.put("barcode_id",mBarcodeId);
-        goods.put("del_status",1);
-
-        barcode_info.add(goods);
-
         data.put("appid",getAppId());
-        data.put("goods",barcode_info);
+
+        final List<MultiUnitInfo> d = mMultiUnitAdapter.getValidData();
+        if (!d.isEmpty())
+            data.put("goods",JSONObject.parseArray(JSON.toJSONString(d)));
+        data.put("fuzhu",JSONObject.parseArray(JSON.toJSONString(mAuxiliaryBarcodeAdapter.getValidData())));
         return data;
     }
 
@@ -1038,7 +1037,6 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
             final String param = HttpRequest.generate_request_parm(data,getAppSecret());
 
             final JSONObject retJson = httpRequest.sendPost(getUrl() +"/api/goods_set/goods_sets",param,true);
-
             switch (retJson.getIntValue("flag")){
                 case 0:
                     loop.done(0);
@@ -1100,7 +1098,8 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
                         break;
                     case "y":
                         final JSONArray new_goods = JSON.parseArray(Utils.getNullOrEmptyStringAsDefault(info,"data","[]"));
-                        code = SQLiteHelper.execSQLByBatchFromJson(new_goods,"barcode_info" , CustomApplication.getGoodsCols(),err,1);
+                        if (!new_goods.isEmpty())
+                            code = SQLiteHelper.execSQLByBatchFromJson(new_goods,"barcode_info" , CustomApplication.getGoodsCols(),err,1);
                         break;
                 }
                 break;

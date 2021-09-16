@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.zxing.client.android.CaptureActivity;
 import com.wyc.cloudapp.CustomizationView.TopDrawableTextView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.cashierDesk.MobileCashierActivity;
@@ -144,7 +145,7 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent){//条码回调
         if (resultCode == RESULT_OK ){
-            final String _code = intent.getStringExtra("auth_code");
+            final String _code = intent.getStringExtra(CaptureActivity.CALLBACK_CODE);
              if (requestCode == PAY_REQUEST_CODE){
                 if (mScanCallback != null){
                     final ScanCallback callback = mScanCallback.get();

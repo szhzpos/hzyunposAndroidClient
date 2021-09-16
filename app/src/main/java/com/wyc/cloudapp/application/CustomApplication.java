@@ -191,6 +191,14 @@ public final class CustomApplication extends Application {
         return mUrl;
     }
 
+    public static String getNotEmptyHintsString(final String sz){
+        return mApplication.getString(R.string.not_empty_hint_sz,sz);
+    }
+    public static String getNotExistHintsString(final String sz){
+        return mApplication.getString(R.string.not_exist_hint_sz,sz);
+    }
+
+
     private final ActivityLifecycleCallbacks callbacks = new ActivityLifecycleCallbacks() {
         @Override
         public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {

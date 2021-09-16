@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -172,7 +171,7 @@ public class MobileTransferInOrderDetailActivity extends AbstractMobileActivity 
         mOrderID = Utils.getNullStringAsEmpty(mOrderInfo,ORDER_ID_KEY);
         final ItemPaddingLinearLayout business_main = findViewById(R.id.business_add_main_layout);
         if (isAudit()){
-            business_main.setIgnore(true);
+            business_main.setDisableEvent(true);
             final ItemPaddingLinearLayout business_function_btn_layout = business_main.findViewById(R.id.business_function_btn_layout);
             for (int i = 0,size = business_function_btn_layout.getChildCount(); i < size ;i ++){
                 final View view = business_function_btn_layout.getChildAt(i);

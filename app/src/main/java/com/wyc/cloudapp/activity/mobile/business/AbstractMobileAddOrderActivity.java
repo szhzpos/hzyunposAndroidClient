@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.zxing.client.android.CaptureActivity;
 import com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
@@ -111,7 +112,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                 if (mScanCallback != null){
                     final ScanCallback callback = mScanCallback.get();
                     if (callback != null){
-                        final String _code = data.getStringExtra("auth_code");
+                        final String _code = data.getStringExtra(CaptureActivity.CALLBACK_CODE);
                         callback.callback(_code);
                     }
                 }
@@ -309,7 +310,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
     private void setOrderStatus(){
         final ItemPaddingLinearLayout business_main = findViewById(R.id.business_add_main_layout);
         if (isAudit()){
-            business_main.setIgnore(true);
+            business_main.setDisableEvent(true);
             final ItemPaddingLinearLayout business_function_btn_layout = business_main.findViewById(R.id.business_function_btn_layout);
             for (int i = 0,size = business_function_btn_layout.getChildCount(); i < size ;i ++){
                 final View view = business_function_btn_layout.getChildAt(i);

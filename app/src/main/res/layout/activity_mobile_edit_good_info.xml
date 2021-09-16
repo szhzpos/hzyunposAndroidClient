@@ -8,16 +8,6 @@
     android:baselineAligned="false"
     android:orientation="vertical">
 
-    <com.wyc.cloudapp.CustomizationView.RoundCornerTabLayout
-        android:id="@+id/_tab_layout"
-        style="@style/TabStyle"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/height_35"
-        android:layout_marginStart="@dimen/size_45"
-        android:layout_marginTop="@dimen/margin_5"
-        android:layout_marginEnd="@dimen/size_45"
-        app:tabTextAppearance="@style/TabText_14" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/basic"
         android:layout_width="match_parent"

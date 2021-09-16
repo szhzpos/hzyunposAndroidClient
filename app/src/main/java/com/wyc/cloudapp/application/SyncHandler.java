@@ -391,7 +391,7 @@ final class SyncHandler extends Handler {
                                             }else if (MessageID.SYNC_AUXILIARY_BARCODE_ID == msg.what){
                                                 up_auxiliary_barcode(data);
                                                 if ((current_page++ <= max_page)){
-                                                    Logger.d("current_page:%d,max_page:%d",current_page,max_page);
+                                                    //Logger.d("current_page:%d,max_page:%d",current_page,max_page);
                                                     sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_AUXILIARY_BARCODE_ID,current_page));
                                                 }
                                             }

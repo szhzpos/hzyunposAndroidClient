@@ -67,6 +67,7 @@ public final  class CaptureActivity extends AppCompatActivity implements Surface
   private static final String TAG = CaptureActivity.class.getSimpleName();
 
   private static final int REQUEST_CAMERA = 4000;
+  public static final String CALLBACK_CODE = "auth_code";
 
   private CameraManager cameraManager;
   private CaptureActivityHandler handler;
@@ -286,7 +287,7 @@ public final  class CaptureActivity extends AppCompatActivity implements Surface
       contentsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, scaledSize);
 
       Intent intent =new Intent();
-      intent.putExtra("auth_code",displayContents);
+      intent.putExtra(CaptureActivity.CALLBACK_CODE,displayContents);
       this.setResult(RESULT_OK,intent);
       this.finish();
     }

@@ -6,7 +6,7 @@
     android:background="@drawable/round_shape"
     android:drawableEnd="@drawable/scan_"
     android:gravity="center"
-    android:paddingEnd="@dimen/margin_2"
+    android:paddingEnd="@dimen/margin_5"
     android:selectAllOnFocus="true"
     android:textColor="@color/text_color"
     android:textSize="@dimen/font_size_16">

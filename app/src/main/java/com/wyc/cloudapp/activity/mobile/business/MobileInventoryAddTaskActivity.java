@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -289,7 +288,7 @@ public class MobileInventoryAddTaskActivity extends AbstractMobileActivity {
     private void setTaskStatus(){
         final ItemPaddingLinearLayout business_main = findViewById(R.id.business_add_main_layout);
         if (isInventoried()){
-            business_main.setIgnore(true);
+            business_main.setDisableEvent(true);
             business_main.setCentreLabel(getString(R.string.inventoried_sz));
         }
     }

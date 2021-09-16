@@ -45,10 +45,10 @@ public class MainActivity extends BaseActivity {
     }
 
     public String getNotEmptyHintsString(final String sz){
-        return getString(R.string.not_empty_hint_sz,sz);
+        return CustomApplication.getNotEmptyHintsString(sz);
     }
     public String getNotExistHintsString(final String sz){
-        return getString(R.string.not_exist_hint_sz,sz);
+        return CustomApplication.getNotExistHintsString(sz);
     }
 
     public String getPosNum(){return mApplication.getPosNum();}

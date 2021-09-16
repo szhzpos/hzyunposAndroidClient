@@ -216,6 +216,11 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
             }
         }
 
+        @Override
+        public void onViewRecycled(@NonNull MyViewHolder holder) {
+            if (holder.itemView == mCurrentItemView)mCurrentItemView.setBackgroundColor(mContext.getColor(R.color.white));
+        }
+
         static class MyViewHolder extends AbstractDataAdapterForJson.SuperViewHolder {
             private final TextView category_id;
             private final TextView category_name;
