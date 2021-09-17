@@ -93,8 +93,7 @@ class MultiUnitAdapter(private val context:MobileEditGoodInfoActivity): Abstract
 
         if (data.plus){
             (holder.barcode.parent as? View)?.visibility = View.GONE
-        }
-        if (holder.adapterPosition == 0){
+        }else if (holder.adapterPosition == 0){
             (holder.itemView  as? ItemPaddingLinearLayout)?.let {
                 it.setDisableEvent(true)
                 it.setCentreLabel("禁止修改")
@@ -117,7 +116,7 @@ class MultiUnitAdapter(private val context:MobileEditGoodInfoActivity): Abstract
         return MyViewHolder(itemView)
     }
 
-    override fun getValidData(): MutableList<MultiUnitInfo> {
+    fun getSubmitData(): MutableList<MultiUnitInfo> {
         val data = super.getValidData()
         return if (data.size > 0){
             data.removeAt(0)

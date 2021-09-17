@@ -64,6 +64,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -165,12 +166,11 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
             auxiliary_list.setAdapter(mAuxiliaryBarcodeAdapter = new AuxiliaryBarcodeAdapter(this));
             auxiliary_list.addItemDecoration(new LinearItemDecoration(this.getColor(R.color.gray_subtransparent),2));
 
-            if (isModify)
-                CustomApplication.execute(()-> mAuxiliaryBarcodeAdapter.setDataForList(getAuxiliaryBarcodeById(mBarcodeId)));
+            CustomApplication.execute(()-> mAuxiliaryBarcodeAdapter.setDataForList(getAuxiliaryBarcodeById()));
         }
     }
-    private List<AuxiliaryBarcode> getAuxiliaryBarcodeById(final String id){
-        return SQLiteHelper.getBeans(AuxiliaryBarcode.class,id,"1");
+    private List<AuxiliaryBarcode> getAuxiliaryBarcodeById(){
+        return SQLiteHelper.getBeans(AuxiliaryBarcode.class,mBarcodeId == null ? "" : mBarcodeId,"1");
     }
 
     private void initMultiUnit(){
@@ -180,12 +180,18 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
             unit_price_list.setAdapter(mMultiUnitAdapter = new MultiUnitAdapter(this));
             unit_price_list.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
 
-            if (isModify)
-                CustomApplication.execute(()-> mMultiUnitAdapter.setDataForList(getMultiUnit()));
+            CustomApplication.execute(()-> mMultiUnitAdapter.setDataForList(getMultiUnit()));
         }
     }
     private List<MultiUnitInfo> getMultiUnit(){
-        return SQLiteHelper.getBeans(MultiUnitInfo.class,Utils.getNullStringAsEmpty(mGoodsObj,"only_coding"),"1");
+        List<MultiUnitInfo> multiUnitInfoList;
+        if (mBarcodeId != null)
+            multiUnitInfoList = SQLiteHelper.getBeans(MultiUnitInfo.class,Utils.getNullStringAsEmpty(mGoodsObj,"only_coding"),"1");
+        else {
+            multiUnitInfoList = new ArrayList<>();
+            multiUnitInfoList.add(new MultiUnitInfo());
+        }
+        return multiUnitInfoList;
     }
 
     private void initTabLayout(){
@@ -210,6 +216,33 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
                         break;
                     case 2:
                         if (mUnitPriceLayout.getVisibility() == View.GONE){
+                            List<MultiUnitInfo> multiUnitInfoList = mMultiUnitAdapter.getValidData();
+                            if (!multiUnitInfoList.isEmpty()){
+                                MultiUnitInfo multiUnitInfo = multiUnitInfoList.get(0);
+                                multiUnitInfo.setBarcode(mBarcode);
+                                multiUnitInfo.setUnit_name(mUnitTv.getText().toString());
+
+                                double value = 0.0;
+                                try {
+                                    value = Double.parseDouble(mRetailPriceEt.getText().toString());
+                                }catch (NumberFormatException ignored){
+                                }
+                                multiUnitInfo.setRetail_price(value);
+
+                                try {
+                                    value = Double.parseDouble(pf_price_et.getText().toString());
+                                }catch (NumberFormatException ignored){
+                                }
+                                multiUnitInfo.setPs_price(value);
+
+                                try {
+                                    value = Double.parseDouble(mVipPriceEt.getText().toString());
+                                }catch (NumberFormatException ignored){
+                                }
+                                multiUnitInfo.setYh_price(value);
+                                mMultiUnitAdapter.notifyDataSetChanged();
+                            }
+
                             showView(mUnitPriceLayout);
                             hideView(mBasicLayout);
                             hideView(mAuxiliaryLayout);
@@ -973,7 +1006,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
 
         data.put("appid",getAppId());
 
-        final List<MultiUnitInfo> d = mMultiUnitAdapter.getValidData();
+        final List<MultiUnitInfo> d = mMultiUnitAdapter.getSubmitData();
         if (!d.isEmpty())
             data.put("goods",JSONObject.parseArray(JSON.toJSONString(d)));
         data.put("fuzhu",JSONObject.parseArray(JSON.toJSONString(mAuxiliaryBarcodeAdapter.getValidData())));

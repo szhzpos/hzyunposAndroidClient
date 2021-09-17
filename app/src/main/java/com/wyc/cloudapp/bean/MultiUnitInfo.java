@@ -30,7 +30,7 @@ public class MultiUnitInfo implements Serializable, AbstractActionAdapter.Action
     private int unit_id;
     @JSONField(name = "sys_unit_name")
     private String unit_name;
-    private double conversion;
+    private double conversion = 1.0;
     private double retail_price;
     private double yh_price;
     private double trade_price;
