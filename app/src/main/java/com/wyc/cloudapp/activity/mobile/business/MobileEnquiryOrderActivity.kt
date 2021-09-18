@@ -15,6 +15,7 @@ import com.wyc.cloudapp.bean.EnquiryOrderPrintContent
 import com.wyc.cloudapp.bean.OrderPrintContentBase
 import com.wyc.cloudapp.bean.OrderPrintContentBase.Goods
 import com.wyc.cloudapp.bean.TransferOutInOrder
+import com.wyc.cloudapp.constants.InterfaceURL.ENQUIRY_ORDER_DETAIL
 import com.wyc.cloudapp.data.SQLiteHelper
 import com.wyc.cloudapp.dialog.MyDialog
 import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson
@@ -119,7 +120,7 @@ class MobileEnquiryOrderActivity : AbstractMobileBusinessOrderActivity() {
         }
 
         override fun generateQueryDetailCondition(): JSONObject {
-            return JSONObject().fluentPut("api", "/api/api_yaohuo/xinfo")
+            return JSONObject().fluentPut("api", ENQUIRY_ORDER_DETAIL)
         }
 
         override fun getAdapter(): AbstractBusinessOrderDetailsDataAdapter<out AbstractDataAdapter.SuperViewHolder> {

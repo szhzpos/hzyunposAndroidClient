@@ -1,12 +1,12 @@
 package com.wyc.cloudapp.adapter.business
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
+import androidx.recyclerview.widget.RecyclerView
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.wyc.cloudapp.R
@@ -14,9 +14,7 @@ import com.wyc.cloudapp.activity.MainActivity
 import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.bean.AuxiliaryBarcode
 import com.wyc.cloudapp.dialog.MyDialog
-import com.wyc.cloudapp.dialog.business.BusinessSelectGoodsDialog
-import com.wyc.cloudapp.logger.Logger
-import com.wyc.cloudapp.mobileFragemt.ScanFragment
+import com.wyc.cloudapp.mobileFragemt.FindFragment
 import com.wyc.cloudapp.utils.Utils
 
 /**
@@ -32,7 +30,7 @@ import com.wyc.cloudapp.utils.Utils
  * @UpdateRemark:   更新说明
  * @Version:        1.0
  */
-class AuxiliaryBarcodeAdapter(private val mContext: MainActivity) : AbstractActionAdapter<AuxiliaryBarcode, AuxiliaryBarcodeAdapter.MyViewHolder>() {
+class AuxiliaryBarcodeAdapter(private val attachView: RecyclerView) : AbstractActionAdapter<AuxiliaryBarcode, AuxiliaryBarcodeAdapter.MyViewHolder>() {
     private var mDelData:MutableList<AuxiliaryBarcode>? = null
     class MyViewHolder(itemView: View):AbstractActionAdapter.MyViewHolder(itemView){
         var mWatcher: TextWatcher? = null
@@ -88,7 +86,7 @@ class AuxiliaryBarcodeAdapter(private val mContext: MainActivity) : AbstractActi
                 val dx: Float = motionEvent.x
                 val w: Int = it.width
                 if (dx > w - it.compoundPaddingRight) {
-                    ScanFragment.beginScan(mContext, object : ScanFragment.ScanCallback {
+                    FindFragment.beginScan(attachView.context as MainActivity, object : FindFragment.Callback{
                         override fun scan(code: String) {
                             it.setText(code)
                         }
@@ -136,9 +134,18 @@ class AuxiliaryBarcodeAdapter(private val mContext: MainActivity) : AbstractActi
         return data
     }
     override fun isValid(): Boolean {
-        return super.getValidData().all {
-            if (!Utils.isNotEmpty(it.fuzhu_barcode)){
-                MyDialog.toastMessage(CustomApplication.getNotEmptyHintsString(CustomApplication.self().getString(R.string.barcode)))
+        return super.getValidData().all {data ->
+            if (!Utils.isNotEmpty(data.fuzhu_barcode)){
+                MyDialog.ToastMessage(mData?.let {
+                    var view:View? = null
+                    attachView.getChildAt(it.indexOf(data))?.let {v ->
+                        (attachView.getChildViewHolder(v) as? MultiUnitAdapter.MyViewHolder)?.let { viewHolder ->
+                            viewHolder.barcode.requestFocus()
+                            view = viewHolder.barcode
+                        }
+                    }
+                    view
+                },CustomApplication.getNotEmptyHintsString(CustomApplication.self().getString(R.string.auxiliary_barcode)),null)
                 return false
             }
             true

@@ -28,6 +28,7 @@ import com.wyc.cloudapp.utils.Utils;
  */
 public abstract class AbstractBusinessOrderDataAdapter<T extends AbstractDataAdapterForJson.SuperViewHolder > extends AbstractDataAdapterForJson<T> implements View.OnClickListener {
     final MainActivity mContext;
+    public static final String KEY = "order_id";
     public AbstractBusinessOrderDataAdapter(MainActivity activity) {
         mContext = activity;
     }
@@ -35,7 +36,7 @@ public abstract class AbstractBusinessOrderDataAdapter<T extends AbstractDataAda
     @Override
     public void onClick(View v) {
         final Intent intent = new Intent();
-        intent.putExtra("order_id",Utils.getViewTagValue(v,""));
+        intent.putExtra(KEY,Utils.getViewTagValue(v,""));
         if (mContext instanceof AbstractMobileBusinessOrderActivity){
             final AbstractMobileBusinessOrderActivity activity = (AbstractMobileBusinessOrderActivity)mContext;
 

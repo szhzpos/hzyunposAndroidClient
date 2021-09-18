@@ -1,19 +1,23 @@
 package com.wyc.cloudapp.adapter.business
 
+import android.annotation.SuppressLint
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import butterknife.BindView
 import butterknife.ButterKnife
-import butterknife.OnClick
 import com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout
 import com.wyc.cloudapp.R
+import com.wyc.cloudapp.activity.MainActivity
 import com.wyc.cloudapp.activity.mobile.business.MobileEditGoodInfoActivity
 import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.bean.MultiUnitInfo
 import com.wyc.cloudapp.dialog.MyDialog
+import com.wyc.cloudapp.mobileFragemt.FindFragment
 import com.wyc.cloudapp.utils.Utils
 import java.lang.NumberFormatException
 
@@ -30,7 +34,7 @@ import java.lang.NumberFormatException
  * @UpdateRemark:   更新说明
  * @Version:        1.0
  */
-class MultiUnitAdapter(private val context:MobileEditGoodInfoActivity): AbstractActionAdapter<MultiUnitInfo, MultiUnitAdapter.MyViewHolder>() {
+class MultiUnitAdapter(private val attachView:RecyclerView): AbstractActionAdapter<MultiUnitInfo, MultiUnitAdapter.MyViewHolder>() {
     private var mDelData:MutableList<MultiUnitInfo>? = null
     class MyViewHolder(itemView: View):AbstractActionAdapter.MyViewHolder(itemView){
 
@@ -76,6 +80,7 @@ class MultiUnitAdapter(private val context:MobileEditGoodInfoActivity): Abstract
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun bindHolder(holder: MyViewHolder, data: MultiUnitInfo) {
         holder.barcode.setText(data.barcode)
         holder.barcode.tag = data
@@ -98,19 +103,44 @@ class MultiUnitAdapter(private val context:MobileEditGoodInfoActivity): Abstract
                 it.setDisableEvent(true)
                 it.setCentreLabel("禁止修改")
             }
+        }else{
+            holder.barcode.setOnTouchListener(touch)
         }
         holder.itemView.tag = mData
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    val touch = View.OnTouchListener { v, motionEvent ->
+        if (motionEvent.action == MotionEvent.ACTION_DOWN){
+            (v as? EditText)?.let {
+                val dx: Float = motionEvent.x
+                val w: Int = it.width
+                if (dx > w - it.compoundPaddingRight) {
+                    (attachView.context as? MainActivity)?.let {view->
+                        FindFragment.beginScan(view, object : FindFragment.Callback{
+                            override fun scan(code: String) {
+                                it.setText(code)
+                            }
+                        })
+                        return@OnTouchListener true
+                    }
+                }
+            }
+        }
+        false
     }
 
     override fun onViewRecycled(holder: MyViewHolder) {
         (holder.itemView  as? ItemPaddingLinearLayout)?.let {
             it.setDisableEvent(false)
-            it.setCentreLabel(null)
+            it.setCentreLabel("")
         }
         (holder.barcode.parent as? View)?.visibility = View.VISIBLE
     }
 
-    private val click = View.OnClickListener { v -> context.showUnit(v as TextView?) }
+    private val click = View.OnClickListener { v ->
+        (attachView.context as? MobileEditGoodInfoActivity)?.showUnit(v as TextView?)
+    }
 
     override fun getViewHolder(itemView: View): MyViewHolder {
         return MyViewHolder(itemView)
@@ -186,18 +216,38 @@ class MultiUnitAdapter(private val context:MobileEditGoodInfoActivity): Abstract
     override fun isValid(): Boolean {
         return super.getValidData().all {
             if (!Utils.isNotEmpty(it.barcode)){
-                MyDialog.toastMessage(CustomApplication.getNotEmptyHintsString(CustomApplication.self().getString(R.string.barcode)))
+                MyDialog.ToastMessage(requestFocusByObj(it,0),CustomApplication.getNotEmptyHintsString(CustomApplication.self().getString(R.string.barcode)),null)
                 return false
             }
             if (!Utils.isNotEmpty(it.unit_name)){
-                MyDialog.toastMessage(CustomApplication.getNotEmptyHintsString(CustomApplication.self().getString(R.string.unit_sz)))
+                MyDialog.ToastMessage(requestFocusByObj(it,1),CustomApplication.getNotEmptyHintsString(CustomApplication.self().getString(R.string.unit_sz)),null)
                 return false
             }
             if (!Utils.isNotEmpty(it.conversion.toString())){
-                MyDialog.toastMessage(CustomApplication.getNotEmptyHintsString(CustomApplication.self().getString(R.string.conversion_ratio)))
+                MyDialog.ToastMessage(requestFocusByObj(it,2),CustomApplication.getNotEmptyHintsString(CustomApplication.self().getString(R.string.conversion_ratio)),null)
                 return false
             }
             true
         }
+    }
+    private fun requestFocusByObj(data: MultiUnitInfo,which:Int): View? {
+        var view:View? = null
+        mData?.let {
+            attachView.getChildAt(it.indexOf(data))?.let {v ->
+                (attachView.getChildViewHolder(v) as? MyViewHolder)?.let {viewHolder ->
+                    view = when(which){
+                        0 ->{
+                            viewHolder.barcode
+                        }
+                        1 ->{
+                            viewHolder.unit
+                        }
+                        else -> viewHolder.conversion
+                    }
+                    view?.requestFocus()
+                }
+            }
+        }
+        return view
     }
 }

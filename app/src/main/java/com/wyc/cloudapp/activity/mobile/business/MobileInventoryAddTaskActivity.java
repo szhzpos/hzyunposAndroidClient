@@ -16,6 +16,7 @@ import com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
+import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDataAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
@@ -246,7 +247,7 @@ public class MobileInventoryAddTaskActivity extends AbstractMobileActivity {
 
     private void queryData(){
         if (isShowOrder()){
-            mTaskInfo = JSONObject.parseObject(getIntent().getStringExtra("order_id"));
+            mTaskInfo = JSONObject.parseObject(getIntent().getStringExtra(AbstractBusinessOrderDataAdapter.KEY));
             showOrder();
         }else {
             generateOrderCode();
@@ -255,7 +256,7 @@ public class MobileInventoryAddTaskActivity extends AbstractMobileActivity {
 
     private boolean isShowOrder(){
         final Intent intent = getIntent();
-        return null != intent && intent.hasExtra("order_id");
+        return null != intent && intent.hasExtra(AbstractBusinessOrderDataAdapter.KEY);
     }
 
     private void showProgress(final String mess){

@@ -163,7 +163,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         final RecyclerView auxiliary_list = findViewById(R.id.auxiliary_list);
         if (null != auxiliary_list){
             auxiliary_list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
-            auxiliary_list.setAdapter(mAuxiliaryBarcodeAdapter = new AuxiliaryBarcodeAdapter(this));
+            auxiliary_list.setAdapter(mAuxiliaryBarcodeAdapter = new AuxiliaryBarcodeAdapter(auxiliary_list));
             auxiliary_list.addItemDecoration(new LinearItemDecoration(this.getColor(R.color.gray_subtransparent),2));
 
             CustomApplication.execute(()-> mAuxiliaryBarcodeAdapter.setDataForList(getAuxiliaryBarcodeById()));
@@ -177,7 +177,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         final RecyclerView unit_price_list = findViewById(R.id.unit_price_list);
         if (null != unit_price_list){
             unit_price_list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
-            unit_price_list.setAdapter(mMultiUnitAdapter = new MultiUnitAdapter(this));
+            unit_price_list.setAdapter(mMultiUnitAdapter = new MultiUnitAdapter(unit_price_list));
             unit_price_list.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
 
             CustomApplication.execute(()-> mMultiUnitAdapter.setDataForList(getMultiUnit()));
@@ -233,7 +233,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
                                     value = Double.parseDouble(pf_price_et.getText().toString());
                                 }catch (NumberFormatException ignored){
                                 }
-                                multiUnitInfo.setPs_price(value);
+                                multiUnitInfo.setTrade_price(value);
 
                                 try {
                                     value = Double.parseDouble(mVipPriceEt.getText().toString());
@@ -1003,6 +1003,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         data.put("cash_flow_mode",Utils.getViewTagValue(hz_method_tv,""));
         data.put("cash_flow_ratio",ly_ratio_tv.getText().toString());
         data.put("origin",place_et.getText().toString());
+        data.put("pic_id",Utils.getNotKeyAsNumberDefault(mGoodsObj,"goods_img",0));
 
         data.put("appid",getAppId());
 
@@ -1035,7 +1036,6 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     }
 
     private void addGoods(final JSONObject data,boolean reset){
-        Logger.d_json(data);
         if (data.isEmpty())return;
 
         final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,"正在上传商品信息...");
@@ -1066,6 +1066,8 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
 
             data.put("operation_mode",1);//判断后台操作员权限
             data.put("pt_user_id",getPtUserId());
+
+            Logger.d_json(data);
 
             final String param = HttpRequest.generate_request_parm(data,getAppSecret());
 

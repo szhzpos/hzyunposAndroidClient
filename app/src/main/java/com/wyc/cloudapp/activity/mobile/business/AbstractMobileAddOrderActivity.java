@@ -23,6 +23,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
+import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDataAdapter;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.BusinessOrderPrintSetting;
@@ -299,7 +300,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
 
     protected boolean isShowOrder(){
         final Intent intent = getIntent();
-        return null != intent && intent.hasExtra("order_id");
+        return null != intent && intent.hasExtra(AbstractBusinessOrderDataAdapter.KEY);
     }
 
     private void generateOrderCode() {
@@ -634,7 +635,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
 
     private void queryData(){
         if (isShowOrder()){
-            query(getIntent().getStringExtra("order_id"));
+            query(getIntent().getStringExtra(AbstractBusinessOrderDataAdapter.KEY));
         }else {
             generateOrderCode();
         }

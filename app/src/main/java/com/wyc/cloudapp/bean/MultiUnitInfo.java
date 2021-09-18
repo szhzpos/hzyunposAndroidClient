@@ -152,12 +152,13 @@ public class MultiUnitInfo implements Serializable, AbstractActionAdapter.Action
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MultiUnitInfo that = (MultiUnitInfo) o;
-        return barcode_id == that.barcode_id;
+        return barcode_id == that.barcode_id &&
+                Objects.equals(barcode, that.barcode);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(barcode_id);
+        return Objects.hash(barcode_id, barcode);
     }
 
     @NonNull

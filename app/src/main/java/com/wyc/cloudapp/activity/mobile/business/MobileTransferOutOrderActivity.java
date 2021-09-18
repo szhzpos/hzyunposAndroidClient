@@ -1,11 +1,14 @@
 package com.wyc.cloudapp.activity.mobile.business;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDataAdapter;
@@ -17,13 +20,20 @@ import com.wyc.cloudapp.bean.BusinessOrderPrintSetting;
 import com.wyc.cloudapp.bean.OrderPrintContentBase;
 import com.wyc.cloudapp.bean.TransferOutInOrder;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
+import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.mobileFragemt.FindFragment;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
+import com.wyc.cloudapp.utils.http.HttpRequest;
+import com.wyc.cloudapp.utils.http.HttpUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.wyc.cloudapp.constants.InterfaceURL.ENQUIRY_ORDER_DETAIL;
 
 /*调出单*/
 public class MobileTransferOutOrderActivity extends AbstractMobileBusinessOrderActivity {
@@ -49,12 +59,55 @@ public class MobileTransferOutOrderActivity extends AbstractMobileBusinessOrderA
 
     public static class MobileAddTransferOutOrderActivity extends AbstractMobileAddOrderActivity{
         private TextView mTransferInWhTv;
-
+        private TextView mSourceOrderCodeTv;
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             initTransferInWarehouse();
+            initSourceOrder();
         }
+
+        private void initSourceOrder(){
+            final TextView tv = findViewById(R.id.m_source_order_tv);
+            tv.setOnClickListener((view)-> {
+                final Intent intent = new Intent();
+                intent.putExtra("FindSource",true);
+                intent.setClass(this,MobileEnquiryOrderActivity.class);
+                intent.putExtra(AbstractMobileActivity.TITLE_KEY,getString(R.string.select_anything_hint,getString(R.string.enquiry_order)));
+
+                FindFragment.beginRequestOrderId(this, intent, id -> {
+                    Logger.d("code:%s",id);
+                    querySourceOrderInfo(id);
+                });
+            });
+            mSourceOrderCodeTv = tv;
+        }
+
+        protected void querySourceOrderInfo(final String id){
+            final JSONObject parameterObj = new JSONObject();
+            parameterObj.put("appid",getAppId());
+            parameterObj.put("stores_id",getStoreId());
+            parameterObj.put("pt_user_id",getPtUserId());
+            parameterObj.put("yhd_id",id);
+
+            final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,getString(R.string.hints_query_data_sz));
+            CustomApplication.execute(()->{
+                final JSONObject retJson = HttpUtils.sendPost(getUrl() + ENQUIRY_ORDER_DETAIL, HttpRequest.generate_request_parm(parameterObj,getAppSecret()),true);
+                if (HttpUtils.checkRequestSuccess(retJson)){
+                    try {
+                        final JSONObject info = JSONObject.parseObject(retJson.getString("info"));
+                        if (HttpUtils.checkBusinessSuccess(info)){
+                            Logger.d_json(info.getJSONObject("data").toString());
+                        }else throw new JSONException(info.getString("info"));
+                    }catch (JSONException e){
+                        e.printStackTrace();
+                        MyDialog.ToastMessageInMainThread(e.getMessage());
+                    }
+                }
+                progressDialog.dismiss();
+            });
+        }
+
         private void initTransferInWarehouse(){
             final TextView transfer_in_wh_tv = findViewById(R.id.transfer_in_wh_tv);
             final String sz = getString(R.string.transfer_in_wh);

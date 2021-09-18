@@ -753,7 +753,7 @@
                     android:textSize="@dimen/font_size_16" />
 
                 <TextView
-                    android:layout_width="138dp"
+                    android:layout_width="168dp"
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:text="@string/barcode_sz"

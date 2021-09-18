@@ -8,6 +8,7 @@ import androidx.annotation.CallSuper;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDataAdapter;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
@@ -48,7 +49,7 @@ public abstract class AbstractMobileQuerySourceOrderActivity extends AbstractMob
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK ){
             if (requestCode == SELECT_ORDER_CODE){
-                querySourceOrderInfo(data.getStringExtra("order_id"));
+                querySourceOrderInfo(data.getStringExtra(AbstractBusinessOrderDataAdapter.KEY));
             }
         }
     }

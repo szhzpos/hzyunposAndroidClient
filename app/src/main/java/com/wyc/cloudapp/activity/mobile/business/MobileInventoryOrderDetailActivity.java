@@ -17,6 +17,7 @@ import com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
+import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDataAdapter;
 import com.wyc.cloudapp.adapter.business.MobileInventoryAuditDetailAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -183,7 +184,7 @@ public class MobileInventoryOrderDetailActivity extends AbstractMobileActivity {
         parameterObj.put("appid",getAppId());
         parameterObj.put("stores_id",getStoreId());
         parameterObj.put("pt_user_id",getPtUserId());
-        parameterObj.put("pcd_task_id",getIntent().getStringExtra("order_id"));
+        parameterObj.put("pcd_task_id",getIntent().getStringExtra(AbstractBusinessOrderDataAdapter.KEY));
 
         Logger.d_json(parameterObj);
 
