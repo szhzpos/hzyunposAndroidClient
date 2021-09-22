@@ -180,13 +180,13 @@ public final class Printer {
         sb.append(leftText);
 
         // 计算两侧文字中间的空格
-        int marginBetweenMiddleAndRight = LINE_BYTE_SIZE - leftTextLength - rightTextLength;
-            if (align == 1)
-                for (int i = 0; i < marginBetweenMiddleAndRight; i++) {
-                    sb.append(" ");
-                }
-                else
+        int middle = LINE_BYTE_SIZE - leftTextLength - rightTextLength;
+        if (align == 1)
+            for (int i = 0; i < middle; i++) {
                 sb.append(" ");
+            }
+            else
+            sb.append(" ");
 
         sb.append(rightText);
         return sb.toString();
@@ -239,7 +239,7 @@ public final class Printer {
     public static String printThreeDataAlignRight_58(int space, String leftText, String middleText, final String rightText) {
         StringBuilder sb = new StringBuilder();
         final String spacing = " ";
-        final int mid_right_margin = 10 - space,left_margin = 12;
+        final int mid_right_margin = 10 - space,left_margin = 14;
         int left_byte_size = getBytesLength(leftText);
         if (left_byte_size > left_margin) {
             leftText = leftText.substring(0, left_margin / 2) + "..";

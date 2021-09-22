@@ -65,7 +65,7 @@ final class SyncHandler extends Handler {
         return new String[]{"goods_id","barcode_id","barcode","goods_title","only_coding","retail_price","buying_price","trade_price","cost_price","ps_price",
                 "unit_id","unit_name","specifi","category_name","metering_id","current_goods","shelf_life","goods_status","origin","type","goods_tare","barcode_status","category_id",
                 "tax_rate","tc_mode","tc_rate","yh_mode","yh_price","mnemonic_code","image","attr_id","attr_name","attr_code","brand_id","brand","brand_code","gs_id","gs_code","gs_name",
-                "conversion","update_price","stock_unit_id","stock_unit_name","goods_img","img_url","spec_str","cash_flow_ratio"};
+                "conversion","update_price","stock_unit_id","stock_unit_name","goods_img","img_url","spec_str","cash_flow_ratio","updtime"};
     }
 
     void initParameter(final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){

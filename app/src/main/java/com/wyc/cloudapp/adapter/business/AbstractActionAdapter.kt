@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.adapter.AbstractDataAdapter
 import com.wyc.cloudapp.application.CustomApplication
+import com.wyc.cloudapp.logger.Logger
 import kotlin.collections.ArrayList
 
 /**

@@ -299,7 +299,7 @@ open class OrderPrintContentBase :Serializable {
                     if (index != 0) info.append(new_line_10)
 
                     info.append(Printer.commandToStr(Printer.BOLD)).append(String.format("%s", it.name)).append(new_line).append(new_line_d).append(Printer.commandToStr(Printer.BOLD_CANCEL))
-                    info.append(Printer.printThreeData(1, {s:String?->  var v = s
+                    info.append(Printer.printThreeDataAlignRight_58(2, {s:String?->  var v = s
                         if (Utils.isNotEmpty(s))if (s!!.length > 13)v = s.substring(0..12)
                         v
                     }(it.barcode),String.format("%s", it.unit), String.format("%.2f", it.num))).append(new_line)

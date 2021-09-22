@@ -17,6 +17,7 @@ import com.wyc.cloudapp.activity.mobile.business.MobileEditGoodInfoActivity
 import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.bean.MultiUnitInfo
 import com.wyc.cloudapp.dialog.MyDialog
+import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.mobileFragemt.FindFragment
 import com.wyc.cloudapp.utils.Utils
 import java.lang.NumberFormatException
@@ -152,6 +153,10 @@ class MultiUnitAdapter(private val attachView:RecyclerView): AbstractActionAdapt
             data.removeAt(0)
             data
         }else data;
+    }
+
+    fun getOriginalData(): MutableList<MultiUnitInfo>{
+        return mData
     }
 
     private class ChangeText(private val obj:EditText,private val holder: MyViewHolder):TextWatcher{

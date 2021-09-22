@@ -688,8 +688,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
     }
 
     private void deleteMolDiscountRecord(){
-        //由于在抹零情况下单种支付方式支付金额会超过抹零之前的金额，所以清除抹零记录的时候需要判断剩余付款金额不小于抹零金额的绝对值
-        if (!Utils.equalDouble(mMolAmt,0.0) && Utils.equalDouble(mPay_balance,Math.abs(mMolAmt)) || mPay_balance > Math.abs(mMolAmt)){
+        if (!Utils.equalDouble(mMolAmt,0.0)){
             mMolAmt = 0.0;
             mContext.deleteMolDiscountRecord();
 

@@ -55,10 +55,13 @@ import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.TakePhotoPopWin;
 import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.msg.ReloadMsg;
 import com.wyc.cloudapp.utils.FileUtils;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.io.IOException;
@@ -150,7 +153,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         getGoodsBase();
         getGoodsInfoByBarcode();
         getSupplier();
-        if (!isModify)getOnlycodeAndBarcode();
+        getOnlycodeAndBarcode();
 
         if (isModify){
             getGoodsByBarcodeId();
@@ -189,7 +192,6 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
             multiUnitInfoList = SQLiteHelper.getBeans(MultiUnitInfo.class,Utils.getNullStringAsEmpty(mGoodsObj,"only_coding"),"1");
         else {
             multiUnitInfoList = new ArrayList<>();
-            multiUnitInfoList.add(new MultiUnitInfo());
         }
         return multiUnitInfoList;
     }
@@ -216,32 +218,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
                         break;
                     case 2:
                         if (mUnitPriceLayout.getVisibility() == View.GONE){
-                            List<MultiUnitInfo> multiUnitInfoList = mMultiUnitAdapter.getValidData();
-                            if (!multiUnitInfoList.isEmpty()){
-                                MultiUnitInfo multiUnitInfo = multiUnitInfoList.get(0);
-                                multiUnitInfo.setBarcode(mBarcode);
-                                multiUnitInfo.setUnit_name(mUnitTv.getText().toString());
-
-                                double value = 0.0;
-                                try {
-                                    value = Double.parseDouble(mRetailPriceEt.getText().toString());
-                                }catch (NumberFormatException ignored){
-                                }
-                                multiUnitInfo.setRetail_price(value);
-
-                                try {
-                                    value = Double.parseDouble(pf_price_et.getText().toString());
-                                }catch (NumberFormatException ignored){
-                                }
-                                multiUnitInfo.setTrade_price(value);
-
-                                try {
-                                    value = Double.parseDouble(mVipPriceEt.getText().toString());
-                                }catch (NumberFormatException ignored){
-                                }
-                                multiUnitInfo.setYh_price(value);
-                                mMultiUnitAdapter.notifyDataSetChanged();
-                            }
+                            showMultiUnit();
 
                             showView(mUnitPriceLayout);
                             hideView(mBasicLayout);
@@ -265,6 +242,39 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         _tab_layout.addTab(_tab_layout.newTab().setText(getString(R.string.auxiliary_info)));
         _tab_layout.addTab(_tab_layout.newTab().setText(getString(R.string.unit_price_info)));
         _tab_layout.setVisibility(View.VISIBLE);
+    }
+
+    private void showMultiUnit(){
+        final List<MultiUnitInfo> multiUnitInfoList = mMultiUnitAdapter.getOriginalData();
+        MultiUnitInfo multiUnitInfo ;
+        if (multiUnitInfoList.size() > 1){
+            multiUnitInfo = multiUnitInfoList.get(multiUnitInfoList.size() - 1);
+        }else {
+            multiUnitInfo = new MultiUnitInfo();
+            multiUnitInfoList.add(0,multiUnitInfo);
+        }
+        multiUnitInfo.setBarcode(mBarcode);
+        multiUnitInfo.setUnit_name(mUnitTv.getText().toString());
+
+        double value = 0.0;
+        try {
+            value = Double.parseDouble(mRetailPriceEt.getText().toString());
+        }catch (NumberFormatException ignored){
+        }
+        multiUnitInfo.setRetail_price(value);
+
+        try {
+            value = Double.parseDouble(pf_price_et.getText().toString());
+        }catch (NumberFormatException ignored){
+        }
+        multiUnitInfo.setTrade_price(value);
+
+        try {
+            value = Double.parseDouble(mVipPriceEt.getText().toString());
+        }catch (NumberFormatException ignored){
+        }
+        multiUnitInfo.setYh_price(value);
+        mMultiUnitAdapter.notifyDataSetChanged();
     }
 
     private static class Hide implements Animator.AnimatorListener {
@@ -598,8 +608,9 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     }
 
     private void getOnlycodeAndBarcode(){
-        new ViewModelProvider(this).get(BarcodeOnlyCodeViewModel.class).getCurrentModel(Utils.getViewTagValue(mCategoryTv,"7223")
-                ,Utils.getViewTagValue(mGoodsAttrEt,"1")).observe(this, this::setBarcodeAndItemId);
+        if (!isModify)//修改状态下不刷新条码和货号20210922
+            new ViewModelProvider(this).get(BarcodeOnlyCodeViewModel.class).getCurrentModel(Utils.getViewTagValue(mCategoryTv,"7223")
+                    ,Utils.getViewTagValue(mGoodsAttrEt,"1")).observe(this, this::setBarcodeAndItemId);
     }
 
     private void setBarcodeAndItemId(final @NonNull BarcodeOnlyCodeInfo info){
@@ -1105,8 +1116,10 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         }else {
             if (reset)
                 reset();
-            else
+            else{
+                EventBus.getDefault().post(new ReloadMsg());
                 finish();
+            }
         }
     }
 

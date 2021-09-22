@@ -17,6 +17,7 @@ import com.wyc.cloudapp.activity.MainActivity;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.text.SimpleDateFormat;
@@ -97,6 +98,16 @@ public abstract class AbstractPayDialog extends AbstractDialogMainActivity imple
         return mContext;
     }
 
+
+    @Override
+    public boolean dispatchKeyEvent(@NonNull KeyEvent event) {
+        if ((event.getKeyCode() == KeyEvent.KEYCODE_ENTER || event.getKeyCode() == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_UP){
+            if (mOk != null)mOk.callOnClick();
+            return true;
+        }
+        return super.dispatchKeyEvent(event);
+    }
+
     protected String getTitle(){
         return mTitle.toString();
     }
@@ -175,12 +186,6 @@ public abstract class AbstractPayDialog extends AbstractDialogMainActivity imple
 
     private void init_pay_code(){
         mPayCode = findViewById(R.id.pay_code);
-        mPayCode.setOnKeyListener((dialog, keyCode, event) -> {
-            if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_UP){
-                return true;
-            }
-            return false;
-        });
     }
 
     private void initKeyboardView(){

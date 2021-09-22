@@ -176,7 +176,7 @@
 
 -keep class com.wyc.cloudapp.dialog.serialScales.* { *; }
 -keep class com.wyc.cloudapp.dialog.barcodeScales.* { *; }
--keep class com.wyc.cloudapp.bean.*
+-keep class com.wyc.cloudapp.bean.*{ *; }
 
 -keep class butterknife.** { *; }
 -dontwarn butterknife.internal.**

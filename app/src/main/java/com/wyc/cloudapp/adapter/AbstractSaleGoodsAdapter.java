@@ -1350,7 +1350,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
                 jsonObject.put("discount", new_discount);
                 jsonObject.put("discount_amt", discount_amt);
                 jsonObject.put("price",new_price);
-                jsonObject.put("sale_amt",Utils.formatDouble(current_sale_amt,2));
+                jsonObject.put("sale_amt",Utils.formatDouble(current_sale_amt,4));
                 jsonObject.put("original_amt",original_amt);
 
                 //处理商品优惠明细

@@ -34,7 +34,11 @@ import com.wyc.cloudapp.decoration.GoodsInfoItemDecoration;
 import com.wyc.cloudapp.decoration.SuperItemDecoration;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.msg.ReloadMsg;
 import com.wyc.cloudapp.utils.Utils;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.Locale;
 
@@ -56,6 +60,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
 
         initExtra();
 
@@ -74,6 +79,12 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
 
             Logger.d("priceType:%d,taskCategory：%s",mPriceType, mGoodsCategory);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -173,6 +184,14 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
         mGoodsInfoAdapter.loadGoodsByCategoryId(id);
     }
 
+    @Subscribe
+    public void handlerMsg(ReloadMsg msg){
+        if (mGoodsCategoryAdapter != null){
+            final String id = Utils.getNullStringAsEmpty(mGoodsCategoryAdapter.getCategoryObj(),TreeListBaseAdapter.COL_ID);
+            if (!"".equals(id))loadGoods(id);
+        }
+    }
+
     static String getGoodsName(final JSONObject object){
         return Utils.getNullStringAsEmpty(object,"goods_title");
     }
@@ -214,6 +233,10 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
 
                 mContext.loadGoods(id);
             }
+        }
+
+        private JSONObject getCategoryObj(){
+            return CategoryObj;
         }
 
         @Override
@@ -425,6 +448,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
             }else{
                 sql = common_sql + " category_id in (select category_id from shop_category where path like '%" + id +"%')";
             }
+            sql = sql.concat(" order by updtime desc");
 
             mData = SQLiteHelper.getListToJson(sql,0,0,false,err);
             if (mData != null){

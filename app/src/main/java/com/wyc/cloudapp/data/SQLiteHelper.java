@@ -57,7 +57,7 @@ import static android.database.Cursor.FIELD_TYPE_NULL;
 import static android.database.Cursor.FIELD_TYPE_STRING;
 
 public final class SQLiteHelper extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 12;
+    public static final int DATABASE_VERSION = 13;
     private static volatile SQLiteDatabase mDb;
 
     private SQLiteHelper(Context context,final String databaseName){
@@ -189,6 +189,9 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
 
         if(checkColumnNotExists(db, "barcode_info", "goods_img")){
             modify_list.add("ALTER TABLE barcode_info ADD COLUMN goods_img INTEGER DEFAULT (-1)");
+        }
+        if(checkColumnNotExists(db, "barcode_info", "updtime")){
+            modify_list.add("ALTER TABLE barcode_info ADD COLUMN updtime INTEGER DEFAULT (0)");
         }
 
         try {

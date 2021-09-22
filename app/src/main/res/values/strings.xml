@@ -865,5 +865,5 @@
     <string name="enquiry_order">@string/applying_order</string>
     <string name="enquiry_store">要货门店：</string>
     <string name="target_store">目标门店：</string>
-    <string name="enquiry_header_sz">名称/条码------单位---------数量</string>
+    <string name="enquiry_header_sz">名称/条码---------单位-----数量</string>
 </resources>
