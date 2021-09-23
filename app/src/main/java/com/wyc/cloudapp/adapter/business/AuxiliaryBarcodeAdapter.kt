@@ -36,6 +36,8 @@ class AuxiliaryBarcodeAdapter(private val attachView: RecyclerView) : AbstractAc
         var mWatcher: TextWatcher? = null
         init {
             ButterKnife.bind(this, itemView)
+            if (android.hardware.Camera.getNumberOfCameras() == 0)
+                barcode.setCompoundDrawables(null,null,null,null)
         }
         @BindView(R.id.barcode)
         lateinit var barcode:EditText

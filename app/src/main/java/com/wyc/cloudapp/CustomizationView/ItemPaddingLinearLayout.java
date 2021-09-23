@@ -98,7 +98,7 @@ public class ItemPaddingLinearLayout extends LinearLayout {
     public ItemPaddingLinearLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         final TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.ItemPaddingLinearLayout, 0, 0);
-        init(typedArray.getDimension(0, 2),typedArray.getColor( 1,Color.TRANSPARENT));
+        init(typedArray.getDimension(0, 1),typedArray.getColor( 1,Color.TRANSPARENT));
      }
 
     @Override

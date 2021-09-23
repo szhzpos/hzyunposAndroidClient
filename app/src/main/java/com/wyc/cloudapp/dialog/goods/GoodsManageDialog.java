@@ -17,6 +17,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.SaleActivity;
+import com.wyc.cloudapp.activity.mobile.business.MobileEditGoodsInfoActivity;
+import com.wyc.cloudapp.activity.mobile.business.NormalEditGoodsInfoActivity;
 import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
 import com.wyc.cloudapp.adapter.GoodsManageViewAdapter;
 import com.wyc.cloudapp.adapter.TreeListAdapter;
@@ -52,12 +54,13 @@ public final class GoodsManageDialog extends AbstractDialogSaleActivity {
         if (btn != null)
             btn.setOnClickListener(v -> {
                 if (AddGoodsInfoDialog.verifyGoodsAddPermissions(mContext)){
-                    final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(mContext);
+                    NormalEditGoodsInfoActivity.start(mContext,null);
+                    /*final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(mContext);
                     addGoodsInfoDialog.setCurrentCategory(mCurrentCategory);
                     addGoodsInfoDialog.setFinishListener(barcode -> {
                         addGoodsInfoDialog.dismiss();
                     });
-                    addGoodsInfoDialog.show();
+                    addGoodsInfoDialog.show();*/
                 }
             });
     }

@@ -13,7 +13,8 @@ import butterknife.ButterKnife
 import com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.activity.MainActivity
-import com.wyc.cloudapp.activity.mobile.business.MobileEditGoodInfoActivity
+import com.wyc.cloudapp.activity.mobile.business.EditGoodsInfoBaseActivity
+import com.wyc.cloudapp.activity.mobile.business.MobileEditGoodsInfoActivity
 import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.bean.MultiUnitInfo
 import com.wyc.cloudapp.dialog.MyDialog
@@ -42,6 +43,9 @@ class MultiUnitAdapter(private val attachView:RecyclerView): AbstractActionAdapt
         init {
             ButterKnife.bind(this,itemView)
             barcode.addTextChangedListener(ChangeText(barcode,this))
+            if (android.hardware.Camera.getNumberOfCameras() == 0)
+                barcode.setCompoundDrawables(null,null,null,null)
+
             unit.addTextChangedListener(ChangeText(unit,this))
             conversion.addTextChangedListener(ChangeText(conversion,this))
             retail_price.addTextChangedListener(ChangeText(retail_price,this))
@@ -86,9 +90,7 @@ class MultiUnitAdapter(private val attachView:RecyclerView): AbstractActionAdapt
         holder.barcode.setText(data.barcode)
         holder.barcode.tag = data
 
-        if (!holder.unit.hasOnClickListeners()){
-            holder.unit.setOnClickListener(click)
-        }
+        holder.unit.setOnTouchListener(touch)
         holder.unit.setText(data.unit_name)
 
         holder.conversion.setText(String.format("%.2f",data.conversion))
@@ -117,14 +119,22 @@ class MultiUnitAdapter(private val attachView:RecyclerView): AbstractActionAdapt
                 val dx: Float = motionEvent.x
                 val w: Int = it.width
                 if (dx > w - it.compoundPaddingRight) {
-                    (attachView.context as? MainActivity)?.let {view->
-                        FindFragment.beginScan(view, object : FindFragment.Callback{
-                            override fun scan(code: String) {
-                                it.setText(code)
+                        when(it.id){
+                            R.id.barcode ->{
+                                (attachView.context as? MainActivity)?.let {c->
+                                    FindFragment.beginScan(c, object : FindFragment.Callback{
+                                        override fun scan(code: String) {
+                                            it.setText(code)
+                                        }
+                                    })
+                                    return@OnTouchListener true
+                                }
                             }
-                        })
-                        return@OnTouchListener true
-                    }
+                            R.id.unit ->{
+                                (attachView.context as? EditGoodsInfoBaseActivity)?.showUnit(v as TextView?)
+                                return@OnTouchListener true
+                            }
+                        }
                 }
             }
         }
@@ -137,10 +147,6 @@ class MultiUnitAdapter(private val attachView:RecyclerView): AbstractActionAdapt
             it.setCentreLabel("")
         }
         (holder.barcode.parent as? View)?.visibility = View.VISIBLE
-    }
-
-    private val click = View.OnClickListener { v ->
-        (attachView.context as? MobileEditGoodInfoActivity)?.showUnit(v as TextView?)
     }
 
     override fun getViewHolder(itemView: View): MyViewHolder {

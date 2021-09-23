@@ -89,7 +89,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
 
     @Override
     protected void add() {
-        MobileEditGoodInfoActivity.start(this,null);
+        MobileEditGoodsInfoActivity.start(this,null);
     }
 
     @Override
@@ -311,7 +311,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
         @Override
         public void onClick(View v) {
             if (v.getId() == R.id.modify_){
-                MobileEditGoodInfoActivity.start(mContext,Utils.getViewTagValue(v,""));
+                MobileEditGoodsInfoActivity.start(mContext,Utils.getViewTagValue(v,""));
             }else {
                 final TextView tv = v.findViewById(R.id.barcode_id);
                 if (null != tv && onSelectFinish != null)onSelectFinish.onFinish(tv.getText().toString());

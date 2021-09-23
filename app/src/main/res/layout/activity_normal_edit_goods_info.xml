@@ -1,0 +1,823 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:baselineAligned="false"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/basic"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingStart="@dimen/margin_5"
+        android:paddingEnd="@dimen/margin_5"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/img_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/goods_img_sz"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintBottom_toBottomOf="@id/goods_img"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/goods_img" />
+
+        <ImageView
+            android:id="@+id/goods_img"
+            android:layout_width="@dimen/size_88"
+            android:layout_height="@dimen/size_88"
+            android:layout_marginTop="@dimen/margin_8"
+            android:contentDescription="@string/space_sz"
+            android:scaleType="fitXY"
+            android:src="@drawable/nodish"
+            app:layout_constraintStart_toEndOf="@+id/img_label"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/add_img_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/margin_8"
+            android:layout_weight="1"
+            android:background="@drawable/button_blue"
+            android:text="@string/add_img"
+            android:textColor="@color/blue_white"
+            app:layout_constraintBottom_toBottomOf="@id/goods_img"
+            app:layout_constraintStart_toEndOf="@id/goods_img"
+            app:layout_constraintTop_toTopOf="@id/goods_img" />
+
+        <Button
+            android:id="@+id/clear_img_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/margin_8"
+            android:layout_weight="1"
+            android:background="@drawable/button_blue"
+            android:text="@string/clear_img"
+            android:textColor="@color/blue_white"
+            app:layout_constraintBottom_toBottomOf="@id/goods_img"
+            app:layout_constraintStart_toEndOf="@id/add_img_btn"
+            app:layout_constraintTop_toTopOf="@id/goods_img" />
+
+        <TextView
+            android:id="@+id/attr_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/a_goods_attr_sz"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintBottom_toBottomOf="@id/a_goods_attr_et"
+            app:layout_constraintEnd_toEndOf="@id/img_label"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/a_goods_attr_et" />
+
+        <EditText
+            android:id="@+id/a_goods_attr_et"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/add_goods_item_h"
+            android:layout_marginTop="@dimen/margin_5"
+            android:layout_marginEnd="2dp"
+            android:background="@drawable/round_border_sub_gray"
+            android:drawableEnd="@drawable/content"
+            android:ems="12"
+            android:focusable="false"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:lines="1"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:selectAllOnFocus="true"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toStartOf="@+id/a_metering_et"
+            app:layout_constraintHorizontal_weight="2"
+            app:layout_constraintStart_toEndOf="@id/attr_label"
+            app:layout_constraintTop_toBottomOf="@id/goods_img" />
+
+        <EditText
+            android:id="@+id/a_metering_et"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/add_goods_item_h"
+            android:layout_marginStart="@dimen/margin_2"
+            android:background="@drawable/round_border_sub_gray"
+            android:drawableEnd="@drawable/content"
+            android:ems="12"
+            android:hint="@string/space_sz"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:selectAllOnFocus="true"
+            android:textColor="@color/text_color"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@+id/cur_price_label"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/a_goods_attr_et"
+            app:layout_constraintTop_toTopOf="@id/a_goods_attr_et" />
+
+        <TextView
+            android:id="@+id/cur_price_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/cur_price"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintBottom_toBottomOf="@id/cur"
+            app:layout_constraintEnd_toEndOf="@id/ly_ratio_label"
+            app:layout_constraintStart_toStartOf="@id/ly_ratio_label"
+            app:layout_constraintTop_toTopOf="@id/cur" />
+
+        <RadioGroup
+            android:id="@+id/cur"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/add_goods_item_h"
+            android:background="@drawable/round_border_sub_gray"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/cur_price_label"
+            app:layout_constraintTop_toTopOf="@id/a_goods_attr_et">
+
+            <RadioButton
+                android:id="@+id/n"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:checked="true"
+                android:text="@string/no" />
+
+            <RadioButton
+                android:id="@+id/y"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:text="@string/yes" />
+
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/category_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/a_category_sz"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintBottom_toBottomOf="@id/a_category_et"
+            app:layout_constraintEnd_toStartOf="@+id/a_category_et"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/a_category_et" />
+
+        <TextView
+            android:id="@+id/a_category_et"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/add_goods_item_h"
+            android:layout_marginTop="@dimen/margin_5"
+            android:background="@drawable/round_border_sub_gray"
+            android:drawableEnd="@drawable/content"
+            android:gravity="center_vertical"
+            android:importantForAutofill="no"
+            android:lines="1"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toStartOf="@+id/brand_label"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@+id/category_label"
+            app:layout_constraintTop_toBottomOf="@id/cur" />
+
+        <TextView
+            android:id="@+id/brand_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/brand_sz"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toEndOf="@id/ly_ratio_label"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@id/ly_ratio_label"
+            app:layout_constraintTop_toTopOf="@id/category_label" />
+
+        <TextView
+            android:id="@+id/brand_et"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/add_goods_item_h"
+            android:background="@drawable/round_border_sub_gray"
+            android:drawableEnd="@drawable/content"
+            android:gravity="center_vertical"
+            android:importantForAutofill="no"
+            android:lines="1"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@+id/brand_label"
+            app:layout_constraintTop_toTopOf="@id/a_category_et" />
+
+        <TextView
+            android:id="@+id/item_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/a_item_no_sz"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintBottom_toBottomOf="@id/a_item_no_et"
+            app:layout_constraintEnd_toEndOf="@id/img_label"
+            app:layout_constraintTop_toTopOf="@id/a_item_no_et" />
+
+        <EditText
+            android:id="@+id/a_item_no_et"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/add_goods_item_h"
+            android:layout_marginTop="@dimen/margin_5"
+            android:background="@drawable/round_border_sub_gray"
+            android:ems="10"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:lines="1"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:selectAllOnFocus="true"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toStartOf="@+id/barcode_label"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/item_label"
+            app:layout_constraintTop_toBottomOf="@id/a_category_et" />
+
+        <TextView
+            android:id="@+id/barcode_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/a_barcode_sz"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintBottom_toBottomOf="@id/a_barcode_et"
+            app:layout_constraintEnd_toEndOf="@id/brand_label"
+            app:layout_constraintStart_toEndOf="@id/a_item_no_et"
+            app:layout_constraintStart_toStartOf="@id/brand_label"
+            app:layout_constraintTop_toTopOf="@id/a_barcode_et" />
+
+        <EditText
+            android:id="@+id/a_barcode_et"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/add_goods_item_h"
+            android:background="@drawable/round_border_sub_gray"
+            android:ems="12"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:lines="1"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:selectAllOnFocus="true"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/barcode_label"
+            app:layout_constraintTop_toTopOf="@id/a_item_no_et" />
+
+        <TextView
+            android:id="@+id/name_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/a_g_name_sz"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintBottom_toBottomOf="@id/a_name_et"
+            app:layout_constraintEnd_toEndOf="@id/img_label"
+            app:layout_constraintTop_toTopOf="@id/a_name_et" />
+
+        <EditText
+            android:id="@+id/a_name_et"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/add_goods_item_h"
+            android:layout_marginTop="@dimen/margin_5"
+            android:background="@drawable/round_border_sub_gray"
+            android:ems="12"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            android:lines="1"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:selectAllOnFocus="true"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/name_label"
+            app:layout_constraintTop_toBottomOf="@id/a_barcode_et" />
+
+        <TextView
+            android:id="@+id/unit_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/a_unit_sz"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintBottom_toBottomOf="@id/a_unit_et"
+            app:layout_constraintEnd_toEndOf="@id/img_label"
+            app:layout_constraintTop_toTopOf="@id/a_unit_et" />
+
+        <TextView
+            android:id="@+id/a_unit_et"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/add_goods_item_h"
+            android:layout_marginTop="@dimen/margin_5"
+            android:layout_weight="1"
+            android:background="@drawable/round_border_sub_gray"
+            android:drawableEnd="@drawable/content"
+            android:gravity="center_vertical"
+            android:lines="1"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toStartOf="@+id/place_label"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/unit_label"
+            app:layout_constraintTop_toBottomOf="@id/a_name_et" />
+
+        <TextView
+            android:id="@+id/place_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/pro_place_sz"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintBottom_toBottomOf="@id/place_et"
+            app:layout_constraintEnd_toEndOf="@id/ly_ratio_label"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@id/ly_ratio_label"
+            app:layout_constraintTop_toTopOf="@id/place_et" />
+
+        <EditText
+            android:id="@+id/place_et"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/add_goods_item_h"
+            android:layout_weight="1"
+            android:background="@drawable/round_border_sub_gray"
+            android:ems="10"
+            android:importantForAutofill="no"
+            android:inputType="textPersonName"
+            android:lines="1"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/place_label"
+            app:layout_constraintTop_toTopOf="@id/a_unit_et" />
+
+        <EditText
+            android:id="@+id/spec_tv"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/add_goods_item_h"
+            android:layout_marginTop="@dimen/margin_5"
+            android:background="@drawable/round_border_sub_gray"
+            android:gravity="center_vertical"
+            android:importantForAutofill="no"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:selectAllOnFocus="true"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/spec_label"
+            app:layout_constraintTop_toBottomOf="@id/a_unit_et" />
+
+        <TextView
+            android:id="@+id/spec_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/speci_sz"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintBottom_toBottomOf="@id/spec_tv"
+            app:layout_constraintEnd_toEndOf="@id/ly_ratio_label"
+            app:layout_constraintStart_toStartOf="@id/ly_ratio_label"
+            app:layout_constraintTop_toTopOf="@id/spec_tv" />
+
+        <TextView
+            android:id="@+id/sup_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/a_supplier_sz"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintBottom_toBottomOf="@+id/a_supplier_et"
+            app:layout_constraintEnd_toEndOf="@id/img_label"
+            app:layout_constraintTop_toTopOf="@id/a_supplier_et" />
+
+        <TextView
+            android:id="@+id/a_supplier_et"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/add_goods_item_h"
+            android:background="@drawable/round_border_sub_gray"
+            android:drawableEnd="@drawable/content"
+            android:gravity="center_vertical"
+            android:importantForAutofill="no"
+            android:lines="1"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:selectAllOnFocus="true"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toStartOf="@+id/spec_label"
+            app:layout_constraintStart_toEndOf="@id/sup_label"
+            app:layout_constraintTop_toTopOf="@id/spec_tv" />
+
+        <TextView
+            android:id="@+id/ly_ratio_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingStart="@dimen/margin_5"
+            android:text="@string/ly_ratio_sz"
+            android:textAlignment="textEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@id/ly_ratio_tv"
+            app:layout_constraintEnd_toStartOf="@+id/ly_ratio_tv"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/hz_method_tv"
+            app:layout_constraintTop_toTopOf="@id/ly_ratio_tv" />
+
+        <EditText
+            android:id="@+id/ly_ratio_tv"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/add_goods_item_h"
+            android:background="@drawable/round_border_sub_gray"
+            android:gravity="center_vertical"
+            android:hint="@string/space_sz"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:lines="1"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:selectAllOnFocus="true"
+            android:text="@string/zero_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/ly_ratio_label"
+            app:layout_constraintTop_toTopOf="@id/hz_method_tv" />
+
+        <TextView
+            android:id="@+id/method_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/hz_method_sz"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintBottom_toBottomOf="@id/hz_method_tv"
+            app:layout_constraintEnd_toEndOf="@id/img_label"
+            app:layout_constraintTop_toTopOf="@id/hz_method_tv" />
+
+        <EditText
+            android:id="@+id/hz_method_tv"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/add_goods_item_h"
+            android:layout_marginTop="@dimen/margin_5"
+            android:background="@drawable/round_border_sub_gray"
+            android:enabled="false"
+            android:importantForAutofill="no"
+            android:inputType="numberDecimal"
+            android:lines="1"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:selectAllOnFocus="true"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toStartOf="@+id/ly_ratio_label"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/method_label"
+            app:layout_constraintTop_toBottomOf="@id/a_supplier_et" />
+
+        <TextView
+            android:id="@+id/pur_price_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/a_purchase_price_sz"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintBottom_toBottomOf="@+id/a_pur_price_et"
+            app:layout_constraintEnd_toEndOf="@id/img_label"
+            app:layout_constraintTop_toTopOf="@id/a_pur_price_et" />
+
+        <EditText
+            android:id="@+id/a_pur_price_et"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/add_goods_item_h"
+            android:layout_marginTop="@dimen/margin_5"
+            android:layout_weight="1"
+            android:background="@drawable/round_border_sub_gray"
+            android:hint="@string/space_sz"
+            android:importantForAutofill="no"
+            android:inputType="numberDecimal"
+            android:lines="1"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:selectAllOnFocus="true"
+            android:text="@string/zero_p_z_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toEndOf="@id/hz_method_tv"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/pur_price_label"
+            app:layout_constraintTop_toBottomOf="@id/hz_method_tv" />
+
+        <TextView
+            android:id="@+id/pf_price_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/pf_price"
+            android:textAlignment="textEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintBottom_toBottomOf="@id/pf_price_et"
+            app:layout_constraintEnd_toEndOf="@id/ly_ratio_label"
+
+
+            app:layout_constraintStart_toStartOf="@id/ly_ratio_label"
+            app:layout_constraintTop_toTopOf="@id/pf_price_et" />
+
+        <EditText
+            android:id="@+id/pf_price_et"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/add_goods_item_h"
+            android:layout_weight="1"
+            android:background="@drawable/round_border_sub_gray"
+            android:gravity="center_vertical"
+            android:hint="@string/space_sz"
+            android:importantForAutofill="no"
+            android:inputType="none|numberDecimal"
+            android:lines="1"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:selectAllOnFocus="true"
+            android:text="@string/zero_p_z_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/pf_price_label"
+            app:layout_constraintTop_toTopOf="@id/a_pur_price_et" />
+
+        <TextView
+            android:id="@+id/retail_price_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/a_retail_price"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintBottom_toBottomOf="@id/a_retail_price_et"
+            app:layout_constraintEnd_toEndOf="@id/img_label"
+            app:layout_constraintTop_toTopOf="@id/a_retail_price_et" />
+
+        <EditText
+            android:id="@+id/a_retail_price_et"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/add_goods_item_h"
+            android:layout_marginTop="@dimen/margin_5"
+            android:background="@drawable/round_border_sub_gray"
+            android:importantForAutofill="no"
+            android:inputType="numberDecimal"
+            android:lines="1"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:selectAllOnFocus="true"
+            android:text="@string/zero_p_z_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toStartOf="@+id/vip_price_label"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@+id/retail_price_label"
+            app:layout_constraintTop_toBottomOf="@id/a_pur_price_et" />
+
+        <TextView
+            android:id="@+id/vip_price_label"
+            android:layout_width="@dimen/width_78"
+            android:layout_height="wrap_content"
+            android:text="@string/a_vip_price_sz"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintBottom_toBottomOf="@id/a_vip_price_et"
+            app:layout_constraintEnd_toStartOf="@+id/a_vip_price_et"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/a_retail_price_et"
+            app:layout_constraintTop_toTopOf="@id/a_vip_price_et" />
+
+        <EditText
+            android:id="@+id/a_vip_price_et"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/add_goods_item_h"
+            android:background="@drawable/round_border_sub_gray"
+            android:importantForAutofill="no"
+            android:inputType="numberDecimal"
+            android:lines="1"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
+            android:selectAllOnFocus="true"
+            android:text="@string/zero_p_z_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@+id/vip_price_label"
+            app:layout_constraintTop_toTopOf="@id/a_retail_price_et" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/auxiliary"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/margin_8"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_35"
+            android:background="@color/appColor"
+            android:orientation="horizontal"
+            app:PaddingColor="@color/gray_subtransparent">
+
+            <TextView
+                android:layout_width="@dimen/width_50"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/action"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:layout_width="@dimen/width_50"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/sequence"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/auxiliary_barcode"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_16" />
+
+        </com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/auxiliary_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <HorizontalScrollView
+        android:id="@+id/unit_price_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/margin_5"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/height_35"
+                android:background="@color/appColor"
+                android:orientation="horizontal"
+                app:PaddingColor="@color/gray_subtransparent">
+
+                <TextView
+                    android:layout_width="@dimen/width_50"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/action"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_16" />
+
+                <TextView
+                    android:layout_width="@dimen/width_50"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/sequence"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_16" />
+
+                <TextView
+                    android:layout_width="168dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/barcode_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_16" />
+
+                <TextView
+                    android:layout_width="@dimen/width_88"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/marketing_unit"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_16" />
+
+                <TextView
+                    android:layout_width="@dimen/width_68"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/conversion_ratio"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_16" />
+
+                <TextView
+                    android:layout_width="@dimen/width_68"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/retail_price_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_16" />
+
+                <TextView
+                    android:layout_width="@dimen/width_68"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/manage_vip_price_sz"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_16" />
+
+                <TextView
+                    android:layout_width="@dimen/width_68"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/pf_price_not_colon"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_16" />
+
+                <TextView
+                    android:layout_width="@dimen/width_68"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="@string/shipping_price"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/font_size_16" />
+
+            </com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/unit_price_list"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+</merge>

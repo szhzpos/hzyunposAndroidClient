@@ -28,6 +28,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <uses-feature android:name="android.hardware.usb.host" />
+    <uses-feature android:name="android.hardware.camera"/>
 
     <application
         android:name=".application.CustomApplication"
@@ -48,6 +49,8 @@
             android:name=".activity.mobile.cashierDesk.GiftCardOrderQueryActivity"
             android:windowSoftInputMode="adjustResize|stateUnchanged" />
         <activity android:name=".activity.mobile.cashierDesk.QueryGiftCardInfoActivity" />
+        <activity android:name=".activity.mobile.business.NormalEditGoodsInfoActivity"
+            android:theme="@style/notFullActivity"/>
         <activity
             android:name=".activity.mobile.cashierDesk.GiftCardPayActivity"
             android:theme="@style/notFullActivity" />
@@ -63,7 +66,7 @@
         <activity android:name=".activity.mobile.cashierDesk.TimeCardSaleActivity" />
         <activity android:name=".activity.mobile.cashierDesk.SelectTimeCardActivity" />
         <activity android:name=".activity.mobile.business.EditVipInfoActivity" />
-        <activity android:name=".activity.mobile.business.MobileEditGoodInfoActivity" />
+        <activity android:name=".activity.mobile.business.MobileEditGoodsInfoActivity" />
         <activity android:name=".activity.mobile.business.MobileVipCategoryInfoActivity" />
         <activity android:name=".activity.mobile.business.EditConsumerActivity" />
         <activity

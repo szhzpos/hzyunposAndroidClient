@@ -2,7 +2,6 @@ package com.wyc.cloudapp.activity.mobile.business;
 
 import android.animation.Animator;
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,7 +14,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
@@ -80,7 +79,19 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 import static com.wyc.cloudapp.constants.ScanCallbackCode.CODE_REQUEST_CODE;
 
-public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
+/**
+ * @ProjectName: AndroidClient
+ * @Package: com.wyc.cloudapp.activity.mobile.business
+ * @ClassName: EditGoodInfoBaseActivity
+ * @Description: 商品编辑基类
+ * @Author: wyc
+ * @CreateDate: 2021-09-23 10:30
+ * @UpdateUser: 更新者
+ * @UpdateDate: 2021-09-23 10:30
+ * @UpdateRemark: 更新说明
+ * @Version: 1.0
+ */
+abstract public class EditGoodsInfoBaseActivity extends AbstractEditArchiveActivity {
     private static final String DEFAULT_SUPPLIER_CODE = "0000";
     private static final int REQUEST_CAPTURE_IMG = 100;
     private static final int REQ_CROP = 108;
@@ -167,7 +178,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         if (null != auxiliary_list){
             auxiliary_list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
             auxiliary_list.setAdapter(mAuxiliaryBarcodeAdapter = new AuxiliaryBarcodeAdapter(auxiliary_list));
-            auxiliary_list.addItemDecoration(new LinearItemDecoration(this.getColor(R.color.gray_subtransparent),2));
+            auxiliary_list.addItemDecoration(new LinearItemDecoration(this.getColor(R.color.gray_subtransparent),1));
 
             CustomApplication.execute(()-> mAuxiliaryBarcodeAdapter.setDataForList(getAuxiliaryBarcodeById()));
         }
@@ -181,7 +192,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         if (null != unit_price_list){
             unit_price_list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
             unit_price_list.setAdapter(mMultiUnitAdapter = new MultiUnitAdapter(unit_price_list));
-            unit_price_list.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+            unit_price_list.addItemDecoration(new LinearItemDecoration(this.getColor(R.color.gray_subtransparent),1));
 
             CustomApplication.execute(()-> mMultiUnitAdapter.setDataForList(getMultiUnit()));
         }
@@ -332,7 +343,7 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         final TakePhotoPopWin takePhotoPopWin = new TakePhotoPopWin(this, v -> {
             int id = v.getId();
             if (id == R.id.btn_take_photo){
-                XXPermissions.with(MobileEditGoodInfoActivity.this)
+                XXPermissions.with(this)
                         .permission(Permission.CAMERA)
                         .request(new OnPermissionCallback() {
                             @Override
@@ -941,11 +952,6 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
     }
 
     @Override
-    protected int getLayout() {
-        return R.layout.activity_mobile_edit_good_info;
-    }
-
-    @Override
     protected void sure() {
         addGoods(generateParameter(),false);
     }
@@ -1258,12 +1264,5 @@ public class MobileEditGoodInfoActivity extends AbstractEditArchiveActivity {
         pf_price_et.setText(goods.getString("trade_price"));
         mRetailPriceEt.setText(goods.getString("retail_price"));
         mVipPriceEt.setText(goods.getString("yh_price"));
-    }
-
-    public static void start(Context context,final String barcode_id){
-        /*barcode_id 为空时 ，以新增模式打开*/
-        Intent intent = new Intent(context,MobileEditGoodInfoActivity.class);
-        intent.putExtra("barcodeId",barcode_id);
-        context.startActivity(intent);
     }
 }

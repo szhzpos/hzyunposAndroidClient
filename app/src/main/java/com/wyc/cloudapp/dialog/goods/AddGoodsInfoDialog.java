@@ -681,29 +681,24 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
         data.put("current_goods", getCurPriceFlag());
         data.put("cash_flow_mode",Utils.getViewTagValue(hz_method_tv,""));
         data.put("cash_flow_ratio",ly_ratio_tv.getText().toString());
-        data.put("unit",unit);
+        data.put("unit_name",unit);
 
-        final JSONArray barcode_info = new JSONArray();
-        final JSONObject goods = new JSONObject();
-        goods.put("barcode",barcode);
-        goods.put("mnemonic_code","");
-        goods.put("goods_spec_code","");
-        goods.put("metering_id",getMetering());
-        goods.put("retail_price",mRetailPriceEt.getText().toString());
-        goods.put("sys_unit",unit);
-        goods.put("conversion",1);
-        goods.put("yh_mode",0);
-        goods.put("yh_price",mVipPriceEt.getText().toString());
-        goods.put("cost_price",0);
-        goods.put("ps_price",0);
-        goods.put("goods_id",0);
-        goods.put("barcode_id",0);
-        goods.put("del_status",1);
-
-        barcode_info.add(goods);
+        data.put("barcode",barcode);
+        data.put("mnemonic_code","");
+        data.put("goods_spec_code","");
+        data.put("metering_id",getMetering());
+        data.put("retail_price",mRetailPriceEt.getText().toString());
+        data.put("sys_unit",unit);
+        data.put("conversion",1);
+        data.put("yh_mode",0);
+        data.put("yh_price",mVipPriceEt.getText().toString());
+        data.put("cost_price",0);
+        data.put("ps_price",0);
+        data.put("goods_id",0);
+        data.put("barcode_id",0);
+        data.put("del_status",1);
 
         data.put("appid",activity.getAppId());
-        data.put("goods",barcode_info);
 
         return data;
     }

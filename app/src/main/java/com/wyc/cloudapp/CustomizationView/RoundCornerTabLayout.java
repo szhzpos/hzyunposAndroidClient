@@ -2,6 +2,8 @@ package com.wyc.cloudapp.CustomizationView;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
@@ -24,11 +26,12 @@ public final class RoundCornerTabLayout extends TabLayout {
         this(context,null);
     }
 
+    @SuppressLint("ResourceType")
     public RoundCornerTabLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        mColor = getResources().getColor(R.color.blue,null);
-        mBorderWidth = Utils.dpToPx(CustomApplication.self(),1);
+        final TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.RoundCornerTabLayout, 0, 0);
+        mColor = typedArray.getColor( 1,getResources().getColor(R.color.blue,context.getTheme()));
+        mBorderWidth = (int) typedArray.getDimension(0,1);
 
         try {
             Field field = getClass().getSuperclass().getDeclaredField("slidingTabIndicator");
@@ -57,7 +60,7 @@ public final class RoundCornerTabLayout extends TabLayout {
             mMiddle = DrawableUtil.createDrawable(new float[]{0,0,0,0,0,0,0,0},mColor, mBorderWidth,mColor);
 
             setForeground(DrawableUtil.createDrawable(new float[]{corner_size,corner_size,corner_size,corner_size,corner_size,corner_size,corner_size,corner_size}
-                    ,getResources().getColor(R.color.transparent,null), mBorderWidth,mColor));
+                    ,getResources().getColor(R.color.transparent,getContext().getTheme()), mBorderWidth,mColor));
 
             //默认左边
             setSelectedTabIndicator(mLeft);

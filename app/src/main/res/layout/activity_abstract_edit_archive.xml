@@ -44,8 +44,9 @@
         android:layout_height="@dimen/height_35"
         android:layout_marginStart="@dimen/size_45"
         android:layout_marginEnd="@dimen/size_45"
-        android:visibility="gone"
-        app:tabTextAppearance="@style/TabText_14" />
+        android:visibility="visible"
+        app:tabTextAppearance="@style/TabText_14"
+        app:tabTextColor="@color/text_color" />
 
     <ScrollView
         android:layout_width="match_parent"

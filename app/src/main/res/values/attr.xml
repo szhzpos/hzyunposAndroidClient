@@ -21,4 +21,8 @@
     <declare-styleable name="SwipeLayout">
         <attr name="layout" format="reference" />
     </declare-styleable>
+    <declare-styleable name="RoundCornerTabLayout">
+        <attr name="borderWidth" format="dimension"/>
+        <attr name="color" format="color"/>
+    </declare-styleable>
 </resources>

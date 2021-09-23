@@ -20,6 +20,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.BaseWindowActivity;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.PayDetailViewAdapter;
 import com.wyc.cloudapp.adapter.PayMethodAdapterForObj;
@@ -41,7 +42,7 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class CardPayBaseActivity<T extends ICardPay<?>> extends AbstractMobileActivity {
+public class CardPayBaseActivity<T extends ICardPay<?>> extends BaseWindowActivity {
     public static final int ONCE_CARD_REQUEST_PAY = 0x000000dd;
     protected static final String ORDER_INFO = "o";
 
@@ -70,16 +71,6 @@ public class CardPayBaseActivity<T extends ICardPay<?>> extends AbstractMobileAc
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        WindowManager.LayoutParams attributes = getWindow().getAttributes();
-        attributes.dimAmount = 0.5f;
-        attributes.x = 0;
-        attributes.y = 0;
-        attributes.width = WindowManager.LayoutParams.MATCH_PARENT;
-        attributes.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        getWindow().setAttributes(attributes);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-
         ButterKnife.bind(this);
 
         mOrder = getIntent().getParcelableExtra(ORDER_INFO);
