@@ -314,12 +314,8 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
         Uri data ;
         final Intent intent= new Intent(Intent.ACTION_VIEW);
         final File file =  new File(filepath);
-
-        // 判断版本大于等于7.0
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            // "com.wyc.cloudapp.fileprovider"即是在清单文件中配置的authorities
-            data = FileProvider.getUriForFile(this, "com.wyc.cloudapp.fileprovider",file);
-            // 给目标应用一个临时授权
+            data = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".FileProvider",file);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         } else {
             data = Uri.fromFile(file);

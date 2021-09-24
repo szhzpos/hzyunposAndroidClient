@@ -17,6 +17,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.bean.ApkVersion;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.constants.MessageID;
 import com.wyc.cloudapp.utils.Utils;
@@ -25,6 +26,9 @@ import com.wyc.cloudapp.utils.http.HttpUtils;
 
 import java.io.File;
 import java.net.HttpURLConnection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 
 public class AppUpdateService extends Service {
@@ -87,19 +91,17 @@ public class AppUpdateService extends Service {
                             update_error(info_json.getString("info"));
                             break;
                         case "y":
-                            final JSONArray file_list = Utils.getNullObjectAsEmptyJsonArray(info_json,"file_list");
-                            if (file_list.isEmpty()){
+                            final List<ApkVersion> apkVersions = JSONArray.parseArray(Utils.getNullOrEmptyStringAsDefault(info_json,"file_list","[]"),ApkVersion.class);
+                            if (apkVersions == null || apkVersions.isEmpty()){
                                 check_ver_intent.putExtra("status",SUCCESS_STATUS);
                                 sendBroadcast(check_ver_intent);
                             }else {
-                                final JSONObject file_info = file_list.getJSONObject(0);//可能抛出java.lang.IndexOutOfBoundsException异常
-                                final String name = Utils.getNullStringAsEmpty(file_info,"name"),dwn_url = Utils.getNullStringAsEmpty(file_info,"dwn_url");
-                                final int file_size = Utils.getNotKeyAsNumberDefault(file_info,"size",0);
-                                int v_index = name.indexOf("v"),last_index = name.lastIndexOf(".");
-                                if (v_index != -1 && last_index != -1){
-                                    final String online_ver = name.substring(v_index + 1,last_index);
-                                    Logger.d("file_name:%s,online_ver:%s",name,online_ver);
+                                Collections.sort(apkVersions);
 
+                                final ApkVersion file_info = apkVersions.get(0);
+                                final String online_ver = file_info.getVersion(),name = file_info.getName();
+                                if (!online_ver.isEmpty()){
+                                    Logger.d("file_name:%s,online_ver:%s",name,online_ver);
                                     try {
                                         final PackageInfo packageInfo = getPackageManager().getPackageInfo("com.wyc.cloudapp",0);
                                         long version_code = -1;
@@ -113,7 +115,7 @@ public class AppUpdateService extends Service {
                                         if (packageInfo.versionName.compareTo(online_ver) < 0){
                                             object.clear();
                                             object.put("appid",appid);
-                                            downloadApkFile(httpRequest,dwn_url,HttpRequest.generate_request_parm(object,appSecret),file_size);
+                                            downloadApkFile(httpRequest,file_info.getDwn_url(),HttpRequest.generate_request_parm(object,appSecret),file_info.getSize());
                                         }else {
                                             check_ver_intent.putExtra("status",SUCCESS_STATUS);
                                             sendBroadcast(check_ver_intent);
