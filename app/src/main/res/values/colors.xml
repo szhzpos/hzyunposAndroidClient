@@ -4,7 +4,7 @@
     <color name="colorPrimaryDark">@color/appColor</color>
     <color name="colorAccent">@color/appColor</color>
     <color name="appColor">@color/lightBlue</color><!--3F3F55-->
-    <color name="lightBlue">#53A3F3</color>
+    <color name="lightBlue">#67B0F8</color>
     <color name="blue">#FF0080ff</color>
     <color name="white">#FFFFFFFF</color>
     <color name="pink">#FFF88C9F</color>
@@ -28,7 +28,7 @@
     <color name="table_header_color">@color/lightBlue</color>
     <color name="listSelected">#731883F7</color>
     <color name="abnormal_status_color">@color/orange_1</color>
-    <color name="activity_title_color">#FF53A3F3</color>
+    <color name="activity_title_color">@color/appColor<!--#FF53A3F3--></color>
     <color name="mobile_navi_color">#FFE6E2E2</color>
     <color name="light_blue_600">#FF039BE5</color>
     <color name="light_blue_900">#FF01579B</color>
@@ -41,4 +41,5 @@
     <color name="light_blue_400">#FF29B6F6</color>
     <color name="gray_400">#FFBDBDBD</color>
     <color name="gray_600">#FF757575</color>
+    <color name="black_trans">#1A000000</color>
 </resources>

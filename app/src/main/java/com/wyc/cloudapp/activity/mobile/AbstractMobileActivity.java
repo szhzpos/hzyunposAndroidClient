@@ -1,13 +1,15 @@
 package com.wyc.cloudapp.activity.mobile;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.OverScroller;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -18,16 +20,104 @@ import com.wyc.cloudapp.activity.MainActivity;
 public abstract class AbstractMobileActivity extends MainActivity {
     public static final String TITLE_KEY = "TL";
     private TextView mLeft,mMiddle,mRight;
+    private View mRoot;
+    private float mTouchX = -1;
+    private OverScroller mScroller;
+    private int mStatusBarAlpha;
     @Override
     @CallSuper
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN) ;//显示状态栏
         setContentLayout();
-
+        initWindow();
         initTitle();
         initTitleText();
         initTitleClickListener();
+    }
+
+    @Override
+    protected void onDestroy() {
+        stopScroll();
+        super.onDestroy();
+    }
+
+    private void initWindow(){
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN) ;//显示状态栏
+        mRoot = window.getDecorView();
+        mRoot.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                updateStatusBarColor(Math.abs((float)scrollX / (float)v.getWidth()));
+            }
+        });
+        mStatusBarAlpha = ((window.getStatusBarColor() >> 24) & 0xff);
+    }
+
+    private void updateStatusBarColor(float ratio){
+        Window window = getWindow();
+        int color = window.getStatusBarColor();
+        int a = mStatusBarAlpha;
+        a = (int) ((float)a * (1 - Math.sin( 2 * Math.PI * ratio)));
+        color &= 0x00ffffff;
+        color |= ((a << 24) & 0xff000000);
+        window.setStatusBarColor(color);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        if (hasSlide()){
+            switch (ev.getAction()){
+                case MotionEvent.ACTION_DOWN:
+                    mTouchX = ev.getX();
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    if (mTouchX == -1)mTouchX = ev.getX();
+                    mRoot.scrollTo((int) (mTouchX - ev.getX()),0);
+                    break;
+                case MotionEvent.ACTION_UP:
+                    mTouchX = -1;
+                    int w = mRoot.getWidth();
+                    int scrollX = mRoot.getScrollX(),distance_scrollX = Math.abs(scrollX);
+                    int dx;
+                    if (distance_scrollX > (w >> 1)){
+                        dx = distance_scrollX - w;
+                    }else {
+                        dx = distance_scrollX;
+                    }
+                    if (scrollX > 0)dx = -dx;
+
+                    if (mScroller == null)mScroller = new OverScroller(this);
+                    mScroller.startScroll(scrollX,0,dx,0);
+                    startScroll();
+                    break;
+            }
+        }
+        return super.onTouchEvent(ev);
+    }
+
+    protected boolean hasSlide(){
+        return true;
+    }
+
+    private void startScroll(){
+        if (mScroller.computeScrollOffset()){
+            int cur_x = mScroller.getCurrX();
+            if (Math.abs(cur_x) < mRoot.getRight()) {
+                mRoot.scrollTo(cur_x,0);
+                mRoot.postDelayed(this::startScroll,16);
+            } else {
+                mScroller.abortAnimation();
+                finish();
+            }
+        }
+    }
+
+    private void stopScroll(){
+        if (mScroller != null){
+            mScroller.abortAnimation();
+        }
     }
 
     private void initTitle(){

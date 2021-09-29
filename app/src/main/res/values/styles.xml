@@ -8,11 +8,14 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@color/black_trans</item>
+        <item name="android:windowIsTranslucent">true</item>
     </style>
 
     <style name="splashTheme" parent="AppTheme">
         <item name="android:windowContentTransitions">false</item>
         <item name="android:windowBackground">@drawable/splash</item>
+        <item name="android:windowIsTranslucent">false</item>
     </style>
 
     <style name="MyDialog" parent="Base.ThemeOverlay.AppCompat.Dialog">
@@ -74,7 +77,6 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:listDivider">@color/gray_subtransparent</item>
     </style>
-
     <style name="take_photo_anim" parent="android:Animation">
         <item name="android:windowEnterAnimation">@anim/pop_enter_anim</item>
         <item name="android:windowExitAnimation">@anim/pop_exit_anim</item>

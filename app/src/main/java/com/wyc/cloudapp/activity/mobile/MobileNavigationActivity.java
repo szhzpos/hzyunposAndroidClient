@@ -128,6 +128,11 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
     }
 
     @Override
+    protected boolean hasSlide(){
+        return false;
+    }
+
+    @Override
     public void onBackPressed(){
         if (mCurrentFragment instanceof MobileCashierDeskFragment){
             CustomApplication.runInMainThread(()->{

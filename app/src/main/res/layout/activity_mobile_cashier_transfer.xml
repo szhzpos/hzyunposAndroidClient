@@ -139,7 +139,7 @@
 
         </LinearLayout>
 
-        <HorizontalScrollView
+        <com.wyc.cloudapp.CustomizationView.SlideHorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -213,7 +213,7 @@
                 </androidx.recyclerview.widget.RecyclerView>
 
             </LinearLayout>
-        </HorizontalScrollView>
+        </com.wyc.cloudapp.CustomizationView.SlideHorizontalScrollView>
 
     </LinearLayout>
 
