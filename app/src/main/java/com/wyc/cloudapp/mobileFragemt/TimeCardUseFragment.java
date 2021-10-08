@@ -27,6 +27,7 @@ import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
@@ -53,6 +54,9 @@ import butterknife.ButterKnife;
  */
 public final class TimeCardUseFragment extends AbstractMobileFragment {
     private TimeCardInfoAdapter mAdapter;
+
+    @BindView(R.id.search_et)
+    EditText mSearchEt;
 
     @BindView(R.id._vip_no_tv)
     TextView _vip_no_tv;
@@ -85,44 +89,54 @@ public final class TimeCardUseFragment extends AbstractMobileFragment {
 
     @SuppressLint("ClickableViewAccessibility")
     private void initSearchContent(){
-        final EditText search = findViewById(R.id.search_et);
-        assert search != null;
-        search.setTransformationMethod(new ReplacementTransformationMethod() {
-            @Override
-            protected char[] getOriginal() {
-                return new char[]{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
-                        'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
-            }
-
-            @Override
-            protected char[] getReplacement() {
-                return new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
-                        'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
-            }
-        });
-        search.setOnKeyListener((v, keyCode, event) -> {
-            if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_UP){
-                queryVipTimeCard(search);
-                return true;
-            }
-            return false;
-        });
-        search.setOnTouchListener((view, motionEvent) -> {
-            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                final float dx = motionEvent.getX();
-                final int w = search.getWidth();
-                if (dx > (w - search.getCompoundPaddingRight())) {
-                    queryVipTimeCard(search);
+        if (mSearchEt != null){
+            mSearchEt.setTransformationMethod(new ReplacementTransformationMethod() {
+                @Override
+                protected char[] getOriginal() {
+                    return new char[]{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+                            'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
                 }
-            }
-            return false;
-        });
+
+                @Override
+                protected char[] getReplacement() {
+                    return new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
+                            'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+                }
+            });
+            mSearchEt.setOnTouchListener((view, motionEvent) -> {
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                    final float dx = motionEvent.getX();
+                    final int w = mSearchEt.getWidth();
+                    if (dx > (w - mSearchEt.getCompoundPaddingRight())) {
+                        queryVipTimeCard();
+                    }
+                }
+                return false;
+            });
+        }
     }
 
-    private void queryVipTimeCard(EditText search){
-        final String c = search.getText().toString();
+    @Override
+    public boolean hookEnterKey() {
+        if (mSearchEt != null && mSearchEt.hasFocus()){
+            queryVipTimeCard();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mSearchEt != null){
+            mSearchEt.requestFocus();
+        }
+    }
+
+    private void queryVipTimeCard(){
+        final String c = mSearchEt.getText().toString();
         if (!Utils.isNotEmpty(c)){
-            MyDialog.toastMessage(getString(R.string.not_empty_hint_sz,search.getHint()));
+            MyDialog.toastMessage(getString(R.string.not_empty_hint_sz,mSearchEt.getHint()));
             return;
         }
         final JSONObject param = new JSONObject();

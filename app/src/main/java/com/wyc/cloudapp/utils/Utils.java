@@ -191,8 +191,8 @@ public final class Utils {
         activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     }
 
-    public static void setFocus(Activity activity, EditText textView,boolean isfocus){
-        if (isfocus){
+    public static void setFocus(Activity activity, EditText textView,boolean hideKeyboard){
+        if (hideKeyboard){
             hideKeyBoard(textView);
         }
         textView.setFocusable(true);
@@ -550,6 +550,9 @@ public final class Utils {
     }
 
     public static boolean equalDouble(double a,double b){
+        return Math.abs(a - b) < 0.00001;
+    }
+    public static boolean equalDouble(float a,float b){
         return Math.abs(a - b) < 0.00001;
     }
     public static boolean notLessDouble(double a,double b){

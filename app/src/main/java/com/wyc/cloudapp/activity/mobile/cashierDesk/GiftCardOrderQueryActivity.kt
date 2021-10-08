@@ -134,13 +134,6 @@ class GiftCardOrderQueryActivity : AbstractMobileActivity() {
     private fun initSearchContent(){
         val search:EditText? = findViewById(R.id.order_search)
         search?.let {
-            it.setOnKeyListener{ _: View, keyCode: Int, keyEvent: KeyEvent ->
-                if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && keyEvent.action == KeyEvent.ACTION_UP) {
-                    _tab_layout.selectTab(_tab_layout.getTabAt(_tab_layout.selectedTabPosition))
-                    return@setOnKeyListener true
-                }
-                false
-            }
             it.setOnTouchListener { _: View?, motionEvent: MotionEvent ->
                 if (motionEvent.action == MotionEvent.ACTION_DOWN) {
                     val dx = motionEvent.x
@@ -153,6 +146,11 @@ class GiftCardOrderQueryActivity : AbstractMobileActivity() {
             }
             mSearchContent = it
         }
+    }
+
+    override fun hookEnterKey(): Boolean {
+        _tab_layout.selectTab(_tab_layout.getTabAt(_tab_layout.selectedTabPosition))
+        return true
     }
 
     private fun initTimeTv() {

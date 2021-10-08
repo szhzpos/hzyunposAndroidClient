@@ -8,13 +8,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.wyc.cloudapp.activity.IHookKey;
 import com.wyc.cloudapp.logger.Logger;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public abstract class AbstractBaseFragment extends Fragment {
+public abstract class AbstractBaseFragment extends Fragment implements IHookKey {
     private View mRootView;
     protected abstract void viewCreated();
 
@@ -40,5 +41,10 @@ public abstract class AbstractBaseFragment extends Fragment {
 
     public boolean onBackPressed(){
         return true;
+    }
+
+    @Override
+    public boolean hookEnterKey() {
+        return false;
     }
 }

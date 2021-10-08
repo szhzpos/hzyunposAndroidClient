@@ -218,13 +218,6 @@ public abstract class AbstractMobileQueryDialog extends AbstractDialogMainActivi
                         'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
             }
         });
-        order_vip_search.setOnKeyListener((v, keyCode, event) -> {
-            if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_UP){
-                if (mCurrentDateBtn != null)mCurrentDateBtn.callOnClick();
-                return true;
-            }
-            return false;
-        });
         order_vip_search.setOnTouchListener((view, motionEvent) -> {
             if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                 final float dx = motionEvent.getX();
@@ -237,6 +230,12 @@ public abstract class AbstractMobileQueryDialog extends AbstractDialogMainActivi
         });
 
         mSearchContent = order_vip_search;
+    }
+
+    @Override
+    public boolean hookEnterKey() {
+        if (mCurrentDateBtn != null)mCurrentDateBtn.callOnClick();
+        return true;
     }
 
     private void initSwitchCondition(){

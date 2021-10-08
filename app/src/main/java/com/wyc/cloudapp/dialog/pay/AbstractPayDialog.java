@@ -98,14 +98,10 @@ public abstract class AbstractPayDialog extends AbstractDialogMainActivity imple
         return mContext;
     }
 
-
     @Override
-    public boolean dispatchKeyEvent(@NonNull KeyEvent event) {
-        if ((event.getKeyCode() == KeyEvent.KEYCODE_ENTER || event.getKeyCode() == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_UP){
-            if (mOk != null)mOk.callOnClick();
-            return true;
-        }
-        return super.dispatchKeyEvent(event);
+    public boolean hookEnterKey() {
+        if (mOk != null)mOk.callOnClick();
+        return true;
     }
 
     protected String getTitle(){
@@ -175,12 +171,6 @@ public abstract class AbstractPayDialog extends AbstractDialogMainActivity imple
     private void init_c_amount(){
         mPayAmtEt = findViewById(R.id.c_amt);
         mPayAmtEt.setText(String.format(Locale.CHINA,"%.2f",mOriginalPayAmt));
-        mPayAmtEt.setOnKeyListener((dialog, keyCode, event) -> {
-            if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_UP){
-                return true;
-            }
-            return false;
-        });
         mPayAmtEt.setEnabled(modifyPayAmt);
     }
 

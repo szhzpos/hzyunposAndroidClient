@@ -80,13 +80,6 @@ public abstract class AbstractSelectActivity<E extends Parcelable,T extends Abst
     @SuppressLint("ClickableViewAccessibility")
     private void initSearchContent(){
         final EditText search = findViewById(R.id.search_once_card);
-        search.setOnKeyListener((v, keyCode, event) -> {
-            if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_UP){
-                loadData(search.getText().toString());
-                return true;
-            }
-            return false;
-        });
         search.setOnTouchListener((view, motionEvent) -> {
             if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                 final float dx = motionEvent.getX();
@@ -98,6 +91,12 @@ public abstract class AbstractSelectActivity<E extends Parcelable,T extends Abst
             return false;
         });
         mSearch = search;
+    }
+
+    @Override
+    public boolean hookEnterKey() {
+        if (mSearch != null)loadData(mSearch.getText().toString());
+        return true;
     }
 
     @Override

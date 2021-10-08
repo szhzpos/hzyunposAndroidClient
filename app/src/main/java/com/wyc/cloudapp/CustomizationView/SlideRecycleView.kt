@@ -6,6 +6,9 @@ import android.view.MotionEvent
 import android.view.ViewConfiguration
 import androidx.recyclerview.widget.RecyclerView
 import com.wyc.cloudapp.logger.Logger
+import com.wyc.cloudapp.utils.Utils
+import kotlin.math.abs
+import kotlin.math.asin
 
 class SlideRecycleView : RecyclerView{
     private var downX = 0f;
@@ -30,22 +33,26 @@ class SlideRecycleView : RecyclerView{
             MotionEvent.ACTION_MOVE -> {
                 val moveX = ev.x
                 val moveY = ev.y
-                val xDiff = Math.abs(moveX - downX)
-                val yDiff = Math.abs(moveY - downY)
+                val xDiff = abs(moveX - downX)
+                val yDiff = abs(moveY - downY)
                 if (xDiff > mTouchSlop || yDiff > mTouchSlop) {
                     val squareRoot = Math.sqrt((xDiff * xDiff + yDiff * yDiff).toDouble())
-                    val degree = Math.asin(yDiff / squareRoot) * 180 / Math.PI
+                    val degree = asin(yDiff / squareRoot) * 180 / Math.PI
                     val isMeetSlidingYAngle = degree > 45
                     val isSlideUp = moveY < downY && isMeetSlidingYAngle
                     val isSlideDown = moveY > downY && isMeetSlidingYAngle
                     val isSlideLeft = moveX < downX && !isMeetSlidingYAngle
                     val isSlideRight = moveX > downX && !isMeetSlidingYAngle
-                    if ((isSlideRight && !canScrollHorizontally(-1)) || (isSlideLeft &&!canScrollHorizontally(1))) {
+                    if ((isSlideRight && !canScrollHorizontally(-1)) || (isSlideLeft && !canScrollHorizontally(1))) {
                         return false
                     }
                 }
             }
-            MotionEvent.ACTION_UP -> return false
+            MotionEvent.ACTION_UP -> {
+                if (!Utils.equalDouble(downX,ev.x)) {
+                    return false
+                }
+            }
         }
         return super.dispatchTouchEvent(ev)
     }

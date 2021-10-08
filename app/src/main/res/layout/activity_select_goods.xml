@@ -30,7 +30,7 @@
         android:layout_height="match_parent"
         android:orientation="horizontal">
 
-        <androidx.recyclerview.widget.RecyclerView
+        <com.wyc.cloudapp.CustomizationView.SlideRecycleView
             android:id="@+id/business_goods_type_list"
             android:layout_width="@dimen/width_108"
             android:layout_height="match_parent"
@@ -38,7 +38,7 @@
             android:background="@drawable/right_bule_separator"
             android:padding="@dimen/margin_1">
 
-        </androidx.recyclerview.widget.RecyclerView>
+        </com.wyc.cloudapp.CustomizationView.SlideRecycleView>
 
         <com.wyc.cloudapp.CustomizationView.SlideRecycleView
             android:id="@+id/business_goods_info_list"

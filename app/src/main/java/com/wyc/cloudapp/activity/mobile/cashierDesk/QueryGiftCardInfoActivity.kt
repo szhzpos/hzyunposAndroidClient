@@ -4,10 +4,9 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.KeyEvent
 import android.view.MotionEvent
-import android.view.View
 import android.widget.EditText
+import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
 import com.alibaba.fastjson.JSONObject
@@ -26,35 +25,35 @@ import com.wyc.cloudapp.utils.http.HttpUtils
 import com.wyc.cloudapp.utils.http.callback.ArrayCallback
 
 class QueryGiftCardInfoActivity : AbsBindingActivity() {
+    @BindView(R.id.search_gift_card)
+    lateinit var search_content: EditText
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ButterKnife.bind(this)
 
         initSearchContent();
     }
     @SuppressLint("ClickableViewAccessibility")
     private fun initSearchContent(){
-        val _search_content = findViewById<EditText>(R.id.search_gift_card);
-        _search_content?.setOnKeyListener(object : View.OnKeyListener {
-            override fun onKey(v: View, keyCode: Int, event: KeyEvent): Boolean {
-                if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.action == KeyEvent.ACTION_UP) {
-                    queryGiftCardByCode(_search_content.text.toString())
-                    return true;
+        search_content.let {
+            it.setOnTouchListener { _, event ->
+                if (event.action == MotionEvent.ACTION_DOWN){
+                    val dx:Float = event.getX()
+                    val w:Int = it.width
+                    if (dx > (w - it.compoundPaddingRight)) {
+                        queryGiftCardByCode(it.text.toString())
+                    }else if(dx < it.compoundPaddingLeft){
+                        finish()
+                    }
                 }
-                return false;
+                false
             }
-        })
-        _search_content?.setOnTouchListener { _, event ->
-            if (event.action == MotionEvent.ACTION_DOWN){
-                val dx:Float = event.getX()
-                val w:Int = _search_content.width
-                if (dx > (w - _search_content.compoundPaddingRight)) {
-                    queryGiftCardByCode(_search_content.text.toString())
-                }else if(dx < _search_content.compoundPaddingLeft){
-                    finish()
-                }
-            }
-            false
+        }
+    }
+
+    override fun hookEnterKey(): Boolean {
+        search_content.let {
+            queryGiftCardByCode(it.text.toString())
+            return true;
         }
     }
     private fun queryGiftCardByCode(code: String) {

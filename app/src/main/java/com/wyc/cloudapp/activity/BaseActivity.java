@@ -3,8 +3,10 @@ package com.wyc.cloudapp.activity;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.inputmethod.InputMethodManager;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -23,7 +25,7 @@ import com.wyc.cloudapp.logger.Logger;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends AppCompatActivity implements IHookKey {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,4 +67,17 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean dispatchKeyEvent(@NonNull KeyEvent event) {
+        if ((event.getKeyCode() == KeyEvent.KEYCODE_ENTER || event.getKeyCode() == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_UP){
+            return hookEnterKey();
+        }
+        return super.dispatchKeyEvent(event);
+    }
+
+
+    @Override
+    public boolean hookEnterKey() {
+        return false;
+    }
 }

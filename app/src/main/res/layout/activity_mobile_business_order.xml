@@ -143,7 +143,7 @@
             android:textSize="@dimen/font_size_16" />
     </com.wyc.cloudapp.CustomizationView.InterceptLinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
+    <com.wyc.cloudapp.CustomizationView.SlideRecycleView
         android:id="@+id/m_order_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"

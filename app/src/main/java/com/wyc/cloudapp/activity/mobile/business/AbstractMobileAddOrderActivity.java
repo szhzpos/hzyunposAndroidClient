@@ -322,9 +322,13 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                 }
             }
             showPrint();
-        }else if (!"".equals(Utils.getNullStringAsEmpty(mOrderInfo,getOrderIDKey()))){
+        }else if (hasOrderId()){
             business_main.setCentreLabel(getString(R.string.saved_sz));
         }
+    }
+
+    private boolean hasOrderId(){
+        return !"".equals(Utils.getNullStringAsEmpty(mOrderInfo,getOrderIDKey()));
     }
 
     private void getSupplier(){
@@ -398,7 +402,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
                     addGoodsDetails(dialog.getContentObj(),false);
                 }
             }else if (id == R.id.m_business_save_btn){
-                if (mAdapter.isEmpty()){
+                if (!hasOrderId() && mAdapter.isEmpty()){
                     MyDialog.ToastMessage(getString(R.string.not_empty_hint_sz,getString(R.string.goods_i_sz)), getWindow());
                 }else
                     uploadOrderInfo();

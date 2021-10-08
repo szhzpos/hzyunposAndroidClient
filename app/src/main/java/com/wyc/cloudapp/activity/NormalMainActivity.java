@@ -504,34 +504,6 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     @SuppressLint("ClickableViewAccessibility")
     private void initSearch(){
         final EditText search = findViewById(R.id.search_content);
-        search.setOnKeyListener((v, keyCode, event) -> {
-            if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_DOWN){
-                final SaleActivity context = this;
-                final String content = search.getText().toString();
-                if (content.length() == 0){
-                    mGoodsCategoryAdapter.trigger_preView();
-                }else{
-                    if (!mGoodsInfoViewAdapter.fuzzy_search_goods(content,true)) {
-                        CustomApplication.runInMainThread(()->{
-                            if (mApplication.isConnection() && AddGoodsInfoDialog.verifyGoodsAddPermissions(context)) {
-                                if (1 == MyDialog.showMessageToModalDialog(context,"未找到匹配商品，是否新增?")){
-                                    final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(context);
-                                    addGoodsInfoDialog.setBarcode(mSearch_content.getText().toString());
-                                    addGoodsInfoDialog.setFinishListener(barcode -> {
-                                        mGoodsInfoViewAdapter.fuzzy_search_goods(content,true);
-                                        addGoodsInfoDialog.dismiss();
-                                    });
-                                    addGoodsInfoDialog.show();
-                                }
-                            } else
-                                MyDialog.ToastMessage("无此商品!", getWindow());
-                        });
-                    }
-                }
-                return true;
-            }
-            return false;
-        });
         search.setTransformationMethod(new ReplacementTransformationMethod() {
             @Override
             protected char[] getOriginal() {
@@ -639,6 +611,34 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         });
         mSearch_content = search;
     }
+
+    @Override
+    public boolean hookEnterKey() {
+        final SaleActivity context = this;
+        final String content = mSearch_content.getText().toString();
+        if (content.length() == 0){
+            mGoodsCategoryAdapter.trigger_preView();
+        }else{
+            if (!mGoodsInfoViewAdapter.fuzzy_search_goods(content,true)) {
+                CustomApplication.runInMainThread(()->{
+                    if (mApplication.isConnection() && AddGoodsInfoDialog.verifyGoodsAddPermissions(context)) {
+                        if (1 == MyDialog.showMessageToModalDialog(context,"未找到匹配商品，是否新增?")){
+                            final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(context);
+                            addGoodsInfoDialog.setBarcode(mSearch_content.getText().toString());
+                            addGoodsInfoDialog.setFinishListener(barcode -> {
+                                mGoodsInfoViewAdapter.fuzzy_search_goods(content,true);
+                                addGoodsInfoDialog.dismiss();
+                            });
+                            addGoodsInfoDialog.show();
+                        }
+                    } else
+                        MyDialog.ToastMessage("无此商品!", getWindow());
+                });
+            }
+        }
+        return true;
+    }
+
     private void initTmpOrder(){
         final TmpOrderButton tmp_order = findViewById(R.id.tmp_order);
         final SaleActivity activity = this;

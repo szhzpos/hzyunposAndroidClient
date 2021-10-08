@@ -107,19 +107,11 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
                 return new char[]{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
                         'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
             }
-
             @Override
             protected char[] getReplacement() {
                 return new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
                         'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
             }
-        });
-        search.setOnKeyListener((v, keyCode, event) -> {
-            if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_UP){
-                search(search.getText().toString());
-                return true;
-            }
-            return false;
         });
         search.setOnTouchListener((view, motionEvent) -> {
             if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
@@ -131,8 +123,13 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
             }
             return false;
         });
-
         mSearchContentEt = search;
+    }
+
+    @Override
+    public boolean hookEnterKey() {
+        if (mSearchContentEt != null)search(mSearchContentEt.getText().toString());
+        return true;
     }
 
     private void checkSearch(){

@@ -6,6 +6,7 @@ import android.view.MotionEvent
 import android.view.ViewConfiguration
 import android.widget.HorizontalScrollView
 import com.wyc.cloudapp.logger.Logger
+import com.wyc.cloudapp.utils.Utils
 
 class SlideHorizontalScrollView:HorizontalScrollView {
     private var downX = 0f;
@@ -40,15 +41,16 @@ class SlideHorizontalScrollView:HorizontalScrollView {
                     val isSlideDown = moveY > downY && isMeetSlidingYAngle
                     val isSlideLeft = moveX < downX && !isMeetSlidingYAngle
                     val isSlideRight = moveX > downX && !isMeetSlidingYAngle
-
-                    Logger.d("isSlideLeft:%s,isSlideRight:%s,canScrollHorizontally:%s",isSlideLeft,isSlideRight,canScrollHorizontally(-1))
-
                     if ((isSlideRight && !canScrollHorizontally(-1)) || (isSlideLeft &&!canScrollHorizontally(1))) {
                         return false
                     }
                 }
             }
-            MotionEvent.ACTION_UP -> return false
+            MotionEvent.ACTION_UP -> {
+                if (!Utils.equalDouble(downX,ev.x)) {
+                    return false
+                }
+            }
         }
         return super.dispatchTouchEvent(ev)
     }

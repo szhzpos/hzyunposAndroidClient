@@ -48,13 +48,6 @@ public class MobileSupplierInfoActivity extends AbstractMobileBaseArchiveActivit
     @SuppressLint("ClickableViewAccessibility")
     private void initSearchContent(){
         final EditText search = findViewById(R.id._search);
-        search.setOnKeyListener((v, keyCode, event) -> {
-            if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_UP){
-                query();
-                return true;
-            }
-            return false;
-        });
         search.setOnTouchListener((view, motionEvent) -> {
             if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                 final float dx = motionEvent.getX();
@@ -67,6 +60,13 @@ public class MobileSupplierInfoActivity extends AbstractMobileBaseArchiveActivit
         });
         mSearchContent = search;
     }
+
+    @Override
+    public boolean hookEnterKey() {
+        query();
+        return true;
+    }
+
     private void query(){
         final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,getString(R.string.hints_query_data_sz));
         CustomApplication.execute(()->{

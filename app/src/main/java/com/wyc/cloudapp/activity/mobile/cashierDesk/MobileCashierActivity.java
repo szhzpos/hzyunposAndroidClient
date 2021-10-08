@@ -277,13 +277,6 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
                         'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
             }
         });
-        search.setOnKeyListener((v, keyCode, event) -> {
-            if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_UP){
-                selectGoodsWithSearchContent(search.getText().toString());
-                return true;
-            }
-            return false;
-        });
         search.setOnTouchListener((view, motionEvent) -> {
             if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                 final float dx = motionEvent.getX();
@@ -299,6 +292,12 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
             return false;
         });
         mSearchContent = search;
+    }
+
+    @Override
+    public boolean hookEnterKey() {
+        if (mSearchContent != null)selectGoodsWithSearchContent(mSearchContent.getText().toString());
+        return true;
     }
 
     @SuppressLint("ClickableViewAccessibility")

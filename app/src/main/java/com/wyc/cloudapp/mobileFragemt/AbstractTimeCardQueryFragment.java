@@ -161,6 +161,7 @@ public abstract class AbstractTimeCardQueryFragment extends AbstractMobileFragme
         mSearchContent = order_vip_search;
     }
 
+
     private void initTimeTv(){
         mStartDate.setText(new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).format(new Date()));
         mStartDate.setOnClickListener(v -> Utils.showDatePickerDialog(mContext,mStartDate, Calendar.getInstance()));

@@ -82,13 +82,6 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
     @SuppressLint("ClickableViewAccessibility")
     private void initSearchEt(){
         final EditText search = findViewById(R.id.vip_search_et);
-        search.setOnKeyListener((v, keyCode, event) -> {
-            if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_UP){
-                mVipRecordAdapter.loadVip(search.getText().toString(),mConditionSpinner.getSelectedItemPosition());
-                return true;
-            }
-            return false;
-        });
         search.setOnTouchListener((view, motionEvent) -> {
             if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                 final float dx = motionEvent.getX();
@@ -100,6 +93,12 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
             return false;
         });
         mSearchEt = search;
+    }
+
+    @Override
+    public boolean hookEnterKey() {
+        if (mSearchEt != null && mConditionSpinner != null)mVipRecordAdapter.loadVip(mSearchEt.getText().toString(),mConditionSpinner.getSelectedItemPosition());
+        return true;
     }
 
     private void loadVipForCategoryId(){

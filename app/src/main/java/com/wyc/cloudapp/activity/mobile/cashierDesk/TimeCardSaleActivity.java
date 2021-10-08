@@ -42,8 +42,12 @@ public class TimeCardSaleActivity extends AbstractMobileActivity {
 
         final FragmentPagerAdapter<AbstractMobileFragment> adapter =  new FragmentPagerAdapter<>(fragments,this);
         view_pager.setAdapter(adapter);
-
         new TabLayoutMediator(_tab, view_pager,(tab, position) -> tab.setText(adapter.getItem(position).getTitle())).attach();
+    }
+
+    @Override
+    public boolean hookEnterKey() {
+        return ((FragmentPagerAdapter<?>) view_pager.getAdapter()).getItem(_tab.getSelectedTabPosition()).hookEnterKey();
     }
 
     @Override

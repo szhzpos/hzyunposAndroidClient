@@ -35,6 +35,7 @@ import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
@@ -207,13 +208,6 @@ public final class TimeCardSaleFragment extends AbstractMobileFragment {
                         'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
             }
         });
-        search.setOnKeyListener((v, keyCode, event) -> {
-            if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_UP){
-                queryTimeCardByName(search.getText().toString());
-                return true;
-            }
-            return false;
-        });
         search.setOnTouchListener((view, motionEvent) -> {
             if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                 final float dx = motionEvent.getX();
@@ -227,6 +221,23 @@ public final class TimeCardSaleFragment extends AbstractMobileFragment {
             return false;
         });
         _search_content = search;
+    }
+
+    @Override
+    public boolean hookEnterKey() {
+        if (_search_content != null && _search_content.hasFocus()){
+            queryTimeCardByName(_search_content.getText().toString());
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (_search_content != null){
+            _search_content.postDelayed(()->_search_content.requestFocus(),150);
+        }
     }
 
     private void queryTimeCardByName(String name) {

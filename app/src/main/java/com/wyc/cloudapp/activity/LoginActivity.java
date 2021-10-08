@@ -332,6 +332,12 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
         }
     }
 
+    @Override
+    public boolean hookEnterKey() {
+        if (mLoginBtn != null)mLoginBtn.callOnClick();
+        return true;
+    }
+
     private void relaunch(){
         finish();
         final Intent intent_launch = new Intent(this,LoginActivity.class);
@@ -365,25 +371,12 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
     private void initPassword(){
         final EditText password  = findViewById(R.id.password);
         password.setTransformationMethod(new PasswordEditTextReplacement());
-        password.setOnKeyListener((view, i, keyEvent) -> {
-            int keyCode = keyEvent.getKeyCode();
-            if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && keyEvent.getAction() == KeyEvent.ACTION_DOWN){
-                if (mLoginBtn != null)mLoginBtn.callOnClick();
-                return true;
-            }
-            return false;
-        });
         mPasswordEt = password;
     }
     private void initUserId(){
         final EditText user_id = findViewById(R.id.user_id);
         user_id.setOnKeyListener((view, i, keyEvent) -> {
-            int keyCode = keyEvent.getKeyCode();
-            if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && keyEvent.getAction() == KeyEvent.ACTION_DOWN){
-                if (mLoginBtn != null)mLoginBtn.callOnClick();
-                return false;
-            }
-            if (keyCode == KeyEvent.KEYCODE_TAB){
+            if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_TAB){
                 if (mPasswordEt != null) mPasswordEt.requestFocus();
                 return true;
             }

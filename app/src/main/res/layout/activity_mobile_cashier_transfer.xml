@@ -130,7 +130,7 @@
                 android:text="@string/cashier_not_colon_sz"
                 android:textSize="@dimen/font_size_16" />
 
-            <androidx.recyclerview.widget.RecyclerView
+            <com.wyc.cloudapp.CustomizationView.SlideRecycleView
                 android:id="@+id/cashier_name_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

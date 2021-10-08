@@ -285,14 +285,6 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
                 mBarcode = s.toString();
             }
         });
-        search.setOnKeyListener((v, keyCode, event) -> {
-            if ((keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_UP){
-                searchGoods();
-                mNumEt.requestFocus();
-                return true;
-            }
-            return false;
-        });
         search.setOnTouchListener((view, motionEvent) -> {
             if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                 final float dx = motionEvent.getX();
@@ -313,6 +305,14 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
         }
         mBarcodeEt = search;
     }
+
+    @Override
+    public boolean hookEnterKey() {
+        searchGoods();
+        mNumEt.requestFocus();
+        return true;
+    }
+
     private void setBarcodeDrawable(boolean clear){
         if (clear){
             mBarcodeEt.setCompoundDrawables( null, null, null, null);

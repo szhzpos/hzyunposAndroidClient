@@ -133,7 +133,7 @@ public final class MobileWarehouseOrderActivity extends AbstractMobileBusinessOr
             final JSONObject upload_obj = super.generateUploadCondition(),object = new JSONObject();
 
             upload_obj.put("rkd_code",mOrderCodeTv.getText().toString());
-            upload_obj.put("rkd_id",Utils.getNullStringAsEmpty(mOrderInfo,"cgd_id"));
+            upload_obj.put("rkd_id",Utils.getNullStringAsEmpty(mOrderInfo,getOrderIDKey()));
             upload_obj.put("cgd_code",getSourceOrder());
             upload_obj.put("goods_list_json",getGoodsList());
 

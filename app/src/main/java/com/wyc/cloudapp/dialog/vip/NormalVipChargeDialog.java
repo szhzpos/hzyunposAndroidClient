@@ -28,14 +28,12 @@ public class NormalVipChargeDialog extends AbstractVipChargeDialog {
 
     private void initPayCode(){
         mPayCodeEt = findViewById(R.id.pay_code);
-        if (null != mPayCodeEt)
-            mPayCodeEt.setOnKeyListener((dialog, keyCode, event) -> {
-                if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_UP){
-                    triggerCharge();
-                    return true;
-                }
-                return false;
-            });
+    }
+
+    @Override
+    public boolean hookEnterKey() {
+        triggerCharge();
+        return true;
     }
 
     @Override
