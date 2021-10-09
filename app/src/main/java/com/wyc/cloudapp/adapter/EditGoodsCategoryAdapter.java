@@ -58,7 +58,7 @@ public class EditGoodsCategoryAdapter extends TreeListBaseAdapterWithList<EditGo
         final View view = getView();
         if (view instanceof SwipeLayout){
             final SwipeLayout swipeLayout = (SwipeLayout)view;
-            swipeLayout.addMenuItem(mContext.getString(R.string.modify_sz), v -> editCategory(),mContext.getResources().getColor(R.color.green,null));
+            swipeLayout.addMenuItem(mContext.getString(R.string.modify_sz), v -> editCategory(swipeLayout),mContext.getResources().getColor(R.color.green,null));
         }
         return new MyViewHolder(view);
     }
@@ -76,8 +76,7 @@ public class EditGoodsCategoryAdapter extends TreeListBaseAdapterWithList<EditGo
             holder.add.setVisibility(View.INVISIBLE);
 
         if (!holder.modify.hasOnClickListeners())holder.modify.setOnClickListener(v -> {
-            holder.itemView.callOnClick();
-            editCategory();
+            editCategory(holder.itemView);
         });
         holder.content.setText(String.format(Locale.CHINA,"%s - %s",object.getCode(),object.getItem_name()));
     }
@@ -96,7 +95,8 @@ public class EditGoodsCategoryAdapter extends TreeListBaseAdapterWithList<EditGo
         item.setSel(true);
         addItemChildOfCurrent(item);
     }
-    private void editCategory(){
+    private void editCategory(View view){
+        view.callOnClick();
         ((MobileEditGoodsCategoryActivity)mContext).editCategory(true);
     }
 }

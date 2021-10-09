@@ -90,7 +90,6 @@ class MultiUnitAdapter(private val attachView:RecyclerView): AbstractActionAdapt
         holder.barcode.setText(data.barcode)
         holder.barcode.tag = data
 
-        holder.unit.setOnTouchListener(touch)
         holder.unit.setText(data.unit_name)
 
         holder.conversion.setText(String.format("%.2f",data.conversion))
@@ -99,22 +98,29 @@ class MultiUnitAdapter(private val attachView:RecyclerView): AbstractActionAdapt
         holder.trade_price.setText(String.format("%.2f",data.trade_price))
         holder.ps_price.setText(String.format("%.2f",data.ps_price))
 
-        if (data.plus){
-            (holder.barcode.parent as? View)?.visibility = View.GONE
-        }else if (holder.adapterPosition == 0){
-            (holder.itemView  as? ItemPaddingLinearLayout)?.let {
-                it.setDisableEvent(true)
-                it.setCentreLabel("禁止修改")
+        when {
+            data.plus -> {
+                (holder.barcode.parent as? View)?.visibility = View.GONE
             }
-        }else{
-            holder.barcode.setOnTouchListener(touch)
+            holder.adapterPosition == 0 -> {
+                (holder.itemView  as? ItemPaddingLinearLayout)?.let {
+                    it.setDisableEvent(true)
+                    it.setCentreLabel("禁止修改")
+                    holder.barcode.setCompoundDrawables(null,null,null,null)
+                    holder.unit.setCompoundDrawables(null,null,null,null)
+                }
+            }
+            else -> {
+                holder.unit.setOnTouchListener(touch)
+                holder.barcode.setOnTouchListener(touch)
+            }
         }
         holder.itemView.tag = mData
     }
 
     @SuppressLint("ClickableViewAccessibility")
     val touch = View.OnTouchListener { v, motionEvent ->
-        if (motionEvent.action == MotionEvent.ACTION_DOWN){
+        if (motionEvent.action == MotionEvent.ACTION_UP){
             (v as? EditText)?.let {
                 val dx: Float = motionEvent.x
                 val w: Int = it.width

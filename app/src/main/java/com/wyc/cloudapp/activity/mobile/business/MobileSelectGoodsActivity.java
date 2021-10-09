@@ -238,7 +238,11 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
 
         @Override
         public void onViewRecycled(@NonNull MyViewHolder holder) {
-            if (holder.itemView == mCurrentItemView)mCurrentItemView.setBackgroundColor(mContext.getColor(R.color.white));
+            if (holder.itemView == mCurrentItemView){
+                final TextView name_tv = mCurrentItemView.findViewById(R.id.category_name);
+                if (name_tv != null)name_tv.setTextColor(mContext.getColor(R.color.blue));
+                mCurrentItemView.setBackgroundColor(mContext.getColor(R.color.white));
+            }
         }
 
         static class MyViewHolder extends AbstractDataAdapterForJson.SuperViewHolder {
@@ -266,7 +270,9 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
                 final JSONObject goods_type_info = mData.getJSONObject(position);
                 holder.category_id.setText(goods_type_info.getString("category_id"));
                 holder.category_name.setText(String.format(Locale.CHINA,"%s-%s",goods_type_info.getString("category_code"),goods_type_info.getString("name")));
-                if (position == 0) holder.itemView.callOnClick();
+                if (position == 0 && null == mCurrentItemView) {
+                    holder.itemView.callOnClick();
+                }
             }
         }
 

@@ -5,8 +5,9 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.ViewConfiguration
 import android.widget.HorizontalScrollView
-import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.Utils
+import kotlin.math.asin
+import kotlin.math.sqrt
 
 class SlideHorizontalScrollView:HorizontalScrollView {
     private var downX = 0f;
@@ -34,8 +35,8 @@ class SlideHorizontalScrollView:HorizontalScrollView {
                 val xDiff = Math.abs(moveX - downX)
                 val yDiff = Math.abs(moveY - downY)
                 if (xDiff > mTouchSlop || yDiff > mTouchSlop) {
-                    val squareRoot = Math.sqrt((xDiff * xDiff + yDiff * yDiff).toDouble())
-                    val degree = Math.asin(yDiff / squareRoot) * 180 / Math.PI
+                    val squareRoot = sqrt((xDiff * xDiff + yDiff * yDiff).toDouble())
+                    val degree = asin(yDiff / squareRoot) * 180 / Math.PI
                     val isMeetSlidingYAngle = degree > 45
                     val isSlideUp = moveY < downY && isMeetSlidingYAngle
                     val isSlideDown = moveY > downY && isMeetSlidingYAngle

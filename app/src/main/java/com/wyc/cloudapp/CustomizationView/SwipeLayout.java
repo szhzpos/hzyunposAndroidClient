@@ -15,6 +15,7 @@ import android.widget.OverScroller;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 public class SwipeLayout extends FrameLayout {
@@ -190,6 +191,16 @@ public class SwipeLayout extends FrameLayout {
     }
 
     @Override
+    public boolean canScrollHorizontally(int direction) {
+        int scrollX = getScrollX();
+        if (direction < 0){
+            return scrollX + getWidth() + getPaddingRight() < mRightBorder;
+        }else {
+            return scrollX > mLeftBorder;
+        }
+    }
+
+    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
@@ -209,7 +220,7 @@ public class SwipeLayout extends FrameLayout {
             int parentViewWidth = getMeasuredWidthAndState();
             mMenuLayout.layout(parentViewWidth, top, parentViewWidth + menuViewWidth, top + menuViewHeight);
 
-            mLeftBorder = left;
+            mLeftBorder = 0;
             mRightBorder = mMenuLayout.getRight();
         }
     }
