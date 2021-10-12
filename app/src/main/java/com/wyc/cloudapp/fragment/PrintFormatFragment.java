@@ -33,6 +33,8 @@ import androidx.fragment.app.Fragment;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -51,8 +53,9 @@ public class PrintFormatFragment extends AbstractParameterFragment {
     public static final int GIFT_CARD_SALE_FORMAT_ID = 102;
     public static final String ACTION_USB_PERMISSION = "com.wyc.cloudapp.USB_PERMISSION";
 
-    private static final String mTitle = "打印设置";
+    private static final String mTitle = CustomApplication.self().getString(R.string.print_setting);
     private ArrayAdapter<String> mPrintIdAdapter;
+    private Spinner mPrinterId;
     private CustomProgressDialog mProgressDialog;
     public PrintFormatFragment() {
     }
@@ -72,18 +75,35 @@ public class PrintFormatFragment extends AbstractParameterFragment {
 
     @Override
     public boolean saveContent() {
-        final JSONArray array = get_or_show_print_format_content_2(true);
-        final JSONObject content = new JSONObject();
-        content.put("parameter_id","printer");
-        content.put("parameter_content",get_or_show_printer_setting(true));
-        content.put("parameter_desc","打印机设置");
-        array.add(content);
+        if (checkPrinter()){
+            final JSONArray array = get_or_show_print_format_content_2(true);
+            final JSONObject content = new JSONObject();
+            content.put("parameter_id","printer");
+            content.put("parameter_content",get_or_show_printer_setting(true));
+            content.put("parameter_desc","打印机设置");
+            array.add(content);
 
-        final StringBuilder err = new StringBuilder();
-        if (!SQLiteHelper.execSQLByBatchFromJson(array,"local_parameter",null,err,1)){
-            MyDialog.ToastMessage(null,err.toString(), null);
-        }else{
-            MyDialog.ToastMessage(null,"保存成功！", null);
+            final StringBuilder err = new StringBuilder();
+            if (SQLiteHelper.execSQLByBatchFromJson(array,"local_parameter",null,err,1)){
+                MyDialog.ToastMessage(null,mContext.getString(R.string.save_hint), null);
+                if (mContext instanceof MainActivity){
+                    final MainActivity mainActivity = (MainActivity) mContext;
+                    if (!mainActivity.getPrintStatus()){
+                        mainActivity.switchPrintStatus();
+                    }
+                }
+            }else{
+                MyDialog.ToastMessage(null,err.toString(), null);
+            }
+        }else {
+            MyDialog.toastMessage(mContext.getString(R.string.select_printer_hint));
+        }
+        return false;
+    }
+    private boolean checkPrinter(){
+        if (mPrinterId != null){
+            final Object value =  mPrinterId.getSelectedItem();
+            return  value instanceof String && Utils.isNotEmpty((String) value) && !mContext.getString(R.string.select_printer_hint).equals(value);
         }
         return false;
     }
@@ -154,44 +174,46 @@ public class PrintFormatFragment extends AbstractParameterFragment {
     }
 
     private void initPrinterId(){
-        Spinner printerId = findViewById(R.id.printer_id);
-        mPrintIdAdapter = new ArrayAdapter<>(mContext,R.layout.drop_down_style);
-        mPrintIdAdapter.setDropDownViewResource(R.layout.drop_down_style);
-        mPrintIdAdapter.add("请选择打印机");
-        printerId.setAdapter(mPrintIdAdapter);
-        printerId.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                final String tmp = mPrintIdAdapter.getItem(position);
-                if (Utils.isNotEmpty(tmp)){
-                    String[] vals = tmp.split("\t");
-                    if (vals.length > 1){
-                        RadioGroup radioGroup = findViewById(R.id.print_way);
-                        switch (radioGroup.getCheckedRadioButtonId()){
-                            case R.id.bluetooth_p:
-                                BluetoothUtils.bondBlueTooth(vals[1]);
-                                BluetoothUtils.stopBlueToothDiscovery();
-                                break;
-                            case R.id.usb_p:
-                                startUSBDiscoveryAndAuth(vals[0].substring(vals[0].indexOf(":") + 1),vals[1].substring(vals[1].indexOf(":") + 1));
-                                break;
+        mPrinterId = findViewById(R.id.printer_id);
+        if (mPrinterId != null){
+            mPrintIdAdapter = new ArrayAdapter<>(mContext,R.layout.drop_down_style);
+            mPrintIdAdapter.setDropDownViewResource(R.layout.drop_down_style);
+            mPrintIdAdapter.add(mContext.getString(R.string.select_printer_hint));
+            mPrinterId.setAdapter(mPrintIdAdapter);
+            mPrinterId.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    final String tmp = mPrintIdAdapter.getItem(position);
+                    if (Utils.isNotEmpty(tmp)){
+                        String[] vals = tmp.split("\t");
+                        if (vals.length > 1){
+                            RadioGroup radioGroup = findViewById(R.id.print_way);
+                            switch (radioGroup.getCheckedRadioButtonId()){
+                                case R.id.bluetooth_p:
+                                    BluetoothUtils.bondBlueTooth(vals[1]);
+                                    BluetoothUtils.stopBlueToothDiscovery();
+                                    break;
+                                case R.id.usb_p:
+                                    startUSBDiscoveryAndAuth(vals[0].substring(vals[0].indexOf(":") + 1),vals[1].substring(vals[1].indexOf(":") + 1));
+                                    break;
+                            }
                         }
                     }
                 }
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                Logger.d("onNothingSelected");
-            }
-        });
-        printerId.setOnTouchListener((v, event) -> {
-            v.performClick();
-            if (event.getAction() == MotionEvent.ACTION_DOWN){
-                startFindDevice();
-            }
-            return false;
-        });
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                    Logger.d("onNothingSelected");
+                }
+            });
+            mPrinterId.setOnTouchListener((v, event) -> {
+                v.performClick();
+                if (event.getAction() == MotionEvent.ACTION_DOWN){
+                    startFindDevice();
+                }
+                return false;
+            });
+        }
     }
 
     private JSONObject get_or_show_print_format_content(boolean way){
@@ -385,7 +407,6 @@ public class PrintFormatFragment extends AbstractParameterFragment {
         int id = -1,status = 0;
         JSONObject object = new JSONObject();
         RadioGroup radioGroup = findViewById(R.id.print_way);
-        Spinner printerId = findViewById(R.id.printer_id);
         if (way){
             switch (radioGroup.getCheckedRadioButtonId()){
                 case R.id.bluetooth_p:
@@ -399,7 +420,7 @@ public class PrintFormatFragment extends AbstractParameterFragment {
             }
             object.put("id",id);
             object.put("s",status);
-            object.put("v",printerId.getSelectedItem());
+            object.put("v",mPrinterId.getSelectedItem());
         }else{
             if (SQLiteHelper.getLocalParameter("printer",object)){
                 String printer_info = Utils.getNullStringAsEmpty(object,"v");
@@ -418,8 +439,10 @@ public class PrintFormatFragment extends AbstractParameterFragment {
                     }
                 }else  status_id = R.id.usb_p;//默认usb
                 radioGroup.check(status_id);
-                mPrintIdAdapter.clear();
-                mPrintIdAdapter.add(printer_info);
+                if (Utils.isNotEmpty(printer_info)){
+                    mPrintIdAdapter.clear();
+                    mPrintIdAdapter.add(printer_info);
+                }
             }else
                 MyDialog.ToastMessage("加载打印机参数错误：" + object.getString("info"), null);
         }

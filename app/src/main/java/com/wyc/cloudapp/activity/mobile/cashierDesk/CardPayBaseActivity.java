@@ -1,9 +1,12 @@
 package com.wyc.cloudapp.activity.mobile.cashierDesk;
 
+import android.content.Context;
 import android.database.sqlite.SQLiteException;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -397,5 +400,14 @@ public class CardPayBaseActivity<T extends ICardPay<?>> extends BaseWindowActivi
     @Override
     protected int getContentLayoutId() {
         return R.layout.activity_card_pay;
+    }
+
+    @Override
+    public int with() {
+        final WindowManager wm = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
+        final Display d = wm.getDefaultDisplay(); // 获取屏幕宽、高用
+        final Point point = new Point();
+        d.getSize(point);
+        return (int) (point.x * 0.95);
     }
 }

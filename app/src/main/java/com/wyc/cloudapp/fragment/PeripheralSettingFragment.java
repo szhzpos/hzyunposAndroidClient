@@ -55,7 +55,7 @@ public class PeripheralSettingFragment extends AbstractParameterFragment {
         if (!SQLiteHelper.execSQLByBatchFromJson(array,"local_parameter",null,err,1)){
             MyDialog.ToastMessage(null,err.toString(), null);
         }else{
-            MyDialog.ToastMessage(null,"保存成功！", null);
+            MyDialog.ToastMessage(null,mContext.getString(R.string.save_hint), null);
         }
 
         return false;

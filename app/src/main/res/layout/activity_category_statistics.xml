@@ -152,7 +152,7 @@
                 android:text="@string/category_name_sz"
                 android:textSize="@dimen/font_size_16" />
 
-            <androidx.recyclerview.widget.RecyclerView
+            <com.wyc.cloudapp.CustomizationView.SlideRecycleView
                 android:id="@+id/category_name_list"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -160,7 +160,7 @@
                 android:background="@drawable/right_bule_separator"
                 android:padding="1dp">
 
-            </androidx.recyclerview.widget.RecyclerView>
+            </com.wyc.cloudapp.CustomizationView.SlideRecycleView>
 
             <TextView
                 android:id="@+id/sum_tv"
@@ -175,7 +175,7 @@
 
         </LinearLayout>
 
-        <HorizontalScrollView
+        <com.wyc.cloudapp.CustomizationView.SlideHorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -220,7 +220,7 @@
 
                 </LinearLayout>
 
-                <androidx.recyclerview.widget.RecyclerView
+                <com.wyc.cloudapp.CustomizationView.SlideRecycleView
                     android:id="@+id/category_content_list"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
@@ -228,7 +228,7 @@
                     android:background="@color/encode_view"
                     android:padding="1dp">
 
-                </androidx.recyclerview.widget.RecyclerView>
+                </com.wyc.cloudapp.CustomizationView.SlideRecycleView>
 
                 <LinearLayout
                     android:id="@+id/content_sum_layout"
@@ -272,7 +272,7 @@
                 </LinearLayout>
 
             </LinearLayout>
-        </HorizontalScrollView>
+        </com.wyc.cloudapp.CustomizationView.SlideHorizontalScrollView>
 
     </LinearLayout>
 

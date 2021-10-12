@@ -15,6 +15,7 @@ import com.wyc.cloudapp.adapter.business.MobilePurchaseRefundOrderDetailsAdapter
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.OrderPrintContentBase;
 import com.wyc.cloudapp.bean.BusinessOrderPrintSetting;
+import com.wyc.cloudapp.bean.PurchaseRefundOrderPrintContent;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
@@ -183,7 +184,7 @@ public class MobilePurchaseRefundOrderActivity extends AbstractMobileBusinessOrd
 
         @Override
         protected String getPrintContent(BusinessOrderPrintSetting setting) {
-            final OrderPrintContentBase.Builder Builder = new OrderPrintContentBase.Builder();
+            final OrderPrintContentBase.Builder Builder = new OrderPrintContentBase.Builder(new PurchaseRefundOrderPrintContent());
             final List<OrderPrintContentBase.Goods> details = new ArrayList<>();
             JSONArray goods_list;
             final String name = getString(R.string.purchase_refund_order_sz);

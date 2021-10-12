@@ -12,7 +12,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.method.ReplacementTransformationMethod;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +27,7 @@ import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.GoodsCategory;
 import com.wyc.cloudapp.constants.WholesalePriceType;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.decoration.GoodsInfoItemDecoration;
@@ -89,7 +89,12 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
 
     @Override
     protected void add() {
-        MobileEditGoodsInfoActivity.start(this,null);
+        GoodsCategory category = null;
+        final JSONObject object = mGoodsCategoryAdapter.getCategoryObj();
+        if (!object.isEmpty()){
+            category = new GoodsCategory(object.getIntValue(TreeListBaseAdapter.COL_ID),object.getString("category_code"),CategoryAdapter.getName(object.getString(TreeListBaseAdapter.COL_NAME)));
+        }
+        MobileEditGoodsInfoActivity.start(this,null,category);
     }
 
     @Override
@@ -197,6 +202,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
         final MobileSelectGoodsActivity mContext;
         private View mCurrentItemView;
         private final JSONObject CategoryObj = new JSONObject();
+        private final static String SEPARATOR = "-";
         public CategoryAdapter(MobileSelectGoodsActivity activity) {
             mContext = activity;
         }
@@ -236,6 +242,13 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
             return CategoryObj;
         }
 
+        private static String getName(final String name){
+            if (name != null && name.contains(CategoryAdapter.SEPARATOR)){
+                return name.split(CategoryAdapter.SEPARATOR)[1];
+            }
+            return "";
+        }
+
         @Override
         public void onViewRecycled(@NonNull MyViewHolder holder) {
             if (holder.itemView == mCurrentItemView){
@@ -269,7 +282,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
             if (mData != null){
                 final JSONObject goods_type_info = mData.getJSONObject(position);
                 holder.category_id.setText(goods_type_info.getString("category_id"));
-                holder.category_name.setText(String.format(Locale.CHINA,"%s-%s",goods_type_info.getString("category_code"),goods_type_info.getString("name")));
+                holder.category_name.setText(String.format(Locale.CHINA,"%s%s%s",goods_type_info.getString("category_code"),SEPARATOR,goods_type_info.getString("name")));
                 if (position == 0 && null == mCurrentItemView) {
                     holder.itemView.callOnClick();
                 }
@@ -314,7 +327,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
         @Override
         public void onClick(View v) {
             if (v.getId() == R.id.modify_){
-                MobileEditGoodsInfoActivity.start(mContext,Utils.getViewTagValue(v,""));
+                MobileEditGoodsInfoActivity.start(mContext,Utils.getViewTagValue(v,""),null);
             }else {
                 final TextView tv = v.findViewById(R.id.barcode_id);
                 if (null != tv && onSelectFinish != null)onSelectFinish.onFinish(tv.getText().toString());
@@ -430,7 +443,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
 
         public void loadGoodsByCategoryId(final String id){
             try {
-                setDatas(Integer.parseInt(id));
+                setData(Integer.parseInt(id));
             }catch (NumberFormatException e){
                 e.printStackTrace();
             }
@@ -440,7 +453,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
                 "type,(buying_price * conversion) price,retail_price,cost_price,ps_price,trade_price,ifnull(img_url,'') img_url from barcode_info " +
                 "where (goods_status = 1 and barcode_status = 1) and " + (isSelectMode ? "" : "conversion = 1 and ")/*//非业务选择商品隐藏大件商品*/;
 
-        private void setDatas(int id){
+        private void setData(int id){
 
             final StringBuilder err = new StringBuilder();
             String sql;

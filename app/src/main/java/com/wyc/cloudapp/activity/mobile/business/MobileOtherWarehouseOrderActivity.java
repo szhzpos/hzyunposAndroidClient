@@ -16,6 +16,7 @@ import com.wyc.cloudapp.adapter.business.MobileOtherWarehouseOrderDetailsAdapter
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.BusinessOrderPrintSetting;
 import com.wyc.cloudapp.bean.OrderPrintContentBase;
+import com.wyc.cloudapp.bean.OtherWarehouseOrderPrintContent;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
@@ -101,13 +102,18 @@ public final class MobileOtherWarehouseOrderActivity extends AbstractMobileBusin
         private void setOutInType(){
             final JSONArray array = getOutInTypes();
             final String bgd_type = Utils.getNullStringAsEmpty(mOrderInfo,"bgd_type");
-            for (int i = 0,size = array.size();i < size;i ++){
-                final JSONObject object = array.getJSONObject(i);
-                if (bgd_type.equals(object.getString(TreeListBaseAdapter.COL_ID))){
-                    setView(mOutInTypeTv,bgd_type,object.getString(TreeListBaseAdapter.COL_NAME));
-                    return;
+            if ("3".equals(bgd_type)){
+                setView(mOutInTypeTv,bgd_type,"会员暂存入库");
+            }else if("7".equals(bgd_type)){
+                setView(mOutInTypeTv,bgd_type,"会员暂存出库");
+            }else
+                for (int i = 0,size = array.size();i < size;i ++){
+                    final JSONObject object = array.getJSONObject(i);
+                    if (bgd_type.equals(object.getString(TreeListBaseAdapter.COL_ID))){
+                        setView(mOutInTypeTv,bgd_type,object.getString(TreeListBaseAdapter.COL_NAME));
+                        return;
+                    }
                 }
-            }
         }
 
         private String getOutInType(){
@@ -193,7 +199,7 @@ public final class MobileOtherWarehouseOrderActivity extends AbstractMobileBusin
 
         @Override
         protected String getPrintContent(BusinessOrderPrintSetting setting) {
-            final OrderPrintContentBase.Builder Builder = new OrderPrintContentBase.Builder();
+            final OrderPrintContentBase.Builder Builder = new OrderPrintContentBase.Builder(new OtherWarehouseOrderPrintContent());
             final List<OrderPrintContentBase.Goods> details = new ArrayList<>();
             JSONArray goods_list;
             final String name = getString(R.string.other_inventory_sz);

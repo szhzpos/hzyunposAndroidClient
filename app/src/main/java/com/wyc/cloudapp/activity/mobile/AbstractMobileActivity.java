@@ -3,7 +3,9 @@ package com.wyc.cloudapp.activity.mobile;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
@@ -16,6 +18,7 @@ import androidx.annotation.CallSuper;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.logger.Logger;
 
 public abstract class AbstractMobileActivity extends MainActivity {
     public static final String TITLE_KEY = "TL";
@@ -24,6 +27,12 @@ public abstract class AbstractMobileActivity extends MainActivity {
     private float mTouchX = -1;
     private OverScroller mScroller;
     private int mStatusBarAlpha;
+
+    private VelocityTracker mVelocityTracker;
+    private int mMinimumVelocity;
+    private int mMaximumVelocity;
+    private int mActivePointerId = -1;
+
     @Override
     @CallSuper
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,12 +42,36 @@ public abstract class AbstractMobileActivity extends MainActivity {
         initTitle();
         initTitleText();
         initTitleClickListener();
+
+        initVelocity();
     }
 
     @Override
     protected void onDestroy() {
         stopScroll();
+        recycleVelocityTracker();
         super.onDestroy();
+    }
+
+    private void initVelocity(){
+        final ViewConfiguration configuration = ViewConfiguration.get(this);
+        mMinimumVelocity = configuration.getScaledMinimumFlingVelocity();
+        mMaximumVelocity = configuration.getScaledMaximumFlingVelocity();
+    }
+
+    private void initVelocityTrackerIfNotExists() {
+        if (mVelocityTracker == null) {
+            mVelocityTracker = VelocityTracker.obtain();
+            Logger.d("VelocityTracker has initialized.");
+        }
+    }
+
+    private void recycleVelocityTracker() {
+        if (mVelocityTracker != null) {
+            mVelocityTracker.recycle();
+            Logger.d("VelocityTracker has been recycled.");
+            mVelocityTracker = null;
+        }
     }
 
     private void initWindow(){
@@ -46,12 +79,7 @@ public abstract class AbstractMobileActivity extends MainActivity {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN) ;//显示状态栏
         mRoot = window.getDecorView();
-        mRoot.setOnScrollChangeListener(new View.OnScrollChangeListener() {
-            @Override
-            public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                updateStatusBarColor(Math.abs((float)scrollX / (float)v.getWidth()));
-            }
-        });
+        mRoot.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> updateStatusBarColor(Math.abs((float)scrollX / (float)v.getWidth())));
         mStatusBarAlpha = ((window.getStatusBarColor() >> 24) & 0xff);
     }
 
@@ -68,16 +96,35 @@ public abstract class AbstractMobileActivity extends MainActivity {
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         if (hasSlide()){
+            initVelocityTrackerIfNotExists();
             switch (ev.getAction()){
                 case MotionEvent.ACTION_DOWN:
                     mTouchX = ev.getX();
+
+                    mActivePointerId = ev.getPointerId(0);
+                    mVelocityTracker.addMovement(ev);
                     break;
                 case MotionEvent.ACTION_MOVE:
+                    mVelocityTracker.addMovement(ev);
+
                     if (mTouchX == -1)mTouchX = ev.getX();
                     mRoot.scrollTo((int) (mTouchX - ev.getX()),0);
                     break;
                 case MotionEvent.ACTION_UP:
+                    final VelocityTracker velocityTracker = mVelocityTracker;
+                    velocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
+                    int initialXVelocity = (int) velocityTracker.getXVelocity(mActivePointerId);
+
+                    mActivePointerId = -1;
                     mTouchX = -1;
+                    recycleVelocityTracker();
+
+                    if (mScroller == null)mScroller = new OverScroller(this);
+                    if (Math.abs(initialXVelocity) > mMinimumVelocity){
+                        mScroller.fling(mRoot.getScrollX(),0,initialXVelocity ,0,0,0,0,0);
+                        mRoot.scrollBy(mScroller.getCurrX(),0);
+                    }
+
                     int w = mRoot.getWidth();
                     int scrollX = mRoot.getScrollX(),distance_scrollX = Math.abs(scrollX);
                     int dx;
@@ -88,7 +135,6 @@ public abstract class AbstractMobileActivity extends MainActivity {
                     }
                     if (scrollX > 0)dx = -dx;
 
-                    if (mScroller == null)mScroller = new OverScroller(this);
                     mScroller.startScroll(scrollX,0,dx,0);
                     startScroll();
                     break;

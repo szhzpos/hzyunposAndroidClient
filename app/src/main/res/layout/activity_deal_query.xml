@@ -200,7 +200,7 @@
             android:textSize="@dimen/font_size_18" />
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
+    <com.wyc.cloudapp.CustomizationView.SlideRecycleView
         android:id="@+id/order_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

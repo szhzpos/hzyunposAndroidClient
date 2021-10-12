@@ -11,6 +11,7 @@ import com.wyc.cloudapp.adapter.business.MobilePurchaseOrderDetailsAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.bean.OrderPrintContentBase;
 import com.wyc.cloudapp.bean.BusinessOrderPrintSetting;
+import com.wyc.cloudapp.bean.PurchaseOrderPrintContent;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -129,7 +130,7 @@ public class MobilePurchaseOrderActivity extends AbstractMobileBusinessOrderActi
         }
         @Override
         protected String getPrintContent(BusinessOrderPrintSetting setting) {
-            final OrderPrintContentBase.Builder Builder = new OrderPrintContentBase.Builder();
+            final OrderPrintContentBase.Builder Builder = new OrderPrintContentBase.Builder(new PurchaseOrderPrintContent());
             final List<OrderPrintContentBase.Goods> details = new ArrayList<>();
             final String name = getString(R.string.purchase_order_sz);
             JSONArray goods_list;

@@ -23,7 +23,9 @@ import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
 import com.wyc.cloudapp.adapter.GoodsManageViewAdapter;
 import com.wyc.cloudapp.adapter.TreeListAdapter;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
+import com.wyc.cloudapp.bean.GoodsCategory;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 public final class GoodsManageDialog extends AbstractDialogSaleActivity {
@@ -54,7 +56,12 @@ public final class GoodsManageDialog extends AbstractDialogSaleActivity {
         if (btn != null)
             btn.setOnClickListener(v -> {
                 if (AddGoodsInfoDialog.verifyGoodsAddPermissions(mContext)){
-                    NormalEditGoodsInfoActivity.start(mContext,null);
+
+                    GoodsCategory category = null;
+                    if (mCurrentCategory != null){
+                        category = new GoodsCategory(mCurrentCategory.getIntValue(TreeListBaseAdapter.COL_ID),mCurrentCategory.getString("code"),mCurrentCategory.getString(TreeListBaseAdapter.COL_NAME));
+                    }
+                    NormalEditGoodsInfoActivity.start(mContext,null,category);
                     /*final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(mContext);
                     addGoodsInfoDialog.setCurrentCategory(mCurrentCategory);
                     addGoodsInfoDialog.setFinishListener(barcode -> {
@@ -151,7 +158,7 @@ public final class GoodsManageDialog extends AbstractDialogSaleActivity {
             }
             condition_sb.append(and_sz);
         }
-        int categoryid = Utils.getNotKeyAsNumberDefault(mCurrentCategory,"item_id",0);
+        int categoryid = Utils.getNotKeyAsNumberDefault(mCurrentCategory,TreeListBaseAdapter.COL_ID,0);
         if (categoryid != 0){
             condition_sb.append("category_id in (").append("select category_id from shop_category where path like '%").append(categoryid).append("%'").append(")");
             condition_sb.append(and_sz);

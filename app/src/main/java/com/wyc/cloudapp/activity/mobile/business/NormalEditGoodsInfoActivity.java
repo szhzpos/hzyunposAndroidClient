@@ -8,12 +8,13 @@ import android.view.Display;
 import android.view.WindowManager;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.bean.GoodsCategory;
 
 /**
  * @ProjectName: AndroidClient
  * @Package: com.wyc.cloudapp.activity.mobile.business
- * @ClassName: NomorlEditGoodsInfoActivity
- * @Description: java类作用描述
+ * @ClassName: NormalEditGoodsInfoActivity
+ * @Description: 新增商品
  * @Author: wyc
  * @CreateDate: 2021-09-23 10:36
  * @UpdateUser: 更新者
@@ -40,10 +41,10 @@ public class NormalEditGoodsInfoActivity extends EditGoodsInfoBaseActivity {
         attributes.height = (int) (point.y * 0.98);
         getWindow().setAttributes(attributes);
     }
-    public static void start(Context context, final String barcode_id){
+    public static void start(Context context, final String barcode_id, final GoodsCategory category){
         /*barcode_id 为空时 ，以新增模式打开*/
         Intent intent = new Intent(context, NormalEditGoodsInfoActivity.class);
-        intent.putExtra("barcodeId",barcode_id);
+        intent.putExtra(BARCODEID_KEY,barcode_id).putExtra(CATEGORY_KEY,category);
         context.startActivity(intent);
     }
     @Override

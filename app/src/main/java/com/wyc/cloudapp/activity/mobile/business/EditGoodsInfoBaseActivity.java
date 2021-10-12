@@ -42,6 +42,7 @@ import com.wyc.cloudapp.adapter.business.MultiUnitAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.AuxiliaryBarcode;
 import com.wyc.cloudapp.bean.BarcodeOnlyCodeInfo;
+import com.wyc.cloudapp.bean.GoodsCategory;
 import com.wyc.cloudapp.bean.MultiUnitInfo;
 import com.wyc.cloudapp.bean.Supplier;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -96,6 +97,9 @@ abstract public class EditGoodsInfoBaseActivity extends AbstractEditArchiveActiv
     private static final int REQUEST_CAPTURE_IMG = 100;
     private static final int REQ_CROP = 108;
     private static final int CHOOSE_PHOTO = 110;
+    protected static final String BARCODEID_KEY = "BCK";
+    protected static final String CATEGORY_KEY = "CK";
+
 
     private String mBarcodeId;
     private String mBarcode;
@@ -148,7 +152,7 @@ abstract public class EditGoodsInfoBaseActivity extends AbstractEditArchiveActiv
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mBarcodeId = getIntent().getStringExtra("barcodeId");
+        mBarcodeId = getIntent().getStringExtra(BARCODEID_KEY);
         setMiddleText(getString((isModify = Utils.isNotEmpty(mBarcodeId)) ? R.string.modify_goods : R.string.add_goods));
         Logger.d("mBarcodeId:%s",mBarcodeId);
 
@@ -633,6 +637,7 @@ abstract public class EditGoodsInfoBaseActivity extends AbstractEditArchiveActiv
             }else{
                 if(mBarcode == null || mBarcode.isEmpty()){
                     mBarcodeEt.setText(info.getBarcode());
+                    mBarcodeEt.requestFocus();
                     mBarcodeEt.selectAll();
                 }
             }
@@ -641,11 +646,11 @@ abstract public class EditGoodsInfoBaseActivity extends AbstractEditArchiveActiv
 
     @SuppressLint("ClickableViewAccessibility")
     private void initBarcode(){
-        final EditText barcdoe_et = findViewById(R.id.a_barcode_et);
-        if (barcdoe_et != null){
-            barcdoe_et.setText(mBarcode);
-            barcdoe_et.requestFocus();
-            barcdoe_et.addTextChangedListener(new TextWatcher() {
+        final EditText barcode_et = findViewById(R.id.a_barcode_et);
+        if (barcode_et != null){
+            barcode_et.setText(mBarcode);
+            barcode_et.requestFocus();
+            barcode_et.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -661,19 +666,19 @@ abstract public class EditGoodsInfoBaseActivity extends AbstractEditArchiveActiv
                     mBarcode = s.toString();
                 }
             });
-            barcdoe_et.setOnTouchListener((view, motionEvent) -> {
+            barcode_et.setOnTouchListener((view, motionEvent) -> {
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                     final float dx = motionEvent.getX();
-                    final int w = barcdoe_et.getWidth();
-                    if (dx > (w - barcdoe_et.getCompoundPaddingRight())) {
-                        barcdoe_et.requestFocus();
+                    final int w = barcode_et.getWidth();
+                    if (dx > (w - barcode_et.getCompoundPaddingRight())) {
+                        barcode_et.requestFocus();
                         final Intent intent = new Intent("com.google.zxing.client.android.SCAN");
                         startActivityForResult(intent, CODE_REQUEST_CODE);
                     }
                 }
                 return false;
             });
-            mBarcodeEt = barcdoe_et;
+            mBarcodeEt = barcode_et;
         }
     }
 
@@ -730,22 +735,31 @@ abstract public class EditGoodsInfoBaseActivity extends AbstractEditArchiveActiv
     }
 
     private JSONObject getDefaultCategory(){
+        JSONObject object = null;
         if (mCategoryList != null) {
-            for (int i = 0,size = mCategoryList.size();i < size;i ++){
-                final JSONObject object = mCategoryList.getJSONObject(i);
-                if ("00".equals(object.getString("category_code"))){
-                    return object;
+            final GoodsCategory category = getIntent().getParcelableExtra(CATEGORY_KEY);
+            if (category != null){
+                object = new JSONObject();
+                object.put(TreeListBaseAdapter.COL_ID,category.getCategory_id());
+                object.put(TreeListBaseAdapter.COL_NAME,category.getName());
+            }else
+                for (int i = 0,size = mCategoryList.size();i < size;i ++){
+                    object  = mCategoryList.getJSONObject(i);
+                    if ("00".equals(object.getString("category_code"))){
+                        return object;
+                    }
                 }
-            }
         }
-        return null;
+        return object;
     }
 
     private void setDefaultCategory(){
-        final JSONObject object = getDefaultCategory();
-        if (!isModify && null != object && mCategoryTv != null){
-            mCategoryTv.setTag(object.getString(TreeListBaseAdapter.COL_ID));
-            mCategoryTv.setText(object.getString(TreeListBaseAdapter.COL_NAME));
+        if (!isModify ){
+            final JSONObject object = getDefaultCategory();
+            if (null != object && mCategoryTv != null){
+                mCategoryTv.setTag(object.getString(TreeListBaseAdapter.COL_ID));
+                mCategoryTv.setText(object.getString(TreeListBaseAdapter.COL_NAME));
+            }
         }
     }
 
@@ -1174,16 +1188,17 @@ abstract public class EditGoodsInfoBaseActivity extends AbstractEditArchiveActiv
         mNameEt.setText(R.string.space_sz);
         resetCurPrice();
         //setDefaultSupplier();
-        //setDefaultCategory();
+        setDefaultCategory();
         setDefaultUnit();
 
         mRetailPriceEt.setText(R.string.zero_p_z_sz);
         mVipPriceEt.setText(R.string.zero_p_z_sz);
         mPurPriceEt.setText(R.string.zero_p_z_sz);
         pf_price_et.setText(R.string.zero_p_z_sz);
-        mUnitTv.setText("");
+        //mUnitTv.setText("");
         spec_tv.setText("");
         mBarcodeEt.setText("");
+        if (Utils.isNotEmpty(mBarcode))mBarcode = null;
 
         getOnlycodeAndBarcode();
     }

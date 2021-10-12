@@ -13,6 +13,8 @@ import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.adapter.business.MobileWholesaleRefundOrderAdapter;
 import com.wyc.cloudapp.adapter.business.MobileWholesaleRefundOrderDetailAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.OrderPrintContentBase;
+import com.wyc.cloudapp.bean.WholesaleRefundPrintContent;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
@@ -127,6 +129,11 @@ public class MobileWholesaleRefundOrderActivity extends AbstractMobileBusinessOr
         @Override
         protected String getOrderPrintName() {
             return getString(R.string.wholesale_refund_sz);
+        }
+
+        @Override
+        protected OrderPrintContentBase getPrintContent() {
+            return new WholesaleRefundPrintContent();
         }
 
         @Override

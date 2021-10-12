@@ -103,7 +103,7 @@
     <string name="begin_print">开始打印</string>
     <string name="end_print">结束打印</string>
     <string name="retail_price_sz">零售价</string>
-
+    <string name="save_hint">保存成功!</string>
     <!-- 新增会员 -->
     <string name="vip_dialog_title_sz">会员信息</string>
     <string name="vip_search_hint_sz">请输入会员手机号</string>
@@ -847,6 +847,10 @@
 
     <!--后台单据打印设置-->
     <string name="in_store">入库门店</string>
+    <string name="out_store">出库门店</string>
+    <string name="pur_store">订货门店</string>
+    <string name="o_store">出入库门店</string>
+    <string name="pur_refund_store">退货门店</string>
     <string name="sup">@string/supplier_name_sz</string>
     <string name="oper">经办人</string>
     <string name="order_no">单据编号</string>
@@ -858,7 +862,7 @@
     <string name="printer_empty_hint">打印机未设置</string>
     <string name="continue_input">继续</string>
     <string name="out_in">出入库类型</string>
-    <string name="out_store">配出门店</string>
+    <string name="delivery_out_store">配出门店</string>
     <string name="in_store_alias">配入门店</string>
 
     <!--后台单据打印设置-->
@@ -866,4 +870,8 @@
     <string name="enquiry_store">要货门店：</string>
     <string name="target_store">目标门店：</string>
     <string name="enquiry_header_sz">名称/条码---------单位-----数量</string>
+
+    <!--零售打印设置-->
+    <string name="print_setting">打印设置</string>
+    <string name="select_printer_hint">请选择打印机</string>
 </resources>
