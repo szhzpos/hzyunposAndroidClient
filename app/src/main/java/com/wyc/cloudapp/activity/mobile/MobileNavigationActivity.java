@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
@@ -18,17 +19,17 @@ import com.wyc.cloudapp.CustomizationView.TopDrawableTextView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.cashierDesk.MobileCashierActivity;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.constants.MessageID;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.orderDialog.AbstractTransferDialog;
 import com.wyc.cloudapp.dialog.orderDialog.MobileTransferDialog;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.mobileFragemt.MobileBusinessFragment;
 import com.wyc.cloudapp.mobileFragemt.BoardFragment;
+import com.wyc.cloudapp.mobileFragemt.MobileBusinessFragment;
 import com.wyc.cloudapp.mobileFragemt.MobileCashierDeskFragment;
 import com.wyc.cloudapp.mobileFragemt.MyFragment;
 import com.wyc.cloudapp.mobileFragemt.ReportFragment;
-import com.wyc.cloudapp.constants.MessageID;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -79,7 +80,9 @@ public final class MobileNavigationActivity extends AbstractMobileActivity imple
                     y1 = m_y;
                     isMoved = false;
                 }else {
-                    isMoved = x1 != m_x || y1 != m_y;
+                    float slop = ViewConfiguration.get(this).getScaledPagingTouchSlop();
+                    Logger.d("x1:%f,m_x:%f,slop:%f,x1 - m_x:%f",x1,m_x,slop,x1 - m_x);
+                    isMoved = Math.abs(x1 - m_x) > slop * 2  || Math.abs(y1 - m_y) > slop * 2;
                 }
             }
             break;

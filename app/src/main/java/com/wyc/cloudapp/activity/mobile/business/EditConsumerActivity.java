@@ -6,6 +6,8 @@ import android.os.Parcelable;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.lifecycle.ViewModelProvider;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
@@ -14,6 +16,8 @@ import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.bean.Consumer;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.data.viewModel.ConsumerViewModel;
+import com.wyc.cloudapp.data.viewModel.SupplierViewModel;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.utils.Utils;
@@ -50,8 +54,12 @@ public class EditConsumerActivity extends AbstractEditArchiveActivity {
         initSettlementWay();
 
         initContent();
-
     }
+
+    private void getConsumerCode(){
+        new ViewModelProvider(this).get(ConsumerViewModel.class).getCodeModel().observe(this, s -> mConsumerCode.setText(s));
+    }
+
 
     private void initSettlementWay(){
         final TextView consumer_settlement_way_tv = findViewById(R.id.consumer_settlement_way_tv);
@@ -130,7 +138,7 @@ public class EditConsumerActivity extends AbstractEditArchiveActivity {
             mContactsJob.setText(consumer.getRoles());
             mContactsName.setText(consumer.getName());
             mContactsMobile.setText(consumer.getMobile());
-        }
+        }else getConsumerCode();
     }
 
 
@@ -196,8 +204,7 @@ public class EditConsumerActivity extends AbstractEditArchiveActivity {
 
     private void reset(){
         final String space = getString(R.string.space_sz);
-        mConsumerCode.setText(resetSupplierCode());
-        mConsumerCode.setTag(null);
+        resetConsumerCode();
 
         mConsumerName.setText(space);
         mConsumerAddr.setText(space);
@@ -207,15 +214,11 @@ public class EditConsumerActivity extends AbstractEditArchiveActivity {
         setDefaultCooperationWay();
         setDefaultSettlementWay();
     }
-    private String resetSupplierCode(){
-        if (mConsumerCode == null)return "";
-        String code = mConsumerCode.getText().toString(),new_code = "";
-        try {
-            new_code = String.format(Locale.CHINA,"%0"+ code.length() +"d",Integer.parseInt(code) + 1);
-        }catch (NumberFormatException e){
-            e.printStackTrace();
+    private void resetConsumerCode(){
+        if (mConsumerCode != null){
+            getConsumerCode();
+            mConsumerCode.setTag(null);
         }
-        return new_code;
     }
 
     @Override

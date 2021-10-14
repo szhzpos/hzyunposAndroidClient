@@ -6,21 +6,22 @@ import android.os.Parcelable;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.lifecycle.ViewModelProvider;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
-import com.wyc.cloudapp.bean.Supplier;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.Supplier;
+import com.wyc.cloudapp.data.viewModel.SupplierViewModel;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
-
-import java.util.Locale;
 
 import butterknife.BindView;
 
@@ -50,6 +51,10 @@ public class EditSupplierActivity extends AbstractEditArchiveActivity {
         initSettlementWay();
 
         initContent();
+    }
+
+    private void getSupplierCode(){
+        new ViewModelProvider(this).get(SupplierViewModel.class).getCodeModel().observe(this, s -> mSupplierCode.setText(s));
     }
 
     private void initSettlementWay(){
@@ -129,7 +134,7 @@ public class EditSupplierActivity extends AbstractEditArchiveActivity {
             mContactsJob.setText(supplier.getRoles());
             mContactsName.setText(supplier.getName());
             mContactsMobile.setText(supplier.getMobile());
-        }
+        }else getSupplierCode();
     }
 
 
@@ -195,8 +200,7 @@ public class EditSupplierActivity extends AbstractEditArchiveActivity {
 
     private void reset(){
         final String space = getString(R.string.space_sz);
-        mSupplierCode.setText(resetSupplierCode());
-        mSupplierCode.setTag(null);
+        resetSupplierCode();
 
         mSupplierName.setText(space);
         mSupplierAddr.setText(space);
@@ -206,15 +210,11 @@ public class EditSupplierActivity extends AbstractEditArchiveActivity {
         setDefaultCooperationWay();
         setDefaultSettlementWay();
     }
-    private String resetSupplierCode(){
-        if (mSupplierCode == null)return "";
-        String code = mSupplierCode.getText().toString(),new_code = "";
-        try {
-            new_code = String.format(Locale.CHINA,"%0"+ code.length() +"d",Integer.parseInt(code) + 1);
-        }catch (NumberFormatException e){
-            e.printStackTrace();
+    private void resetSupplierCode(){
+        if (mSupplierCode != null){
+            getSupplierCode();
+            mSupplierCode.setTag(null);
         }
-        return new_code;
     }
 
     @Override

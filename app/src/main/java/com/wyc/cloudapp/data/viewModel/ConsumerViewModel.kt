@@ -10,6 +10,7 @@ import com.wyc.cloudapp.dialog.MyDialog
 import com.wyc.cloudapp.utils.http.HttpRequest
 import com.wyc.cloudapp.utils.http.HttpUtils
 import com.wyc.cloudapp.utils.http.callback.ArrayResult
+import com.wyc.cloudapp.utils.http.callback.ObjectResult
 import kotlinx.coroutines.*
 import java.io.IOException
 import java.net.HttpURLConnection
@@ -28,8 +29,10 @@ import java.net.HttpURLConnection
  * @Version:        1.0
  */
 class ConsumerViewModel:ViewModelBase() {
-    private val currentModel: MutableLiveData<List<Consumer>>  = MutableLiveData()
+    private var currentModel: MutableLiveData<List<Consumer>>?  = null
+    private var codeModel: MutableLiveData<String>?  = null
     fun getCurrentModel(): MutableLiveData<List<Consumer>>  {
+        if (currentModel == null)currentModel = MutableLiveData()
         launchWithHandler {
             val app = CustomApplication.self()
             val `object` = JSONObject()
@@ -40,7 +43,7 @@ class ConsumerViewModel:ViewModelBase() {
                 if (code == HttpURLConnection.HTTP_OK){
                     val data:ArrayResult<Consumer> = parseArray(Consumer::class.java,it.body()?.string())
                     if (data.isSuccess)
-                        currentModel.postValue(data.data)
+                        currentModel!!.postValue(data.data)
                     else
                         MyDialog.ToastMessageInMainThread(data.info)
                 }else{
@@ -49,6 +52,29 @@ class ConsumerViewModel:ViewModelBase() {
                 netFinished()
             }
         }
-        return currentModel
+        return currentModel!!
+    }
+    fun getCodeModel(): MutableLiveData<String>  {
+        if (codeModel == null)codeModel = MutableLiveData()
+        launchWithHandler {
+            val app = CustomApplication.self()
+            val `object` = JSONObject()
+            `object`["appid"] = app.appId
+            `object`["cs_xinzi"] = 2
+            netRequest(app.url + "/api/supplier_search/get_code", HttpRequest.generate_request_parm(`object`, app.appSecret)).execute().use {
+                val code: Int = it.code()
+                if (code == HttpURLConnection.HTTP_OK){
+                    val data: ObjectResult<String> = parseObject(String::class.java,it.body()?.string())
+                    if (data.isSuccess)
+                        codeModel!!.postValue(data.data)
+                    else
+                        MyDialog.ToastMessageInMainThread(data.info)
+                }else{
+                    MyDialog.ToastMessageInMainThread(it.message())
+                }
+                netFinished()
+            }
+        }
+        return codeModel!!
     }
 }

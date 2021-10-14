@@ -1,17 +1,17 @@
 package com.wyc.cloudapp.data.viewModel
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.alibaba.fastjson.JSONObject
 import com.wyc.cloudapp.application.CustomApplication
-import com.wyc.cloudapp.bean.Consumer
+import com.wyc.cloudapp.bean.BarcodeOnlyCodeInfo
 import com.wyc.cloudapp.bean.Supplier
 import com.wyc.cloudapp.dialog.MyDialog
 import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.http.HttpRequest
-import com.wyc.cloudapp.utils.http.HttpUtils
 import com.wyc.cloudapp.utils.http.callback.ArrayCallback
+import com.wyc.cloudapp.utils.http.callback.ObjectResult
 import kotlinx.coroutines.*
+import java.net.HttpURLConnection
 
 /**
  *
@@ -27,22 +27,48 @@ import kotlinx.coroutines.*
  * @Version:        1.0
  */
 class SupplierViewModel:ViewModelBase() {
-    private val currentModel: MutableLiveData<List<Supplier>>  = MutableLiveData()
+    private var currentModel: MutableLiveData<List<Supplier>>?  = null
+    private var codeModel: MutableLiveData<String>?  = null
     fun getCurrentModel():MutableLiveData<List<Supplier>> {
+        if (currentModel == null)currentModel = MutableLiveData()
         val app = CustomApplication.self()
         val `object` = JSONObject()
         `object`["appid"] = app.appId
         `object`["stores_id"] = app.storeId
-        netRequestAsync(app.url + "/api/supplier_search/xlist",HttpRequest.generate_request_parm(`object`, app.appSecret),object: ArrayCallback<Supplier>(Supplier::class.java) {
+        netRequestAsync(app.url + "/api/supplier_search/xlist", HttpRequest.generate_request_parm(`object`, app.appSecret), object : ArrayCallback<Supplier>(Supplier::class.java) {
             override fun onSuccessForResult(d: MutableList<Supplier>?, hint: String?) {
                 netFinished()
-                currentModel.postValue(d)
+                currentModel!!.postValue(d)
             }
+
             override fun onError(msg: String?) {
                 netFinished()
                 MyDialog.toastMessage(msg)
             }
         })
-        return currentModel
+        return currentModel!!
+    }
+    fun getCodeModel(): MutableLiveData<String>  {
+        if (codeModel == null)codeModel = MutableLiveData()
+        launchWithHandler {
+            val app = CustomApplication.self()
+            val `object` = JSONObject()
+            `object`["appid"] = app.appId
+            `object`["cs_xinzi"] = 1
+            netRequest(app.url + "/api/supplier_search/get_code", HttpRequest.generate_request_parm(`object`, app.appSecret)).execute().use {
+                val code: Int = it.code()
+                if (code == HttpURLConnection.HTTP_OK){
+                    val data: ObjectResult<String> = parseObject(String::class.java,it.body()?.string())
+                    if (data.isSuccess)
+                        codeModel!!.postValue(data.data)
+                    else
+                        MyDialog.ToastMessageInMainThread(data.info)
+                }else{
+                    MyDialog.ToastMessageInMainThread(it.message())
+                }
+                netFinished()
+            }
+        }
+        return codeModel!!
     }
 }
