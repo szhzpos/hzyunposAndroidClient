@@ -1,6 +1,9 @@
 package com.wyc.cloudapp.data.viewModel;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -26,9 +29,9 @@ import okhttp3.ResponseBody;
  * @Version: 1.0
  */
 public class BarcodeOnlyCodeViewModel extends ViewModelBase {
-    private final MutableLiveData<BarcodeOnlyCodeInfo> currentModel = new MutableLiveData<>();
-
-    public MutableLiveData<BarcodeOnlyCodeInfo> getCurrentModel(final String cate_id,final String spec_id) {
+    private MutableLiveData<BarcodeOnlyCodeInfo> currentModel = null;
+    public void refresh(final String cate_id,final String spec_id) {
+        if (currentModel == null)return;
         launchWithHandler((coroutineScope, continuation) -> {
             final JSONObject object = new JSONObject();
             object.put("appid", CustomApplication.self().getAppId());
@@ -51,6 +54,15 @@ public class BarcodeOnlyCodeViewModel extends ViewModelBase {
             }
             return null;
         });
-        return currentModel;
+    }
+    public BarcodeOnlyCodeViewModel AddObserver(@NonNull LifecycleOwner owner,@NonNull Observer<? super BarcodeOnlyCodeInfo> observer){
+        if (currentModel == null){
+            currentModel = new MutableLiveData<>();
+            currentModel.observe(owner,observer);
+        }
+        return this;
+    }
+    public boolean hasObserver(){
+        return (currentModel != null && currentModel.hasActiveObservers());
     }
 }

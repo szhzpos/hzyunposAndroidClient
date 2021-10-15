@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.alibaba.fastjson.JSONArray;
@@ -57,7 +58,8 @@ public class EditConsumerActivity extends AbstractEditArchiveActivity {
     }
 
     private void getConsumerCode(){
-        new ViewModelProvider(this).get(ConsumerViewModel.class).getCodeModel().observe(this, s -> mConsumerCode.setText(s));
+        final MutableLiveData<String> liveData = new ViewModelProvider(this).get(ConsumerViewModel.class).getCodeModel();
+        if (!liveData.hasActiveObservers())liveData.observe(this, s -> mConsumerCode.setText(s));
     }
 
 

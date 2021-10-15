@@ -14,15 +14,14 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -263,7 +262,7 @@ abstract public class EditGoodsInfoBaseActivity extends AbstractEditArchiveActiv
         final List<MultiUnitInfo> multiUnitInfoList = mMultiUnitAdapter.getOriginalData();
         MultiUnitInfo multiUnitInfo ;
         if (multiUnitInfoList.size() > 1){
-            multiUnitInfo = multiUnitInfoList.get(multiUnitInfoList.size() - 1);
+            multiUnitInfo = multiUnitInfoList.get(0);
         }else {
             multiUnitInfo = new MultiUnitInfo();
             multiUnitInfoList.add(0,multiUnitInfo);
@@ -436,7 +435,8 @@ abstract public class EditGoodsInfoBaseActivity extends AbstractEditArchiveActiv
     }
 
     private void getSupplier(){
-        new ViewModelProvider(this).get(SupplierViewModel.class).getCurrentModel().observe(this, suppliers -> {
+        final MutableLiveData<List<Supplier>> liveData = new ViewModelProvider(this).get(SupplierViewModel.class).getCurrentModel();
+        if (!liveData.hasActiveObservers())liveData.observe(this, suppliers -> {
             mSupplierList = suppliers;
             setDefaultSupplier();
         });
@@ -622,10 +622,12 @@ abstract public class EditGoodsInfoBaseActivity extends AbstractEditArchiveActiv
         mCategoryTv = category_et;
     }
 
-    private void getOnlycodeAndBarcode(){
-        if (!isModify)//修改状态下不刷新条码和货号20210922
-            new ViewModelProvider(this).get(BarcodeOnlyCodeViewModel.class).getCurrentModel(Utils.getViewTagValue(mCategoryTv,"7223")
-                    ,Utils.getViewTagValue(mGoodsAttrEt,"1")).observe(this, this::setBarcodeAndItemId);
+    private void getOnlycodeAndBarcode(){//修改状态下不刷新条码和货号20210922
+        if (!isModify){
+            final BarcodeOnlyCodeViewModel model = new ViewModelProvider(this).get(BarcodeOnlyCodeViewModel.class);
+            if (!model.hasObserver())model.AddObserver(this, this::setBarcodeAndItemId);
+            model.refresh(Utils.getViewTagValue(mCategoryTv,"7223"),Utils.getViewTagValue(mGoodsAttrEt,"1"));
+        }
     }
 
     private void setBarcodeAndItemId(final @NonNull BarcodeOnlyCodeInfo info){
@@ -1188,7 +1190,7 @@ abstract public class EditGoodsInfoBaseActivity extends AbstractEditArchiveActiv
         mNameEt.setText(R.string.space_sz);
         resetCurPrice();
         //setDefaultSupplier();
-        setDefaultCategory();
+        //setDefaultCategory();
         setDefaultUnit();
 
         mRetailPriceEt.setText(R.string.zero_p_z_sz);

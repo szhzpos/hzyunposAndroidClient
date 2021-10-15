@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.alibaba.fastjson.JSON;
@@ -13,6 +14,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.Consumer;
 import com.wyc.cloudapp.bean.WholesalePrintContent;
 import com.wyc.cloudapp.bean.BusinessOrderPrintSetting;
 import com.wyc.cloudapp.bean.OrderPrintContentBase;
@@ -129,10 +131,8 @@ public abstract class MobileWholesaleBaseActivity extends AbstractMobileQuerySou
             }
         }));
 
-        new ViewModelProvider(this).get(ConsumerViewModel.class)
-                .getCurrentModel().observe(this, consumers -> {
-                    mCustomerList = parse_customer_info_and_set_default(JSONArray.parseArray(JSON.toJSONString(consumers)));
-        });
+        final MutableLiveData<List<Consumer>> liveData = new ViewModelProvider(this).get(ConsumerViewModel.class).getCurrentModel();
+        if (!liveData.hasActiveObservers())liveData.observe(this, consumers -> mCustomerList = parse_customer_info_and_set_default(JSONArray.parseArray(JSON.toJSONString(consumers))));
     }
 
     public int getCustomerPriceType(){

@@ -466,8 +466,8 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
     }
 
     private void getOnlycodeAndBarcode(){
-        new ViewModelProvider(mContext).get(BarcodeOnlyCodeViewModel.class).getCurrentModel(Utils.getViewTagValue(mCategoryEt,"7223")
-                ,Utils.getViewTagValue(mGoodsAttrEt,"1")).observe(mContext, this::setBarcodeAndItemId);
+        new ViewModelProvider(mContext).get(BarcodeOnlyCodeViewModel.class).AddObserver(mContext, this::setBarcodeAndItemId).refresh(Utils.getViewTagValue(mCategoryEt,"7223")
+                ,Utils.getViewTagValue(mGoodsAttrEt,"1"));
     }
 
     private void setBarcodeAndItemId(final @NonNull BarcodeOnlyCodeInfo data){

@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -304,8 +305,8 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
     }
 
     private void generateOrderCode() {
-         new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
-                .get(OrderIdViewModel.class).init(generateOrderCodePrefix()).observe(this, s -> mOrderCodeTv.setText(s));
+         final MutableLiveData<String> liveData = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication())).get(OrderIdViewModel.class).init(generateOrderCodePrefix());
+         if (!liveData.hasActiveObservers())liveData.observe(this, s -> mOrderCodeTv.setText(s));
     }
 
     private void setOrderStatus(){
@@ -332,8 +333,8 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
     }
 
     private void getSupplier(){
-        new ViewModelProvider(this).get(SupplierViewModel.class).getCurrentModel()
-                .observe(this, suppliers -> mSupplierList = parse_supplier_info_and_set_default(suppliers));
+        final  MutableLiveData<List<Supplier>> liveData = new ViewModelProvider(this).get(SupplierViewModel.class).getCurrentModel();
+        if (!liveData.hasActiveObservers())liveData.observe(this, suppliers -> mSupplierList = parse_supplier_info_and_set_default(suppliers));
     }
     private JSONArray parse_supplier_info_and_set_default(final List<Supplier> suppliers){
         final JSONArray array  = new JSONArray();
@@ -655,13 +656,14 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActiv
             parameterObj.put(getOrderIDKey(),id);
 
             final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,getString(R.string.hints_query_data_sz)).setCancel(true);
-            new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
-                    .get(OrderViewModel.class).getCurrentModel(getUrl() + condition.getString("api"),HttpRequest.generate_request_parm(parameterObj,getAppSecret()))
-                    .observe(this, jsonObject -> {
-                        mOrderInfo = jsonObject;
-                        showOrder();
-                        progressDialog.dismiss();
-                    });
+            final MutableLiveData<JSONObject> liveData = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
+                    .get(OrderViewModel.class).getCurrentModel(getUrl() + condition.getString("api"),HttpRequest.generate_request_parm(parameterObj,getAppSecret()));
+            if (!liveData.hasActiveObservers())
+                liveData.observe(this, jsonObject -> {
+                            mOrderInfo = jsonObject;
+                            showOrder();
+                            progressDialog.dismiss();
+                        });
             progressDialog.setOnCancelListener(dialog -> {
                 dialog.dismiss();
                 finish();
