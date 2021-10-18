@@ -391,7 +391,7 @@ final class SyncHandler extends Handler {
                                             }else if (MessageID.SYNC_AUXILIARY_BARCODE_ID == msg.what){
                                                 up_auxiliary_barcode(data);
                                                 if ((current_page++ <= max_page)){
-                                                    //Logger.d("current_page:%d,max_page:%d",current_page,max_page);
+                                                    Logger.d("current_page:%d,max_page:%d",current_page,max_page);
                                                     sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_AUXILIARY_BARCODE_ID,current_page));
                                                 }
                                             }
@@ -1051,15 +1051,17 @@ final class SyncHandler extends Handler {
             JSONObject object;
             final String url = mUrl + "/api/goods_set/up_fuzhu_barcode";
 
-            final JSONArray g_m_ids = new JSONArray();
+            final JSONArray g_m_ids = new JSONArray(),ids = new JSONArray();
             for (int k = 0,length = datas.size();k < length;k++) {
                 object = datas.getJSONObject(k);
                 g_m_ids.add(object.getIntValue("g_m_id"));
+                ids.add(object.getIntValue("id"));
             }
 
             object = new JSONObject();
             object.put("appid",mAppId);
             object.put("g_m_ids",g_m_ids);
+            object.put("ids",ids);
             object.put("pos_num",mPosNum);
 
             object = mHttp.sendPost(url,HttpRequest.generate_request_parm(object,mAppSecret),true);

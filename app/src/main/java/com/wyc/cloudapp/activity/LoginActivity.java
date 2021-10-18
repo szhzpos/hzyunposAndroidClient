@@ -316,7 +316,7 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
         final File file =  new File(filepath);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             data = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".FileProvider",file);
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         } else {
             data = Uri.fromFile(file);
         }

@@ -44,6 +44,8 @@ public abstract class AbstractCallback<T> implements Callback {
         } catch (JSONException e) {
             e.printStackTrace();
             error(e.getMessage() + "___" + content);
+        }finally {
+            if (body != null)body.close();
         }
     }
     private void error(final String msg){

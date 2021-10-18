@@ -67,14 +67,12 @@ public class VipDetailInfoWindow extends PopupWindow {
     @Override
     public void dismiss() {
         super.dismiss();
-        setBackgroundAlpha(1.0f);
     }
 
     @Override
     public void showAtLocation(View anchor,int gravity,int x,int y) {
         initWidth();
         super.showAtLocation(anchor,gravity,x, y);
-        setBackgroundAlpha(0.5f);
     }
     private void initWidth(){
         final WindowManager m = (WindowManager)mContext.getSystemService(WINDOW_SERVICE);

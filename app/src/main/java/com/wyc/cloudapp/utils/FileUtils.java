@@ -175,7 +175,7 @@ public class FileUtils {
     public static Uri getUriForFile(Context context, File file) {
         Uri fileUri;
         if (Build.VERSION.SDK_INT >= 24) {
-            fileUri = FileProvider.getUriForFile(context, context.getPackageName() + ".fileprovider", file);
+            fileUri = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".FileProvider", file);
         } else {
             fileUri = Uri.fromFile(file);
         }
