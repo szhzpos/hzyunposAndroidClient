@@ -12,7 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.SaleActivity;
+import com.wyc.cloudapp.activity.base.SaleActivity;
 import com.wyc.cloudapp.adapter.VipDepositOrderAdapter;
 import com.wyc.cloudapp.dialog.orderDialog.AbstractQuerySuperDialog;
 import com.wyc.cloudapp.utils.Utils;

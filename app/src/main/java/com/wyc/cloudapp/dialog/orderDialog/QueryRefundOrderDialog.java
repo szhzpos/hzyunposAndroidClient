@@ -13,7 +13,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.SaleActivity;
+import com.wyc.cloudapp.activity.base.SaleActivity;
 import com.wyc.cloudapp.adapter.RefundOrderAdapter;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;

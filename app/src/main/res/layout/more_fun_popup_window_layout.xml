@@ -61,6 +61,17 @@
             android:textSize="@dimen/font_size_14" />
 
         <Button
+            android:id="@+id/pop_time_card_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/fun_button_height_size"
+            android:layout_marginBottom="@dimen/margin_2"
+            android:background="@drawable/button_green"
+            android:text="@string/time_card_business"
+            android:textColor="@color/black_white"
+            android:textSize="@dimen/font_size_14" />
+
+        <Button
             android:id="@+id/pop_refund_btn"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/fun_button_width_size"
@@ -69,6 +80,7 @@
             android:text="@string/single_refund_sz"
             android:textColor="@color/black_white"
             android:textSize="@dimen/font_size_14" />
+
     </com.wyc.cloudapp.CustomizationView.InterceptLinearLayout>
 
 </LinearLayout>

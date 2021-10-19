@@ -16,7 +16,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.SaleActivity;
+import com.wyc.cloudapp.activity.base.SaleActivity;
 import com.wyc.cloudapp.bean.FullReduceRule;
 import com.wyc.cloudapp.bean.PromotionRule;
 import com.wyc.cloudapp.data.SQLiteHelper;

@@ -17,7 +17,7 @@ import android.widget.TextView;
 import androidx.annotation.CallSuper;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.logger.Logger;
 
 public abstract class AbstractMobileActivity extends MainActivity {

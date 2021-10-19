@@ -1,10 +1,7 @@
 package com.wyc.cloudapp.dialog.vip;
 
-import android.app.Activity;
 import android.graphics.Point;
-import android.os.Bundle;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
@@ -17,8 +14,7 @@ import androidx.lifecycle.LifecycleOwner;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
+import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;

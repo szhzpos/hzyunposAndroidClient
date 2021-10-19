@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,7 +13,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.activity.mobile.report.MobileStockQueryActivity;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;

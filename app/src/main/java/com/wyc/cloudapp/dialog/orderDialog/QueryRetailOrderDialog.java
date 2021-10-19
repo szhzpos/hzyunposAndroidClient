@@ -11,7 +11,7 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractQueryDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.adapter.RetailOrderAdapter;

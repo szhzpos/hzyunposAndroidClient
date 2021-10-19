@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.SaleActivity;
+import com.wyc.cloudapp.activity.base.SaleActivity;
 import com.wyc.cloudapp.adapter.BuyFullGiveXGoodsAdapter;
 import com.wyc.cloudapp.adapter.BuyFullGiveXRuleAdapter;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;

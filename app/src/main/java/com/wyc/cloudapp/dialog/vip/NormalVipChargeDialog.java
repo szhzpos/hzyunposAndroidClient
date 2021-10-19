@@ -1,14 +1,13 @@
 package com.wyc.cloudapp.dialog.vip;
 
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.bean.VipInfo;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;

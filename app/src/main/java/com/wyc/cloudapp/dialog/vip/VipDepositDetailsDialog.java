@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.adapter.VipDepositDetailsPayInfoAdapter;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.Utils;

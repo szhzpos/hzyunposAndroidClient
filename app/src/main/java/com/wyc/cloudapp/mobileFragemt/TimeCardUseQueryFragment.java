@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForList;
 import com.wyc.cloudapp.application.CustomApplication;

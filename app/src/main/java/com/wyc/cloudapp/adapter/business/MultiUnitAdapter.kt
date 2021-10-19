@@ -12,13 +12,11 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout
 import com.wyc.cloudapp.R
-import com.wyc.cloudapp.activity.MainActivity
+import com.wyc.cloudapp.activity.base.MainActivity
 import com.wyc.cloudapp.activity.mobile.business.EditGoodsInfoBaseActivity
-import com.wyc.cloudapp.activity.mobile.business.MobileEditGoodsInfoActivity
 import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.bean.MultiUnitInfo
 import com.wyc.cloudapp.dialog.MyDialog
-import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.mobileFragemt.FindFragment
 import com.wyc.cloudapp.utils.Utils
 import java.lang.NumberFormatException
@@ -127,7 +125,7 @@ class MultiUnitAdapter(private val attachView:RecyclerView): AbstractActionAdapt
                 if (dx > w - it.compoundPaddingRight) {
                         when(it.id){
                             R.id.barcode ->{
-                                (attachView.context as? MainActivity)?.let {c->
+                                (attachView.context as? MainActivity)?.let { c->
                                     FindFragment.beginScan(c, object : FindFragment.Callback{
                                         override fun scan(code: String) {
                                             it.setText(code)

@@ -17,7 +17,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.SaleActivity;
+import com.wyc.cloudapp.activity.base.SaleActivity;
 import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.decoration.PayMethodItemDecoration;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;

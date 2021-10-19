@@ -2,7 +2,6 @@ package com.wyc.cloudapp.dialog;
 
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -11,7 +10,7 @@ import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.callback.PasswordEditTextReplacement;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.logger.Logger;

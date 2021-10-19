@@ -1,7 +1,6 @@
 package com.wyc.cloudapp.dialog.business;
 
 import android.os.Bundle;
-import android.view.View;
 import android.view.ViewStub;
 import android.widget.Button;
 
@@ -9,7 +8,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 

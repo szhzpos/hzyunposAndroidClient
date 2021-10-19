@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.SaleActivity;
+import com.wyc.cloudapp.activity.base.SaleActivity;
 import com.wyc.cloudapp.callback.ClickListener;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;

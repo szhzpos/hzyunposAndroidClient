@@ -5,9 +5,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -21,7 +19,7 @@ import androidx.annotation.NonNull;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.activity.mobile.business.MobileSelectGoodsActivity;
 import com.wyc.cloudapp.activity.mobile.business.MobileWholesaleBaseActivity;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -33,9 +31,6 @@ import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
-
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * @ProjectName: CloudApp

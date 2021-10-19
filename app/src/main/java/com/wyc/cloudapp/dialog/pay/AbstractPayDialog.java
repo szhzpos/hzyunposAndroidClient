@@ -1,7 +1,6 @@
 package com.wyc.cloudapp.dialog.pay;
 
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -13,11 +12,10 @@ import androidx.annotation.NonNull;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.text.SimpleDateFormat;

@@ -1,29 +1,18 @@
 package com.wyc.cloudapp.dialog;
-import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
-import androidx.fragment.app.DialogFragment;
-
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
-import com.wyc.cloudapp.CustomizationView.TopDrawableTextView;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.adapter.FragmentPagerAdapter;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
-import com.wyc.cloudapp.fragment.AbstractBaseFragment;
 import com.wyc.cloudapp.fragment.AbstractParameterFragment;
 import com.wyc.cloudapp.fragment.BaseParameterFragment;
 import com.wyc.cloudapp.fragment.PeripheralSettingFragment;

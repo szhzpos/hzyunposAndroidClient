@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.wyc.cloudapp.activity.IHookKey;
+import com.wyc.cloudapp.activity.base.IHookKey;
 import com.wyc.cloudapp.logger.Logger;
 
 

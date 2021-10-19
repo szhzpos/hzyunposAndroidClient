@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.activity;
+package com.wyc.cloudapp.activity.normal;
 
 import android.Manifest;
 import android.app.Dialog;
@@ -27,7 +27,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -41,6 +40,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.BuildConfig;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.base.BaseActivity;
 import com.wyc.cloudapp.activity.mobile.MobileNavigationActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.callback.PasswordEditTextReplacement;

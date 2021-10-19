@@ -8,8 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
-import com.wyc.cloudapp.bean.TimeCardSaleInfo;
+import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.data.room.entity.GiftCardSaleDetail;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;

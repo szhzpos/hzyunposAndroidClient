@@ -7,11 +7,10 @@ import android.os.Bundle
 import android.view.MotionEvent
 import android.widget.EditText
 import butterknife.BindView
-import butterknife.ButterKnife
 import butterknife.OnClick
 import com.alibaba.fastjson.JSONObject
 import com.wyc.cloudapp.R
-import com.wyc.cloudapp.activity.AbsBindingActivity
+import com.wyc.cloudapp.activity.base.AbsBindingActivity
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity.TITLE_KEY
 import com.wyc.cloudapp.activity.mobile.cashierDesk.AbstractSelectActivity.SELECT_ITEM
 import com.wyc.cloudapp.bean.GiftCardInfo

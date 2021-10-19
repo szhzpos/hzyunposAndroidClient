@@ -1,6 +1,6 @@
 package com.wyc.cloudapp.adapter.business;
 
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.base.MainActivity;
 
 /**
  * @ProjectName: CloudApp

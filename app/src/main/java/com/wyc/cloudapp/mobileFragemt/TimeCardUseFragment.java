@@ -2,7 +2,6 @@ package com.wyc.cloudapp.mobileFragemt;
 
 import android.annotation.SuppressLint;
 import android.text.method.ReplacementTransformationMethod;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForList;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -27,7 +26,6 @@ import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;

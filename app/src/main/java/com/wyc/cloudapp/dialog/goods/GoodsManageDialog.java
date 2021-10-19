@@ -16,8 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.SaleActivity;
-import com.wyc.cloudapp.activity.mobile.business.MobileEditGoodsInfoActivity;
+import com.wyc.cloudapp.activity.base.SaleActivity;
 import com.wyc.cloudapp.activity.mobile.business.NormalEditGoodsInfoActivity;
 import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
 import com.wyc.cloudapp.adapter.GoodsManageViewAdapter;
@@ -25,7 +24,6 @@ import com.wyc.cloudapp.adapter.TreeListAdapter;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.bean.GoodsCategory;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 public final class GoodsManageDialog extends AbstractDialogSaleActivity {

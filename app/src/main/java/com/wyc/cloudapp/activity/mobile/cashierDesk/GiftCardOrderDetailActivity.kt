@@ -10,23 +10,19 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
 import com.wyc.cloudapp.R
-import com.wyc.cloudapp.activity.AbsBindingActivity
+import com.wyc.cloudapp.activity.base.AbsBindingActivity
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity
 import com.wyc.cloudapp.adapter.AbstractDataAdapter
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForList
-import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.data.room.entity.GiftCardPayDetail
 import com.wyc.cloudapp.data.room.entity.GiftCardSaleDetail
 import com.wyc.cloudapp.data.room.entity.GiftCardSaleOrder
 import com.wyc.cloudapp.databinding.ActivityGiftCardOrderDetailBinding
 import com.wyc.cloudapp.databinding.MobileGiftCardDetailAdapterBinding
 import com.wyc.cloudapp.databinding.MobileGiftCardPayAdapterBinding
-import com.wyc.cloudapp.decoration.LinearItemDecoration
-import com.wyc.cloudapp.logger.Logger
 
 class GiftCardOrderDetailActivity : AbsBindingActivity() {
     private var mBinding: ActivityGiftCardOrderDetailBinding? = null

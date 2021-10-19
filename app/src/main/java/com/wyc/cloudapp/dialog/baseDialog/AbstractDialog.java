@@ -22,13 +22,12 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.IHookKey;
+import com.wyc.cloudapp.activity.base.IHookKey;
 import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import static android.content.Context.INPUT_METHOD_SERVICE;
-import static android.content.Context.WINDOW_SERVICE;
 
 public abstract class AbstractDialog extends Dialog implements IHookKey {
     protected CharSequence mTitle;

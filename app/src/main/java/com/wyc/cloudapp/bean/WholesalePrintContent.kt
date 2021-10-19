@@ -1,8 +1,7 @@
 package com.wyc.cloudapp.bean
 
 import com.wyc.cloudapp.R
-import com.wyc.cloudapp.activity.MainActivity
-import com.wyc.cloudapp.bean.OrderPrintContentBase
+import com.wyc.cloudapp.activity.base.MainActivity
 
 /**
  *

@@ -1,7 +1,7 @@
 package com.wyc.cloudapp.bean
 
 import android.os.Parcelable
-import com.wyc.cloudapp.activity.MainActivity
+import com.wyc.cloudapp.activity.base.MainActivity
 
 /*
 * 泛型参数 S 表示销售明细类型 P 支付明细类型
@@ -26,5 +26,5 @@ interface ICardPay<S> :Parcelable{
     fun getAmt():Double
     fun getSaleInfo():List<S>
     fun getOrder_no():String
-    fun save(a: MainActivity,payDetailList:List<PayDetailInfo>)
+    fun save(a: MainActivity, payDetailList:List<PayDetailInfo>)
 }

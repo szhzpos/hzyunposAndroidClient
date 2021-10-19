@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.wyc.cloudapp.CustomizationView.InterceptLinearLayout;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.SaleActivity;
+import com.wyc.cloudapp.activity.base.SaleActivity;
 
 public final class MobileSaleGoodsAdapter extends AbstractSaleGoodsAdapter implements View.OnClickListener {
     public MobileSaleGoodsAdapter(final SaleActivity context){

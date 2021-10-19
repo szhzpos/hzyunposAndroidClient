@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.fragment.AbstractBaseFragment;
 
 import butterknife.ButterKnife;

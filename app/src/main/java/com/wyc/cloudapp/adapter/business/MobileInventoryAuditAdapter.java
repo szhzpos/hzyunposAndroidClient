@@ -2,7 +2,7 @@ package com.wyc.cloudapp.adapter.business;
 
 import androidx.annotation.NonNull;
 
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.base.MainActivity;
 
 /**
  * @ProjectName: CloudApp

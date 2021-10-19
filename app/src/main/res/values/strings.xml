@@ -759,6 +759,7 @@
     <string name="success">成功</string>
     <string name="failure">失败</string>
     <string name="order_amt_colon">订单金额：</string>
+    <string name="time_card_business">次卡管理</string>
     <!-- 次卡打印格式 -->
     <string name="time_card_sale_format">次卡购买小票</string>
     <string name="time_card_print_pay_method">@string/pay_method_name_colon_sz</string>

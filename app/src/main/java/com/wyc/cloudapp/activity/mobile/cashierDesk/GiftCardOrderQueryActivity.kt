@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -18,15 +17,12 @@ import butterknife.ButterKnife
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.wyc.cloudapp.R
-import com.wyc.cloudapp.activity.MainActivity
+import com.wyc.cloudapp.activity.base.MainActivity
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity
 import com.wyc.cloudapp.adapter.AbstractDataAdapter
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForList
-import com.wyc.cloudapp.data.room.AppDatabase
-import com.wyc.cloudapp.data.room.entity.GiftCardSaleDetail
 import com.wyc.cloudapp.data.room.entity.GiftCardSaleOrder
 import com.wyc.cloudapp.decoration.LinearItemDecoration
-import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.FormatDateTimeUtils
 import com.wyc.cloudapp.utils.Utils
 import java.text.ParseException

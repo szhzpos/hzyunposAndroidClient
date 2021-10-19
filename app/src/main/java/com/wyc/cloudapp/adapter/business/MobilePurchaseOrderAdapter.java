@@ -3,7 +3,7 @@ package com.wyc.cloudapp.adapter.business;
 import android.text.Html;
 
 import com.alibaba.fastjson.JSONObject;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.base.MainActivity;
 
 /**
  * @ProjectName: CloudApp

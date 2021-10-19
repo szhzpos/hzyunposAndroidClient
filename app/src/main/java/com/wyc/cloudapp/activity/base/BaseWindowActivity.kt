@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.activity
+package com.wyc.cloudapp.activity.base
 
 import android.os.Bundle
 import android.view.WindowManager

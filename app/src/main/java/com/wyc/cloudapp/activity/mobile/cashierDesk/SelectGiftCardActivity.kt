@@ -8,7 +8,7 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import com.alibaba.fastjson.JSONObject
 import com.wyc.cloudapp.R
-import com.wyc.cloudapp.activity.MainActivity
+import com.wyc.cloudapp.activity.base.MainActivity
 import com.wyc.cloudapp.adapter.AbstractSelectAdapter
 import com.wyc.cloudapp.bean.GiftCardInfo
 import com.wyc.cloudapp.constants.InterfaceURL

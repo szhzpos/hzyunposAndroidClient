@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.activity
+package com.wyc.cloudapp.activity.base
 
 import android.os.Bundle
 import android.util.Log
@@ -25,7 +25,7 @@ import com.wyc.cloudapp.databinding.BindingActivityBinding
  * @UpdateRemark:   更新说明
  * @Version:        1.0
  */
-abstract class AbsBindingActivity: MainActivity(),ITitle {
+abstract class AbsBindingActivity: MainActivity(), ITitle {
     private var mContentView:View? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

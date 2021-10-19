@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.wyc.cloudapp.R
-import com.wyc.cloudapp.activity.MainActivity
+import com.wyc.cloudapp.activity.base.MainActivity
 import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.bean.AuxiliaryBarcode
 import com.wyc.cloudapp.dialog.MyDialog

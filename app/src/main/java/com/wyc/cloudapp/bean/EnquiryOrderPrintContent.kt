@@ -1,10 +1,7 @@
 package com.wyc.cloudapp.bean
 
 import com.wyc.cloudapp.R
-import com.wyc.cloudapp.activity.MainActivity
-import com.wyc.cloudapp.print.Printer
-import com.wyc.cloudapp.utils.Utils
-import java.util.*
+import com.wyc.cloudapp.activity.base.MainActivity
 
 /**
  *

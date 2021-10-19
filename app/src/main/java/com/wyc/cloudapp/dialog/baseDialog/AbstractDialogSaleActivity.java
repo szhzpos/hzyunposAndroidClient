@@ -2,7 +2,7 @@ package com.wyc.cloudapp.dialog.baseDialog;
 
 import androidx.annotation.NonNull;
 
-import com.wyc.cloudapp.activity.SaleActivity;
+import com.wyc.cloudapp.activity.base.SaleActivity;
 
 public abstract class AbstractDialogSaleActivity extends AbstractDialog {
     protected SaleActivity mContext;

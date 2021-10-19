@@ -3,10 +3,9 @@ package com.wyc.cloudapp.adapter.business;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
-import android.widget.Toast;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.activity.mobile.business.AbstractMobileBusinessOrderActivity;
 import com.wyc.cloudapp.activity.mobile.business.MobilePracticalInventoryOrderActivity;

@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.activity;
+package com.wyc.cloudapp.activity.base;
 
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.wyc.cloudapp.activity.normal.LoginActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.logger.Logger;
 

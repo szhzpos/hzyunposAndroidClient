@@ -3,7 +3,7 @@
     <data>
         <variable
             name="title"
-            type="com.wyc.cloudapp.activity.ITitle" />
+            type="com.wyc.cloudapp.activity.base.ITitle" />
 
     </data>
 

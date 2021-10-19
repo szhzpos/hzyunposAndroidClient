@@ -18,7 +18,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.zxing.client.android.CaptureActivity;
 import com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;

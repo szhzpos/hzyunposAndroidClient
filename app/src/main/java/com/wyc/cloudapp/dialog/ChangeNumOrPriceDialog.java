@@ -9,7 +9,7 @@ import android.widget.EditText;
 
 import com.wyc.cloudapp.CustomizationView.KeyboardView;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.callback.PasswordEditTextReplacement;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 

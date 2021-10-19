@@ -6,7 +6,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSONObject;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 
 public abstract class AbstractOrderDetailsDialog extends AbstractDialogMainActivity {

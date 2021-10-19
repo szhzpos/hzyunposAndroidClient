@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.activity;
+package com.wyc.cloudapp.activity.normal;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -17,7 +17,6 @@ import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.ReplacementTransformationMethod;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -46,6 +45,7 @@ import com.wyc.cloudapp.CustomizationView.InterceptLinearLayout;
 import com.wyc.cloudapp.CustomizationView.ScaleView;
 import com.wyc.cloudapp.CustomizationView.TmpOrderButton;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.base.SaleActivity;
 import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
@@ -360,6 +360,8 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                                 setSingleRefundStatus(true);
                                 window.dismiss();
                             }
+                        }else if (id == R.id.pop_time_card_btn){
+                            NTimeCardBusiness.start(this);
                         }
                     });
 

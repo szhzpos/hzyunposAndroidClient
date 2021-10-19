@@ -7,14 +7,13 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.alibaba.fastjson.JSONObject;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.UnifiedPayResult;
 import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.data.room.AppDatabase;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.JEventLoop;
-import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;

@@ -43,6 +43,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
+        <activity android:name=".activity.normal.NTimeCardBusiness"/>
         <activity android:name=".activity.mobile.business.MobileEnquiryOrderActivity$MobileAddEnquiryOrderActivity"/>
         <activity android:name=".activity.mobile.business.MobileEnquiryOrderActivity" />
         <activity android:name=".activity.mobile.cashierDesk.GiftCardOrderDetailActivity" />
@@ -122,11 +123,11 @@
         <activity android:name=".activity.mobile.business.MobilePurchaseOrderActivity$MobileAddPurchaseOrderActivity" />
         <activity android:name=".activity.mobile.business.AbstractMobileBusinessOrderActivity" />
         <activity android:name=".activity.mobile.MobileSetupActivity" />
-        <activity android:name=".activity.SaleActivity" />
+        <activity android:name=".activity.base.SaleActivity" />
         <activity android:name=".activity.mobile.cashierDesk.MobileCashierActivity" />
         <activity android:name=".activity.mobile.MobileNavigationActivity" />
         <activity
-            android:name=".activity.NormalMainActivity"
+            android:name=".activity.normal.NormalMainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTask"
             android:screenOrientation="landscape">
@@ -142,7 +143,7 @@
             -->
         </activity>
         <activity
-            android:name=".activity.LoginActivity"
+            android:name=".activity.normal.LoginActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTop"
             android:theme="@style/splashTheme"

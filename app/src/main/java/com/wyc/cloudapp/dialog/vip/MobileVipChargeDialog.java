@@ -5,7 +5,7 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.MainActivity;
+import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.activity.mobile.cashierDesk.MobileCashierActivity;
 import com.wyc.cloudapp.constants.ScanCallbackCode;
 import com.wyc.cloudapp.dialog.MyDialog;

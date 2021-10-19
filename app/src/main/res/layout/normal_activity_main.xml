@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/lightBlue"
     android:focusable="false"
-    tools:context=".activity.MainActivity">
+    tools:context=".activity.base.MainActivity">
 
     <LinearLayout
         android:id="@+id/main_top"
