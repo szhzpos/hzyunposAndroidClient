@@ -14,16 +14,24 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.alibaba.fastjson.JSONObject;
+import com.bumptech.glide.Glide;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;
 import com.wyc.cloudapp.adapter.AbstractSelectAdapter;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.TimeCardData;
 import com.wyc.cloudapp.bean.TimeCardInfo;
 import com.wyc.cloudapp.constants.InterfaceURL;
+import com.wyc.cloudapp.data.viewModel.TimeCardViewModel;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
@@ -32,6 +40,7 @@ import com.wyc.cloudapp.utils.http.callback.ObjectCallback;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -51,7 +60,7 @@ public final class SelectTimeCardActivity extends AbstractSelectActivity<TimeCar
 
     @Override
     protected TimeCardAdapter getAdapter() {
-        return new TimeCardAdapter(this);
+        return new TimeCardAdapter();
     }
 
     public static void startWithFragment(Fragment context, final ArrayList<TimeCardInfo> result){
@@ -66,35 +75,15 @@ public final class SelectTimeCardActivity extends AbstractSelectActivity<TimeCar
 
     @Override
     protected void loadData(String c) {
-        final JSONObject object = new JSONObject();
-        object.put("appid",getAppId());
-        object.put("channel",1);
-        if (Utils.isNotEmpty(c)){
-            object.put("title",c);
+        final MutableLiveData<List<TimeCardInfo>> liveData = new ViewModelProvider(this).get(TimeCardViewModel.class).refresh(this,c);
+        if (!liveData.hasActiveObservers()){
+            liveData.observe(this, this::setData);
         }
-        final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,getString(R.string.hints_query_data_sz));
-        HttpUtils.sendAsyncPost(getUrl() + InterfaceURL.ONCE_CARD,HttpRequest.generate_request_parm(object,getAppSecret()))
-                .enqueue(new ObjectCallback<TimeCardData>(TimeCardData.class,true) {
-                    @Override
-                    protected void onError(String msg) {
-                        progressDialog.dismiss();
-                        MyDialog.toastMessage(msg);
-                    }
-
-                    @Override
-                    protected void onSuccessForResult(TimeCardData d, String hint) {
-                        progressDialog.dismiss();
-                        setData(d.getCard());
-                    }
-                });
     }
 
     static class TimeCardAdapter extends AbstractSelectAdapter<TimeCardInfo, TimeCardAdapter.MyViewHolder> implements View.OnClickListener{
-        private final SelectTimeCardActivity mContext;
-        public TimeCardAdapter(SelectTimeCardActivity context){
-            mContext = context;
+        public TimeCardAdapter(){
         }
-
         @Override
         public void onClick(View v) {
             if (hasListener()){
@@ -124,8 +113,8 @@ public final class SelectTimeCardActivity extends AbstractSelectActivity<TimeCar
         @NonNull
         @Override
         public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            final View view = View.inflate(mContext,R.layout.mobile_once_card_info,null);
-            view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) mContext.getResources().getDimension(R.dimen.once_card_item_height)));
+            final View view = View.inflate(CustomApplication.self(),R.layout.mobile_once_card_info,null);
+            view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) CustomApplication.self().getResources().getDimension(R.dimen.once_card_item_height)));
             view.setOnClickListener(this);
             return new MyViewHolder(view);
         }
@@ -135,22 +124,9 @@ public final class SelectTimeCardActivity extends AbstractSelectActivity<TimeCar
             final TimeCardInfo cardInfo = mData.get(position);
             final String img_url = cardInfo.getImg();
             if (Utils.isNotEmpty(img_url)){
-                HttpUtils.sendAsyncGet(img_url).enqueue(new Callback() {
-                    @Override
-                    public void onFailure(@NonNull Call call,@NonNull IOException e) {
-                        MyDialog.ToastMessageInMainThread(e.getMessage());
-                    }
-
-                    @Override
-                    public void onResponse(@NonNull Call call,@NonNull Response response) throws IOException {
-                        try (InputStream inputStream = response.body().byteStream()){
-                            final Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                            holder.img.post(()-> holder.img.setImageBitmap(bitmap));
-                        }
-                    }
-                });
+                Glide.with(holder.img).load(img_url).into(holder.img);
             }else
-                holder.img.setImageDrawable(mContext.getDrawable(R.drawable.nodish));
+                Glide.with(holder.img).load(R.drawable.nodish).into(holder.img);
 
             holder.id_tv.setText(String.format(Locale.CHINA,"%d、",position + 1));
             holder.name_tv.setText(cardInfo.getTitle());

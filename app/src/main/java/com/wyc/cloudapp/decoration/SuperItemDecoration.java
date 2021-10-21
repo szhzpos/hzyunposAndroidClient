@@ -10,7 +10,7 @@ import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 public class SuperItemDecoration extends RecyclerView.ItemDecoration {
-    int mSpace = -1;
+    protected int mSpace = -1;
     public SuperItemDecoration(){
     }
     @Override

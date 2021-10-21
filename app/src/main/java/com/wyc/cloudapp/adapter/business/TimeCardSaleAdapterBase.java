@@ -76,7 +76,7 @@ abstract public class TimeCardSaleAdapterBase<T extends AbstractDataAdapter.Supe
 
     }
 
-    protected final void modifyCurrentNum(int n){
+    public final void modifyCurrentNum(int n){
         final TimeCardSaleInfo saleInfo = getItem(mCurrentIndex);
         if (saleInfo != null){
             int num = saleInfo.getNum() + n;

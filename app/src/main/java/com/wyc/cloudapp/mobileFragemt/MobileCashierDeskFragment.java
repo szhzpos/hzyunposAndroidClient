@@ -11,6 +11,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.activity.mobile.cashierDesk.MobileCashierActivity;
 import com.wyc.cloudapp.activity.mobile.MobileNavigationActivity;
+import com.wyc.cloudapp.activity.normal.NTimeCardBusiness;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.orderDialog.MobileQueryRefundOrderDialog;
@@ -36,7 +37,7 @@ public final class MobileCashierDeskFragment extends AbstractJumpFragment {
     @Override
     protected List<Integer> getIgnoreView() {
         final List<Integer> ids = new ArrayList<>();
-        if (!verifyTimeCardPermissions()){
+        if (!NTimeCardBusiness.verifyTimeCardPermissions(mContext)){
             ids.add(R.id.once_card_layout);
         }
         if (!verifyGiftCardPermissions()){
@@ -45,9 +46,6 @@ public final class MobileCashierDeskFragment extends AbstractJumpFragment {
         return ids;
     }
 
-    private boolean verifyTimeCardPermissions(){
-        return mContext.verifyPermissions("27",null,false);
-    }
     private boolean verifyGiftCardPermissions(){
         return mContext.verifyPermissions("30",null,false);
     }

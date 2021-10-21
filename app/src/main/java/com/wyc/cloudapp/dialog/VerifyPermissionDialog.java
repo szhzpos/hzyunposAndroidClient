@@ -2,6 +2,7 @@ package com.wyc.cloudapp.dialog;
 
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -93,7 +94,7 @@ public final class VerifyPermissionDialog extends AbstractDialogMainActivity {
     @Override
     protected double getWidthRatio(){
         //返回值： //小于0 是系统WRAP_CONTENT、MATCH_PARENT 在0到1直接为屏幕比例 大于1为具体大小
-        return 0.95;
+        return mContext.lessThan7Inches()? 0.95 : ViewGroup.LayoutParams.WRAP_CONTENT;
     }
 
     public interface OnFinishListener{

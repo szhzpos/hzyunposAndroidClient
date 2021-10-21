@@ -72,7 +72,7 @@ open class ViewModelBase:ViewModel(),CoroutineScope by CoroutineScope(Dispatcher
     protected fun <T> parseArray(clazz: Class<T>,value:String?):ArrayResult<T>{
         return JSONObject.parseObject(value, object : TypeReference<ArrayResult<T>>(clazz) {}.type)
     }
-    protected fun <T> parseObject(clazz: Class<T>,value:String?):ObjectResult<T>{
+    protected fun <T> parseObject(clazz: Class<T>,value:String?):ObjectResult<T>?{
         return JSONObject.parseObject(value, object : TypeReference<ObjectResult<T>>(clazz) {}.type)
     }
     protected fun finalize(){

@@ -64,11 +64,12 @@ class ConsumerViewModel:ViewModelBase() {
             netRequest(app.url + "/api/supplier_search/get_code", HttpRequest.generate_request_parm(`object`, app.appSecret)).execute().use {
                 val code: Int = it.code()
                 if (code == HttpURLConnection.HTTP_OK){
-                    val data: ObjectResult<String> = parseObject(String::class.java,it.body()?.string())
-                    if (data.isSuccess)
-                        codeModel!!.postValue(data.data)
-                    else
-                        MyDialog.ToastMessageInMainThread(data.info)
+                    parseObject(String::class.java,it.body()?.string())?.let {
+                        if (it.isSuccess)
+                            codeModel!!.postValue(it.data)
+                        else
+                            MyDialog.ToastMessageInMainThread(it.info)
+                    }
                 }else{
                     MyDialog.ToastMessageInMainThread(it.message())
                 }

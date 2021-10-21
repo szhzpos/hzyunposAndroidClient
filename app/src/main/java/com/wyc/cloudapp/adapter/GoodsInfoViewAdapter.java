@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.SaleActivity;
@@ -86,15 +87,9 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
             final TextView goods_title = myViewHolder.goods_title;
             if (mShowPic){
                 final String img_url = Utils.getNullStringAsEmpty(goods_info,"img_url");
-                if (!"".equals(img_url)){
-                    final String szImage = img_url.substring(img_url.lastIndexOf("/") + 1);
-                    CustomApplication.execute(()->{
-                        final Bitmap bitmap = BitmapFactory.decodeFile(CustomApplication.getGoodsImgSavePath() + szImage);
-                        CustomApplication.runInMainThread(()-> myViewHolder.goods_img.setImageBitmap(bitmap));
-                    });
-                }else{
-                    goods_img.setImageDrawable(mContext.getDrawable(R.drawable.nodish));
-                }
+                if (Utils.isNotEmpty(img_url)) {
+                    Glide.with(myViewHolder.goods_img).load(CustomApplication.getGoodsImgSavePath() + img_url.substring(img_url.lastIndexOf("/") + 1)).into(myViewHolder.goods_img);
+                } else Glide.with(myViewHolder.goods_img).load(R.drawable.nodish).into(myViewHolder.goods_img);
             }else{
                  if (goods_img.getVisibility() != View.GONE)goods_img.setVisibility(View.GONE);
             }

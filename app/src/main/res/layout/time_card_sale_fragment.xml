@@ -61,7 +61,6 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginStart="@dimen/margin_2"
-            android:layout_weight="1"
             android:background="@drawable/button_blue"
             android:drawableEnd="@drawable/fold"
             android:focusable="false"
@@ -72,7 +71,7 @@
             android:textColor="@color/blue_white"
             android:textSize="@dimen/font_size_16"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/mobile_sale_man_btn"
+            app:layout_constraintEnd_toStartOf="@+id/sale_man_btn"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -105,7 +104,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/mobile_vip_btn" />
+            app:layout_constraintStart_toEndOf="@+id/_vip_btn" />
 
         <TextView
             android:id="@+id/sale_man_tv"
