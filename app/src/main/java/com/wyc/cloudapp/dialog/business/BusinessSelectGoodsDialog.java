@@ -1,11 +1,14 @@
 package com.wyc.cloudapp.dialog.business;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -300,12 +303,13 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
         }
         mBarcodeEt = search;
     }
-
-    @Override
+     @Override
     public boolean hookEnterKey() {
-        searchGoods();
-        mNumEt.requestFocus();
-        return true;
+        if (getCurrentFocus() == mBarcodeEt){
+            searchGoods();
+            return true;
+        }
+        return false;
     }
 
     private void setBarcodeDrawable(boolean clear){
@@ -319,6 +323,7 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
     }
 
     private void searchGoods(){
+        boolean code = false;
         final String barcode = mBarcode;
         if (Utils.isNotEmpty(barcode)){
             String where_sql = " where barcode = '" + barcode + "'";
@@ -341,6 +346,7 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
                         if (selectGoodsWithBarcodeId(mContentObj,barcode_ids.getString(0),mPriceType)){
                             Logger.d_json(mContentObj.toString());
                             showGoods();
+                            code = true;
                         }else {
                             MyDialog.ToastMessage(mContentObj.getString("info"), getWindow());
                             mContentObj = null;
@@ -355,6 +361,11 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
         }else {
             MyDialog.ToastMessage(mBarcodeEt,mContext.getNotEmptyHintsString("搜索内容"), getWindow());
         }
+        if (!code)
+            CustomApplication.postDelayed(()-> {
+                Utils.setFocus(mContext,mBarcodeEt,true);
+                mBarcodeEt.selectAll();
+            },300);
     }
 
     private void showGoods(){
@@ -373,12 +384,10 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
         mNumEt.setText(String.valueOf(num));
 
         if (mPriceEt != null){
-            CustomApplication.postDelayed(()->{Utils.setFocus(mContext,mPriceEt);},50);
             mPriceEt.setText(String.valueOf(price));
             if (mAmtTv != null)mAmtTv.setText(String.format(Locale.CHINA,"%.2f",num * price));
-        }else{
-            CustomApplication.postDelayed(()->{Utils.setFocus(mContext,mNumEt);},50);
         }
+        CustomApplication.postDelayed(()->{Utils.setFocus(mContext,mNumEt);},150);
 
         mUnitTv.setTag(object.getString("unit_id"));
         mUnitTv.setText(object.getString("unit_name"));

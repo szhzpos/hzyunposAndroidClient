@@ -116,9 +116,9 @@ public class EditConsumerActivity extends AbstractEditArchiveActivity {
     }
     private void setDefaultCooperationWay(){
         if (null != mDefaultPrice){
-            final JSONObject default_way = getDefaultPrice().getJSONObject(1);
-            mDefaultPrice.setTag(default_way.getIntValue(TreeListBaseAdapter.COL_ID));
-            mDefaultPrice.setText(default_way.getString(TreeListBaseAdapter.COL_NAME));
+            final JSONObject default_way = getDefaultPrice().getJSONObject(3);
+            mDefaultPrice.setTag(Utils.getNotKeyAsNumberDefault(default_way,TreeListBaseAdapter.COL_ID,-1));
+            mDefaultPrice.setText(Utils.getNullStringAsEmpty(default_way,TreeListBaseAdapter.COL_NAME));
         }
     }
 

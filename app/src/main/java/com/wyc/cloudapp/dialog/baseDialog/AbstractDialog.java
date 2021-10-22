@@ -2,6 +2,7 @@ package com.wyc.cloudapp.dialog.baseDialog;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
@@ -88,8 +89,10 @@ public abstract class AbstractDialog extends Dialog implements IHookKey {
 
     @Override
     public boolean dispatchKeyEvent(@NonNull KeyEvent event) {
-        if ((event.getKeyCode() == KeyEvent.KEYCODE_ENTER || event.getKeyCode() == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_UP){
-            return hookEnterKey();
+        if ((event.getKeyCode() == KeyEvent.KEYCODE_ENTER || event.getKeyCode() == KeyEvent.KEYCODE_NUMPAD_ENTER)){
+            if (event.getAction() == KeyEvent.ACTION_UP){
+                return hookEnterKey() || super.dispatchKeyEvent(event);
+            }
         }
         return super.dispatchKeyEvent(event);
     }

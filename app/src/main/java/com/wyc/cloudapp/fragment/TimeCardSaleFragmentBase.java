@@ -269,6 +269,7 @@ abstract public class TimeCardSaleFragmentBase extends AbstractMobileFragment {
                         MyDialog.toastMessage(getString(R.string.not_exist_hint_sz, _search_content.getText().toString()));
                     }else
                         cardDataChange(list);
+                    _search_content.getText().clear();
                 }
             });
         }

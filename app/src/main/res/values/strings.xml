@@ -620,7 +620,7 @@
     <string name="auditing_hints">正在审核单据…</string>
     <string name="upload_order_success_hints">上传成功</string>
     <string name="ask_audit_hints">是否审核?</string>
-    <string name="ask_exist_hints">%1$s已存在，是否继续?</string>
+    <string name="ask_exist_hints">%1$s已存在，是否累加?</string>
 
 
     <!--买满赠方案选择对话框-->

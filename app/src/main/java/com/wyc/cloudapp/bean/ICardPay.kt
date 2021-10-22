@@ -4,7 +4,7 @@ import android.os.Parcelable
 import com.wyc.cloudapp.activity.base.MainActivity
 
 /*
-* 泛型参数 S 表示销售明细类型 P 支付明细类型
+* 泛型参数 S 表示销售明细类型
 * */
 interface ICardPay<S> :Parcelable{
     fun getVip_openid():String?{
