@@ -9,12 +9,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.data.room.AppDatabase;
+import com.wyc.cloudapp.data.room.entity.PayMethod;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -174,17 +177,12 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     }
 
     public void setDatas(final String support_code){
-        final StringBuilder err = new StringBuilder();
-        if (mContext.isConnection())
-            mDatas = SQLiteHelper.getListToJson("select *  from pay_method where status = '1' and support like '%" + support_code +"%' order by sort",err);
-        else
-            mDatas = SQLiteHelper.getListToJson("select *  from pay_method where is_check = 2 and status = '1' and support like '%" + support_code +"%' order by sort",err);
-
+        mDatas = JSON.parseArray(JSON.toJSONString(AppDatabase.getInstance().PayMethodDao().getPayMethodBySupport(support_code)));
         if (mDatas != null){
             setDefaultPayMethod();
             this.notifyDataSetChanged();
         }else{
-            MyDialog.ToastMessage("加载支付方式错误：" + err, null);
+            MyDialog.ToastMessage("加载支付方式错误", null);
         }
     }
 

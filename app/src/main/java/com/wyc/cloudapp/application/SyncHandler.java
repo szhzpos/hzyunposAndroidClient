@@ -41,32 +41,16 @@ final class SyncHandler extends Handler {
 
     private String mAppId, mAppSecret,mUrl,mPosNum,mOperId,mStoresId;
 
-    private static final List<Integer> mSyncBasicsDataMessageIds = getBasicsDataMessageIds();
-
     SyncHandler(Looper looper){
         super(looper);
         mHttp = new HttpRequest();
         mHttp.setConnTimeOut(3000);
     }
 
-    private static List<Integer> getBasicsDataMessageIds(){
-        return Arrays.asList(MessageID.SYNC_CASHIER_ID/*收银员*/,MessageID.SYNC_GOODS_CATEGORY_ID/*商品类别*/,MessageID.SYNC_PAY_METHOD_ID/*支付方式*/,MessageID.SYNC_STORES_ID/*仓库信息*/,
-                MessageID.SYNC_GP_INFO_ID/*组合商品*/,MessageID.SYNC_GOODS_ID/*商品信息*/,MessageID.SYNC_FULLREDUCE_ID/*满减信息*/,MessageID.SYNC_SALES_INFO_ID/*营业员信息*/,
-                MessageID.SYNC_SALE_OPERATOR_INFO_ID/*经办人信息*/,MessageID.SYNC_PROMOTION_ID/*促销信息*/,MessageID.SYNC_STEP_PROMOTION_ID/*阶梯促销*/,MessageID.SYNC_STEP_FULLREDUCE_ID/*阶梯满减*/,
-                MessageID.SYNC_BUY_X_GIVE_X_ID,MessageID.SYNC_BUY_FULL_GIVE_X_ID,MessageID.SYNC_AUXILIARY_BARCODE_ID/*辅助条码*/);
-    }
-
-    List<String> getSyncDataTableName(){
-        return Arrays.asList("shop_category","shop_stores","barcode_info","pay_method","cashier_info","fullreduce_info","sales_info",
-                "promotion_info","sale_operator_info","goods_group", "goods_group_info","buyfull_give_x","buy_x_give_x","step_promotion_info","auxiliary_barcode_info");
-    }
-
-    String[] getGoodsCols(){
-        return new String[]{"goods_id","barcode_id","barcode","goods_title","only_coding","retail_price","buying_price","trade_price","cost_price","ps_price",
-                "unit_id","unit_name","specifi","category_name","metering_id","current_goods","shelf_life","goods_status","origin","type","goods_tare","barcode_status","category_id",
-                "tax_rate","tc_mode","tc_rate","yh_mode","yh_price","mnemonic_code","image","attr_id","attr_name","attr_code","brand_id","brand","brand_code","gs_id","gs_code","gs_name",
-                "conversion","update_price","stock_unit_id","stock_unit_name","goods_img","img_url","spec_str","cash_flow_ratio","updtime"};
-    }
+    private static final List<Integer> mSyncBasicsDataMessageIds = Arrays.asList(MessageID.SYNC_CASHIER_ID/*收银员*/,MessageID.SYNC_GOODS_CATEGORY_ID/*商品类别*/,MessageID.SYNC_PAY_METHOD_ID/*支付方式*/,MessageID.SYNC_STORES_ID/*仓库信息*/,
+                                                                    MessageID.SYNC_GP_INFO_ID/*组合商品*/,MessageID.SYNC_GOODS_ID/*商品信息*/,MessageID.SYNC_FULLREDUCE_ID/*满减信息*/,MessageID.SYNC_SALES_INFO_ID/*营业员信息*/,
+                                                                    MessageID.SYNC_SALE_OPERATOR_INFO_ID/*经办人信息*/,MessageID.SYNC_PROMOTION_ID/*促销信息*/,MessageID.SYNC_STEP_PROMOTION_ID/*阶梯促销*/,MessageID.SYNC_STEP_FULLREDUCE_ID/*阶梯满减*/,
+                                                                    MessageID.SYNC_BUY_X_GIVE_X_ID,MessageID.SYNC_BUY_FULL_GIVE_X_ID,MessageID.SYNC_AUXILIARY_BARCODE_ID/*辅助条码*/);
 
     void initParameter(final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){
         mUrl = url ;
@@ -77,8 +61,19 @@ final class SyncHandler extends Handler {
         mStoresId = stores_id;
     }
 
+    private static final List<Integer> PracticeModeMsgFilter = Arrays.asList(MessageID.SYNC_FINISH_ID,MessageID.SYNC_THREAD_QUIT_ID);
+
     @Override
     public void handleMessage(Message msg){
+        /*
+         * 练习模式下不处理业务同步事件
+         * */
+        if (CustomApplication.isPracticeMode() && !PracticeModeMsgFilter.contains(msg.what)){
+            return;
+        }
+        /*
+        *
+        * */
 
         final String base_url =  mUrl,app_id = mAppId,appSecret = mAppSecret,pos_num = mPosNum,oper_id = mOperId,stores_id = mStoresId;
         JSONObject object = new JSONObject(),info_json,retJson;
@@ -119,7 +114,7 @@ final class SyncHandler extends Handler {
                 case MessageID.SYNC_GOODS_ID://商品信息
                     table_name = "barcode_info";
                     sys_name = "正在同步商品";
-                    table_cls = getGoodsCols();
+                    table_cls = SQLiteHelper.getGoodsCols();
                     url = base_url + "/api/goods/get_goods_all";
                     object.put("stores_id",stores_id);
                     object.put("pos_num",pos_num);

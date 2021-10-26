@@ -139,16 +139,7 @@ public final class PayMethodAdapterForObj extends AbstractDataAdapterForList<Pay
     };
 
     public void setData(final String support_code){
-        final List<PayMethod> payMethods = AppDatabase.getInstance().PayMethodDao().getPayMethodBySupport(support_code);
-        if (!mContext.isConnection()){
-            for (int i = payMethods.size() - 1;i >=0 ;i --){
-                final PayMethod payMethod = payMethods.get(i);
-                if (payMethod.getIs_check() != 2){
-                    payMethods.remove(i);
-                }
-            }
-        }
-        setDataForList(payMethods);
+        setDataForList(AppDatabase.getInstance().PayMethodDao().getPayMethodBySupport(support_code));
         setDefaultPayMethod();
         this.notifyDataSetChanged();
     }

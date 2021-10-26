@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.SaleActivity;
+import com.wyc.cloudapp.activity.normal.LoginActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.barcodeScales.BarCodeScaleDownDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
@@ -17,6 +18,9 @@ import com.wyc.cloudapp.dialog.vip.VipDepositOrderDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.print.Printer;
 
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public final class MoreFunDialog extends AbstractDialogSaleActivity {
     public MoreFunDialog(@NonNull SaleActivity context, final String title) {
         super(context,title);
@@ -25,6 +29,7 @@ public final class MoreFunDialog extends AbstractDialogSaleActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setCancelable(true);
+        ButterKnife.bind(this);
 
         //初始化按钮事件
         initSyncBtn();
@@ -43,6 +48,22 @@ public final class MoreFunDialog extends AbstractDialogSaleActivity {
     @Override
     protected int getContentLayoutId(){
         return R.layout.more_fun_dialog_layout;
+    }
+
+    @Override
+    public void dismiss() {
+        super.dismiss();
+    }
+
+    @OnClick(R.id.practice)
+    void practice(){
+        if (MyDialog.showMessageToModalDialog(mContext,"是否重新登录练习收银模式?") == 1){
+            dismiss();
+            mContext.finish();
+            CustomApplication.self().resetSync();
+            CustomApplication.enterPracticeMode();
+            LoginActivity.start(mContext);
+        }
     }
 
     private void initDataUploadBtn(){

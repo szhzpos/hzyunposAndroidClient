@@ -296,54 +296,59 @@ public final class RefundDialog extends AbstractDialogMainActivity {
 
     private void requestRefund(){
         final MyDialog myDialog = new MyDialog(mContext,"退款信息");
-        myDialog.setMessage(mRefundDialogAdapter.PayDatasToString()).setYesOnclickListener(mContext.getString(R.string.OK), myDialog1 -> {
-            myDialog1.dismiss();
-            mProgressDialog.setCancel(false).setMessage("正在保存单据...").refreshMessage().show();
-            CustomApplication.execute(()->{
-                final StringBuilder err = new StringBuilder();
-                try {
+        final String info = mRefundDialogAdapter.PayDatasToString();
+        if (Utils.isNotEmpty(info)){
+            myDialog.setMessage(info).setYesOnclickListener(mContext.getString(R.string.OK), myDialog1 -> {
+                myDialog1.dismiss();
+                mProgressDialog.setCancel(false).setMessage("正在保存单据...").refreshMessage().show();
+                CustomApplication.execute(()->{
+                    final StringBuilder err = new StringBuilder();
+                    try {
 
-                    final JSONObject data = new JSONObject();
-                    if (generateRefundData(data)){
-                        if (saveRefundOrderInfo(data,err)){
-                            mProgressDialog.setCancel(false).setMessage("正在退款...").refreshMessage().show();
-                            if (isRefundCheck){
-                                refundWithCheck(err);
-                            }else{
-                                refundWithNotCheck(err);
+                        final JSONObject data = new JSONObject();
+                        if (generateRefundData(data)){
+                            if (saveRefundOrderInfo(data,err)){
+                                mProgressDialog.setCancel(false).setMessage("正在退款...").refreshMessage().show();
+                                if (isRefundCheck){
+                                    refundWithCheck(err);
+                                }else{
+                                    refundWithNotCheck(err);
+                                }
+                                isRefundCheck = false;//重置
                             }
-                            isRefundCheck = false;//重置
+                        }else {
+                            err.append(data.getString("info"));
                         }
-                    }else {
-                        err.append(data.getString("info"));
+
+                    }catch (Exception e){
+                        e.printStackTrace();
                     }
 
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-
-                if (err.length() != 0){
-                    mContext.runOnUiThread(()->{
-                        mProgressDialog.dismiss();
-                        MyDialog.ToastMessage(err.toString(), getWindow());
-                    });
-                }else {
-                    mContext.runOnUiThread(()->{
-                        if (mRefundDialogAdapter.isSingleRefundStatus()){
+                    if (err.length() != 0){
+                        mContext.runOnUiThread(()->{
                             mProgressDialog.dismiss();
-                            mRefundDialogAdapter.clearOrderInfo();
-                            this.dismiss();
-                        }
-                        if (null != mRemarkEt){
-                            mRemarkEt.setVisibility(View.GONE);
-                            mRemarkEt.getText().clear();
-                        }
-                    });
-                    Printer.print(get_print_content(mContext,mRefundCode,!isRefundCheck));
-                }
-            });
+                            MyDialog.ToastMessage(err.toString(), getWindow());
+                        });
+                    }else {
+                        mContext.runOnUiThread(()->{
+                            if (mRefundDialogAdapter.isSingleRefundStatus()){
+                                mProgressDialog.dismiss();
+                                mRefundDialogAdapter.clearOrderInfo();
+                                this.dismiss();
+                            }
+                            if (null != mRemarkEt){
+                                mRemarkEt.setVisibility(View.GONE);
+                                mRemarkEt.getText().clear();
+                            }
+                        });
+                        Printer.print(get_print_content(mContext,mRefundCode,!isRefundCheck));
+                    }
+                });
 
-        }).setNoOnclickListener(mContext.getString(R.string.cancel),MyDialog::dismiss).show();
+            });
+        }else {
+            myDialog.setMessage(mContext.getNotEmptyHintsString("退款信息")).setNoOnclickListener(mContext.getString(R.string.cancel),MyDialog::dismiss).show();
+        }
     }
 
     private void refundWithNotCheck(final StringBuilder err){

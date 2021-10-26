@@ -338,6 +338,8 @@
     <string name="per_hint_sz">请输入授权工号及密码</string>
     <string name="per_dialog_sz">授权操作</string>
     <string name="per_hint_2_sz">您没有【%1$s】权限！</string>
+    <string name="not_found_per_hints">未找到授权工号的权限记录,请确定输入是否正确!</string>
+    <string name="per_error_hint">权限查询错误：%1$s</string>
     <string name="server_url_sz">.hzyunpos.com</string>
     <string name="app_id_sz">sy</string>
     <string name="appSecret_sz">1234</string>
@@ -875,4 +877,9 @@
     <!--零售打印设置-->
     <string name="print_setting">打印设置</string>
     <string name="select_printer_hint">请选择打印机</string>
+
+
+    <string name="practice">练习收银</string>
+    <string name="enter_practice_fail">创建文件失败，不能进入练习收银模式</string>
+    <string name="enter_practice">进入练习收银模式</string>
 </resources>

@@ -8,6 +8,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -105,8 +106,7 @@ public class MainActivity extends BaseActivity {
     * */
     public boolean verifyPermissions(final String per_id,final String requested_cas_code,boolean isShow){
         boolean code = false;
-        final JSONObject mCashierInfo = mApplication.getCashierInfo();
-        String cas_pwd = Utils.getNullStringAsEmpty(mCashierInfo,"cas_pwd"),stores_id = getStoreId();
+        String cas_pwd = Utils.getNullStringAsEmpty(mApplication.getCashierInfo(),"cas_pwd"),stores_id = getStoreId();
         final StringBuilder err = new StringBuilder();
         if (null != requested_cas_code){
             cas_pwd = Utils.getUserIdAndPasswordCombinationOfMD5(requested_cas_code);
@@ -160,14 +160,14 @@ public class MainActivity extends BaseActivity {
                         mPermissionCashierId = Utils.getNullStringAsEmpty(obj,"cas_id");
                     }
                 }else {
-                    MyDialog.displayErrorMessage(this, "未找到授权工号的权限记录,请确定输入是否正确!");
+                    MyDialog.displayErrorMessage(this, getString(R.string.not_found_per_hints));
                 }
             }catch (JSONException e){
                 e.printStackTrace();
                 MyDialog.displayErrorMessage(this, "权限数据解析错误：" + e.getMessage());
             }
         }else {
-            MyDialog.displayErrorMessage(this, "权限查询错误：" + err);
+            MyDialog.displayErrorMessage(this, getString(R.string.per_error_hint,err.length() == 0 ? getNotExistHintsString(mApplication.getCashierName() + "【"+ mApplication.getCashierCode() +"】") : err));
         }
         return code;
     }
@@ -201,10 +201,10 @@ public class MainActivity extends BaseActivity {
                     code = true;
                 }
             }else{
-                MyDialog.displayErrorMessage(this, "未找到授权工号的权限记录,请确定输入是否正确!");
+                MyDialog.displayErrorMessage(this, getString(R.string.not_found_per_hints));
             }
         } else {
-            MyDialog.displayErrorMessage(this, "权限查询错误：" + discount_ojb.getString("info"));
+            MyDialog.displayErrorMessage(this, getString(R.string.per_error_hint,discount_ojb.getString("info")));
         }
         return code;
     }

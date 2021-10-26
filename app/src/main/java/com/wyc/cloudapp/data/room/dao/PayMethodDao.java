@@ -5,6 +5,7 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.room.entity.PayMethod;
 
 import java.util.List;
@@ -29,6 +30,21 @@ public interface PayMethodDao {
     PayMethod getPayMethodById(int id);
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long[] insertAll(List<PayMethod> payMethods);
+    @Query("select *  from pay_method where status = 1 and is_check = 2 and support like '%' || :support_code || '%' order by sort")
+    List<PayMethod> getOfflinePayMethodBySupport(String support_code);
+
     @Query("select *  from pay_method where status = 1 and support like '%' || :support_code || '%' order by sort")
-    List<PayMethod> getPayMethodBySupport(String support_code);
+    List<PayMethod> getNotCheckPayMethodBySupport(String support_code);
+
+    @Query("select *  from pay_method where status = 1 and (is_check = 2 or pay_method_id = 560) and support like '%' || :support_code || '%' order by sort")
+    List<PayMethod> getPracticeModePayMethodBySupport(String support_code);
+
+    default List<PayMethod> getPayMethodBySupport(String support_code){
+        if (!CustomApplication.self().isConnection()){
+            return getOfflinePayMethodBySupport(support_code);
+        }else if (CustomApplication.isPracticeMode()){
+            return getPracticeModePayMethodBySupport(support_code);
+        }
+        return getNotCheckPayMethodBySupport(support_code);
+    }
 }

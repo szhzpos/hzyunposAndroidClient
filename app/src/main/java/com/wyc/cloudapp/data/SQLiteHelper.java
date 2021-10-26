@@ -22,6 +22,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -30,6 +31,7 @@ import com.wyc.cloudapp.utils.FileUtils;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -41,6 +43,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -67,8 +70,48 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
 
     public static String DATABASE_NAME(String storesId){
         //数据库名称order_门店编号
-        if (!Utils.isNotEmpty(storesId))throw new IllegalArgumentException("storesId must not be empty...");
+        if (!Utils.isNotEmpty(storesId)){
+            Logger.e("init DATABASE_NAME failure because the storesId is empty...");
+            throw new IllegalArgumentException("storesId must not be empty...");
+        }
+        return CustomApplication.isPracticeMode() ? String.format(Locale.CHINA,"%sTemp_order_%s",Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/",storesId) : NORMAL_DATABASE_NAME(storesId);
+    }
+    private static String NORMAL_DATABASE_NAME(String storesId){
         return String.format(Locale.CHINA,"%sorder_%s",Environment.getExternalStorageDirectory().getAbsolutePath() + "/hzYunPos/",storesId);
+    }
+
+    /**
+    * 练习收银模式下要复制基本资料
+     * @param src 正常模式下本地库文件的绝对路径
+    * */
+    private static void copy(final String src) {
+        final ContentValues values = new ContentValues();
+        final SQLiteDatabase src_sqLiteHelper = new SQLiteHelper(CustomApplication.self(), src).getWritableDatabase();
+        try{
+            final List<String> tables = getSyncDataTableName();
+            src_sqLiteHelper.beginTransaction();
+            mDb.beginTransaction();
+            for (String name : tables) {
+                mDb.delete(name,null,null);
+                try (Cursor src_cursor = src_sqLiteHelper.query(name, null, null, null, null, null, null)) {
+                    int count = src_cursor.getColumnCount();
+                    while (src_cursor.moveToNext()) {
+                        values.clear();
+                        for (int i = 0; i < count; i++) {
+                            values.put(src_cursor.getColumnName(i), src_cursor.getString(i));
+                        }
+                        mDb.insert(name, null, values);
+                    }
+                }
+            }
+            src_sqLiteHelper.setTransactionSuccessful();
+            mDb.setTransactionSuccessful();
+        }finally {
+            src_sqLiteHelper.endTransaction();
+            mDb.endTransaction();
+
+            src_sqLiteHelper.close();
+        }
     }
 
     public static boolean isNotInit(){
@@ -82,6 +125,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                     try {
                         final SQLiteHelper sqLiteHelper = new SQLiteHelper(context,DATABASE_NAME(storesId));
                         mDb = sqLiteHelper.getWritableDatabase();
+                        if (CustomApplication.isPracticeMode())copy(NORMAL_DATABASE_NAME(storesId));
                     }catch (SQLiteException e){
                         CustomApplication.execute(()-> {
                             Looper.prepare();
@@ -450,6 +494,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         if (mDb != null)
         {
             synchronized (SQLiteHelper.class){
+                if (mDb.inTransaction())mDb.endTransaction();
                 mDb.close();
                 mDb = null;
                 Logger.i("mDb closed...");
@@ -522,20 +567,6 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         }
         return result;
     }
-    public static JSONArray getListContentValues(@NonNull String sql,Integer minrow,Integer maxrow,boolean row,StringBuilder err){
-        JSONArray array;
-        synchronized (SQLiteHelper.class){
-            try(Cursor cursor = mDb.rawQuery(sql,null);){
-                array = rs2ContentValues(cursor,minrow,maxrow,row);
-            } catch (SQLiteException e) {
-                if (err != null)err.append(e.getMessage());
-                e.printStackTrace();
-                array=null;
-            }
-        }
-        return array;
-    }
-
 
     public static boolean saveFormJson(@NonNull final JSONObject json, @NonNull final String table_name, String[] cls,int action, StringBuilder err){
         boolean isTrue = true;
@@ -825,6 +856,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 code = mDb.replaceOrThrow(table,nullColumnHack,values);
             }
         }catch (SQLiteException e){
+            e.printStackTrace();
             if (err != null)err.append(e.getMessage());
         }
         return code;
@@ -836,6 +868,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 code =  mDb.delete(table,whereClause,whereArgs);
             }
         }catch (SQLiteException e){
+            e.printStackTrace();
             if (err != null)err.append(e.getMessage());
         }
         return code;
@@ -877,7 +910,6 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 for (int k = 0,size = tables.size();k < size;k++) {
                     table = tables.get(k);
                     arrays = json.getJSONArray(table);
-
                     if (arrays == null){
                         if (err != null)err.append(table).append("不能为null");
                         return false;
@@ -1346,6 +1378,19 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
 
     public static @Nullable String getStoreNameById(String s_id){
         return SQLiteHelper.getString("select stores_name from shop_stores where stores_id = '"+ s_id + "'",null);
+    }
+
+
+    public static @NonNull List<String> getSyncDataTableName(){
+        return Arrays.asList("shop_category","shop_stores","barcode_info","pay_method","cashier_info","fullreduce_info","sales_info",
+                "promotion_info","sale_operator_info","goods_group", "goods_group_info","buyfull_give_x","buy_x_give_x","step_promotion_info","auxiliary_barcode_info");
+    }
+
+    public static String[] getGoodsCols(){
+        return new String[]{"goods_id","barcode_id","barcode","goods_title","only_coding","retail_price","buying_price","trade_price","cost_price","ps_price",
+                "unit_id","unit_name","specifi","category_name","metering_id","current_goods","shelf_life","goods_status","origin","type","goods_tare","barcode_status","category_id",
+                "tax_rate","tc_mode","tc_rate","yh_mode","yh_price","mnemonic_code","image","attr_id","attr_name","attr_code","brand_id","brand","brand_code","gs_id","gs_code","gs_name",
+                "conversion","update_price","stock_unit_id","stock_unit_name","goods_img","img_url","spec_str","cash_flow_ratio","updtime"};
     }
 
     private void initTables(SQLiteDatabase db) throws SQLiteException {

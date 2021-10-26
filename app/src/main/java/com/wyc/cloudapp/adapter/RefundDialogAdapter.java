@@ -413,18 +413,20 @@ public final class RefundDialogAdapter extends RecyclerView.Adapter<RefundDialog
         JSONObject goods;
         boolean isRefresh = false;
         double refund_num = 0.0,returnable_num = 0.0;
-        for (int i = 0,size = mGoodsDatas.size();i < size;i++){
-            goods = mGoodsDatas.getJSONObject(i);
-            refund_num = goods.getDoubleValue("refund_num");
-            returnable_num = goods.getDoubleValue("returnable_num");
-            if (!Utils.equalDouble(refund_num,returnable_num)){
-                if (!isRefresh)isRefresh = true;
-                refund_num = returnable_num;
-                goods.put("refund_num",refund_num);
+        if (mGoodsDatas != null){
+            for (int i = 0,size = mGoodsDatas.size();i < size;i++){
+                goods = mGoodsDatas.getJSONObject(i);
+                refund_num = goods.getDoubleValue("refund_num");
+                returnable_num = goods.getDoubleValue("returnable_num");
+                if (!Utils.equalDouble(refund_num,returnable_num)){
+                    if (!isRefresh)isRefresh = true;
+                    refund_num = returnable_num;
+                    goods.put("refund_num",refund_num);
+                }
             }
-        }
-        if (isRefresh){
-            notifyDataSetChanged();
+            if (isRefresh){
+                notifyDataSetChanged();
+            }
         }
     }
 

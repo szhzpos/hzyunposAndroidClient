@@ -113,17 +113,8 @@ class SyncManagement extends Thread {
         acquireHandler();
         mSyncHandler.removeCallbacksAndMessages(null);
     }
-    List<String> getDataTableName(){
-        acquireHandler();
-        return mSyncHandler.getSyncDataTableName();
-    }
 
     private void acquireHandler(){
         if (mSyncHandler == null)mSyncHandler = getHandler();
-    }
-
-    String[] getGoodsCols(){
-        acquireHandler();
-        return mSyncHandler.getGoodsCols();
     }
 }

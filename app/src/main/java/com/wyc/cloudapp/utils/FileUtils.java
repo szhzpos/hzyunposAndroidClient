@@ -18,8 +18,10 @@ import com.wyc.cloudapp.logger.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -39,6 +41,20 @@ import java.util.zip.ZipOutputStream;
  * @Version: 1.0
  */
 public class FileUtils {
+    public static void copyFileUsingFileChannels(File source, File dest) throws IOException {
+        try (FileChannel inputChannel = new FileInputStream(source).getChannel(); FileChannel outputChannel = new FileOutputStream(dest).getChannel()) {
+            outputChannel.truncate(inputChannel.size());
+            outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
+        }
+    }
+    public static void copyFileUsingStream(File source, File dest) throws IOException {
+        try (FileInputStream inputStream = new FileInputStream(source); FileOutputStream outputStream = new FileOutputStream(dest)) {
+            final byte[] bytes = new byte[1024];
+            while (inputStream.read(bytes) != -1){
+                outputStream.write(bytes);
+            }
+        }
+    }
     public static void zipFile(File dbFile, OutputStream outputStream) throws IOException {
         try (ZipOutputStream out = new ZipOutputStream(outputStream)) {
             zip(dbFile.listFiles(),"",out);

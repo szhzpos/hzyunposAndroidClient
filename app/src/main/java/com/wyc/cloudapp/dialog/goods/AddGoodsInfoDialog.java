@@ -634,7 +634,7 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
                         break;
                     case "y":
                         final JSONArray new_goods = JSON.parseArray(Utils.getNullOrEmptyStringAsDefault(info,"data","[]"));
-                        code = SQLiteHelper.execSQLByBatchFromJson(new_goods,"barcode_info" ,CustomApplication.getGoodsCols(),err,1);
+                        code = SQLiteHelper.execSQLByBatchFromJson(new_goods,"barcode_info" ,SQLiteHelper.getGoodsCols(),err,1);
                         break;
                 }
                 break;

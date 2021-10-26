@@ -65,8 +65,16 @@ public final class CustomApplication extends Application {
 
     private long OfflineTime = 0;//离线时间戳
 
+    /*
+    * 业务模式 true 正常模式 false 练习收银模式
+    * 练习收银模式下：1、本地库直接复制正常模式的本地库，所以要求必须至少一次进入正常模式同步基本数据 2、禁用所有业务同步功能 3、所有需要联网的支付方式除了移动支付之外都必须禁用
+    * 4、练习收银模式可以通过软件内部切换；正常收银则必须重新登陆软件
+     * */
+    private boolean mBusinessMode;
+
     public CustomApplication(){
         super();
+        mBusinessMode = true;
         mApplication = this;
         mActivities = new Vector<>();
         myhandler  = new Myhandler(Looper.myLooper(),this);
@@ -103,7 +111,14 @@ public final class CustomApplication extends Application {
         }
     }
 
-    public boolean initCashierInfoAndStoreInfo(final Context context){
+    public static boolean isPracticeMode(){
+        return !mApplication.mBusinessMode;
+    }
+    public static void enterPracticeMode(){
+        mApplication.mBusinessMode = false;
+    }
+
+    public boolean initCashierInfoAndStoreInfo(){
         final JSONObject cas_info = mCashierInfo = new JSONObject();
         final JSONObject st_info = mStoreInfo = getConnParam();
         if (SQLiteHelper.getLocalParameter("cashierInfo",cas_info)){
@@ -345,16 +360,12 @@ public final class CustomApplication extends Application {
         if (mSyncManagement != null) mSyncManagement.sync_refund_order();
     }
 
-    public static String[] getGoodsCols(){
-        return mApplication.mSyncManagement.getGoodsCols();
-    }
-
     public void resetSync(){
         mSyncManagement.rest();
     }
 
     public void clearBasicsData(){
-        final List<String> names = mSyncManagement.getDataTableName();
+        final List<String> names = SQLiteHelper.getSyncDataTableName();
         final StringBuilder err = new StringBuilder();
         for (String name : names){
             if (SQLiteHelper.execDelete(name,null,null,err) < 0){
@@ -447,9 +458,14 @@ public final class CustomApplication extends Application {
     }
 
     public static void initDb(final String stores_id){
-        if (!mApplication.getStoreId().equals(stores_id)){
-            //输入的门店ID和当前的不一样需要重新初始化数据库，因为数据库名称和门店ID相关。
+        if (CustomApplication.isPracticeMode() || !mApplication.getStoreId().equals(stores_id)){
+            /*
+            * 1、输入的门店ID和当前的不一样需要重新初始化数据库，因为数据库名称和门店ID相关。
+            * 2、进入练习收银模式也需要切换到练习库，必须重新初始化数据库
+            * */
+            mApplication.resetSync();
             SQLiteHelper.closeDB();
+            AppDatabase.closeDB();
         }
         SQLiteHelper.initDb(mApplication,stores_id);
     }

@@ -1169,7 +1169,7 @@ abstract public class EditGoodsInfoBaseActivity extends AbstractEditArchiveActiv
                     case "y":
                         final JSONArray new_goods = JSON.parseArray(Utils.getNullOrEmptyStringAsDefault(info,"data","[]"));
                         if (!new_goods.isEmpty())
-                            code = SQLiteHelper.execSQLByBatchFromJson(new_goods,"barcode_info" , CustomApplication.getGoodsCols(),err,1);
+                            code = SQLiteHelper.execSQLByBatchFromJson(new_goods,"barcode_info" , SQLiteHelper.getGoodsCols(),err,1);
                         break;
                 }
                 break;
@@ -1212,7 +1212,7 @@ abstract public class EditGoodsInfoBaseActivity extends AbstractEditArchiveActiv
 
     private void getGoodsByBarcodeId(){
         final StringBuilder sql = new StringBuilder("select ");
-        final String[] cols = CustomApplication.getGoodsCols();
+        final String[] cols = SQLiteHelper.getGoodsCols();
         for (int i = 0,size = cols.length;i < size;i ++){
             sql.append(cols[i]);
             if (i != size -1)sql.append(",");

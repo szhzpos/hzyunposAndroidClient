@@ -695,7 +695,7 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
 
     private void launchLogin(boolean isConnection){
         mApplication.setNetworkStatus(isConnection);
-        if (mApplication.initCashierInfoAndStoreInfo(this)){
+        if (mApplication.initCashierInfoAndStoreInfo()){
             final Intent intent = new Intent(this,NormalMainActivity.class);
             if (isSmallScreen)intent.setClass(this, MobileNavigationActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

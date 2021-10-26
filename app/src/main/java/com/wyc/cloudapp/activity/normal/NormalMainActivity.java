@@ -8,15 +8,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.PixelFormat;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.ReplacementTransformationMethod;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -50,6 +53,7 @@ import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.constants.MessageID;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.decoration.GoodsInfoItemDecoration;
 import com.wyc.cloudapp.decoration.SaleGoodsItemDecoration;
@@ -64,14 +68,13 @@ import com.wyc.cloudapp.dialog.orderDialog.HangBillDialog;
 import com.wyc.cloudapp.dialog.orderDialog.NormalTransferDialog;
 import com.wyc.cloudapp.dialog.orderDialog.QueryRetailOrderDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
-import com.wyc.cloudapp.dialog.pay.NormalSettlementDialog;
 import com.wyc.cloudapp.dialog.pay.AbstractSettlementDialog;
+import com.wyc.cloudapp.dialog.pay.NormalSettlementDialog;
 import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
 import com.wyc.cloudapp.print.Printer;
-import com.wyc.cloudapp.constants.MessageID;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -106,7 +109,6 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         initMemberVariable();
 
         initNetworkStatus();
-        initLastOrderInfo();
 
         //初始化adapter
         initGoodsInfoAdapter();
@@ -146,6 +148,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         launchSync();
 
         checkUsbPermission();
+
     }
     private void initMemberVariable(){
         mProgressDialog = new CustomProgressDialog(this);
@@ -155,14 +158,6 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         mKeyboard = findViewById(R.id.keyboard_layout);
         mOrderCodeTv = findViewById(R.id.order_code);
         mDisSumAmtTv = findViewById(R.id.dis_sum_amt);
-    }
-    @Override
-    public void onResume(){
-        super.onResume();
-    }
-    @Override
-    public void onPause(){
-        super.onPause();
     }
 
     @Override
@@ -227,27 +222,45 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     private void initScaleView(){
         mScaleView = findViewById(R.id.scaleView);
     }
-    private void initLastOrderInfo(){
-        final ConstraintLayout constraintLayout =  findViewById(R.id.last_order_info_c_layout);
-        if (constraintLayout != null){
-            final TextView close_tv = constraintLayout.findViewById(R.id.order_info_close_tv);
-            close_tv.setOnClickListener(v -> constraintLayout.setVisibility(View.GONE));
-            mLastOrderInfo = constraintLayout;
-        }
+
+    private WindowManager.LayoutParams createPopupLayoutParams(final View anchor) {
+        final WindowManager.LayoutParams p = new WindowManager.LayoutParams();
+        p.packageName = anchor.getContext().getPackageName();
+        p.gravity = Gravity.TOP|Gravity.START;
+        p.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
+        p.type = WindowManager.LayoutParams.TYPE_APPLICATION_PANEL;
+        p.token = anchor.getApplicationWindowToken();
+
+        int[] location = new int[2];
+        anchor.getLocationInWindow(location);
+        p.x = location[0] + 8;
+        p.y = location[1] + 8;
+
+        p.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED;
+        p.format = PixelFormat.RGBA_8888;
+        p.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        p.width = WindowManager.LayoutParams.WRAP_CONTENT;
+        return p;
     }
-    private void hideLastOrderInfo(){
-        final ConstraintLayout constraintLayout = mLastOrderInfo;
-        if (constraintLayout != null && constraintLayout.getVisibility() == View.VISIBLE){
-            constraintLayout.setVisibility(View.GONE);
-        }
-    }
-    private void showLastOrderInfo(){
-        final ConstraintLayout constraintLayout = mLastOrderInfo;
+    private void showLastOrderInfo() {
+        final ConstraintLayout constraintLayout = (ConstraintLayout) View.inflate(this,R.layout.last_order_info,null);
         if (constraintLayout != null){
-            constraintLayout.setVisibility(View.VISIBLE);
             final JSONObject order_info = new JSONObject();
             if (SQLiteHelper.execSql(order_info,"SELECT order_code,sum(pre_sale_money) pre_amt,sum(pay_money) pay_amt,sum(pre_sale_money - pay_money) zl_amt FROM " +
                     "retail_order_pays where order_code = '" + mOrderCodeTv.getText() +"' group by order_code")){
+
+                final WindowManager.LayoutParams p = createPopupLayoutParams(mSaleGoodsRecyclerView);
+                final WindowManager windowManager = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
+                final CountDownTimer countDownTimer = new CountDownTimer(30000,1000){
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+                    }
+                    @Override
+                    public void onFinish() {
+                        hideLastOrderInfo();
+                    }
+                };
+                constraintLayout.setTag(countDownTimer);
 
                 final TextView last_order_code = constraintLayout.findViewById(R.id.last_order_code),last_reality_amt = constraintLayout.findViewById(R.id.last_reality_amt),
                         last_rec_amt = constraintLayout.findViewById(R.id.last_rec_amt),last_zl = constraintLayout.findViewById(R.id.last_zl),close_tv = constraintLayout.findViewById(R.id.order_info_close_tv);
@@ -258,15 +271,30 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                 last_rec_amt.setText(String.format(Locale.CHINA,"%.2f",order_info.getDoubleValue("pay_amt")));
                 last_reality_amt.setText(String.format(Locale.CHINA,"%.2f",order_info.getDoubleValue("pre_amt")));
                 last_zl.setText(String.format(Locale.CHINA,"%.2f",order_info.getDoubleValue("zl_amt")));
-                close_tv.setOnClickListener(v -> {
-                    constraintLayout.setVisibility(View.GONE);
-                    close_tv.setOnClickListener(null);
-                    last_reprint_btn.setOnClickListener(null);
+                close_tv.setOnClickListener(v ->{
+                    hideLastOrderInfo();
+                    countDownTimer.cancel();
                 });
                 last_reprint_btn.setOnClickListener(v -> Printer.print(AbstractSettlementDialog.get_print_content(this,last_order_code.getText().toString(),false)));
+
+                windowManager.addView(constraintLayout, p);
+                countDownTimer.start();
             }else {
                 MyDialog.ToastMessage(order_info.getString("info"), getWindow());
             }
+        }
+        mLastOrderInfo = constraintLayout;
+    }
+
+    private void hideLastOrderInfo(){
+        if (mLastOrderInfo != null){
+            ((WindowManager)getSystemService(Context.WINDOW_SERVICE)).removeViewImmediate(mLastOrderInfo);
+            final Object o = mLastOrderInfo.getTag();
+            if (o instanceof CountDownTimer){
+                ((CountDownTimer)o).cancel();
+            }
+            mLastOrderInfo.setTag(null);
+            mLastOrderInfo = null;
         }
     }
     private void initNetworkStatus(){
