@@ -133,7 +133,7 @@
                 android:background="#E4B0D9"
                 android:drawableTop="@drawable/once_card"
                 android:gravity="center"
-                android:tag="activity.mobile.cashierDesk.TimeCardSaleActivity"
+                android:tag="activity.mobile.cashierDesk.TimeCardBusinessActivity"
                 android:text="@string/once_card_sale_sz"
                 android:textColor="@color/white"
                 android:textSize="@dimen/font_size_18"

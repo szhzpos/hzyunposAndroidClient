@@ -882,4 +882,5 @@
     <string name="practice">练习收银</string>
     <string name="enter_practice_fail">创建文件失败，不能进入练习收银模式</string>
     <string name="enter_practice">进入练习收银模式</string>
+    <string name="not_enter_practice">练习收银不支持此功能.</string>
 </resources>

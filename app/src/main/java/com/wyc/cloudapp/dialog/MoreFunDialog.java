@@ -57,7 +57,7 @@ public final class MoreFunDialog extends AbstractDialogSaleActivity {
 
     @OnClick(R.id.practice)
     void practice(){
-        if (MyDialog.showMessageToModalDialog(mContext,"是否重新登录练习收银模式?") == 1){
+        if (mContext.verifyPermissions("60",null) && MyDialog.showMessageToModalDialog(mContext,"是否重新登录练习收银模式?") == 1){
             dismiss();
             mContext.finish();
             CustomApplication.self().resetSync();

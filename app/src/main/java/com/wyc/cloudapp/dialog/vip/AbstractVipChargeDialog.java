@@ -81,6 +81,15 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
 
         showVipInfo();
     }
+    @Override
+    public void onAttachedToWindow(){
+        if (CustomApplication.isPracticeMode()){
+            MyDialog.toastMessage(mContext.getString(R.string.not_enter_practice));
+            dismiss();
+            return;
+        }
+        super.onAttachedToWindow();
+    }
 
     private void initSaleMan(){
         final TextView mobile_sale_man = findViewById(R.id.mobile_sale_man);

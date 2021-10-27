@@ -249,8 +249,6 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
             if (SQLiteHelper.execSql(order_info,"SELECT order_code,sum(pre_sale_money) pre_amt,sum(pay_money) pay_amt,sum(pre_sale_money - pay_money) zl_amt FROM " +
                     "retail_order_pays where order_code = '" + mOrderCodeTv.getText() +"' group by order_code")){
 
-                final WindowManager.LayoutParams p = createPopupLayoutParams(mSaleGoodsRecyclerView);
-                final WindowManager windowManager = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
                 final CountDownTimer countDownTimer = new CountDownTimer(30000,1000){
                     @Override
                     public void onTick(long millisUntilFinished) {
@@ -271,13 +269,14 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                 last_rec_amt.setText(String.format(Locale.CHINA,"%.2f",order_info.getDoubleValue("pay_amt")));
                 last_reality_amt.setText(String.format(Locale.CHINA,"%.2f",order_info.getDoubleValue("pre_amt")));
                 last_zl.setText(String.format(Locale.CHINA,"%.2f",order_info.getDoubleValue("zl_amt")));
+
                 close_tv.setOnClickListener(v ->{
                     hideLastOrderInfo();
                     countDownTimer.cancel();
                 });
                 last_reprint_btn.setOnClickListener(v -> Printer.print(AbstractSettlementDialog.get_print_content(this,last_order_code.getText().toString(),false)));
 
-                windowManager.addView(constraintLayout, p);
+                getWindowManager().addView(constraintLayout,createPopupLayoutParams(mSaleGoodsRecyclerView));
                 countDownTimer.start();
             }else {
                 MyDialog.ToastMessage(order_info.getString("info"), getWindow());

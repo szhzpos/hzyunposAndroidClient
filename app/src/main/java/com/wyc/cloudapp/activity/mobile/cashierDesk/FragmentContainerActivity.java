@@ -2,6 +2,7 @@ package com.wyc.cloudapp.activity.mobile.cashierDesk;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
@@ -10,8 +11,8 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.FragmentPagerAdapter;
 import com.wyc.cloudapp.mobileFragemt.AbstractMobileFragment;
-import com.wyc.cloudapp.mobileFragemt.TimeCardSaleFragment;
-import com.wyc.cloudapp.mobileFragemt.TimeCardUseFragment;
+import com.wyc.cloudapp.mobileFragemt.TimeCardSaleQueryFragment;
+import com.wyc.cloudapp.mobileFragemt.TimeCardUseQueryFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,14 +20,23 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/*次卡销售*/
-public class TimeCardSaleActivity extends AbstractMobileActivity {
-
+/**
+ * @ProjectName: AndroidClient
+ * @Package: com.wyc.cloudapp.activity.mobile.cashierDesk
+ * @ClassName: FragmentContainerActivity
+ * @Description: java类作用描述
+ * @Author: wyc
+ * @CreateDate: 2021-10-27 11:44
+ * @UpdateUser: 更新者
+ * @UpdateDate: 2021-10-27 11:44
+ * @UpdateRemark: 更新说明
+ * @Version: 1.0
+ */
+public abstract class FragmentContainerActivity<T extends AbstractMobileFragment> extends AbstractMobileActivity {
     @BindView(R.id._fragment_tab)
     TabLayout _tab;
     @BindView(R.id.view_pager)
     ViewPager2 view_pager;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,19 +46,12 @@ public class TimeCardSaleActivity extends AbstractMobileActivity {
     }
 
     private void init(){
-        final List<AbstractMobileFragment> fragments = new ArrayList<>();
-        fragments.add(new TimeCardSaleFragment());
-        fragments.add(new TimeCardUseFragment());
-
-        final FragmentPagerAdapter<AbstractMobileFragment> adapter =  new FragmentPagerAdapter<>(fragments,this);
+        final FragmentPagerAdapter<T> adapter =  new FragmentPagerAdapter<>(createFragments(),this);
         view_pager.setAdapter(adapter);
         new TabLayoutMediator(_tab, view_pager,(tab, position) -> tab.setText(adapter.getItem(position).getTitle())).attach();
     }
 
-    @Override
-    public boolean hookEnterKey() {
-        return ((FragmentPagerAdapter<?>) view_pager.getAdapter()).getItem(_tab.getSelectedTabPosition()).hookEnterKey();
-    }
+    protected abstract @NonNull List<T> createFragments();
 
     @Override
     protected int getContentLayoutId() {

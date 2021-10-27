@@ -83,6 +83,11 @@ public final class VipInfoDialog extends AbstractDialogMainActivity {
     }
     @Override
     public void onAttachedToWindow(){
+        if (CustomApplication.isPracticeMode()){
+            MyDialog.toastMessage(mContext.getString(R.string.not_enter_practice));
+            dismiss();
+            return;
+        }
         super.onAttachedToWindow();
     }
 
