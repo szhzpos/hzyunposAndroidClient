@@ -8,7 +8,7 @@
     android:background="@drawable/round_shape"
     android:orientation="vertical">
 
-    <com.wyc.cloudapp.CustomizationView.RoundCornerTabLayout
+    <com.wyc.cloudapp.customizationView.RoundCornerTabLayout
         android:id="@+id/_fragment_tab"
         style="@style/TabStyle"
         android:layout_width="wrap_content"

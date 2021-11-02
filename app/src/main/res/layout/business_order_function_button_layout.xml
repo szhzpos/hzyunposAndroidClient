@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.wyc.cloudapp.customizationView.ItemPaddingLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/business_function_btn_layout"
     android:layout_width="match_parent"
@@ -79,4 +79,4 @@
             android:textColor="@color/white_pink"
             android:textSize="@dimen/font_size_18"
             android:visibility="visible" />
-</com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout>
+</com.wyc.cloudapp.customizationView.ItemPaddingLinearLayout>

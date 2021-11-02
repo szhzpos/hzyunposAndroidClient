@@ -7,7 +7,7 @@
     android:orientation="vertical"
     tools:context=".activity.mobile.business.MobileEditGoodsCategoryActivity">
 
-    <com.wyc.cloudapp.CustomizationView.SlideRecycleView
+    <com.wyc.cloudapp.customizationView.SlideRecycleView
         android:id="@+id/goods_category_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

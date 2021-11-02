@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.MotionEvent
+import android.view.View
 import android.widget.EditText
 import butterknife.BindView
 import butterknife.OnClick
@@ -15,6 +16,8 @@ import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity.TITLE_KEY
 import com.wyc.cloudapp.activity.mobile.cashierDesk.AbstractSelectActivity.SELECT_ITEM
 import com.wyc.cloudapp.bean.GiftCardInfo
 import com.wyc.cloudapp.constants.InterfaceURL
+import com.wyc.cloudapp.data.viewModel.GiftCardInfoModel
+import com.wyc.cloudapp.databinding.ActivityNGiftSaleBinding
 import com.wyc.cloudapp.databinding.ActivityQueryGiftCardInfoBinding
 import com.wyc.cloudapp.dialog.CustomProgressDialog
 import com.wyc.cloudapp.dialog.MyDialog
@@ -24,12 +27,15 @@ import com.wyc.cloudapp.utils.http.HttpUtils
 import com.wyc.cloudapp.utils.http.callback.ArrayCallback
 
 class QueryGiftCardInfoActivity : AbsBindingActivity() {
+    private val giftCardViewModel = GiftCardInfoModel()
     @BindView(R.id.search_gift_card)
     lateinit var search_content: EditText
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         initSearchContent();
+        giftCardViewModel.AddObserver(this){
+            getBindingData<ActivityQueryGiftCardInfoBinding>()?.giftCardInfo = it[0]
+        }
     }
     @SuppressLint("ClickableViewAccessibility")
     private fun initSearchContent(){
@@ -56,32 +62,7 @@ class QueryGiftCardInfoActivity : AbsBindingActivity() {
         }
     }
     private fun queryGiftCardByCode(code: String) {
-        if (!Utils.isNotEmpty(code)){
-            MyDialog.toastMessage(getString(R.string.not_empty_hint_sz, getString(R.string.input_gift_card_hints)))
-            return
-        }
-        val obj = JSONObject()
-        obj["appid"] = appId
-        obj["pos_num"] = posNum
-        obj["stores_id"] = storeId
-        obj["card_no"] = code
-
-        val progressDialog : CustomProgressDialog = CustomProgressDialog.showProgress(this, getString(R.string.hints_query_data_sz));
-        HttpUtils.sendAsyncPost(url + InterfaceURL.GIFT_CARD_INFO, HttpRequest.generate_request_parm(obj, appSecret))
-                .enqueue(object : ArrayCallback<GiftCardInfo>(GiftCardInfo::class.java) {
-                    override fun onError(msg: String?) {
-                        progressDialog.dismiss()
-                        MyDialog.toastMessage(msg)
-                    }
-                    override fun onSuccessForResult(d: List<GiftCardInfo>?, hint: String?) {
-                        if (d != null){
-                            if (d.isNotEmpty())
-                                getBindingData<ActivityQueryGiftCardInfoBinding>()?.giftCardInfo = d[0]
-                            else MyDialog.toastMessage(getString(R.string.not_exist_hint_sz, "卡号：$code"))
-                        }else MyDialog.toastMessage(hint)
-                        progressDialog.dismiss()
-                    }
-                })
+        giftCardViewModel.refresh(this,code)
     }
 
     @OnClick(R.id.select_btn)

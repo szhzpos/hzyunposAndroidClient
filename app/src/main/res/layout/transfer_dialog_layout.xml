@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@color/white"
@@ -61,7 +62,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="688dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
@@ -213,11 +214,105 @@
                 </LinearLayout>
 
             </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/left_separator"
+                android:paddingStart="@dimen/margin_1">
+
+                <TextView
+                    android:id="@+id/label1"
+                    android:layout_width="match_parent"
+                    android:layout_height="25dp"
+                    android:background="@drawable/bottom_separator"
+                    android:gravity="center"
+                    android:text="@string/time_card_payment"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16"
+                    app:layout_constraintBottom_toTopOf="@+id/label2"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/label2"
+                    android:layout_width="@dimen/transfer_details_col01_width"
+                    android:layout_height="0dp"
+                    android:gravity="center"
+                    android:text="@string/order_num_sz"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/label1" />
+
+                <TextView
+                    android:id="@+id/label3"
+                    android:layout_width="@dimen/transfer_details_col02_width"
+                    android:layout_height="0dp"
+                    android:background="@drawable/left_separator"
+                    android:gravity="center"
+                    android:text="@string/amt_not_colon_sz"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/label2"
+                    app:layout_constraintTop_toBottomOf="@id/label1" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/left_separator"
+                android:paddingStart="@dimen/margin_1">
+
+                <TextView
+                    android:id="@+id/label9"
+                    android:layout_width="match_parent"
+                    android:layout_height="25dp"
+                    android:background="@drawable/bottom_separator"
+                    android:gravity="center"
+                    android:text="@string/gift_card_payment"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16"
+                    app:layout_constraintBottom_toTopOf="@id/label7"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/label8"
+                    android:layout_width="@dimen/transfer_details_col01_width"
+                    android:layout_height="0dp"
+                    android:gravity="center"
+                    android:text="@string/order_num_sz"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/label9" />
+
+                <TextView
+                    android:id="@+id/label7"
+                    android:layout_width="@dimen/transfer_details_col02_width"
+                    android:layout_height="0dp"
+                    android:background="@drawable/left_separator"
+                    android:gravity="center"
+                    android:text="@string/amt_not_colon_sz"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_16"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/label8"
+                    app:layout_constraintTop_toBottomOf="@id/label9" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/transfer_info_list"
-            android:layout_width="match_parent"
+            android:layout_width="1062dp"
             android:layout_height="@dimen/transfer_list_height"
             android:background="@drawable/bottom_separator" />
 
@@ -310,6 +405,60 @@
                 android:text="@string/zero_p_z_sz"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:id="@+id/time_card_sum_order_num"
+                android:layout_width="@dimen/transfer_details_col01_width"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/margin_1"
+                android:layout_weight="1"
+                android:background="@drawable/left_separator"
+                android:gravity="center"
+                android:paddingStart="0dp"
+                android:paddingEnd="@dimen/margin_5"
+                android:text="@string/zero_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:id="@+id/time_card_sum_amt"
+                android:layout_width="@dimen/transfer_details_col02_width"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/left_separator"
+                android:gravity="center"
+                android:paddingStart="0dp"
+                android:paddingEnd="@dimen/margin_5"
+                android:text="@string/zero_p_z_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:id="@+id/gift_sum_order_num"
+                android:layout_width="@dimen/transfer_details_col01_width"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/margin_1"
+                android:layout_weight="1"
+                android:background="@drawable/left_separator"
+                android:gravity="center"
+                android:paddingStart="0dp"
+                android:paddingEnd="@dimen/margin_5"
+                android:text="@string/zero_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_18" />
+
+            <TextView
+                android:id="@+id/gift_sum_amt"
+                android:layout_width="@dimen/transfer_details_col02_width"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/left_separator"
+                android:gravity="center"
+                android:paddingStart="0dp"
+                android:paddingEnd="@dimen/margin_5"
+                android:text="@string/zero_p_z_sz"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_18" />
         </LinearLayout>
 
     </LinearLayout>
@@ -359,4 +508,4 @@
             android:textSize="@dimen/font_size_24" />
     </LinearLayout>
 
-</LinearLayout>
+</merge>

@@ -1,9 +1,8 @@
-package com.wyc.cloudapp.CustomizationView;
+package com.wyc.cloudapp.customizationView;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
@@ -13,9 +12,7 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.tabs.TabLayout;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.utils.DrawableUtil;
-import com.wyc.cloudapp.utils.Utils;
 
 import java.lang.reflect.Field;
 

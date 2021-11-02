@@ -25,7 +25,7 @@
         android:background="@drawable/round_border_sub_gray"
         android:orientation="horizontal">
 
-        <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+        <com.wyc.cloudapp.customizationView.EditTextForHideKeyBoard
             android:id="@+id/c_amt"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -40,7 +40,7 @@
             android:textColor="@color/orange_1"
             android:textSize="@dimen/font_size_18" />
 
-        <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+        <com.wyc.cloudapp.customizationView.EditTextForHideKeyBoard
             android:id="@+id/pay_code"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -58,7 +58,7 @@
 
     </LinearLayout>
 
-    <com.wyc.cloudapp.CustomizationView.KeyboardView
+    <com.wyc.cloudapp.customizationView.KeyboardView
         android:id="@+id/keyboard_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

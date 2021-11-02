@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.CustomizationView;
+package com.wyc.cloudapp.customizationView;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -15,8 +15,6 @@ import android.widget.OverScroller;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.Utils;
 
 public class SwipeLayout extends FrameLayout {
     private OverScroller mScroller;

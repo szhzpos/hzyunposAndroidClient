@@ -90,7 +90,7 @@
         android:orientation="vertical"
         android:padding="@dimen/margin_8">
 
-        <com.wyc.cloudapp.CustomizationView.JumpTextView
+        <com.wyc.cloudapp.customizationView.JumpTextView
             android:id="@+id/m_print_options_tv"
             android:layout_width="match_parent"
             android:layout_height="@dimen/m_setup_item_height"
@@ -103,7 +103,7 @@
             android:textColor="@color/label_text_color"
             android:textSize="@dimen/font_size_18" />
 
-        <com.wyc.cloudapp.CustomizationView.JumpTextView
+        <com.wyc.cloudapp.customizationView.JumpTextView
             android:id="@+id/business_print_tv"
             android:layout_width="match_parent"
             android:layout_height="@dimen/m_setup_item_height"

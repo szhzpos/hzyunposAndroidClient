@@ -179,7 +179,7 @@
                 android:textSize="@dimen/font_size_16" />
         </LinearLayout>
 
-        <com.wyc.cloudapp.CustomizationView.SlideRecycleView
+        <com.wyc.cloudapp.customizationView.SlideRecycleView
             android:id="@+id/stock_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

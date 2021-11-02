@@ -104,7 +104,7 @@
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16" />
 
-    <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+    <com.wyc.cloudapp.customizationView.EditTextForHideKeyBoard
         android:id="@+id/cur_refund_num"
         android:layout_width="@dimen/width_118"
         android:layout_height="match_parent"

@@ -301,7 +301,7 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16" />
 
-        <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+        <com.wyc.cloudapp.customizationView.EditTextForHideKeyBoard
             android:id="@+id/mobile_charge_amt"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -326,7 +326,7 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16" />
 
-        <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+        <com.wyc.cloudapp.customizationView.EditTextForHideKeyBoard
             android:id="@+id/mobile_present_amt"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -374,7 +374,7 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16" />
 
-        <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+        <com.wyc.cloudapp.customizationView.EditTextForHideKeyBoard
             android:id="@+id/pay_code"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

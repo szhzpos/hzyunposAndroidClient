@@ -69,4 +69,42 @@
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16" />
 
+    <TextView
+        android:id="@+id/time_card_order_num"
+        android:layout_width="@dimen/transfer_details_col01_width"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="@dimen/margin_1"
+        android:background="@drawable/left_separator"
+        android:gravity="center"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
+
+    <TextView
+        android:id="@+id/time_card_amt"
+        android:layout_width="@dimen/transfer_details_col02_width"
+        android:layout_height="match_parent"
+        android:background="@drawable/left_separator"
+        android:gravity="center"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
+
+    <TextView
+        android:id="@+id/gift_order_num"
+        android:layout_width="@dimen/transfer_details_col01_width"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="@dimen/margin_1"
+        android:background="@drawable/left_separator"
+        android:gravity="center"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
+
+    <TextView
+        android:id="@+id/gift_amt"
+        android:layout_width="@dimen/transfer_details_col02_width"
+        android:layout_height="match_parent"
+        android:background="@drawable/left_separator"
+        android:gravity="center"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
+
 </LinearLayout>

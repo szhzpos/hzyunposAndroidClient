@@ -115,7 +115,7 @@
         android:background="@drawable/round_shape"
         android:orientation="vertical">
 
-        <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+        <com.wyc.cloudapp.customizationView.EditTextForHideKeyBoard
             android:id="@+id/search_content"
             android:layout_width="match_parent"
             android:layout_height="@dimen/height_45"
@@ -131,10 +131,11 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_18" />
 
-        <com.wyc.cloudapp.CustomizationView.KeyboardView
+        <com.wyc.cloudapp.customizationView.KeyboardView
             android:id="@+id/keyboard_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:keyboardLayout="@layout/keyboard_layout" />
     </LinearLayout>
 
 </LinearLayout>

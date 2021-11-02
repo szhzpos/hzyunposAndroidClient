@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import butterknife.BindView
 import butterknife.ButterKnife
-import com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout
+import com.wyc.cloudapp.customizationView.ItemPaddingLinearLayout
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.activity.base.MainActivity
 import com.wyc.cloudapp.activity.mobile.business.EditGoodsInfoBaseActivity

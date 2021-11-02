@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.CustomizationView;
+package com.wyc.cloudapp.customizationView;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -8,7 +8,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 public class BasketView extends androidx.appcompat.widget.AppCompatImageView {

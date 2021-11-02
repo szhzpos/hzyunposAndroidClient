@@ -7,7 +7,7 @@
     android:background="@drawable/round_border_sub_gray"
     android:orientation="vertical">
 
-    <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+    <com.wyc.cloudapp.customizationView.EditTextForHideKeyBoard
         android:id="@+id/new_numOrprice_text"
         android:layout_width="match_parent"
         android:layout_height="@dimen/height_45"
@@ -24,7 +24,7 @@
         android:textColor="@color/text_color"
         android:textSize="@dimen/fun_button_font_size_18" />
 
-    <com.wyc.cloudapp.CustomizationView.KeyboardView
+    <com.wyc.cloudapp.customizationView.KeyboardView
         android:id="@+id/keyboard_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

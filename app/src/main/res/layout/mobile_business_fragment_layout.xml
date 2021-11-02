@@ -31,7 +31,7 @@
             android:orientation="vertical"
             android:padding="@dimen/margin_1">
 
-            <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            <com.wyc.cloudapp.customizationView.TopDrawableTextView
                 android:id="@+id/goods_category_tv"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -48,7 +48,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:verSpacing="@dimen/margin_5" />
 
-            <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            <com.wyc.cloudapp.customizationView.TopDrawableTextView
                 android:id="@+id/goods_record_tv"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -64,7 +64,7 @@
                 app:layout_constraintTop_toTopOf="@id/goods_category_tv"
                 app:verSpacing="@dimen/margin_5" />
 
-            <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            <com.wyc.cloudapp.customizationView.TopDrawableTextView
                 android:id="@+id/supplier_tv"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -79,7 +79,7 @@
                 app:layout_constraintTop_toTopOf="@id/goods_category_tv"
                 app:verSpacing="@dimen/margin_5" />
 
-            <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            <com.wyc.cloudapp.customizationView.TopDrawableTextView
                 android:id="@+id/customer_tv"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -96,7 +96,7 @@
                 app:layout_constraintWidth_percent="0.333"
                 app:verSpacing="@dimen/margin_5" />
 
-            <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            <com.wyc.cloudapp.customizationView.TopDrawableTextView
                 android:id="@+id/vip_category_tv"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -113,7 +113,7 @@
                 app:layout_constraintWidth_percent="0.333"
                 app:verSpacing="@dimen/margin_5" />
 
-            <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            <com.wyc.cloudapp.customizationView.TopDrawableTextView
                 android:id="@+id/vip_record_tv"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -151,7 +151,7 @@
             android:orientation="vertical"
             android:padding="@dimen/margin_1">
 
-            <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            <com.wyc.cloudapp.customizationView.TopDrawableTextView
                 android:id="@+id/purchase_tv"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -166,7 +166,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:verSpacing="@dimen/margin_5" />
 
-            <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            <com.wyc.cloudapp.customizationView.TopDrawableTextView
                 android:id="@+id/warehouse_tv"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -184,7 +184,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:verSpacing="@dimen/margin_5" />
 
-            <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            <com.wyc.cloudapp.customizationView.TopDrawableTextView
                 android:id="@+id/refund_tv"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -224,7 +224,7 @@
             android:orientation="vertical"
             android:padding="@dimen/margin_1">
 
-            <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            <com.wyc.cloudapp.customizationView.TopDrawableTextView
                 android:id="@+id/wholesale_tv"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -240,7 +240,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:verSpacing="@dimen/margin_5" />
 
-            <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            <com.wyc.cloudapp.customizationView.TopDrawableTextView
                 android:id="@+id/wholesale_sale_tv"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -258,7 +258,7 @@
                 app:verSpacing="@dimen/margin_5"
                 tools:layout_editor_absoluteY="1dp" />
 
-            <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            <com.wyc.cloudapp.customizationView.TopDrawableTextView
                 android:id="@+id/wholesale_refund_tv"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -297,7 +297,7 @@
             android:orientation="vertical"
             android:padding="@dimen/margin_1">
 
-            <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            <com.wyc.cloudapp.customizationView.TopDrawableTextView
                 android:id="@+id/other_inventory_tv"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -321,7 +321,7 @@
             android:orientation="vertical"
             android:padding="@dimen/margin_1">
 
-            <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            <com.wyc.cloudapp.customizationView.TopDrawableTextView
                 android:id="@+id/inventory_task_tv"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -335,7 +335,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:verSpacing="@dimen/margin_5" />
 
-            <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            <com.wyc.cloudapp.customizationView.TopDrawableTextView
                 android:id="@+id/inventory_order_tv"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -353,7 +353,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:verSpacing="@dimen/margin_5" />
 
-            <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            <com.wyc.cloudapp.customizationView.TopDrawableTextView
                 android:id="@+id/inventory_audit_tv"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -392,7 +392,7 @@
             android:orientation="vertical"
             android:padding="@dimen/margin_1">
 
-            <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            <com.wyc.cloudapp.customizationView.TopDrawableTextView
                 android:id="@+id/distribution_warehouse_tv"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -407,7 +407,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:verSpacing="@dimen/margin_5" />
 
-            <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            <com.wyc.cloudapp.customizationView.TopDrawableTextView
                 android:id="@+id/distribution_warehousing_tv"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -425,7 +425,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:verSpacing="@dimen/margin_5" />
 
-            <com.wyc.cloudapp.CustomizationView.TopDrawableTextView
+            <com.wyc.cloudapp.customizationView.TopDrawableTextView
                 android:id="@+id/enquiry_tv"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"

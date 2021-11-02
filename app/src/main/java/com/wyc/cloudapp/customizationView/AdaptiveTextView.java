@@ -1,18 +1,10 @@
-package com.wyc.cloudapp.CustomizationView;
+package com.wyc.cloudapp.customizationView;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.RectF;
-import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.widget.TextView;
-
-import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.Utils;
 
 /**
  * @ProjectName: CloudApp

@@ -15,7 +15,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.zxing.client.android.CaptureActivity;
-import com.wyc.cloudapp.CustomizationView.TopDrawableTextView;
+import com.wyc.cloudapp.customizationView.TopDrawableTextView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.cashierDesk.MobileCashierActivity;
 import com.wyc.cloudapp.application.CustomApplication;

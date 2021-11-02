@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.wyc.cloudapp.CustomizationView.InterceptLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.wyc.cloudapp.customizationView.InterceptLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/_float_fun_btn"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -35,4 +35,4 @@
         android:textColor="@color/gray_7"
         android:textSize="@dimen/font_size_14" />
 
-</com.wyc.cloudapp.CustomizationView.InterceptLinearLayout>
+</com.wyc.cloudapp.customizationView.InterceptLinearLayout>

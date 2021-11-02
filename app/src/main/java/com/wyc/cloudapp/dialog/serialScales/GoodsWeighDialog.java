@@ -14,7 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSONObject;
-import com.wyc.cloudapp.CustomizationView.KeyboardView;
+import com.wyc.cloudapp.customizationView.KeyboardView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.SaleActivity;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;

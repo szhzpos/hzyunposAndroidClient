@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+    <com.wyc.cloudapp.customizationView.EditTextForHideKeyBoard
         android:id="@+id/search_content"
         android:layout_width="match_parent"
         android:layout_height="@dimen/height_45"
@@ -117,7 +117,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.wyc.cloudapp.CustomizationView.KeyboardView
+    <com.wyc.cloudapp.customizationView.KeyboardView
         android:id="@+id/keyboard_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

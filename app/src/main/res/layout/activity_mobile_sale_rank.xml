@@ -126,7 +126,7 @@
                 android:textSize="16sp" />
         </LinearLayout>
 
-        <com.wyc.cloudapp.CustomizationView.SlideRecycleView
+        <com.wyc.cloudapp.customizationView.SlideRecycleView
             android:id="@+id/rank_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

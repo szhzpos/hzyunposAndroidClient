@@ -7,7 +7,7 @@ import android.widget.ScrollView;
 
 import androidx.annotation.CallSuper;
 
-import com.wyc.cloudapp.CustomizationView.JumpTextView;
+import com.wyc.cloudapp.customizationView.JumpTextView;
 
 import java.util.ArrayList;
 import java.util.List;

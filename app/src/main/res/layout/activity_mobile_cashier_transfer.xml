@@ -130,7 +130,7 @@
                 android:text="@string/cashier_not_colon_sz"
                 android:textSize="@dimen/font_size_16" />
 
-            <com.wyc.cloudapp.CustomizationView.SlideRecycleView
+            <com.wyc.cloudapp.customizationView.SlideRecycleView
                 android:id="@+id/cashier_name_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -139,7 +139,7 @@
 
         </LinearLayout>
 
-        <com.wyc.cloudapp.CustomizationView.SlideHorizontalScrollView
+        <com.wyc.cloudapp.customizationView.SlideHorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -213,7 +213,7 @@
                 </androidx.recyclerview.widget.RecyclerView>
 
             </LinearLayout>
-        </com.wyc.cloudapp.CustomizationView.SlideHorizontalScrollView>
+        </com.wyc.cloudapp.customizationView.SlideHorizontalScrollView>
 
     </LinearLayout>
 

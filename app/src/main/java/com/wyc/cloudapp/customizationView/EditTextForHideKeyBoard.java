@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.CustomizationView;
+package com.wyc.cloudapp.customizationView;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -6,14 +6,8 @@ import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.widget.EditText;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleEventObserver;
-import androidx.lifecycle.LifecycleOwner;
-
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.dialog.DigitKeyboardPopup;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 @SuppressLint("AppCompatCustomView")

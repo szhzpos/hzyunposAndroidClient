@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.CustomizationView;
+package com.wyc.cloudapp.customizationView;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -11,7 +11,6 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
 
 public final class TopDrawableTextView extends JumpTextView{

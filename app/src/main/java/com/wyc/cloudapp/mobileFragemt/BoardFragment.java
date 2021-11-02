@@ -15,7 +15,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import com.wyc.cloudapp.CustomizationView.PieView;
+import com.wyc.cloudapp.customizationView.PieView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.PayMethodStatisticsViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;

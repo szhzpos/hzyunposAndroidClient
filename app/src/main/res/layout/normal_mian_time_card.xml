@@ -854,7 +854,7 @@
         app:layout_constraintStart_toEndOf="@+id/main_middle_middle"
         app:layout_constraintTop_toBottomOf="@id/keyboard_layout">
 
-        <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+        <com.wyc.cloudapp.customizationView.EditTextForHideKeyBoard
             android:id="@+id/_search_content"
             android:layout_width="@dimen/size_248"
             android:layout_height="@dimen/height_40"

@@ -15,7 +15,7 @@ import com.wyc.cloudapp.activity.base.SaleActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
-import com.wyc.cloudapp.CustomizationView.KeyboardView;
+import com.wyc.cloudapp.customizationView.KeyboardView;
 import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;

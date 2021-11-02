@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.CustomizationView;
+package com.wyc.cloudapp.customizationView;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;

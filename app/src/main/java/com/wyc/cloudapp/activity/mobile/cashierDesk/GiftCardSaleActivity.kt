@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.text.method.ReplacementTransformationMethod
-import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
@@ -16,7 +15,7 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
 import com.alibaba.fastjson.JSONObject
-import com.wyc.cloudapp.CustomizationView.BasketView
+import com.wyc.cloudapp.customizationView.BasketView
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity
 import com.wyc.cloudapp.adapter.MobileGiftCardSaleAdapter

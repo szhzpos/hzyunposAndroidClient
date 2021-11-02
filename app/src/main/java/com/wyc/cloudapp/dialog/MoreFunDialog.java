@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.SaleActivity;
 import com.wyc.cloudapp.activity.normal.LoginActivity;
+import com.wyc.cloudapp.activity.normal.NGiftSaleActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.barcodeScales.BarCodeScaleDownDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
@@ -63,6 +64,14 @@ public final class MoreFunDialog extends AbstractDialogSaleActivity {
             CustomApplication.self().resetSync();
             CustomApplication.enterPracticeMode();
             LoginActivity.start(mContext);
+        }
+    }
+
+    @OnClick(R.id.gift_sold)
+    void gift_sold(){//购物卡销售
+        if (mContext.verifyPermissions("30",null)){
+            dismiss();
+            NGiftSaleActivity.start(mContext);
         }
     }
 

@@ -1,6 +1,7 @@
-package com.wyc.cloudapp.CustomizationView;
+package com.wyc.cloudapp.customizationView;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.text.Editable;
 import android.util.AttributeSet;
@@ -24,6 +25,13 @@ public final class KeyboardView extends LinearLayout implements View.OnClickList
 
     public KeyboardView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        final TypedArray typedArray = context.obtainStyledAttributes(attrs,R.styleable.KeyboardView);
+        int contentViewId = typedArray.getResourceId(R.styleable.KeyboardView_android_keyboardLayout,0);
+        if (contentViewId != 0){
+            LayoutInflater.from(getContext()).inflate(contentViewId, this, true);
+            typedArray.recycle();
+            initKeyboard();
+        }
     }
 
     @Override
@@ -111,9 +119,9 @@ public final class KeyboardView extends LinearLayout implements View.OnClickList
     }
 
     public void layout(int res_id){
-        LayoutInflater.from(getContext()).inflate(res_id, this, true);
-        initKeyboard();
+        if (getChildCount() == 0){
+            LayoutInflater.from(getContext()).inflate(res_id, this, true);
+            initKeyboard();
+        }
     }
-
-
 }

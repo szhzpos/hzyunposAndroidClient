@@ -7,7 +7,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.wyc.cloudapp.CustomizationView.InterceptLinearLayout;
+import com.wyc.cloudapp.customizationView.InterceptLinearLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractDataAdapter;

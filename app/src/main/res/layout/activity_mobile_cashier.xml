@@ -24,7 +24,7 @@
         android:focusableInTouchMode="true"
         android:visibility="visible">
 
-        <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+        <com.wyc.cloudapp.customizationView.EditTextForHideKeyBoard
             android:id="@+id/mobile_search_content"
             android:layout_width="match_parent"
             android:layout_height="@dimen/height_50"
@@ -146,14 +146,14 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/mobile_bottom_btn_layout">
 
-            <com.wyc.cloudapp.CustomizationView.InterceptLinearLayout
+            <com.wyc.cloudapp.customizationView.InterceptLinearLayout
                 android:id="@+id/mobile_other_fun_hide_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:visibility="gone">
 
-                <com.wyc.cloudapp.CustomizationView.TmpOrderButton
+                <com.wyc.cloudapp.customizationView.TmpOrderButton
                     android:id="@+id/mobile_hang_orderl_btn"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="@dimen/float_circle_button_size"
@@ -197,7 +197,7 @@
                     android:text="@string/o_back_sz"
                     android:textColor="@color/blue_white"
                     android:textSize="@dimen/font_size_14" />
-            </com.wyc.cloudapp.CustomizationView.InterceptLinearLayout>
+            </com.wyc.cloudapp.customizationView.InterceptLinearLayout>
 
             <Button
                 android:id="@+id/mobile_other_fun_btn"
@@ -218,7 +218,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
-            <com.wyc.cloudapp.CustomizationView.BasketView
+            <com.wyc.cloudapp.customizationView.BasketView
                 android:id="@+id/basketView"
                 android:layout_width="@dimen/height_78"
                 android:layout_height="wrap_content"

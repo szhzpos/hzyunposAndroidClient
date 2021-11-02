@@ -7,7 +7,7 @@
             type="com.wyc.cloudapp.bean.BusinessOrderPrintSetting" />
     </data>
 
-    <com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout
+    <com.wyc.cloudapp.customizationView.ItemPaddingLinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white"
@@ -419,5 +419,5 @@
             app:layout_constraintTop_toTopOf="@id/distribution_out_label" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout>
+</com.wyc.cloudapp.customizationView.ItemPaddingLinearLayout>
 </layout>

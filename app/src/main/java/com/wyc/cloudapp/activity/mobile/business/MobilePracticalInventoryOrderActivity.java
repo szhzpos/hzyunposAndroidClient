@@ -7,14 +7,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import com.wyc.cloudapp.CustomizationView.InterceptLinearLayout;
+import com.wyc.cloudapp.customizationView.InterceptLinearLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.business.MobileInventoryOrderAdapter;

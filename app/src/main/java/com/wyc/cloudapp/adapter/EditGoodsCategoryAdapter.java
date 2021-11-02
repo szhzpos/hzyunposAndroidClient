@@ -7,7 +7,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.wyc.cloudapp.CustomizationView.SwipeLayout;
+import com.wyc.cloudapp.customizationView.SwipeLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.business.MobileEditGoodsCategoryActivity;
 import com.wyc.cloudapp.bean.TreeListItem;

@@ -13,7 +13,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout;
+import com.wyc.cloudapp.customizationView.ItemPaddingLinearLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;

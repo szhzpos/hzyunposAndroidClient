@@ -434,7 +434,7 @@
                 android:textColor="@color/blue"
                 android:textSize="@dimen/fun_button_font_size_18" />
 
-            <com.wyc.cloudapp.CustomizationView.EditTextForHideKeyBoard
+            <com.wyc.cloudapp.customizationView.EditTextForHideKeyBoard
                 android:id="@+id/cash_amt"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.wyc.cloudapp.CustomizationView.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.wyc.cloudapp.customizationView.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:layout="@layout/tree_item_layout">
 
-</com.wyc.cloudapp.CustomizationView.SwipeLayout>
+</com.wyc.cloudapp.customizationView.SwipeLayout>

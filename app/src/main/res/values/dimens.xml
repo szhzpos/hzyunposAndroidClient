@@ -165,7 +165,7 @@
     <dimen name="table_footer_height">@dimen/height_50</dimen>
     <dimen name="status_et_width">@dimen/width_85</dimen>
     <dimen name="transfer_details_h_height">@dimen/size_50</dimen>
-    <dimen name="transfer_list_height">@dimen/size_200</dimen>
+    <dimen name="transfer_list_height">@dimen/size_328</dimen>
     <dimen name="transfer_details_col01_width">@dimen/width_68</dimen>
     <dimen name="transfer_details_col02_width">@dimen/width_118</dimen>
     <dimen name="mobile_transfer_details_col01_width">108dp</dimen>

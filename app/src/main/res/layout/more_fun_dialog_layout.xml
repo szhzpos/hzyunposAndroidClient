@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/more_dialog"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
-
     <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/more_dialog"
         android:layout_width="@dimen/more_fun_dialog_width"
         android:layout_height="@dimen/more_fun_dialog_height">
 
@@ -183,5 +179,17 @@
             android:textSize="@dimen/font_size_14"
             app:layout_constraintStart_toEndOf="@id/data_upload_btn"
             app:layout_constraintTop_toTopOf="@id/sync_btn" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</merge>
+
+    <Button
+        android:id="@+id/gift_sold"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="@dimen/more_fun_btn_width"
+        android:layout_height="@dimen/more_fun_btn_height"
+        android:layout_marginStart="@dimen/margin_5"
+        android:background="@drawable/button_blue"
+        android:text="@string/gift_card_sale_sz"
+        android:textColor="@color/blue_white"
+        android:textSize="@dimen/font_size_14"
+        app:layout_constraintStart_toEndOf="@id/practice"
+        app:layout_constraintTop_toTopOf="@id/sync_btn" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.wyc.cloudapp.CustomizationView.InterceptLinearLayout;
+import com.wyc.cloudapp.customizationView.InterceptLinearLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.SaleActivity;
 

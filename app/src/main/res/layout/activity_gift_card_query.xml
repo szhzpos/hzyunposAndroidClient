@@ -6,7 +6,7 @@
     android:background="@color/white"
     android:orientation="vertical">
 
-    <com.wyc.cloudapp.CustomizationView.RoundCornerTabLayout
+    <com.wyc.cloudapp.customizationView.RoundCornerTabLayout
         android:id="@+id/_tab_layout"
         style="@style/TabStyle"
         android:layout_width="match_parent"

@@ -161,7 +161,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <com.wyc.cloudapp.CustomizationView.BasketView
+        <com.wyc.cloudapp.customizationView.BasketView
             android:id="@+id/basketView"
             android:layout_width="@dimen/height_78"
             android:layout_height="wrap_content"

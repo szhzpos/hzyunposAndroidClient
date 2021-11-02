@@ -20,7 +20,7 @@ import okhttp3.ResponseBody;
  * @ProjectName: AndroidClient
  * @Package: com.wyc.cloudapp.data.viewModel
  * @ClassName: BarcodeOnlyCodeViewModel
- * @Description: java类作用描述
+ * @Description: 查询条码、货号
  * @Author: wyc
  * @CreateDate: 2021-09-09 16:05
  * @UpdateUser: 更新者

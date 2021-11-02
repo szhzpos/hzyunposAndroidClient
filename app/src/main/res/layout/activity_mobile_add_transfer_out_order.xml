@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.wyc.cloudapp.customizationView.ItemPaddingLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/business_add_main_layout"
@@ -201,4 +201,4 @@
     <include layout="@layout/business_order_remark_layout" />
 
     <include layout="@layout/business_order_details_area_layout" />
-</com.wyc.cloudapp.CustomizationView.ItemPaddingLinearLayout>
+</com.wyc.cloudapp.customizationView.ItemPaddingLinearLayout>
