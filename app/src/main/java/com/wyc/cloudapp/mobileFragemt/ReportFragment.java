@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
+import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity;
 import com.wyc.cloudapp.dialog.MyDialog;
 
 public final class ReportFragment extends AbstractJumpFragment {
@@ -36,7 +36,7 @@ public final class ReportFragment extends AbstractJumpFragment {
     protected void triggerItemClick(View v) {
         final Intent intent = new Intent();
         final String title = ((TextView)v).getText().toString();
-        intent.putExtra(AbstractMobileActivity.TITLE_KEY,title);
+        intent.putExtra(AbstractDefinedTitleActivity.TITLE_KEY,title);
         intent.setClassName(mContext,mContext.getPackageName().concat(".") + v.getTag());
         try {
             startActivity(intent);

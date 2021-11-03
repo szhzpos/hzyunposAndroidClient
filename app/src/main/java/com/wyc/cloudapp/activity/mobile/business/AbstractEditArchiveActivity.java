@@ -7,7 +7,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
+import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -15,7 +15,7 @@ import com.wyc.cloudapp.dialog.MyDialog;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public abstract class AbstractEditArchiveActivity extends AbstractMobileActivity {
+public abstract class AbstractEditArchiveActivity extends AbstractDefinedTitleActivity {
     private CustomProgressDialog mProgressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

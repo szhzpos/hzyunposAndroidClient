@@ -15,7 +15,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.customizationView.ItemPaddingLinearLayout;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
+import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDataAdapter;
 import com.wyc.cloudapp.adapter.business.MobileInventoryAuditDetailAdapter;
@@ -32,7 +32,7 @@ import com.wyc.cloudapp.utils.http.HttpUtils;
 
 import java.util.Locale;
 
-public class MobileInventoryOrderDetailActivity extends AbstractMobileActivity {
+public class MobileInventoryOrderDetailActivity extends AbstractDefinedTitleActivity {
     private TextView mOrderCodeTv,mInventoryWayTv,mInventoryCategoryTv,mTaskName,mRemarkEt,mSumNumTv,mSumAmtTv;
     private JSONObject mTaskInfo;
     private CustomProgressDialog mProgressDialog;

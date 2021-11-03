@@ -25,22 +25,20 @@ import com.wyc.cloudapp.logger.Logger
  * @Version:        1.0
  */
 class FindFragment(private var mIntent: Intent):Fragment() {
-    private val request_code = 0x111
-    private val request_code_1 = 0x112
     private var mCallBack: Callback? = null
-    private var mRequestType = 0
     companion object{
+        private val CODE_KEY = "code"
+        private val DATA_KEY = "D"
         @JvmStatic
         fun beginScan(activity: FragmentActivity, callback: Callback){
-            val fragment = FindFragment(Intent(activity,CaptureActivity::class.java))
+            val fragment = FindFragment(Intent(activity,CaptureActivity::class.java).putExtra(CODE_KEY,0x111).putExtra(DATA_KEY,CaptureActivity.CALLBACK_CODE))
             fragment.mCallBack = callback
             fragment.attachActivity(activity)
         }
 
         @JvmStatic
         fun beginRequestOrderId(activity: FragmentActivity, intent: Intent, callback: Callback){
-            val fragment = FindFragment(intent)
-            fragment.mRequestType = 1
+            val fragment = FindFragment(intent.putExtra(CODE_KEY,0x112).putExtra(DATA_KEY,AbstractBusinessOrderDataAdapter.KEY))
             fragment.mCallBack = callback
             fragment.attachActivity(activity)
         }
@@ -64,13 +62,7 @@ class FindFragment(private var mIntent: Intent):Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         try {
-            when(mRequestType){
-                1 ->{
-                    startActivityForResult(mIntent,request_code_1)
-                }else ->{
-                startActivityForResult(mIntent,request_code)
-            }
-            }
+            startActivityForResult(mIntent,mIntent.getIntExtra(CODE_KEY,0))
         }catch (e: ActivityNotFoundException){
             MyDialog.toastMessage(e.message)
         }
@@ -83,17 +75,8 @@ class FindFragment(private var mIntent: Intent):Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
          if (resultCode == RESULT_OK){
-             when(requestCode){
-                 request_code->{
-                     data?.getStringExtra(CaptureActivity.CALLBACK_CODE)?.let {
-                         mCallBack?.scan(it)
-                     }
-                 }
-                 request_code_1->{
-                     data?.getStringExtra(AbstractBusinessOrderDataAdapter.KEY)?.let {
-                         mCallBack?.scan(it)
-                     }
-                 }
+             data?.getStringExtra(data.getStringExtra(DATA_KEY))?.let {
+                 mCallBack?.scan(it)
              }
          }
         mCallBack = null

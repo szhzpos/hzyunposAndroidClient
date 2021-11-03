@@ -3,9 +3,7 @@ package com.wyc.cloudapp.activity.mobile.business;
 import android.os.Bundle;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
-
-import static com.wyc.cloudapp.activity.mobile.business.MobileSelectGoodsActivity.TITLE_KEY;
+import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity;
 
 /**
  * @ProjectName: CloudApp
@@ -19,7 +17,7 @@ import static com.wyc.cloudapp.activity.mobile.business.MobileSelectGoodsActivit
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public abstract class AbstractMobileBaseArchiveActivity extends AbstractMobileActivity {
+public abstract class AbstractMobileBaseArchiveActivity extends AbstractDefinedTitleActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -4,10 +4,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 
 import com.wyc.cloudapp.customizationView.JumpTextView;
+import com.wyc.cloudapp.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,10 +50,10 @@ public abstract class AbstractJumpFragment extends AbstractMobileFragment {
                         child_count = viewGroup.getChildCount();
                         for (int j = 0; j < child_count; j++) {
                             final View view = viewGroup.getChildAt(j);
-                            if (view instanceof JumpTextView)view.setOnClickListener(mClickListener);
+                            if (view instanceof JumpTextView)view.setOnClickListener(this::triggerItemClick);
                         }
                     }else if (child instanceof JumpTextView){
-                        child.setOnClickListener(mClickListener);
+                        child.setOnClickListener(this::triggerItemClick);
                     }
                 }
             }
@@ -68,18 +70,20 @@ public abstract class AbstractJumpFragment extends AbstractMobileFragment {
         return new ArrayList<>();
     }
     private boolean ignore(View view){
-        if (view.getVisibility() == View.GONE)return true;
-
-        int id_ = view.getId();
-        List<Integer> ids = getIgnoreView();
-        for(int id : ids){
-            if (id_ == id){
-                view.setVisibility(View.GONE);
+        switch (view.getVisibility()){
+            case View.VISIBLE:
+                final List<Integer> ids = getIgnoreView();
+                if (!ids.isEmpty()){
+                    if (ids.contains(view.getId())){
+                        view.setVisibility(View.GONE);
+                        return true;
+                    }
+                }
+                break;
+            case View.GONE:
+            case View.INVISIBLE:
                 return true;
-            }
         }
         return false;
     }
-
-    private final View.OnClickListener mClickListener = this::triggerItemClick;
 }

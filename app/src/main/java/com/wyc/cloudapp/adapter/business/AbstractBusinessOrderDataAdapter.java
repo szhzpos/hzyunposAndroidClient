@@ -6,7 +6,7 @@ import android.view.View;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.MainActivity;
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
+import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity;
 import com.wyc.cloudapp.activity.mobile.business.AbstractMobileBusinessOrderActivity;
 import com.wyc.cloudapp.activity.mobile.business.MobilePracticalInventoryOrderActivity;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
@@ -44,13 +44,13 @@ public abstract class AbstractBusinessOrderDataAdapter<T extends AbstractDataAda
                 activity.finish();
             }else {
                 intent.setClass(activity, activity.jumpAddTarget());
-                intent.putExtra(AbstractMobileActivity.TITLE_KEY, mContext.getString(R.string.order_detail_sz));
+                intent.putExtra(AbstractDefinedTitleActivity.TITLE_KEY, mContext.getString(R.string.order_detail_sz));
                 activity.startActivity(intent);
             }
         }else if (mContext instanceof MobilePracticalInventoryOrderActivity){
             final MobilePracticalInventoryOrderActivity activity = (MobilePracticalInventoryOrderActivity)mContext;
             intent.setClass(activity, activity.jumpAddTarget());
-            intent.putExtra(AbstractMobileActivity.TITLE_KEY, mContext.getString(R.string.order_detail_sz));
+            intent.putExtra(AbstractDefinedTitleActivity.TITLE_KEY, mContext.getString(R.string.order_detail_sz));
             activity.startActivity(intent);
         }else
             MyDialog.toastMessage("未实现详情功能...");

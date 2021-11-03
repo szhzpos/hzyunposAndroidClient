@@ -104,6 +104,8 @@
     <string name="end_print">结束打印</string>
     <string name="retail_price_sz">零售价</string>
     <string name="save_hint">保存成功!</string>
+    <string name="not_permission_hint">当前用户没有权限处理此业务!</string>
+
     <!-- 新增会员 -->
     <string name="vip_dialog_title_sz">会员信息</string>
     <string name="vip_search_hint_sz">请输入会员手机号</string>
@@ -819,7 +821,7 @@
     <string name="gift_card_price">购物卡售价：</string>
     <string name="gift_card_balance">购物卡余额：</string>
     <string name="use_validity">使用有效期：</string>
-    <string name="made_card_time">制卡时间：</string>
+    <string name="made_card_time">制&#160;卡&#160;时&#160;&#160;间：</string>
     <string name="sold">已售出</string>
     <string name="unsold">未售出</string>
     <string name="hint_unfounded">未查询到购物卡信息</string>
@@ -885,4 +887,7 @@
     <string name="enter_practice_fail">创建文件失败，不能进入练习收银模式</string>
     <string name="enter_practice">进入练习收银模式</string>
     <string name="not_enter_practice">练习收银不支持此功能.</string>
+
+    <!--零售打印设置-->
+    <string name="time_card_per_id">27</string>
 </resources>

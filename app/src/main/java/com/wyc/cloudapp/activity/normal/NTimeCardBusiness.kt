@@ -53,7 +53,7 @@ class NTimeCardBusiness: TimeCardBusinessBase() {
         }
         @JvmStatic
         fun verifyTimeCardPermissions(@Nullable context: MainActivity): Boolean {
-            return context.verifyPermissions("27", null, false)
+            return context.verifyPermissions(context.getString(R.string.time_card_per_id), null, false)
         }
     }
 }

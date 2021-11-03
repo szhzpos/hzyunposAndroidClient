@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.activity.mobile;
+package com.wyc.cloudapp.activity.base;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,7 +20,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.logger.Logger;
 
-public abstract class AbstractMobileActivity extends MainActivity {
+public abstract class AbstractDefinedTitleActivity extends MainActivity {
     public static final String TITLE_KEY = "TL";
     private TextView mLeft,mMiddle,mRight;
     private View mRoot;

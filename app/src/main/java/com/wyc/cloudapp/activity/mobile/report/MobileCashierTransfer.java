@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -19,7 +18,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
+import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity;
 import com.wyc.cloudapp.adapter.report.CashierTransferContentAdapter;
 import com.wyc.cloudapp.adapter.report.CashierTransferNameAdapter;
 import com.wyc.cloudapp.adapter.report.TransferDetailsAdapter;
@@ -398,7 +397,7 @@ public class MobileCashierTransfer extends AbstractReportActivity {
     }
 
 
-    public static final class TransferDetailsActivity extends AbstractMobileActivity{
+    public static final class TransferDetailsActivity extends AbstractDefinedTitleActivity {
         private JSONObject mData;
 
         @Override

@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.wyc.cloudapp.R
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity
+import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity
 import com.wyc.cloudapp.data.room.entity.GiftCardSaleOrder
 import com.wyc.cloudapp.dialog.MyDialog
 
@@ -21,7 +21,7 @@ class GiftCardPayActivity : CardPayBaseActivity<GiftCardSaleOrder>() {
                 return
             }
             context.startActivityForResult(Intent(context, GiftCardPayActivity::class.java).putExtra(ORDER_INFO, order)
-                    .putExtra(AbstractMobileActivity.TITLE_KEY,context.getString(R.string.gift_card_pay)), ONCE_CARD_REQUEST_PAY)
+                    .putExtra(AbstractDefinedTitleActivity.TITLE_KEY,context.getString(R.string.gift_card_pay)), ONCE_CARD_REQUEST_PAY)
         }
     }
 }

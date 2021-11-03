@@ -13,19 +13,16 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
+import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.bean.Consumer;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.viewModel.ConsumerViewModel;
-import com.wyc.cloudapp.data.viewModel.SupplierViewModel;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
-
-import java.util.Locale;
 
 import butterknife.BindView;
 
@@ -232,7 +229,7 @@ public class EditConsumerActivity extends AbstractEditArchiveActivity {
         final Intent intent = new Intent();
         intent.setClass(context,EditConsumerActivity.class);
         intent.putExtra("key",modify);
-        intent.putExtra(AbstractMobileActivity.TITLE_KEY,context.getString(modify ? R.string.modify_consumer_sz : R.string.new_consumer_sz));
+        intent.putExtra(AbstractDefinedTitleActivity.TITLE_KEY,context.getString(modify ? R.string.modify_consumer_sz : R.string.new_consumer_sz));
         intent.putExtra("obj",obj);
         context.startActivity(intent);
     }

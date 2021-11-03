@@ -1,26 +1,22 @@
 package com.wyc.cloudapp.activity.mobile.cashierDesk;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.WindowManager;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
+import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity;
 import com.wyc.cloudapp.adapter.AbstractSelectAdapter;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,7 +31,7 @@ import java.util.List;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public abstract class AbstractSelectActivity<E extends Parcelable,T extends AbstractSelectAdapter<E,?>> extends AbstractMobileActivity {
+public abstract class AbstractSelectActivity<E extends Parcelable,T extends AbstractSelectAdapter<E,?>> extends AbstractDefinedTitleActivity {
     public static final int SELECT_ITEM = 0x000000cc;
     public static final String ITEM_KEY = "I";
     private T mAdapter;

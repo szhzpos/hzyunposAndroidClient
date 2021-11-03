@@ -8,13 +8,10 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
+import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity;
 import com.wyc.cloudapp.adapter.FragmentPagerAdapter;
 import com.wyc.cloudapp.mobileFragemt.AbstractMobileFragment;
-import com.wyc.cloudapp.mobileFragemt.TimeCardSaleQueryFragment;
-import com.wyc.cloudapp.mobileFragemt.TimeCardUseQueryFragment;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -32,7 +29,7 @@ import butterknife.ButterKnife;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public abstract class FragmentContainerActivity<T extends AbstractMobileFragment> extends AbstractMobileActivity {
+public abstract class FragmentContainerActivity<T extends AbstractMobileFragment> extends AbstractDefinedTitleActivity {
     @BindView(R.id._fragment_tab)
     TabLayout _tab;
     @BindView(R.id.view_pager)

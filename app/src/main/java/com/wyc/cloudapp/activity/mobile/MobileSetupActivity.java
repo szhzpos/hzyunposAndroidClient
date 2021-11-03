@@ -10,16 +10,16 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.fragment.AbstractBaseFragment;
-import com.wyc.cloudapp.mobileFragemt.AbstractMobileFragment;
 import com.wyc.cloudapp.mobileFragemt.MobileBusinessPrintFragment;
 import com.wyc.cloudapp.mobileFragemt.MobilePrintFormatFragment;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
-public class MobileSetupActivity extends AbstractMobileActivity {
+public class MobileSetupActivity extends AbstractDefinedTitleActivity {
     private FragmentManager mFragmentManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +82,7 @@ public class MobileSetupActivity extends AbstractMobileActivity {
 
     private static void start(final String which,final String title){
         final Context context = CustomApplication.self();
-        context.startActivity(new Intent(context, MobileSetupActivity.class).addFlags(FLAG_ACTIVITY_NEW_TASK).putExtra("w",which).putExtra(AbstractMobileActivity.TITLE_KEY,title));
+        context.startActivity(new Intent(context, MobileSetupActivity.class).addFlags(FLAG_ACTIVITY_NEW_TASK).putExtra("w",which).putExtra(AbstractDefinedTitleActivity.TITLE_KEY,title));
     }
 
     public static void startRetailPrintSetting(final String title){

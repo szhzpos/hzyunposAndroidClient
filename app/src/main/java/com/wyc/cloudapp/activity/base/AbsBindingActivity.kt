@@ -9,7 +9,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import butterknife.ButterKnife
 import com.wyc.cloudapp.R
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity
 import com.wyc.cloudapp.databinding.BindingActivityBinding
 
 /**
@@ -53,7 +52,7 @@ abstract class AbsBindingActivity: MainActivity(), ITitle {
     }
 
     override fun getMiddleText(): String {
-        return intent.getStringExtra(AbstractMobileActivity.TITLE_KEY) ?: ""
+        return intent.getStringExtra(AbstractDefinedTitleActivity.TITLE_KEY) ?: ""
     }
 
     override fun getRightText(): String {

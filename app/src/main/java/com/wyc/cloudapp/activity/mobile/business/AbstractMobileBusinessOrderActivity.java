@@ -16,7 +16,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.customizationView.InterceptLinearLayout;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
+import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDataAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -38,7 +38,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.TimeZone;
 
-public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobileActivity {
+public abstract class AbstractMobileBusinessOrderActivity extends AbstractDefinedTitleActivity {
     private long mStartTime = 0,mEndTime = 0;
     private Button mCurrentDateBtn,mCurrentAuditStatusBtn;
     private TextView mStartDateTv,mEndDateTv;
@@ -72,7 +72,7 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
 
     private boolean verifyPermission(){
         boolean code = verifyPermissions(getPermissionId(),null,false);
-        if (!code) MyDialog.toastMessage("当前操作员没有此功能权限!");
+        if (!code) MyDialog.toastMessage(getString(R.string.not_permission_hint));
         return code;
     }
 
@@ -95,7 +95,7 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractMobile
         final CharSequence title = getRightText().toString() + getMiddleText();
         final Intent intent = new Intent();
         intent.setClass(this, jumpAddTarget());
-        intent.putExtra(AbstractMobileActivity.TITLE_KEY, title);
+        intent.putExtra(AbstractDefinedTitleActivity.TITLE_KEY, title);
         try {
             startActivity(intent);
         }catch (ActivityNotFoundException e){

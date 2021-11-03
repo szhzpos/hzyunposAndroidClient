@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
+import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForList;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.bean.TimeCardSaleInfo;
@@ -35,7 +35,7 @@ import butterknife.OnClick;
 /*
 * 次卡订单详情
 * */
-public class TimeCardOrderDetailActivity extends AbstractMobileActivity {
+public class TimeCardOrderDetailActivity extends AbstractDefinedTitleActivity {
 
     @BindView(R.id.order_id_tv)
     TextView order_id_tv;

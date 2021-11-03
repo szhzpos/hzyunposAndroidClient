@@ -21,7 +21,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.zxing.client.android.CaptureActivity;
 import com.wyc.cloudapp.customizationView.ItemPaddingLinearLayout;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
+import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDataAdapter;
@@ -52,7 +52,7 @@ import java.util.List;
 import java.util.Locale;
 
 
-public abstract class AbstractMobileAddOrderActivity extends AbstractMobileActivity {
+public abstract class AbstractMobileAddOrderActivity extends AbstractDefinedTitleActivity {
     private AbstractBusinessOrderDetailsDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> mAdapter;
     private JSONArray mSupplierList;
     private RecyclerView mDetailsView;

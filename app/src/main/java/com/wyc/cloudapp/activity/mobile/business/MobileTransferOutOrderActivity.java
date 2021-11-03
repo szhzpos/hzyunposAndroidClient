@@ -8,7 +8,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
+import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDataAdapter;
@@ -73,7 +73,7 @@ public class MobileTransferOutOrderActivity extends AbstractMobileBusinessOrderA
                 final Intent intent = new Intent();
                 intent.putExtra("FindSource",true);
                 intent.setClass(this,MobileEnquiryOrderActivity.class);
-                intent.putExtra(AbstractMobileActivity.TITLE_KEY,getString(R.string.select_anything_hint,getString(R.string.enquiry_order)));
+                intent.putExtra(AbstractDefinedTitleActivity.TITLE_KEY,getString(R.string.select_anything_hint,getString(R.string.enquiry_order)));
 
                 FindFragment.beginRequestOrderId(this, intent, id -> {
                     Logger.d("code:%s",id);

@@ -1,10 +1,9 @@
 package com.wyc.cloudapp.activity.mobile.cashierDesk
 
 import android.content.Intent
-import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.wyc.cloudapp.R
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity
+import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity
 import com.wyc.cloudapp.data.room.entity.TimeCardSaleOrder
 import com.wyc.cloudapp.dialog.MyDialog
 
@@ -18,7 +17,7 @@ class TimeCardPayActivity : CardPayBaseActivity<TimeCardSaleOrder>() {
                 return
             }
             context.startActivityForResult(Intent(context.context, TimeCardPayActivity::class.java).putExtra(ORDER_INFO, order)
-                    .putExtra(AbstractMobileActivity.TITLE_KEY,context.getString(R.string.once_card_pay)), ONCE_CARD_REQUEST_PAY)
+                    .putExtra(AbstractDefinedTitleActivity.TITLE_KEY,context.getString(R.string.once_card_pay)), ONCE_CARD_REQUEST_PAY)
         }
     }
 }

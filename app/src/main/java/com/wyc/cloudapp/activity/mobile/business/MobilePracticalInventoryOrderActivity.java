@@ -15,7 +15,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.customizationView.InterceptLinearLayout;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
+import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity;
 import com.wyc.cloudapp.adapter.business.MobileInventoryOrderAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
@@ -36,7 +36,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.TimeZone;
 /*实盘数据录入单*/
-public class MobilePracticalInventoryOrderActivity extends AbstractMobileActivity {
+public class MobilePracticalInventoryOrderActivity extends AbstractDefinedTitleActivity {
     public static String WH_ID_KEY = "wh_id";
     private long mStartTime = 0,mEndTime = 0;
     private Button mCurrentDateBtn;
@@ -87,7 +87,7 @@ public class MobilePracticalInventoryOrderActivity extends AbstractMobileActivit
         final CharSequence title = getRightText().toString() + getMiddleText();
         final Intent intent = new Intent();
         intent.setClass(this, MobilePracticalInventoryAddOrderActivity.class);
-        intent.putExtra(AbstractMobileActivity.TITLE_KEY, title);
+        intent.putExtra(AbstractDefinedTitleActivity.TITLE_KEY, title);
         try {
             startActivity(intent);
         }catch (ActivityNotFoundException e){

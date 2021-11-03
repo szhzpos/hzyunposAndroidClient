@@ -29,4 +29,8 @@
     <declare-styleable name="KeyboardView">
         <attr name="android:keyboardLayout" format="reference"/>
     </declare-styleable>
+    <declare-styleable name="JumpTextView">
+        <attr name="perId" format="string" />
+        <attr name="hide" format="boolean"/>
+    </declare-styleable>
 </resources>

@@ -19,7 +19,7 @@ import com.google.zxing.client.android.CaptureActivity;
 import com.wyc.cloudapp.customizationView.ItemPaddingLinearLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.MainActivity;
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
+import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDataAdapter;
@@ -42,7 +42,7 @@ import com.wyc.cloudapp.utils.http.HttpUtils;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 /*新增实盘数据录入单*/
-public class MobilePracticalInventoryAddOrderActivity extends AbstractMobileActivity {
+public class MobilePracticalInventoryAddOrderActivity extends AbstractDefinedTitleActivity {
     private AbstractBusinessOrderDetailsDataAdapter<? extends AbstractTableDataAdapter.SuperViewHolder> mAdapter;
     private RecyclerView mDetailsView;
     private TextView mSaleOperatorTv;

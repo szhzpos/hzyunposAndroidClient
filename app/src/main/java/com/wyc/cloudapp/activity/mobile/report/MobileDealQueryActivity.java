@@ -12,7 +12,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,7 +21,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
+import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity;
 import com.wyc.cloudapp.adapter.report.MobileDealQueryAdapter;
 import com.wyc.cloudapp.adapter.report.MobileGoodsDetailsAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -419,7 +418,7 @@ public final class MobileDealQueryActivity extends AbstractReportActivity {
         }
     }
 
-    public static final class OrderDetailsActivity extends AbstractMobileActivity {
+    public static final class OrderDetailsActivity extends AbstractDefinedTitleActivity {
         private View mCurrentDetailsView;
         private MobileGoodsDetailsAdapter mDetailsAdapter;
         private JSONArray saleDetails,payDetails;

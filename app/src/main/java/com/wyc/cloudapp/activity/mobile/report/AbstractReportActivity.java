@@ -1,8 +1,6 @@
 package com.wyc.cloudapp.activity.mobile.report;
 
-import android.app.DatePickerDialog;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -10,12 +8,10 @@ import android.widget.TextView;
 import androidx.annotation.CallSuper;
 
 import com.alibaba.fastjson.JSONObject;
-import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
+import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Calendar;
-import java.util.Locale;
 
 /**
  * @ProjectName: CloudApp
@@ -29,7 +25,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public abstract class AbstractReportActivity extends AbstractMobileActivity {
+public abstract class AbstractReportActivity extends AbstractDefinedTitleActivity {
     protected JSONObject mQueryConditionObj;
     protected View mCurrentDateView;
     @CallSuper

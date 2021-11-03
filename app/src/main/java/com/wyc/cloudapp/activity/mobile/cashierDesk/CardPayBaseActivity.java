@@ -402,7 +402,7 @@ public class CardPayBaseActivity<T extends ICardPay<?>> extends BaseWindowActivi
     }
 
     @Override
-    public int with() {
+    public int width() {
         if (lessThan7Inches()){
             final WindowManager wm = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
             final Display d = wm.getDefaultDisplay(); // 获取屏幕宽、高用

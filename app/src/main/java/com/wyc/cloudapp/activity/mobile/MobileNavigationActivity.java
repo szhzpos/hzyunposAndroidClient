@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.zxing.client.android.CaptureActivity;
+import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity;
 import com.wyc.cloudapp.customizationView.TopDrawableTextView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.cashierDesk.MobileCashierActivity;
@@ -37,7 +38,7 @@ import java.util.List;
 
 import static com.wyc.cloudapp.constants.ScanCallbackCode.PAY_REQUEST_CODE;
 
-public final class MobileNavigationActivity extends AbstractMobileActivity implements CustomApplication.MessageCallback {
+public final class MobileNavigationActivity extends AbstractDefinedTitleActivity implements CustomApplication.MessageCallback {
     private FragmentManager mFragmentManager;
     private CustomProgressDialog mProgressDialog;
     private WeakReference<ScanCallback> mScanCallback;

@@ -355,13 +355,6 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
 
             CustomApplication.runInMainThread(()->{
                 final View contentView = window.getContentView();
-
-                //根据权限隐藏次卡功能
-                if (!NTimeCardBusiness.verifyTimeCardPermissions(this)){
-                    final View view = contentView.findViewById(R.id.pop_time_card_btn);
-                    if (view != null)view.setVisibility(View.GONE);
-                }
-
                 contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
                 final int content_height = contentView.getMeasuredHeight();
                 int width = btn.getWidth(),height = btn.getHeight();

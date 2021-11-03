@@ -14,7 +14,7 @@ import butterknife.ButterKnife
 import butterknife.OnClick
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.activity.base.AbsBindingActivity
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity
+import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity
 import com.wyc.cloudapp.adapter.AbstractDataAdapter
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForList
 import com.wyc.cloudapp.data.room.entity.GiftCardPayDetail
@@ -109,7 +109,7 @@ class GiftCardOrderDetailActivity : AbsBindingActivity() {
         @JvmStatic
         fun start(context: Context,@NonNull giftCardSaleOrder: GiftCardSaleOrder){
             context.startActivity(Intent(context,GiftCardOrderDetailActivity::class.java)
-                    .putExtra("o",giftCardSaleOrder).putExtra(AbstractMobileActivity.TITLE_KEY,context.getString(R.string.gift_card_order_detail)))
+                    .putExtra("o",giftCardSaleOrder).putExtra(AbstractDefinedTitleActivity.TITLE_KEY,context.getString(R.string.gift_card_order_detail)))
         }
     }
     override fun getBindingLayoutId(): Int {

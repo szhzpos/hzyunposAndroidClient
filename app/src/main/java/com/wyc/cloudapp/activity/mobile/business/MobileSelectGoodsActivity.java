@@ -22,7 +22,7 @@ import android.widget.TextView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity;
+import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
@@ -46,7 +46,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity {
-    public static final String TITLE_KEY = AbstractMobileActivity.TITLE_KEY,IS_SEL_KEY = "isSel",PRICE_TYPE_KEY = "price_type",TASK_CATEGORY_KEY = "taskCategory",SEARCH_KEY = "barcode",MODIFIABLE = "modify";
+    public static final String TITLE_KEY = AbstractDefinedTitleActivity.TITLE_KEY,IS_SEL_KEY = "isSel",PRICE_TYPE_KEY = "price_type",TASK_CATEGORY_KEY = "taskCategory",SEARCH_KEY = "barcode",MODIFIABLE = "modify";
 
     public static final int SELECT_GOODS_CODE = 0x147;
     private GoodsAdapter mGoodsInfoAdapter;

@@ -18,7 +18,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.activity.base.MainActivity
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity
+import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity
 import com.wyc.cloudapp.adapter.AbstractDataAdapter
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForList
 import com.wyc.cloudapp.data.room.entity.GiftCardSaleOrder
@@ -30,7 +30,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.concurrent.thread
 
-class GiftCardOrderQueryActivity : AbstractMobileActivity() {
+class GiftCardOrderQueryActivity : AbstractDefinedTitleActivity() {
     private var mAdapter:OrderAdapter? = null
     private lateinit var mSearchContent:EditText
 

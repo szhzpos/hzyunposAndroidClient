@@ -17,9 +17,10 @@ import butterknife.OnClick
 import com.alibaba.fastjson.JSONObject
 import com.wyc.cloudapp.customizationView.BasketView
 import com.wyc.cloudapp.R
-import com.wyc.cloudapp.activity.mobile.AbstractMobileActivity
+import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity
 import com.wyc.cloudapp.adapter.MobileGiftCardSaleAdapter
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter
+import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.bean.GiftCardInfo
 import com.wyc.cloudapp.constants.InterfaceURL
 import com.wyc.cloudapp.data.room.entity.GiftCardSaleDetail
@@ -33,7 +34,7 @@ import com.wyc.cloudapp.utils.http.HttpRequest
 import com.wyc.cloudapp.utils.http.HttpUtils
 import com.wyc.cloudapp.utils.http.callback.ArrayCallback
 
-open class GiftCardSaleActivity : AbstractMobileActivity() {
+open class GiftCardSaleActivity : AbstractDefinedTitleActivity() {
     private lateinit var mSaleAdapter: MobileGiftCardSaleAdapter
     @BindView(R.id._search_content)
     lateinit var search_content: EditText
@@ -49,6 +50,13 @@ open class GiftCardSaleActivity : AbstractMobileActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (CustomApplication.isPracticeMode()){
+            MyDialog.toastMessage(getString(R.string.not_enter_practice))
+            finish()
+            return
+        }
+
         ButterKnife.bind(this)
 
         initSearchContent()
@@ -200,7 +208,7 @@ open class GiftCardSaleActivity : AbstractMobileActivity() {
     private fun clearContent() {
         mSaleAdapter.clear()
         setSaleman(null)
-        search_content?.text?.clear()
+        search_content.text?.clear()
     }
     private fun add(info: GiftCardInfo) {
         val saleInfo = GiftCardSaleDetail.Builder()
