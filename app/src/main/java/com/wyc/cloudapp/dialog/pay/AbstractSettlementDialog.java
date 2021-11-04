@@ -99,6 +99,8 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         //初始化支付方式
         initPayMethod();
 
+        changePriceBtn();
+
         //初始化现金EditText
         initCashText();
 
@@ -160,7 +162,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         final Button all_discount_btn = findViewById(R.id.all_discount);
         if (null != all_discount_btn)
             all_discount_btn.setOnClickListener(view -> {
-                final ChangeNumOrPriceDialog dialog = new ChangeNumOrPriceDialog(mContext, Html.fromHtml("折扣率<size value='14'>[1-10],10为不折扣</size> ",null,
+                final ChangeNumOrPriceDialog dialog = new ChangeNumOrPriceDialog(mContext, Html.fromHtml("折扣率<size value='14'>[1-10],10为不折扣</size>",null,
                         new FontSizeTagHandler(mContext)),String.format(Locale.CHINA,"%.2f",10.0),1.0,10.0);
                 dialog.setYesOnclickListener(myDialog -> {
                     if (mContext.allDiscount(myDialog.getContent())){
@@ -174,6 +176,29 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                 }).show();
             });
     }
+
+    private void changePriceBtn(){
+        final Button btn = findViewById(R.id.ch_price);
+        if (null != btn)
+            btn.setOnClickListener(view -> {
+                final ChangeNumOrPriceDialog dialog = new ChangeNumOrPriceDialog(mContext,mContext.getString(R.string.new_price),String.valueOf(mActual_amt));
+                dialog.setYesOnclickListener(myDialog -> {
+                    if (!Utils.equalDouble(0.0,mActual_amt)){
+                        mContext.deleteAllDiscountRecord();
+                        refreshPayContent();
+                        if (mContext.allDiscount(myDialog.getContent() / mActual_amt * 10)){
+                            myDialog.dismiss();
+
+                            deleteFullReduceDiscount();
+                            deleteMolDiscountRecord();
+                            deleteBuyFullGiveXDiscount();
+                            refreshPayContent();
+                        }
+                    }else myDialog.dismiss();
+                }).show();
+            });
+    }
+
     private void vipBtn(){
         final Button vip_btn = findViewById(R.id.vip);
         if (null != vip_btn)

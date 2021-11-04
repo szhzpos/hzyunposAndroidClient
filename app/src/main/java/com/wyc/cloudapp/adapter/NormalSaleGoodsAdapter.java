@@ -74,10 +74,10 @@ public final class NormalSaleGoodsAdapter extends AbstractSaleGoodsAdapter {
             ChangeNumOrPriceDialog dialog = null;
             switch (type){
                 case 1:
-                    dialog = new ChangeNumOrPriceDialog(mContext,"新价格",cur_goods.getString("price"));
+                    dialog = new ChangeNumOrPriceDialog(mContext,mContext.getString(R.string.new_price),cur_goods.getString("price"));
                     break;
                 case 2:
-                    dialog = new ChangeNumOrPriceDialog(mContext, Html.fromHtml("折扣率<size value='14'>[1-10],10为不折扣</size> ",null,new FontSizeTagHandler(mContext)),
+                    dialog = new ChangeNumOrPriceDialog(mContext, Html.fromHtml("折扣率<size value='14'>[1-10],10为不折扣</size>",null,new FontSizeTagHandler(mContext)),
                             String.format(Locale.CHINA,"%.2f",Utils.getNotKeyAsNumberDefault(cur_goods,"discount",1.0) * 10),1.0,10.0);
                     break;
                 case 0:

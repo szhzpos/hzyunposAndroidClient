@@ -27,6 +27,7 @@ import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.FontSizeTagHandler;
 import com.wyc.cloudapp.utils.Utils;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -870,10 +871,10 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
             ChangeNumOrPriceDialog dialog = null;
             switch (type){
                 case 1:
-                    dialog = new ChangeNumOrPriceDialog(mContext,"新价格",cur_json.getString("price"));
+                    dialog = new ChangeNumOrPriceDialog(mContext,mContext.getString(R.string.new_price),cur_json.getString("price"));
                     break;
                 case 2:
-                    dialog = new ChangeNumOrPriceDialog(mContext, Html.fromHtml("折扣率<size value='14'>[1-10],10为不折扣</size> ",null,new FontSizeTagHandler(mContext)),
+                    dialog = new ChangeNumOrPriceDialog(mContext, Html.fromHtml("折扣率<size value='14'>[1-10],10为不折扣</size>",null,new FontSizeTagHandler(mContext)),
                             String.format(Locale.CHINA,"%.2f",Utils.getNotKeyAsNumberDefault(cur_json,"discount",1.0) * 10),1.0,10.0);
                     break;
                 case 0:
@@ -1140,7 +1141,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
                 final JSONObject record = mDiscountRecords.getJSONObject(i);
                 if (stringBuilder.length() > 0) stringBuilder.append(",");
                 stringBuilder.append(getDiscountName(Utils.getNotKeyAsNumberDefault(record,"discount_type",-1)));
-                stringBuilder.append("：").append(String.format(Locale.CHINA, "%.3f", record.getDoubleValue("discount_money")));
+                stringBuilder.append("：").append(BigDecimal.valueOf(Utils.formatDouble(record.getDoubleValue("discount_money"), 4)).stripTrailingZeros().toPlainString());
             }
         }
         return stringBuilder.toString();

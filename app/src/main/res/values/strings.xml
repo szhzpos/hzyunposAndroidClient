@@ -105,6 +105,7 @@
     <string name="retail_price_sz">零售价</string>
     <string name="save_hint">保存成功!</string>
     <string name="not_permission_hint">当前用户没有权限处理此业务!</string>
+    <string name="new_price">新价格</string>
 
     <!-- 新增会员 -->
     <string name="vip_dialog_title_sz">会员信息</string>
