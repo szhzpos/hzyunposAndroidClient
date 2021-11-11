@@ -70,7 +70,6 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
     private LoginActivity mSelf;
     private CustomProgressDialog mProgressDialog;
     private Button mCancelBtn,mLoginBtn;
-    private String mPosNum,mOperId,mStoresId;
     private Call mLoginCall;
     private JSONObject mConnParam;
     private boolean isSmallScreen = false;
@@ -476,10 +475,10 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
         JSONObject object = new JSONObject(), conn_param = mConnParam;
         final String url, sz_param, base_url = Utils.getNullStringAsEmpty(conn_param,"server_url"),appid =  Utils.getNullStringAsEmpty(conn_param,"appId"),
                 appSecret = Utils.getNullStringAsEmpty(conn_param,"appSecret");
-        mOperId = mUserIdEt.getText().toString();
+        final String operId = mUserIdEt.getText().toString();
 
         object.put("appid",appid);
-        object.put("cas_account", mOperId);
+        object.put("cas_account", operId);
         object.put("cas_pwd", mPasswordEt.getText());
 
         sz_param = HttpRequest.generate_request_parm(object,appSecret);
@@ -515,10 +514,10 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
                             break;
                         case "y":
                             store_info = JSON.parseObject(info_json.getString("shop_info"));
-                            mStoresId = Utils.getNullStringAsEmpty(store_info,"stores_id");
+                            final String storesId = Utils.getNullStringAsEmpty(store_info,"stores_id");
                             cashier_json = JSON.parseObject(info_json.getString("cashier"));
 
-                            if (!Utils.isNotEmpty(mStoresId)){
+                            if (!Utils.isNotEmpty(storesId)){
                                 CustomApplication.sendMessage(MessageID.DIS_ERR_INFO_ID, "登录错误，门店编号不能为空!");
                                 return;
                             }
@@ -526,15 +525,15 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
                             //初始化本地数据库
                         {
                             final String id = mApplication.getStoreIdWithSharedPreferences();
-                            if (!id.isEmpty() && !id.equals(mStoresId)){
+                            if (!id.isEmpty() && !id.equals(storesId)){
                                 final String message = String.format(Locale.CHINA,"本次登录的操作员【%s<%s>】所属门店/仓库【%s】，确定登录将切换前台数据库，是否登录?"
-                                        ,Utils.getNullStringAsEmpty(cashier_json,"cas_name"),mOperId,Utils.getNullStringAsEmpty(store_info,"stores_name"));
+                                        ,Utils.getNullStringAsEmpty(cashier_json,"cas_name"),operId,Utils.getNullStringAsEmpty(store_info,"stores_name"));
                                 if(MyDialog.showMessageToModalDialog(mSelf,message) == 0){
                                     mProgressDialog.dismiss();
                                     return;
                                 }
                             }
-                            CustomApplication.initDb(mStoresId);
+                            CustomApplication.initDb(storesId);
                         }
 
                             final String set_url = base_url + "/api/pos/set_ps";
@@ -542,7 +541,7 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
                             jsonLogin.put("appid", appid);
                             jsonLogin.put("pos_code", Utils.getDeviceId(mSelf));
                             jsonLogin.put("pos_name", Utils.getDeviceId(mSelf));
-                            jsonLogin.put("stores_id", mStoresId);
+                            jsonLogin.put("stores_id", storesId);
                             jsonLogin.put("pos_type", 1);//安卓设备
                             jsonLogin.put("cas_id", Utils.getNullStringAsEmpty(cashier_json,"cas_id"));
                             jsonLogin.put("soft_version", BuildConfig.VERSION_NAME);
@@ -571,9 +570,9 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
                                                 case "y":
                                                     final StringBuilder err = new StringBuilder();
                                                     final JSONArray params = new JSONArray();
-                                                    mPosNum = info_json.getString("pos_num");
+                                                    final String posNum = info_json.getString("pos_num");
 
-                                                    conn_param.put("pos_num",mPosNum);
+                                                    conn_param.put("pos_num",posNum);
                                                     conn_param.put("storeInfo",store_info);
                                                     CustomApplication.setConnParam(conn_param);
 
@@ -583,7 +582,7 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
                                                     _json.put("parameter_desc","条码秤参数信息");
                                                     params.add(_json);
 
-                                                    cashier_json.put("pos_num",mPosNum);
+                                                    cashier_json.put("pos_num",posNum);
                                                     _json = new JSONObject();
                                                     _json.put("parameter_id","cashierInfo");
                                                     _json.put("parameter_content",cashier_json);
@@ -602,7 +601,7 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
                                                     _json.put("parameter_desc","会员参数");
                                                     params.add(_json);
 
-                                                    if (SQLiteHelper.execSQLByBatchFromJson(params,"local_parameter",null,err,1)){
+                                                    if (SQLiteHelper.execSQLByBatchFromJson(params,"local_parameter",null,err,1) && mApplication.initCashierInfoAndStoreInfo(err)){
                                                         CustomApplication.sendMessage(MessageID.LOGIN_OK_ID);
                                                     }else {
                                                         CustomApplication.sendMessage(MessageID.DIS_ERR_INFO_ID, "保存当前收银参数错误：" + err);
@@ -626,21 +625,6 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
                 }
             }
         });
-
-        mProgressDialog.setCancel(true).setOnCancelListener(dialog -> {
-            final CustomApplication application = CustomApplication.self();
-            application.pauseSync();
-            if (MyDialog.showMessageToModalDialog(mSelf,"是否取消登录？") == 1){
-                application.stop_sync();
-                mLoginCall.cancel();
-                if (mLoginCall.isCanceled()){
-                    CustomApplication.sendMessageAtFrontOfQueue(MessageID.CANCEL_LOGIN_ID);
-                }
-            }else {
-                application.continueSync();
-                if (mProgressDialog.isShowing())mProgressDialog.setRestShowTime(false).show();
-            }
-        });
     }
 
     @Override
@@ -661,14 +645,11 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
                 launchLogin(true);
                 break;
             case MessageID.LOGIN_OK_ID://登录成功
-                mApplication.initSyncManagement(Utils.getNullStringAsEmpty(mConnParam,"server_url"),Utils.getNullStringAsEmpty(mConnParam,"appId"),
-                        Utils.getNullStringAsEmpty(mConnParam,"appSecret"),mStoresId,mPosNum,mOperId);
-
                 if (SQLiteHelper.isNew()) {
                     mProgressDialog.setMessage("准备重新同步...").refreshMessage().show();
                     mApplication.manualSync();
                 }else
-                    mApplication.start_sync(true);
+                    mApplication.start_sync();
                 break;
             case MessageID.LOGIN_ID_ERROR_ID://账号错误
                 mUserIdEt.requestFocus();
@@ -695,41 +676,38 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
 
     private void launchLogin(boolean isConnection){
         mApplication.setNetworkStatus(isConnection);
-        if (mApplication.initCashierInfoAndStoreInfo()){
-            final Intent intent = new Intent(this,NormalMainActivity.class);
-            if (isSmallScreen)intent.setClass(this, MobileNavigationActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            finish();
-        }
+        final Intent intent = new Intent();
+        if (isSmallScreen){
+            intent.setClass(this, MobileNavigationActivity.class);
+        }else intent.setClass(this,NormalMainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private void offline_login(){
         MyDialog.displayAskMessage(this, "连接服务器失败，是否离线登录？", myDialog -> {
             myDialog.dismiss();
-            final JSONObject connParam = mConnParam;
-            mStoresId = Utils.getNullObjectAsEmptyJson(connParam, "storeInfo").getString("stores_id");
-            if (Utils.isNotEmpty(mStoresId)){
-                CustomApplication.initDb(mStoresId);
+            final String storesId = Utils.getNullObjectAsEmptyJson(mConnParam, "storeInfo").getString("stores_id"),posNum = Utils.getNullStringAsEmpty(mConnParam, "pos_num");;
+            if (Utils.isNotEmpty(storesId) && Utils.isNotEmpty(posNum)){
+                CustomApplication.initDb(storesId);
                 if (CustomApplication.verifyOfflineTime(this)){
-                    mOperId = mUserIdEt.getText().toString();
-
-                    final String password = mPasswordEt.getText().toString();
-                    final String local_password = Utils.getUserIdAndPasswordCombinationOfMD5(mOperId + password);
-                    final StringBuilder err = new StringBuilder();
-
-
-                    mPosNum = Utils.getNullStringAsEmpty(connParam, "pos_num");
-
-                    final String sz_count = SQLiteHelper.getString("SELECT count(cas_id) count FROM cashier_info where " +
-                            "cas_account = '" + mOperId + "' and stores_id = '" + mStoresId + "' and cas_pwd = '" + local_password + "'", err);
-
-                    if (Integer.parseInt(sz_count) > 0) {
-                        mApplication.initSyncManagement(Utils.getNullStringAsEmpty(connParam,"server_url"),Utils.getNullStringAsEmpty(connParam,"appId"),
-                                Utils.getNullStringAsEmpty(connParam,"appSecret"),mStoresId,mPosNum,mOperId);
-                        launchLogin(false);
-                    } else {
-                        CustomApplication.sendMessage(MessageID.LOGIN_ID_ERROR_ID, "不存在此用户！");
+                    final String operId = mUserIdEt.getText().toString();
+                    final String local_password = Utils.getUserIdAndPasswordCombinationOfMD5(operId + mPasswordEt.getText().toString());
+                    final JSONObject cas_info = new JSONObject();
+                    if (SQLiteHelper.execSql(cas_info,"SELECT  pt_user_cname, pt_user_id, is_put, is_give, is_refund, min_discount, cas_status, cas_phone,\n" +
+                            "       cas_code, cas_addtime, cas_pwd, cas_account, cas_name, stores_name, stores_id," +
+                            "       cas_id count FROM cashier_info where cas_status = 1 and cas_account = '" + operId + "' and stores_id = '" + storesId + "' and cas_pwd = '" + local_password + "'")){
+                        if (!cas_info.isEmpty()) {
+                            cas_info.put("pos_num",posNum);
+                            final StringBuilder err = new StringBuilder();
+                            if (SQLiteHelper.saveLocalParameter("cashierInfo",cas_info,"收银员信息",err) && mApplication.initCashierInfoAndStoreInfo(err)){
+                                launchLogin(false);
+                            }else CustomApplication.sendMessage(MessageID.LOGIN_ID_ERROR_ID,"保存收银员信息错误：" + err);
+                        } else {
+                            CustomApplication.sendMessage(MessageID.LOGIN_ID_ERROR_ID, "不存在此用户！");
+                        }
+                    }else {
+                        CustomApplication.sendMessage(MessageID.LOGIN_ID_ERROR_ID, cas_info.getString("info"));
                     }
                 }else {
                     if (mProgressDialog.isShowing())mProgressDialog.dismiss();

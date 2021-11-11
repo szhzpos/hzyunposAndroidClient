@@ -438,8 +438,8 @@ class GiftCardSaleOrder():ICardPay<GiftCardSaleDetail> {
             info.append(context.getString(R.string.pay_method_name_colon_sz) + stringBuilder.toString()).append(new_line).append(line_58).append(new_line)
 
             if (footer_c.isEmpty()) {
-                info.append(context.getString(R.string.hotline_sz)).append(Utils.getNullOrEmptyStringAsDefault(application.storeInfo, "telphone", "")).append(new_line)
-                info.append(context.getString(R.string.stores_address_sz)).append(Utils.getNullOrEmptyStringAsDefault(application.storeInfo, "region", "")).append(new_line)
+                info.append(context.getString(R.string.hotline_sz)).append(application.storeTelephone).append(new_line)
+                info.append(context.getString(R.string.stores_address_sz)).append(application.storeRegion).append(new_line)
             } else {
                 info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(footer_c).append(Printer.commandToStr(Printer.ALIGN_LEFT))
             }

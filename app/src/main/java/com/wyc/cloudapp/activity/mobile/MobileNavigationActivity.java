@@ -195,7 +195,6 @@ public final class MobileNavigationActivity extends AbstractDefinedTitleActivity
     private void initSyncManagement(){
         mApplication.registerHandleMessage(this);
         mApplication.sync_order_info();
-        mApplication.start_sync(false);
     }
 
     private void initFunctionBtn(){
@@ -280,7 +279,6 @@ public final class MobileNavigationActivity extends AbstractDefinedTitleActivity
                     mProgressDialog.dismiss();
                     mProgressDialog = null;
                 }
-                CustomApplication.self().start_sync(false);
                 break;
             case MessageID.SYNC_DIS_INFO_ID://资料同步进度信息
                 mProgressDialog.setMessage(msg.obj.toString()).refreshMessage();

@@ -208,7 +208,6 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     private void launchSync(){
         mApplication.registerHandleMessage(this);
         mApplication.sync_order_info();
-        mApplication.start_sync(false);
     }
 
     private void showCashierInfoAndStoreInfo(){
@@ -449,6 +448,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     }
 
     private void clearResource(){
+        hideLastOrderInfo();
         if (mSecondDisplay != null)mSecondDisplay.dismiss();
     }
 
@@ -927,7 +927,6 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                 break;
             case MessageID.SYNC_FINISH_ID:
                 if (mProgressDialog.isShowing())mProgressDialog.dismiss();
-                mApplication.start_sync(false);
                 break;
             case MessageID.TRANSFERSTATUS_ID://传输状态
                 imageView = findViewById(R.id.upload_status);

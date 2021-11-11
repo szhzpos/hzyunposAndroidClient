@@ -30,9 +30,11 @@ import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 public final class MyDialog extends AbstractDialogContext {
+    @SuppressLint("StaticFieldLeak")
+    private static MyDialog mDup;
     private Button mYes,mNo;//mYes确定按钮、mNo取消按钮
     private TextView mMessage;//mTitle标题文本、mMessage消息提示文本
-    private String mMessageStr;//从外界设置的消息文本
+    private String mMessageStr = "";//从外界设置的消息文本
     private final Context mContext;
     private IconType mContentIconType = IconType.INFO;
     private boolean mIsYes,mIsNo;
@@ -93,6 +95,7 @@ public final class MyDialog extends AbstractDialogContext {
         if (mLifecycleEventObserver != null){
             ((LifecycleOwner)mContext).getLifecycle().removeObserver(mLifecycleEventObserver);
         }
+        mDup = null;
     }
 
     public enum IconType {
@@ -230,8 +233,8 @@ public final class MyDialog extends AbstractDialogContext {
     }
 
     public static void displayErrorMessage(final Context context,final String message){
-        final MyDialog dialog = new MyDialog(context,"提示信息", IconType.ERROR);
-        dialog.setMessage(message).setNoOnclickListener("取消", Dialog::dismiss).show();
+        if (mDup == null) mDup = new MyDialog(context,"提示信息", IconType.ERROR);
+        mDup.setMessage(mDup.mMessageStr + "\n" +message).setNoOnclickListener("取消", Dialog::dismiss).show();
     }
 
     public static void displayErrorMessage(final Context context,final String message,final onNoOnclickListener no){

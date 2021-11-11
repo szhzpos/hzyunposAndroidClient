@@ -70,7 +70,7 @@ public class MainActivity extends BaseActivity {
         return mApplication.getWhId();
     }
     public String getPermissionCashierId(){
-        if ("".equals(mPermissionCashierId))return mApplication.getCashierInfo().getString("cas_id");
+        if ("".equals(mPermissionCashierId))return mApplication.getCashierId();
         return mPermissionCashierId;
     }
     public String getPtUserId(){
@@ -106,7 +106,7 @@ public class MainActivity extends BaseActivity {
     * */
     public boolean verifyPermissions(final String per_id,final String requested_cas_code,boolean isShow){
         boolean code = false;
-        String cas_pwd = Utils.getNullStringAsEmpty(mApplication.getCashierInfo(),"cas_pwd"),stores_id = getStoreId();
+        String cas_pwd = mApplication.getCasPwd(),stores_id = getStoreId();
         final StringBuilder err = new StringBuilder();
         if (null != requested_cas_code){
             cas_pwd = Utils.getUserIdAndPasswordCombinationOfMD5(requested_cas_code);
@@ -173,8 +173,7 @@ public class MainActivity extends BaseActivity {
     }
     public boolean verifyDiscountPermissions(double discount,final String requested_cas_code){
         boolean code = false;
-        final JSONObject mCashierInfo = mApplication.getCashierInfo(),mStoreInfo = mApplication.getStoreInfo();
-        String cashier_id = Utils.getNullStringAsEmpty(mCashierInfo,"cas_code"),cas_pwd = Utils.getNullStringAsEmpty(mCashierInfo,"cas_pwd"),stores_id = mStoreInfo.getString("stores_id");
+        String cashier_id = getCashierCode(),cas_pwd = mApplication.getCasPwd(),stores_id = getStoreId();
         if (null != requested_cas_code){
             cas_pwd = Utils.getUserIdAndPasswordCombinationOfMD5(requested_cas_code);
             Logger.i("操作员:%s,向:%s请求折扣为%f的权限",cashier_id,cas_pwd,discount);

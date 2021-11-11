@@ -164,12 +164,11 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
         }
     }
     private void initNavigationInfo(){
-        final JSONObject mStoreInfo = CustomApplication.self().getStoreInfo();
         final TextView stores_name = findViewById(R.id.store_name),stores_hotline = findViewById(R.id.sec_stores_hotline),
                 stores_addr = findViewById(R.id.sec_stores_addr);
-        stores_name.setText(mStoreInfo.getString("stores_name"));
-        stores_hotline.setText(mStoreInfo.getString("telphone"));
-        stores_addr.setText(mStoreInfo.getString("region"));
+        stores_name.setText(CustomApplication.self().getStoreName());
+        stores_hotline.setText(CustomApplication.self().getStoreTelephone());
+        stores_addr.setText(CustomApplication.self().getStoreRegion());
     }
 
     public SecondDisplay setDatas(JSONArray array){

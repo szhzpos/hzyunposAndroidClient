@@ -43,7 +43,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
-        <activity android:name=".activity.normal.NGiftSaleActivity"></activity>
+        <activity android:name=".activity.normal.NGiftSaleActivity" />
         <activity android:name=".activity.normal.NTimeCardBusiness" />
         <activity android:name=".activity.mobile.business.MobileEnquiryOrderActivity$MobileAddEnquiryOrderActivity" />
         <activity android:name=".activity.mobile.business.MobileEnquiryOrderActivity" />
@@ -127,7 +127,7 @@
         <activity android:name=".activity.mobile.MobileSetupActivity" />
         <activity android:name=".activity.base.SaleActivity" />
         <activity android:name=".activity.mobile.cashierDesk.MobileCashierActivity" />
-        <activity android:name=".activity.mobile.MobileNavigationActivity" />
+        <activity android:name=".activity.mobile.MobileNavigationActivity" android:launchMode="singleTask"/>
         <activity
             android:name=".activity.normal.NormalMainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"

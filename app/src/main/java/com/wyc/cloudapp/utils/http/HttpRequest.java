@@ -20,10 +20,13 @@ import java.io.IOException;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.channels.Channel;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -279,11 +282,9 @@ public final class HttpRequest {
     }
 
     public synchronized JSONObject sendPost(final String url,@NonNull final String param,boolean json) {//json 请求返回数据类型 true 为json格式 否则为XML
-        BufferedReader in = null;
-        BufferedWriter out = null;
+        OutputStream out = null;
         InputStreamReader reader = null;
-        String line;
-        final StringBuilder result = new StringBuilder();
+        final StringBuilder result = new StringBuilder(1024 * 4);
         final JSONObject content = new JSONObject();
         try {
             final URL url_obj = new URL(url);
@@ -298,9 +299,8 @@ public final class HttpRequest {
             mPostConn.setDoInput(true);
             mPostConn.connect();///如果没有打开连接则在getOutputStream()打开
 
-            out = new BufferedWriter(new OutputStreamWriter(mPostConn.getOutputStream(),StandardCharsets.UTF_8));
-            out.write(param);
-            out.flush();
+            out = mPostConn.getOutputStream();
+            out.write(param.getBytes(StandardCharsets.UTF_8));
 
             mPostCode = mPostConn.getResponseCode();
 
@@ -312,11 +312,11 @@ public final class HttpRequest {
             }else{
                 reader = new InputStreamReader(mPostConn.getInputStream(),StandardCharsets.UTF_8);
                 if (json){
-                    in = new BufferedReader(reader);
-                    while ((line = in.readLine()) != null) {
-                        result.append(line);
+                    final char[] chs = new char[1024];
+                    int ch;
+                    while ((ch = reader.read(chs)) != -1){
+                        result.append(chs,0,ch);
                     }
-
                     content.put("flag", 1);
                     content.put("info",result.toString());
                 }else {
@@ -337,9 +337,6 @@ public final class HttpRequest {
             try{
                 if(out != null){
                     out.close();
-                }
-                if(in != null){
-                    in.close();
                 }
                 if (reader != null)
                     reader.close();

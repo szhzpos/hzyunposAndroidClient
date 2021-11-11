@@ -324,8 +324,8 @@ public final class VipTimeCardUseOrder{
             info.append(stringBuilder).append(new_line);
 
             if (footer_c.isEmpty()){
-                info.append(context.getString(R.string.hotline_sz)).append(Utils.getNullOrEmptyStringAsDefault(application.getStoreInfo(),"telphone","")).append(new_line);
-                info.append(context.getString(R.string.stores_address_sz)).append(Utils.getNullOrEmptyStringAsDefault(application.getStoreInfo(),"region","")).append(new_line);
+                info.append(context.getString(R.string.hotline_sz)).append(application.getStoreTelephone()).append(new_line);
+                info.append(context.getString(R.string.stores_address_sz)).append(application.getStoreRegion()).append(new_line);
             }else {
                 info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(footer_c).append(Printer.commandToStr(Printer.ALIGN_LEFT));
             }

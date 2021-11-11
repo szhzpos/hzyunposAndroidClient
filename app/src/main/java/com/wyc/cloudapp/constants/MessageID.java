@@ -5,7 +5,7 @@ public final  class MessageID {
 
     }
     public static final int DIS_ERR_INFO_ID = 35;
-    public static final int SYNC_GOODS_BASE_ID = 1;
+    public static final int SYNC_BASICS_ID = 1;
     public static final int SYNC_STORES_ID = 2;
     public static final int SYNC_GOODS_ID = 3;
     public static final int SYNC_PAY_METHOD_ID = 4;

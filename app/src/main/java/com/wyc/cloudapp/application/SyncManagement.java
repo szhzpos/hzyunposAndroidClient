@@ -2,26 +2,19 @@ package com.wyc.cloudapp.application;
 
 import android.os.Looper;
 
+import androidx.annotation.NonNull;
+
+import com.wyc.cloudapp.application.syncinstance.ISync;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.constants.MessageID;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.CountDownLatch;
 
 class SyncManagement extends Thread {
-    private CountDownLatch handlerInitLatch;
-    private SyncHandler mSyncHandler;
+    private SyncHandler1 mSyncHandler;
     SyncManagement(){
-        handlerInitLatch = new CountDownLatch(1);
         start();
-    }
-
-    void initSync(final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){
-        acquireHandler();
-        mSyncHandler.initParameter(url,appid,appsecret,stores_id,pos_num,operid);
     }
 
     @Override
@@ -29,21 +22,10 @@ class SyncManagement extends Thread {
         Logger.i("SyncManagement<%s>启动:%s",getName(),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS",Locale.CHINA).format(new Date()));
         if (mSyncHandler == null) {
             Looper.prepare();
-            mSyncHandler = new SyncHandler(Looper.myLooper());
-            handlerInitLatch.countDown();
+            mSyncHandler = new SyncHandler1(Looper.myLooper());
         }
         Looper.loop();
     }
-
-    private SyncHandler getHandler(){
-        try{
-            handlerInitLatch.await();//必须确保Handler初始化
-        }catch (InterruptedException e){
-            e.printStackTrace();
-        }
-        return this.mSyncHandler;
-    }
-
     void quit(){
         if (mSyncHandler != null){
             mSyncHandler.stop();
@@ -55,66 +37,55 @@ class SyncManagement extends Thread {
                 mSyncHandler.getLooper().quit();
             }
             mSyncHandler = null;
-            handlerInitLatch = null;
         }
         Logger.i("SyncManagement<%s>退出:%s",getName(),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.CHINA).format(new Date()));
     }
-    void afresh_sync(){
-        acquireHandler();
-        mSyncHandler.sign_downloaded();
-        start_sync(true);
-    }
-    void start_sync(boolean b){
-        acquireHandler();
-        if (b){
-            mSyncHandler.modifyReportProgressStatus(true);
-            mSyncHandler.sync();
-            mSyncHandler.obtainMessage(MessageID.SYNC_FINISH_ID).sendToTarget();//最后发送同步完成消息;
-        }else{
-            mSyncHandler.startNetworkTest();
-        }
+
+    void sync(@NonNull ISync sync){
+        mSyncHandler.syncBasics(sync);
     }
 
-    void stop_sync(){
-        acquireHandler();
-        mSyncHandler.stopSync();
+    void afresh_sync(){
+        if (mSyncHandler != null){
+            mSyncHandler.sign_downloaded();
+            start_sync();
+        }
+    }
+    void start_sync(){
+        if (mSyncHandler != null){
+            mSyncHandler.modifyReportProgressStatus(true);
+            mSyncHandler.syncAllBasics();
+        }
+    }
+    void finishSync(){
+        if (mSyncHandler != null){
+            mSyncHandler.finishSync();
+        }
+    }
+    void testNetwork(){
+        if (mSyncHandler != null)mSyncHandler.startTestNetwork();
     }
 
     void sync_order_info(){
-        acquireHandler();
-        mSyncHandler.sync_order_info();
+        if (mSyncHandler != null)mSyncHandler.sync_order_info();
     }
 
     void sync_retail_order(boolean reupload){
-        acquireHandler();
-        mSyncHandler.startUploadRetailOrder(reupload);
+        if (mSyncHandler != null)mSyncHandler.startUploadRetailOrder(reupload);
     }
 
     void sync_transfer_order(){
-        acquireHandler();
-        mSyncHandler.startUploadTransferOrder();
+        if (mSyncHandler != null)mSyncHandler.startUploadTransferOrder();
     }
 
     void sync_refund_order(){
-        acquireHandler();
-        mSyncHandler.startUploadRefundOrder();
-    }
-
-    void pauseSync(){
-        acquireHandler();
-        mSyncHandler.pause();
-    }
-    void continueSync(){
-        acquireHandler();
-        mSyncHandler._continue();
+        if (mSyncHandler != null)mSyncHandler.startUploadRefundOrder();
     }
 
     void rest(){
-        acquireHandler();
-        mSyncHandler.removeCallbacksAndMessages(null);
+        if (mSyncHandler != null)mSyncHandler.removeCallbacksAndMessages(null);
     }
-
-    private void acquireHandler(){
-        if (mSyncHandler == null)mSyncHandler = getHandler();
+    boolean showReportProgress(){
+        return mSyncHandler.showReportProgress();
     }
 }

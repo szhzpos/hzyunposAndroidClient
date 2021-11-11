@@ -17,12 +17,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.squareup.leakcanary.LeakCanary;
 import com.wyc.cloudapp.BuildConfig;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.application.syncinstance.ISync;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.data.room.AppDatabase;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -35,6 +35,7 @@ import com.wyc.cloudapp.utils.Utils;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -57,7 +58,7 @@ public final class CustomApplication extends Application {
     private final SyncManagement mSyncManagement;
     private final AtomicBoolean mTransferStatus;
     private final AtomicBoolean mNetworkStatus;
-    private MessageCallback mCallback;
+    private final List<MessageCallback> mCallbacks;
     private final Myhandler myhandler;
 
     private JSONObject mCashierInfo,mStoreInfo;
@@ -81,6 +82,7 @@ public final class CustomApplication extends Application {
         mNetworkStatus = new AtomicBoolean(true);
         mTransferStatus = new AtomicBoolean(true);//传输状态
         mSyncManagement = new SyncManagement();
+        mCallbacks = new ArrayList<>();
     }
     @Override
     public  void  onCreate(){
@@ -90,7 +92,7 @@ public final class CustomApplication extends Application {
         Logger.addLogAdapter(new AndroidLogAdapter());
         Logger.addLogAdapter(new DiskLogAdapter());//日志记录磁盘
         CrashHandler.getInstance().init(this);
-        registerActivityLifecycleCallbacks(callbacks);
+        registerActivityLifecycleCallbacks(activityCallbacks);
     }
 
     @Override
@@ -118,31 +120,26 @@ public final class CustomApplication extends Application {
         mApplication.mBusinessMode = false;
     }
 
-    public boolean initCashierInfoAndStoreInfo(){
-        final JSONObject cas_info = mCashierInfo = new JSONObject();
-        final JSONObject st_info = mStoreInfo = getConnParam();
-        if (SQLiteHelper.getLocalParameter("cashierInfo",cas_info)){
-            if(SQLiteHelper.execSql(cas_info,"SELECT ifnull(pt_user_cname,'') pt_user_cname,ifnull(pt_user_id,'') pt_user_id FROM cashier_info where cas_id = " + cas_info.getString("cas_id"))){
-                try {
-                    mUrl = st_info.getString("server_url");
-                    mAppId = st_info.getString("appId");
-                    mAppSecret = st_info.getString("appSecret");
-                    mStoreInfo = JSON.parseObject(st_info.getString("storeInfo"));
-                    return true;
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    MyDialog.toastMessage("初始化仓库信息错误：" + e.getMessage());
-                    return false;
-                }
-            }else {
-                MyDialog.toastMessage(mApplication.getString(R.string.init_cas_hint,cas_info.getString("info")));
-                return false;
-            }
-        }else{
-            MyDialog.toastMessage(mApplication.getString(R.string.init_cas_hint,cas_info.getString("info")));
-            return false;
+    public boolean initCashierInfoAndStoreInfo(@NonNull final StringBuilder err){
+        mCashierInfo = new JSONObject();
+        if (SQLiteHelper.getLocalParameter("cashierInfo",mCashierInfo) &&
+                SQLiteHelper.execSql(mCashierInfo,"SELECT ifnull(pt_user_cname,'') pt_user_cname,ifnull(pt_user_id,'') pt_user_id FROM cashier_info where cas_status = 1 and cas_id = " + mCashierInfo.getString("cas_id")))
+        {
+            final JSONObject st_info = getConnParam();
+            mUrl = st_info.getString("server_url");
+            mAppId = st_info.getString("appId");
+            mAppSecret = st_info.getString("appSecret");
+            mStoreInfo = JSON.parseObject(st_info.getString("storeInfo"));
+
+            //启动心跳线程
+            mSyncManagement.testNetwork();
+
+            return true;
         }
+        err.append(mCashierInfo.getString("info"));
+        return false;
     }
+
     public static JSONObject getConnParam(){
         final SharedPreferences preferences= mApplication.getSharedPreferences("conn_param", Context.MODE_PRIVATE);
         return JSON.parseObject(preferences.getString("param","{}"));
@@ -160,18 +157,15 @@ public final class CustomApplication extends Application {
         return SQLiteHelper.isNotInit() || mStoreInfo == null || mCashierInfo == null;
     }
 
-    public JSONObject getCashierInfo(){
-        return mCashierInfo;
-    }
-    public JSONObject getStoreInfo(){
-        return mStoreInfo;
-    }
     public String getCashierName(){
-       return mCashierInfo.getString("cas_name");
+        return Utils.getNullStringAsEmpty(mCashierInfo,"cas_name");
     }
     public String getPosNum(){return Utils.getNullStringAsEmpty(mCashierInfo,"pos_num");}
     public String getCashierId(){
-        return mCashierInfo.getString("cas_id");
+        return Utils.getNullStringAsEmpty(mCashierInfo,"cas_id");
+    }
+    public String getCasPwd(){
+        return Utils.getNullStringAsEmpty(mCashierInfo,"cas_pwd");
     }
     public String getCashierCode(){
         return Utils.getNullStringAsEmpty(mCashierInfo,"cas_code");
@@ -180,7 +174,13 @@ public final class CustomApplication extends Application {
         return Utils.getNullStringAsEmpty(mCashierInfo,"pt_user_id");
     }
     public String getStoreName(){
-        return mStoreInfo.getString("stores_name");
+        return Utils.getNullStringAsEmpty(mStoreInfo,"stores_name");
+    }
+    public String getStoreTelephone(){
+        return Utils.getNullStringAsEmpty(mStoreInfo,"telphone");
+    }
+    public String getStoreRegion(){
+        return Utils.getNullStringAsEmpty(mStoreInfo,"region");
     }
     public String getStoreId(){
         return Utils.getNullStringAsEmpty(mStoreInfo,"stores_id");
@@ -214,7 +214,7 @@ public final class CustomApplication extends Application {
     }
 
 
-    private final ActivityLifecycleCallbacks callbacks = new ActivityLifecycleCallbacks() {
+    private final ActivityLifecycleCallbacks activityCallbacks = new ActivityLifecycleCallbacks() {
         @Override
         public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
             mActivities.add(activity);
@@ -243,6 +243,7 @@ public final class CustomApplication extends Application {
         @Override
         public void onActivityDestroyed(@NonNull Activity activity) {
             mActivities.remove(activity);
+            if (activity instanceof MessageCallback)mCallbacks.remove(activity);
             if (mActivities.isEmpty()){
                 THREAD_POOL_EXECUTOR.shutdownNow();
                 Logger.d("THREAD_POOL_EXECUTOR shutdown...");
@@ -310,11 +311,7 @@ public final class CustomApplication extends Application {
         return mNetworkStatus.get();
     }
     public void registerHandleMessage(final MessageCallback callback){
-        mCallback = callback;
-    }
-
-    public void initSyncManagement(final String url, final String appid, final String appsecret, final String stores_id, final String pos_num, final String operid){
-        mSyncManagement.initSync(url,appid,appsecret,stores_id,pos_num,operid);
+        mCallbacks.add(callback);
     }
 
     public void data_upload(){
@@ -337,31 +334,29 @@ public final class CustomApplication extends Application {
         mSyncManagement.sync_retail_order(true);
     }
 
-    public void start_sync(boolean b){
-        mSyncManagement.start_sync(b);
-    }
-
-    public void pauseSync(){
-        mSyncManagement.pauseSync();
-    }
-
-    public void continueSync(){
-        mSyncManagement.continueSync();
-    }
-
-    public void stop_sync(){
-        mSyncManagement.stop_sync();
+    public void start_sync(){
+        mSyncManagement.start_sync();
     }
 
     public void manualSync(){
         mSyncManagement.afresh_sync();
     }
     public void sync_refund_order(){
-        if (mSyncManagement != null) mSyncManagement.sync_refund_order();
+        mSyncManagement.sync_refund_order();
     }
 
     public void resetSync(){
         mSyncManagement.rest();
+    }
+    public boolean isReportProgress(){
+       return mSyncManagement.showReportProgress();
+    }
+    public void finishSync(){
+        mSyncManagement.finishSync();
+    }
+
+    public static void sync(@NonNull ISync sync){
+        mApplication.mSyncManagement.sync(sync);
     }
 
     public void clearBasicsData(){
@@ -415,8 +410,8 @@ public final class CustomApplication extends Application {
                 case MessageID.NETWORKSTATUS_ID:
                     if ((msg.obj instanceof Boolean)){
                         boolean code = (boolean) msg.obj;
-                        if (app.getAndSetNetworkStatus(code) != code && app.mCallback != null){
-                            app.mCallback.handleMessage(this,msg);
+                        if (app.getAndSetNetworkStatus(code) != code){
+                            app.executeMsg(msg);
                         }
                     }
                     break;
@@ -431,8 +426,7 @@ public final class CustomApplication extends Application {
                                 msg.arg1 = 3;
                         }else
                             msg.arg1 = 1;
-
-                        if (app.mCallback != null)app.mCallback.handleMessage(this,msg);
+                        app.executeMsg(msg);
                     }
                     break;
                 case MessageID.START_SYNC_ORDER_INFO_ID:
@@ -442,8 +436,13 @@ public final class CustomApplication extends Application {
                     Toast.makeText(app,"数据上传完成",Toast.LENGTH_SHORT).show();
                     break;
                 default:
-                    if (app.mCallback != null)app.mCallback.handleMessage(this,msg);
+                    app.executeMsg(msg);
             }
+        }
+    }
+    private void executeMsg(@NonNull Message msg){
+        for (MessageCallback callback : mCallbacks){
+            callback.handleMessage(myhandler,msg);
         }
     }
     public interface MessageCallback{
