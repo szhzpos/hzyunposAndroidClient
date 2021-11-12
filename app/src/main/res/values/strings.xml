@@ -106,6 +106,7 @@
     <string name="save_hint">保存成功!</string>
     <string name="not_permission_hint">当前用户没有权限处理此业务!</string>
     <string name="new_price">新价格</string>
+    <string name="abnormal_Network_Status">网络状态异常…</string>
 
     <!-- 新增会员 -->
     <string name="vip_dialog_title_sz">会员信息</string>
@@ -767,6 +768,8 @@
     <string name="failure">失败</string>
     <string name="order_amt_colon">订单金额：</string>
     <string name="time_card_business">次卡管理</string>
+    <string name="consume">消费</string>
+    <string name="time">次</string>
     <!-- 次卡打印格式 -->
     <string name="time_card_sale_format">次卡购买小票</string>
     <string name="time_card_print_pay_method">@string/pay_method_name_colon_sz</string>

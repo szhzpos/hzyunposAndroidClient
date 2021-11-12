@@ -4,6 +4,7 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.wyc.cloudapp.activity.normal.LoginActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.NotchUtils;
 
 /**
  * @ProjectName: CloudApp
@@ -31,6 +33,9 @@ public class BaseActivity extends AppCompatActivity implements IHookKey {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (NotchUtils.hasNotchScreen(this)){
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }else getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);

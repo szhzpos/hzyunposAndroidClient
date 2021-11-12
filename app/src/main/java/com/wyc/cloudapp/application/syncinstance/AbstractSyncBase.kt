@@ -39,7 +39,7 @@ abstract class AbstractSyncBase(private val table_name: String, private val tabl
         mParamObj["appid"] = CustomApplication.self().appId
         mParamObj["stores_id"] = CustomApplication.self().storeId
         mParamObj["page"] = null
-        mParamObj["limit"] = 100
+        mParamObj["limit"] = 500
         mParamObj["pos_num"] = CustomApplication.self().posNum
     }
 
@@ -186,6 +186,7 @@ abstract class AbstractSyncBase(private val table_name: String, private val tabl
                             } else {
                                 data = Utils.getNullObjectAsEmptyJsonArray(info_json, "data")
                             }
+                            deal(data)
                             markHeart()
                         } else
                             data = Utils.getNullObjectAsEmptyJsonArray(info_json, "data")
@@ -198,6 +199,7 @@ abstract class AbstractSyncBase(private val table_name: String, private val tabl
                             if (deal(data)) {
                                 //表名为空数据已在deal处理
                                 if (Utils.isNotEmpty(table_name)) {
+                                    Logger.d_json(data)
                                     if (SQLiteHelper.execSQLByBatchFromJson(data, table_name, table_cls, mError, 1)) {
                                         sign(data)
                                         if (mMaxPage-- > 0) {

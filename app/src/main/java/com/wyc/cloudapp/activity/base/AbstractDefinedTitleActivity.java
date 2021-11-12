@@ -77,7 +77,6 @@ public abstract class AbstractDefinedTitleActivity extends MainActivity {
     private void initWindow(){
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN) ;//显示状态栏
         mRoot = window.getDecorView();
         mRoot.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> updateStatusBarColor(Math.abs((float)scrollX / (float)v.getWidth())));
         mStatusBarAlpha = ((window.getStatusBarColor() >> 24) & 0xff);

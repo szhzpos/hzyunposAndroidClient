@@ -184,7 +184,7 @@ public final class TimeCardUseFragment extends AbstractMobileFragment {
         @NonNull
         @Override
         public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            final View view = View.inflate(mContext, R.layout.time_card_use_adapter,null);
+            final View view = View.inflate(mContext, mContext.lessThan7Inches() ? R.layout.time_card_use_adapter : R.layout.normal_time_card_use_adapter,null);
             view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             return new MyViewHolder(view);
         }
@@ -245,41 +245,47 @@ public final class TimeCardUseFragment extends AbstractMobileFragment {
         }
 
         private void sale(@NonNull VipTimeCardData.VipTimeCardInfo cardInfo){
-            final JSONObject param = new JSONObject();
-            param.put("appid",mContext.getAppId());
-            param.put("number",cardInfo.getNumber());
-            param.put("stores_id",mContext.getStoreId());
-            param.put("cas_id",mContext.getCashierId());
-            param.put("use_num",cardInfo.getSale_num());
+            final String message = cardInfo.getTitle().concat(mContext.getString(R.string.consume)).concat(String.valueOf(cardInfo.getSale_num())).concat(mContext.getString(R.string.time));
+            MyDialog.displayAskMessage(mContext, message, myDialog -> {
+                myDialog.dismiss();
 
-            final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(mContext,mContext.getString(R.string.dispose_hints));
-            HttpUtils.sendAsyncPost(mContext.getUrl() + InterfaceURL.VIP_TIME_CARD_USE,HttpRequest.generate_request_parm(param,mContext.getAppSecret()))
-                    .enqueue(new ArrayCallback<VipTimeCardUseOrder>(VipTimeCardUseOrder.class) {
+                final JSONObject param = new JSONObject();
+                param.put("appid",mContext.getAppId());
+                param.put("number",cardInfo.getNumber());
+                param.put("stores_id",mContext.getStoreId());
+                param.put("cas_id",mContext.getCashierId());
+                param.put("use_num",cardInfo.getSale_num());
 
-                        @Override
-                        protected void onSuccessForResult(@Nullable List<VipTimeCardUseOrder> d, String hint) {
-                            MyDialog.toastMessage(hint);
-                            if (null != d && !d.isEmpty()){
-                                final VipTimeCardUseOrder order = d.get(0);
-                                order.print(mContext);
+                final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(mContext,mContext.getString(R.string.dispose_hints));
+                HttpUtils.sendAsyncPost(mContext.getUrl() + InterfaceURL.VIP_TIME_CARD_USE,HttpRequest.generate_request_parm(param,mContext.getAppSecret()))
+                        .enqueue(new ArrayCallback<VipTimeCardUseOrder>(VipTimeCardUseOrder.class) {
 
-                                {
-                                    cardInfo.setSale_num(1);
-                                    cardInfo.setUsenum(cardInfo.getUsenum() + order.getUseNum());
-                                    if (cardInfo.getAvailableLimit() != 1)
-                                        cardInfo.setAvailable(cardInfo.getAvailable() - order.getUseNum());
+                            @Override
+                            protected void onSuccessForResult(@Nullable List<VipTimeCardUseOrder> d, String hint) {
+                                MyDialog.toastMessage(hint);
+                                if (null != d && !d.isEmpty()){
+                                    final VipTimeCardUseOrder order = d.get(0);
+                                    order.print(mContext);
 
-                                    notifyDataSetChanged();
+                                    {
+                                        cardInfo.setSale_num(1);
+                                        cardInfo.setUsenum(cardInfo.getUsenum() + order.getUseNum());
+                                        if (cardInfo.getAvailableLimit() != 1)
+                                            cardInfo.setAvailable(cardInfo.getAvailable() - order.getUseNum());
+
+                                        notifyDataSetChanged();
+                                    }
                                 }
+                                progressDialog.dismiss();
                             }
-                            progressDialog.dismiss();
-                        }
-                        @Override
-                        protected void onError(String msg) {
-                            MyDialog.toastMessage(msg);
-                            progressDialog.dismiss();
-                        }
-                    });
+                            @Override
+                            protected void onError(String msg) {
+                                MyDialog.toastMessage(msg);
+                                progressDialog.dismiss();
+                            }
+                        });
+            }, MyDialog::dismiss);
+
         }
 
         static class MyViewHolder extends AbstractDataAdapter.SuperViewHolder{

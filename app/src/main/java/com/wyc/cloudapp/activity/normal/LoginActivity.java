@@ -105,8 +105,6 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
 
     private void loadView(){
         if ((isSmallScreen = Utils.lessThan7Inches(this))){
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN) ;//显示状态栏
-
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             setContentView(R.layout.mobile_activity_login);
         }else{
@@ -602,7 +600,11 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
                                                     params.add(_json);
 
                                                     if (SQLiteHelper.execSQLByBatchFromJson(params,"local_parameter",null,err,1) && mApplication.initCashierInfoAndStoreInfo(err)){
-                                                        CustomApplication.sendMessage(MessageID.LOGIN_OK_ID);
+                                                        if (CustomApplication.isPracticeMode()){
+                                                            /*练习模式下直接登录不再进行同步数据*/
+                                                            CustomApplication.sendMessage(MessageID.SYNC_FINISH_ID);
+                                                        }else
+                                                            CustomApplication.sendMessage(MessageID.LOGIN_OK_ID);
                                                     }else {
                                                         CustomApplication.sendMessage(MessageID.DIS_ERR_INFO_ID, "保存当前收银参数错误：" + err);
                                                     }
@@ -641,7 +643,7 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
                 handler.removeCallbacksAndMessages(null);
                 finish();
                 break;
-            case MessageID.SYNC_FINISH_ID://同步成功启动主界面
+            case MessageID.SYNC_FINISH_ID:
                 launchLogin(true);
                 break;
             case MessageID.LOGIN_OK_ID://登录成功
@@ -696,7 +698,7 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
                     final JSONObject cas_info = new JSONObject();
                     if (SQLiteHelper.execSql(cas_info,"SELECT  pt_user_cname, pt_user_id, is_put, is_give, is_refund, min_discount, cas_status, cas_phone,\n" +
                             "       cas_code, cas_addtime, cas_pwd, cas_account, cas_name, stores_name, stores_id," +
-                            "       cas_id count FROM cashier_info where cas_status = 1 and cas_account = '" + operId + "' and stores_id = '" + storesId + "' and cas_pwd = '" + local_password + "'")){
+                            "       cas_id FROM cashier_info where cas_status = 1 and cas_account = '" + operId + "' and stores_id = '" + storesId + "' and cas_pwd = '" + local_password + "'")){
                         if (!cas_info.isEmpty()) {
                             cas_info.put("pos_num",posNum);
                             final StringBuilder err = new StringBuilder();

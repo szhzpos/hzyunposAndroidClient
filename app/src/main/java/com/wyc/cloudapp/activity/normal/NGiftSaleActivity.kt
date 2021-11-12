@@ -56,8 +56,6 @@ class NGiftSaleActivity : AbsBindingActivity() {
             finish()
             return
         }
-
-        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
 
         initKeyboardView()

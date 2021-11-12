@@ -183,10 +183,9 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             btn.setOnClickListener(view -> {
                 final ChangeNumOrPriceDialog dialog = new ChangeNumOrPriceDialog(mContext,mContext.getString(R.string.new_price),String.valueOf(mActual_amt));
                 dialog.setYesOnclickListener(myDialog -> {
-                    if (!Utils.equalDouble(0.0,mActual_amt)){
+                    if (!Utils.equalDouble(0.0,mOrder_amt)){
                         mContext.deleteAllDiscountRecord();
-                        refreshPayContent();
-                        if (mContext.allDiscount(myDialog.getContent() / mActual_amt * 10)){
+                        if (mContext.allDiscount(myDialog.getContent() / mOrder_amt * 10)){
                             myDialog.dismiss();
 
                             deleteFullReduceDiscount();

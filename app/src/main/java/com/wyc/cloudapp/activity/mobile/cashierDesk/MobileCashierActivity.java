@@ -64,7 +64,6 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mobile_cashier);
-        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN) ;//显示状态栏
 
         mSaleSumAmtTv = findViewById(R.id.mobile_sale_amt);
 

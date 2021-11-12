@@ -149,6 +149,14 @@ public final class MoreFunDialog extends AbstractDialogSaleActivity {
     private void initSyncBtn(){
         final Button sync_btn = findViewById(R.id.sync_btn);
         sync_btn.setOnClickListener(v->{
+            if (!CustomApplication.self().isConnection()){
+                MyDialog.toastMessage(mContext.getString(R.string.abnormal_Network_Status));
+                return;
+            }
+            if (CustomApplication.isPracticeMode()){
+                MyDialog.toastMessage(mContext.getString(R.string.not_enter_practice));
+                return;
+            }
             clearBasicsData();
             manualSync();
             this.dismiss();

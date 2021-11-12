@@ -29,7 +29,6 @@ class NTimeCardBusiness: TimeCardBusinessBase() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setMiddleText(getString(R.string.time_card_business))
-        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
     }
 
