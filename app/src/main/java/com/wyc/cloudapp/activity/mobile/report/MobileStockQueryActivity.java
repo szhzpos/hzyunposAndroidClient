@@ -84,12 +84,12 @@ public class MobileStockQueryActivity extends AbstractReportActivity {
                 final JSONObject retJson = HttpUtils.sendPost(mUrl + "/api/goods_set/get_bases", HttpRequest.generate_request_parm(object, mAppSecret),true);
                 switch (retJson.getIntValue("flag")){
                     case 0:
-                        MyDialog.ToastMessageInMainThread(CustomApplication.self().getString(R.string.query_goods_hint, retJson.getString("info")));
+                        MyDialog.toastMessage(CustomApplication.self().getString(R.string.query_goods_hint, retJson.getString("info")));
                         break;
                     case 1:
                         final JSONObject info_obj = JSONObject.parseObject(retJson.getString("info"));
                         if ("n".equals(info_obj.getString("status"))){
-                            MyDialog.ToastMessageInMainThread(CustomApplication.self().getString(R.string.query_goods_hint,info_obj.getString("info")));
+                            MyDialog.toastMessage(CustomApplication.self().getString(R.string.query_goods_hint,info_obj.getString("info")));
                         }else{
                             final JSONObject data = info_obj.getJSONObject("data");
 
@@ -118,7 +118,7 @@ public class MobileStockQueryActivity extends AbstractReportActivity {
 
             }catch (Exception e){
                 e.printStackTrace();
-                MyDialog.ToastMessageInMainThread(CustomApplication.self().getString(R.string.query_goods_hint,e.getMessage()));
+                MyDialog.toastMessage(CustomApplication.self().getString(R.string.query_goods_hint,e.getMessage()));
             }
         });
     }

@@ -45,7 +45,7 @@ class SyncGoods: AbstractSyncBase("barcode_info", SQLiteHelper.getGoodsCols(), "
     companion object{
         @JvmStatic
         fun sync(){
-            CustomApplication.sync(SyncGoods())
+            SyncGoods().request()
         }
         @JvmField
         val HEART_BEAT_KEY  =  "goods_barcode"

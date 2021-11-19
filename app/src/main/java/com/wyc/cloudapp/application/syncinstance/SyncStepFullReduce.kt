@@ -18,7 +18,7 @@ class SyncStepFullReduce :AbstractSyncBase("fullreduce_info", arrayOf("full_id",
     companion object{
         @JvmStatic
         fun sync(){
-            CustomApplication.sync(SyncStepFullReduce())
+            SyncStepFullReduce().request()
         }
         @JvmField
         val HEART_BEAT_KEY  = "full_reduce";

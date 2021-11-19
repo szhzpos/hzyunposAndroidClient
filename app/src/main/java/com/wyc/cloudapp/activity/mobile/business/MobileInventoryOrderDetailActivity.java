@@ -126,7 +126,7 @@ public class MobileInventoryOrderDetailActivity extends AbstractDefinedTitleActi
                 }
             }
             if (Utils.isNotEmpty(err)){
-                MyDialog.ToastMessageInMainThread("审核单据错误:" + err);
+                MyDialog.toastMessage("审核单据错误:" + err);
             }
             mProgressDialog.dismiss();
         });
@@ -200,7 +200,7 @@ public class MobileInventoryOrderDetailActivity extends AbstractDefinedTitleActi
                     }else throw new JSONException(info.getString("info"));
                 }catch (JSONException e){
                     e.printStackTrace();
-                    MyDialog.ToastMessageInMainThread(e.getMessage());
+                    MyDialog.toastMessage(e.getMessage());
                 }
             }
             mProgressDialog.dismiss();

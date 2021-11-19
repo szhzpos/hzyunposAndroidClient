@@ -34,9 +34,5 @@ public abstract class AbstractMobileFragment extends AbstractBaseFragment {
             mContext = (MainActivity) context;
         }else throw new IllegalArgumentException("attach context is not instance of MainActivity...!");
     }
-
     abstract protected int getRootLayout();
-    public String getTitle(){
-        return "";
-    }
 }

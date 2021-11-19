@@ -331,7 +331,7 @@ public final class Printer {
 
     private static void bluetooth_print(final byte[] content, final String device_addr){
         if(content != null && Utils.isNotEmpty(device_addr)){
-            MyDialog.ToastMessageInMainThread(CustomApplication.self().getString(R.string.begin_print));
+            MyDialog.toastMessage(CustomApplication.self().getString(R.string.begin_print));
             CustomApplication.execute(()->{
                 BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
                 if (bluetoothAdapter != null){
@@ -367,7 +367,7 @@ public final class Printer {
                                         tmp_c++;
                                     }
                                 }
-                                MyDialog.ToastMessageInMainThread(CustomApplication.self().getString(R.string.end_print));
+                                MyDialog.toastMessage(CustomApplication.self().getString(R.string.end_print));
                                 Logger.d("count:%d,bytes.length:%d",count,length);
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -383,7 +383,7 @@ public final class Printer {
     }
 
     private static void usb_print_byte(final String vid, final String pid, final byte[] in_bytes){
-        MyDialog.ToastMessageInMainThread(CustomApplication.self().getString(R.string.begin_print));
+        MyDialog.toastMessage(CustomApplication.self().getString(R.string.begin_print));
         CustomApplication.execute(()->{
             UsbDevice device = null;
             UsbInterface usbInterface = null;
@@ -441,7 +441,7 @@ public final class Printer {
                                             }
 
                                         }
-                                        MyDialog.ToastMessageInMainThread(CustomApplication.self().getString(R.string.end_print));
+                                        MyDialog.toastMessage(CustomApplication.self().getString(R.string.end_print));
                                         Logger.d("ret_c:%d,bytes.length:%d",ret_c,length);
                                     }
                                 } finally {

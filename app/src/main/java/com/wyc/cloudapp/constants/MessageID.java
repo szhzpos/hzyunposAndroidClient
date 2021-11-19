@@ -31,7 +31,7 @@ public final  class MessageID {
     public static final int SYNC_THREAD_QUIT_ID= 31;
     public static final int CANCEL_LOGIN_ID = 32;
     public static final int UPLOAD_TRANS_ORDER_ID = 33;//交班单据
-            public static final int OFF_LINE_LOGIN_ID = 34;
+    public static final int OFF_LINE_LOGIN_ID = 34;
     public static final int UPLOAD_REFUND_ORDER_ID = 36;
     public static final int START_SYNC_ORDER_INFO_ID = 37;
     public static final int FINISH_SYNC_ORDER_INFO_ID = 38;
@@ -45,4 +45,6 @@ public final  class MessageID {
     public static final int SYNC_BUY_X_GIVE_X_ID = 47;
     public static final int SYNC_BUY_FULL_GIVE_X_ID = 48;
     public static final int SYNC_AUXILIARY_BARCODE_ID = 49;
+
+    public static final int GoodsCategory_CHANGE_ID = 50;
 }

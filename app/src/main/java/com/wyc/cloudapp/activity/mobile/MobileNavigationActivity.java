@@ -237,7 +237,6 @@ public final class MobileNavigationActivity extends AbstractDefinedTitleActivity
         }
         private void showFragment(final View v){
             final FragmentTransaction ft = mFragmentManager.beginTransaction();
-            final MobileNavigationActivity activity = MobileNavigationActivity.this;
             Fragment current = null ;
             final int id = v.getId();
             if (id == R.id._mobile_archive_tv) {//first
@@ -264,27 +263,34 @@ public final class MobileNavigationActivity extends AbstractDefinedTitleActivity
         }
     };
 
+    private void showProgress(final String mess,boolean isCancel){
+        if (mProgressDialog == null)mProgressDialog = new CustomProgressDialog(this);
+        mProgressDialog.setMessage(mess).refreshMessage();
+        mProgressDialog.setCancel(isCancel);
+        mProgressDialog.show();
+    }
+    private void dismissProgress(){
+        if (mProgressDialog != null){
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+        }
+    }
+
     @Override
     public void handleMessage(Handler handler, Message msg) {
-        if (mProgressDialog == null)mProgressDialog = new CustomProgressDialog(this);
         switch (msg.what){
             case MessageID.DIS_ERR_INFO_ID:
             case MessageID.SYNC_ERR_ID://资料同步错误
-                if (mProgressDialog.isShowing())mProgressDialog.dismiss();
-                if (msg.obj instanceof String)
+                dismissProgress();
+                if (msg.obj != null)
                     MyDialog.displayErrorMessage(this, msg.obj.toString());
                 break;
             case MessageID.SYNC_FINISH_ID:
-                if (mProgressDialog.isShowing()){
-                    mProgressDialog.dismiss();
-                    mProgressDialog = null;
-                }
+                dismissProgress();
                 break;
             case MessageID.SYNC_DIS_INFO_ID://资料同步进度信息
-                mProgressDialog.setMessage(msg.obj.toString()).refreshMessage();
-                if (!mProgressDialog.isShowing()) {
-                    mProgressDialog.setCancel(false).show();
-                }
+                if (msg.obj != null)
+                    showProgress(msg.obj.toString(),false);
                 break;
         }
     }

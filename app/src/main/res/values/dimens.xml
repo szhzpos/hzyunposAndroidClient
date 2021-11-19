@@ -150,7 +150,7 @@
     <dimen name="more_fun_btn_width">@dimen/width_88</dimen>
     <dimen name="param_setting_item_width">@dimen/width_118</dimen>
     <dimen name="param_setting_item_height">@dimen/height_58</dimen>
-    <dimen name="param_setting_dialog_width">@dimen/size_908</dimen>
+    <dimen name="param_setting_dialog_width">928dp</dimen>
     <dimen name="param_setting_dialog_height">@dimen/size_528</dimen>
     <dimen name="param_title_height">@dimen/_size_25</dimen>
     <dimen name="param_value_height">@dimen/height_45</dimen>

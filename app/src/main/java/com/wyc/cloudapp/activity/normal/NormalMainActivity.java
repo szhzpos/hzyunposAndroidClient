@@ -97,9 +97,8 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     private ConstraintLayout mLastOrderInfo;
     private ImageView mPrinterStatusIv;
     private ScaleView mScaleView;
-    private CustomProgressDialog mProgressDialog;
     private EditText mSearch_content;
-
+    private CustomProgressDialog mProgressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -151,13 +150,25 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
 
     }
     private void initMemberVariable(){
-        mProgressDialog = new CustomProgressDialog(this);
         mCurrentTimeViewTv = findViewById(R.id.current_time);
         mSaleSumNumTv = findViewById(R.id.sale_sum_num);
         mSaleSumAmtTv = findViewById(R.id.sale_sum_amt);
         mKeyboard = findViewById(R.id.keyboard_layout);
         mOrderCodeTv = findViewById(R.id.order_code);
         mDisSumAmtTv = findViewById(R.id.dis_sum_amt);
+    }
+
+    private void showProgress(final String mess,boolean isCancel){
+        if (mProgressDialog == null)mProgressDialog = new CustomProgressDialog(this);
+        mProgressDialog.setMessage(mess).refreshMessage();
+        mProgressDialog.setCancel(isCancel);
+        mProgressDialog.show();
+    }
+    private void dismissProgress(){
+        if (mProgressDialog != null){
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+        }
     }
 
     @Override
@@ -921,12 +932,15 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         switch (msg.what){
             case MessageID.DIS_ERR_INFO_ID:
             case MessageID.SYNC_ERR_ID://资料同步错误
-                if (mProgressDialog.isShowing())mProgressDialog.dismiss();
-                if (msg.obj instanceof String)
+                dismissProgress();
+                if (msg.obj != null)
                     MyDialog.displayErrorMessage(this, msg.obj.toString());
                 break;
             case MessageID.SYNC_FINISH_ID:
-                if (mProgressDialog.isShowing())mProgressDialog.dismiss();
+                dismissProgress();
+                break;
+            case MessageID.GoodsCategory_CHANGE_ID:
+                if (mSaleGoodsAdapter != null)mGoodsCategoryAdapter.setDatas(0);
                 break;
             case MessageID.TRANSFERSTATUS_ID://传输状态
                 imageView = findViewById(R.id.upload_status);
@@ -956,10 +970,8 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                 }
                 break;
             case MessageID.SYNC_DIS_INFO_ID://资料同步进度信息
-                mProgressDialog.setMessage(msg.obj.toString()).refreshMessage();
-                if (!mProgressDialog.isShowing()) {
-                    mProgressDialog.setCancel(false).show();
-                }
+                if (msg.obj != null)
+                    showProgress(msg.obj.toString(),false);
                 break;
         }
     }

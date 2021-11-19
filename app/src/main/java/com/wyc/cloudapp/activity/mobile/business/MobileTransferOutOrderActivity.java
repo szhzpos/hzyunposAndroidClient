@@ -101,7 +101,7 @@ public class MobileTransferOutOrderActivity extends AbstractMobileBusinessOrderA
                         }else throw new JSONException(info.getString("info"));
                     }catch (JSONException e){
                         e.printStackTrace();
-                        MyDialog.ToastMessageInMainThread(e.getMessage());
+                        MyDialog.toastMessage(e.getMessage());
                     }
                 }
                 progressDialog.dismiss();

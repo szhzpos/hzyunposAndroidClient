@@ -6,7 +6,6 @@ import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONException
 import com.alibaba.fastjson.JSONObject
 import com.wyc.cloudapp.application.CustomApplication
-import com.wyc.cloudapp.constants.MessageID
 import com.wyc.cloudapp.data.SQLiteHelper
 import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.Utils
@@ -14,7 +13,6 @@ import com.wyc.cloudapp.utils.http.HttpRequest
 import com.wyc.cloudapp.utils.http.HttpUtils
 import kotlinx.coroutines.*
 import java.io.Serializable
-import java.util.concurrent.atomic.AtomicInteger
 
 /**
  *
@@ -30,7 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * @Version:        1.0
  */
 abstract class AbstractSyncBase(private val table_name: String, private val table_cls: Array<String>, private val sys_name: String, private val path: String):Serializable,ISync
-        ,CoroutineScope by CoroutineScope(Dispatchers.IO) {
+          {
     private var mMaxPage = -1
     protected val mParamObj = JSONObject()
     protected val mMarkPathKey = "U"
@@ -43,13 +41,27 @@ abstract class AbstractSyncBase(private val table_name: String, private val tabl
         mParamObj["pos_num"] = CustomApplication.self().posNum
     }
 
-    //用于保存数据之前处理数据
+    /**
+     * 保存已下载的数据之前对数据进行预处理
+     * @param data 从服务器获取的数据
+     * @return true成功 false失败
+     * */
     protected open fun deal(@NonNull data: JSONArray):Boolean{
         return true
     }
-    //获取保存数据之后回传服务器的参数
+    /**
+    * 获取标记已下载数据的请求参数
+     * @param data 需要标记的数据
+     * @return 返回参数JSON对象
+    * */
     protected open fun getMarkParam(@NonNull data: JSONArray):JSONObject{
         return JSONObject()
+    }
+    /**
+     * 标记成功后再通知数据已更新
+     * */
+    protected open fun dataChanged(){
+
     }
 
     protected fun removePosNumForParam(){
@@ -77,33 +89,9 @@ abstract class AbstractSyncBase(private val table_name: String, private val tabl
     }
 
     companion object{
-        private val mTasks:AtomicInteger = AtomicInteger()
-        @JvmStatic
-        private fun addTask(){
-            Logger.d("inTask:%d", mTasks.incrementAndGet())
-        }
-        @JvmStatic
-        private fun delTask(){
-            Logger.d("outTask:%d", mTasks.decrementAndGet())
-        }
-        /**
-        *
-        * */
-        @JvmStatic
-        private fun waitTaskFinish():Boolean{
-            val c = mTasks.get()
-            if (c == 0){
-                if (CustomApplication.self().isReportProgress){
-                    CustomApplication.self().finishSync()
-                }
-                return true
-            }
-            Logger.d("task:%d", c)
-            return false;
-        }
         @JvmStatic
         fun dealHeartBeatUpdate(array: JSONArray) {
-            if (waitTaskFinish() && array.isNotEmpty()) {
+            if (array.isNotEmpty()) {
                 val `object` = array.getJSONObject(0)
                 val keys: Iterator<String> = `object`.innerMap.keys.iterator()
                 var value: Int
@@ -114,56 +102,87 @@ abstract class AbstractSyncBase(private val table_name: String, private val tabl
                     if (value == 1) continue
                     when (key){
                         SyncPayMethod.HEART_BEAT_KEY -> {
-                            SyncPayMethod.sync()
+                            ISync.sync(SyncPayMethod())
                         }
                         SyncFullReduce.HEART_BEAT_KEY -> {
-                            SyncFullReduce.sync()
+                            ISync.sync(SyncFullReduce())
                         }
                         SyncCashier.HEART_BEAT_KEY -> {
-                            SyncCashier.sync()
+                            ISync.sync(SyncCashier())
                         }
                         SyncBuyNGiveN.HEART_BEAT_KEY -> {
-                            SyncBuyNGiveN.sync()
+                            ISync.sync(SyncBuyNGiveN())
                         }
                         SyncGP.HEART_BEAT_KEY -> {
-                            SyncGP.sync()
+                            ISync.sync(SyncGP())
                         }
                         SyncBuyFullGiveN.HEART_BEAT_KEY -> {
-                            SyncGP.sync()
+                            ISync.sync(SyncGP())
                         }
                         SyncGoods.HEART_BEAT_KEY -> {
-                            SyncGoods.sync()
+                            ISync.sync(SyncGoods())
                         }
                         SyncGoods.HEART_BEAT_KEY1 -> {
 
                         }
                         SyncSaleman.HEART_BEAT_KEY -> {
-                            SyncSaleman.sync()
+                            ISync.sync(SyncSaleman())
                         }
                         SyncStepFullReduce.HEART_BEAT_KEY -> {
-                            SyncStepFullReduce.sync()
+                            ISync.sync(SyncStepFullReduce())
                         }
                         SyncGoodsCategory.HEART_BEAT_KEY -> {
-                            SyncGoodsCategory.sync()
+                            ISync.sync(SyncGoodsCategory())
                         }
                         SyncAuxiliaryBarcode.HEART_BEAT_KEY -> {
-                            SyncAuxiliaryBarcode.sync()
+                            ISync.sync(SyncAuxiliaryBarcode())
                         }
                         SyncStepPromotion.HEART_BEAT_KEY -> {
-                            SyncStepPromotion.sync()
+                            ISync.sync(SyncStepPromotion())
                         }
                         SyncPromotion.HEART_BEAT_KEY -> {
-                            SyncPromotion.sync()
+                            ISync.sync(SyncPromotion())
                         }
                     }
                 }
             }
         }
+        @JvmStatic
+        fun syncAllBasics(){
+            CoroutineScope(Dispatchers.IO + CoroutineExceptionHandler { _, exception ->
+                CustomApplication.showSyncErrorMsg(exception.message)
+            }).launch{
+                 val job = launch {
+                     ISync.sync(SyncGoodsCategory(),this,true)
+                     ISync.sync(SyncStores(),this,true)
+                     ISync.sync(SyncPayMethod(),this,true)
+                     ISync.sync(SyncCashier(),this,true)
+                     ISync.sync(SyncGP(),this,true)
+                     ISync.sync(SyncFullReduce(),this,true)
+                     ISync.sync(SyncStepFullReduce(),this,true)
+                     ISync.sync(SyncBuyNGiveN(),this,true)
+                     ISync.sync(SyncBuyFullGiveN(),this,true)
+                     ISync.sync(SyncSaleman(),this,true)
+                     ISync.sync(SyncPromotion(),this,true)
+                     ISync.sync(SyncStepPromotion(),this,true)
+                     ISync.sync(SyncSaleOperator(),this,true)
+                     ISync.sync(SyncAuxiliaryBarcode(),this,true)
+                     ISync.sync(SyncGoods(),this,true)
+                }
+                job.join()
+                if (!job.isCancelled){
+                    CustomApplication.finishSync()
+                }
+            }
+        }
     }
 
-    private tailrec fun asyncRequest():Boolean{
-        if (CustomApplication.self().isReportProgress)showInfo()
-        addTask()
+    private tailrec fun asyncRequest(c:CoroutineScope,show:Boolean){
+        if (!c.isActive){
+            return
+        }
+
+        if(show)showInfo()
 
         val retJson = HttpUtils.sendPost(CustomApplication.self().url + path, HttpRequest.generate_request_parm(mParamObj, CustomApplication.self().appSecret), true)
         when (retJson.getIntValue("flag")) {
@@ -197,19 +216,27 @@ abstract class AbstractSyncBase(private val table_name: String, private val tabl
                             markHeart()
                         } else {
                             if (deal(data)) {
-                                //表名为空数据已在deal处理
                                 if (Utils.isNotEmpty(table_name)) {
-                                    Logger.d_json(data)
-                                    if (SQLiteHelper.execSQLByBatchFromJson(data, table_name, table_cls, mError, 1)) {
+                                    if (SQLiteHelper.execSQLByBatchFromJson(
+                                            data,
+                                            table_name,
+                                            table_cls,
+                                            mError,
+                                            1
+                                        )
+                                    ) {
                                         sign(data)
                                         if (mMaxPage-- > 0) {
-                                            Logger.d("current_page:%d,max_page:%d", curPage, mMaxPage)
+                                            Logger.d(
+                                                "current_page:%d,max_page:%d",
+                                                curPage,
+                                                mMaxPage
+                                            )
                                             mParamObj["page"] = 0
 
-                                            delTask()
-                                            return asyncRequest()
+                                            return asyncRequest(c,show)
                                         }
-                                    }
+                                    }else mError.insert(0,sys_name)
                                 }
                             }
                         }
@@ -217,33 +244,24 @@ abstract class AbstractSyncBase(private val table_name: String, private val tabl
                 }
             }
         }
-        delTask()
-        return mError.isEmpty()
+        if (mError.isNotEmpty()){
+            throw Exception(mError.toString())
+        }
     }
 
-    /*
-    * SyncGoods 在心跳线程处理
-    * */
-    override  fun request():Boolean {
-        if (this is SyncGoods){
-            return asyncRequest()
-        }else {
-            launch {
-                val a = async { asyncRequest() }
-                a.await()
-                if (mError.isNotEmpty()){
-                    cancel()
-                    if (CustomApplication.self().isReportProgress) {
-                        CustomApplication.self().finishSync()
-                        CustomApplication.sendMessage(MessageID.SYNC_ERR_ID,mError.toString())
-                    } else {
-                        CustomApplication.sendMessage(MessageID.TRANSFERSTATUS_ID, false)
-                        Logger.e("%s",mError)
-                    }
-                }
+    override fun request(c:CoroutineScope?, show: Boolean) {
+        if (c != null){
+            c.launch {
+                asyncRequest(this,show)
+            }
+        }else{
+            CoroutineScope(Dispatchers.IO + CoroutineExceptionHandler{_,exception->
+                CustomApplication.transFailure()
+                Logger.e("%s",exception.localizedMessage)
+            }).launch{
+                asyncRequest(this,show)
             }
         }
-        return true
     }
 
     @Throws(JSONException::class)
@@ -257,15 +275,11 @@ abstract class AbstractSyncBase(private val table_name: String, private val tabl
                 obj = JSON.parseObject(obj.getString("info"))
                 success = "y" == obj.getString("status")
             }
-            if (!success) Logger.e("标记" + sys_name + "错误:" + obj.getString("info"))
+            if (success) dataChanged() else Logger.e("标记" + sys_name + "错误:" + obj.getString("info"))
         }
     }
 
-    override fun error(): String {
-        return mError.toString()
-    }
-
-    override fun showInfo() {
-        CustomApplication.sendMessage(MessageID.SYNC_DIS_INFO_ID, sys_name + "信息....")
+    private fun showInfo() {
+        CustomApplication.showMsg(sys_name + "信息....")
     }
 }

@@ -3,14 +3,10 @@ package com.wyc.cloudapp.data.viewModel
 import androidx.lifecycle.MutableLiveData
 import com.alibaba.fastjson.JSONObject
 import com.wyc.cloudapp.application.CustomApplication
-import com.wyc.cloudapp.bean.BarcodeOnlyCodeInfo
 import com.wyc.cloudapp.bean.Supplier
 import com.wyc.cloudapp.dialog.MyDialog
-import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.http.HttpRequest
 import com.wyc.cloudapp.utils.http.callback.ArrayCallback
-import com.wyc.cloudapp.utils.http.callback.ObjectResult
-import kotlinx.coroutines.*
 import java.net.HttpURLConnection
 
 /**
@@ -62,10 +58,10 @@ class SupplierViewModel:ViewModelBase() {
                         if (it.isSuccess)
                             codeModel!!.postValue(it.data)
                         else
-                            MyDialog.ToastMessageInMainThread(it.info)
+                            MyDialog.toastMessage(it.info)
                     }
                 }else{
-                    MyDialog.ToastMessageInMainThread(it.message())
+                    MyDialog.toastMessage(it.message())
                 }
                 netFinished()
             }

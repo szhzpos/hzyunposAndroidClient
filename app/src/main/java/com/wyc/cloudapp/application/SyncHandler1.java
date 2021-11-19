@@ -1,54 +1,33 @@
 package com.wyc.cloudapp.application;
 
+import static com.wyc.cloudapp.constants.MessageID.SYNC_DIS_INFO_ID;
+
 import android.content.ContentValues;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-
-import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.application.syncinstance.AbstractSyncBase;
-import com.wyc.cloudapp.application.syncinstance.ISync;
-import com.wyc.cloudapp.application.syncinstance.SyncAuxiliaryBarcode;
-import com.wyc.cloudapp.application.syncinstance.SyncBuyFullGiveN;
-import com.wyc.cloudapp.application.syncinstance.SyncBuyNGiveN;
-import com.wyc.cloudapp.application.syncinstance.SyncCashier;
-import com.wyc.cloudapp.application.syncinstance.SyncFullReduce;
-import com.wyc.cloudapp.application.syncinstance.SyncGP;
-import com.wyc.cloudapp.application.syncinstance.SyncGoods;
-import com.wyc.cloudapp.application.syncinstance.SyncGoodsCategory;
-import com.wyc.cloudapp.application.syncinstance.SyncPayMethod;
-import com.wyc.cloudapp.application.syncinstance.SyncPromotion;
-import com.wyc.cloudapp.application.syncinstance.SyncSaleOperator;
-import com.wyc.cloudapp.application.syncinstance.SyncSaleman;
-import com.wyc.cloudapp.application.syncinstance.SyncStepFullReduce;
-import com.wyc.cloudapp.application.syncinstance.SyncStepPromotion;
-import com.wyc.cloudapp.application.syncinstance.SyncStores;
+import com.wyc.cloudapp.constants.MessageID;
 import com.wyc.cloudapp.constants.RetailOrderStatus;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.constants.MessageID;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
 
 import java.net.HttpURLConnection;
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.locks.LockSupport;
-
-import static com.wyc.cloudapp.constants.MessageID.SYNC_DIS_INFO_ID;
 
 final class SyncHandler1 extends Handler {
-    private volatile boolean mReportProgress = false,isPause = false;
+    private volatile boolean isPause = false;
     private volatile int mCurrentNetworkStatusCode = HttpURLConnection.HTTP_OK;
     private JSONObject mHeartbeat;
 
@@ -56,7 +35,7 @@ final class SyncHandler1 extends Handler {
         super(looper);
     }
 
-    private static final List<Integer> PracticeModeMsgFilter = Arrays.asList(MessageID.SYNC_FINISH_ID,MessageID.SYNC_THREAD_QUIT_ID);
+    private static final List<Integer> PracticeModeMsgFilter = Collections.singletonList(MessageID.SYNC_THREAD_QUIT_ID);
 
     @Override
     public void handleMessage(Message msg){
@@ -71,19 +50,7 @@ final class SyncHandler1 extends Handler {
          * */
         switch (msg.what) {
             case MessageID.SYNC_BASICS_ID:
-                final ISync sync = (ISync)msg.obj;
-                if (sync.request()) {
-                    if (!mReportProgress)
-                        CustomApplication.sendMessage(MessageID.TRANSFERSTATUS_ID,true);
-                }else{
-                    stopSync();
-                    if (mReportProgress) {
-                        CustomApplication.sendMessage(MessageID.SYNC_ERR_ID, sync.error());
-                    }else{
-                        CustomApplication.sendMessage(MessageID.TRANSFERSTATUS_ID,false);
-                        Logger.e("%s", sync.error());
-                    }
-                }
+                AbstractSyncBase.syncAllBasics();
                 break;
             case MessageID.SYNC_PAUSE_ID:
                 synchronized (this){
@@ -95,10 +62,6 @@ final class SyncHandler1 extends Handler {
                     }
                     isPause = false;
                 }
-                return;
-            case MessageID.SYNC_FINISH_ID:
-                CustomApplication.sendMessage(MessageID.SYNC_FINISH_ID);//同步完成
-                if (mReportProgress)mReportProgress = false;
                 return;
             case MessageID.UPLOAD_ORDER_ID:
                 if (msg.obj instanceof Boolean){
@@ -112,15 +75,11 @@ final class SyncHandler1 extends Handler {
             case MessageID.UPLOAD_REFUND_ORDER_ID:
                 uploadRefundOrderInfo();
                 return;
-            case MessageID.MODIFY_REPORT_PROGRESS_ID:
-                if (msg.obj instanceof  Boolean)
-                    mReportProgress = (boolean)msg.obj;
-                return;
             case MessageID.NETWORKSTATUS_ID:
                 testNetworkStatus();
                 return;
             case MessageID.MARK_DOWNLOAD_RECORD_ID:
-                if (mReportProgress)CustomApplication.sendMessage(SYNC_DIS_INFO_ID,"正在更新信息....");
+                CustomApplication.showMsg("正在更新信息....");
                 clear_download_record();
                 return;
             case MessageID.SYNC_THREAD_QUIT_ID://由于处理程序内部会发送消息，消息队列退出需在处理程序内部处理
@@ -263,7 +222,7 @@ final class SyncHandler1 extends Handler {
                                                     values.put("upload_status", RetailOrderStatus.UPLOAD_ERROR);
                                                     err.append(retJson.getString("info"));
                                                     if (reupload){
-                                                        MyDialog.ToastMessageInMainThread(err.toString());
+                                                        MyDialog.toastMessage(err.toString());
                                                     }
                                                     break;
                                                 case "y":
@@ -291,7 +250,7 @@ final class SyncHandler1 extends Handler {
         }
         if (!code || err.length() > 0){
             Logger.e("上传销售单据错误：%s",err);
-            CustomApplication.sendMessage(MessageID.TRANSFERSTATUS_ID,false);
+            CustomApplication.transFailure();
         }
     }
 
@@ -381,7 +340,7 @@ final class SyncHandler1 extends Handler {
         }
         if (err.length() != 0){
             Logger.e("上传交班单据错误:%s",err);
-            CustomApplication.sendMessage(MessageID.TRANSFERSTATUS_ID,false);
+            CustomApplication.transFailure();
         }
     }
 
@@ -398,7 +357,7 @@ final class SyncHandler1 extends Handler {
         }
         if (err.length() != 0){
             Logger.e("上传退货单据错误：%s",err);
-            CustomApplication.sendMessage(MessageID.TRANSFERSTATUS_ID,false);
+            CustomApplication.transFailure();
         }
     }
 
@@ -427,36 +386,15 @@ final class SyncHandler1 extends Handler {
 
     void syncAllBasics(){
         if (mCurrentNetworkStatusCode == HttpURLConnection.HTTP_OK){
-            obtainMessage(MessageID.SYNC_BASICS_ID,new SyncGoodsCategory()).sendToTarget();
-            obtainMessage(MessageID.SYNC_BASICS_ID,new SyncStores()).sendToTarget();
-            obtainMessage(MessageID.SYNC_BASICS_ID,new SyncPayMethod()).sendToTarget();
-            obtainMessage(MessageID.SYNC_BASICS_ID,new SyncCashier()).sendToTarget();
-            obtainMessage(MessageID.SYNC_BASICS_ID,new SyncGP()).sendToTarget();
-            obtainMessage(MessageID.SYNC_BASICS_ID,new SyncFullReduce()).sendToTarget();
-            obtainMessage(MessageID.SYNC_BASICS_ID,new SyncStepFullReduce()).sendToTarget();
-            obtainMessage(MessageID.SYNC_BASICS_ID,new SyncBuyNGiveN()).sendToTarget();
-            obtainMessage(MessageID.SYNC_BASICS_ID,new SyncBuyFullGiveN()).sendToTarget();
-            obtainMessage(MessageID.SYNC_BASICS_ID,new SyncSaleman()).sendToTarget();
-            obtainMessage(MessageID.SYNC_BASICS_ID,new SyncPromotion()).sendToTarget();
-            obtainMessage(MessageID.SYNC_BASICS_ID,new SyncStepPromotion()).sendToTarget();
-            obtainMessage(MessageID.SYNC_BASICS_ID,new SyncSaleOperator()).sendToTarget();
-            obtainMessage(MessageID.SYNC_BASICS_ID,new SyncAuxiliaryBarcode()).sendToTarget();
+            obtainMessage(MessageID.SYNC_BASICS_ID).sendToTarget();
+        }
+    }
 
-            obtainMessage(MessageID.SYNC_BASICS_ID,new SyncGoods()).sendToTarget();
-        }
-    }
-    void syncBasics(@NonNull ISync sync){
-        if (mCurrentNetworkStatusCode == HttpURLConnection.HTTP_OK){
-            sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_BASICS_ID,sync));
-        }
-    }
+    @SuppressWarnings("unused")
     void stopSync(){
         if (isPause)_continue();//如果已经暂停，则先唤醒线程
         removeMessages(MessageID.SYNC_BASICS_ID);
         removeMessages(MessageID.SYNC_FINISH_ID);
-    }
-    void modifyReportProgressStatus(boolean b){
-        sendMessageAtFrontOfQueue(obtainMessage(MessageID.MODIFY_REPORT_PROGRESS_ID,b));
     }
     void startTestNetwork(){
         if (!hasMessages(MessageID.NETWORKSTATUS_ID)){
@@ -478,7 +416,7 @@ final class SyncHandler1 extends Handler {
             sendMessageAtFrontOfQueue(obtainMessage(MessageID.UPLOAD_REFUND_ORDER_ID));
         }
     }
-
+    @SuppressWarnings("unused")
     void pause(){
         if (!isPause)sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_PAUSE_ID));
     }
@@ -491,12 +429,5 @@ final class SyncHandler1 extends Handler {
         if (mCurrentNetworkStatusCode == HttpURLConnection.HTTP_OK && !hasMessages(MessageID.MARK_DOWNLOAD_RECORD_ID)) {
             obtainMessage(MessageID.MARK_DOWNLOAD_RECORD_ID).sendToTarget();
         }
-    }
-    boolean showReportProgress(){
-        return mReportProgress;
-    }
-
-    void finishSync(){
-        sendMessageAtFrontOfQueue(obtainMessage(MessageID.SYNC_FINISH_ID));
     }
 }

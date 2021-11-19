@@ -425,7 +425,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
                             path = path_obj.getString("path");
                         }else {
                             path = type_detail_id;
-                            MyDialog.ToastMessageInMainThread(path_obj.getString("info"));
+                            MyDialog.toastMessage(path_obj.getString("info"));
                         }
                         if (code && null != path && path.startsWith(path_start)){
                             sum_xnum  += tmp_obj.getDoubleValue("xnum");
@@ -521,7 +521,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
                             path = path_obj.getString("path");
                         }else {
                             path = type_detail_id;
-                            MyDialog.ToastMessageInMainThread(path_obj.getString("info"));
+                            MyDialog.toastMessage(path_obj.getString("info"));
                         }
                         if (code && null != path && path.startsWith(path_start)){
                             current_promotion_xnum  += tmp_obj.getDoubleValue("xnum");
@@ -636,7 +636,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
                             path = path_obj.getString("path");
                         }else {
                             path = type_detail_id;
-                            MyDialog.ToastMessageInMainThread(path_obj.getString("info"));
+                            MyDialog.toastMessage(path_obj.getString("info"));
                         }
                         if (null != path && path.startsWith(path_start)){
                             sum_sale_xnum  += xnum;

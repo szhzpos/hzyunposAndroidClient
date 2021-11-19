@@ -2,17 +2,11 @@ package com.wyc.cloudapp.data.viewModel
 
 import androidx.lifecycle.MutableLiveData
 import com.alibaba.fastjson.JSONObject
-import com.alibaba.fastjson.TypeReference
 import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.bean.Consumer
-import com.wyc.cloudapp.bean.Supplier
 import com.wyc.cloudapp.dialog.MyDialog
 import com.wyc.cloudapp.utils.http.HttpRequest
-import com.wyc.cloudapp.utils.http.HttpUtils
 import com.wyc.cloudapp.utils.http.callback.ArrayResult
-import com.wyc.cloudapp.utils.http.callback.ObjectResult
-import kotlinx.coroutines.*
-import java.io.IOException
 import java.net.HttpURLConnection
 
 /**
@@ -45,9 +39,9 @@ class ConsumerViewModel:ViewModelBase() {
                     if (data.isSuccess)
                         currentModel!!.postValue(data.data)
                     else
-                        MyDialog.ToastMessageInMainThread(data.info)
+                        MyDialog.toastMessage(data.info)
                 }else{
-                    MyDialog.ToastMessageInMainThread(it.message())
+                    MyDialog.toastMessage(it.message())
                 }
                 netFinished()
             }
@@ -68,10 +62,10 @@ class ConsumerViewModel:ViewModelBase() {
                         if (it.isSuccess)
                             codeModel!!.postValue(it.data)
                         else
-                            MyDialog.ToastMessageInMainThread(it.info)
+                            MyDialog.toastMessage(it.info)
                     }
                 }else{
-                    MyDialog.ToastMessageInMainThread(it.message())
+                    MyDialog.toastMessage(it.message())
                 }
                 netFinished()
             }

@@ -27,7 +27,7 @@ class SyncFullReduce:AbstractSyncBase("fullreduce_info_new", arrayOf("tlp_id","t
     companion object{
         @JvmStatic
         fun sync(){
-            CustomApplication.sync(SyncFullReduce())
+            SyncFullReduce().request()
         }
         @JvmField
         val HEART_BEAT_KEY  = "time_limit_fullreduce";

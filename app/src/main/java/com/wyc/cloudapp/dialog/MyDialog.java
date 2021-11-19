@@ -267,11 +267,8 @@ public final class MyDialog extends AbstractDialogContext {
         return b;
     }
 
-    public static void ToastMessageInMainThread(final String message){
-        CustomApplication.runInMainThread(()-> Toast.makeText(CustomApplication.self(),message,Toast.LENGTH_LONG).show());
-    }
     public static void toastMessage(final String message){
-        Toast.makeText(CustomApplication.self(),message,Toast.LENGTH_SHORT).show();
+        CustomApplication.showGlobalToast(message);
     }
 
     public static void ToastMessage(final String message, final Window window){
@@ -319,10 +316,6 @@ public final class MyDialog extends AbstractDialogContext {
         }
     }
 
-    public static boolean SnackBarMessage(final Window window, final String message, View anchor, boolean b){
-        if(!b) SnackBarMessage( window, message, anchor);
-        return b;
-    }
     public static void SnackBarMessage(final Window window, final String message, View anchor){
         if (null != window){
             final Snackbar snackbar = Snackbar.make(window.getDecorView(),message, Snackbar.LENGTH_LONG);

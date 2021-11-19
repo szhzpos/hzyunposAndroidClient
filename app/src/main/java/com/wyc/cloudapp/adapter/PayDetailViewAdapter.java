@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,8 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
     private final JSONArray mDatas;
     private View mCurrentItemView;
     private int mCurrentItemIndex;
+    private OnDeleteItem mDelItemListener = id -> true;
+
     public PayDetailViewAdapter(Context context){
         this.mContext = context;
         mDatas = new JSONArray();
@@ -67,15 +70,18 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
             if (pay_detail != null){
                 ContentHolder contentHolder = (ContentHolder)myViewHolder;
                 contentHolder.row_id.setText(String.valueOf(i));
-                contentHolder.pay_method_id.setText(pay_detail.getString("pay_method_id"));
                 contentHolder.pay_method_name.setText(pay_detail.getString("name"));
                 contentHolder.pay_detail_amt.setText(pay_detail.getString("pamt"));
                 contentHolder.pay_detail_zl.setText(pay_detail.getString("pzl"));
                 contentHolder.pay_detail_v_num.setText(pay_detail.getString("v_num"));
 
+                final String pay_method_id = pay_detail.getString("pay_method_id");
+                contentHolder.pay_method_id.setText(pay_method_id);
                 contentHolder.itemView.setOnTouchListener(new ClickListener(v -> {
                     setCurrentItemIndexAndItemView(v);
-                    deletePayDetail(mCurrentItemIndex);
+                    if (mDelItemListener.onDel(pay_method_id)){
+                        deletePayDetail(mCurrentItemIndex);
+                    }
                 }, this::setSelectStatus));
 
                 if (mCurrentItemIndex == i){
@@ -119,6 +125,7 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
         return mDatas;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void addPayDetail(JSONObject pay_detail_info){
         double amt = 0.0;
         if (pay_detail_info != null){
@@ -195,4 +202,19 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
         mDatas.clear();
         notifyDataSetChanged();
     }
+
+    public interface OnDeleteItem{
+        /**
+        * @param id 支付方式Id
+        * @return true 可以删除明细，false不删除明细
+        * */
+        boolean onDel(@NonNull String id);
+    }
+    public void setDelItemListener(OnDeleteItem delItemListener){
+        if (delItemListener == null)
+            mDelItemListener = id -> true;
+        else
+            mDelItemListener = delItemListener;
+    }
+
 }

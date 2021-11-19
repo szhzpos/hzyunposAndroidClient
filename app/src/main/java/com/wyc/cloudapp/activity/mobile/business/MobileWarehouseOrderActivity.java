@@ -83,7 +83,7 @@ public final class MobileWarehouseOrderActivity extends AbstractMobileBusinessOr
                         }else throw new JSONException(info.getString("info"));
                     }catch (JSONException e){
                         e.printStackTrace();
-                        MyDialog.ToastMessageInMainThread(e.getMessage());
+                        MyDialog.toastMessage(e.getMessage());
                     }
                 }
                 progressDialog.dismiss();

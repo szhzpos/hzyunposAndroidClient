@@ -21,45 +21,59 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/sync_btn"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/more_fun_btn_width"
-            android:layout_height="@dimen/more_fun_btn_height"
-            android:layout_marginStart="@dimen/margin_5"
-            android:layout_marginTop="@dimen/margin_5"
-            android:background="@drawable/button_blue"
-            android:text="@string/sync_sz"
-            android:textColor="@color/blue_white"
-            android:textSize="@dimen/font_size_14"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/setup_btn" />
+    <Button
+        android:id="@+id/sync_btn"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="@dimen/more_fun_btn_width"
+        android:layout_height="@dimen/more_fun_btn_height"
+        android:layout_marginStart="@dimen/margin_5"
+        android:layout_marginTop="@dimen/margin_5"
+        android:background="@drawable/button_blue"
+        android:text="@string/sync_sz"
+        android:textColor="@color/blue_white"
+        android:textSize="@dimen/font_size_14"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/vip_manage" />
 
-        <Button
-            android:id="@+id/setup_btn"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/more_fun_btn_width"
-            android:layout_height="@dimen/more_fun_btn_height"
-            android:layout_marginTop="@dimen/margin_5"
-            android:background="@drawable/button_blue"
-            android:text="@string/setup_sz"
-            android:textColor="@color/blue_white"
-            android:textSize="@dimen/font_size_14"
-            app:layout_constraintStart_toStartOf="@id/present_btn"
-            app:layout_constraintTop_toBottomOf="@id/present_btn" />
+    <Button
+        android:id="@+id/vip_manage"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="@dimen/more_fun_btn_width"
+        android:layout_height="@dimen/more_fun_btn_height"
+        android:layout_marginTop="@dimen/margin_5"
+        android:background="@drawable/button_blue"
+        android:text="@string/vip_manage"
+        android:textColor="@color/blue_white"
+        android:textSize="@dimen/font_size_14"
+        app:layout_constraintStart_toStartOf="@id/present_btn"
+        app:layout_constraintTop_toBottomOf="@id/present_btn" />
 
-        <Button
-            android:id="@+id/o_cashbox"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/more_fun_btn_width"
-            android:layout_height="@dimen/more_fun_btn_height"
-            android:layout_marginStart="@dimen/margin_5"
-            android:background="@drawable/button_blue"
-            android:text="@string/o_cashbox_sz"
-            android:textColor="@color/blue_white"
-            android:textSize="@dimen/font_size_14"
-            app:layout_constraintStart_toEndOf="@id/setup_btn"
-            app:layout_constraintTop_toTopOf="@id/setup_btn" />
+    <Button
+        android:id="@+id/setup_btn"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="@dimen/more_fun_btn_width"
+        android:layout_height="@dimen/more_fun_btn_height"
+        android:layout_marginStart="@dimen/margin_5"
+        android:layout_marginTop="@dimen/margin_5"
+        android:background="@drawable/button_blue"
+        android:text="@string/setup_sz"
+        android:textColor="@color/blue_white"
+        android:textSize="@dimen/font_size_14"
+        app:layout_constraintStart_toEndOf="@id/gift_sold"
+        app:layout_constraintTop_toBottomOf="@id/goods_manage_btn" />
+
+    <Button
+        android:id="@+id/o_cashbox"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="@dimen/more_fun_btn_width"
+        android:layout_height="@dimen/more_fun_btn_height"
+        android:layout_marginStart="@dimen/margin_5"
+        android:background="@drawable/button_blue"
+        android:text="@string/o_cashbox_sz"
+        android:textColor="@color/blue_white"
+        android:textSize="@dimen/font_size_14"
+        app:layout_constraintStart_toEndOf="@id/vip_manage"
+        app:layout_constraintTop_toTopOf="@id/vip_manage" />
 
         <Button
             android:id="@+id/barcode_scale"

@@ -2,7 +2,6 @@ package com.wyc.cloudapp.activity.mobile.business;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -96,7 +95,7 @@ public class MobileConsumerInfoActivity extends AbstractMobileBaseArchiveActivit
                     }else throw new JSONException(ret_obj.getString("info"));
                 }catch (JSONException e){
                     e.printStackTrace();
-                    MyDialog.ToastMessageInMainThread(e.getMessage());
+                    MyDialog.toastMessage(e.getMessage());
                 }
             }
             progressDialog.dismiss();

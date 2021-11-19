@@ -9,6 +9,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.SaleActivity;
 import com.wyc.cloudapp.activity.normal.LoginActivity;
 import com.wyc.cloudapp.activity.normal.NGiftSaleActivity;
+import com.wyc.cloudapp.activity.normal.NVipManageActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.barcodeScales.BarCodeScaleDownDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
@@ -54,6 +55,12 @@ public final class MoreFunDialog extends AbstractDialogSaleActivity {
     @Override
     public void dismiss() {
         super.dismiss();
+    }
+
+    @OnClick(R.id.vip_manage)
+    void manage(){
+        dismiss();
+        NVipManageActivity.start(mContext);
     }
 
     @OnClick(R.id.practice)
@@ -146,6 +153,7 @@ public final class MoreFunDialog extends AbstractDialogSaleActivity {
                 Printer.print(Printer.commandToStr(Printer.OPEN_CASHBOX));
         });
     }
+
     private void initSyncBtn(){
         final Button sync_btn = findViewById(R.id.sync_btn);
         sync_btn.setOnClickListener(v->{
@@ -157,9 +165,11 @@ public final class MoreFunDialog extends AbstractDialogSaleActivity {
                 MyDialog.toastMessage(mContext.getString(R.string.not_enter_practice));
                 return;
             }
-            clearBasicsData();
-            manualSync();
-            this.dismiss();
+            MyDialog.displayAskMessage(mContext, "是否进行数据同步?", myDialog -> {
+                myDialog.dismiss();
+                clearBasicsData();
+                manualSync();
+            },MyDialog::dismiss);
         });
     }
 

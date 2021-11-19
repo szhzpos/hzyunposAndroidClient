@@ -189,7 +189,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
 
     private void searchVip(final String mobile){
         if(mobile != null && mobile.length() != 0){
-            mProgressDialog.setMessage("正在查询会员...").refreshMessage().show();
+            mProgressDialog.setMessage(mContext.getString(R.string.search_vip_hint)).refreshMessage().show();
             CustomApplication.execute(()->{
                 try {
                     final JSONObject object = VipInfoDialog.searchVip(mobile).getJSONObject(0);

@@ -2,9 +2,6 @@ package com.wyc.cloudapp.application;
 
 import android.os.Looper;
 
-import androidx.annotation.NonNull;
-
-import com.wyc.cloudapp.application.syncinstance.ISync;
 import com.wyc.cloudapp.logger.Logger;
 
 import java.text.SimpleDateFormat;
@@ -41,10 +38,6 @@ class SyncManagement extends Thread {
         Logger.i("SyncManagement<%s>退出:%s",getName(),new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.CHINA).format(new Date()));
     }
 
-    void sync(@NonNull ISync sync){
-        mSyncHandler.syncBasics(sync);
-    }
-
     void afresh_sync(){
         if (mSyncHandler != null){
             mSyncHandler.sign_downloaded();
@@ -53,13 +46,7 @@ class SyncManagement extends Thread {
     }
     void start_sync(){
         if (mSyncHandler != null){
-            mSyncHandler.modifyReportProgressStatus(true);
             mSyncHandler.syncAllBasics();
-        }
-    }
-    void finishSync(){
-        if (mSyncHandler != null){
-            mSyncHandler.finishSync();
         }
     }
     void testNetwork(){
@@ -85,7 +72,5 @@ class SyncManagement extends Thread {
     void rest(){
         if (mSyncHandler != null)mSyncHandler.removeCallbacksAndMessages(null);
     }
-    boolean showReportProgress(){
-        return mSyncHandler.showReportProgress();
-    }
+
 }

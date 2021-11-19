@@ -41,7 +41,9 @@ public class BarcodeOnlyCodeViewModel extends ViewModelBase {
             try(Response response = netRequest(CustomApplication.self().getUrl() + "/api/goods_set/get_onlycode_barcode",HttpRequest.generate_request_parm(object,CustomApplication.self().getAppSecret())).execute()) {
                 ResponseBody body = response.body();
                 if (body != null){
-                    final ObjectResult<BarcodeOnlyCodeInfo> data =  parseObject(BarcodeOnlyCodeInfo.class,body.string());
+                    final String content = body.string();
+                    final ObjectResult<BarcodeOnlyCodeInfo> data =  parseObject(BarcodeOnlyCodeInfo.class,content);
+                    if (data == null)throw new IllegalArgumentException(content);
                     if (data.isSuccess()){
                         currentModel.postValue(data.getData());
                     }else {

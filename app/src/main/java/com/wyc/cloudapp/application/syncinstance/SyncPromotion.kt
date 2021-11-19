@@ -3,6 +3,7 @@ package com.wyc.cloudapp.application.syncinstance
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
 import com.wyc.cloudapp.application.CustomApplication
+import kotlinx.coroutines.CoroutineScope
 
 class SyncPromotion:AbstractSyncBase("promotion_info", arrayOf("tlpb_id", "tlp_id", "barcode_id", "type_detail_id", "status", "way", "limit_xnum", "promotion_object", "promotion_grade_id", "promotion_type", "promotion_price", "stores_id",
         "start_date", "end_date", "promotion_week", "begin_time", "end_time", "xtype"), "正在同步零售特价促销", "/api/promotion/get_promotion_info") {
@@ -27,8 +28,8 @@ class SyncPromotion:AbstractSyncBase("promotion_info", arrayOf("tlpb_id", "tlp_i
     }
     companion object{
         @JvmStatic
-        fun sync(){
-            CustomApplication.sync(SyncPromotion())
+        fun sync(c:CoroutineScope? = null){
+            SyncPromotion().request(c)
         }
         @JvmField
         val HEART_BEAT_KEY  = "time_limit_promotion"

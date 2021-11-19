@@ -528,6 +528,8 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                 }
             }
         });
+        mPayDetailViewAdapter.setDelItemListener(id -> SQLiteHelper.execDelete("retail_order_pays","order_code=? and pay_method=?",new String[]{mContext.getOrderCode(),id},null) >= 0);
+
         RecyclerView recyclerView = findViewById(R.id.pay_detail_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
         recyclerView.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
@@ -979,7 +981,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                final JSONObject retail_order = Utils.getNullObjectAsEmptyJsonArray(data,"retail_order").getJSONObject(0);
                final String order_code = Utils.getNullStringAsEmpty(retail_order,"order_code"),stores_id = Utils.getNullStringAsEmpty(retail_order,"stores_id");
                final List<String> delete_sql = Arrays.asList(" delete from retail_order where order_code = '"+ order_code +"' and stores_id = '"+ stores_id +"' and pay_status = 1 and order_status = 1",
-                       "delete from retail_order_goods where order_code = '"+ order_code +"'"," delete from retail_order_pays where order_code = '"+ order_code +"' and pay_status = 1");
+                       "delete from retail_order_goods where order_code = '"+ order_code +"'"," delete from retail_order_pays where order_code = '"+ order_code +"'");
 
                if (code = SQLiteHelper.execBatchUpdateSql(delete_sql,err)){//保存之前，先删除相同订单号以及相同订单状态的订单信息，防止由于多次结账失败引起的订单错乱。
                    if (!(code = SQLiteHelper.execSQLByBatchFromJson(data,tables,Arrays.asList(retail_order_cols,retail_order_goods_cols,retail_order_pays_cols,discount_record_cols),err,1))){

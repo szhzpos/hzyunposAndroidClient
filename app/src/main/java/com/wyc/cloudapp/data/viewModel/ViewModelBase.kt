@@ -38,7 +38,7 @@ open class ViewModelBase:ViewModel(),CoroutineScope by CoroutineScope(Dispatcher
             override fun resumeWith(result: Result<Unit>) {
                 result.onFailure {
                     it.printStackTrace()
-                    MyDialog.ToastMessageInMainThread("${this@ViewModelBase::class.simpleName}：${it.message}")
+                    MyDialog.toastMessage("${this@ViewModelBase::class.simpleName}：${it.message}")
                 }
                 close()
             }

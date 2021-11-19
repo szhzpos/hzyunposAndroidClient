@@ -65,7 +65,7 @@ public class MobileInventoryAddTaskActivity extends AbstractDefinedTitleActivity
         final String way = Utils.getViewTagValue(mInventoryWayTv,""),ids = Utils.getViewTagValue(mInventoryCategoryTv,"");
         if (noHideCategory(way) && !Utils.isNotEmpty(ids)){
             mInventoryCategoryTv.callOnClick();
-            MyDialog.ToastMessageInMainThread(getString(R.string.not_empty_hint_sz,"task_category"));
+            MyDialog.toastMessage(getString(R.string.not_empty_hint_sz,"task_category"));
             return;
         }
 
@@ -102,7 +102,7 @@ public class MobileInventoryAddTaskActivity extends AbstractDefinedTitleActivity
                 }
             }
             if (Utils.isNotEmpty(err)){
-                MyDialog.ToastMessageInMainThread(getString(R.string.upload_business_order_hint_sz,err));
+                MyDialog.toastMessage(getString(R.string.upload_business_order_hint_sz,err));
             }
             mProgressDialog.dismiss();
         });
@@ -120,7 +120,7 @@ public class MobileInventoryAddTaskActivity extends AbstractDefinedTitleActivity
         }
         final String pcd_task_id = Utils.getNullStringAsEmpty(mTaskInfo,"pcd_task_id");
         if (!Utils.isNotEmpty(pcd_task_id)){
-            MyDialog.ToastMessageInMainThread(getString(R.string.not_empty_hint_sz,"pcd_task_id"));
+            MyDialog.toastMessage(getString(R.string.not_empty_hint_sz,"pcd_task_id"));
             return;
         }
         showProgress(getString(R.string.upload_order_hints));
@@ -148,7 +148,7 @@ public class MobileInventoryAddTaskActivity extends AbstractDefinedTitleActivity
                 }
             }
             if (Utils.isNotEmpty(err)){
-                MyDialog.ToastMessageInMainThread(getString(R.string.upload_business_order_hint_sz,err));
+                MyDialog.toastMessage(getString(R.string.upload_business_order_hint_sz,err));
             }
             mProgressDialog.dismiss();
         });
@@ -320,14 +320,14 @@ public class MobileInventoryAddTaskActivity extends AbstractDefinedTitleActivity
                     if (HttpUtils.checkBusinessSuccess(info)){
                         CustomApplication.runInMainThread(()-> mOrderCodeTv.setText(info.getString("code")));
                     }else {
-                        MyDialog.ToastMessageInMainThread(info.getString("info"));
+                        MyDialog.toastMessage(info.getString("info"));
                     }
                 }catch (JSONException e){
                     e.printStackTrace();
-                    MyDialog.ToastMessageInMainThread(e.getLocalizedMessage());
+                    MyDialog.toastMessage(e.getLocalizedMessage());
                 }
             }else {
-                MyDialog.ToastMessageInMainThread(getString(R.string.query_business_order_id_hint_sz,retJson.getString("info")));
+                MyDialog.toastMessage(getString(R.string.query_business_order_id_hint_sz,retJson.getString("info")));
             }
         });
     }

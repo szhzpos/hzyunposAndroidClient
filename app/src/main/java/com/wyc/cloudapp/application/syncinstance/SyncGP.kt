@@ -69,7 +69,7 @@ class SyncGP:AbstractSyncBase("", arrayOf(), "正在同步组合商品", "/api/p
     companion object{
         @JvmStatic
         fun sync(){
-            CustomApplication.sync(SyncGP())
+            SyncGP().request()
         }
         @JvmField
         val HEART_BEAT_KEY  = "goods_group"

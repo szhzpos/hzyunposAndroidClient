@@ -89,7 +89,7 @@ public class EditGoodsCategoryDialog extends AbstractEditArchiveDialog {
                     }else throw new JSONException(ret_obj.getString("info"));
                 }catch (JSONException e){
                     e.printStackTrace();
-                    MyDialog.ToastMessageInMainThread(e.getMessage());
+                    MyDialog.toastMessage(e.getMessage());
                 }
             }
             dismissProgress();

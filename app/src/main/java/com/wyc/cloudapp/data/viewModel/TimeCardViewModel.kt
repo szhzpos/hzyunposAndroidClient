@@ -47,10 +47,10 @@ class TimeCardViewModel: ViewModelBase() {
                     data?.let {d ->
                         if (d.isSuccess){
                             currentModel.postValue(d.data.card)
-                        }else MyDialog.ToastMessageInMainThread(d.info)
+                        }else MyDialog.toastMessage(d.info)
                     }
                 }else{
-                    MyDialog.ToastMessageInMainThread(it.message())
+                    MyDialog.toastMessage(it.message())
                 }
                 progressDialog.dismiss()
                 netFinished()

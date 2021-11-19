@@ -32,7 +32,7 @@ class SyncCashier:AbstractSyncBase("cashier_info", arrayOf("cas_id","stores_id",
     companion object{
         @JvmStatic
         fun sync(){
-            CustomApplication.sync(SyncCashier())
+            SyncCashier().request()
         }
         @JvmField
         val HEART_BEAT_KEY  = "cashier_info";

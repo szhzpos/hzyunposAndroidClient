@@ -79,8 +79,7 @@ class NotchUtils {
                 val hWNotchSizeUtils = cl.loadClass("com.huawei.android.util.HwNotchSizeUtil")
                 val hasNotchInScreen = hWNotchSizeUtils.getMethod("hasNotchInScreen")
                 return hasNotchInScreen.invoke(hWNotchSizeUtils) as Boolean
-            }catch (e:Exception){
-                e.printStackTrace()
+            }catch (_:Exception){
             }
             return false
         }
@@ -99,8 +98,7 @@ class NotchUtils {
                        }
                     }
                 }
-            }catch (e:Exception){
-                e.printStackTrace()
+            }catch (_:Exception){
             }
             return false
         }

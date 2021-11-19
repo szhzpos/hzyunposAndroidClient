@@ -1,7 +1,6 @@
 package com.wyc.cloudapp.data.viewModel
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.JSONException
 import com.alibaba.fastjson.JSONObject
@@ -41,14 +40,14 @@ class OrderIdViewModel :ViewModelBase() {
                     if (HttpUtils.checkBusinessSuccess(info)) {
                         currentModel.postValue(info.getString("code"))
                     } else {
-                        MyDialog.ToastMessageInMainThread(info.getString("info"))
+                        MyDialog.toastMessage(info.getString("info"))
                     }
                 } catch (e: JSONException) {
                     e.printStackTrace()
-                    MyDialog.ToastMessageInMainThread(e.localizedMessage)
+                    MyDialog.toastMessage(e.localizedMessage)
                 }
             } else {
-                MyDialog.ToastMessageInMainThread(app.getString(R.string.query_business_order_id_hint_sz, retJson.getString("info")))
+                MyDialog.toastMessage(app.getString(R.string.query_business_order_id_hint_sz, retJson.getString("info")))
             }
         }
         return currentModel

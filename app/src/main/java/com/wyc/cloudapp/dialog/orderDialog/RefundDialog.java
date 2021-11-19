@@ -51,7 +51,10 @@ public final class RefundDialog extends AbstractDialogMainActivity {
     private Button mQueryBtn, mRefundBtn,mRemarkBtn;
     private boolean isRefundCheck;
     private final boolean lessThan7Inches;
-    private int mRefundType = 1;//退货类型（1全部退货，2部分退货,3 单品退货,4 无货可退，用于隐藏按钮）
+    /**
+    * 退货类型（1全部退货，2部分退货,3 单品退货,4 无货可退，用于隐藏按钮）
+    * */
+    private int mRefundType = 1;
     public RefundDialog(@NonNull MainActivity context, final String order_code) {
         super(context, context.getString(R.string.refund_dialog_title_sz));
         mOrderCode = order_code;
@@ -347,8 +350,9 @@ public final class RefundDialog extends AbstractDialogMainActivity {
 
             });
         }else {
-            myDialog.setMessage(mContext.getNotEmptyHintsString("退款信息")).setNoOnclickListener(mContext.getString(R.string.cancel),MyDialog::dismiss).show();
+            myDialog.setMessage(mContext.getNotEmptyHintsString("退款信息")).setNoOnclickListener(mContext.getString(R.string.cancel),MyDialog::dismiss);
         }
+        myDialog.show();
     }
 
     private void refundWithNotCheck(final StringBuilder err){

@@ -28,7 +28,7 @@ class SyncStepPromotion:AbstractSyncBase("step_promotion_info", arrayOf("tlpb_id
     companion object{
         @JvmStatic
         fun sync(){
-            CustomApplication.sync(SyncStepPromotion())
+            SyncStepPromotion().request()
         }
         @JvmField
         val HEART_BEAT_KEY  = "time_limit_sellstep"

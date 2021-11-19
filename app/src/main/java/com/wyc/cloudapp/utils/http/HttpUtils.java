@@ -1,12 +1,9 @@
 package com.wyc.cloudapp.utils.http;
 
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -138,7 +135,7 @@ public final class HttpUtils {
         if (null == object)return false;
         boolean code = object.getIntValue("flag") == 1;
         if (!code){
-            MyDialog.ToastMessageInMainThread(object.getString("info"));
+            MyDialog.toastMessage(object.getString("info"));
         }
         return code;
     }

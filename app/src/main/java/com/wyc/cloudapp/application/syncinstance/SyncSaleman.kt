@@ -24,11 +24,8 @@ class SyncSaleman:AbstractSyncBase("sales_info", arrayOf("sc_id", "sc_name", "sc
 
         return obj
     }
+
     companion object{
-        @JvmStatic
-        fun sync(){
-            CustomApplication.sync(SyncSaleman())
-        }
         @JvmField
         val HEART_BEAT_KEY  = "sales_clerk"
     }

@@ -23,19 +23,20 @@ public abstract class AbstractBaseFragment extends Fragment implements IHookKey 
     protected void finalize(){
         Logger.d(getClass().getSimpleName() + " finalized");
     }
+
     @CallSuper
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         mRootView = view;
         viewCreated();
     }
-    public final @Nullable <T extends View> T findViewById(int id) {
+    public final @NonNull <T extends View> T findViewById(int id) {
         if (mRootView == null) {
-            return null;
+            throw new NullPointerException("mRootView may not be null");
         }
         return mRootView.findViewById(id);
     }
-    protected View getRootView(){
+    protected final View getRootView(){
         return mRootView;
     }
 
@@ -46,5 +47,8 @@ public abstract class AbstractBaseFragment extends Fragment implements IHookKey 
     @Override
     public boolean hookEnterKey() {
         return false;
+    }
+    public String getTitle(){
+        return "";
     }
 }

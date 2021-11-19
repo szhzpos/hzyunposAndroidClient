@@ -229,7 +229,7 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractDefine
                         }
                     }catch (JSONException e){
                         e.printStackTrace();
-                        MyDialog.ToastMessageInMainThread(e.getMessage());
+                        MyDialog.toastMessage(e.getMessage());
                     }
                 }
                 progressDialog.dismiss();

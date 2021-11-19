@@ -1,19 +1,10 @@
 package com.wyc.cloudapp.data.viewModel
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.alibaba.fastjson.JSONException
 import com.alibaba.fastjson.JSONObject
-import com.wyc.cloudapp.R
-import com.wyc.cloudapp.activity.mobile.business.AbstractMobileAddOrderActivity
-import com.wyc.cloudapp.application.CustomApplication
-import com.wyc.cloudapp.dialog.CustomProgressDialog
 import com.wyc.cloudapp.dialog.MyDialog
-import com.wyc.cloudapp.logger.Logger
-import com.wyc.cloudapp.utils.http.HttpRequest
 import com.wyc.cloudapp.utils.http.HttpUtils
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 /**
  *
@@ -41,7 +32,7 @@ class OrderViewModel:ViewModelBase() {
                     } else throw JSONException(info.getString("info"))
                 } catch (e: JSONException) {
                     e.printStackTrace()
-                    MyDialog.ToastMessageInMainThread(e.message)
+                    MyDialog.toastMessage(e.message)
                 }
             }
         }

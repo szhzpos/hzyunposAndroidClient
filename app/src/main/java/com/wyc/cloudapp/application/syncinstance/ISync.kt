@@ -1,20 +1,18 @@
 package com.wyc.cloudapp.application.syncinstance
 
-/**
- *
- * @ProjectName:    AndroidClient
- * @Package:        com.wyc.cloudapp.application
- * @ClassName:      ISync
- * @Description:    数据同步接口
- * @Author:         wyc
- * @CreateDate:     2021-11-08 16:47
- * @UpdateUser:     更新者
- * @UpdateDate:     2021-11-08 16:47
- * @UpdateRemark:   更新说明
- * @Version:        1.0
- */
+import androidx.annotation.NonNull
+import kotlinx.coroutines.CoroutineScope
+
 interface ISync {
-    fun request():Boolean
-    fun error():String
-    fun showInfo()
+    /**
+     *请求同步数据
+     *@param c 协程作用域 show 是否显示请求进度
+     * */
+    fun request(c: CoroutineScope? = null, show:Boolean = false)
+    companion object{
+        @JvmStatic
+        fun sync(@NonNull sync:ISync,c: CoroutineScope? = null, show:Boolean = false){
+            sync.request(c,show)
+        }
+    }
 }

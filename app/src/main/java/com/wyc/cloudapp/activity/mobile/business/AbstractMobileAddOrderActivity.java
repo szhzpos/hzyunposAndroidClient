@@ -447,7 +447,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractDefinedTitl
                 }
             }
             if (Utils.isNotEmpty(err)){
-                MyDialog.ToastMessageInMainThread(getString(R.string.upload_business_order_hint_sz,err));
+                MyDialog.toastMessage(getString(R.string.upload_business_order_hint_sz,err));
             }
             mProgressDialog.dismiss();
         });
@@ -499,7 +499,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractDefinedTitl
                 }
             }
             if (Utils.isNotEmpty(err)){
-                MyDialog.ToastMessageInMainThread("审核单据错误:" + err);
+                MyDialog.toastMessage("审核单据错误:" + err);
             }
             dismissProgress();
         });

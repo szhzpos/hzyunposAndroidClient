@@ -238,7 +238,7 @@ public final class VipInfoDialog extends AbstractDialogMainActivity {
 
     private void searchVip(final String ph_num, int btn_id){
         if(ph_num != null && ph_num.length() != 0){
-            mProgressDialog.setMessage("正在查询会员...").show();
+            mProgressDialog.setMessage(mContext.getString(R.string.search_vip_hint)).show();
              CustomApplication.execute(()->{
                 try {
                     mHandler.obtainMessage(MessageID.QUERY_VIP_INFO_ID,btn_id,0, searchVip(ph_num)).sendToTarget();

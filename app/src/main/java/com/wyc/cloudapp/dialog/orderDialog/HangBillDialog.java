@@ -380,7 +380,7 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
                         final String card_code = object.getString("card_code");
                         if (!"".equals(card_code)) {
                             final CustomProgressDialog progressDialog = new CustomProgressDialog(mContext);
-                            progressDialog.setCancel(false).setMessage("正在查询会员信息...").show();
+                            progressDialog.setCancel(false).setMessage(mContext.getString(R.string.search_vip_hint)).show();
                             CustomApplication.execute(() -> {
                                 try {
                                     final JSONArray vips = VipInfoDialog.searchVip(card_code);

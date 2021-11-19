@@ -204,7 +204,7 @@ public class MobilePracticalInventoryOrderActivity extends AbstractDefinedTitleA
                     }
                 }catch (JSONException e){
                     e.printStackTrace();
-                    MyDialog.ToastMessageInMainThread(e.getMessage());
+                    MyDialog.toastMessage(e.getMessage());
                 }
             }
             progressDialog.dismiss();

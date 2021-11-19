@@ -22,7 +22,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -31,7 +30,6 @@ import com.wyc.cloudapp.utils.FileUtils;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -43,11 +41,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -300,7 +296,9 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             code = true;
         }catch (IOException e){
             e.printStackTrace();
-            if (err != null)err.append(e.getMessage());
+            if (err != null){
+                err.append(e.getMessage());
+            }else MyDialog.toastMessage(e.getMessage());
         }finally {
             if (outputStream != null){
                 try {
@@ -726,7 +724,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         } catch (SQLiteException | NoSuchMethodException | IllegalAccessException |
                 IllegalArgumentException | InstantiationException | InvocationTargetException e) {
             e.printStackTrace();
-            MyDialog.ToastMessageInMainThread("getBeans:" + e.getMessage());
+            MyDialog.toastMessage("getBeans:" + e.getMessage());
         }
         return results;
     }
@@ -808,8 +806,9 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             }
         }catch (SQLiteException e){
             e.printStackTrace();
-            code = -1;
-            if (err != null)err.append(e.getMessage());
+            if (err != null){
+                err.append(e.getMessage());
+            }else MyDialog.toastMessage(e.getMessage());
         }
         return code;
     }
@@ -844,7 +843,8 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 return codes;
             }
         }else {
-            if (err != null)err.append(String.format(Locale.CHINA,"更新表数量tables：%d 不等于 更新值数量values：%d",tables.size(),values.size()));
+            final String mess = String.format(Locale.CHINA,"更新表数量tables：%d 不等于 更新值数量values：%d",tables.size(),values.size());
+            if (err != null){err.append(mess);}else MyDialog.toastMessage(mess);
         }
         return null;
     }
@@ -857,7 +857,9 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             }
         }catch (SQLiteException e){
             e.printStackTrace();
-            if (err != null)err.append(e.getMessage());
+            if (err != null){
+                err.append(e.getMessage());
+            }else MyDialog.toastMessage(e.getMessage());
         }
         return code;
     }
@@ -869,7 +871,9 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             }
         }catch (SQLiteException e){
             e.printStackTrace();
-            if (err != null)err.append(e.getMessage());
+            if (err != null){
+                err.append(e.getMessage());
+            }else MyDialog.toastMessage(e.getMessage());
         }
         return code;
     }
@@ -890,7 +894,9 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         }catch (SQLiteException e){
             e.printStackTrace();
             code = false;
-            if (err != null)err.append(e.getMessage());
+            if (err != null){
+                err.append(e.getMessage());
+            }else MyDialog.toastMessage(e.getMessage());
         }
         return code;
     }
@@ -951,7 +957,9 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 mDb.setTransactionSuccessful();
             } catch (SQLException | JSONException e) {
                 code = false;
-                if (err != null)err.append(e.getMessage());
+                if (err != null){
+                    err.append(e.getMessage());
+                }else MyDialog.toastMessage(e.getMessage());
                 e.printStackTrace();
             } finally {
                 if (statement != null){

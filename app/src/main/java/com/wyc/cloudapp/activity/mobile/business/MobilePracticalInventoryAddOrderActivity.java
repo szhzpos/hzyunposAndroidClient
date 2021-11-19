@@ -326,14 +326,14 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractDefinedTit
                     if (HttpUtils.checkBusinessSuccess(info)){
                         CustomApplication.runInMainThread(()-> mOrderCodeTv.setText(info.getString("code")));
                     }else {
-                        MyDialog.ToastMessageInMainThread(info.getString("info"));
+                        MyDialog.toastMessage(info.getString("info"));
                     }
                 }catch (JSONException e){
                     e.printStackTrace();
-                    MyDialog.ToastMessageInMainThread(e.getLocalizedMessage());
+                    MyDialog.toastMessage(e.getLocalizedMessage());
                 }
             }else {
-                MyDialog.ToastMessageInMainThread(getString(R.string.query_business_order_id_hint_sz,retJson.getString("info")));
+                MyDialog.toastMessage(getString(R.string.query_business_order_id_hint_sz,retJson.getString("info")));
             }
         });
     }
@@ -372,7 +372,7 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractDefinedTit
                 }
             }
             if (Utils.isNotEmpty(err)){
-                MyDialog.ToastMessageInMainThread(getString(R.string.upload_business_order_hint_sz,err));
+                MyDialog.toastMessage(getString(R.string.upload_business_order_hint_sz,err));
             }
             mProgressDialog.dismiss();
         });
@@ -437,7 +437,7 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractDefinedTit
                     if (HttpUtils.checkBusinessSuccess(info)){
                         final JSONArray data = Utils.getNullObjectAsEmptyJsonArray(info,"data");
                         if (data.isEmpty()){
-                            MyDialog.ToastMessageInMainThread(getString(R.string.none_inventory_task_hint));
+                            MyDialog.toastMessage(getString(R.string.none_inventory_task_hint));
                             finish();
                         }else {
                             boolean isFind = false;
@@ -450,13 +450,13 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractDefinedTit
                             }
                             if (!isFind){
                                 finish();
-                                MyDialog.ToastMessageInMainThread(getString(R.string.none_inventory_task_hint));
+                                MyDialog.toastMessage(getString(R.string.none_inventory_task_hint));
                             }
                         }
                     }else throw new JSONException(info.getString("info"));
                 }catch (JSONException e){
                     e.printStackTrace();
-                    MyDialog.ToastMessageInMainThread(e.getMessage());
+                    MyDialog.toastMessage(e.getMessage());
                 }
             }
             mProgressDialog.dismiss();
@@ -506,7 +506,7 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractDefinedTit
                     }else throw new JSONException(info.getString("info"));
                 }catch (JSONException e){
                     e.printStackTrace();
-                    MyDialog.ToastMessageInMainThread(e.getMessage());
+                    MyDialog.toastMessage(e.getMessage());
                 }
             }
             mProgressDialog.dismiss();

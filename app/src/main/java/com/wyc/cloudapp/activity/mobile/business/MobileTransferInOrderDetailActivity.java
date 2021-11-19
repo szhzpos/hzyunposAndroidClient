@@ -228,7 +228,7 @@ public class MobileTransferInOrderDetailActivity extends AbstractDefinedTitleAct
                 }
             }
             if (Utils.isNotEmpty(err)){
-                MyDialog.ToastMessageInMainThread("确认收货错误:" + err);
+                MyDialog.toastMessage("确认收货错误:" + err);
             }
             mProgressDialog.dismiss();
         });
@@ -324,7 +324,7 @@ public class MobileTransferInOrderDetailActivity extends AbstractDefinedTitleAct
                     }else throw new JSONException(info.getString("info"));
                 }catch (JSONException e){
                     e.printStackTrace();
-                    MyDialog.ToastMessageInMainThread(e.getMessage());
+                    MyDialog.toastMessage(e.getMessage());
                 }
             }
             progressDialog.dismiss();

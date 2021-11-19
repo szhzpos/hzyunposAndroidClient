@@ -138,7 +138,7 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
                     array.add(0,object);
                     mVipCategoryAdapter.setDataForArray(array);
                 }else {
-                    MyDialog.ToastMessageInMainThread(object.getString("info"));
+                    MyDialog.toastMessage(object.getString("info"));
                 }
             }
         });
@@ -229,7 +229,7 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
 
                 loadVip();
             }else {
-                MyDialog.ToastMessageInMainThread("请输入查询内容。");
+                MyDialog.toastMessage("请输入查询内容。");
             }
         }
 
@@ -267,7 +267,7 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
                         }
                         setDataForArray(data);
                     }else {
-                        MyDialog.ToastMessageInMainThread(object.getString("info"));
+                        MyDialog.toastMessage(object.getString("info"));
                     }
                 }
                 progressDialog.dismiss();
@@ -357,7 +357,7 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
 
 
                 }catch (NumberFormatException e){
-                    MyDialog.ToastMessageInMainThread(e.getMessage());
+                    MyDialog.toastMessage(e.getMessage());
                 }
             }
         }

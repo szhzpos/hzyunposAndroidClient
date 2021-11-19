@@ -26,7 +26,7 @@ class SyncBuyNGiveN:AbstractSyncBase("buy_x_give_x", arrayOf("tlp_id", "tlpb_id"
     companion object{
         @JvmStatic
         fun sync(){
-            CustomApplication.sync(SyncBuyNGiveN())
+            SyncBuyNGiveN().request()
         }
         @JvmField
         val HEART_BEAT_KEY  = "time_limit_buyx_givex"

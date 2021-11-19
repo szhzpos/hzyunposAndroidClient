@@ -262,10 +262,10 @@ final class SyncHandler extends Handler {
                 case MessageID.UPLOAD_TRANS_ORDER_ID:
                     uploadTransferOrderInfo();
                     return;
-                case MessageID.MODIFY_REPORT_PROGRESS_ID:
+/*                case MessageID.MODIFY_REPORT_PROGRESS_ID:
                     if (msg.obj instanceof  Boolean)
                         mReportProgress = (boolean)msg.obj;
-                    return;
+                    return;*/
                 case MessageID.UPLOAD_REFUND_ORDER_ID:
                     uploadRefundOrderInfo();
                     return;
@@ -419,23 +419,23 @@ final class SyncHandler extends Handler {
             if (!code) {
                 stopSync();
                 if (mReportProgress) {
-                    CustomApplication.sendMessage(MessageID.SYNC_ERR_ID, sys_name);
+                    CustomApplication.showSyncErrorMsg(sys_name);
                 }else{
-                    CustomApplication.sendMessage(MessageID.TRANSFERSTATUS_ID,false);
+                    CustomApplication.transFailure();
                     Logger.e("%s", sys_name);
                 }
             }else{
                 if (!mReportProgress)
-                    CustomApplication.sendMessage(MessageID.TRANSFERSTATUS_ID,true);
+                    CustomApplication.transSuccess();
             }
         }catch (JSONException e){
             e.printStackTrace();
             sys_name = "同步" + table_name + "错误:" +  e.getMessage();
             if (mReportProgress) {
                 removeCallbacksAndMessages(null);
-                CustomApplication.sendMessage(MessageID.SYNC_ERR_ID, sys_name);
+                CustomApplication.showSyncErrorMsg(sys_name);
             }else {
-                CustomApplication.sendMessage(MessageID.TRANSFERSTATUS_ID,false);
+                CustomApplication.transFailure();
                 Logger.e("%s", sys_name);
             }
         }
@@ -580,7 +580,7 @@ final class SyncHandler extends Handler {
                                                     values.put("upload_status", RetailOrderStatus.UPLOAD_ERROR);
                                                     err.append(retJson.getString("info"));
                                                     if (reupload){
-                                                        MyDialog.ToastMessageInMainThread(err.toString());
+                                                        MyDialog.toastMessage(err.toString());
                                                     }
                                                     break;
                                                 case "y":
@@ -608,7 +608,7 @@ final class SyncHandler extends Handler {
         }
         if (!code || err.length() > 0){
             Logger.e("上传销售单据错误：%s",err);
-            CustomApplication.sendMessage(MessageID.TRANSFERSTATUS_ID,false);
+            CustomApplication.transFailure();
         }
     }
 
@@ -698,7 +698,7 @@ final class SyncHandler extends Handler {
         }
         if (err.length() != 0){
             Logger.e("上传交班单据错误:%s",err);
-            CustomApplication.sendMessage(MessageID.TRANSFERSTATUS_ID,false);
+            CustomApplication.transFailure();
         }
     }
 
@@ -715,7 +715,7 @@ final class SyncHandler extends Handler {
         }
         if (err.length() != 0){
             Logger.e("上传退货单据错误：%s",err);
-            CustomApplication.sendMessage(MessageID.TRANSFERSTATUS_ID,false);
+            CustomApplication.transFailure();
         }
     }
 

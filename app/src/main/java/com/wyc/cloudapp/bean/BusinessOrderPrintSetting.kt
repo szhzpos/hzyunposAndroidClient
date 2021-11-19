@@ -80,7 +80,7 @@ class BusinessOrderPrintSetting:Serializable {
                 MyDialog.toastMessage(err.toString())
             }else {
                 change = false
-                MyDialog.ToastMessageInMainThread(CustomApplication.self().getString(R.string.success))
+                MyDialog.toastMessage(CustomApplication.self().getString(R.string.success))
             }
         }
     }

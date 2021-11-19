@@ -1,5 +1,7 @@
 package com.wyc.cloudapp.application;
 
+import static com.wyc.cloudapp.constants.MessageID.SYNC_DIS_INFO_ID;
+
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
@@ -22,7 +24,6 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.squareup.leakcanary.LeakCanary;
 import com.wyc.cloudapp.BuildConfig;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.application.syncinstance.ISync;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.data.room.AppDatabase;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -53,6 +54,7 @@ public final class CustomApplication extends Application {
     //使用无界限阻塞队列，不会触发拒绝策略；线程数最大等于核心线程数，如果所有线程都在运行则任务会进入队列等待执行<可能引发内存问题>，
     private static final DefaultScheduledThreadPoolExecutor THREAD_POOL_EXECUTOR = new DefaultScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2);
     private static CustomApplication mApplication;
+    private static volatile Toast mGlobalToast;
     private final Vector<Activity> mActivities;
 
     private final SyncManagement mSyncManagement;
@@ -77,12 +79,13 @@ public final class CustomApplication extends Application {
         super();
         mBusinessMode = true;
         mApplication = this;
+        mCallbacks = new ArrayList<>();
         mActivities = new Vector<>();
-        myhandler  = new Myhandler(Looper.myLooper(),this);
+
+        myhandler  = new Myhandler(Looper.myLooper());
         mNetworkStatus = new AtomicBoolean(true);
         mTransferStatus = new AtomicBoolean(true);//传输状态
         mSyncManagement = new SyncManagement();
-        mCallbacks = new ArrayList<>();
     }
     @Override
     public  void  onCreate(){
@@ -111,6 +114,18 @@ public final class CustomApplication extends Application {
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());
             StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll().penaltyLog().build());
         }
+    }
+    public static void showGlobalToast(final String message){
+        if (mGlobalToast == null){
+            mGlobalToast = Toast.makeText(CustomApplication.self(),"",Toast.LENGTH_LONG);
+        }
+        if (Looper.myLooper() == Looper.getMainLooper()){
+            showToast(message);
+        }else postAtFrontOfQueue(()-> showToast(message));
+    }
+    private static void showToast(final String message){
+        mGlobalToast.setText(message);
+        mGlobalToast.show();
     }
 
     public static boolean isPracticeMode(){
@@ -348,16 +363,6 @@ public final class CustomApplication extends Application {
     public void resetSync(){
         mSyncManagement.rest();
     }
-    public boolean isReportProgress(){
-       return mSyncManagement.showReportProgress();
-    }
-    public void finishSync(){
-        mSyncManagement.finishSync();
-    }
-
-    public static void sync(@NonNull ISync sync){
-        mApplication.mSyncManagement.sync(sync);
-    }
 
     public void clearBasicsData(){
         final List<String> names = SQLiteHelper.getSyncDataTableName();
@@ -368,9 +373,25 @@ public final class CustomApplication extends Application {
             }
         }
     }
+    public static void finishSync(){
+        mApplication.myhandler.obtainMessage(MessageID.SYNC_FINISH_ID).sendToTarget();
+    }
+    public static void transSuccess(){
+        CustomApplication.sendMessage(MessageID.TRANSFERSTATUS_ID,true);
+    }
+    public static void transFailure(){
+        CustomApplication.sendMessage(MessageID.TRANSFERSTATUS_ID,false);
+    }
+    public static void showSyncErrorMsg(final String msg){
+        CustomApplication.sendMessage(MessageID.SYNC_ERR_ID,msg);
+    }
+    public static void showMsg(final String msg){
+        CustomApplication.sendMessage(SYNC_DIS_INFO_ID,msg);
+    }
 
     public static void runInMainThread(Runnable r){
-        if (!mApplication.myhandler.hasCallbacks(r)) mApplication.myhandler.post(r);
+        mApplication.myhandler.removeCallbacks(r);
+        mApplication.myhandler.post(r);
     }
 
     public static void sendMessage(int what){
@@ -391,17 +412,16 @@ public final class CustomApplication extends Application {
     }
 
     public static void postDelayed(Runnable r, long delayMillis){
-        if (!mApplication.myhandler.hasCallbacks(r))mApplication.myhandler.postDelayed(r,delayMillis);
+        mApplication.myhandler.removeCallbacks(r);
+        mApplication.myhandler.postDelayed(r,delayMillis);
     }
     public static void removeCallbacks(Runnable r){
         mApplication.myhandler.removeCallbacks(r);
     }
 
     private static class Myhandler extends Handler {
-        private final CustomApplication app;
-        private Myhandler(Looper looper, final CustomApplication application){
+        private Myhandler(Looper looper){
             super(looper);
-            app = application;
         }
 
         @Override
@@ -410,8 +430,8 @@ public final class CustomApplication extends Application {
                 case MessageID.NETWORKSTATUS_ID:
                     if ((msg.obj instanceof Boolean)){
                         boolean code = (boolean) msg.obj;
-                        if (app.getAndSetNetworkStatus(code) != code){
-                            app.executeMsg(msg);
+                        if (mApplication.getAndSetNetworkStatus(code) != code){
+                            mApplication.executeMsg(msg);
                         }
                     }
                     break;
@@ -419,24 +439,24 @@ public final class CustomApplication extends Application {
                     if ((msg.obj instanceof Boolean)){
                         boolean code = (boolean) msg.obj;
 
-                        if (app.getAndSetTransferStatus(code) != code){
+                        if (mApplication.getAndSetTransferStatus(code) != code){
                             if (code){
                                 msg.arg1 = 2;
                             }else
                                 msg.arg1 = 3;
                         }else
                             msg.arg1 = 1;
-                        app.executeMsg(msg);
+                        mApplication.executeMsg(msg);
                     }
                     break;
                 case MessageID.START_SYNC_ORDER_INFO_ID:
-                    Toast.makeText(app,"开始上传数据",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mApplication,"开始上传数据",Toast.LENGTH_SHORT).show();
                     break;
                 case MessageID.FINISH_SYNC_ORDER_INFO_ID:
-                    Toast.makeText(app,"数据上传完成",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mApplication,"数据上传完成",Toast.LENGTH_SHORT).show();
                     break;
                 default:
-                    app.executeMsg(msg);
+                    mApplication.executeMsg(msg);
             }
         }
     }
@@ -574,14 +594,14 @@ public final class CustomApplication extends Application {
                         sql = "update local_parameter set parameter_content = '"+ object +"' where parameter_id = 'offline_time'";
                     }
                 }else {
-                    MyDialog.ToastMessageInMainThread(object.getString("info"));
+                    MyDialog.toastMessage(object.getString("info"));
                 }
             }
             if (null != sql ){
                 if (!SQLiteHelper.execSql(object,sql)){
                     final String err = "更新离线时间错误:" + object.getString("v");
                     Logger.e(err);
-                    MyDialog.ToastMessageInMainThread(err);
+                    MyDialog.toastMessage(err);
                 }
             }
         }

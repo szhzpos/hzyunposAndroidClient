@@ -52,7 +52,7 @@ class SyncPayMethod:AbstractSyncBase("pay_method", arrayOf("pay_method_id", "nam
     companion object{
         @JvmStatic
         fun sync(){
-            CustomApplication.sync(SyncPayMethod())
+            SyncPayMethod().request()
         }
         @JvmField
         val  HEART_BEAT_KEY  = "pay_method"

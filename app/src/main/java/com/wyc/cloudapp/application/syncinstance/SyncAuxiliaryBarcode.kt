@@ -31,7 +31,7 @@ class SyncAuxiliaryBarcode:AbstractSyncBase("auxiliary_barcode_info", arrayOf("i
     companion object{
         @JvmStatic
         fun sync(){
-            CustomApplication.sync(SyncAuxiliaryBarcode())
+            SyncAuxiliaryBarcode().request()
         }
         @JvmField
         val HEART_BEAT_KEY  = "fuzhu_barcode"
