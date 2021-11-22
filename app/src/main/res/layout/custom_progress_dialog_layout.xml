@@ -32,24 +32,10 @@
         app:layout_constraintStart_toEndOf="@id/pb_load"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/show_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="8"
-        android:textColor="@color/white"
-        android:textSize="@dimen/fun_button_font_size_16"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/textView17"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/textView17"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/sec_sign_sz"
-        android:textColor="@color/white"
-        android:textSize="@dimen/font_size_14"
+    <SurfaceView
+        android:id="@+id/timer_view"
+        android:layout_width="@dimen/width_35"
+        android:layout_height="@dimen/height_35"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

@@ -13,6 +13,7 @@ import com.wyc.cloudapp.utils.http.HttpRequest
 import com.wyc.cloudapp.utils.http.HttpUtils
 import kotlinx.coroutines.*
 import java.io.Serializable
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  *
@@ -30,13 +31,15 @@ import java.io.Serializable
 abstract class AbstractSyncBase(private val table_name: String, private val table_cls: Array<String>, private val sys_name: String, private val path: String):Serializable,ISync
           {
     private var mMaxPage = -1
+    private var mCountPage = -1
+    private var mRemainingPage = 0
     protected val mParamObj = JSONObject()
     protected val mMarkPathKey = "U"
     protected val mError:StringBuilder = StringBuilder()
     init {
         mParamObj["appid"] = CustomApplication.self().appId
         mParamObj["stores_id"] = CustomApplication.self().storeId
-        mParamObj["page"] = null
+        mParamObj["page"] = 0
         mParamObj["limit"] = 500
         mParamObj["pos_num"] = CustomApplication.self().posNum
     }
@@ -89,9 +92,10 @@ abstract class AbstractSyncBase(private val table_name: String, private val tabl
     }
 
     companion object{
+        private var syncing = AtomicBoolean()
         @JvmStatic
         fun dealHeartBeatUpdate(array: JSONArray) {
-            if (array.isNotEmpty()) {
+            if (!syncing.get() && array.isNotEmpty()) {
                 val `object` = array.getJSONObject(0)
                 val keys: Iterator<String> = `object`.innerMap.keys.iterator()
                 var value: Int
@@ -153,6 +157,8 @@ abstract class AbstractSyncBase(private val table_name: String, private val tabl
                 CustomApplication.showSyncErrorMsg(exception.message)
             }).launch{
                  val job = launch {
+                     syncing.set(true)
+
                      ISync.sync(SyncGoodsCategory(),this,true)
                      ISync.sync(SyncStores(),this,true)
                      ISync.sync(SyncPayMethod(),this,true)
@@ -170,6 +176,7 @@ abstract class AbstractSyncBase(private val table_name: String, private val tabl
                      ISync.sync(SyncGoods(),this,true)
                 }
                 job.join()
+                syncing.set(false)
                 if (!job.isCancelled){
                     CustomApplication.finishSync()
                 }
@@ -210,7 +217,12 @@ abstract class AbstractSyncBase(private val table_name: String, private val tabl
                         } else
                             data = Utils.getNullObjectAsEmptyJsonArray(info_json, "data")
 
-                        if (mMaxPage == -1) mMaxPage = info_json.getIntValue("max_page")
+                        if (mMaxPage == -1){
+                            mMaxPage = info_json.getIntValue("max_page")
+                            mCountPage = mMaxPage
+                        }else
+                            mRemainingPage = info_json.getIntValue("max_page")
+
                         val curPage = mParamObj.getIntValue("page")
                         if (data.isEmpty()) {
                             markHeart()
@@ -226,13 +238,13 @@ abstract class AbstractSyncBase(private val table_name: String, private val tabl
                                         )
                                     ) {
                                         sign(data)
-                                        if (mMaxPage-- > 0) {
+                                        if (mCountPage-- > 0) {
                                             Logger.d(
-                                                "current_page:%d,max_page:%d",
+                                                "current_page:%d,max_page:%d,remaining:%d",
                                                 curPage,
-                                                mMaxPage
+                                                mMaxPage,
+                                                mRemainingPage
                                             )
-                                            mParamObj["page"] = 0
 
                                             return asyncRequest(c,show)
                                         }
@@ -280,6 +292,6 @@ abstract class AbstractSyncBase(private val table_name: String, private val tabl
     }
 
     private fun showInfo() {
-        CustomApplication.showMsg(sys_name + "信息....")
+        CustomApplication.showMsg(String.format("%s信息(%d%s)",sys_name,((mMaxPage - mRemainingPage).toFloat() / (if (mMaxPage == 0) 1f else mMaxPage.toFloat()) * 100).toInt(),"%"))
     }
 }

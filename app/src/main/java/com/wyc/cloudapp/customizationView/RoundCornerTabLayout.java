@@ -47,7 +47,6 @@ public final class RoundCornerTabLayout extends TabLayout {
     @SuppressLint("DrawAllocation")
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        super.onLayout(changed, l, t, r, b);
         if (changed){
             float corner_size = getHeight() / 2.0f;
             mLeft = DrawableUtil.createDrawable(new float[]{corner_size,corner_size,0,0,0,0,corner_size,corner_size},mColor, mBorderWidth,mColor);
@@ -62,6 +61,7 @@ public final class RoundCornerTabLayout extends TabLayout {
             //默认左边
             setSelectedTabIndicator(mLeft);
         }
+        super.onLayout(changed, l, t, r, b);
     }
 
     @Override

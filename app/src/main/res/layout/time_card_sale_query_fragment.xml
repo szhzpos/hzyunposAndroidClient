@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -14,7 +15,9 @@
         android:layout_marginStart="@dimen/size_45"
         android:layout_marginTop="@dimen/margin_5"
         android:layout_marginEnd="@dimen/size_45"
-        android:layout_marginBottom="@dimen/margin_5" />
+        android:layout_marginBottom="@dimen/margin_5"
+        android:focusable="true"
+        tools:ignore="SpeakableTextPresentCheck" />
 
     <LinearLayout
         android:id="@+id/_query_time_layout"
@@ -77,10 +80,10 @@
             android:id="@+id/switch_condition"
             android:layout_width="@dimen/size_108"
             android:layout_height="match_parent"
-            android:drawableEnd="@drawable/content"
             android:gravity="center"
             android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_18" />
+            android:textSize="@dimen/font_size_18"
+            app:drawableEndCompat="@drawable/content" />
 
         <EditText
             android:id="@+id/order_vip_search"
@@ -98,7 +101,8 @@
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_18" />
+            android:textSize="@dimen/font_size_18"
+            tools:ignore="TouchTargetSizeCheck,TextContrastCheck" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView

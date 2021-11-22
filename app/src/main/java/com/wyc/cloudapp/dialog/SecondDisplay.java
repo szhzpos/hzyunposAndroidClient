@@ -298,7 +298,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
         if (mAdFileNames != null && mAdFileNames.length > 0) {
             final Canvas canvas = mSurfaceHolder.lockCanvas();
             final Rect rect = mSurfaceRect;
-            if (System.currentTimeMillis() - loseTime >= mShowInterval * 1000 && mShowBannerImg){
+            if (System.currentTimeMillis() - loseTime >= mShowInterval * 1000L && mShowBannerImg){
                 mBannerBitmap = BitmapFactory.decodeFile(mAdFilePath + mAdFileNames[mShowAdImgTimes++ % mAdFileNames.length]);
                 loseTime = System.currentTimeMillis();
             }

@@ -128,6 +128,7 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
         super.onDestroy();
         clearResource();
         unregisterReceiver(updateReceiver);
+        mApplication.unregisterHandleMessage(this);
     }
 
     @Override
@@ -689,7 +690,7 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
     private void offline_login(){
         MyDialog.displayAskMessage(this, "连接服务器失败，是否离线登录？", myDialog -> {
             myDialog.dismiss();
-            final String storesId = Utils.getNullObjectAsEmptyJson(mConnParam, "storeInfo").getString("stores_id"),posNum = Utils.getNullStringAsEmpty(mConnParam, "pos_num");;
+            final String storesId = Utils.getNullObjectAsEmptyJson(mConnParam, "storeInfo").getString("stores_id"),posNum = Utils.getNullStringAsEmpty(mConnParam, "pos_num");
             if (Utils.isNotEmpty(storesId) && Utils.isNotEmpty(posNum)){
                 CustomApplication.initDb(storesId);
                 if (CustomApplication.verifyOfflineTime(this)){

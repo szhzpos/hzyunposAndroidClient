@@ -50,7 +50,7 @@ public final class HttpUtils {
 
     //connectTime 单位秒
     public static JSONObject sendPost(final String url, @NonNull final String param,int connectTime,boolean json) {
-        return sendPost(createClient(connectTime * 1000,0,0,false),url,param,json);
+        return sendPost(createClient(connectTime * 1000L,0,0,false),url,param,json);
     }
 
     private static JSONObject sendPost(final OkHttpClient okHttpClient,final String url, @NonNull final String param, boolean json) {//json 请求返回数据类型 true 为json格式 否则为XML

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
@@ -24,7 +25,8 @@
             android:layout_weight="1"
             android:background="@drawable/button_blue"
             android:text="@string/save_sz"
-            android:textColor="@color/blue_white" />
+            android:textColor="#1976D2"
+            tools:ignore="TouchTargetSizeCheck,TextContrastCheck" />
 
         <Button
             android:id="@+id/cancel_btn"
@@ -34,7 +36,8 @@
             android:layout_weight="1"
             android:background="@drawable/button_blue"
             android:text="@string/save_and_new_sz"
-            android:textColor="@color/blue_white" />
+            android:textColor="@color/blue_white"
+            tools:ignore="TouchTargetSizeCheck,TextContrastCheck" />
     </LinearLayout>
 
     <com.wyc.cloudapp.customizationView.RoundCornerTabLayout
@@ -44,19 +47,21 @@
         android:layout_height="@dimen/height_35"
         android:layout_marginStart="@dimen/size_45"
         android:layout_marginEnd="@dimen/size_45"
-        android:visibility="gone"
+        android:visibility="visible"
         app:tabTextAppearance="@style/TabText_14"
-        app:tabTextColor="@color/text_color" />
+        app:tabTextColor="@color/text_color"
+        tools:ignore="SpeakableTextPresentCheck" />
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:ignore="SpeakableTextPresentCheck">
 
         <LinearLayout
             android:id="@+id/root"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"/>
+            android:orientation="vertical" />
     </ScrollView>
 
 </LinearLayout>

@@ -1,7 +1,5 @@
 package com.wyc.cloudapp.application;
 
-import static com.wyc.cloudapp.constants.MessageID.SYNC_DIS_INFO_ID;
-
 import android.content.ContentValues;
 import android.os.Handler;
 import android.os.Looper;

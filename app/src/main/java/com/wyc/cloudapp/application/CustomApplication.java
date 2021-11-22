@@ -7,6 +7,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.TrafficStats;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -61,7 +62,7 @@ public final class CustomApplication extends Application {
     private final AtomicBoolean mTransferStatus;
     private final AtomicBoolean mNetworkStatus;
     private final List<MessageCallback> mCallbacks;
-    private final Myhandler myhandler;
+    private final MyHandler myhandler;
 
     private JSONObject mCashierInfo,mStoreInfo;
     private String mAppId, mAppSecret,mUrl;
@@ -82,7 +83,7 @@ public final class CustomApplication extends Application {
         mCallbacks = new ArrayList<>();
         mActivities = new Vector<>();
 
-        myhandler  = new Myhandler(Looper.myLooper());
+        myhandler  = new MyHandler(Looper.myLooper());
         mNetworkStatus = new AtomicBoolean(true);
         mTransferStatus = new AtomicBoolean(true);//传输状态
         mSyncManagement = new SyncManagement();
@@ -276,6 +277,9 @@ public final class CustomApplication extends Application {
         android.os.Process.killProcess(android.os.Process.myPid());
     }
 
+    /**
+     * fastJson default configuration
+     * */
     static {
         //是否输出值为null的字段,默认为false
         JSON.DEFAULT_GENERATE_FEATURE |= SerializerFeature.WriteMapNullValue.getMask();
@@ -327,6 +331,9 @@ public final class CustomApplication extends Application {
     }
     public void registerHandleMessage(final MessageCallback callback){
         mCallbacks.add(callback);
+    }
+    public void unregisterHandleMessage(final MessageCallback callback){
+        mCallbacks.remove(callback);
     }
 
     public void data_upload(){
@@ -400,9 +407,7 @@ public final class CustomApplication extends Application {
     public static void sendMessage(int what,  Object obj){
         mApplication.myhandler.obtainMessage(what,obj).sendToTarget();
     }
-    public static void sendMessage(int what,int arg1,int arg2){
-        mApplication.myhandler.obtainMessage(what,arg1,arg2).sendToTarget();
-    }
+
     public static void sendMessageAtFrontOfQueue(int what){
         mApplication.myhandler.sendMessageAtFrontOfQueue(mApplication.myhandler.obtainMessage(what));
     }
@@ -415,12 +420,9 @@ public final class CustomApplication extends Application {
         mApplication.myhandler.removeCallbacks(r);
         mApplication.myhandler.postDelayed(r,delayMillis);
     }
-    public static void removeCallbacks(Runnable r){
-        mApplication.myhandler.removeCallbacks(r);
-    }
 
-    private static class Myhandler extends Handler {
-        private Myhandler(Looper looper){
+    private static class MyHandler extends Handler {
+        private MyHandler(Looper looper){
             super(looper);
         }
 

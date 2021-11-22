@@ -30,9 +30,9 @@ public abstract class AbstractBaseFragment extends Fragment implements IHookKey 
         mRootView = view;
         viewCreated();
     }
-    public final @NonNull <T extends View> T findViewById(int id) {
+    public final @Nullable <T extends View> T findViewById(int id) {
         if (mRootView == null) {
-            throw new NullPointerException("mRootView may not be null");
+            return null;
         }
         return mRootView.findViewById(id);
     }

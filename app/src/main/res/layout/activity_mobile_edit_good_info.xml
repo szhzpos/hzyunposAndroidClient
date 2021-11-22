@@ -61,7 +61,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="@dimen/margin_8"
+            android:layout_marginStart="@dimen/margin_5"
             android:layout_weight="1"
             android:background="@drawable/button_blue"
             android:text="@string/clear_img"
@@ -104,7 +104,8 @@
             app:layout_constraintEnd_toStartOf="@+id/a_metering_et"
             app:layout_constraintHorizontal_weight="2"
             app:layout_constraintStart_toEndOf="@id/attr_label"
-            app:layout_constraintTop_toBottomOf="@id/goods_img" />
+            app:layout_constraintTop_toBottomOf="@id/goods_img"
+            tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
         <EditText
             android:id="@+id/a_metering_et"
@@ -158,7 +159,8 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:checked="true"
-                android:text="@string/no" />
+                android:text="@string/no"
+                tools:ignore="TouchTargetSizeCheck" />
 
             <RadioButton
                 android:id="@+id/y"
@@ -166,7 +168,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
-                android:text="@string/yes" />
+                android:text="@string/yes"
+                tools:ignore="TouchTargetSizeCheck" />
 
         </RadioGroup>
 
@@ -191,7 +194,6 @@
             android:layout_height="@dimen/add_goods_item_h"
             android:layout_marginTop="@dimen/margin_8"
             android:background="@drawable/round_border_sub_gray"
-            android:drawableEnd="@drawable/content"
             android:gravity="center_vertical"
             android:importantForAutofill="no"
             android:lines="1"
@@ -203,7 +205,8 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_weight="1"
             app:layout_constraintStart_toEndOf="@+id/category_label"
-            app:layout_constraintTop_toBottomOf="@id/cur" />
+            app:layout_constraintTop_toBottomOf="@id/cur"
+            app:drawableEndCompat="@drawable/content" />
 
         <TextView
             android:id="@+id/brand_label"
@@ -248,7 +251,8 @@
             android:textSize="@dimen/font_size_16"
             app:layout_constraintBottom_toBottomOf="@id/a_item_no_et"
             app:layout_constraintEnd_toEndOf="@id/img_label"
-            app:layout_constraintTop_toTopOf="@id/a_item_no_et" />
+            app:layout_constraintTop_toTopOf="@id/a_item_no_et"
+            tools:ignore="TextContrastCheck" />
 
         <EditText
             android:id="@+id/a_item_no_et"
@@ -267,7 +271,8 @@
             android:textSize="@dimen/font_size_16"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/item_label"
-            app:layout_constraintTop_toBottomOf="@id/a_category_et" />
+            app:layout_constraintTop_toBottomOf="@id/a_category_et"
+            tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
         <TextView
             android:id="@+id/barcode_label"
@@ -299,7 +304,8 @@
             android:textSize="@dimen/font_size_16"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/barcode_label"
-            app:layout_constraintTop_toBottomOf="@id/a_item_no_et" />
+            app:layout_constraintTop_toBottomOf="@id/a_item_no_et"
+            tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
         <TextView
             android:id="@+id/name_label"
@@ -330,7 +336,8 @@
             android:textSize="@dimen/font_size_16"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/name_label"
-            app:layout_constraintTop_toBottomOf="@id/a_barcode_et" />
+            app:layout_constraintTop_toBottomOf="@id/a_barcode_et"
+            tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
         <TextView
             android:id="@+id/unit_label"
@@ -394,7 +401,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/place_label"
-            app:layout_constraintTop_toTopOf="@id/a_unit_et" />
+            app:layout_constraintTop_toTopOf="@id/a_unit_et"
+            tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
         <EditText
             android:id="@+id/spec_tv"
@@ -411,7 +419,8 @@
             android:textSize="@dimen/font_size_16"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/spec_label"
-            app:layout_constraintTop_toBottomOf="@id/a_unit_et" />
+            app:layout_constraintTop_toBottomOf="@id/a_unit_et"
+            tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
         <TextView
             android:id="@+id/spec_label"
@@ -495,7 +504,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/ly_ratio_label"
-            app:layout_constraintTop_toTopOf="@id/hz_method_tv" />
+            app:layout_constraintTop_toTopOf="@id/hz_method_tv"
+            tools:ignore="TouchTargetSizeCheck" />
 
         <TextView
             android:id="@+id/method_label"
@@ -527,7 +537,8 @@
             app:layout_constraintEnd_toStartOf="@+id/ly_ratio_label"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/method_label"
-            app:layout_constraintTop_toBottomOf="@id/a_supplier_et" />
+            app:layout_constraintTop_toBottomOf="@id/a_supplier_et"
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
 
         <TextView
             android:id="@+id/pur_price_label"
@@ -561,7 +572,8 @@
             app:layout_constraintEnd_toEndOf="@id/hz_method_tv"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/pur_price_label"
-            app:layout_constraintTop_toBottomOf="@id/hz_method_tv" />
+            app:layout_constraintTop_toBottomOf="@id/hz_method_tv"
+            tools:ignore="TouchTargetSizeCheck" />
 
         <TextView
             android:id="@+id/pf_price_label"
@@ -599,7 +611,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/pf_price_label"
-            app:layout_constraintTop_toTopOf="@id/a_pur_price_et" />
+            app:layout_constraintTop_toTopOf="@id/a_pur_price_et"
+            tools:ignore="TouchTargetSizeCheck" />
 
         <TextView
             android:id="@+id/retail_price_label"
@@ -616,7 +629,7 @@
         <EditText
             android:id="@+id/a_retail_price_et"
             android:layout_width="0dp"
-            android:layout_height="@dimen/add_goods_item_h"
+            android:layout_height="48dp"
             android:layout_marginTop="@dimen/margin_8"
             android:background="@drawable/round_border_sub_gray"
             android:importantForAutofill="no"
@@ -664,7 +677,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="1"
             app:layout_constraintStart_toEndOf="@+id/vip_price_label"
-            app:layout_constraintTop_toTopOf="@id/a_retail_price_et" />
+            app:layout_constraintTop_toTopOf="@id/a_retail_price_et"
+            tools:ignore="TouchTargetSizeCheck" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

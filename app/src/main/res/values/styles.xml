@@ -55,7 +55,7 @@
     </style>
     <style name="TabText">
         <item name="android:textSize">@dimen/font_size_18</item>
-        <item name="android:textColor">?android:attr/textColorSecondary</item>
+        <item name="android:textColor">@color/text_color</item>
     </style>
     <style name="TabText_14">
         <item name="android:textSize">@dimen/font_size_14</item>
