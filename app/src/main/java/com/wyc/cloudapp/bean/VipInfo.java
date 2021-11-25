@@ -58,7 +58,7 @@ final public class VipInfo implements Serializable {
         this.head_img_id = head_img_id;
     }
     public String getCard_code() {
-        return card_code;
+        return card_code == null ? "" : card_code;
     }
     public void setCard_code(String card_code) {
         this.card_code = card_code;
@@ -252,128 +252,39 @@ final public class VipInfo implements Serializable {
         this.money_sum = money_sum;
     }
 
-    @NonNull
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(VipInfo.class.getName()).append('@').append(Integer.toHexString(System.identityHashCode(this))).append('[');
-        sb.append("headImgId");
-        sb.append('=');
-        sb.append(((this.head_img_id == null)?"<null>":this.head_img_id));
-        sb.append("\r\n");
-        sb.append("cardCode");
-        sb.append('=');
-        sb.append(((this.card_code == null)?"<null>":this.card_code));
-        sb.append("\r\n");
-        sb.append("scId");
-        sb.append('=');
-        sb.append(((this.sc_id == null)?"<null>":this.sc_id));
-        sb.append("\r\n");
-        sb.append("idcard");
-        sb.append('=');
-        sb.append(((this.idcard == null)?"<null>":this.idcard));
-        sb.append("\r\n");
-        sb.append("discount");
-        sb.append('=');
-        sb.append(this.discount);
-        sb.append("\r\n");
-        sb.append("birthday");
-        sb.append('=');
-        sb.append(((this.birthday == null)?"<null>":this.birthday));
-        sb.append("\r\n");
-        sb.append("memberId");
-        sb.append('=');
-        sb.append(member_id);
-        sb.append("\r\n");
-        sb.append("openid");
-        sb.append('=');
-        sb.append(((this.openid == null)?"<null>":this.openid));
-        sb.append("\r\n");
-        sb.append("remarks");
-        sb.append('=');
-        sb.append(((this.remarks == null)?"<null>":this.remarks));
-        sb.append("\r\n");
-        sb.append("addtime");
-        sb.append('=');
-        sb.append(((this.addtime == null)?"<null>":this.addtime));
-        sb.append("\r\n");
-        sb.append("moneyCreditLimit");
-        sb.append('=');
-        sb.append(this.money_credit_limit);
-        sb.append("\r\n");
-        sb.append("status");
-        sb.append('=');
-        sb.append(this.status);
-        sb.append("\r\n");
-        sb.append("relegatedTime");
-        sb.append('=');
-        sb.append(((this.relegated_time == null)?"<null>":this.relegated_time));
-        sb.append("\r\n");
-        sb.append("birthdayToday");
-        sb.append('=');
-        sb.append(this.birthday_today);
-        sb.append("\r\n");
-        sb.append("gradeName");
-        sb.append('=');
-        sb.append(((this.gradeName == null)?"<null>":this.gradeName));
-        sb.append("\r\n");
-        sb.append("minRechargeMoney");
-        sb.append('=');
-        sb.append(this.min_recharge_money);
-        sb.append("\r\n");
-        sb.append("pointsSum");
-        sb.append('=');
-        sb.append(this.points_sum);
-        sb.append("\r\n");
-        sb.append("upgradeLock");
-        sb.append('=');
-        sb.append(((this.upgrade_lock == null)?"<null>":this.upgrade_lock));
-        sb.append("\r\n");
-        sb.append("birthdayType");
-        sb.append('=');
-        sb.append(this.birthday_type);
-        sb.append("\r\n");
-        sb.append("mobile");
-        sb.append('=');
-        sb.append(((this.mobile == null)?"<null>":this.mobile));
-        sb.append("\r\n");
-        sb.append("upgradePoints");
-        sb.append('=');
-        sb.append(this.upgrade_points);
-        sb.append("\r\n");
-        sb.append("mmType");
-        sb.append('=');
-        sb.append(this.mm_type);
-        sb.append("\r\n");
-        sb.append("payPwd");
-        sb.append('=');
-        sb.append(((this.pay_pwd == null)?"<null>":this.pay_pwd));
-        sb.append("\r\n");
-        sb.append("gradeId");
-        sb.append('=');
-        sb.append(this.grade_id);
-        sb.append("\r\n");
-        sb.append("refMemberId");
-        sb.append('=');
-        sb.append(((this.ref_member_id == null)?"<null>":this.ref_member_id));
-        sb.append("\r\n");
-        sb.append("name");
-        sb.append('=');
-        sb.append(((this.name == null)?"<null>":this.name));
-        sb.append("\r\n");
-        sb.append("loginPwd");
-        sb.append('=');
-        sb.append(((this.login_pwd == null)?"<null>":this.login_pwd));
-        sb.append("\r\n");
-        sb.append("sex");
-        sb.append('=');
-        sb.append(((this.sex == null)?"<null>":this.sex));
-        sb.append("\r\n");
-        sb.append("moneySum");
-        sb.append('=');
-        sb.append(this.money_sum);
-        sb.append(']');
-        return sb.toString();
+        return "VipInfo{" +
+                "head_img_id='" + head_img_id + '\'' +
+                ", card_code='" + card_code + '\'' +
+                ", sc_id='" + sc_id + '\'' +
+                ", idcard='" + idcard + '\'' +
+                ", discount=" + discount +
+                ", birthday='" + birthday + '\'' +
+                ", member_id=" + member_id +
+                ", openid='" + openid + '\'' +
+                ", remarks='" + remarks + '\'' +
+                ", addtime='" + addtime + '\'' +
+                ", money_credit_limit=" + money_credit_limit +
+                ", status=" + status +
+                ", relegated_time='" + relegated_time + '\'' +
+                ", birthday_today=" + birthday_today +
+                ", gradeName='" + gradeName + '\'' +
+                ", min_recharge_money=" + min_recharge_money +
+                ", points_sum=" + points_sum +
+                ", upgrade_lock='" + upgrade_lock + '\'' +
+                ", birthday_type=" + birthday_type +
+                ", mobile='" + mobile + '\'' +
+                ", upgrade_points=" + upgrade_points +
+                ", mm_type=" + mm_type +
+                ", pay_pwd='" + pay_pwd + '\'' +
+                ", grade_id=" + grade_id +
+                ", ref_member_id='" + ref_member_id + '\'' +
+                ", name='" + name + '\'' +
+                ", login_pwd='" + login_pwd + '\'' +
+                ", sex='" + sex + '\'' +
+                ", money_sum=" + money_sum +
+                '}';
     }
 
     @Override

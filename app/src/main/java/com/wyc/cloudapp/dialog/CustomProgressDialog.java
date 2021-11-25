@@ -131,14 +131,11 @@ public class CustomProgressDialog extends Dialog implements SurfaceHolder.Callba
     public void surfaceCreated(@NonNull SurfaceHolder holder) {
         isStart = true;
         drawTimer(holder);
-        mThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (isStart){
-                    LockSupport.parkNanos(this,1000L * 1000L * 1000L);
-                    if (!isStart)break;
-                    drawTimer(holder);
-                }
+        mThread = new Thread(() -> {
+            while (isStart){
+                LockSupport.parkNanos(this,1000L * 1000L * 1000L);
+                if (!isStart)break;
+                drawTimer(holder);
             }
         });
         mThread.start();

@@ -519,7 +519,11 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
             try(Cursor cursor = mDb.rawQuery(sql,null);){
                 array = rs2Json(cursor,0,0,false);
             } catch (JSONException | SQLiteException e) {
-                if (err != null)err.append(e.getMessage());
+                if (err != null)
+                    err.append(e.getMessage());
+                else
+                    MyDialog.toastMessage(e.getMessage());
+
                 e.printStackTrace();
                 array = null;
             }

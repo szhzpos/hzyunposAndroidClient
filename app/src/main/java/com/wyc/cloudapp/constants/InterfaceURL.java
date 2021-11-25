@@ -24,4 +24,5 @@ public final class InterfaceURL {
     public static final String GIFT_CARD_INFO = "/api/api_shopping/get_shopping_list";
     public static final String GIFT_CARD_ORDER_UPLOAD = "/api/api_shopping/mk_shopping_order";
     public static final String ENQUIRY_ORDER_DETAIL = "/api/api_yaohuo/xinfo";
+    public static final String O_OUT_IN_UPLOAD = "/api/bgd/add";
 }

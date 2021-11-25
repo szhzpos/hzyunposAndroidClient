@@ -900,4 +900,10 @@
     <string name="vip_manage">会员管理</string>
     <string name="store_stuff">存货</string>
     <string name="pick_stuff">取货</string>
+    <string name="search_input_hint">请输入商品或销售单号</string>
+    <string name="last_order">最后一单</string>
+    <string name="stored_num">存入数量</string>
+    <string name="query_vip_hint">请先查询会员信息!</string>
+    <string name="store">存入</string>
+    <string name="stuff_not_empty">存货物品不能为空!</string>
 </resources>

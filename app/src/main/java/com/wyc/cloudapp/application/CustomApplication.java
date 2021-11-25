@@ -117,14 +117,14 @@ public final class CustomApplication extends Application {
         }
     }
     public static void showGlobalToast(final String message){
-        if (mGlobalToast == null){
-            mGlobalToast = Toast.makeText(CustomApplication.self(),"",Toast.LENGTH_LONG);
-        }
         if (Looper.myLooper() == Looper.getMainLooper()){
             showToast(message);
         }else postAtFrontOfQueue(()-> showToast(message));
     }
     private static void showToast(final String message){
+        if (mGlobalToast == null){
+            mGlobalToast = Toast.makeText(CustomApplication.self(),"",Toast.LENGTH_LONG);
+        }
         mGlobalToast.setText(message);
         mGlobalToast.show();
     }

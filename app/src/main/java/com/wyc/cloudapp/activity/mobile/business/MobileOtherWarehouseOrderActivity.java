@@ -17,6 +17,7 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.BusinessOrderPrintSetting;
 import com.wyc.cloudapp.bean.OrderPrintContentBase;
 import com.wyc.cloudapp.bean.OtherWarehouseOrderPrintContent;
+import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
@@ -139,7 +140,7 @@ public final class MobileOtherWarehouseOrderActivity extends AbstractMobileBusin
                 upload_obj.put("bgd_type",Utils.getViewTagValue(mOutInTypeTv,"-1"));
                 upload_obj.put("goods_list_json",getGoodsList());
 
-                object.put("api","/api/bgd/add");
+                object.put("api", InterfaceURL.O_OUT_IN_UPLOAD);
                 object.put("upload_obj",upload_obj);
             }else {
                 MyDialog.toastMessage(getString(R.string.input_hint,getString(R.string.out_in)));

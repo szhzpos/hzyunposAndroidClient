@@ -47,7 +47,8 @@
             android:background="@drawable/button_blue"
             android:text="@string/query_sz"
             android:textColor="@color/blue_white"
-            android:textSize="@dimen/font_size_16" />
+            android:textSize="@dimen/font_size_16"
+            tools:ignore="TouchTargetSizeCheck" />
 
         <LinearLayout
             android:id="@+id/vip_info_layout"
