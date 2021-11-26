@@ -137,6 +137,7 @@
             android:name=".activity.normal.NormalMainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTask"
+            android:theme="@style/AppTheme_no_translucent"
             android:screenOrientation="landscape">
 
             <!--

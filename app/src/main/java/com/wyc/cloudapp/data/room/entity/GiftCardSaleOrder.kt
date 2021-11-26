@@ -291,6 +291,13 @@ class GiftCardSaleOrder():ICardPay<GiftCardSaleDetail> {
         time = System.currentTimeMillis() / 1000
         setOrderPayInfo(a, payDetailList)
 
+        if (payInfo.isEmpty()) {
+            MyDialog.toastMessage(
+                CustomApplication.self().getString(R.string.hints_pay_detail_not_empty)
+            )
+            return
+        }
+
         val dao:GiftCardSaleOrderDao = AppDatabase.getInstance().GiftCardSaleOrderDao();
         dao.deleteWithDetails(this, getSaleInfo(), payInfo)
         dao.insertWithDetails(this, getSaleInfo(), payInfo)

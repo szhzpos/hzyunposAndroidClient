@@ -2,16 +2,11 @@ package com.wyc.cloudapp.activity.normal
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.drawable.Icon
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -19,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -40,21 +34,14 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.activity.base.MainActivity
 import com.wyc.cloudapp.adapter.FragmentPagerAdapter
-import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.bean.VipInfo
 import com.wyc.cloudapp.customizationView.RoundCornerTabLayout
 import com.wyc.cloudapp.data.viewModel.VipInfoViewModel
 import com.wyc.cloudapp.databinding.FragmentPagerContainerBinding
 import com.wyc.cloudapp.databinding.VipDetailInfoLayoutBinding
-import com.wyc.cloudapp.dialog.CustomProgressDialog
-import com.wyc.cloudapp.dialog.MyDialog
-import com.wyc.cloudapp.dialog.vip.VipInfoDialog
 import com.wyc.cloudapp.fragment.AbstractBaseFragment
 import com.wyc.cloudapp.fragment.VipPickStuffFragment
 import com.wyc.cloudapp.fragment.VipStoreStuffFragment
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class NVipManageActivity : MainActivity(){
     private var mVipInfo:MutableState<VipInfo>? = null
@@ -78,12 +65,14 @@ class NVipManageActivity : MainActivity(){
                     .fillMaxWidth()
                     .background(colorResource(R.color.activity_title_color))) {
                 Row(
-                    Modifier
-                        .wrapContentWidth()
+                    Modifier.clickable { finish() }
+                        .wrapContentWidth().fillMaxHeight()
                         .align(Alignment.CenterStart),verticalAlignment = Alignment.CenterVertically) {
-                    Icon(painter = painterResource(R.drawable.back_ico), contentDescription = "",Modifier.padding(2.dp),tint = Color.White )
-                    Text(text = stringResource(R.string.back),modifier = Modifier.clickable { finish() }
-                        ,color = colorResource(R.color.white),fontSize = 16.sp)
+                    Icon(painter = painterResource(R.drawable.back_ico), contentDescription = "",
+                        Modifier
+                            .padding(2.dp)
+                            ,tint = Color.White )
+                    Text(text = stringResource(R.string.back),color = colorResource(R.color.white),fontSize = 16.sp)
                 }
                 Text(text = stringResource(R.string.vip_manage),modifier = Modifier
                     .align(Alignment.Center)
@@ -92,7 +81,6 @@ class NVipManageActivity : MainActivity(){
             Row{
                 Column(
                     Modifier
-                        .border(0.5.dp, Color.Gray)
                         .padding(5.dp)
                         .fillMaxHeight()
                         .weight(0.4f),horizontalAlignment = Alignment.CenterHorizontally) {
@@ -100,6 +88,11 @@ class NVipManageActivity : MainActivity(){
                         Modifier, colorResource(R.color.text_color) ,fontSize = 18.sp,textAlign = TextAlign.Center)
                     Search()
                 }
+                Spacer(
+                    Modifier
+                        .fillMaxHeight()
+                        .width(0.5.dp)
+                        .background(colorResource(R.color.gray_subtransparent)))
                 Column(
                     Modifier
                         .wrapContentHeight()
@@ -158,12 +151,15 @@ class NVipManageActivity : MainActivity(){
         fun SearchTextField(textFieldValue:MutableState<TextFieldValue>,trailingIcon: @Composable (() -> Unit)? = null,
                             placeholder: @Composable (() -> Unit)? = {Text(stringResource(R.string.vip_search_hint_sz))},keyboardOptions: KeyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Number )){
 
-            OutlinedTextField(value = textFieldValue.value, onValueChange = {textFieldValue.value = it},modifier = Modifier.onFocusChanged {focusState ->
-                if (focusState.isFocused){
-                    val text = textFieldValue.value
-                    textFieldValue.value = textFieldValue.value.copy(selection = TextRange(0,text.text.length))
+            OutlinedTextField(value = textFieldValue.value, onValueChange = {textFieldValue.value = it},modifier = Modifier
+                .onFocusChanged { focusState ->
+                    if (focusState.isFocused) {
+                        val text = textFieldValue.value
+                        textFieldValue.value =
+                            textFieldValue.value.copy(selection = TextRange(0, text.text.length))
+                    }
                 }
-            }.padding(top = 5.dp,bottom = 5.dp),placeholder = placeholder,
+                .padding(top = 5.dp, bottom = 5.dp),placeholder = placeholder,
                 trailingIcon = trailingIcon,textStyle = TextStyle(fontSize = 16.sp),singleLine = true,colors = textFieldColors(),keyboardOptions = keyboardOptions
             )
         }

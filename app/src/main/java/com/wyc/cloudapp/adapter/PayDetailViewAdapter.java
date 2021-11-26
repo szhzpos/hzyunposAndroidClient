@@ -126,28 +126,23 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void addPayDetail(JSONObject pay_detail_info){
-        double amt = 0.0;
-        if (pay_detail_info != null){
-            amt = pay_detail_info.getDouble("pamt");
-            if (!Utils.equalDouble(0.0,amt)){
-                final JSONObject object = findPayDetailById(pay_detail_info.getString("pay_method_id"));
-                if (object != null){
-                    double payed_amt = object.getDouble("pamt"),
-                            zl_amt = object.getDouble("pzl");
+    public void addPayDetail(@NonNull JSONObject pay_detail_info){
+        double amt = pay_detail_info.getDouble("pamt");
+        final JSONObject object = findPayDetailById(pay_detail_info.getString("pay_method_id"));
+        if (object != null){
+            double payed_amt = object.getDouble("pamt"),
+                    zl_amt = object.getDouble("pzl");
 
-                    amt += payed_amt;
+            amt += payed_amt;
 
-                    object.put("pamt",Utils.formatDouble(amt,2));
-                    object.put("pzl",Utils.formatDouble(zl_amt + pay_detail_info.getDouble("pzl"),2));
-                    object.put("v_num",pay_detail_info.getString("v_num"));
+            object.put("pamt",Utils.formatDouble(amt,2));
+            object.put("pzl",Utils.formatDouble(zl_amt + pay_detail_info.getDouble("pzl"),2));
+            object.put("v_num",pay_detail_info.getString("v_num"));
 
-                }else{
-                    mDatas.add(pay_detail_info);
-                }
-            }
-            notifyDataSetChanged();
+        }else{
+            mDatas.add(pay_detail_info);
         }
+        notifyDataSetChanged();
     }
 
     private void deletePayDetail(int index){

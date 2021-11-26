@@ -7,7 +7,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.net.TrafficStats;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -25,13 +25,13 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.squareup.leakcanary.LeakCanary;
 import com.wyc.cloudapp.BuildConfig;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.constants.MessageID;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.data.room.AppDatabase;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.AndroidLogAdapter;
 import com.wyc.cloudapp.logger.DiskLogAdapter;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.constants.MessageID;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -102,6 +102,17 @@ public final class CustomApplication extends Application {
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public Resources getResources() {
+        final Resources res = super.getResources();
+        final Configuration configuration = res.getConfiguration();
+        if (configuration.fontScale != 1f){
+            configuration.fontScale = 1f;
+            res.updateConfiguration(configuration,res.getDisplayMetrics());
+        }
+        return res;
     }
 
 

@@ -30,14 +30,12 @@ import com.wyc.cloudapp.bean.VipInfo;
 import com.wyc.cloudapp.data.room.entity.TimeCardSaleOrder;
 import com.wyc.cloudapp.data.viewModel.TimeCardViewModel;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
-import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.mobileFragemt.AbstractMobileFragment;
 import com.wyc.cloudapp.utils.Utils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -139,6 +137,7 @@ abstract public class TimeCardSaleFragmentBase extends AbstractMobileFragment {
         sale_once_card_list.setAdapter(mSaleAdapter);
     }
 
+    @CallSuper
     protected void soldDataChange(double num, double amt){
         sale_amt_tv.setText(String.format(Locale.CHINA,"%.2f",amt));
     }

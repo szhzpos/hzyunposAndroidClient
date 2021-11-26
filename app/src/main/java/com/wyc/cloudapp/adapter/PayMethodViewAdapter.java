@@ -17,7 +17,6 @@ import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.data.room.AppDatabase;
-import com.wyc.cloudapp.data.room.entity.PayMethod;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -29,10 +28,10 @@ import java.util.Locale;
 public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdapter.MyViewHolder> {
     private static final String CASH_METHOD_ID = "1";//现金支付方式id
     private static final String VIP_METHOD_ID = "5";//会员支付方式id
-    private static final String DEFAULT_PAY_METHOD_ID = CASH_METHOD_ID;//默认支付方式ID为现金
     private static final String CUR_PAY_METHOD_LABEL = "isCur";
+    private String DEFAULT_PAY_METHOD_ID = CASH_METHOD_ID;//默认支付方式ID为现金
     private final MainActivity mContext;
-    private JSONArray mDatas;
+    private JSONArray mData;
     private OnItemClickListener mOnItemClickListener;
     private final PayDetailViewAdapter mPayDetailViewAdapter;
     private JSONObject mDefaultPayMethod,mCurrentPayMethod;
@@ -71,8 +70,8 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
-        if (mDatas != null){
-            final JSONObject pay_method_info = mDatas.getJSONObject(i);
+        if (mData != null){
+            final JSONObject pay_method_info = mData.getJSONObject(i);
             if (pay_method_info != null){
                 Drawable drawable = null;
                 String szImage = pay_method_info.getString("pay_img");
@@ -151,7 +150,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
 
     @Override
     public int getItemCount() {
-        return mDatas == null ? 0 : mDatas.size();
+        return mData == null ? 0 : mData.size();
     }
 
     private final View.OnHoverListener hoverListener = new View.OnHoverListener() {
@@ -177,8 +176,8 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     }
 
     public void setDatas(final String support_code){
-        mDatas = JSON.parseArray(JSON.toJSONString(AppDatabase.getInstance().PayMethodDao().getPayMethodBySupport(support_code)));
-        if (mDatas != null){
+        mData = JSON.parseArray(JSON.toJSONString(AppDatabase.getInstance().PayMethodDao().getPayMethodBySupport(support_code)));
+        if (mData != null){
             setDefaultPayMethod();
             this.notifyDataSetChanged();
         }else{
@@ -188,8 +187,8 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
 
     public void loadRefundPayMethod(){
         final StringBuilder err = new StringBuilder();
-        mDatas = SQLiteHelper.getListToJson("select *  from pay_method where status = '1' and is_check = 2 order by sort",err);
-        if (mDatas != null){
+        mData = SQLiteHelper.getListToJson("select *  from pay_method where status = '1' and is_check = 2 order by sort",err);
+        if (mData != null){
             setDefaultPayMethod();
             this.notifyDataSetChanged();
         }else{
@@ -198,6 +197,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     }
 
     private void setDefaultPayMethod(){
+        if (mDefaultPayMethod != null)mDefaultPayMethod.put(CUR_PAY_METHOD_LABEL,false);
         mDefaultPayMethod = findPayMethodById(DEFAULT_PAY_METHOD_ID);
         if (null != mDefaultPayMethod){
             mDefaultPayMethod.put(CUR_PAY_METHOD_LABEL,true);
@@ -205,7 +205,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     }
 
     public JSONObject findPayMethodById(final String pay_method_id){
-        final JSONArray array = mDatas;
+        final JSONArray array = mData;
         if (array != null && pay_method_id != null){
             for (int i = 0,length = array.size();i < length;i++){
                 final JSONObject jsonObject = array.getJSONObject(i);
@@ -218,7 +218,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     }
 
     public int findPayMethodIndexById(final String pay_method_id){
-        final JSONArray array = mDatas;
+        final JSONArray array = mData;
         if (array != null && pay_method_id != null){
             for (int i = 0,length = array.size();i < length;i++){
                 final JSONObject jsonObject = array.getJSONObject(i);
@@ -243,7 +243,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
         if (null != mDefaultPayMethod){
             mDefaultPayMethod.put(CUR_PAY_METHOD_LABEL,true);
             if (mDefaultPayMethod != mCurrentPayMethod){
-                mCurrentPayMethod.put(CUR_PAY_METHOD_LABEL,false);
+                if (mCurrentPayMethod != null)mCurrentPayMethod.put(CUR_PAY_METHOD_LABEL,false);
             }
             notifyDataSetChanged();
         }
@@ -252,8 +252,18 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     public JSONObject getDefaultPayMethod(){
         return mDefaultPayMethod;
     }
-    public static String getDefaultPayMethodId(){
+    public String getDefaultPayMethodId(){
         return DEFAULT_PAY_METHOD_ID;
+    }
+    public void defaultVipPay(){
+        DEFAULT_PAY_METHOD_ID = VIP_METHOD_ID;
+        setDefaultPayMethod();
+        notifyDataSetChanged();
+    }
+    public void defaultCashPay(){
+        DEFAULT_PAY_METHOD_ID = CASH_METHOD_ID;
+        setDefaultPayMethod();
+        notifyDataSetChanged();
     }
     public static String getCashMethodId(){
         return CASH_METHOD_ID;

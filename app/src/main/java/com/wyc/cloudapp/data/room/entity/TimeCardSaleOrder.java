@@ -363,6 +363,11 @@ public final class TimeCardSaleOrder implements ICardPay<TimeCardSaleInfo> {
         setTime(System.currentTimeMillis() / 1000);
         setOrderPayInfo(activity,payDetailInfoList);
 
+        if (payDetailInfoList.isEmpty()){
+            MyDialog.toastMessage(CustomApplication.self().getString(R.string.hints_pay_detail_not_empty));
+            return;
+        }
+
         AppDatabase.getInstance().TimeCardSaleOrderDao().deleteWithDetails(this,saleInfo,payInfo);
         AppDatabase.getInstance().TimeCardSaleOrderDao().insertWithDetails(this,saleInfo,payInfo);
 
@@ -677,7 +682,7 @@ public final class TimeCardSaleOrder implements ICardPay<TimeCardSaleInfo> {
 
     @Override
     public String toString() {
-        return super.toString() +"{" +
+        return "TimeCardSaleOrder{" +
                 "order_no='" + order_no + '\'' +
                 ", online_order_no='" + online_order_no + '\'' +
                 ", vip_openid='" + vip_openid + '\'' +
@@ -688,7 +693,10 @@ public final class TimeCardSaleOrder implements ICardPay<TimeCardSaleInfo> {
                 ", status=" + status +
                 ", saleman='" + saleman + '\'' +
                 ", cas_id='" + cas_id + '\'' +
-                ", time='" + time + '\'' +
+                ", time=" + time +
+                ", transfer_status=" + transfer_status +
+                ", saleInfo=" + saleInfo +
+                ", payInfo=" + payInfo +
                 '}';
     }
 }

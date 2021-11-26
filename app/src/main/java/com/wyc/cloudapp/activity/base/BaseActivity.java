@@ -2,6 +2,8 @@ package com.wyc.cloudapp.activity.base;
 
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.WindowManager;
@@ -29,7 +31,6 @@ import com.wyc.cloudapp.utils.NotchUtils;
  * @Version: 1.0
  */
 public class BaseActivity extends AppCompatActivity implements IHookKey {
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,15 +38,17 @@ public class BaseActivity extends AppCompatActivity implements IHookKey {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }else getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        } else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        if (Build.VERSION.SDK_INT != Build.VERSION_CODES.O){
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            } else {
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            }
         }
 
         if (CustomApplication.self().isNotLogin() && !(this instanceof LoginActivity)){
             LoginActivity.start(this);
-            Logger.d("restart Activity:%s",getLocalClassName());
+            Logger.d("restart from Activity:%s",getLocalClassName());
             finish();
         }
     }
@@ -85,5 +88,16 @@ public class BaseActivity extends AppCompatActivity implements IHookKey {
     @Override
     public boolean hookEnterKey() {
         return false;
+    }
+
+    @Override
+    public Resources getResources() {
+        final Resources res = super.getResources();
+        final Configuration configuration = res.getConfiguration();
+        if (configuration.fontScale != 1f){
+            configuration.fontScale = 1f;
+            res.updateConfiguration(configuration,res.getDisplayMetrics());
+        }
+        return res;
     }
 }

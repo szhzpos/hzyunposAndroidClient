@@ -1125,6 +1125,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
     }
     public void deleteVipDiscountRecord(){
         if (!isEmpty()){
+            deleteFullReduceDiscount();
             _deleteDiscountRecordForType(DISCOUNT_TYPE.V_DISCOUNT);
             _deleteDiscountRecordForType(DISCOUNT_TYPE.PROMOTION);
             _deleteDiscountRecordForType(DISCOUNT_TYPE.BUY_X_GIVE_X);

@@ -23,6 +23,7 @@ import com.wyc.cloudapp.data.room.entity.GiftCardSaleOrder
 import com.wyc.cloudapp.databinding.ActivityGiftCardOrderDetailBinding
 import com.wyc.cloudapp.databinding.MobileGiftCardDetailAdapterBinding
 import com.wyc.cloudapp.databinding.MobileGiftCardPayAdapterBinding
+import com.wyc.cloudapp.dialog.MyDialog
 
 class GiftCardOrderDetailActivity : AbsBindingActivity() {
     private var mBinding: ActivityGiftCardOrderDetailBinding? = null
@@ -40,10 +41,12 @@ class GiftCardOrderDetailActivity : AbsBindingActivity() {
     }
 
     private fun initOrder(){
-        val saleOrder:GiftCardSaleOrder = intent.getParcelableExtra("o") ?: throw IllegalArgumentException("mOrder must not be empty...")
-        saleOrder.setSaleInfo(GiftCardSaleDetail.getSaleDetailById(saleOrder.getOrder_no()))
-        saleOrder.payInfo = GiftCardPayDetail.getPayDetailById(saleOrder.getOrder_no()) ?: ArrayList()
-        mBinding?.giftCardSaleOrder = saleOrder
+        val saleOrder:GiftCardSaleOrder? = intent.getParcelableExtra("o")
+         if (null != saleOrder){
+             saleOrder.setSaleInfo(GiftCardSaleDetail.getSaleDetailById(saleOrder.getOrder_no()))
+             saleOrder.payInfo = GiftCardPayDetail.getPayDetailById(saleOrder.getOrder_no()) ?: ArrayList()
+             mBinding?.giftCardSaleOrder = saleOrder
+         }else MyDialog.toastMessage(getNotEmptyHintsString(getString(R.string.gift_card_order_detail)))
     }
 
     private fun initSaleDetail(){

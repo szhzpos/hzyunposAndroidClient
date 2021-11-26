@@ -15,6 +15,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.SaleActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
@@ -95,9 +96,9 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         final View itemView = View.inflate(mContext, R.layout.goods_type_info_layout, null);
         if (null == mSecLevelGoodsCategoryView){
-             itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) mContext.getResources().getDimension(R.dimen.height_50)));
+             itemView.setLayoutParams(new RecyclerView.LayoutParams( (int) mContext.getResources().getDimension(R.dimen.goods_type_width), (int) mContext.getResources().getDimension(R.dimen.height_50)));
         }else{
-            itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.MATCH_PARENT));
+            itemView.setLayoutParams(new RecyclerView.LayoutParams( (int) mContext.getResources().getDimension(R.dimen.goods_type_width),ViewGroup.LayoutParams.MATCH_PARENT));
         }
         itemView.setOnClickListener(this);
 
@@ -150,6 +151,7 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
                     if (mChildGoodsCategoryAdapter == null){
                         mChildGoodsCategoryAdapter = new GoodsCategoryAdapter(mContext,null);
                         mSecLevelGoodsCategoryView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
+                        mSecLevelGoodsCategoryView.addItemDecoration(new LinearItemDecoration(mContext.getColor(R.color.lightBlue),1));
                         mSecLevelGoodsCategoryView.setAdapter(mChildGoodsCategoryAdapter);
                     }
                     mChildGoodsCategoryAdapter.clearCurrentItemView();

@@ -220,6 +220,9 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
     private void clearVipInfo(){
         if (mVip != null){
             mVip = null;
+            if (mPayMethodViewAdapter != null){
+                mPayMethodViewAdapter.defaultCashPay();
+            }
             final LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);
             vip_info_linearLayout.setVisibility(View.GONE);
             final TextView vip_name_tv = vip_info_linearLayout.findViewById(R.id.vip_name),vip_phone_num_tv = vip_info_linearLayout.findViewById(R.id.vip_phone_num);
@@ -336,7 +339,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
     }
 
     private void triggerDefaultPay(){
-        final String id = PayMethodViewAdapter.getDefaultPayMethodId();
+        final String id = mPayMethodViewAdapter.getDefaultPayMethodId();
         final int index = mPayMethodViewAdapter.findPayMethodIndexById(id);
         if (index != -1){
             RecyclerView.ViewHolder viewHolder = mPayMethodView.findViewHolderForAdapterPosition(index);
@@ -385,6 +388,9 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
 
     private void initPayMethod(){
         mPayMethodViewAdapter = new PayMethodViewAdapter(mContext,mPayDetailViewAdapter);
+
+        defaultVipPay();
+
         mPayMethodViewAdapter.setDatas("1");
         mPayMethodViewAdapter.setOnItemClickListener((object) -> {
             try {
@@ -560,7 +566,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                 final BuyFullGiveXSelectDialog dialog = new BuyFullGiveXSelectDialog(mContext,rules);
                 dialog.exec();
             }
-            calculateMolAmt(PayMethodViewAdapter.getPayMethod(PayMethodViewAdapter.getDefaultPayMethodId()),false);
+            calculateMolAmt(PayMethodViewAdapter.getPayMethod(PayMethodViewAdapter.getCashMethodId()),false);
             if (fullReduceDiscount(err)){
                 calculatePayContent();
                 return true;
@@ -1350,7 +1356,16 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             mContext.showVipInfo(vip);
             refreshPayContent();
         }
+        defaultVipPay();
     }
+    private void defaultVipPay(){
+        if (mVip != null && mPayMethodViewAdapter != null){
+            if (!Utils.equalDouble(mVip.getDouble("money_sum"),0.0)){
+                mPayMethodViewAdapter.defaultVipPay();
+            }
+        }
+    }
+
     private void showVipInfo(){
         if (mVip != null){
             final LinearLayout vip_info_linearLayout = findViewById(R.id.vip_info_linearLayout);

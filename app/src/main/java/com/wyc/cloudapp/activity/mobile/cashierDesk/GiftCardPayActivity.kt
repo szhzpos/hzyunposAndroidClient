@@ -9,9 +9,6 @@ import com.wyc.cloudapp.data.room.entity.GiftCardSaleOrder
 import com.wyc.cloudapp.dialog.MyDialog
 
 class GiftCardPayActivity : CardPayBaseActivity<GiftCardSaleOrder>() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
     companion object{
         @JvmStatic
         fun start(context: Activity, order: GiftCardSaleOrder?) {

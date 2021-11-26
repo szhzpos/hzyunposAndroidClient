@@ -249,7 +249,7 @@ final class SyncHandler1 extends Handler {
         if (!code || err.length() > 0){
             Logger.e("上传销售单据错误：%s",err);
             CustomApplication.transFailure();
-        }
+        }else CustomApplication.transSuccess();
     }
 
     private void uploadTransferOrderInfo(){
@@ -336,7 +336,9 @@ final class SyncHandler1 extends Handler {
                 }
             }
         }
-        if (err.length() != 0){
+        if (err.length() == 0){
+            CustomApplication.transSuccess();
+        }else {
             Logger.e("上传交班单据错误:%s",err);
             CustomApplication.transFailure();
         }
@@ -356,7 +358,7 @@ final class SyncHandler1 extends Handler {
         if (err.length() != 0){
             Logger.e("上传退货单据错误：%s",err);
             CustomApplication.transFailure();
-        }
+        }else CustomApplication.transSuccess();
     }
 
     private void clear_download_record(){

@@ -159,14 +159,12 @@ public class CardPayBaseActivity<T extends ICardPay<?>> extends BaseWindowActivi
                 refreshContent();
 
                 Logger.d("amt:%f - zl_amt:%f = %f,mActual_amt:%f,mAmt_received:%f",pay_amt,zl_amt,pay_amt - zl_amt,mActual_amt,mAmt_received);
-                if (!mPayDetailViewAdapter.isEmpty()){
-                    double sale_amt = Utils.formatDouble(getSaleAmt(),2);
-                    double rec_pay_amt = Utils.formatDouble(mPayDetailViewAdapter.getPaySumAmt(),2);
-                    if (Utils.equalDouble(sale_amt,rec_pay_amt)){//再次验证销售金额以及付款金额是否相等
-                        save();
-                    }else{
-                        MyDialog.displayErrorMessage(CardPayBaseActivity.this, String.format(Locale.CHINA,"销售金额:%f  不等于 付款金额:%f",sale_amt,rec_pay_amt));
-                    }
+                double sale_amt = Utils.formatDouble(getSaleAmt(),2);
+                double rec_pay_amt = Utils.formatDouble(mPayDetailViewAdapter.getPaySumAmt(),2);
+                if (Utils.equalDouble(sale_amt,rec_pay_amt)){//证销售金额以及付款金额是否相等
+                    save();
+                }else{
+                    MyDialog.displayErrorMessage(CardPayBaseActivity.this, String.format(Locale.CHINA,"销售金额:%f  不等于 付款金额:%f",sale_amt,rec_pay_amt));
                 }
             }
         });

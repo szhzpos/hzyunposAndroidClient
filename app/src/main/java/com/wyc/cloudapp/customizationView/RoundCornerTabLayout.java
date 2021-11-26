@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
@@ -12,7 +13,9 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.tabs.TabLayout;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.DrawableUtil;
+import com.wyc.cloudapp.utils.Utils;
 
 import java.lang.reflect.Field;
 
@@ -28,8 +31,7 @@ public final class RoundCornerTabLayout extends TabLayout {
         super(context, attrs);
         final TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.RoundCornerTabLayout, 0, 0);
         mColor = typedArray.getColor( 1,getResources().getColor(R.color.blue,context.getTheme()));
-        mBorderWidth = (int) typedArray.getDimension(0,1);
-
+        mBorderWidth = typedArray.getDimensionPixelSize(0,1);
         try {
             Field field = getClass().getSuperclass().getDeclaredField("slidingTabIndicator");
             field.setAccessible(true);
@@ -42,6 +44,8 @@ public final class RoundCornerTabLayout extends TabLayout {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }
+        /*绘制Drawable边框时会模糊，所以要关闭硬件加速*/
+        this.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
     }
 
     @SuppressLint("DrawAllocation")

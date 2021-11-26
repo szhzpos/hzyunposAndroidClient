@@ -20,10 +20,12 @@ import com.wyc.cloudapp.utils.Utils;
 
 import static com.wyc.cloudapp.constants.ScanCallbackCode.PAY_REQUEST_CODE;
 
+import java.util.Objects;
+
 public class PayMethodDialogImp extends AbstractPayDialog implements MobileCashierActivity.ScanCallback {
     public PayMethodDialogImp(@NonNull MainActivity context, @NonNull final JSONObject pay_method) {
         super(context,Utils.getNullStringAsEmpty(pay_method,"name"));
-        mPayMethod = pay_method;
+        mPayMethod = Objects.requireNonNull(pay_method);
     }
 
     @Override

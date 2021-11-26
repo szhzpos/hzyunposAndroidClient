@@ -44,6 +44,7 @@ public final class TimeCardSaleFragment extends TimeCardSaleFragmentBase {
     }
     @Override
     protected void soldDataChange(double num, double amt) {
+        super.soldDataChange(num,amt);
         mBasketView.update(num);
     }
 
